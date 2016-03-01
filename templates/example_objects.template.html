@@ -1,0 +1,12 @@
+<html>
+	<head>
+		<title>Bricky - Objects Example</title>
+	</head>
+	<body>
+		<h2>Bricky - Objects Example</h2>
+		<b>You have the following cars:</b><br><br>
+		{{FOREACH car,!!cars!!,num}}
+			Car #[[num]] is [[car.getName()]] with type [[car.getType()]].<br>
+		{{ENDFOREACH}}
+	</body>
+</html>

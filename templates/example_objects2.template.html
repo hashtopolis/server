@@ -1,0 +1,12 @@
+<html>
+	<head>
+		<title>Bricky - Objects Example 2</title>
+	</head>
+	<body>
+		<h2>Bricky - Objects Example 2</h2>
+		<b>You have the following cars:</b><br><br>
+		{{FOREACH car,!!cars!!}}
+			You bought car #[[num]] named [[car.getName()]] at [[date("d.m.Y", %%car.getBuyDate()%%)]].<br>
+		{{ENDFOREACH}}
+	</body>
+</html>

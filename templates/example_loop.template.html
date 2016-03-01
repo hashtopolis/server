@@ -1,0 +1,26 @@
+<html>
+	<head>
+		<title>Bricky - Loop Example</title>
+	</head>
+	<body>
+		<h2>Bricky - Loop Example</h2>
+		<div style='display: inline;'>
+			{{FOR h,0,!!hours!!}}
+				<span style='width: 30px; height: 30px; background-color: #000000;'>&nbsp;</span>
+			{{ENDFOR}}
+			{{FOR h,!!hours!!,24}}
+				<span style='width: 30px; height: 30px; background-color: #CCCCCC;'>&nbsp;</span>
+			{{ENDFOR}}
+			&nbsp;&nbsp; [[hours]]h
+		</div><br><br>
+		<div style='display: inline;'>
+			{{FOR h,0,!!minutes!!}}
+				<span style='width: 30px; height: 30px; background-color: #000000;'>&nbsp;</span>
+			{{ENDFOR}}
+			{{FOR h,!!minutes!!,60}}
+				<span style='width: 30px; height: 30px; background-color: #CCCCCC;'>&nbsp;</span>
+			{{ENDFOR}}
+			&nbsp;&nbsp; [[minutes]]m
+		</div>
+	</body>
+</html>

@@ -1,0 +1,12 @@
+<html>
+	<head>
+		<title>Bricky - Recursive Example 2</title>
+	</head>
+	<body>
+		<h2>Bricky - Recursive Example 2</h2>
+		These are my cars I own at the moment:<br><br>
+		{{FOREACH car,!!cars!!}}
+			{%TEMPLATE->example_recursive2_car%}
+		{{ENDFOREACH}}
+	</body>
+</html>
