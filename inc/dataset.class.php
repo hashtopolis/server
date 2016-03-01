@@ -1,12 +1,4 @@
 <?php
-/*
- * $Id: dataset.class.php 1346 2015-12-25 16:05:47Z sein $
- */
-
-if(ALLOW != "yes"){
-	die("No Access!");
-}
-
 class DataSet {
 	private $values;
 
