@@ -1,0 +1,21 @@
+@CHARSET "UTF-8";
+
+body {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.navbar {
+	margin-bottom: 20px;
+}
+
+.footer {
+	text-align: center;
+}
+
+.alert-neutral {
+	background-color: #EEEEEE;
+	color: #000000;
+	border-color: #CCCCCC;
+	padding-top: 10px;
+}

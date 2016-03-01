@@ -1,0 +1,44 @@
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed"
+				data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+				aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span> 
+				<span class="icon-bar"></span> 
+				<span class="icon-bar"></span> 
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="index.php">User Services</a>
+		</div>
+		<div id="navbar" class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				{{IF !!login.isLoggedin()!!}}
+					<li[[menu.isActive('mydata')]]><a href="mydata.php">My Data</a></li>
+					<li[[menu.isActive('myproducts')]]><a href="myproducts.php">My Products</a></li>
+					<li class="dropdown[[menu.isActive('bills', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Bills <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li[[menu.isActive('bills_pending')]]><a href="bills_pending.php">Pending</a></li>
+							<li[[menu.isActive('bills_paid')]]><a href="bills_paid.php">Paid</a></li>
+						</ul>
+					</li>
+				{{ENDIF}}
+				{{IF !!login.isAdministrator()!!}}
+					<li class="dropdown[[menu.isActive('admin', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li[[menu.isActive('admin_user')]]><a href="admin_user.php">User Management</a></li>
+							<li[[menu.isActive('admin_product')]]><a href="admin_product.php">Product Management</a></li>
+							<li[[menu.isActive('admin_bill')]]><a href="admin_bill.php">Bill Management</a></li>
+						</ul>
+					</li>
+				{{ENDIF}}
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="../">Coray IT</a></li>
+				{{IF !!login.isLoggedin()!!}}
+					<li><a href="logout.php">Logout</a></li>
+				{{ENDIF}}
+			</ul>
+		</div>
+	</div>
+</nav>
