@@ -1,0 +1,197 @@
+<html>
+  <head>
+    <title>Hashtopus - manual</title>
+  </head>
+  <body>
+    <h1>Introduction</h1>
+  This document is meant to be read from the beginning to the end.
+    <h2>Key features</h2>
+    <ul>
+    <li>Easy and comfortable to use</li>
+    <li>Accessible from anywhere via Web</li>
+    <li>Server part highly compatible with common webhosting setups</li>
+    <li>Agent part completely unattended</li>
+    <li>File management for wordlists, rules, ...</li>
+    <li>Self-updating of both Hashtopus and Hashcat</li>
+    <li>Cracking multiple hashlists of the same type as one</li>
+    <li>Running the same binary on Windows and Linux (OSX untested)</li>
+    <li>Files/hashes marked as "secret" only distributed to agents marked as "trusted"</li>
+    <li>Many options to import/export data</li>
+    <li>A lot of statistic info about tasks/hashes</li>
+    <li>Visual representation of chunk distribution</li>
+    <li>Waiting for idle (Windows only)</li>
+    <li>Event-driven cracking mode</li>
+    </ul>
+    <h2>Architecture concept</h2>
+    Hashtopus is a multiplatform client-server tool to distribute oclHashcat/cudaHashcat tasks between multiple computers. The main goals for its development were portability, robustness and ease of use. The application has two parts:<ul>
+    <li>Agent</li>
+    single .NET 2.0 binary executable<br><br>
+    <li>Server</li>
+    several PHP/CSS files operating on two endpoints: Admin Gui and Agent Connection Point</ul>
+    While developed in C#.NET, the code is being programmed with Linux systems in mind as well, achieving full binary compatibility under Mono for .NET 2.0.<br>Aiming for high usability even on restricted networks, Hashtopus communicates over HTTP(S) using own proprietary protocol (however easy to understand and text-readable). If you have proxy server configured in your system, Hashtopus will use it, as per standard .NET feature.
+    <h2>Usage concept</h2>
+    The server part runs on PHP using MySQL as database backend. It is vital that your <b>MySQL server is configured as well as possible</b> performance wise. Some of the queries can be very expensive and proper configuration makes the difference between few milisecons of waiting and disaster multisecond lags. The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so.<br>
+    I am aware that my webdesign skills are very bad, hence the design is very lightweight and focused on maximum space usage. I haven't figured out a way to combine popular design frameworks with large tables which dominate the administration. Stripping the information off would be a trade-off where the expected userbase of this software prefers the information to the design.<br>
+    The web admin is therefore the single point of access once your agents were deployed on the cracking machines. New agent deployment requires one-time password generated in the admin, which protects your server from hashes/files leaking to rogue or fake agents.
+    <h2>Terminology</h2>
+    In this manual and in the Hashtopus itself, I use several terms. So let's make them clear:
+    <h3>Agent</h3>
+    A computer running hashtopus.exe and Hashcat doing the cracking itself.
+    <h3>Hashlist</h3>
+    A list of hashes saved in the database. Hashlist can be text, HCCAP or binary with most hashlists being the first category.
+    <h3>Task</h3>
+    A specific attack. Every task has a command line defining how will Hashcat be executed. Files can be assigned to a task (wordlists, rules, ...).
+    <h3>Keyspace</h3>
+    Every task has a predefined keyspace which says precisely how big set of keys will be searched.
+    <h3>Chunk</h3>
+    A chunk is a part of a keyspace assigned to a specific agent. If a chunk times out, it (or its part) will be reassigned to next free agent.
+    <hr>
+    <h1>First steps</h1>
+    <h2>Prerequisities</h2>
+    <h3>Server</h3>
+    <ul>
+    <li>Web server (Apache 2 recommended)</li>
+    <li>PHP module (PHP 5.3+) with r/w access for the web directory</li>
+    <li>MySQL 5.x with r/w access for the web directory</li>
+    <li>MySQL user with all privileges for used database and global FILE privilege</li>
+    </ul>
+    <h3>Agent</h3>
+    <ul>
+    <li>.NET 2.0 compatible environment (MS .NET 2.0 or Mono 2.0)</li>
+    On debian-based systems, use <b>apt-get install libmono-2.0cil</b> to install desired runtime environment. 
+    <li>Sufficient GPU drivers (see Hashcat website)</li>
+    <li>HTTP connectivity to server</li>
+    </ul>
+    <h2>Installation</h2>
+    If you meet all prerequisities, let's start with server installation. Unpack the entire installation package to your web-accessible directory. Create a MySQL database and a MySQL user. Assign this user all access rights to the new database and a global FILE privilege. This is very important for ability to import and export hashes. Next, exit file dbconfig.php and provide necesary MySQL connection details. Finally, open MySQL client and execute script hashtopus.sql.<br>
+    Doing just that, the environment should be ready to use. Now open admin.php from web browser. If everything went well, you should see password prompt. Untill new password is set in the server configuration menu, any password will be accepted. You should find yourself in the Hashtopus admin screen.
+    <h2>Initial configuration</h2>
+    Before you actually start cracking, a few things need to be configured. Go to server configuration section in the menu and set a new password. This password will be required to access the admin from now on. Next, review and adjust the configuration variables to your need:<ul>
+    <li>agenttimeout - How long will agent ask for work if there was none last time</li>
+    <li>benchtime - How long should benchmarking each agent take (seconds)</li>
+    <li>chunktime - Default chunk time (read below) (seconds)</li>
+    <li>chunktimeout - How long does the chunk need to be inactive, before considered timeouted (seconds)</li>
+    <li>fieldseparator - Default field separator for data import/export</li>
+    <li>statustimer - Default for how often should agent report its status during cracking (seconds)</li>
+    <li>timefmt - Date/time format to display in admin (see PHP function date() for this)</li>
+    </ul>
+    You should also take your time to configure the Hashcat releases. Hashtopus employs distribution mechanism to ensure that every agent will have the newest possible Hashcat release suitable for their GPU driver. The installation SQL script comes with pre-defined release pointing to the current version at the time of release, but as newer versions will be released, you will need to add them to your releases. Further info is explained in the Releases menu item documentation.
+    <h2>Uploading files</h2>
+    If you are not new to cracking hashes, you probably have a nice collection of wordlists and rules. If you want to use those files in a cracking tasks, you need to add them to Global files section. This can be done three different ways and all of them are covered in Global files menu item documentation.
+    <h2>Pre-defined tasks</h2>
+    As you might have noticed, you often apply the same kinds of attacks against every hashlist you acquire. It would be a waste of time to define it every time. That's why Hashtopus has Pre-defined tasks. Pre-defined tasks look like normal tasks but they are not directly attached to any hashlist. Once you upload a new hashlist, you can select which of the pre-defined tasks you want to apply to it. Hashtopus will then duplicate those tasks for that specific hashlist and execute them in the defined order (priority).
+    <hr>
+    <h1>Features documentation</h1>
+    This section documents each feature by its menu item. The features are sorted by chronological order, in which they are likely to be used.
+    <h2>Server configuration</h2>
+    Allows you to set configuration values and a password for accessing Hashtopus admin.<br>You also have a set of DB-cleaning tools in case you get yourself into some inconsistency trouble.
+    <h2>Hashcat releases</h2>
+    This section contains list of defined Hashcat releases. Each release has numerous values that describe what to do with it. There are separate options for NVidia cards and AMD cards because Hashcat is released in two separate archives as well. Each release therefore contains URL to download on each platform. Column Common files contains list of files to extract regardless of CPU architecture or GPU brand. These files will be extracted on every agent. Next column are Specific files. There you can see different lists of files for 32/64 bit CPUs combined with NVidia/AMD brand, total of 4 combinations. Next column is Root directory, which is simply the name of the Root directory inside the archive. All files in previous columns are expected to be relative to the Root directory. Following is the Required driver column. This specifies the minimal version of GPU driver the agent has to have installed in order to be given instruction to download this Hashcat version. NVidia drivers are specified as five numbers, for example 33167 means driver v331.67, AMD drivers are represented by four numbers, where 1404 means Catalyst 14.4. Last column gives you the opportunity to delete old releases. If a release is still used by some agent, you won't be allowed to delete it.
+    <h2>New release</h2>
+    As the name suggests, this is the place to define new Hashcat releases. Everytime you open this form, it will be prefilled by the data of the last release previous to it, as most of the fields barely change. The URL has to be absolute. All files are space-separated.
+    <h2>Global files</h2>
+    Think of this as a fileserver. Every wordlist and ruleset needs to be added to this list before you can use it in your tasks. You have three ways of adding files:<ul>
+    <li>HTTP upload</li>The file will be uploaded from your browser. Suitable for smaller files because default server limits are not very generous.
+    <li>Import</li>The file will be moved from directory called 'import' you can create inside the web directory. Suitable for large files, you can copy them via FTP or locally and then simply import.
+    <li>URL download</li>The file will be downloaded from the URL specified. The download will read 128KB chunks and print progress to the screen every few seconds.
+    </ul>
+    Because these files will be delivered to every agent who needs them for their current task, you can compress them using 7Zip to save bandwidth. However, you need to keep some basic rules: the file can't be in any subdirectory inside the archive and the algorithm needs to be LZMA (to be specific, it must be unpackable by 7zr). Everytime an agent will download a file ending with .7z, it will first extract it prior to starting the task.<br>
+    You can mark any file as "Secret" using checkbox in the column with a lock icon. This will allow only trusted agents to download the file. Agents not marked as trusted won't even see such task to begin with.
+    <h2>Pre-conf tasks</h2>
+    There are two types of tasks in Hashtopus. Regular ones and pre-configured tasks. They are actually the same thing with one difference: while regular task NEEDS to be assigned to specific hashlist, a pre-configured task does not. Pre-conf task can't have any agents assigned or any chunks dispatched. It's sort of a mask for the regular tasks, once there are some hashes to crack. Unlike regular tasks, pre-configured tasks can be defined without having any actual hashes in the system. Once defined, you will be allowed to apply these tasks to every hashlist you upload to Hashtopus.<br>
+    All of the fields are also in the regular tasks list, so they will be described there.
+    <h2>New task</h2>
+    In this form, you can define new task, should it be pre-configured or not. Every task needs to have a name (if you don't specify any it will be generated but as you will find out, it's REALLY a good idea to keep names organized once you have many of them) and a command line. This is not the actual final command line, it will be enriched with more parameters which is the reason you can't use them here (as the form informs you). An example of command line would be <pre>-a 0 #HL# words.txt</pre>, provided that you would check words.txt in the table on the right (read below).<br>
+    Very important option is the hashlist selection. Choose an existing hashlist or a pre-configured task. Following are some tweaking parameters.<br>
+    The chunk size instructs Hashtopus, how big chunks should it dispatch to agents, time-wise. This means that more powerful agents will be given larger chunks of keyspace compared to less powerful ones, but they should take about the same time. This is achieved by benchmarking the agents prior to giving them chunks.<br>
+    Next option is the status timer. This defines, how often should an agent report to the server during task cracking.<br>
+    Last checkbox sets if Hashtopus should adjust agent's benchmark automaticaly according to the last chunk. This means that i.e. if the agent takes longer time than the defined chunk time, next time it will be given smaller chunk to meet the definition. However, this feature should only be enabled for attacks with "stable" speed, like mask attacks.<br>
+    If you have already uploaded something into Global files, you see another table on the right with every file in the system. If you want to use any of those files for this task, check them. If you have compressed some files into 7Zip archive, check the archive the same way, but use the inside filenames in the task command line.
+    <h2>Agent deployer</h2>
+    Since you have set up all things need to crack hashes, you need some computing power! The Agent deployer menu is just the place to start. On the top of the page, you see "Download agent" link. This is the direct, non-passworded link to download the current Hashtopus agent exe. Download this executable on all machines intended for cracking hashes, regardless of their OS.<br>
+    Once executed, the agent will ask for registration voucher. That's what is the form on the page for. You can generate as many vouchers as you want (and you can define your own text and not use the prefilled one). These vouchers are one-time tickets to allow agent registration. Once the registration is successful, the agent will receive connection token and will never ask for password unless you delete that token or delete the agent from the administration.
+    <h2>Agents</h2>
+    Assuming you have your agents registered, you will see them in this list along with lots of usefull information:<ul>
+    <li>Act</li>This little checkbox enabled/disables the agent. Should Hashcat error occur, agent will be deactivated automaticaly unless Ignore errors is enabled for it.
+    <li>Name</li>This is the actual machine name.
+    <li>OS</li>A little icon identifying Windows from Linux.
+    <li>CPU</li>Either 32 or 64 bit.
+    <li>GPU brand</li>Either NVidia or AMD.
+    <li>Driver</li>This tells you agent's driver version. Refer to releases' documentation for format explanation.
+    <li>GPUs</li>A shortened list of detected GPU cards. Hover mouse for full text.
+    <li>Hashcat</li>If not empty, tells you what release of hashcat has the agent downloaded.
+    <li>Last activity</li>Tells you what, when and from what IP has the agent done last.
+    <li>Assignment</li>Shows you and lets you change agent's current assignment.<br>
+    <li>Action</li>Lets you delete the agent. If you will need it again, it will need to register using fresh voucher (see above).
+    </ul>
+    Important thing is that agent ID and Name are clickable, which will get you to agent detail page. On this page, you can see all of the information from before plus some more. Machine ID refers to unique system partition identified (S/N on Windows, UUID on Linux).<br>
+    You will also notice that GPU brand is changeable here, giving you the chance to correct possible bad decision or even complete lack of decision by Hashtopus.<br>
+    Don't miss the other configurable fields - you can define Hashcat parameters only applied to this agent. If you need things like --force, --workload-profile or --gpu-temp-disable only for some agents, this is the place to set them instead of the task command line. You can also edit Idle wait (the time the agent will wait for user inactivity before it starts cracking), Trust setup (only trusted agents will be allowed to crack tasks with secret hashlist or files) and Error ignoring (agent will not be deactivated if an error occurs).<br>
+    If there was already some activity by this agent, you can see uploaded errors and dispatched chunks down the page.
+    <h2>Hashlists</h2>
+    This is the storage of all your cracking targets. A hashlist, as the name suggests, is a list of hashes, even if there should be only one hash in it. In this table you can see all your hashlists, along with information how many hashes there are and how many of them are cracked. You can also see hash type and you have some options like deleting the hashlist or importing/exporting pre-cracked hashes. This option allows easy synchronizing between multiple Hashtopus instances or even between off-line Hashcat instance and Hashtopus. Be sure to set correct field separator in Server configuration.<br>
+    The hashlist name and ID is clickable and will get you to hashlist detail page. In there, you can see all of the info form Hashlist list as well as list of tasks cracking against this hashlist. Clicking on most of the hashes count will take you to view the actual hashes stated there.<br>
+    Enabling Secret option will allow only trusted agents to crack the hashlist.<br>
+    The option Generate wordlist will take all already cracked hashes, strip the $HEX[] format and save the file as a .txt in your Global files.<br>
+    If you have some tasks pre-configured, you can see them in the list on the right. Checking any of them and clicking Create button will result in duplicating the pre-conf tasks and turning the copies into regular tasks attached to this hashlist. The priority of these new tasks will be sum of the maximum priority of the regular tasks and the priority of their pre-conf originals.
+    <h2>New hashlist</h2>
+    With all that computing power, you might as well start cracking something. The New hashlist option gives you what you need. Again, every hashlist needs to have a name (this one here is mandatory, it won't be generated if omitted). You also need to specify a hash type in a number format, the same you would give to Hashcat with -m. Hashlist format specifies whether the hashlist is a text file with many hashes, HCCAP file with network captures or binary hashlist (used for TrueCrypt 512B headers but not limited to that size).<br>
+    Bellow you have an option to select where to get the hashes from. You are already familiar with Upload, Import and URL download from Global files section. The only remaining is the Paste, which will simply show text box allowing you to copy-paste hashes in there.<br>
+    Please note that creating text-based hashlists takes some time. For multi-million hashes, that will go into minutes and that's on well configured MySQL server and sorted list. If you misconfigure your MySQL server and don't sort your hashlist (that's really a MUST), you might as well end up waiting several hours. This is MySQL limitation and there is really nothing I can do about it. Having FILE privilege for your MySQL user is very recommended, because Hashtopus can then use LOAD DATA command. If it fails for whatever reason, it starts to INSERT the hashes one by one inside a transaction, which is several times slower.
+    <h2>New superhashlist</h2>
+    Sometimes you find yourself in a situation where you have multiple hashlists of the same hash type. Naturally, the fastest way is to merge them as one and crack all at once. But what if they are from different sources and the results should never be mixed? The superhashlist is the feature to solve this problem. Once you have created some hashlists, you can create a superhashlist over them and use it as a regular hashlist in your tasks. However, the cracks will be kept in the original hashlists, so you will see exactly which plaintext belongs where. Should one hash be contained in more hashlists, it will be cracked in all of them at once.<br>
+    However, if any of the contained hashlists is marked as secret, hashes from this hashlist will not be given to untrusted agents to crack. Should the superhashlist itself be marked as secret, no task cracking this superhashlist will be given to unstrusted agent in the first place.
+    <h2>Tasks</h2>
+    Let's assume you have created a hashlist and either assigned a bunch of pre-conf tasks to it or simply created new tasks from scratch, just for this hashlist. You can see them in this very list. The information shown to you are:<ul>
+    <li>Name</li>Name of the task that you specified or that was generated (hover mouse to get task command line popup).
+    <li>Hashlist</li>Name of the (super)hashlist the task is cracking.
+    <li>Chunks</li>Number of dispatched chunks and how long are they configured to take.
+    <li>Dispatched</li>How much of keyspace was cut into existing chunks.
+    <li>Searched</li>How much of keyspace was actually searched in these chunks.
+    <li>Cracked</li>How many hashes were cracked in this task. If clicked, will take you to the actual list of those hashes.
+    <li>Agents</li>Number of agents currently assigned to this task.
+    <li>Files</li>Number of global files attached to this task.
+    <li>Priority</li>Here you can see or change the priority of each task. Tasks with the highest priority are cracked<br>first. If you have an agent assigned to a task and you will prioritize a new task over the current one,<br>as soon as the agents will finish their current chunk they will move to the new task and get back<br>to the previous one once they finish cracking the new one.<br> To make it simple, everytime an agent asks for new chunk, it will be directed to the most prioritized task.<br>
+    A lock icon in any column marks secret data.
+    <li>Action</li>As in every page, an option to delete the task.
+    </ul>
+    Clicking on task name will take you to task detail, which is one of the most important screens in the system. You can see all the information about the task from the task list plus estimated and spent time, and current cracking speed. You can also see the full command line.<br>Notice that some options are changeable - you can redefine chunk size and after you do that, all agents' benchmarks will be recalculated to match it.<br>
+    Under the main table is a visual representation of a task. This picture shows the exact chunk spread amongst the keyspace including if anything was cracked in each chunk (green filling) or if there were any problems and the chunk was trimmed (red border).<br>
+    Below is the list of atached files (clickable to detail in Global files section).<br>
+    The table under it shows information about agents assigned to this task:<ul>
+    <li>Name</li>Name of agent that will link you to agent detail.
+    <li>Benchmark</li>How big chunk will be dispatched to this agent with the ability to set auto-adjusting of this size.<br>If you have auto-adjusting disabled, feel free to modify this value as high performance systems require larger chunks to fully utilize all the GPU power.
+    <li>Speed</li>Current cracking speed (only on active agents)
+    <li>Keyspace searched</li>What part of the total keyspace has the agent searched.<br>If you plan to reward your agents for their work, this is the relevant info.
+    <li>Time spent</li>Also good way to reward your agents, this shows how much actual time has the agent spent on this task.
+    <li>Cracked</li>A simple number showing how many hashes has the agent cracked.
+    <li>Last activity</li>Tells you exactly when was agent's last activity on this tasks.
+    <li>Action</li>Lets you unassign the agent from this task. Keep in mind that if it's the highest priority task, the agent will return to it just after finishing its chunk.
+    </ul>
+    Last and also very informative table shows the actual chunks that were dispatched in this task. You see numerous values there:<ul>
+    <li>Start</li>Where exactly in the keyspace does this chunk start.
+    <li>Length</li>How long the chunk is, keyspace-wise
+    <li>Checkpoint</li>If the agent crashed, from where would the chunk have to be restarted.
+    <li>Progress</li>Real progress in that chunk, regardless of checkpoint.
+    <li>Agent</li>Self-explanatory.
+    <li>Dispatch time</li>When was the task given to the agent.
+    <li>Last activity</li>When was the last time agent reported activity on this chunk.
+    <li>Time spent</li>The difference between two previous values.
+    <li>State</li>Mimics Hashcat's state info plus adds a new option: Trimmed (means the chunk was dead, cut and the rest reassigned to someone else)
+    <li>Cracked</li>How many hashes were cracked in this chunk. If clicked, will take you to the actual list of those hashes.
+    <li>Action</li>If the chunk is inactive long enough (configured in server configuration), lets you reset its progress and checkpoint to zero.<br>
+    Don't to this to chunks in progress, or you will create redundant work.
+    </ul>
+    <h2>Chunk activity</h2>
+    This is the same table as in task or agent details, but shows chunks for ALL tasks and ALL agents.<br>A good place to monitor overall cracking activity.
+    <hr>
+    <h1>Command line</h1>
+    The Hashtopus agent has several command line parameters you can use to alter the behaviour of the agent. Those parameters are invoked as standalone words without prefixes like dash, etc.<br>
+    <ul>
+    <li>debug</li>Invoking this parameter will force Hashtopus to print all Hashcat output to screen as well as invoked Hashcat command lines. Use this if you are suspecting bad parameters passed to Hashcat or Hashcat outputing garbage.
+    <li>eventmode</li>In the Event mode, Hashtopus won't start cracking immediatelly. Instead, it will create file event_ready and wait for you to delete it.<br>
+    Once you delete it, it will start cracking and will continue to crack as long as there are unfinished tasks.<br>
+    When every work is done, Hashtopus will create file event_idle and wait for more work again. You can use these files to wrap your own scripts<br>
+    around Hashtopus to, for example, use your GPU on other purposes in the meantime when there is nothing to crack.
+  </body>
+</html>

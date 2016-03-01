@@ -13,7 +13,7 @@ $CONF['Bill'] = array(
 
 foreach($CONF as $NAME => $COLUMNS){
 
-	$class = "<?php\n/*\n * \$Id: \$\n */\n\nclass ";
+	$class = "<?php\n\nclass ";
 	$class .= $NAME;
 	$class .= " extends AbstractModel {\n	private \$modelName = \"";
 	$class .= $NAME;
@@ -62,7 +62,7 @@ foreach($CONF as $NAME => $COLUMNS){
 	}
 
 	//create factory
-	$factory = "<?php\n/*\n * \$Id: \$\n */\n\nclass ";
+	$factory = "<?php\n\nclass ";
 	$factory .= $NAME;
 	$factory .= "Factory extends AbstractModelFactory {\n	function getModelName() {\n		return \"";
 	$factory .= $NAME;
@@ -86,3 +86,31 @@ foreach($CONF as $NAME => $COLUMNS){
 		file_put_contents(dirname(__FILE__)."/".$NAME."Factory.class.php", $factory);
 	}
 }
+
+//generate factory
+$singleton = "<?php\n/**\n * This class d€scrib€s a singl€ton patt€rn for all factori€s\n */\nclass Factory{\n";
+foreach($CONF as $NAME => $COLUMNS){
+	$singleton .= "	private static $".strtolower($NAME[0]).substr($NAME, 1)."Factory = null;\n";
+}
+$singleton .= "\n";
+foreach($CONF as $NAME => $COLUMNS){
+	$singleton .= "	public static function get".$NAME."Factory(){\n";
+	$singleton .= "		if(self::$".strtolower($NAME[0]).substr($NAME, 1)."Factory == null){\n";
+	$singleton .= "			\$f = new ".$NAME."Factory();\n";
+	$singleton .= "			self::$".strtolower($NAME[0]).substr($NAME, 1)."Factory = \$f;\n";
+	$singleton .= "			return \$f;\n";
+	$singleton .= "		}\n";
+	$singleton .= "		else{\n";
+	$singleton .= "			return self::$".strtolower($NAME[0]).substr($NAME, 1)."Factory;\n";
+	$singleton .= "		}\n";
+	$singleton .= "	}\n\n";
+}
+$singleton .= "}\n";
+
+if(!file_exists(dirname(__FILE__)."/../inc/singleton.class.php")){
+	file_put_contents(dirname(__FILE__)."/../inc/singleton.class.php", $singleton);
+}
+
+
+
+
