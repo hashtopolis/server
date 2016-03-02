@@ -5,6 +5,7 @@ require_once(dirname(__FILE__)."/inc/load.php");
 $TEMPLATE = new Template("agents");
 
 $ans = $FACTORIES::getBillFactory()->getDB()->query("SELECT id,name FROM tasks WHERE hashlist IS NOT NULL ORDER BY id ASC");
+$ans = $ans->fetchAll();
 $allTasks = array();
 foreach($ans as $task){
 	$allTasks[] = $task;
