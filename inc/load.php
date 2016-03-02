@@ -10,6 +10,10 @@ $CONN['db'] = 'dbname';
 
 $INSTALL = "pending...";
 
+//manually force the system to think it is installed
+//this should be removed in release!!!
+$INSTALL = 'DONE';
+
 require_once(dirname(__FILE__)."/crypt.class.php");
 require_once(dirname(__FILE__)."/dataset.class.php");
 require_once(dirname(__FILE__)."/lang.class.php");
@@ -35,8 +39,8 @@ $FACTORIES = new Factory();
 $LOGIN = null;
 if($INSTALL == 'DONE'){
 	$LOGIN = new Login();
+	$OBJECTS['login'] = $LOGIN;
 }
-$OBJECTS['login'] = $LOGIN;
 
 
 
