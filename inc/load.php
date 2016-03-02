@@ -44,6 +44,8 @@ require_once(dirname(__FILE__)."/factory.class.php");
 $FACTORIES = new Factory();
 
 $LOGIN = null;
+$MENU = new Menu();
+$OBJECTS['menu'] = $MENU;
 if($INSTALL == 'DONE'){
 	$LOGIN = new Login();
 	$OBJECTS['login'] = $LOGIN;

@@ -3,6 +3,7 @@ use Bricky\Template;
 require_once(dirname(__FILE__)."/inc/load.php");
 
 $TEMPLATE = new Template("agents");
+$MENU->setActive("agents");
 $message = "";
 
 //catch agents actions here...
