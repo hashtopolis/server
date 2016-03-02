@@ -4,11 +4,6 @@
  */
 abstract class AbstractModel {
 	/**
-	 * This function returns the name of the class it is modelling
-	 */
-	abstract function getName();
-	
-	/**
 	 * Returns a dict with all keys and associated values for this array
 	 * This is used for update queries.
 	 */

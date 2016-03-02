@@ -34,7 +34,7 @@ foreach($CONF as $NAME => $COLUMNS){
 	for($x=0;$x<sizeof($COLUMNS);$x++){
 		$class .= "	private \$".$COLUMNS[$x].";\n";
 	}
-	$class .= "	\n	public function getName() {\n		return \$this->modelName;\n	}\n	\n	function __construct(";
+	$class .= "	\n	\n	function __construct(";
 	for($x=0;$x<sizeof($COLUMNS);$x++){
 		$class .= "\$".$COLUMNS[$x];
 		if($x < sizeof($COLUMNS) - 1){

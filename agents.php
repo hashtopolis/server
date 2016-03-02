@@ -21,6 +21,10 @@ if(isset($_POST['action'])){
 				$agent->setActive(1);
 				$FACTORIES::getagentsFactory()->update($agent);
 			}
+			if(strlen($message) == 0){
+				header("Location: agents.php");
+				die();
+			}
 			break;
 	}
 }

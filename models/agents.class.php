@@ -23,10 +23,6 @@ class agents extends AbstractModel {
 	private $lasttime;
 	private $lastip;
 	
-	public function getName() {
-		return $this->modelName;
-	}
-	
 	function __construct($id, $name, $uid, $os, $cputype, $gpubrand, $gpudriver, $gpus, $hcversion, $cmdpars, $wait, $ignoreerrors, $active, $trusted, $token, $lastact, $lasttime, $lastip) {
 		$this->id = $id;
 		$this->name = $name;
