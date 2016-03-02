@@ -57,7 +57,6 @@
         		<td>
         			<form id="assign[[set.getVal('id')]]" action="agents.php" method="post">
         				<input type='hidden' name='action' value='agentassign'>
-        				<input type='hidden' name='return' value='agents.php'>
         				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
         				<select name='task' size='1' onChange="javascript:document.getElementById('assign[[set.getVal('id')]]').submit();">
         					<option value="">(unassigned)</option>
@@ -70,9 +69,8 @@
         		<td>
         			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('id')]]?')) return false;">
         				<input type='hidden' name='action' value='agentassign'>
-        				<input type="hidden" name="return" value="agents.php">
         				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
-        				<input type="submit" value="Delete">
+        				<input type="submit" class='btn btn-danger' value="Delete">
         			</form>
         		</td>
 		{{ENDFOREACH}}
