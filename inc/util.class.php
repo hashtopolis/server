@@ -39,7 +39,7 @@ class Util{
 
 	public static function shortenstring($co, $kolik){
 		// shorten string that would be too long
-		$rest =  "<span title='$co'>";
+		$ret =  "<span title='$co'>";
 		if(strlen($co) > $kolik){
 			$ret .= substr($co, 0, $kolik - 3) . "...";
 		}
