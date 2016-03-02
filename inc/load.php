@@ -32,6 +32,7 @@ require_once(dirname(__FILE__)."/factory.class.php");
 $OBJECTS = array();
 $FACTORIES = new Factory();
 
+$LOGIN = null;
 if($INSTALL == 'DONE'){
 	$LOGIN = new Login();
 	$OBJECTS['login'] = $LOGIN;
