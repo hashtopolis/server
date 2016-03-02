@@ -28,6 +28,7 @@ if(isset($_POST['action'])){
 			break;
 		case 'agentassign':
 			$agent = $FACTORIES::getagentsFactory()->get($_POST["agent"]);
+			$ans = true;
 			if($agent === null){
 				$message = "<div class='alert alert-danger'>Invalid agent id!</div>";
 			}
