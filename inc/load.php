@@ -35,10 +35,8 @@ $FACTORIES = new Factory();
 $LOGIN = null;
 if($INSTALL == 'DONE'){
 	$LOGIN = new Login();
-	$OBJECTS['login'] = $LOGIN;
 }
-
-print_r($OBJECTS);
+$OBJECTS['login'] = $LOGIN;
 
 
 
