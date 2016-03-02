@@ -38,7 +38,7 @@ if($INSTALL == 'DONE'){
 	$OBJECTS['login'] = $LOGIN;
 }
 
-
+print_r($OBJECTS);
 
 
 
