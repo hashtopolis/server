@@ -13,22 +13,36 @@
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				{{IF !!login.getLevel()!! > 0}}
+				{{IF !!login.getLevel()!! >= 0}}
 					<li class="dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
 							<li[[menu.isActive('agents_new')]]><a href="newagent.php">New Agent</a></li>
 						</ul>
 					</li>
-				{{ENDIF}}
-				{{IF !!login.isAdministrator()!!}}
-					<li class="dropdown[[menu.isActive('admin', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin <span class="caret"></span></a>
+					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li[[menu.isActive('admin_user')]]><a href="admin_user.php">User Management</a></li>
-							<li[[menu.isActive('admin_product')]]><a href="admin_product.php">Product Management</a></li>
-							<li[[menu.isActive('admin_bill')]]><a href="admin_bill.php">Bill Management</a></li>
+							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
+							<li[[menu.isActive('tasks_new')]]><a href="newtask.php">New Task</a></li>
+							<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Pre-conf Tasks</a></li>
 						</ul>
 					</li>
+					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
+							<li[[menu.isActive('lists_super')]]><a href="superhashlists.php">Superhashlists</a></li>
+						</ul>
+					</li>
+					<li[[menu.isActive('files')]]><a href="files.php">Global files</a></li>
+					<li[[menu.isActive('chunks')]]><a href="chunks.php">Chunk activity</a></li>
+					<li class="dropdown[[menu.isActive('hashcat', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hashcat <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li[[menu.isActive('hashcat_list')]]><a href="hashlists.php">Hashcat releases</a></li>
+							<li[[menu.isActive('hashcat_new')]]><a href="superhashlists.php">New Hashcat release</a></li>
+						</ul>
+					</li>
+					<li[[menu.isActive('config')]]><a href="config.php">Server config</a></li>
+					<li[[menu.isActive('users')]]><a href="users.php">User Management</a></li>
 				{{ENDIF}}
 			</ul>
 			<ul class="nav navbar-nav navbar-right">

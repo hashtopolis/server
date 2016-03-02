@@ -22,8 +22,10 @@ class agents extends AbstractModel {
 	private $lastact;
 	private $lasttime;
 	private $lastip;
+	private $userId;
 	
-	function __construct($id, $name, $uid, $os, $cputype, $gpubrand, $gpudriver, $gpus, $hcversion, $cmdpars, $wait, $ignoreerrors, $active, $trusted, $token, $lastact, $lasttime, $lastip) {
+	
+	function __construct($id, $name, $uid, $os, $cputype, $gpubrand, $gpudriver, $gpus, $hcversion, $cmdpars, $wait, $ignoreerrors, $active, $trusted, $token, $lastact, $lasttime, $lastip, $userId) {
 		$this->id = $id;
 		$this->name = $name;
 		$this->uid = $uid;
@@ -42,6 +44,7 @@ class agents extends AbstractModel {
 		$this->lastact = $lastact;
 		$this->lasttime = $lasttime;
 		$this->lastip = $lastip;
+		$this->userId = $userId;
 
 	}
 	
@@ -65,6 +68,7 @@ class agents extends AbstractModel {
 		$dict['lastact'] = $this->lastact;
 		$dict['lasttime'] = $this->lasttime;
 		$dict['lastip'] = $this->lastip;
+		$dict['userId'] = $this->userId;
 		
 		return $dict;
 	}
@@ -219,5 +223,13 @@ class agents extends AbstractModel {
 
 	function setLastip($lastip){
 		$this->lastip = $lastip;
+	}
+
+	function getUserId(){
+		return $this->userId;
+	}
+
+	function setUserId($userId){
+		$this->userId = $userId;
 	}
 }

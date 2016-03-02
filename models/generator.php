@@ -21,7 +21,35 @@ $CONF['agents'] = array(
 		'token',
 		'lastact',
 		'lasttime',
-		'lastip'
+		'lastip',
+		'userId'
+);
+$CONF['User'] = array(
+		'userId',
+		'username',
+		'email',
+		'passwordHash',
+		'passwordSalt',
+		'isValid',
+		'isComputedPassword',
+		'lastLoginDate',
+		'registeredSince',
+		'sessionLifetime',
+		'rightGroupId'
+);
+$CONF['Session'] = array(
+		'sessionId',
+		'userId',
+		'sessionStartDate',
+		'lastActionDate',
+		'isOpen',
+		'sessionLifetime',
+		'sessionKey'
+);
+$CONF['RightGroup'] = array(
+		'rightGroupId',
+		'groupName',
+		'level'
 );
 
 foreach($CONF as $NAME => $COLUMNS){

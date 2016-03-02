@@ -9,13 +9,13 @@ class Login {
 	private $valid = false;
 	private $session = null;
 	
-	/**
-	 * @var int Defines the time a login is valid without any action
-	 */
-	public static $loginSessionLimit = 600;
-	
 	public function getLevel(){
-		//TODO: here will right management be
+		global $FACTORIES;
+		
+		if($this->valid){
+			$rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
+			return $rightGroup->getLevel();
+		}
 		return 0;
 	}
 	
@@ -35,7 +35,7 @@ class Login {
 			$filter3 = new QueryFilter("lastAction", time() - self::$loginSessionLimit, ">");
 			$check = $sF->filter(array('filter' => array($filter1, $filter2, $filter3)));
 			if($check === null || sizeof($check) == 0){
-				setcookie("session", "", time() - self::$loginSessionLimit); //delete invalid or old cookie
+				setcookie("session", "", time() - 600); //delete invalid or old cookie
 				return;
 			}
 			$s = $check[0];
@@ -46,7 +46,7 @@ class Login {
 				$this->session = $s;
 				$s->setLastAction(time());
 				$sF->update($s);
-				setcookie("session", $s->getSessionKey(), time() + self::$loginSessionLimit);
+				setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime());
 			}
 		}
 	}
@@ -65,7 +65,7 @@ class Login {
 		$sF = new SessionFactory();
 		$this->session->setIsOpen(0);
 		$sF->update($this->session);
-		setcookie("session", "", time() - self::$loginSessionLimit);
+		setcookie("session", "", time() - 600);
 	}
 	
 	/**
@@ -78,16 +78,6 @@ class Login {
 	
 	public function getUser(){
 		return $this->user;
-	}
-	
-	public function isAdministrator(){
-		if(!$this->valid){
-			return false;
-		}
-		else if($this->user->getIsAdmin() == '1'){
-			return true;
-		}
-		return false;
 	}
 	
 	/**
@@ -130,7 +120,7 @@ class Login {
 		$sF->update($s);
 		
 		$this->valid = true;
-		setcookie("session", "$sessionKey", time() + self::$loginSessionLimit);
+		setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime());
 		return true;
 	}
 }
