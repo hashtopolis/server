@@ -36,8 +36,8 @@ require_once(dirname(__FILE__)."/../models/JoinFilter.class.php");
 require_once(dirname(__FILE__)."/../models/OrderFilter.class.php");
 require_once(dirname(__FILE__)."/../models/QueryFilter.class.php");
 
-require_once(dirname(__FILE__)."/../models/Bill.class.php");
-require_once(dirname(__FILE__)."/../models/BillFactory.class.php");
+require_once(dirname(__FILE__)."/../models/agents.class.php");
+require_once(dirname(__FILE__)."/../models/agentsFactory.class.php");
 
 require_once(dirname(__FILE__)."/factory.class.php");
 

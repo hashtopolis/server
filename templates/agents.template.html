@@ -25,7 +25,7 @@
 					<form id="active[[set.getVal('id')]]" action="agents.php" method="post">
 						<input type='hidden' name='action' value='agentactive'>
         				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
-        				<input type="checkbox" name="active" {{IF !!set.getVal('active')!! == 1}}value='0' checked{{ENDIF}}{{IF !!set.getVal('active')!! == 0}}value='1'{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('id')]]').submit();">
+        				<input type="checkbox" {{IF !!set.getVal('active')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('id')]]').submit();">
         			</form>
         		</td>
         		<td>

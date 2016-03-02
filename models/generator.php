@@ -3,12 +3,25 @@
 $CONF = array();
 
 //config SQL here
-$CONF['Bill'] = array(
-		'billId',
-		'userId',
-		'isPaid',
-		'userIsNotified',
-		'notes'
+$CONF['agents'] = array(
+		'id',
+		'name',
+		'uid',
+		'os',
+		'cputype',
+		'gpubrand',
+		'gpudriver',
+		'gpus',
+		'hcversion',
+		'cmdpars',
+		'wait',
+		'ignoreerrors',
+		'active',
+		'trusted',
+		'token',
+		'lastact',
+		'lasttime',
+		'lastip'
 );
 
 foreach($CONF as $NAME => $COLUMNS){
@@ -107,8 +120,8 @@ foreach($CONF as $NAME => $COLUMNS){
 }
 $singleton .= "}\n";
 
-if(!file_exists(dirname(__FILE__)."/../inc/singleton.class.php")){
-	file_put_contents(dirname(__FILE__)."/../inc/singleton.class.php", $singleton);
+if(!file_exists(dirname(__FILE__)."/../inc/factory.class.php")){
+	file_put_contents(dirname(__FILE__)."/../inc/factory.class.php", $singleton);
 }
 
 
