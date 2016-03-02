@@ -14,6 +14,11 @@ class Login {
 	 */
 	public static $loginSessionLimit = 600;
 	
+	public function getLevel(){
+		//TODO: here will right management be
+		return 0;
+	}
+	
 	/**
 	 * Creates a Login-Instance and checks automatically if there is a session
 	 * running. It updates the session lifetime again up to the session limit.
