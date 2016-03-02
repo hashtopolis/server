@@ -1,0 +1,82 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Agents</h2>
+[[message]]
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>Id</th>
+			<th>Act</th>
+			<th>Name</th>
+			<th>OS</th>
+			<th>CPU</th>
+			<th>GPU brand</th>
+			<th>Driver</th>
+			<th>GPUs</th>
+			<th>Hashcat</th>
+			<th>Last activity</th>
+			<th>Assignment</th>
+			<th>Action</th>
+		</tr>
+		{{FOREACH set,!!sets!!}}
+			<tr>
+				<td><a href="agents.php?agent=[[set.getVal('id')]]">[[set.getVal('id')]]</a></td>
+				<td>
+					<form id="active[[set.getVal('id')]]" action="agents.php" method="post">
+						<input type='hidden' name='action' value='agentactive'>
+        				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
+        				<input type="hidden" name="return" value="agents.php">
+        				<input type="checkbox" name="active" value="1"{{IF !!set.getVal('active')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('id')]]').submit();">
+        			</form>
+        		</td>
+        		<td>
+        			<a href="agents.php?agent=[[set.getVal('id')]]">[[set.getVal('name')]]</a>
+        			{{IF !!set.getVal('trusted')!! == 1}}
+        				<img src="static/lock.gif" alt="Trusted">
+        			{{ENDIF}}
+        			{{IF !!set.getVal('working')!! == 1}}
+        				<img src="static/active.gif" alt="Active" title="[[Util::nicenum(%%set.getVal('speed')%%, 100000, 1000)]]H/s">
+        			{{ENDIF}}
+        			{{IF !!set.getVal('active')!! == 0}}
+        				<img src="static/pause.gif" alt="Paused">
+        			{{ENDIF}}
+        		</td>
+        		<td>[[Util::getStaticArray(%%set.getVal('os')%%, 'os')]]</td>
+        		<td>[[set.getVal('cputype')]]-bit</td>
+        		<td>[[Util::getStaticArray(%%set.getVal('gpubrand')%%, 'platforms')]]</td>
+        		<td>[[set.getVal('gpudriver')]]</td>
+        		<td>
+	        		{{FOREACH gpu,!!set.getVal('gpus')!!}}
+	        			[[Util::shortenstring(%%gpu%%, 32)]]<br>
+	        		{{ENDFOREACH}}
+        		</td>
+        		<td>[[set.getVal('hcversion')]]</td>
+        		<td>
+        			[[set.getVal('lastact')]] at [[Util::date(%%config.getVal('timefmt')%%, %%set.getVal('lasttime')%%)]]<br>
+        			IP: [[set.getVal('lastip')]]
+        		</td>
+        		<td>
+        			<form id="assign[[set.getVal('id')]]" action="agents.php" method="post">
+        				<input type='hidden' name='action' value='agentassign'>
+        				<input type='hidden' name='return' value='agents.php'>
+        				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
+        				<select name='task' size='1' onChange="javascript:document.getElementById('assign[[set.getVal('id')]]').submit();">
+        					<option value="">(unassigned)</option>
+        					{{FOREACH task,!!allTasks!!}}
+        						<option value='[[task.getVal('id')]]'{{IF !!task.getVal('id')!! == !!set.getVal('task')!!}} selected{{ENDIF}}>[[task.getVal('name')]]</option>
+        					{{ENDFOREACH}}
+        				</select>
+        			</form>
+        		</td>
+        		<td>
+        			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('id')]]?')) return false;">
+        				<input type='hidden' name='action' value='agentassign'>
+        				<input type="hidden" name="return" value="agents.php">
+        				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
+        				<input type="submit" value="Delete">
+        			</form>
+        		</td>
+		{{ENDFOREACH}}
+	</table>
+</div>
+{%TEMPLATE->foot%}

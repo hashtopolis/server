@@ -14,10 +14,7 @@ if(strpos($HOST, ":") !== false){
 $OBJECTS['version'] = $VERSION;
 $OBJECTS['host'] = $HOST;
 
-$CONN['user'] = 'dbuser';
-$CONN['pass'] = 'dbpass';
-$CONN['server'] = 'dbhost';
-$CONN['db'] = 'dbname';
+include(dirname(__FILE__)."/load.ini");
 
 $INSTALL = "pending...";
 
