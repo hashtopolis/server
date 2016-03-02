@@ -3,6 +3,15 @@ use Bricky\Template;
 require_once(dirname(__FILE__)."/inc/load.php");
 
 $TEMPLATE = new Template("agents");
+$message = "";
+
+//catch agents actions here...
+$agentId = intval($_POST["agent"]);
+$active = intval($_POST["active"]);
+$ans = $FACTORIES::getBillFactory()->getDB()->query("UPDATE agents SET active=$active WHERE id=$agentId");
+if(!$ans){
+	$message = "<div class='alert alert-danger'>Could not change agent activity!</div>";
+}
 
 $ans = $FACTORIES::getBillFactory()->getDB()->query("SELECT id,name FROM tasks WHERE hashlist IS NOT NULL ORDER BY id ASC");
 $ans = $ans->fetchAll();
@@ -23,6 +32,7 @@ $OBJECTS['numAgents'] = sizeof($agents);
 
 $OBJECTS['allTasks'] = $allTasks;
 $OBJECTS['sets'] = $agents;
+$OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
 
