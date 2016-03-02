@@ -26,6 +26,38 @@ if(isset($_POST['action'])){
 				die();
 			}
 			break;
+		case 'agentassign':
+			$agent = $FACTORIES::getagentsFactory()->get($_POST["agent"]);
+			if($agent === null){
+				$message = "<div class='alert alert-danger'>Invalid agent id!</div>";
+			}
+			else if(intval($_POST['task']) == 0){
+				//unassign
+				$FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM assignments WHERE agent=".$agent->getId());
+			}
+			else {
+				$task = intval($_POST['task']);
+				$ans = $FACTORIES::getagentsFactory()->getDB()->query("SELECT task FROM assignments WHERE agent=".$agent->getId());
+				// keep the clever pre-bench query in variable
+				$asskv = "IFNULL((SELECT length FROM chunks WHERE solvetime>dispatchtime AND progress=length AND state IN (4,5) AND agent=".$agent->getId()." AND task=$task ORDER BY solvetime DESC LIMIT 1),0)";
+				$line = $ans->fetch();
+				if($line){
+					// agent was assigned to something, change the assignment
+					$ans = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE assignments JOIN tasks ON tasks.id=$task SET assignments.task=tasks.id,assignments.benchmark=$asskv,assignments.autoadjust=tasks.autoadjust,assignments.speed=0 WHERE assignments.agent=".$agent->getId());
+				} 
+				else {
+					// agent was not assigned, we need a new assignment
+					$ans = $FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO assignments (task,agent,benchmark,autoadjust) SELECT id,".$agent->getId().",$asskv,autoadjust FROM tasks WHERE id=$task");
+				}
+			}
+			if(!$ans){
+				$message = "<div class='alert alert-danger'>Failed to apply task change!</div>";
+			}
+			else if(strlen($message) == 0) {
+				header("Location: agents.php");
+				die();
+			}
+			break;
 	}
 }
 
