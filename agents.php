@@ -6,11 +6,17 @@ $TEMPLATE = new Template("agents");
 $message = "";
 
 //catch agents actions here...
-$agentId = intval($_POST["agent"]);
-$active = intval($_POST["active"]);
-$ans = $FACTORIES::getBillFactory()->getDB()->query("UPDATE agents SET active=$active WHERE id=$agentId");
-if(!$ans){
-	$message = "<div class='alert alert-danger'>Could not change agent activity!</div>";
+if(isset($_POST['action'])){
+	switch($_POST['action']){
+		case 'agentactive':
+			$agentId = intval($_POST["agent"]);
+			$active = intval($_POST["active"]);
+			$ans = $FACTORIES::getBillFactory()->getDB()->query("UPDATE agents SET active=$active WHERE id=$agentId");
+			if(!$ans){
+				$message = "<div class='alert alert-danger'>Could not change agent activity!</div>";
+			}
+			break;
+	}
 }
 
 $ans = $FACTORIES::getBillFactory()->getDB()->query("SELECT id,name FROM tasks WHERE hashlist IS NOT NULL ORDER BY id ASC");
