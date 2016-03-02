@@ -68,7 +68,7 @@
         		</td>
         		<td>
         			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('id')]]?')) return false;">
-        				<input type='hidden' name='action' value='agentassign'>
+        				<input type='hidden' name='action' value='agentdelete'>
         				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
         				<input type="submit" class='btn btn-danger' value="Delete">
         			</form>

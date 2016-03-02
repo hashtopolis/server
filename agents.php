@@ -26,6 +26,19 @@ if(isset($_POST['action'])){
 				die();
 			}
 			break;
+		case 'agentdelete':
+			$agent = $FACTORIES::getagentsFactory()->get($_POST['agent']);
+			$FACTORIES::getagentsFactory()->getDB()->query("START TRANSACTION");
+			if (Util::deleteAgent($agent)) {
+				$FACTORIES::getagentsFactory()->getDB()->query("COMMIT");
+				header("Location: agents.php");
+				die();
+			} 
+			else {
+				$FACTORIES::getagentsFactory()->getDB()->query("ROLLBACK");
+				$message = "<div class='alert alert-danger'>Could not delete agent!</div>";
+			}
+			break;
 		case 'agentassign':
 			$agent = $FACTORIES::getagentsFactory()->get($_POST["agent"]);
 			$ans = true;
