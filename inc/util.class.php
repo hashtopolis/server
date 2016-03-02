@@ -39,14 +39,15 @@ class Util{
 
 	public static function shortenstring($co, $kolik){
 		// shorten string that would be too long
-		echo "<span title='$co'>";
+		$rest =  "<span title='$co'>";
 		if(strlen($co) > $kolik){
-			echo substr($co, 0, $kolik - 3) . "...";
+			$ret .= substr($co, 0, $kolik - 3) . "...";
 		}
 		else{
-			echo $co;
+			$ret .= $co;
 		}
-		echo "</span>";
+		$ret .= "</span>";
+		return $ret;
 	}
 	
 	public static function prefixNum($num, $size){
