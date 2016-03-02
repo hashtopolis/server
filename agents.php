@@ -44,6 +44,7 @@ $agents = array();
 foreach($res as $agent){
 	$set = new DataSet();
 	$set->setValues($agent);
+	$set->addValue('gpus', explode("\x01", $agent['gpus']));
 	$agents[] = $set;
 }
 $OBJECTS['numAgents'] = sizeof($agents);
