@@ -14,12 +14,11 @@ $res = $FACTORIES::getBillFactory()->getDB()->query("SELECT agents.id,agents.uid
 $OBJECTS['numAgents'] = sizeof($res);
 $agents = array();
 foreach($res as $agent){
+	print_r($agent);
 	$set = new DataSet();
 	$set->setValues($agent);
 	$agents[] = $set;
 }
-
-print_r($agents);
 
 $OBJECTS['allTasks'] = $allTasks;
 $OBJECTS['sets'] = $agents;
