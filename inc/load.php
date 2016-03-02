@@ -49,6 +49,11 @@ if($INSTALL == 'DONE'){
 	$OBJECTS['login'] = $LOGIN;
 }
 
+$res = $FACTORIES::getBillFactory()->getDB()->query("SELECT * FROM config");
+$CONFIG = new DataSet();
+foreach($res as $entry){
+	$CONFIG->addValue($entry['item'], $entry['value']);
+}
 
 
 
