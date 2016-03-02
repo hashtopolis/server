@@ -16,6 +16,39 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function getStaticArray($val, $id){
+		$platforms = array(
+				"unknown", 
+				"NVidia", 
+				"AMD"
+		);
+		$oses = array(
+				"<img src='static/win.png' alt='Win' title='Windows'>",
+				"<img src='static/unix.png' alt='Unix' title='Linux'>"
+		);
+		switch($id){
+			case 'os':
+				return $oses[$val];
+				break;
+			case 'platforms':
+				return $platforms[$val];
+				break;
+		}
+		return "";
+	}
+
+	public static function shortenstring($co, $kolik){
+		// shorten string that would be too long
+		echo "<span title='$co'>";
+		if(strlen($co) > $kolik){
+			echo substr($co, 0, $kolik - 3) . "...";
+		}
+		else{
+			echo $co;
+		}
+		echo "</span>";
+	}
+	
 	public static function prefixNum($num, $size){
 		$string = "".$num;
 		while(strlen($string) < $size){
