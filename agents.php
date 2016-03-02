@@ -16,6 +16,7 @@ $agents = array();
 foreach($res as $agent){
 	$set = new DataSet();
 	$set->setValues($agent);
+	$agents[] = $set;
 }
 
 $OBJECTS['allTasks'] = $allTasks;
