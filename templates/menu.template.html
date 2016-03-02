@@ -46,7 +46,7 @@
 				{{ENDIF}}
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				{{IF !!login.isLoggedin()!!}}
+				{{IF ! !!login.isLoggedin()!!}}
 					<li><a href="logout.php">Logout</a></li>
 				{{ENDIF}}
 			</ul>
