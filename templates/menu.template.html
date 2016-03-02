@@ -13,13 +13,11 @@
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				{{IF !!login.isLoggedin()!!}}
-					<li[[menu.isActive('mydata')]]><a href="mydata.php">My Data</a></li>
-					<li[[menu.isActive('myproducts')]]><a href="myproducts.php">My Products</a></li>
-					<li class="dropdown[[menu.isActive('bills', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Bills <span class="caret"></span></a>
+				{{IF !!login.getLevel()!! > 0}}
+					<li class="dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li[[menu.isActive('bills_pending')]]><a href="bills_pending.php">Pending</a></li>
-							<li[[menu.isActive('bills_paid')]]><a href="bills_paid.php">Paid</a></li>
+							<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
+							<li[[menu.isActive('agents_new')]]><a href="newagent.php">New Agent</a></li>
 						</ul>
 					</li>
 				{{ENDIF}}
