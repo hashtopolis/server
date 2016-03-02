@@ -11,14 +11,14 @@ foreach($ans as $task){
 }
 
 $res = $FACTORIES::getBillFactory()->getDB()->query("SELECT agents.id,agents.uid,agents.active,agents.trusted,agents.cputype,agents.gpubrand,agents.gpudriver,agents.gpus,agents.hcversion,agents.lastact,agents.lasttime,agents.lastip,assignments.task,assignments.speed,agents.os,agents.name,IF(IFNULL(chunks.time,0)>".(time() - $CONFIG->getVal('chunktimeout')).",1,0) AS working FROM agents LEFT JOIN assignments ON agents.id=assignments.agent LEFT JOIN tasks ON assignments.task=tasks.id LEFT JOIN (SELECT agent,MAX(GREATEST(dispatchtime,solvetime)) AS time FROM chunks GROUP BY agent) chunks ON chunks.agent=agents.id ORDER BY agents.id ASC");
-$OBJECTS['numAgents'] = sizeof($res);
+$res = $res->fetchAll();
 $agents = array();
 foreach($res as $agent){
-	print_r($agent);
 	$set = new DataSet();
 	$set->setValues($agent);
 	$agents[] = $set;
 }
+$OBJECTS['numAgents'] = sizeof($agents);
 
 $OBJECTS['allTasks'] = $allTasks;
 $OBJECTS['sets'] = $agents;
