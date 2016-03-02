@@ -3,6 +3,17 @@
 //set to 0 after finished debugging
 ini_set("display_errors", "1");
 
+$OBJECTS = array();
+
+$VERSION = "0.1.".substr(md5("3.14"), 0, 6);
+$HOST = $_SERVER['HTTP_HOST'];
+if(strpos($HOST, ":") !== false){
+	$HOST = substr($HOST, 0, strpos($HOST, ":"));
+}
+
+$OBJECTS['version'] = $VERSION;
+$OBJECTS['host'] = $HOST;
+
 $CONN['user'] = 'dbuser';
 $CONN['pass'] = 'dbpass';
 $CONN['server'] = 'dbhost';
@@ -33,7 +44,6 @@ require_once(dirname(__FILE__)."/../models/BillFactory.class.php");
 
 require_once(dirname(__FILE__)."/factory.class.php");
 
-$OBJECTS = array();
 $FACTORIES = new Factory();
 
 $LOGIN = null;
