@@ -5,12 +5,12 @@ This is a wrapper for oclHashcat for distributed hashcracking, based on the sour
 ### What is working? ###
 
 * Templating
+* Bootstrap added
 
 ### What is missing currently? ###
 
 * DBA system
 * All GUI elements in templates
-* Bootstrap added
 * Add a install script
 * Add additional sql tables
 * Create right management system
