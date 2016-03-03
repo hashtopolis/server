@@ -17,7 +17,7 @@ if(isset($_POST['action'])){
 			if($list){
 				$format = $list['format'];
 				// create proper superhashlist field if needed
-				list($superhash, $hlisty) = superList($hlist, $format);
+				list($superhash, $hlisty) = Util::superList($hlist, $format);
 			
 				$tmpfile = "Pre-cracked_".$hlist."_".date("Y-m-d_H-i-s").".txt";
 				$tmpfull = "files/".$tmpfile;
