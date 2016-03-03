@@ -1,0 +1,45 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Add new agent</h2>
+[[message]]
+<div class='alert alert-info'>
+	To add new agents provide them with a valid voucher and the following link to download the client:<br>
+	<a href='server.php?a=update'>Download Agent</a><br><br>
+	Used vouchers are automaticaly deleted to prevent double spending.
+</div>
+{{IF !!sizeof(%%vouchers%%)!! > 0}}
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			{{FOREACH voucher,!!vouchers!!}}
+				<tr>
+					<td>[[voucher.getVal('id')]]</td>
+          			<td>[[date(%%config.getVal('timefmt')%%, %%voucher.getVal('time')%%)]]</td>
+          			<td>
+          				<form action="newagent.php" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
+          					<input type="hidden" name="action" value="voucherdelete">
+          					<input type="hidden" name="voucher" value="[[voucher.getVal('id')]]">";
+          					<input type="submit" class='btn btn-danger' value="Delete">
+          				</form>
+          			</td>
+          		</tr>
+			{{ENDFOREACH}}
+		</table>
+	</div>
+	<form action="newagent.php" method="POST">
+		<input type="hidden" name="action" value="vouchercreate">
+		<div class="panel panel-default">
+			<table class="table table-bordered table-nonfluid">
+				<tr>
+					<td>New voucher</td>
+					<td>
+						<input type="text" name="newvoucher" value="[[Util::randomString(8)]]">
+					</td>
+					<td>
+						<input type="submit" class='btn btn-default' value="Create">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+{{ENDIF}}
+{%TEMPLATE->foot%}
