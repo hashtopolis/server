@@ -16,6 +16,59 @@
 	    	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 	    	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	    <![endif]-->
+	    
+	    <script type='text/javascript'>
+			function sourceChange(valu) {
+				var pasteObject = document
+						.getElementById("pasteLine");
+				var uploadObject = document
+						.getElementById("uploadLine");
+				var importObject = document
+						.getElementById("importLine");
+				var downloadObject = document
+						.getElementById("downloadLine");
+				switch (valu) {
+				case 'paste':
+					pasteObject.style.display = '';
+					uploadObject.style.display = 'none';
+					importObject.style.display = 'none';
+					downloadObject.style.display = 'none';
+					break;
+
+				case 'upload':
+					pasteObject.style.display = 'none';
+					uploadObject.style.display = '';
+					importObject.style.display = 'none';
+					downloadObject.style.display = 'none';
+					break;
+
+				case 'import':
+					pasteObject.style.display = 'none';
+					uploadObject.style.display = 'none';
+					importObject.style.display = '';
+					downloadObject.style.display = 'none';
+					break;
+
+				case 'url':
+					pasteObject.style.display = 'none';
+					uploadObject.style.display = 'none';
+					importObject.style.display = 'none';
+					downloadObject.style.display = '';
+					break;
+				}
+			}
+			
+			function checkAll(formname, checktoggle) {
+				var checkboxes = new Array();
+				checkboxes = document.getElementById(formname)
+						.getElementsByTagName('input');
+				for (var i = 0; i < checkboxes.length; i++) {
+					if (checkboxes[i].type == 'checkbox') {
+						checkboxes[i].checked = checktoggle;
+					}
+				}
+			}
+		</script>
 	</head>
 	<body>
 		<div class="container">
