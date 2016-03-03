@@ -106,6 +106,7 @@ if(isset($_POST['action'])){
 				header("Location: files.php");
 				die();
 			}
+			$message .= "</div>";
 			break;
 	}
 }
