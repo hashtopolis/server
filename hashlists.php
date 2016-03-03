@@ -76,8 +76,8 @@ if(isset($_POST['action'])){
 						$total=0;
 			
 						// create temporary hell to handle all that crack/crap
-						$FACTORIES::getagentsFactory()->getDB()->exec("CREATE TEMPORARY TABLE tmphlcracks (hashlist INT NOT NULL, zaps BIT(1) DEFAULT 0, PRIMARY KEY (hashlist))");
-						$FACTORIES::getagentsFactory()->getDB()->exec("INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty)");
+						$FACTORIES::getagentsFactory()->getDB()->query("CREATE TEMPORARY TABLE tmphlcracks (hashlist INT NOT NULL, zaps BIT(1) DEFAULT 0, PRIMARY KEY (hashlist))");
+						$FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty)");
 			
 			
 						$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
