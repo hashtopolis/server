@@ -17,7 +17,7 @@
           			<td>
           				<form action="newagent.php" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
           					<input type="hidden" name="action" value="voucherdelete">
-          					<input type="hidden" name="voucher" value="[[voucher.getVal('id')]]">";
+          					<input type="hidden" name="voucher" value="[[voucher.getVal('voucher')]]">";
           					<input type="submit" class='btn btn-danger' value="Delete">
           				</form>
           			</td>

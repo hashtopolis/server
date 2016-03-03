@@ -10,9 +10,16 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'vouchercreate':
-			//"INSERT INTO regvouchers (voucher,time) VALUES ('".mysqli_real_escape_string($dblink,$_POST["newvoucher"])."',$cas)");
+			$voucher = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["newvoucher"]);
+			$FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO regvouchers (voucher,time) VALUES ($voucher, ".time().")");
+			header("Location: newagent.php");
+			die();
 			break;
 		case 'voucherdelete':
+			$voucher = $FACTORIES::getagentsFactory()->getDB()->quote($_POST['voucher']);
+			$FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM regvouchers WHERE voucher=$voucher");
+			header("Location: newagent.php");
+			die();
 			break;
 	}
 }
