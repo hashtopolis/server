@@ -9,6 +9,191 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'hashlistzapp':
+			// pre-crack hashes processor
+			$hlist = intval($_POST["hashlist"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,IFNULL(hashes.salted,0) AS salted FROM hashlists LEFT JOIN (SELECT hashlist,1 AS salted FROM hashes WHERE hashlist=$hlist AND salt!='' LIMIT 1) hashes ON hashlists.format=0 AND hashes.hashlist=hashlists.id WHERE hashlists.id=$hlist");
+			$list = $res->fetch();
+			if($list){
+				$format = $list["format"];
+				$salted = $list["salted"];
+			
+				$fs = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["separator"]);
+				$source = $_POST["source"];
+				// switch based on source
+				switch ($source) {
+					case "paste":
+						$sourcedata = $_POST["hashfield"];
+						break;
+					case "upload":
+						$sourcedata = $_FILES["hashfile"];
+						break;
+					case "import":
+						$sourcedata = $_POST["importfile"];
+						break;
+					case "url":
+						$sourcedata = $_POST["url"];
+						break;
+				}
+				$tmpfile = "zaplist_$hlist";
+				$message = "<div class='alert alert-neutral'>";
+				if(Util::uploadFile($tmpfile, $source, $sourcedata)){
+					$hsize = filesize($tmpfile);
+					if($hsize>0){
+						$message .= "Opening file $tmpfile ($hsize B)...";
+						$hhandle = fopen($tmpfile, "rb");
+						$message .= "OK<br>";
+						$pocet = 0;
+						$chyby = 0;
+						$cas_start = time();
+			
+						$message .= "Determining line separator...";
+						// read buffer and get the pointer back to start
+						$buf = fread($hhandle, 1024);
+						$seps = array("\r\n", "\n", "\r");
+						$ls = "";
+						foreach($seps as $sep){
+							if(strpos($buf, $sep) !== false){
+								$ls = $sep;
+								$message .= Util::bintohex($ls);
+								break;
+							}
+						}
+						if($ls == "") {
+							$message .= "not found - assuming single hash";
+						}
+						$message .= "<br>";
+			
+						// create proper superhashlist field if needed
+						list($superhash,$hlisty) = Util::superList($hlist,$format);
+			
+						// now read the lines
+            			$message .= "Importing pre-cracked hashes from text file...<br>";
+						Util::rewind($hhandle);
+						$zapy=0; 
+						$chyby=0; 
+						$skipy=0; 
+						$total=0;
+			
+						// create temporary hell to handle all that crack/crap
+						$FACTORIES::getagentsFactory()->getDB()->exec("CREATE TEMPORARY TABLE tmphlcracks (hashlist INT NOT NULL, zaps BIT(1) DEFAULT 0, PRIMARY KEY (hashlist))");
+						$FACTORIES::getagentsFactory()->getDB()->exec("INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty)");
+			
+			
+						$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
+			            $zaptable = Util::getStaticArray($format, 'formattables');
+			            while(!feof($hhandle)){
+							$dato = stream_get_line($hhandle, 1024, $ls);
+							if($dato == ""){
+								continue;
+							}
+							$total++;
+							$kv = "UPDATE $zaptable JOIN hashlists ON $zaptable.hashlist=hashlists.id JOIN tmphlcracks ON tmphlcracks.hashlist=$zaptable.hashlist SET tmphlcracks.zaps=1,$zaptable.chunk=0,$zaptable.plaintext='";
+							$datko = explode($fs, $dato);
+							$zaphash=""; 
+							$zapsalt=""; 
+							$zapplain="";
+							// distribute data into vars
+							if ($salted == 1) {
+								if (count($datko) >= 3) {
+									$zaphash=$datko[0];
+									$zapsalt=$datko[1];
+									$zapplain=$datko[2];
+									for ($i=3;$i<count($datko);$i++) {
+										$zapplain .= $fs.$datko[$i];
+									}
+								} 
+								else {
+									$message .= "Bad line: $dato<br>";
+									$chyby++;
+									continue;
+								}
+							} 
+							else {
+								if (count($datko) >= 2) {
+									$zaphash = $datko[0];
+									$zapplain = $datko[1];
+									for ($i=2;$i<count($datko);$i++) {
+										$zapplain .= $fs.$datko[$i];
+									}
+								} 
+								else {
+									$message .= "Bad line: $dato<br>";
+									$chyby++;
+									continue;
+								}
+							}
+							//overwritting condition
+							if (isset($_POST["overwrite"]) && $_POST["overwrite"]=="1") {
+								$over = true;
+							} 
+							else {
+								$over = false;
+							}
+							$kv2 = "',$zaptable.time=$cas,hashlists.cracked=hashlists.cracked+".($over ? "IF($zaptable.plaintext IS NULL,1,0)" : "1")." WHERE $zaptable.hashlist IN ($hlisty)".($over ? "" : " AND $zaptable.plaintext IS NULL");
+							switch ($format) {
+								case 0:
+									$kv2 .= " AND $zaptable.hash=".$FACTORIES::getagentsFactory()->getDB()->quote($zaphash);
+									if($zapsalt != ""){
+										$kv2.=" AND $zaptable.salt=".$FACTORIES::getagentsFactory()->getDB()->quote($zapsalt);
+									}
+									break;
+								case 1:
+									$kv2.=" AND $zaptable.essid=".$FACTORIES::getagentsFactory()->getDB()->quote($zaphash);
+									break;
+							}
+							if ($zapplain != ""){
+								$vysledek = $FACTORIES::getagentsFactory()->getDB()->query($kv.$FACTORIES::getagentsFactory()->getDB()->quote($zapplain).$kv2);
+								if (!$vysledek) {
+									$vysledek = $FACTORIES::getagentsFactory()->getDB()->query($kv."\$HEX[".Util::bintohex($zapplain)."]".$kv2);
+								}
+								if ($vysledek) {
+									$aff = $vysledek->rowCount();
+									if ($aff==0) {
+										$skipy++;
+									} 
+									else {
+										$zapy++;
+									}
+								} 
+								else {
+									$message .= "Problems pre-cracking hash ".$zaphash." ($kv--$kv2)<br>";
+									$chyby++;
+								}
+							} 
+							else {
+								$skipy++;
+							}
+							if ($total % 10000 == 0) {
+								$message .= "Read $total lines...<br>";
+							}
+						}
+						$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
+						$cas_stop = time();
+			
+						$FACTORIES::getagentsFactory()->getDB()->exec("INSERT IGNORE INTO zapqueue (hashlist,agent,time,chunk) SELECT hashlistusers.hashlist,hashlistusers.agent,$cas,0 FROM hashlistusers JOIN tmphlcracks ON hashlistusers.hashlist=tmphlcracks.hashlist AND tmphlcracks.zaps=1");
+						$FACTORIES::getagentsFactory()->getDB()->exec("DROP TABLE tmphlcracks");
+			
+						// evaluate, what have we accomplished
+						if ($superhash) {
+							// recount cracked
+							$FACTORIES::getagentsFactory()->getDB()->exec("SET @ctotal=(SELECT SUM(hashlists.cracked) FROM superhashlists JOIN hashlists ON superhashlists.hashlist=hashlists.id WHERE superhashlists.id=$hlist)");
+							$FACTORIES::getagentsFactory()->getDB()->exec("UPDATE hashlists SET cracked=@ctotal WHERE id=$hlist AND format=3");
+						}
+						$message .= "Pre-cracking completed ($zapy hashes pre-cracked, $skipy skipped for duplicity or empty plaintext, $chyby SQL errors, took ".($cas_stop-$cas_start)." sec)";
+						fclose($hhandle);
+					} 
+					else {
+						$message .= "Pre-cracked file is empty!";
+					}
+					unlink($tmpfile);
+				}
+				$message .= "</div>";
+			}
+			else{
+				$message = "<div class='alert alert-danger'>Invalid hashlist!</div>";
+			}
+			break;
 		case 'export':
 			// export cracked hashes to a file
 			$hlist = intval($_POST["hashlist"]);
