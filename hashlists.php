@@ -306,17 +306,17 @@ if(isset($_POST['action'])){
 			$ans0 = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE hashlists JOIN superhashlists ON superhashlists.id=hashlists.id AND hashlists.format=3 AND superhashlists.hashlist=$hlist JOIN hashlists hashlists2 ON hashlists2.id=superhashlists.hashlist SET hashlists.cracked=hashlists.cracked-hashlists2.cracked,hashlists.hashcount=hashlists.hashcount-hashlists2.hashcount");
 			
 			// then actually delete the list
-			$ans1 = $ans0 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM hashlists WHERE id=$hlist");
-			$ans2 = $ans1 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM hashlistusers WHERE hashlist=$hlist");
-			$ans3 = $ans2 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM zapqueue WHERE hashlist=$hlist");
+			$ans1 = $ans0 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM hashlists WHERE id=$hlist");
+			$ans2 = $ans1 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM hashlistusers WHERE hashlist=$hlist");
+			$ans3 = $ans2 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM zapqueue WHERE hashlist=$hlist");
 			
 			// and its tasks
-			$ans4 = $ans3 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM taskfiles WHERE task IN (SELECT id FROM tasks WHERE hashlist=$hlist)");
-			$ans5 = $ans4 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM assignments WHERE task IN (SELECT id FROM tasks WHERE hashlist=$hlist)");
-			$ans6 = $ans5 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM chunks WHERE task IN (SELECT id FROM tasks WHERE hashlist=$hlist)");
-			$ans7 = $ans6 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM tasks WHERE hashlist=$hlist");
+			$ans4 = $ans3 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM taskfiles WHERE task IN (SELECT id FROM tasks WHERE hashlist=$hlist)");
+			$ans5 = $ans4 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM assignments WHERE task IN (SELECT id FROM tasks WHERE hashlist=$hlist)");
+			$ans6 = $ans5 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM chunks WHERE task IN (SELECT id FROM tasks WHERE hashlist=$hlist)");
+			$ans7 = $ans6 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM tasks WHERE hashlist=$hlist");
 			
-			$ans8 = $ans7 && $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM superhashlists WHERE hashlist=$hlist");
+			$ans8 = $ans7 && $FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM superhashlists WHERE hashlist=$hlist");
 			
 			if($ans8){
 				$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
