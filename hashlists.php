@@ -25,7 +25,7 @@ if(isset($_POST['action'])){
 				$kvery1 = "SELECT ";
 				switch ($format) {
 					case 0:
-						$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hash FROM hashes WHERE hashlist IN ($hlisty) AND salt!='' LIMIT 1");
+						$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT 1 FROM hashes WHERE hashlist IN ($hlisty) AND salt!='' LIMIT 1");
 						if($res->rowCount() > 0){
 							$kvery1 .= "hash,salt,plaintext";
 							$salted = true;

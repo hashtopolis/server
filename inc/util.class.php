@@ -99,12 +99,20 @@ class Util{
 				"Binary",
 				"Superhashlist"
 		);
+		$formattables = array(
+				"hashes",
+				"hashes_binary",
+				"hashes_binary"
+		);
 		switch($id){
 			case 'os':
 				return $oses[$val];
 				break;
 			case 'formats':
 				return $formats[$val];
+				break;
+			case 'formattables':
+				return $formattables[$val];
 				break;
 			case 'platforms':
 				if($val == '-1'){
