@@ -90,7 +90,7 @@ class Util{
 				"M",
 				"G" 
 		);
-		$vysnew = niceround($num, 2);
+		$vysnew = Util::niceround($num, 2);
 		return $vysnew . " " . $rs[$r];
 	}
 	
