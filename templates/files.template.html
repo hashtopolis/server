@@ -36,7 +36,7 @@
         				<form id="secret[[file.getVal('id')]]" action="files.php" method="POST">
         					<input type="hidden" name="file" value="[[file.getVal('id')]]">
         					<input type="hidden" name="action" value="filesecret">
-        					<input type="checkbox" name="secret" value="[[file.getVal('secret')]]"
+        					<input type="checkbox" name="secret" value="{{IF !!file.getVal('secret')!! == 0}}1{{ENDIF}}{{IF !!file.getVal('secret')!! == 1}}0{{ENDIF}}"
         					{{IF !!file.getVal('secret')!! == 1}}
         						checked
         					{{ENDIF}}

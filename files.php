@@ -17,6 +17,10 @@ if(isset($_POST['action'])){
 			if (!$res) {
 				$message = "<div class='alert alert-danger'>Could not change global file secrecy!</div>";
 			}
+			else{
+				header("Location: files.php");
+				die();
+			}
 			break;
 		case 'addfile':
 			$pocetup = 0;
