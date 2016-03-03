@@ -115,7 +115,9 @@ if(isset($_GET['id'])){
 			$chunks[] = $set;
 		}
 		
-		$OBJECTS['platforms'] = Util::getStaticArray('-1', 'platforms');
+		$platforms = new DataSet();
+		$platforms->setValues(Util::getStaticArray('-1', 'platforms'));
+		$OBJECTS['platforms'] = $platforms;
 		$OBJECTS['agent'] = $agentSet;
 		$OBJECTS['errors'] = $errors;
 		$OBJECTS['chunks'] = $chunks;
