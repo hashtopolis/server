@@ -18,8 +18,8 @@ class Util{
 	public static function isValidEmail($email){
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
-	
-	public static function sectotime($soucet) {
+
+	public static function sectotime($soucet){
 		// convert seconds to human readable format
 		$vysledek = "";
 		if($soucet > 86400){
@@ -38,17 +38,17 @@ class Util{
 		
 		$DB = $FACTORIES::getagentsFactory()->getDB();
 		
-		$vysledek1 = $DB->query("DELETE FROM assignments WHERE agent=".$agent->getId());
-		$vysledek2 = $vysledek1 && $DB->query("DELETE FROM errors WHERE agent=".$agent->getId());
-		$vysledek3 = $vysledek2 && $DB->query("DELETE FROM hashlistusers WHERE agent=".$agent->getId());
-		$vysledek4 = $vysledek3 && $DB->query("DELETE FROM zapqueue WHERE agent=".$agent->getId());
+		$vysledek1 = $DB->query("DELETE FROM assignments WHERE agent=" . $agent->getId());
+		$vysledek2 = $vysledek1 && $DB->query("DELETE FROM errors WHERE agent=" . $agent->getId());
+		$vysledek3 = $vysledek2 && $DB->query("DELETE FROM hashlistusers WHERE agent=" . $agent->getId());
+		$vysledek4 = $vysledek3 && $DB->query("DELETE FROM zapqueue WHERE agent=" . $agent->getId());
 		
 		// orphan the chunks
-		$vysledek5 = $vysledek4 && $DB->query("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.agent=".$agent->getId()." SET chunk=NULL");
-		$vysledek6 = $vysledek5 && $DB->query("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.agent=".$agent->getId()." SET chunk=NULL");
-		$vysledek7 = $vysledek6 && $DB->query("UPDATE chunks SET agent=NULL WHERE agent=".$agent->getId());
+		$vysledek5 = $vysledek4 && $DB->query("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.agent=" . $agent->getId() . " SET chunk=NULL");
+		$vysledek6 = $vysledek5 && $DB->query("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.agent=" . $agent->getId() . " SET chunk=NULL");
+		$vysledek7 = $vysledek6 && $DB->query("UPDATE chunks SET agent=NULL WHERE agent=" . $agent->getId());
 		
-		$vysledek8 = $vysledek7 && $DB->query("DELETE FROM agents WHERE id=".$agent->getId());
+		$vysledek8 = $vysledek7 && $DB->query("DELETE FROM agents WHERE id=" . $agent->getId());
 		
 		return ($vysledek8);
 	}
@@ -75,6 +75,23 @@ class Util{
 				break;
 		}
 		return "";
+	}
+
+	public static function nicenum($num, $treshold = 1024, $divider = 1024){
+		// display nicely formated number divided into correct units
+		$r = 0;
+		while($num > $treshold){
+			$num /= $divider;
+			$r++;
+		}
+		$rs = array(
+				"",
+				"k",
+				"M",
+				"G" 
+		);
+		$vysnew = niceround($num, 2);
+		return $vysnew . " " . $rs[$r];
 	}
 
 	public static function shortenstring($co, $kolik){
