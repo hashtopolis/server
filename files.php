@@ -130,7 +130,6 @@ $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT files.id,files.fil
 $res = $res->fetchAll();
 $files = array();
 foreach($res as $file){
-	print_r($file);
 	$set = new DataSet();
 	$set->setValues($file);
 	$files[] = $set;
