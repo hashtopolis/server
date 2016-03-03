@@ -37,10 +37,10 @@ if(isset($_POST['action'])){
 							$nsoubor[$klic] = $soubor[$i];
 						}
 						$tmpfile = "files/".$realname;
-						$resp = uploadFile($tmpfile, $source, $nsoubor);
+						$resp = Util::uploadFile($tmpfile, $source, $nsoubor);
 						$message .= $resp[1];
 						if ($resp[0]) {
-							$resp = insertFile($tmpfile);
+							$resp = Util::insertFile($tmpfile);
 							$message .= $resp[1];
 							if ($resp[0]) {
 								$pocetup++;
@@ -63,10 +63,10 @@ if(isset($_POST['action'])){
 						// copy all uploaded attached files to proper directory
 						$realname = basename($soubor);
 						$tmpfile = "files/".$realname;
-						$resp = uploadFile($tmpfile,$source,$realname);
+						$resp = Util::uploadFile($tmpfile,$source,$realname);
 						$message .= $resp[1];
 						if ($resp[0]) {
-							$resp = insertFile($tmpfile);
+							$resp = Util::insertFile($tmpfile);
 							$message .= $resp[1];
 							if ($resp[0]) {
 								$pocetup++;
@@ -85,20 +85,20 @@ if(isset($_POST['action'])){
 					// from url
 					$realname = basename($_POST["url"]);
 					$tmpfile = "files/".$realname;
-					$resp = uploadFile($tmpfile,$source,$_POST["url"]);
+					$resp = Util::uploadFile($tmpfile,$source,$_POST["url"]);
 					$message .= $resp[1];
 					if ($resp[0]) {
-						$resp = insertFile($tmpfile);
+						$resp = Util::insertFile($tmpfile);
 						$message .= $resp[1];
 						if ($resp[0]) {
 							$pocetup++;
 						} 
 						else {
-							$allok=false;
+							$allok = false;
 						}
 					} 
 					else {
-						$allok=false;
+						$allok = false;
 					}
 					break;
 			}
