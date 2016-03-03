@@ -17,7 +17,9 @@ if(isset($_POST['action'])){
 				if(mkdir("files")){
 					$message .= "OK<br>";
 				}
+				$message .= "</div>";
 			}
+			$message .= "<div class='alert alert-neutral'>";
 			
 			$allok = true;
 			switch($source){
