@@ -28,7 +28,7 @@
 					<td>[[file.getVal('id')]]</td>
 					<td>
 						<a name="[[file.getVal('id')]]" href="files/[[file.getVal('filename')]]" target="_blank">[[file.getVal('filename')]]</a>
-        				{{IF !!file.getVal('secret')!! == 1}}
+        				{{IF !!file.getVal('file.secret')!! == '1'}}
         					<img src="static/lock.gif" alt="Secret">
         				{{ENDIF}}
         			</td>
