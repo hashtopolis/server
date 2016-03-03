@@ -35,8 +35,8 @@
         			<td>
         				<form id="secret[[file.getVal('id')]]" action="files.php" method="POST">
         					<input type="hidden" name="file" value="[[file.getVal('id')]]">
-        					<input type="hidden" name="action" value="filesecret#[[file.getVal('id')]]">
-        					<input type="checkbox" name="secret" value="1"
+        					<input type="hidden" name="action" value="filesecret">
+        					<input type="checkbox" name="secret" value="[[file.getVal('secret')]]"
         					{{IF !!file.getVal('secret')!! == 1}}
         						checked
         					{{ENDIF}}

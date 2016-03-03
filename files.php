@@ -9,6 +9,15 @@ $message = "";
 //catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'filesecret':
+			// switch global file secret state
+			$fid = intval($_POST["file"]);
+			$secret = intval($_POST["secret"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE files SET secret=$secret WHERE id=$fid");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change global file secrecy!</div>";
+			}
+			break;
 		case 'addfile':
 			$pocetup = 0;
 			$source = $_POST["source"];
