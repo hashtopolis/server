@@ -18,7 +18,7 @@ if(isset($_POST['action'])){
 				$format = $list["format"];
 				$salted = $list["salted"];
 			
-				$fs = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["separator"]);
+				$fs = substr($FACTORIES::getagentsFactory()->getDB()->quote($_POST["separator"]), 1, -1);
 				$source = $_POST["source"];
 				// switch based on source
 				switch ($source) {
