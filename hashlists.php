@@ -171,7 +171,7 @@ if(isset($_POST['action'])){
 						$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
 						$cas_stop = time();
 			
-						$FACTORIES::getagentsFactory()->getDB()->exec("INSERT IGNORE INTO zapqueue (hashlist,agent,time,chunk) SELECT hashlistusers.hashlist,hashlistusers.agent,$cas,0 FROM hashlistusers JOIN tmphlcracks ON hashlistusers.hashlist=tmphlcracks.hashlist AND tmphlcracks.zaps=1");
+						$FACTORIES::getagentsFactory()->getDB()->exec("INSERT IGNORE INTO zapqueue (hashlist,agent,time,chunk) SELECT hashlistusers.hashlist,hashlistusers.agent,".time().",0 FROM hashlistusers JOIN tmphlcracks ON hashlistusers.hashlist=tmphlcracks.hashlist AND tmphlcracks.zaps=1");
 						$FACTORIES::getagentsFactory()->getDB()->exec("DROP TABLE tmphlcracks");
 			
 						// evaluate, what have we accomplished
