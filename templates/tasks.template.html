@@ -92,10 +92,11 @@
         				<input type="submit" class='btn btn-default' value="Set">
         			</form>
         		</td>
-        		<td style='display: inline;'>
+        		<td>
         			<form action="newtask?id=[[task.getVal('task')]]" method="post">
         				<input type="submit" class='btn btn-default' value="Copy">
         			</form>
+        			&nbsp;
         			<form action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('task')]]?')) return false;">
         				<input type="hidden" name="action" value="taskdelete">
         				<input type="hidden" name="task" value="[[task.getVal('task')]]">
