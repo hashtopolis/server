@@ -12,7 +12,7 @@
 		<table class="table table-bordered table-nonfluid">
 			{{FOREACH voucher,!!vouchers!!}}
 				<tr>
-					<td>[[voucher.getVal('voucher')]]</td>
+					<td><code>[[voucher.getVal('voucher')]]</code></td>
           			<td>[[date(%%config.getVal('timefmt')%%, %%voucher.getVal('time')%%)]]</td>
           			<td>
           				<form action="newagent.php" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">

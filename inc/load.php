@@ -56,6 +56,7 @@ $CONFIG = new DataSet();
 foreach($res as $entry){
 	$CONFIG->addValue($entry['item'], $entry['value']);
 }
+$OBJECTS['config'] = $CONFIG;
 
 
 
