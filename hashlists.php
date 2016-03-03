@@ -65,7 +65,7 @@ if(isset($_POST['action'])){
 						$message .= "<br>";
 			
 						// create proper superhashlist field if needed
-						list($superhash,$hlisty) = Util::superList($hlist,$format);
+						list($superhash, $hlisty) = Util::superList($hlist,$format);
 			
 						// now read the lines
             			$message .= "Importing pre-cracked hashes from text file...<br>";
@@ -76,8 +76,8 @@ if(isset($_POST['action'])){
 						$total=0;
 			
 						// create temporary hell to handle all that crack/crap
-						$FACTORIES::getagentsFactory()->getDB()->query("CREATE TEMPORARY TABLE tmphlcracks (hashlist INT NOT NULL, zaps TINYINT DEFAULT 0, PRIMARY KEY (hashlist))");
-						$FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty)");
+						$FACTORIES::getagentsFactory()->getDB()->query("CREATE TEMPORARY TABLE tmphlcracks (hashlist INT NOT NULL, zaps TINYINT DEFAULT 0, PRIMARY KEY (hashlist));");
+						$FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty);");
 			
 			
 						$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
