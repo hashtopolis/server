@@ -94,6 +94,131 @@ class Util{
 		return $vysnew . " " . $rs[$r];
 	}
 	
+	public static function uploadFile($tmpfile, $source, $sourcedata) {
+		// upload file from multiple sources
+		global $uperrs;
+		
+		$povedlo = false;
+		$msg = "<b>Adding file $tmpfile:</b><br>";
+		if(!file_exists($tmpfile)){
+			switch($source){
+				case "paste":
+					$msg .= "Creating file from text field...";
+					if(file_put_contents($tmpfile, $sourcedata)){
+						$msg .= "OK";
+						$povedlo = true;
+					}
+					else{
+						$msg .= "ERROR!";
+					}
+					break;
+				
+				case "upload":
+					$hashfile = $sourcedata;
+					$hashchyba = $hashfile["error"];
+					if($hashchyba == 0){
+						$msg .= "Moving uploaded file...";
+						if(move_uploaded_file($hashfile["tmp_name"], $tmpfile) && file_exists($tmpfile)){
+							$msg .= "OK";
+							$povedlo = true;
+						}
+						else{
+							$msg .= "ERROR";
+						}
+					}
+					else{
+						$msg .= "Upload file error: " . $uperrs[$hashchyba];
+					}
+					break;
+				
+				case "import":
+					$msg .= "Loading imported file...";
+					if(file_exists("import/" . $sourcedata)){
+						rename("import/" . $sourcedata, $tmpfile);
+						if(file_exists($tmpfile)){
+							$msg .= "OK";
+							$povedlo = true;
+						}
+						else{
+							$msg .= "DST ERROR";
+						}
+					}
+					else{
+						$msg .= "SRC ERROR";
+					}
+					break;
+				
+				case "url":
+					$local = basename($sourcedata);
+					$msg .= "Downloading remote file <a href=\"$sourcedata\" target=\"_blank\">$local</a>...";
+					
+					$furl = fopen($sourcedata, "rb");
+					if(!$furl){
+						$msg .= "SRC ERROR";
+					}
+					else{
+						$floc = fopen($tmpfile, "w");
+						if(!$floc){
+							$msg .= "DST ERROR";
+						}
+						else{
+							$downed = 0;
+							$bufsize = 131072;
+							$cas_pinfo = time();
+							while(!feof($furl)){
+								if(!$data = fread($furl, $bufsize)){
+									$msg .= "READ ERROR";
+									break;
+								}
+								fwrite($floc, $data);
+								$downed += strlen($data);
+								if($cas_pinfo < time() - 10){
+									$msg .= Util::nicenum($downed, 1024) . "B...\n";
+									$cas_pinfo = time();
+									flush();
+								}
+							}
+							fclose($floc);
+							$msg .= "OK (" . Util::nicenum($downed, 1024) . "B)";
+							$povedlo = true;
+						}
+						fclose($furl);
+					}
+					break;
+				
+				default:
+					$msg .= "Wrong file source.";
+			}
+		}
+		else{
+			$msg .= "File already exists.";
+		}
+		$msg .= "<br>";
+		return array($povedlo, $msg);
+	}
+	
+	public static function insertFile($tmpfile) {
+		// insert existing file into global files
+		global $dblink;
+		$allok = false;
+		$msg = "";
+		if(file_exists($tmpfile)){
+			$velikost = filesize($tmpfile);
+			$nazev = mysqli_real_escape_string($dblink, basename($tmpfile));
+			$msg .= "Inserting <a href=\"$tmpfile\" target=\"_blank\">$nazev</a> into global files...";
+			if(mysqli_query_wrapper($dblink, "INSERT INTO files (filename,size) VALUES ('$nazev',$velikost)")){
+				$fid = mysqli_insert_id($dblink);
+				$msg .= "OK (<a href=\"$myself?a=files#$fid\">list</a>)";
+				$allok = true;
+			}
+			else{
+				$msg .= "DB ERROR";
+			}
+		}
+		$msg .= "<br>";
+		return array($allok, $msg);
+	}
+	
 	public static function niceround($num, $dec){
 		// round to specific amount of decimal places
 		$stri = strval(round($num, $dec));

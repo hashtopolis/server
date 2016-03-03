@@ -9,7 +9,104 @@ $message = "";
 //catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		case 'addfile':
+			$pocetup = 0;
+			$source = $_POST["source"];
+			if(!file_exists("files")) {
+				$message .= "<div class='alert alert-success'>First imported file, creating files subdir...";
+				if(mkdir("files")){
+					$message .= "OK<br>";
+				}
+			}
+			
+			$allok = true;
+			switch($source){
+				case "upload":
+					// from http upload
+					$soubory = $_FILES["upfile"];
+					$pocet = count($_FILES["upfile"]["name"]);
+					for($i=0;$i<$pocet;$i++) {
+						// copy all uploaded attached files to proper directory
+						$realname = basename($soubory["name"][$i]);
+						if ($realname==""){
+							continue;
+						}
+			
+						$nsoubor = array();
+						foreach ($soubory as $klic => $soubor) {
+							$nsoubor[$klic] = $soubor[$i];
+						}
+						$tmpfile = "files/".$realname;
+						$resp = uploadFile($tmpfile, $source, $nsoubor);
+						$message .= $resp[1];
+						if ($resp[0]) {
+							$resp = insertFile($tmpfile);
+							$message .= $resp[1];
+							if ($resp[0]) {
+								$pocetup++;
+							} 
+							else {
+								$allok = false;
+							}
+						} 
+						else {
+							$allok = false;
+						}
+					}
+					break;
+			
+				case "import":
+					// from import dir
+					$soubory = $_POST["imfile"];
+					$pocet = count($soubory);
+					foreach($soubory as $soubor) {
+						// copy all uploaded attached files to proper directory
+						$realname = basename($soubor);
+						$tmpfile = "files/".$realname;
+						$resp = uploadFile($tmpfile,$source,$realname);
+						$message .= $resp[1];
+						if ($resp[0]) {
+							$resp = insertFile($tmpfile);
+							$message .= $resp[1];
+							if ($resp[0]) {
+								$pocetup++;
+							} 
+							else {
+								$allok=false;
+							}
+						} 
+						else {
+							$allok=false;
+						}
+					}
+					break;
+			
+				case "url":
+					// from url
+					$realname = basename($_POST["url"]);
+					$tmpfile = "files/".$realname;
+					$resp = uploadFile($tmpfile,$source,$_POST["url"]);
+					$message .= $resp[1];
+					if ($resp[0]) {
+						$resp = insertFile($tmpfile);
+						$message .= $resp[1];
+						if ($resp[0]) {
+							$pocetup++;
+						} 
+						else {
+							$allok=false;
+						}
+					} 
+					else {
+						$allok=false;
+					}
+					break;
+			}
+			if ($allok){ 
+				header("Location: files.php");
+				die();
+			}
+			break;
 	}
 }
 
