@@ -20,7 +20,7 @@
 		</tr>
 		{{FOREACH set,!!sets!!}}
 			<tr>
-				<td><a href="agents.php?agent=[[set.getVal('id')]]">[[set.getVal('id')]]</a></td>
+				<td><a href="agents.php?id=[[set.getVal('id')]]">[[set.getVal('id')]]</a></td>
 				<td>
 					<form id="active[[set.getVal('id')]]" action="agents.php" method="post">
 						<input type='hidden' name='action' value='agentactive'>
