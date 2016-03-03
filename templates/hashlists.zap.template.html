@@ -1,0 +1,101 @@
+<h3>Import pre-cracked hashes:</h3>
+<form action="hashlists.php" method="POST" enctype="multipart/form-data">
+	<input type='hidden' name='action' value='hashlistzapp'>
+	<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>Property</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td>Name:</td>
+				<td>[[list.getVal('name')]]</td>
+			</tr>
+			<tr>
+				<td>Hashtype:</td>
+				<td>[[list.getVal('hashtype')]]</td>
+			</tr>
+			<tr>
+				<td>Salted:</td>
+				<td>
+					{{IF !!list.getVal('salted')!! == 1}}
+						Yes
+					{{ENDIF}}
+					{{IF !!list.getVal('salted')!! == 0}}
+						No
+					{{ENDIF}}
+				</td>
+			</tr>
+			<tr>
+				<td>Hashlist format:</td>
+				<td>
+					[[Util::getStaticArray(%%list.getVal('format')%%, 'formats')]]<br>
+			        Field separator: <input type="text" name="separator" value="[[config.getVal('fieldseparator')]]" size="1"><br>
+			        (Accepted format is
+			        {{IF !!list.getVal('format')!! == 0}}
+			        	hash[:salt]:plaintext
+			        {{ENDIF}}
+			        {{IF !!list.getVal('format')!! == 1}}
+			        	essid:plaintext
+			        {{ENDIF}}
+			        {{IF !!list.getVal('format')!! == 2}}
+			        	just plaintext
+			        {{ENDIF}}
+			        )
+			    </td>
+			</tr>
+			<tr>
+				<td>Hash source</td>
+				<td>
+			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="paste">Paste<br>
+			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked>Upload<br>
+			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="import">Import<br>
+			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="url">URL download
+        		</td>
+        	</tr>
+        	<tr id="pasteLine" style="display: none;">
+        		<td>Input field:</td>
+        		<td>
+        			<textarea name="hashfield" cols="60" rows="10" placeholder='Paste founds here...'></textarea>
+        		</td>
+        	</tr>
+        	<tr id="uploadLine">
+        		<td>File to upload:</td>
+        		<td>
+        			<input type="file" name="hashfile">
+        		</td>
+        	</tr>
+        	<tr id="importLine" style="display: none;">
+        		<td>File to import:</td>
+        		<td>
+        			<select name="importfile">
+	        			{{FOREACH impfile,!!impfiles!!}}
+							<option value="[[impfile]]">[[impfile]]</option>
+						{{ENDFOREACH}}
+						{{IF !!sizeof(%%impfiles%%)!! == 0}}
+							'import' directory is empty
+						{{ENDIF}}
+					</select>
+				</td>
+			</tr>
+			<tr id="downloadLine" style="display: none;">
+				<td>File URL:</td>
+				<td>
+					<input type="text" name="url" size="35">
+				</td>
+			</tr>
+        	<tr>
+        		<td>Conflict resolution:</td>
+        		<td>
+        			<input type="checkbox" name="overwrite" value="1">Overwrite already cracked hashes
+        		</td>
+        	</tr>
+        	<tr>
+        		<td colspan="3">
+        			<input type="submit" value="Pre-crack hashes">
+        		</td>
+        	</tr>
+		</table>
+	</div>
+</form>
