@@ -69,7 +69,7 @@ if(isset($_POST['action'])){
 			
 						// now read the lines
             			$message .= "Importing pre-cracked hashes from text file...<br>";
-						Util::rewind($hhandle);
+						rewind($hhandle);
 						$zapy=0; 
 						$chyby=0; 
 						$skipy=0; 
