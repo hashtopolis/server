@@ -70,14 +70,14 @@ if(isset($_POST['action'])){
 						// now read the lines
             			$message .= "Importing pre-cracked hashes from text file...<br>";
 						rewind($hhandle);
-						$zapy=0; 
-						$chyby=0; 
-						$skipy=0; 
-						$total=0;
+						$zapy = 0; 
+						$chyby = 0; 
+						$skipy = 0; 
+						$total = 0;
 			
 						// create temporary hell to handle all that crack/crap
-						$FACTORIES::getagentsFactory()->getDB()->query("CREATE TEMPORARY TABLE tmphlcracks (hashlist INT NOT NULL, zaps TINYINT DEFAULT 0, PRIMARY KEY (hashlist));");
-						$FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty);");
+						$FACTORIES::getagentsFactory()->getDB()->query("CREATE TEMPORARY TABLE tmphlcracks (hashlist INT NOT NULL, zaps TINYINT DEFAULT 0, PRIMARY KEY (hashlist));INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty);");
+						//$FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO tmphlcracks (hashlist) SELECT id FROM hashlists WHERE id IN ($hlisty);");
 			
 			
 						$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
