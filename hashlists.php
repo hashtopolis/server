@@ -332,7 +332,7 @@ if(isset($_POST['action'])){
 							$cas_start = time();
 							$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
 							while($kolik > 0) {
-								$kver = "DELETE FROM ".$formattables[$list["format"]]." WHERE hashlist=$hlist LIMIT 1000";
+								$kver = "DELETE FROM ".Util::getStaticArray($format, 'formattables')." WHERE hashlist=$hlist LIMIT 1000";
 								$ans1 = $FACTORIES::getagentsFactory()->getDB()->exec($kver);
 								$kolik = $ans1->rowCount();
 								$hdelete += $kolik;
