@@ -5,6 +5,7 @@
  * models from Database. It handels the DB calling and caching of objects.
  */
 abstract class AbstractModelFactory{
+	private $dbh = null;
 
 	/**
 	 * Return the Models name
@@ -471,10 +472,14 @@ abstract class AbstractModelFactory{
 		$user = $CONN['user'];
 		$password = $CONN['pass'];
 		
+		if($this->dbh !== null){
+			return $this->dbh;
+		}
+		
 		try{
-			$dbh = new PDO($dsn, $user, $password);
-			$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			return $dbh;
+			$this->dbh = new PDO($dsn, $user, $password);
+			$this->$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			return $this->$dbh;
 		}
 		catch(PDOException $e){
 			die("Fatal Error ! Database connection failed");
