@@ -116,7 +116,13 @@ if(isset($_POST['action'])){
 										$cas_xstart = time();
                       					// try fast load data
 										$kv = "LOAD DATA INFILE $tmpfull IGNORE INTO TABLE hashes ".($fs=="" ? "" : "FIELDS TERMINATED BY '$fs' ")."LINES TERMINATED BY ".$DB->quote($ls)." (hash, salt) SET hashlist=$id";
-										$kvr = $DB->query($kv);
+										$kvr = false;
+										try{
+											$kvr = $DB->query($kv);
+										}
+										catch(Exception $e){
+											$kvr = false;
+										}
 										if ($kvr) {
 											$message .= "OK";
 											$pocet += $kvr->rowCount();
