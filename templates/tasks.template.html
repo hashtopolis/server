@@ -27,10 +27,10 @@
 	    			{{IF !!strlen(%%task.getVal('color')%%)!! > 0}}
 	    				style='background-color: #[[task.getVal('color')]]'
 	    			{{ENDIF}}
-	    			><a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('id')]]</a>
+	    			><a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('task')]]</a>
     			</td>
     			<td title="[[task.getVal('attackcmd')]]">
-    				<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a>
+    				<a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('name')]]</a>
         			[[Util::tickdone(%%task.getVal('sumprog')%%,%%task.getVal('keyspace')%%)]]
         			{{IF !!task.getVal('active')!! == 1 && !!task.getVal('sumprog')!! < !!task.getVal('keyspace')!!}}
         				<img src="static/active.gif" alt="Active">
@@ -67,7 +67,7 @@
         		{{ENDIF}}
         		<td class='num'>
         			{{IF !!task.getVal('pcount')!! > 0}}
-        				<a href="hashes.php?task=[[task.getVal('id')]]">[[task.getVal('pcount')]]</a>
+        				<a href="hashes.php?task=[[task.getVal('task')]]">[[task.getVal('pcount')]]</a>
         			{{ENDIF}}
         		</td>
         		<td class='num'>
@@ -86,18 +86,18 @@
         		<td>
         			<form action="tasks.php" method="POST">
         				<input type='hidden' name='action' value='taskprio'>
-        				<input type="hidden" name="task" value="[[task.getVal('id')]]">
+        				<input type="hidden" name="task" value="[[task.getVal('task')]]">
         				<input type="text" name="priority" size="4" value="[[task.getVal('priority')]]">
         				<input type="submit" class='btn btn-default' value="Set">
         			</form>
         		</td>
         		<td>
-        			<form action="newtask?id=[[task.getVal('id')]]" method="post">
+        			<form action="newtask?id=[[task.getVal('task')]]" method="post">
         				<input type="submit" class='btn btn-default' value="Copy">
         			</form>
-        			<form action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('id')]]?')) return false;">
+        			<form action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('task')]]?')) return false;">
         				<input type="hidden" name="action" value="taskdelete">
-        				<input type="hidden" name="task" value="[[task.getVal('id')]]">
+        				<input type="hidden" name="task" value="[[task.getVal('task')]]">
         				<input type="submit" class='btn btn-danger' value="Delete">
         			</form>
         		</td>
