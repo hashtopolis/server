@@ -85,19 +85,57 @@ foreach($ans as $task){
 	$allTasks[] = $set;
 }
 
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT agents.id,agents.uid,agents.active,agents.trusted,agents.cputype,agents.gpubrand,agents.gpudriver,agents.gpus,agents.hcversion,agents.lastact,agents.lasttime,agents.lastip,assignments.task,assignments.speed,agents.os,agents.name,IF(IFNULL(chunks.time,0)>".(time() - $CONFIG->getVal('chunktimeout')).",1,0) AS working FROM agents LEFT JOIN assignments ON agents.id=assignments.agent LEFT JOIN tasks ON assignments.task=tasks.id LEFT JOIN (SELECT agent,MAX(GREATEST(dispatchtime,solvetime)) AS time FROM chunks GROUP BY agent) chunks ON chunks.agent=agents.id ORDER BY agents.id ASC");
-$res = $res->fetchAll();
-$agents = array();
-foreach($res as $agent){
-	$set = new DataSet();
-	$set->setValues($agent);
-	$set->addValue('gpus', explode("\x01", $agent['gpus']));
-	$agents[] = $set;
+if(isset($_GET['id'])){
+	//show agent detail
+	$TEMPLATE = new Template("agents.detail");
+	$agent = $FACTORIES::getagentsFactory()->get($_GET['id']);
+	if($agent === null){
+		$message = "<div class='alert alert-danger'>Agent not found!</div>";
+	}
+	else{
+		$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT agents.*,assignments.task,SUM(GREATEST(chunks.solvetime,chunks.dispatchtime)-chunks.dispatchtime) AS spent FROM agents LEFT JOIN assignments ON assignments.agent=agents.id LEFT JOIN chunks ON chunks.agent=agents.id WHERE agents.id=".$agent->getId());
+		$agentSet = new DataSet();
+		$agentSet->setValues($res->fetch());
+		
+		$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT errors.*,chunks.id FROM errors LEFT JOIN chunks ON (errors.time BETWEEN chunks.dispatchtime AND chunks.solvetime) AND chunks.agent=errors.agent WHERE errors.agent=".$agent->getId()." ORDER BY time DESC");
+		$res = $res->fetchAll();
+		$errors = array();
+		foreach($res as $error){
+			$set = new DataSet();
+			$set->setValues($error);
+			$errors[] = $set;
+		}
+		
+		$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT chunks.*,GREATEST(chunks.dispatchtime,chunks.solvetime)-chunks.dispatchtime AS spent,tasks.name AS taskname FROM chunks JOIN tasks ON chunks.task=tasks.id WHERE agent=".$agent->getId()." ORDER BY chunks.dispatchtime DESC,chunks.skip DESC LIMIT 100");
+		$res = $res->fetchAll();
+		$chunks = array();
+		foreach($res as $chunk){
+			$set = new DataSet();
+			$set->setValues($chunk);
+			$chunks[] = $set;
+		}
+		
+		$OBJECTS['agent'] = $agentSet;
+		$OBJECTS['errors'] = $errors;
+		$OBJECTS['chunks'] = $chunks;
+	}
 }
-$OBJECTS['numAgents'] = sizeof($agents);
+else{
+	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT agents.id,agents.uid,agents.active,agents.trusted,agents.cputype,agents.gpubrand,agents.gpudriver,agents.gpus,agents.hcversion,agents.lastact,agents.lasttime,agents.lastip,assignments.task,assignments.speed,agents.os,agents.name,IF(IFNULL(chunks.time,0)>".(time() - $CONFIG->getVal('chunktimeout')).",1,0) AS working FROM agents LEFT JOIN assignments ON agents.id=assignments.agent LEFT JOIN tasks ON assignments.task=tasks.id LEFT JOIN (SELECT agent,MAX(GREATEST(dispatchtime,solvetime)) AS time FROM chunks GROUP BY agent) chunks ON chunks.agent=agents.id ORDER BY agents.id ASC");
+	$res = $res->fetchAll();
+	$agents = array();
+	foreach($res as $agent){
+		$set = new DataSet();
+		$set->setValues($agent);
+		$set->addValue('gpus', explode("\x01", $agent['gpus']));
+		$agents[] = $set;
+	}
+	$OBJECTS['numAgents'] = sizeof($agents);
+	
+	$OBJECTS['sets'] = $agents;
+}
 
 $OBJECTS['allTasks'] = $allTasks;
-$OBJECTS['sets'] = $agents;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

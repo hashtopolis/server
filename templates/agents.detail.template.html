@@ -1,0 +1,231 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Agent details</h2>
+[[message]]
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<td>Property</td>
+			<td>Value</td>
+		</tr>
+		<tr>
+			<td>ID</td>
+			<td>[[agent.getVal('id')]]</td>
+		</tr>
+		<tr>
+			<td>Activity:</td>
+			<td>
+				<form id="active[[set.getVal('id')]]" action="agents.php?id=[[agent.getVal('id')]]" method="post">
+					<input type='hidden' name='action' value='agentactive'>
+       				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+       				<input type="checkbox" {{IF !!agent.getVal('active')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getVal('id')]]').submit();">
+       			</form>
+			</td>
+		</tr>
+		<tr>
+			<td>Machine name:</td>
+			<td>[[agent.getVal('name')]]</td>
+		</tr>
+		<tr>
+			<td>Operating system:</td>
+			<td>[[Util::getStaticArray(%%agent.getVal('os')%%, 'os')]]</td>
+		</tr>
+		<tr>
+			<td>Access token:</td>
+			<td>[[agent.getVal('token)]]</td>
+		</tr>
+		<tr>
+			<td>Machine ID:</td>
+			<td>[[agent.getVal('uid')]]</td>
+		</tr>
+		<tr>
+			<td>CPU platform:</td>
+			<td>[[agent.getVal('cputype')]]-bit</td>
+		</tr>
+		<tr>
+			<td>GPU platform:</td>
+			<td>
+				<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="POST">
+      				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+      				<input type="hidden" name="action" value="setplatform">
+      				<select class='form-control' name="platform">
+      					{{FOREACH platform,!!platforms!!}}
+      						<option value='[[platform.getValue('key')]]'{{IF !!platform.getValue('key')!! == !!agent.getVal('gpubrand')!!}} selected{{ENDIF}}>[[platform.getValue('val')]]</option>
+      					{{ENDFOREACH}}
+      				</select>
+      				<input type="submit" class='btn btn-default' value="Set">
+      			</form>
+			</td>
+		</tr>
+		<tr>
+			<td>GPU driver:</td>
+			<td>[[agent.getVal('gpudriver')]]</td>
+		</tr>
+		<tr>
+			<td>Graphic cards:</td>
+			<td>[[str_replace("\x01","<br>",%%agent.getVal('gpus')%%)]]</td></tr>
+		<tr>
+			<td>Hashcat version:</td>
+			<td>[[agent.getVal('hcversion')]]</td>
+		</tr>
+		<tr>
+			<td>Idle wait:</td>
+			<td>
+				<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="POST">
+      				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+      				<input type="hidden" name="action" value="agentwait">
+      				<input type="text" name="wait" class='form-control' value="[[agent.getVal('wait')]]" size="4"> seconds
+      				<input type="submit" class='btn btn-default' value="Set">
+      			</form>
+			</td>
+		</tr>
+		<tr>
+			<td>Extra parameters:</td>
+			<td>
+      			<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="POST">
+      				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+      				<input type="hidden" name="action" value="setparam">
+      				<input type="text" class='form-control' name="cmdpars" value="[[agent.getVal('cmdpars')]]" size="30">
+      				<input type="submit" class='btn btn-default' value="Set">
+      			</form>
+      		</td>
+      	</tr>
+      	<tr>
+      		<td>Hashcat errors:</td>
+      		<td>
+      			<form id="agentignore" action="agents.php?id=[[agent.getVal('id')]]" method="post">
+					<input type='hidden' name='action' value='agentignore'>
+       				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+       				<input type="checkbox" {{IF !!agent.getVal('ignoreerrors')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
+       				Ignore <br><i>(Be careful, this might lead to endless loops!)</i>
+       			</form>
+       		</td>
+       	</tr>
+       	<tr>
+      		<td>Trust:</td>
+      		<td>
+      			<form id="agenttrusted" action="agents.php?id=[[agent.getVal('id')]]" method="post">
+					<input type='hidden' name='action' value='agenttrusted'>
+       				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+       				<input type="checkbox" {{IF !!agent.getVal('trusted')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agenttrusted').submit();">
+       				Trust agent with secret data
+       			</form>
+       		</td>
+       	</tr>
+       	<tr>
+       		<td>Assignment:</td>
+       		<td>
+       			<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="post">
+       				<input type='hidden' name='action' value='agentassign'>
+       				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
+       				<select name='task' size='1'>
+       					<option value="">(unassigned)</option>
+       					{{FOREACH task,!!allTasks!!}}
+       						<option value='[[task.getVal('id')]]'{{IF !!task.getVal('id')!! == !!agent.getVal('task')!!}} selected{{ENDIF}}>[[task.getVal('name')]]</option>
+       					{{ENDFOREACH}}
+       				</select>
+       				<input type="submit" class='btn btn-default' value="Assign">
+       			</form>
+       		</td>
+       	</tr>
+       	<tr>
+       		<td>Last activity:</td>
+       		<td>
+      			Action: [[agent.getVal('lastact')]]<br>
+      			Time: [[date(%%config.getVal('timefmt')%%, %%agent.getVal('lasttime')%%)]]<br>
+      			IP: [[agent.getVal('lastip')]]
+      		</td>
+      	</tr>
+      	<tr>
+      		<td>Time spent cracking:</td>
+      		<td>[[Util::sectotime(%%agent.getVal('spent'))]]</td>
+      	</tr>
+	</table>
+</div>
+<h3>Error messages:</h3>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>Time</th>
+			<th>Task</th>
+			<th>Chunk</th>
+			<th>Error message</th>
+		</tr>
+		{{FOREACH error,!!errors!!}}
+			<tr>
+				<td>[[Util::date(%%config.getVAl('timefmt')%%, %%error.getVal('time')%%)]]</td>
+				<td>
+					{{IF !!error.getVal('task')!! == ""}}
+						N/A
+					{{ENDIF}}
+					{{IF !!error.getVal('task')!! != ""}}
+						<a href="tasks.php?id=[[error.getVal('task')]]">[[error.getVal('task')]]</a>
+					{{ENDIF}}
+				</td>
+				<td>
+					[[error.getVal('id')]]
+				</td>
+				<td style="white-space: normal;">
+					[[error.getVal('error')]]
+				</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+<h3>Dispatched chunks:</h3>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>ID</th>
+			<th>Start</th>
+			<th>Length</th>
+			<th>Checkpoint</th>
+			<th>Progress</th>
+			<th>Task</th>
+			<th>Dispatch time</th>
+			<th>Last activity</th>
+			<th>Time spent</th>
+			<th>State</th>
+			<th>Cracked</th>
+		</tr>
+		{{FOREACH chunk,!!chunks!!}}
+			<tr>
+				<td>[[chunk.getVal('id')]]</td>
+				<td class='num'>[[chunk.getVal('skip')]]</td>
+				<td class='num'>[[chunk.getVal('length'))]]</td>
+				<td class='num'>
+					[[chunk.getVal('progress')]]
+					{{IF !!chunk.getVal('progress')!! > 0 && !!chunk.getVal('progress')!! != !!chunk.getVal('length')!!}}
+						<br>([[Util::showperc(%%chunk.getVal('progress')%%, %%chunk.getVal('length')%%)]]%)
+					{{ENDIF}}
+				</td>
+				<td class='num'>
+          	 		[[Util::showperc(%%chunk.getVal('rprogress')%%, 10000)]]%
+          		</td>
+          		<td>
+          			<a href='tasks.php?id=[[chunk.getVal('task')]]'>[[chunk.getVal('taskname')]]</a>
+          		</td>
+          		<td>
+          			[[date(%%config.getVal('timefmt')%%, %%chunk.getVal('dispatchtime')%%)]]
+          		</td>
+          		<td>
+          			{{IF !!chunk.getVal('solvetime')!! == 0}}
+          				(no activity)
+          			{{ENDIF}}
+          			{{IF !!chunk.getVal('solvetime')!! != 0}}
+          				[[date(%%config.getVal('timefmt')%%, %%chunk.getVal('solvetime')%%)]]
+          			</td>
+          			<td class='num'>
+          				[[Util::sectotime(%%chunk.getVal('spent')%%)]]
+          			{{ENDIF}}
+          		</td>
+          		<td>
+          			{{IF !!chunk.getVal('cracked')!! > 0}}
+          				<a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
+          			{{ENDIF}}
+          		</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+{%TEMPLATE->foot%}
