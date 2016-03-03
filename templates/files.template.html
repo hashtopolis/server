@@ -1,0 +1,138 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Files</h2>
+<script>
+	function addLine(tablename) { 
+		var table = document.getElementById(tablename); 
+		var pos = table.getElementsByTagName('tr').length-1; 
+		var row = table.insertRow(pos); 
+		var cell = row.insertCell(0); 
+		cell.innerHTML= '<input type=\\x22file\\x22 name=\\x22upfile[]\\x22><br>'; 
+	}
+</script>
+[[message]]
+<div class='col-md-9'>
+	<h3>Existing files ([[numFiles]])</h3>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<td>ID</td>
+				<td>File</td>
+				<td><img src="static/lock.gif" alt="Secret"></td>
+				<td>Size</td>
+				<td>Used</td>
+				<td>Action</td>
+			</tr>
+			{{FOREACH file,!!files!!}}
+				<tr>
+					<td>[[file.getVal('id')]]</td>
+					<td>
+						<a name="[[file.getVal('id')]]" href="files/[[file.getVal('filename')]]" target="_blank">[[file.getVal('filename')]]</a>
+        				{{IF !!file.getVal('secret')!! == 1}}
+        					<img src="static/lock.gif" alt="Secret">
+        				{{ENDIF}}
+        			</td>
+        			<td>
+        				<form id="secret[[file.getVal('id')]]" action="files.php" method="POST">
+        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
+        					<input type="hidden" name="action" value="filesecret#[[file.getVal('id')]]">
+        					<input type="checkbox" name="secret" value="1"
+        					{{IF !!file.getVal('secret')!! == 1}}
+        						checked
+        					{{ENDIF}}
+        					onChange="javascript:document.getElementById('secret[[file.getVal('id')]]').submit();">
+        				</form>
+        			</td>
+        			<td class='num'>
+        				[[Util::nicenum(%%file.getVal('size')%%)]]B
+        			</td>
+        			<td>[[file.getVal('tasks')]]x</td>
+        			<td>
+        				<form action="files.php" method="POST" onSubmit="if (!confirm('Really delete file [[file.getVal('filename')]]?')) return false;">
+        					<input type="hidden" name="action" value="filedelete">
+        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
+        					<input type="submit" class='btn btn-danger' value="Delete">
+        				</form>
+        			</td>
+        		</tr>
+			{{ENDFOREACH}}
+		</table>
+	</div>
+</div>
+<div class='col-md-3'>
+	<h3>Add new files</h3>
+	<form action="files.php" method="POST" enctype="multipart/form-data">
+		<input type="hidden" name="source" value="upload">
+		<input type="hidden" name="action" value="addfile">
+		<div class="panel panel-default">
+			<table class="table table-bordered table-nonfluid" id='upfiles'>
+				<tr>
+					<th>
+						Upload files 
+						<button type="button" class='btn btn-default' onclick="javascript:addLine('upfiles');">Add file</button>
+					</th>
+				</tr>
+				<tr>
+					<td>
+						<input type="submit" class='btn btn-default' value="Upload files">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+	<form id="impfiles" action="files.php" method="POST" enctype="multipart/form-data">
+    	<input type="hidden" name="source" value="import">
+    	<input type="hidden" name="action" value="addfile">
+      	<div class="panel panel-default">
+			<table class="table table-bordered table-nonfluid" id='imfiles'>
+				<tr>
+					<th>Import files</th>
+				</tr>
+				{{FOREACH impfile,!!impfiles!!}}
+					<tr>
+						<td>
+							<input type="checkbox" name="imfile[]" value="[[impfile.getVal('name')]]">
+							[[impfile.getVal('name')]] ([[Util::nicenum(%%impfile.getVal('size')%%)]]B)
+						</td>
+					</tr>
+				{{ENDFOREACH}}
+				{{IF !!sizeof(%%impfiles%%)!! == 0}}
+					<tr>
+						<td>'import' directory is empty.</td>
+					</tr>
+				{{ENDIF}}
+				{{IF !!sizeof(%%impfiles%%)!! != 0}}
+					<tr>
+						<td>
+							<input type="submit" class='btn btn-default' value="Import files"> 
+							<input type="checkbox" onChange="javascript:checkAll('impfiles',this.checked);">Select All
+						</td>
+					</tr>
+				{{ENDIF}}
+			</table>
+		</div>
+	</form>
+	<form action="files.php" method="POST" enctype="multipart/form-data">
+		<input type="hidden" name="action" value="addfile">
+      	<input type="hidden" name="source" value="url">
+      	<div class="panel panel-default">
+			<table class="table table-bordered table-nonfluid" id='upfiles'>
+				<tr>
+					<td colspan='2'>Download URL</td>
+				</tr>
+				<tr>
+					<td>URL:</td>
+					<td>
+						<input type="text" class='form-control' name="url">
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<input type="submit" class='btn btn-default' value="Download file">
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
+{%TEMPLATE->foot%}
