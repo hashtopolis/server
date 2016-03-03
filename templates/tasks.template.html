@@ -85,7 +85,7 @@
         			{{ENDIF}}
         		</td>
         		<td>
-        			<form action="tasks.php" method="POST">
+        			<form class="form-inline" action="tasks.php" method="POST">
         				<input type='hidden' name='action' value='taskprio'>
         				<input type="hidden" name="task" value="[[task.getVal('task')]]">
         				<input type="text" class='form-control' style='width: 40px;' name="priority" size="4" value="[[task.getVal('priority')]]">
