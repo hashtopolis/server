@@ -25,21 +25,21 @@
 			{{ENDFOREACH}}
 		</table>
 	</div>
-	<form action="newagent.php" method="POST">
-		<input type="hidden" name="action" value="vouchercreate">
-		<div class="panel panel-default">
-			<table class="table table-bordered table-nonfluid">
-				<tr>
-					<td>New voucher</td>
-					<td>
-						<input type="text" name="newvoucher" value="[[Util::randomString(8)]]">
-					</td>
-					<td>
-						<input type="submit" class='btn btn-default' value="Create">
-					</td>
-				</tr>
-			</table>
-		</div>
-	</form>
 {{ENDIF}}
+<form action="newagent.php" method="POST">
+	<input type="hidden" name="action" value="vouchercreate">
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<td>New voucher</td>
+				<td>
+					<input type="text" name="newvoucher" value="[[Util::randomString(8)]]">
+				</td>
+				<td>
+					<input type="submit" class='btn btn-default' value="Create">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
 {%TEMPLATE->foot%}
