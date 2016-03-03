@@ -1,0 +1,99 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>New hashlist</h2>
+[[message]]
+<script type='text/javascript'>
+	function formatChange(valu) { 
+		var txtObject=document.getElementById('textopt'); 
+		if (valu == '0') { 
+			txtObject.style.display = ''; 
+		} 
+		else { 
+			txtObject.style.display = 'none'; 
+		} 
+	}
+</script>
+<form action="newhashlist.php" method="POST" enctype="multipart/form-data">
+	<input type='hidden' name='action' value='uploadhashlist'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>Property</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td>Name:</td>
+				<td>
+					<input type="text" class='form-control' name="name" size="35">
+				</td>
+			</tr>
+			<tr>
+				<td>Hashtype:</td>
+				<td>
+					<input type="text" class='form-control' name="hashtype" size="5">
+				</td>
+			</tr>
+			<tr>
+				<td>Hashlist format:</td>
+				<td>
+					<select class='form-control' name="format" onChange="formatChange(this.value);">
+						<option value="0">Text file</option>
+						<option value="1">HCCAP file</option>
+						<option value="2">Binary file (single hash)</option>
+					</select>
+					<span id="textopt">
+      					<br>
+      					<input type="checkbox" name="salted" value="1"> Salted hashes, separator 
+      					<input type="text" name="separator" value="[[config.getVal('fieldseparator')]]" size="1">
+      				</span>
+      			</td>
+      		</tr>
+      		<tr>
+      			<td>
+      				Hash source<br>
+      				<i>(make sure<br>it's sorted!)</i>
+      			</td>
+      			<td>
+      				<input type="radio" name="source" onChange="sourceChange(this.value);" value="paste"> Paste<br>
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked> Upload<br>
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="import"> Import<br>
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="url"> URL download
+      			</td>
+      		</tr>
+      		<tr id="pasteLine" style="display: none;">
+      			<td>Input field:</td>
+      			<td>
+      				<textarea class='form-control' name="hashfield" cols="60" rows="10"></textarea>
+      			</td>
+      		</tr>
+      		<tr id="uploadLine">
+      			<td>File to upload:</td>
+      			<td>
+      				<input type="file" class='form-control' name="hashfile">
+      			</td>
+      		</tr>
+      		<tr id="importLine" style="display: none;">
+      			<td>File to import:</td>
+      			<td>
+      				<select class='form-control' name="importfile">
+	      				{{FOREACH impfile,!!impfiles!!}}
+	      					<option value="[[impfile]]">[[impfile]]</option>
+	      				{{ENDFOREACH}}
+      				</select>
+      			</td>
+      		</tr>
+      		<tr id="downloadLine" style="display: none;">
+      			<td>File URL:</td>
+      			<td>
+      				<input type="text" class='form-control' name="url" size="35">
+      			</td>
+      		</tr>
+      		<tr>
+      			<td colspan="3">
+      				<input type="submit" class='btn btn-default' value="Create hashlist">
+      			</td>
+      		</tr>
+		</table>
+	</div>
+</form>
+{%TEMPLATE->foot%}
