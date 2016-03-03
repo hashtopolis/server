@@ -19,6 +19,18 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function bintohex($dato){
+		$ndato = "";
+		for($i = 0; $i < strlen($dato); $i++){
+			$zn = dechex(ord($dato[$i]));
+			while(strlen($zn) < 2){
+				$zn = "0" . $zn;
+			}
+			$ndato .= $zn;
+		}
+		return $ndato;
+	}
+	
 	public static function sectotime($soucet) {
 		// convert seconds to human readable format
 		$vysledek = "";
