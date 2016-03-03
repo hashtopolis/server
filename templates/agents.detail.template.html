@@ -15,7 +15,7 @@
 		<tr>
 			<td>Activity:</td>
 			<td>
-				<form id="active[[set.getVal('id')]]" action="agents.php?id=[[agent.getVal('id')]]" method="post">
+				<form id="active[[agent.getVal('id')]]" action="agents.php?id=[[agent.getVal('id')]]" method="post">
 					<input type='hidden' name='action' value='agentactive'>
        				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
        				<input type="checkbox" {{IF !!agent.getVal('active')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getVal('id')]]').submit();">
