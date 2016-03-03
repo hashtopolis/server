@@ -478,8 +478,8 @@ abstract class AbstractModelFactory{
 		
 		try{
 			$this->dbh = new PDO($dsn, $user, $password);
-			$this->$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-			return $this->$dbh;
+			$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			return $this->dbh;
 		}
 		catch(PDOException $e){
 			die("Fatal Error ! Database connection failed");
