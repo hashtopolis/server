@@ -18,6 +18,20 @@ class Util{
 	public static function isValidEmail($email){
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
+	
+	public static function sectotime($soucet) {
+		// convert seconds to human readable format
+		$vysledek = "";
+		if($soucet > 86400){
+			$dnu = floor($soucet / 86400);
+			if($dnu > 0){
+				$vysledek .= $dnu . "d ";
+			}
+			$soucet = $soucet % 86400;
+		}
+		$vysledek .= gmdate("H:i:s", $soucet);
+		return $vysledek;
+	}
 
 	public static function deleteAgent($agent){
 		global $FACTORIES;
