@@ -130,7 +130,7 @@ if(isset($_POST['action'])){
 							else {
 								$over = false;
 							}
-							$kv2 = "',$zaptable.time=$cas,hashlists.cracked=hashlists.cracked+".($over ? "IF($zaptable.plaintext IS NULL,1,0)" : "1")." WHERE $zaptable.hashlist IN ($hlisty)".($over ? "" : " AND $zaptable.plaintext IS NULL");
+							$kv2 = "',$zaptable.time=".time().",hashlists.cracked=hashlists.cracked+".($over ? "IF($zaptable.plaintext IS NULL,1,0)" : "1")." WHERE $zaptable.hashlist IN ($hlisty)".($over ? "" : " AND $zaptable.plaintext IS NULL");
 							switch ($format) {
 								case 0:
 									$kv2 .= " AND $zaptable.hash=".$FACTORIES::getagentsFactory()->getDB()->quote($zaphash);
