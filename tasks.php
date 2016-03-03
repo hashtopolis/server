@@ -22,6 +22,7 @@ foreach($res as $task){
 	$tasks[] = $set;
 }
 
+$OBJECTS['numTasks'] = sizeof($tasks);
 $OBJECTS['tasks'] = $tasks;
 $OBJECTS['message'] = $message;
 
