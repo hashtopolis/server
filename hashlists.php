@@ -88,7 +88,7 @@ if(isset($_POST['action'])){
 								continue;
 							}
 							$total++;
-							$kv = "UPDATE $zaptable JOIN hashlists ON $zaptable.hashlist=hashlists.id JOIN tmphlcracks ON tmphlcracks.hashlist=$zaptable.hashlist SET tmphlcracks.zaps=1,$zaptable.chunk=0,$zaptable.plaintext='";
+							$kv = "UPDATE $zaptable JOIN hashlists ON $zaptable.hashlist=hashlists.id JOIN tmphlcracks ON tmphlcracks.hashlist=$zaptable.hashlist SET tmphlcracks.zaps=1,$zaptable.chunk=0,$zaptable.plaintext=";
 							$datko = explode($fs, $dato);
 							$zaphash=""; 
 							$zapsalt=""; 
@@ -130,7 +130,7 @@ if(isset($_POST['action'])){
 							else {
 								$over = false;
 							}
-							$kv2 = "',$zaptable.time=".time().",hashlists.cracked=hashlists.cracked+".($over ? "IF($zaptable.plaintext IS NULL,1,0)" : "1")." WHERE $zaptable.hashlist IN ($hlisty)".($over ? "" : " AND $zaptable.plaintext IS NULL");
+							$kv2 = ",$zaptable.time=".time().",hashlists.cracked=hashlists.cracked+".($over ? "IF($zaptable.plaintext IS NULL,1,0)" : "1")." WHERE $zaptable.hashlist IN ($hlisty)".($over ? "" : " AND $zaptable.plaintext IS NULL");
 							switch ($format) {
 								case 0:
 									$kv2 .= " AND $zaptable.hash=".$FACTORIES::getagentsFactory()->getDB()->quote($zaphash);
