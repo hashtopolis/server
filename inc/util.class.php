@@ -63,9 +63,18 @@ class Util{
 				"<img src='static/win.png' alt='Win' title='Windows'>",
 				"<img src='static/unix.png' alt='Unix' title='Linux'>" 
 		);
+		$formats = array(
+				"Text",
+				"HCCAP",
+				"Binary",
+				"Superhashlist"
+		);
 		switch($id){
 			case 'os':
 				return $oses[$val];
+				break;
+			case 'formats':
+				return $formats[$val];
 				break;
 			case 'platforms':
 				if($val == '-1'){
@@ -188,6 +197,7 @@ class Util{
 				
 				default:
 					$msg .= "Wrong file source.";
+					break;
 			}
 		}
 		else{
