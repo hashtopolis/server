@@ -20,7 +20,7 @@ if(isset($_POST['action'])){
 				list($superhash, $hlisty) = Util::superList($hlist, $format);
 			
 				$tmpfile = "Pre-cracked_".$hlist."_".date("Y-m-d_H-i-s").".txt";
-				$tmpfull = "files/".$tmpfile;
+				$tmpfull = dirname(__FILE__)."/files/".$tmpfile;
 				$salted = false;
 				$kvery1 = "SELECT ";
 				switch ($format) {
