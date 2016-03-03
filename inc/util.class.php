@@ -199,16 +199,16 @@ class Util{
 	
 	public static function insertFile($tmpfile) {
 		// insert existing file into global files
-		global $dblink;
+		global $FACTORIES;
 		$allok = false;
 		$msg = "";
 		if(file_exists($tmpfile)){
 			$velikost = filesize($tmpfile);
-			$nazev = mysqli_real_escape_string($dblink, basename($tmpfile));
-			$msg .= "Inserting <a href=\"$tmpfile\" target=\"_blank\">$nazev</a> into global files...";
-			if(mysqli_query_wrapper($dblink, "INSERT INTO files (filename,size) VALUES ('$nazev',$velikost)")){
-				$fid = mysqli_insert_id($dblink);
-				$msg .= "OK (<a href=\"$myself?a=files#$fid\">list</a>)";
+			$nazev = $FACTORIES::getagentsFactory()->getDB()->quote(basename($tmpfile));
+			$msg .= "Inserting <a href='$tmpfile' target='_blank'>$nazev</a> into global files...";
+			if($FACTORIES::getagentsFactory()->getDB()->exec("INSERT INTO files (filename,size) VALUES ($nazev,$velikost)")){
+				$fid = $FACTORIES::getagentsFactory()->getDB()->lastInsertId();
+				$msg .= "OK (<a href='files.php#$fid'>list</a>)";
 				$allok = true;
 			}
 			else{
