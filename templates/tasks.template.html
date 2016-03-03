@@ -1,0 +1,115 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Tasks ([[numTasks]])</h2>
+[[message]]
+<form action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
+	<input type='hidden' name='action' value='finishedtasksdelete'>
+    <input type="submit" value="Delete finished" class='btn btn-default'>
+</form>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+    	<tr>
+    		<th>ID</th>
+    		<th>Name</th>
+    		<th>Hashlist</th>
+    		<th>Chunks</th>
+    		<th>Dispatched</th>
+    		<th>Searched</th>
+    		<th>Cracked</th>
+    		<th>Agents</th>
+    		<th>Files</th>
+    		<th>Priority</th>
+    		<th>Action</th>
+    	</tr>
+    	{{FOREACH task,!!tasks!!}}
+    		<tr>
+    			<td
+	    			{{IF !!strlen(%%task.getVal('color')%%)!! > 0}}
+	    				style='background-color: #[[task.getVal('color')]]'
+	    			{{ENDIF}}
+	    			><a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('id')]]</a>
+    			</td>
+    			<td title="[[task.getVal('attackcmd')]]">
+    				<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a>
+        			[[Util::tickdone(%%task.getVal('sumprog')%%,%%task.getVal('keyspace')%%)]]
+        			{{IF !!task.getVal('active')!! == 1 && !!task.getVal('sumprog')!! < !!task.getVal('keyspace')!!}}
+        				<img src="static/active.gif" alt="Active">
+        			{{ENDIF}}
+        		</td>
+        		<td>
+        			{{IF !!task.getVal('hashlist')!! == ""}}
+        				(pre-configured task)
+        			{{ENDIF}}
+        			{{IF !!task.getVal('hashlist')!! != ""}}
+        				<a href="hashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('name')]]</a>
+        			{{ENDIF}}
+        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hsecret') == 1}}
+        				<img src="static/lock.gif" alt="Secret">
+        			{{ENDIF}}
+        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hlinc')!! == 0}}
+        				[[Util::tickdone(1, 1)]]
+        			{{ENDIF}}
+        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hlinc')!! == 1}}
+        				[[Util::tickdone(0, 1)]]
+        			{{ENDIF}}
+        		</td>
+        		<td class="num">[[task.getVal('ccount')]]@[[task.getVal('chunktime')]]s</td>
+        		{{IF !!task.getVal('keyspace')!! > 0}}
+        			<td class='num'>
+        				[[Util::showperc(%%task.getVal('progress')%%, %%task.getVal('keyspace')%%)]]%
+        			</td>
+        			<td class='num'>
+        				[[Util::showperc(%%task.getVal('sumprog')%%, %%task.getVal('keyspace')%%)]]%
+        			</td>
+        		{{ENDIF}}
+        		{{IF !!task.getVal('keyspace')!! > 0}}
+        			<td colspan='2'>Keyspace unknown</td>
+        		{{ENDIF}}
+        		<td class='num'>
+        			{{IF !!task.getVal('pcount')!! > 0}}
+        				<a href="hashes.php?task=[[task.getVal('id')]]">[[task.getVal('pcount')]]</a>
+        			{{ENDIF}}
+        		</td>
+        		<td class='num'>
+        			{{IF !!task.getVal('assigncount')!! > 0}}
+        				[[task.getVal('assigncount')]]
+        			{{ENDIF}}
+        		</td>
+        		<td>
+        			{{IF !!task.getVal('filescount')!! > 0}}
+        				[[task.getVal('filescount')]] ([[Util::nicenum(%%task.getVal('filesize')%%)]]B);
+        			{{ENDIF}}
+        			{{IF !!task.getVal('secret')!! == 1}}
+        				<img src="static/lock.gif" alt="Secret">
+        			{{ENDIF}}
+        		</td>
+        		<td>
+        			<form action="tasks.php" method="POST">
+        				<input type='hidden' name='action' value='taskprio'>
+        				<input type="hidden" name="task" value="[[task.getVal('id')]]">
+        				<input type="text" name="priority" size="4" value="[[task.getVal('priority')]]">
+        				<input type="submit" class='btn btn-default' value="Set">
+        			</form>
+        		</td>
+        		<td>
+        			<form action="newtask?id=[[task.getVal('id')]]" method="post">
+        				<input type="submit" class='btn btn-default' value="Copy">
+        			</form>
+        			<form action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('id')]]?')) return false;">
+        				<input type="hidden" name="action" value="taskdelete">
+        				<input type="hidden" name="task" value="[[task.getVal('id')]]">
+        				<input type="submit" class='btn btn-danger' value="Delete">
+        			</form>
+        		</td>
+    		</tr>
+    		{{IF !!task.getVal('sumprog')!! < !!task.getVal('keyspace')!!}}
+    			<tr>
+    				<td colspan="11">
+    					<img style="width: 100%; height: 6px;" src="taskimg.php?task=$id&x=800&y=6">
+    				</td>
+    			</tr>
+    		{{ENDIF}}
+    	{{ENFOREACH}}
+    </table>
+</div>
+{%TEMPLATE->foot%}

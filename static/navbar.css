@@ -20,3 +20,7 @@ body {
 	border-color: #CCCCCC;
 	padding-top: 10px;
 }
+
+td.num {
+  text-align: right;
+}
