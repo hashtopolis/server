@@ -118,7 +118,7 @@
        			<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="post">
        				<input type='hidden' name='action' value='agentassign'>
        				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
-       				<select name='task' size='1'>
+       				<select class='form-control' name='task' size='1'>
        					<option value="">(unassigned)</option>
        					{{FOREACH task,!!allTasks!!}}
        						<option value='[[task.getVal('id')]]'{{IF !!task.getVal('id')!! == !!agent.getVal('task')!!}} selected{{ENDIF}}>[[task.getVal('name')]]</option>

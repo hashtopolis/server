@@ -54,6 +54,9 @@ class Util{
 				return $oses[$val];
 				break;
 			case 'platforms':
+				if($val == '-1'){
+					return $platforms;
+				}
 				return $platforms[$val];
 				break;
 		}
