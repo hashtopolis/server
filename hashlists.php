@@ -68,7 +68,7 @@ if(isset($_POST['action'])){
 					fclose($fexp);
 				}
 				if($res) {
-					if (insertFile("files/".$tmpfile)) {
+					if(Util::insertFile("files/".$tmpfile)) {
 						$message .= "Cracked hashes from hashlist $hlist exported.</div>";
 					} 
 					else {
