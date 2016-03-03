@@ -47,7 +47,13 @@ if(isset($_POST['action'])){
 					mkdir("files");
 				}
 				$kvery = $kvery1.$kvery2.$kvery3;
-				$res = $FACTORIES::getagentsFactory()->getDB()->exec($kvery);
+				$res = false;
+				try{
+					$res = $FACTORIES::getagentsFactory()->getDB()->exec($kvery);
+				}
+				catch(Exception $e){
+					$res = false;
+				}
 				$message = "<div class='alert alert-neutral'>";
 				if(!$res){
 					$message .= "File export failed, trying SELECT with file output<br>";
