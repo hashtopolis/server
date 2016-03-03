@@ -9,6 +9,40 @@ $message = "";
 //catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'filedelete':
+			// delete global file
+			$fid = intval($_POST["file"]);
+			$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM files WHERE id=$fid");
+			$file = $res->fetch();
+			if($file){
+				$fname = $file["filename"];
+				$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT 1 FROM taskfiles WHERE file=$fid");
+				if($res->rowCount() > 0){
+					// file is used
+					$message = "<div class='alert alert-danger'>File is used in a task.</div>";
+				} 
+				else {
+					$ans2 = true;
+					$ans1 = $FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM files WHERE id=$fid");
+					if($ans1 && file_exists("files/".$fname)){
+						$ans2 = unlink("files/".$fname);
+					}
+					if($ans1 && $ans2){
+						$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
+						header("Location: files.php");
+						die();
+					} 
+					else{
+						$FACTORIES::getagentsFactory()->getDB()->exec("ROLLBACK");
+						$message = "<div class='alert alert-danger'>Could not delete file!</div>";
+					}
+				}
+			} 
+			else {
+				$message = "<div class='alert alert-danger'>Such file is not defined.</div>";
+			}
+			break;
 		case 'filesecret':
 			// switch global file secret state
 			$fid = intval($_POST["file"]);
