@@ -52,6 +52,36 @@ class Util{
 		
 		return ($vysledek8);
 	}
+	
+	public static function superList($hlist,&$format) {
+		// detect superhashlists and create array of its contents
+		global $FACTORIES;
+		
+		if($format == 3){
+			$superhash = true;
+		}
+		else{
+			$superhash = false;
+		}
+		
+		$hlistar = array();
+		if($superhash){
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.format FROM superhashlists JOIN hashlists ON superhashlists.hashlist=hashlists.id WHERE superhashlists.id=$hlist");
+			$res = $res->fetchAll();
+			foreach($res as $entry){
+				$format = $entry['format'];
+				$hlistar[] = $entry['id'];
+			}
+		}
+		else{
+			$hlistar[] = $hlist;
+		}
+		$hlisty = implode(",", $hlistar);
+		return array(
+				$superhash,
+				$hlisty
+		);
+	}
 
 	public static function getStaticArray($val, $id){
 		$platforms = array(

@@ -10,6 +10,71 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'export':
+			// export cracked hashes to a file
+			$hlist = intval($_POST["hashlist"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT format FROM hashlists WHERE id=$hlist");
+			$list = $res->fetch();
+			if($list){
+				$format = $list['format'];
+				// create proper superhashlist field if needed
+				list($superhash, $hlisty) = superList($hlist, $format);
+			
+				$tmpfile = "Pre-cracked_".$hlist."_".date("Y-m-d_H-i-s").".txt";
+				$tmpfull = "files/".$tmpfile;
+				$salted = false;
+				$kvery1 = "SELECT ";
+				switch ($format) {
+					case 0:
+						$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT 1 FROM hashes WHERE hashlist IN ($hlisty) AND salt!='' LIMIT 1");
+						if($res->rowCount() > 0){
+							$kvery1 .= "hash,salt,plaintext";
+							$salted = true;
+						} 
+						else{
+							$kvery1 .= "hash,plaintext";
+						}
+						break;
+					case 1:
+						$kvery1 .= "essid AS hash,plaintext";
+						break;
+					case 2:
+						$kvery1 .= "plaintext";
+						break;
+				}
+				$kvery2 = " INTO OUTFILE '$tmpfull' FIELDS TERMINATED BY '".mysqli_real_escape_string($dblink,$config["fieldseparator"])."' ESCAPED BY '' LINES TERMINATED BY '\\n'";
+				$kvery3 = " FROM ".Util::getStaticArray($format, 'formattables')." WHERE hashlist IN ($hlisty) AND plaintext IS NOT NULL";
+				if (!file_exists("files")){
+					mkdir("files");
+				}
+				$kvery = $kvery1.$kvery2.$kvery3;
+				$res = $FACTORIES::getagentsFactory()->getDB()->exec($kvery);
+				$message = "<div class='alert alert-neutral'>";
+				if(!$res){
+					$message .= "File export failed, trying SELECT with file output<br>";
+					$kvery = $kvery1.$kvery3;
+					$res = $FACTORIES::getagentsFactory()->getDB()->query($kvery);
+					$res = $res->fetchAll();
+					$fexp = fopen("files/".$tmpfile, "w");
+					foreach($res as $entry){
+						fwrite($fexp, $entry["hash"].($salted ? $CONFIG->getVal("fieldseparator").$entry["salt"] : "").$CONFIG->getVal("fieldseparator").$entry["plaintext"]."\n");
+					}
+					fclose($fexp);
+				}
+				if($res) {
+					if (insertFile("files/".$tmpfile)) {
+						$message .= "Cracked hashes from hashlist $hlist exported.</div>";
+					} 
+					else {
+						$message .= "Cracked hashes exported, but the file is missing.</div>";
+          			}
+        		} 
+        		else {
+					$message .= "Could not export hashlist $hlist</div>";
+				}
+			}
+			else {
+				$message = "<div class='alert alert-danger'>No such hashlist.</div>";
+			}
 			break;
 		case 'hashlistzap':
 			$hlist = intval($_POST["hashlist"]);
