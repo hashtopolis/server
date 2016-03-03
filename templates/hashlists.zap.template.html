@@ -31,7 +31,7 @@
 				<td>Hashlist format:</td>
 				<td>
 					[[Util::getStaticArray(%%list.getVal('format')%%, 'formats')]]<br>
-			        Field separator: <input type="text" name="separator" value="[[config.getVal('fieldseparator')]]" size="1"><br>
+			        Field separator: <input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1"><br>
 			        (Accepted format is
 			        {{IF !!list.getVal('format')!! == 0}}
 			        	hash[:salt]:plaintext
@@ -48,28 +48,28 @@
 			<tr>
 				<td>Hash source</td>
 				<td>
-			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="paste">Paste<br>
-			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked>Upload<br>
-			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="import">Import<br>
-			        <input type="radio" name="source" onChange="sourceChange(this.value);" value="url">URL download
+			        <input type="radio" class='form-control' name="source" onChange="sourceChange(this.value);" value="paste">Paste<br>
+			        <input type="radio" class='form-control' name="source" onChange="sourceChange(this.value);" value="upload" checked>Upload<br>
+			        <input type="radio" class='form-control' name="source" onChange="sourceChange(this.value);" value="import">Import<br>
+			        <input type="radio" class='form-control' name="source" onChange="sourceChange(this.value);" value="url">URL download
         		</td>
         	</tr>
         	<tr id="pasteLine" style="display: none;">
         		<td>Input field:</td>
         		<td>
-        			<textarea name="hashfield" cols="60" rows="10" placeholder='Paste founds here...'></textarea>
+        			<textarea name="hashfield" class='form-control' cols="60" rows="10" placeholder='Paste founds here...'></textarea>
         		</td>
         	</tr>
         	<tr id="uploadLine">
         		<td>File to upload:</td>
         		<td>
-        			<input type="file" name="hashfile">
+        			<input type="file" class='form-control' name="hashfile">
         		</td>
         	</tr>
         	<tr id="importLine" style="display: none;">
         		<td>File to import:</td>
         		<td>
-        			<select name="importfile">
+        			<select class='form-control' name="importfile">
 	        			{{FOREACH impfile,!!impfiles!!}}
 							<option value="[[impfile]]">[[impfile]]</option>
 						{{ENDFOREACH}}
@@ -82,18 +82,18 @@
 			<tr id="downloadLine" style="display: none;">
 				<td>File URL:</td>
 				<td>
-					<input type="text" name="url" size="35">
+					<input type="text" class='form-control' name="url" size="35">
 				</td>
 			</tr>
         	<tr>
         		<td>Conflict resolution:</td>
         		<td>
-        			<input type="checkbox" name="overwrite" value="1">Overwrite already cracked hashes
+        			<input type="checkbox" class='form-control' name="overwrite" value="1">Overwrite already cracked hashes
         		</td>
         	</tr>
         	<tr>
         		<td colspan="3">
-        			<input type="submit" value="Pre-crack hashes">
+        			<input type="submit" class='btn btn-default' value="Pre-crack hashes">
         		</td>
         	</tr>
 		</table>
