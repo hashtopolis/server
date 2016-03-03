@@ -23,7 +23,7 @@ if(isset($_POST['action'])){
 				$FACTORIES::getagentsFactory()->update($agent);
 			}
 			if(strlen($message) == 0){
-				header("Location: ".$_SERVER['PHP_SELF']);
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
 				die();
 			}
 			break;
@@ -32,7 +32,7 @@ if(isset($_POST['action'])){
 			$FACTORIES::getagentsFactory()->getDB()->query("START TRANSACTION");
 			if (Util::deleteAgent($agent)) {
 				$FACTORIES::getagentsFactory()->getDB()->query("COMMIT");
-				header("Location: ".$_SERVER['PHP_SELF']);
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
 				die();
 			} 
 			else {
@@ -69,7 +69,7 @@ if(isset($_POST['action'])){
 				$message = "<div class='alert alert-danger'>Failed to apply task change!</div>";
 			}
 			else if(strlen($message) == 0) {
-				header("Location: ".$_SERVER['PHP_SELF']);
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
 				die();
 			}
 			break;
