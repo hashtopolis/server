@@ -64,6 +64,7 @@ if(isset($_POST['action'])){
 					foreach($res as $entry){
 						fwrite($fexp, $entry["hash"].($salted ? $CONFIG->getVal("fieldseparator").$entry["salt"] : "").$CONFIG->getVal("fieldseparator").$entry["plaintext"]."\n");
 					}
+					$res = true;
 					fclose($fexp);
 				}
 				if($res) {
