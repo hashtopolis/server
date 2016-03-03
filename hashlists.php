@@ -41,7 +41,7 @@ if(isset($_POST['action'])){
 						$kvery1 .= "plaintext";
 						break;
 				}
-				$kvery2 = " INTO OUTFILE '$tmpfull' FIELDS TERMINATED BY '".mysqli_real_escape_string($dblink,$config["fieldseparator"])."' ESCAPED BY '' LINES TERMINATED BY '\\n'";
+				$kvery2 = " INTO OUTFILE '$tmpfull' FIELDS TERMINATED BY '".$FACTORIES::getagentsFactory()->getDB()->quote($CONFIG->getVal("fieldseparator"))."' ESCAPED BY '' LINES TERMINATED BY '\\n'";
 				$kvery3 = " FROM ".Util::getStaticArray($format, 'formattables')." WHERE hashlist IN ($hlisty) AND plaintext IS NOT NULL";
 				if (!file_exists("files")){
 					mkdir("files");
