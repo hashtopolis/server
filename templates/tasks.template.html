@@ -43,7 +43,7 @@
         			{{IF !!task.getVal('hashlist')!! != ""}}
         				<a href="hashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('name')]]</a>
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hsecret') == 1}}
+        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hsecret')!! == 1}}
         				<img src="static/lock.gif" alt="Secret">
         			{{ENDIF}}
         			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hlinc')!! == 0}}
