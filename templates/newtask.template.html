@@ -56,7 +56,7 @@
       			<tr>
       				<td>Benchmark:</td>
       				<td>
-      					<input type="checkbox" name="autoadjust" value="1"{{IF !!copy.getVal('adjust')!! == 1}} checked{{ENDIF}}> 
+      					<input type="checkbox" name="autoadjust" {{IF !!copy.getVal('adjust')!! == 1}} checked{{ENDIF}}> 
       					Auto adjust<br>(Not recommended for AMD and/or in combination with small chunks sizes)
       				</td>
       			</tr>

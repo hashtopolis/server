@@ -14,7 +14,7 @@ if(isset($_POST['action'])){
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote($_POST["name"]);
 			$cmdline = $DB->quote($_POST["cmdline"]);
-			$autoadj = intval($_POST["autoadjust"]);
+			$autoadjust = intval($_POST["autoadjust"]);
 			$chunk = intval($_POST["chunk"]);
 			$status = intval($_POST["status"]);
 			$color = $_POST["color"];
@@ -26,8 +26,8 @@ if(isset($_POST['action'])){
 			else {
 				$color = "NULL";
 			}
-			if (strpos($cmdline,$hashlistAlias)===false) {
-				$message .= "Command line must contain hashlist ($hashlistAlias).";
+			if (strpos($cmdline, $CONFIG->getVal('hashlistAlias'))===false) {
+				$message .= "Command line must contain hashlist (".$CONFIG->getVal('hashlistAlias').").";
 			} 
 			else {
 				if ($_POST["hashlist"] == "preconf") {
