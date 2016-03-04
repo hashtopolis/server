@@ -22,6 +22,7 @@ foreach($res as $list){
 	$lists[] = $set;
 }
 
+$OBJECTS['numSuperhashlists'] = sizeof($lists);
 $OBJECTS['lists'] = $lists;
 $OBJECTS['message'] = $message;
 
