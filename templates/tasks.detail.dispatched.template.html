@@ -43,7 +43,7 @@
          				{{ENDIF}}
          			</td>
          			<td>
-         				".date($config["timefmt"],$dispatchtime)."
+         				[[date(%%config.getVal('timefmt')%%, %%chunk.getVal('dispatchtime')%%)]]
          			</td>
          			<td>
          				{{IF !!chunk.getVal('solvetime')!! == 0}}
