@@ -14,7 +14,7 @@
 		</tr>
 		{{FOREACH task,!!tasks!!}}
 			<tr>
-				<td{{IF strlen("!!task.getVal('color')!!") > 0}} style="background-color: #[[task.getVal('color')]]{{ENDIF}}>
+				<td{{IF !!strlen("%%task.getVal('color')%%")!! > 0}} style="background-color: #[[task.getVal('color')]]{{ENDIF}}>
 					<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('id')]]</a>
 				</td>
 				<td>
