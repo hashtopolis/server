@@ -23,7 +23,7 @@
         		<td>[[task.getVal('attackcmd')]]</td>
         		<td>
         			{{IF !!task.getVal('filescount')!! > 0}}
-        				[[task.getVal('filescount')]] ([[Util::nicenum(%%task.getVal('filesize')%%])]]B)
+        				[[task.getVal('filescount')]] ([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
         			{{ENDIF}}
         			{{IF !!task.getVal('secret')!! == 1}}
         				<img src="static/lock.gif" alt="Secret">
