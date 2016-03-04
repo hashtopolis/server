@@ -27,7 +27,7 @@ if(isset($_GET['id'])){
 	if($taskEntry){
 		$taskSet->setValues($taskEntry);
 		$taskSet->addValue("filter", $filter);
-		$res = $DB->query("SELECT dispatchtime,solvetime FROM chunks WHERE task=$id AND solvetime>dispatchtime ORDER BY dispatchtime ASC");
+		$res = $DB->query("SELECT dispatchtime,solvetime FROM chunks WHERE task={$taskEntry['id']} AND solvetime>dispatchtime ORDER BY dispatchtime ASC");
 		$intervaly = array();
 		foreach($res as $entry){
 			$interval = array();
