@@ -59,7 +59,7 @@ if(isset($_POST['action'])){
 							$id = $DB->lastInsertId();
 							$message .= "OK (id: $id)<br>";
 							// attach files
-							$attachok=true;
+							$attachok = true;
 							if (isset($_POST["adfile"])) {
 								foreach($_POST["adfile"] as $fid) {
 									if ($fid > 0) {
@@ -79,8 +79,8 @@ if(isset($_POST['action'])){
 								$DB->exec("COMMIT");
 								$message = "Task created successfuly!";
 								if($forward){
-									header("Location: $forward");
-									die();
+									/*header("Location: $forward");
+									die();*/
 								}
 							} 
 							else {
