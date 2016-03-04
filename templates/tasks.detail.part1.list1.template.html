@@ -2,7 +2,3 @@
 	<a href="superhashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('hname')]]</a> 
 	({{IF !!task.getVal('htypename')!! == ""}}[[task.getVal('htype')]]{{ENDIF}}{{IF !!task.getVal('htypename')!! != ""}}[[task.getVal('htypename')]]{{ENDIF}})
 {{ENDIF}}
-{{IF !!task.getVal('format')!! != 3}}
-	<a href="hashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('hname')]]</a> 
-	({{IF !!task.getVal('htypename')!! == ""}}[[task.getVal('htype')]]{{ENDIF}}{{IF !!task.getVal('htypename')!! != ""}}[[task.getVal('htypename')]]{{ENDIF}})
-{{ENDIF}}

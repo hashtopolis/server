@@ -14,7 +14,7 @@
 			<td>
 				[[task.getVal('progress')]] ([[Util::showperc(%%task.getVal('progress')%%, %%task.getVal('keyspace')%%)]]%)
 				{{IF !!task.getVal('active')!! == 0}}
-					<form action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getVal('id')]]?')) return false;">
+					<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getVal('id')]]?')) return false;">
 						<input type="hidden" name="action" value="taskpurge">
 						<input type="hidden" name="task" value="[[task.getVal('id')]]">
 						<input type="submit" class='btn btn-danger' value="Purge">
@@ -53,7 +53,8 @@
        			{{IF !!task.getVal('format')!! != 3}}Hashlist{{ENDIF}}
        		</td>
        		<td>
-       			{%TEMPLATE->tasks.detail.part1.list%}
+       			{%TEMPLATE->tasks.detail.part1.list1%}
+       			{%TEMPLATE->tasks.detail.part1.list2%}
        		</td>
        	</tr>
        </table>
