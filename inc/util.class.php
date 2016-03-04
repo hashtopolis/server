@@ -116,9 +116,25 @@ class Util{
 				"hashes_binary",
 				"hashes_binary"
 		);
+		$states = array(
+				"New",
+				"Init",
+				"Running",
+				"Paused",
+				"Exhausted",
+				"Cracked",
+				"Aborted",
+				"Quit",
+				"Bypass",
+				"Trimmed",
+				"Aborting..."
+		);
 		switch($id){
 			case 'os':
 				return $oses[$val];
+				break;
+			case 'states':
+				return $states[$val];
 				break;
 			case 'formats':
 				return $formats[$val];
