@@ -183,7 +183,7 @@ class Util{
 		else{
 			$vys = 0;
 		}
-		$vysnew = niceround($vys, $decs);
+		$vysnew = Util::niceround($vys, $decs);
 		return $vysnew;
 	}
 	
