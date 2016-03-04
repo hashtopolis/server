@@ -69,6 +69,10 @@ if(isset($_POST['action'])){
 				$message = "<div class='alert alert-danger'>Failed to apply task change!</div>";
 			}
 			else if(strlen($message) == 0) {
+				if(isset($_GET['task'])){
+					header("Location: tasks.php?id=".$_GET['task']);
+					die();
+				}
 				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
 				die();
 			}
