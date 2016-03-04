@@ -1,0 +1,19 @@
+<tr>
+	<td colspan="2">
+		<form action="agents.php?task=[[task.getVal('id')]]" method="POST">
+     				<input type="hidden" name="action" value="agentassign">
+     				<input type="hidden" name="task" value="[[task.getVal('id')]]">
+     				<select class='form-control' name="agent">
+     					{{FOREACH agent,!!assignAgents!!}}
+     						<option value='[[agent.getVal('id')]]'>[[agent.getVal('id')]]
+     							{{IF !!agent.getVal('name')!! != ""}}
+     								([[agent.getVal('name')]])
+     							{{ENDIF}}
+     					{{ENDFOREACH}}
+     				</select>
+     			</td>
+     			<td colspan="8">
+     				<input type="submit" class='btn btn-default' value="Assign">
+     			</form>
+     		</td>
+     	</tr>
