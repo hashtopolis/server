@@ -77,7 +77,7 @@ if(isset($_POST['action'])){
 							}
 							if ($attachok == true) {
 								$DB->exec("COMMIT");
-								$message = "Task created successfuly!";
+								$message .= "Task created successfuly!";
 								if($forward){
 									/*header("Location: $forward");
 									die();*/
