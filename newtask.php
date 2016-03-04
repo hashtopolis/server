@@ -2,8 +2,8 @@
 use Bricky\Template;
 require_once(dirname(__FILE__)."/inc/load.php");
 
-$TEMPLATE = new Template("agents");
-$MENU->setActive("agents_list");
+$TEMPLATE = new Template("newtask");
+$MENU->setActive("tasks_new");
 $message = "";
 
 //catch agents actions here...
@@ -35,7 +35,7 @@ if (isset($_GET["id"])) {
 			$copy->addValue('adjust', $task["autoadjust"]);
 			$copy->addValue('hlist', $task["hashlist"]);
 			$copy->addValue('color', $task["color"]);
-			if ($hlist == ""){
+			if ($copy->getVal('hlist') == ""){
 				$hlist = "preconf";
 			}
 		} else {
