@@ -1,0 +1,73 @@
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>Property</th>
+			<th>Value</th>
+		</tr>
+		<tr>
+			<td>ID:</td>
+			<td>[[task.getVal('id')]]</td>
+		</tr>
+		<tr>
+			<td>Name:</td>
+			<td>
+				<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+					<input type="hidden" name="action" value="taskrename">
+					<input type="hidden" name="task" value="[[task.getVal('id')]]">
+					<input type="text" class='form-control' name="name" size="25" value=""[[task.getVal('name')]]">
+					<input type="submit" class='btn btn-default' value="Change">
+				</form>
+			</td>
+		</tr>
+		<tr>
+			<td>Attack command:</td>
+			<td>[[task.getVal('attackcmd')]]</td>
+		</tr>
+		<tr>
+			<td>Chunk size:</td>
+			<td>
+				<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+					<input type="hidden" name="action" value="taskchunk">
+					<input type="hidden" name="task" value="[[task.getVal('id')]]">
+					<input type="text" class='form-control' name="chunktime" size="5" value="[[task.getVal('chunktime')]]"> seconds 
+					<input type="submit" class='btn btn-default' value="Set">
+				</form>
+			</td>
+		</tr>
+		<tr>
+			<td>Benchmark:</td>
+			<td>
+				<form id="taskauto" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+					<input type="hidden" name="action" value="taskauto">
+					<input type="hidden" name="task" value="[[task.getVal('id')]]">
+					<input type="checkbox" name="auto" value="1"{{IF !!task.getVal('autoadjust')!! == 1}} checked{{ENDIF}}
+						onChange="javascript:document.getElementById('taskauto').submit();"> Autoadjust by default
+				</form>
+			</td>
+		</tr>
+		<tr>
+			<td>Color:</td>
+			<td>
+				<form class='form-inline' id="taskcolor" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+					<input type="hidden" name="action" value="taskcolor">
+					<input type="hidden" name="task" value="[[task.getVal('id')]]">
+					#<input type="text" class='form-control' size="6" name="color" class="color {required:false}" value="[[task.getVal('color')]]">
+					<input type="submit" class='btn btn-default' value="Set">
+				</form>
+			</td>
+		</tr>
+		<tr>
+			<td>Status timer:</td>
+			<td>[[task.getVal('statustimer')]] seconds</td>
+		</tr>
+		<tr>
+			<td>Priority:</td>
+			<td>
+				<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+					<input type="hidden" name="action" value="taskprio">
+					<input type="hidden" name="task" value="[[task.getVal('id')]]">
+					<input type="text" name="priority" size="4" value="[[task.getVal('priority')]]"> 
+					<input type="submit" class='btn btn-default' value="Set">
+				</form>
+			</td>
+		</tr>

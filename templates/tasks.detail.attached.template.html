@@ -1,0 +1,24 @@
+<h3>Attached files</h3>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>ID</th>
+			<th>Filename</th>
+			<th>Size</th>
+		</tr>
+		{{FOREACH attach,!!attachFiles!!}}
+			<tr>
+				<td>[[attach.getVal('id')]]</td>
+				<td>
+					<a href="files.php#[[attach.getVal('id')]]">[[attch.getVal('filename')]]</a>
+					{{IF !!attach.getVal('secret')!! == 1}}
+						<img src="static/lock.gif" alt="Secret">
+					{{ENDIF}}
+				</td>
+				<td class='num'>
+					[[Util::nicenum(%%attach.getVal('size')%%)]]B
+				</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
