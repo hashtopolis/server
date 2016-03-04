@@ -50,7 +50,7 @@
          					(no activity)</td><td>
          				{{ENDIF}}
          				{{IF !!chunk.getVal('solvetime')!! != 0}}
-         					[[Util::date(%%config.getVal('timefmt')%%, %%chunk.getVal('solvetime')%%)]]
+         					[[date(%%config.getVal('timefmt')%%, %%chunk.getVal('solvetime')%%)]]
          					</td><td class='num'>
          					[[Util::sectotime(%%chunk.getVal('spent')%%)]]
          				{{ENDIF}}
