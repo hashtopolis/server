@@ -48,11 +48,11 @@ if(isset($_GET['id'])){
 		}
 		$taskSet->addValue("soucet", $soucet);
 		
-		$res = $DB->query("SELECT ROUND((tasks.keyspace-SUM(tchunks.length))/SUM(tchunks.length*tchunks.active/tchunks.time)) AS eta FROM (SELECT SUM(chunks.length*chunks.rprogress/10000) AS length,SUM(chunks.solvetime-chunks.dispatchtime) AS time,IF(MAX(solvetime)>=".time()."-".$CONFIG->getVal('chunktimeout').",1,0) AS active FROM chunks WHERE chunks.solvetime>chunks.dispatchtime AND chunks.task=$id GROUP BY chunks.agent) tchunks CROSS JOIN tasks WHERE tasks.id=$id");
+		$res = $DB->query("SELECT ROUND((tasks.keyspace-SUM(tchunks.length))/SUM(tchunks.length*tchunks.active/tchunks.time)) AS eta FROM (SELECT SUM(chunks.length*chunks.rprogress/10000) AS length,SUM(chunks.solvetime-chunks.dispatchtime) AS time,IF(MAX(solvetime)>=".time()."-".$CONFIG->getVal('chunktimeout').",1,0) AS active FROM chunks WHERE chunks.solvetime>chunks.dispatchtime AND chunks.task={$taskEntry['id']} GROUP BY chunks.agent) tchunks CROSS JOIN tasks WHERE tasks.id={$taskEntry['id']}");
 		$entry = $res->fetch();
 		$taskSet->addValue('eta', $entry['eta']);
 		
-		$res = $DB->query("SELECT files.id,files.filename,files.size,files.secret FROM taskfiles JOIN files ON files.id=taskfiles.file WHERE task=$task ORDER BY filename");
+		$res = $DB->query("SELECT files.id,files.filename,files.size,files.secret FROM taskfiles JOIN files ON files.id=taskfiles.file WHERE task={$taskEntry['id']} ORDER BY filename");
 		$res = $res->fetchAll();
 		$attachFiles = array();
 		foreach($res as $file){
