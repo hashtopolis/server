@@ -1,4 +1,4 @@
-<h3>Dispatched chunks {{IF !!filter!! != 1}}(showing active only - <a href="tasks.php?id=[[task.getVal('id')]]&all=1">show latest 100</a>){{ENDIF}}{{IF !!filter!! == 1}}(show latest 100){{ENDIF}}</h3>
+<h3>Dispatched chunks {{IF !!task.getVal('filter')!! != 1}}(showing active only - <a href="tasks.php?id=[[task.getVal('id')]]&all=1">show latest 100</a>){{ENDIF}}{{IF !!task.getVal('filter')!! == 1}}(show latest 100){{ENDIF}}</h3>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
