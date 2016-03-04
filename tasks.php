@@ -24,11 +24,12 @@ if(isset($_GET['id'])){
 
 	$res = $DB->query("SELECT tasks.*,hashlists.name AS hname,hashlists.format,hashlists.hashtype AS htype,hashtypes.description AS htypename,ROUND(chunks.cprogress) AS cprogress,SUM(assignments.speed*IFNULL(achunks.working,0)) AS taskspeed,IF(chunks.lastact>".(time()-$CONFIG->getVal('chunktimeout')).",1,0) AS active FROM tasks LEFT JOIN hashlists ON hashlists.id=tasks.hashlist LEFT JOIN hashtypes ON hashlists.hashtype=hashtypes.id LEFT JOIN (SELECT task,SUM(progress) AS cprogress,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks GROUP BY task) chunks ON chunks.task=tasks.id LEFT JOIN assignments ON assignments.task=tasks.id LEFT JOIN (SELECT DISTINCT agent,1 AS working FROM chunks WHERE task=$task AND GREATEST(dispatchtime,solvetime)>".(time()-$CONFIG->getVal('chunktimeout')).") achunks ON achunks.agent=assignments.agent WHERE tasks.id=$task GROUP BY tasks.id");
 	$taskEntry = $res->fetch();
+	print_r($taskEntry);
 	if($taskEntry == 1){
 		$taskSet->setValues($taskEntry);
 		$taskSet->addValue("filter", $filter);
 		$res = $DB->query("SELECT dispatchtime,solvetime FROM chunks WHERE task=$id AND solvetime>dispatchtime ORDER BY dispatchtime ASC");
-		$intervaly=array();
+		$intervaly = array();
 		foreach($res as $entry){
 			$interval = array();
 			$interval["start"] = $entry["dispatchtime"];
