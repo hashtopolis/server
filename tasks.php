@@ -96,6 +96,7 @@ if(isset($_GET['id'])){
 			$chunks[] = $set;
 		}
 		$OBJECTS['chunks'] = $chunks;
+		$OBJECTS['task'] = $taskSet;
 	}
 }
 else{
