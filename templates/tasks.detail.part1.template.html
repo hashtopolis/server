@@ -25,7 +25,12 @@
        	<tr>
        		<td>Keyspace searched:</td>
        		<td>
-       			[[task.getVal('cprogress')]] ([[Util::showperc(%%task.getVal('cprogress')%%, %%task.getVal('keyspace')%%)]]%)
+       			{{IF !!task.getVal('keyspace')!! > 0}}
+       				[[task.getVal('cprogress')]] ([[Util::showperc(%%task.getVal('cprogress')%%, %%task.getVal('keyspace')%%)]]%)
+       			{{ENDIF}}
+       			{{IF !!task.getVal('keyspace')!! == 0}}
+       				N/A
+       			{{ENDIF}}
        		</td>
        	</tr>
        	<tr>
