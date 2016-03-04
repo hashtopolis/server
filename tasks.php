@@ -77,7 +77,7 @@ if(isset($_GET['id'])){
 		$res = $res->fetchAll();
 		foreach($res as $agent){
 			$set = new DataSet();
-			$set->setValues($set);
+			$set->setValues($agent);
 			$assignAgents[] = $set;
 		}
 		$OBJECTS['assignAgents'] = $assignAgents;
