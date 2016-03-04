@@ -14,7 +14,7 @@
 		</tr>
 		{{FOREACH task,!!tasks!!}}
 			<tr>
-				<td{{IF !!strlen("%%task.getVal('color')%%")!! > 0}} style="background-color: #[[task.getVal('color')]]{{ENDIF}}>
+				<td{{IF !!strlen(%%task.getVal('color')%%)!! > 0}} style="background-color: #[[task.getVal('color')]]{{ENDIF}}>
 					<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('id')]]</a>
 				</td>
 				<td>
@@ -40,13 +40,13 @@
         		<td>
         			<form style='float: left; padding-right: 5px;' action="newtask.php" method="GET">
 				        <input type="hidden" name="task" value="[[task.getVal('id')]]">
-				        <input type="submit" value="Copy">
+				        <input type="submit" class='btn btn-default' value="Copy">
 				    </form> 
 
 			        <form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task $id?')) return false;">
 				        <input type="hidden" name="action" value="taskdelete">
 				        <input type="hidden" name="task" value="[[task.getVal('id')]]">
-				        <input type="submit" value="Delete">
+				        <input type="submit" class='btn btn-default' value="Delete">
 				    </form>
 				</td>
 			</tr>
