@@ -9,7 +9,98 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		case 'newtaskp':
+			// new task creator
+			$DB = $FACTORIES::getagentsFactory()->getDB();
+			$name = $DB->quote($_POST["name"]);
+			$cmdline = $DB->quote($_POST["cmdline"]);
+			$autoadj = intval($_POST["autoadjust"]);
+			$chunk = intval($_POST["chunk"]);
+			$status = intval($_POST["status"]);
+			$color = $_POST["color"];
+			$message = "<div class='alert alert-neutral'>";
+			$forward = "";
+			if (preg_match("/[0-9A-Za-z]{6}/",$color)==1) {
+				$color = "'$color'";
+			} 
+			else {
+				$color = "NULL";
+			}
+			if (strpos($cmdline,$hashlistAlias)===false) {
+				$message .= "Command line must contain hashlist ($hashlistAlias).";
+			} 
+			else {
+				if ($_POST["hashlist"] == "preconf") {
+					// it will be a preconfigured task
+					$hashlist = "NULL";
+					if ($name=="''"){
+						$name = "PC_".date("Ymd_Hi");
+					}
+					$forward = "pretasks.php";
+				} 
+				else {
+					$thashlist = intval($_POST["hashlist"]);
+					if ($thashlist > 0) {
+						$hashlist = $thashlist;
+					}
+					if ($name == "''"){
+						$name = "HL".$hashlist."_".date("Ymd_Hi");
+					}
+					$forward = "tasks.php";
+				}
+				if ($hashlist != "") {
+					if ($status>0 && $chunk>0 && $chunk>$status) {
+						$DB->exec("SET autocommit = 0");
+						$DB->exec("START TRANSACTION");
+						$message .= "Creating task in the DB...";
+						$res = $DB->exec("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, color) VALUES ($name, $cmdline, $hashlist, $chunk, $status, $autoadj, $color)");
+						if ($res) {
+							// insert succeeded
+							$id = $DB->lastInsertId();
+							$message .= "OK (id: $id)<br>";
+							// attach files
+							$attachok=true;
+							if (isset($_POST["adfile"])) {
+								foreach($_POST["adfile"] as $fid) {
+									if ($fid > 0) {
+										$message .= "Attaching file $fid...";
+										if ($DB->exec("INSERT INTO taskfiles (task,file) VALUES ($id, $fid)")) {
+											$message .= "OK";
+										} 
+										else {
+											$message .= "ERROR!";
+											$attachok = false;
+										}
+										$message .= "<br>";
+									}
+								}
+							}
+							if ($attachok == true) {
+								$DB->exec("COMMIT");
+								$message = "Task created successfuly!";
+								if($forward){
+									header("Location: $forward");
+									die();
+								}
+							} 
+							else {
+								$DB->exec("ROLLBACK");
+							}
+						} 
+						else {
+							$message .= "ERROR: ".$DB->errorInfo()[2];
+						}
+					} 
+					else {
+						$message .= "Chunk time must be higher than status timer.";
+					}
+				} 
+				else {
+					$message .= "Every task requires a hashlist, even if it should contain only one hash.";
+				}
+			}
+			$message .= "</div>";
+			break;
 	}
 }
 
