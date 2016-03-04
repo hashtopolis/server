@@ -32,7 +32,7 @@ if(isset($_POST['action'])){
 					if ($name=="''") {
 						$name = "SHL_".$res['hashtype'];
 					}
-					$res = $DB->exec("INSERT INTO hashlists (name,format,hashtype,hashcount,cracked) SELECT '$name',3,".$erej["hashtype"].",SUM(hashlists.hashcount),SUM(hashlists.cracked) FROM hashlists WHERE hashlists.id IN ($hlisty)");
+					$res = $DB->exec("INSERT INTO hashlists (name,format,hashtype,hashcount,cracked) SELECT '$name',3,".$res["hashtype"].",SUM(hashlists.hashcount),SUM(hashlists.cracked) FROM hashlists WHERE hashlists.id IN ($hlisty)");
 					if ($res) {
 						$id = $DB->lastInsertId();
 						$message .= "Inserting hashlists...<br>";
