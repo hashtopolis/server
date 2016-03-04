@@ -169,6 +169,24 @@ class Util{
 		return $vysnew . " " . $rs[$r];
 	}
 	
+	public static function showperc($part,$total,$decs=2) {
+			// show nicely formated percentage
+		if($total > 0){
+			$vys = round(($part / $total) * 100, $decs);
+			if($vys == 100 && $part < $total){
+				$vys -= 1 / (10 ^ $decs);
+			}
+			if($vys == 0 && $part > 0){
+				$vys += 1 / (10 ^ $decs);
+			}
+		}
+		else{
+			$vys = 0;
+		}
+		$vysnew = niceround($vys, $decs);
+		return $vysnew;
+	}
+	
 	public static function uploadFile($tmpfile, $source, $sourcedata) {
 		// upload file from multiple sources
 		global $uperrs;
