@@ -9,7 +9,7 @@ $message = "";
 //catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		//currently no actions
 	}
 }
 
