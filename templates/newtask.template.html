@@ -1,0 +1,127 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>New task</h2>
+[[message]]
+<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
+	<form action="newtask.php" method="POST" enctype="multipart/form-data">
+		<input type='hidden' name='action' value='newtaskp'>
+		<div class="panel panel-default">
+			<table class="table table-bordered table-nonfluid">
+				<tr>
+					<th>Property</th>
+					<th>Value</th>
+				</tr>
+				<tr>
+					<td>Name:</td>
+					<td>
+						<input type="text" class='form-control' name="name" value="[[copy.getVal('name')]]">
+					</td>
+				</tr>
+				<tr>
+					<td>Hashlist:</td>
+					<td>
+						<select class='form-control' name="hashlist">
+							{{FOREACH list,!!lists!!}}
+								<option value="[[list.getVal('id')]]"{{IF !!list.getVal('id')!! == !!copy.getVal('hlist')!!}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+							{{ENDFOREACH}}
+						</select> (hashlist needs to be created before task)
+					</td>
+				</tr>
+				<tr>
+					<td>Command line:</td>
+					<td>
+						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine">[[copy.getVal('cmd')]]</textarea>
+						<br>
+      					Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
+      					If you have Linux agents, please mind the filename case sensitivity!<br>
+      					Also, don't use any of these parameters, they will be invoked automatically:<br>
+      					hash-type, limit, outfile-check-dir, outfile-check-timer, potfile-disable, remove,<br>
+      					remove-timer, separator, session, skip, status, status-timer
+      				</td>
+      			</tr>
+      			<tr>
+      				<td>Chunk size:</td>
+      				<td>
+      					<input type="text" class='form-control' name="chunk" value="[[copy.getVal('chunksize')]]"> 
+      					seconds
+      				</td>
+      			</tr>
+      			<tr>
+      				<td>Status timer:</td>
+      				<td>
+      					<input type="text" class='form-control' name="status" value="[[copy.getVal('status')]]"> 
+      					seconds
+      				</td>
+      			</tr>
+      			<tr>
+      				<td>Benchmark:</td>
+      				<td>
+      					<input type="checkbox" name="autoadjust" value="1"{{IF !!copy.getVal('adjust')!! == 1}} checked{{ENDIF}}> 
+      					Auto adjust<br>(Not recommended for AMD and/or in combination with small chunks sizes)
+      				</td>
+      			</tr>
+      			<tr>
+      				<td>Color:</td>
+      				<td>
+      					#<input type="text" class='form-control' name="color" size="6" class="color {required:false}" value="[[copy.getVal('color')]]">
+      				</td>
+      			</tr>
+      			<tr>
+      				<td colspan="2">
+      					<input type="submit" class='btn btn-default' value="Create task">
+      				</td>
+      			</tr>
+			</table>
+		</div>
+	</form>
+</div>
+<div class='col-md-4' style='padding: 0px;'>
+	<script type='text/javascript'>
+		function assignFile(cmdLine,addObject,fileName) { 
+			if (fileName.indexOf('.7z') != -1) {
+				fileName=fileName.substring(0,fileName.length-2)+'???';
+			} 
+			var cmdObject = document.getElementById(cmdLine); 
+			if (addObject == true) { 
+				if (cmdObject.value.indexOf(fileName) == -1) { 
+					if (cmdObject.value.length>0 && cmdObject.value.slice(-1)!=' ') {
+						cmdObject.value += ' '; 
+					}
+					cmdObject.value += fileName; 
+				} 
+			} 
+			else { 
+				cmdObject.value = cmdObject.value.replace(fileName,''); 
+				while (cmdObject.value.slice(-1)==' ') {
+					cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1); 
+				}
+				while (cmdObject.value.substring(0,1)==' ') {
+					cmdObject.value=cmdObject.value.substring(1); 
+				}
+			} 
+		}
+	</script>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>Filename</th>
+				<th>Size</th>
+			</tr>
+			{{FOREACH file,!!files!!}}
+				<tr>
+					<td>
+						<input type="checkbox" name="adfile[]" value="[[file.getVal('id')]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('filename')]]');"{{IF !!file.getVal('che')!! == 1}} checked{{ENDIF}}>
+        				[[file.getVal('filename')]]
+        				{{IF !!file.getVal('secret')!! == 1}}
+        					<img src="static/lock.gif" alt="Secret">
+        				{{ENDIF}}
+        			</td>
+        			<td>
+        				[[Util::nicenum(%%file.getVal('size')%%)]]B
+        			</td>
+        		</tr>
+			{{ENDFOREACH}}
+		</table>
+	</div>
+</div>
+{%TEMPLATE->foot%}
