@@ -182,6 +182,14 @@ if(isset($_POST['action'])){
 						}
 						$message .= "Pre-cracking completed ($zapy hashes pre-cracked, $skipy skipped for duplicity or empty plaintext, $chyby SQL errors, took ".($cas_stop-$cas_start)." sec)";
 						fclose($hhandle);
+						if($superhash){
+							header("Location: superhashlists.php");
+							die();
+						}
+						else{
+							header("Location: hashlists.php");
+							die();
+						}
 					} 
 					else {
 						$message .= "Pre-cracked file is empty!";
@@ -255,6 +263,14 @@ if(isset($_POST['action'])){
 				if($res) {
 					if(Util::insertFile("files/".$tmpfile)) {
 						$message .= "Cracked hashes from hashlist $hlist exported.</div>";
+						if($superhash){
+							header("Location: superhashlists.php");
+							die();
+						}
+						else{
+							header("Location: hashlists.php");
+							die();
+						}
 					} 
 					else {
 						$message .= "Cracked hashes exported, but the file is missing.</div>";
@@ -363,7 +379,7 @@ if(isset($_POST['action'])){
          	 		case 3:
 						$message .= "Deleting superhashlist links...<br>";
 						$FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM superhashlists WHERE id=$hlist");
-						header("Location: hashlists.php");
+						header("Location: superhashlists.php");
 						die();
 						break;
 				}
@@ -377,13 +393,18 @@ if(isset($_POST['action'])){
 	}
 }
 
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,hashlists.secret,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE format!=3 ORDER BY id ASC");
-$res = $res->fetchAll();
-$hashlists = array();
-foreach($res as $list){
-	$set = new DataSet();
-	$set->setValues($list);
-	$hashlists[] = $set;
+if(isset($_GET['id'])){
+	//TODO:
+}
+else{
+	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,hashlists.secret,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE format!=3 ORDER BY id ASC");
+	$res = $res->fetchAll();
+	$hashlists = array();
+	foreach($res as $list){
+		$set = new DataSet();
+		$set->setValues($list);
+		$hashlists[] = $set;
+	}
 }
 
 $OBJECTS['hashlists'] = $hashlists;
