@@ -1,13 +1,20 @@
 {{FOREACH agent,!!agents!!}}
 <tr>
-	<td><a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
+	<td>
+		<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
 	</td>
-	<td><a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
-		{{IF !!agent.getVal('trusted')!! == 1}} <img src="static/lock.gif"
-		alt="Trusted"> {{ENDIF}} {{IF !!agent.getVal('working')!! == 1}}
-		<img src="static/active.gif" alt="Active"> {{ENDIF}} {{IF
-		!!agent.getVal('active')!! == 0}} <img src="static/pause.gif"
-		alt="Paused"> {{ENDIF}}</td>
+	<td>
+		<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
+		{{IF !!agent.getVal('trusted')!! == 1}} 
+			<img src="static/lock.gif" alt="Trusted"> 
+		{{ENDIF}} 
+		{{IF !!agent.getVal('working')!! == 1}}
+			<img src="static/active.gif" alt="Active"> 
+		{{ENDIF}} 
+		{{IF !!agent.getVal('active')!! == 0}} 
+			<img src="static/pause.gif" alt="Paused"> 
+		{{ENDIF}}
+	</td>
 	<td>
 		<form style='float: left; padding-right: 5px;' class='form-inline'
 			action="tasks.php?id=[[task.getVal('id')]]" method="POST">
@@ -28,13 +35,16 @@
 			Auto
 		</form>
 	</td>
-	<td class="num">{{IF !!agent.getVal('working')!! == 1}}
-		[[Util::nicenum(%%agent.getVal('speed')%%, 100000, 1000)]]H/s
+	<td class="num">
+		{{IF !!agent.getVal('working')!! == 1}}
+			[[Util::nicenum(%%agent.getVal('speed')%%, 100000, 1000)]]H/s
 		{{ENDIF}}</td>
-	<td class="num">{{IF !!task.getVal('keyspace')!! > 0}}
-		[[agent.getVal('searched')]]
-		([[Util::showperc(%%agent.getVal('searched')%%,
-		%%task.getVal('keyspace')%%)]]%) {{ENDIF}}</td>
+	<td class="num">
+		{{IF !!task.getVal('keyspace')!! > 0}}
+			[[agent.getVal('searched')]]
+			([[Util::showperc(%%agent.getVal('searched')%%, %%task.getVal('keyspace')%%)]]%) 
+		{{ENDIF}}
+	</td>
 	<td class="num">[[Util::sectotime(%%agent.getVal('spent')%%)]]</td>
 	<td class="num">[[agent.getVal('cracked')]]</td>
 	<td>{{IF !!agent.getVal('time')!! > 0}}
