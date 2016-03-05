@@ -394,7 +394,7 @@ if(isset($_POST['action'])){
 }
 
 if(isset($_GET['id'])){
-	//TODO:
+	//TODO: hashlist details
 }
 else{
 	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,hashlists.secret,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE format!=3 ORDER BY id ASC");
@@ -405,10 +405,10 @@ else{
 		$set->setValues($list);
 		$hashlists[] = $set;
 	}
+	$OBJECTS['hashlists'] = $hashlists;
+	$OBJECTS['numHashlists'] = sizeof($hashlists);
 }
 
-$OBJECTS['hashlists'] = $hashlists;
-$OBJECTS['numHashlists'] = sizeof($hashlists);
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
