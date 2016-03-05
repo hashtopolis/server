@@ -13,7 +13,7 @@
 		} 
 	}
 </script>
-<form action="newhashlist.php" method="POST" enctype="multipart/form-data">
+<form class='form-inline' action="newhashlist.php" method="POST" enctype="multipart/form-data">
 	<input type='hidden' name='action' value='newhashlistp'>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
@@ -44,7 +44,7 @@
 					<span id="textopt">
       					<br>
       					<input type="checkbox" name="salted" value="1"> Salted hashes, separator 
-      					<input type="text" name="separator" value="[[config.getVal('fieldseparator')]]" size="1">
+      					<input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1">
       				</span>
       			</td>
       		</tr>
