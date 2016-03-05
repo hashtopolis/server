@@ -220,6 +220,9 @@
           			{{ENDIF}}
           		</td>
           		<td>
+          			[[Util::getStaticArray(%%chunk.getVal('state')%%, 'states')]]
+          		</td>
+          		<td>
           			{{IF !!chunk.getVal('cracked')!! > 0}}
           				<a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
           			{{ENDIF}}
