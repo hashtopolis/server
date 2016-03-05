@@ -153,7 +153,7 @@
 		</tr>
 		{{FOREACH error,!!errors!!}}
 			<tr>
-				<td>[[Util::date(%%config.getVAl('timefmt')%%, %%error.getVal('time')%%)]]</td>
+				<td>[[date(%%config.getVal('timefmt')%%, %%error.getVal('time')%%)]]</td>
 				<td>
 					{{IF !!error.getVal('task')!! == ""}}
 						N/A
