@@ -13,7 +13,7 @@ if(isset($_POST['action'])){
 			// switch agent trusted state
 			$agid = intval($_POST["agent"]);
 			$trusted = intval($_POST["trusted"]);
-			$res = $FACTORIES::getagentsFactory()->getDB()->quer("UPDATE agents SET trusted=$trusted WHERE id=$agid");
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET trusted=$trusted WHERE id=$agid");
 			if (!$res) {
 				$message = "<div class='alert alert-danger'>Could not change agent trust!</div>";
 			}
