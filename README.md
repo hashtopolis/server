@@ -7,10 +7,13 @@ This is a wrapper for oclHashcat for distributed hashcracking, based on the sour
 * Templating
 * Bootstrap added
 * Create right management system
+* DBA system (some parts)
+* All GUI elements in templates
+* Add additional sql tables
 
 ### What is missing currently? ###
 
-* DBA system (some parts)
-* All GUI elements in templates
 * Add a install script
-* Add additional sql tables
+* User management
+* Rights management
+* Server config
