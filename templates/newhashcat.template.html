@@ -1,0 +1,90 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Create new hashcat release</h2>
+[[message]]
+<form action='newhashcat.php' method='post' enctype='multipart/form-data'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>Property</th>
+				<th>NVidia</th>
+				<th>AMD</th>
+			</tr>
+			<tr>
+				<td>Version:</td>
+				<td colspan="2">
+					<input type="text" class='form-control' name="version">
+				</td>
+			</tr>
+			<tr>
+				<td>Archive URL:</td>
+				<td>
+					<textarea name="url_nvidia" class='form-control' cols="32">[[new.getVal('url_nvidia')]]</textarea>
+				</td>
+				<td>
+					<textarea name="url_amd" class='form-control' cols="32">[[new.getVal('url_amd')]]</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Archive root directory:
+				</td>
+				<td>
+					<input type="text" class='form-control' name="rootdir_nvidia" size="32" value="[[new.getVal('rootdir_nvidia')]]">
+				</td>
+				<td>
+					<input type="text" class='form-control' name="rootdir_amd" size="32" value="[[new.getVal('rootdir_amd')]]">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					Files to extract (relative to root directory, omit executables and use forward slashes):
+				</td>
+			</tr>
+			<tr>
+				<td>Common:</td>
+				<td colspan="2">
+					<textarea name="common_files" class='form-control' cols="64">[[new.getVal('common_files')]]</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>32bit:</td>
+				<td>
+					<textarea name="32_nvidia" class='form-control' cols="32">[[new.getVal('32_nvidia')]]</textarea>
+				</td>
+				<td>
+					<textarea name="32_amd" class='form-control' cols="32">[[new.getVal('32_amd')]]</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>64bit:</td>
+				<td>
+					<textarea name="64_nvidia" class='form-control' cols="32">[[new.getVal('64_nvidia')]]</textarea>
+				</td>
+				<td>
+					<textarea name="64_amd" class='form-control' cols="32">[[new.getVal('64_amd')]]</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					Minimum driver versions
+				</td>
+			</tr>
+			<tr>
+				<td>NVidia:</td>
+				<td>
+					<input type="text" class='form-control' name="minver_nvidia" value="[[new.getVal('minver_nvidia')]]">
+				</td>
+				<td>
+					<input type="text" class='form-control' name="minver_amd" value="[[new.getVal('minver_amd')]]">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<input type="submit" class='btn btn-default' value="Create release">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+{%TEMPLATE->foot%}
