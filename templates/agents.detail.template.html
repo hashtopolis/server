@@ -96,7 +96,7 @@
       			<form id="agentignore" action="agents.php?id=[[agent.getVal('id')]]" method="post">
 					<input type='hidden' name='action' value='agentignore'>
        				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-       				<input type="checkbox" {{IF !!agent.getVal('ignoreerrors')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
+       				<input type="checkbox" value='1'{{IF !!agent.getVal('ignoreerrors')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
        				Ignore <br><i>(Be careful, this might lead to endless loops!)</i>
        			</form>
        		</td>
