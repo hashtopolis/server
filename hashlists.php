@@ -19,7 +19,7 @@ if(isset($_POST['action'])){
 				$format = $res["format"];
 			
 				// create proper superhashlist field if needed
-				list($superhash, $hlisty) = superList($hlist, $format);
+				list($superhash, $hlisty) = Util::superList($hlist, $format);
 			
 				$kvery = "SELECT plaintext FROM ".Util::getStaticArray($format, 'formattables')." WHERE hashlist IN ($hlisty) AND plaintext IS NOT NULL";
 				$res = $FACTORIES::getagentsFactory()->getDB()->query($kvery);
