@@ -189,7 +189,6 @@ class Template {
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", $val), $partial);
 			}
 			else{
-				echo $val."\n";
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $partial);
 			}
 			preg_match_all("/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is", $partial, $matches, PREG_PATTERN_ORDER);
@@ -286,14 +285,12 @@ class Template {
 						$partial = str_replace($matches[0][$z], "", $partial);
 						break;
 					}
-					echo "foreach start...<br>";
 					foreach(eval("return ".$setting[1].";") as $entry){
 						if($countVar){
 							$objects[$setting[2]] = $count;
 							$count++;
 						}
 						$objects[$varname] = $entry;
-						echo "setting $varname<br>";
 						//render the subpart of the foreach
 						$content .= $this->renderExecute($matches[3][$z], $objects);
 					}

@@ -40,7 +40,7 @@ $releases = array();
 foreach($res as $release){
 	$set = new DataSet();
 	$set->setValues($release);
-	$releases[] = $release;
+	$releases[] = $set;
 }
 
 $OBJECTS['releases'] = $releases;
