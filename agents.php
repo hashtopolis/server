@@ -9,6 +9,19 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'setplatform':
+			// change agent platform (none/nvidia/amd)
+			$agid = intval($_POST["agent"]);
+			$pf = intval($_POST["platform"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET gpubrand=$pf,gpudriver=0 WHERE id=$agid");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change platform!</div>";
+			}
+			else{
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
+			}
+			break;
 		case 'agentactive':
 			$agent = $FACTORIES::getagentsFactory()->get($_POST["agent"]);
 			if($agent === null){
