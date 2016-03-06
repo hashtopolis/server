@@ -1,5 +1,5 @@
 <h3>Import pre-cracked hashes:</h3>
-<form action="hashlists.php" method="POST" enctype="multipart/form-data">
+<form action="hashlists.php{{IF !!list.getVal('id')!! != ""}}?id=[[list.getVal('id')]]{{ENDIF}}" method="POST" enctype="multipart/form-data">
 	<input type='hidden' name='action' value='hashlistzapp'>
 	<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
 	<div class="panel panel-default">

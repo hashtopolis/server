@@ -2,6 +2,9 @@
 {%TEMPLATE->menu%}
 <h2>Hashlist details</h2>
 [[message]]
+{{IF !!zap!!}}
+	{%TEMPLATE->hashlists.zap%}
+{{ENDIF}}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
