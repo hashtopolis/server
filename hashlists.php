@@ -9,6 +9,22 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'hashlistsecret':
+			// switch hashlist secret state
+			$hlist = intval($_POST["hashlist"]);
+			$secret = intval($_POST["secret"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE hashlists SET secret=$secret WHERE id=$hlist");
+			if ($secret == 1) {
+				$FACTORIES::getagentsFactory()->getDB()->exec("DELETE FROM hashlistusers JOIN agents ON agents.id=hashlistusers.agent WHERE hashlistusers.hashlist=$hlist AND agents.trusted<$secret");
+			}
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change hashlist secrecy!</div>";
+			}
+			else{
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
+			}
+			break;
 		case 'hashlistrename':
 			// change hashlist name
 			$hlist = intval($_POST["hashlist"]);
@@ -16,6 +32,10 @@ if(isset($_POST['action'])){
 			$kv = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE hashlists SET name=$name WHERE id=$hlist");
 			if (!$kv) {
 				$message = "<div class='alert alert-danger'>Could not rename hashlist!</div>";
+			}
+			else{
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
 			}
 			break;
 		case 'hashlistzapp':
