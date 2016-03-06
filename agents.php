@@ -9,6 +9,19 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'agentignore':
+			// switch error ignoring for agent
+			$agid = intval($_POST["agent"]);
+			$ignore = intval($_POST["ignore"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET ignoreerrors=$ignore WHERE id=$agid");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change error ignoring!</div>";
+			}
+			else{
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
+			}
+			break;
 		case 'setparam':
 			case "agentpars";
 			// change agent extra cmd line parameters for hashcat
