@@ -19,6 +19,25 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function delete_task($task) {
+		global $FACTORIES;
+		
+		$DB = $FACTORIES::getagentsFactory()->getDB();
+		
+		$ans1 = $DB->exec("DELETE FROM assignments WHERE task=$task");
+		$ans2 = $ans1 && $DB->exec("DELETE FROM errors WHERE task=$task");
+		$ans3 = $ans2 && $DB->exec("DELETE FROM taskfiles WHERE task=$task");
+		
+		$ans4 = $ans3 && $DB->exec("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
+		$ans5 = $ans4 && $DB->exec("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
+		$ans6 = $ans5 && $DB->exec("DELETE FROM zapqueue WHERE chunk IN (SELECT id FROM chunks WHERE task=$task)");
+		$ans7 = $ans6 && $DB->exec("DELETE FROM chunks WHERE task=$task");
+		
+		$ans8 = $ans7 && $DB->exec("DELETE FROM tasks WHERE id=$task");
+		
+		return ($ans8);
+	}
+	
 	public static function bintohex($dato){
 		$ndato = "";
 		for($i = 0; $i < strlen($dato); $i++){
