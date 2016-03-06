@@ -9,6 +9,15 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'hashlistrename':
+			// change hashlist name
+			$hlist = intval($_POST["hashlist"]);
+			$name = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["name"]);
+			$kv = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE hashlists SET name=$name WHERE id=$hlist");
+			if (!$kv) {
+				$message = "<div class='alert alert-danger'>Could not rename hashlist!</div>";
+			}
+			break;
 		case 'hashlistzapp':
 			// pre-crack hashes processor
 			$hlist = intval($_POST["hashlist"]);
