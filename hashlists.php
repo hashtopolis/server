@@ -394,8 +394,54 @@ if(isset($_POST['action'])){
 }
 
 if(isset($_GET['id'])){
-	//TODO: hashlist details
+	//hashlist details
 	$TEMPLATE = new Template("hashlists.detail");
+	$hlist = intval($_GET["hashlist"]);
+	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE hashlists.id=$hlist");
+	$res = $res->fetch();
+	if($res){
+		$list = new DataSet();
+		$list->setValues($res);
+		$OBJECTS['list'] = $list;
+		if($list->getVal('format') == 3){
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.* FROM superhashlists JOIN hashlists ON superhashlists.hashlist=hashlists.id WHERE superhashlists.id=".$list->getVal('id'));
+			$res = $res->fetchAll();
+			$OBJECTS['numSubHashlists'] = sizeof($res);
+			$sublists = array();
+			foreach($res as $l){
+				$set = new DataSet();
+				$set->setValues($l);
+				$sublists[] = $set;
+			}
+			$OBJECTS['sublists'] = $sublists;
+		}
+		
+		$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT tasks.id,tasks.name,tasks.attackcmd,tasks.progress,chunks.sumprog,tasks.keyspace,IFNULL(chunks.cracked,0) AS cracked,IF(chunks.lastact>".(time()-$CONFIG->getVal('chunktimeout')).",1,0) AS active FROM tasks LEFT JOIN (SELECT task,SUM(cracked) AS cracked,SUM(progress) AS sumprog,GREATEST(MAX(dispatchtime),MAX(solvetime)) AS lastact FROM chunks GROUP BY task) chunks ON chunks.task=tasks.id WHERE tasks.hashlist=".$list->getVal('id')." ORDER by tasks.priority DESC,tasks.id ASC");
+		$res = $res->fetchAll();
+		$tasks = array();
+		foreach($res as $task){
+			$set = new DataSet();
+			$set->setValues($task);
+			$tasks[] = $set;
+		}
+		$OBJECTS['tasks'] = $tasks;
+		$OBJECTS['numAssignedTasks'] = sizeof($tasks);
+		
+		$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id,name,attackcmd,color FROM tasks WHERE hashlist IS NULL ORDER BY priority DESC, id ASC");
+		$res = $res->fetchAll();
+		$preTasks = array();
+		foreach($res as $task){
+			$set = new DataSet();
+			$set->setValues($task);
+			$preTasks[] = $set;
+		}
+		$OBJECTS['preTasks'] = $preTasks;
+		$OBJECTS['numPreconfTasks'] = sizeof($preTasks);
+	}
+	else{
+		$TEMPLATE = new Template("hashlists.detail.notfound");
+	}
+	break;
 }
 else{
 	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,hashlists.secret,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE format!=3 ORDER BY id ASC");

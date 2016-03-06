@@ -1,0 +1,31 @@
+<h3>Hashlists included in this superhashlist:</h3>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Cracked</th>
+		</tr>
+		{{FOREACH sublist,!!sublists!!}}
+			<tr>
+				<td>
+					<a href="hashlists.php?id=[[sublist.getVal('id')]]">[[sublist.getVal('id')]]</a>
+				</td>
+				<td>
+					<a href="hashlists.php?id=[[sublist.getVal('id')]]">[[sublist.getVal('name')]]</a>
+					{{IF !!sublist.getVal('secret') == 1}}
+						<img src="static/lock.gif" alt="Secret">
+					{{ENDIF}}
+					[[Util::tickdone(%%sublist.getVal('cracked')%%, %%sublist.getVal('hashcount')%%)]]
+				</td>
+				<td class="num">
+					[[Util::showperc(%%sublist.getVal('cracked')%%, %%sublist.getVal('hashcount')%%)]]%<br>
+					(<a href="hashes.php?hashlist=[[sublist.getVal('id')]]&filter=cracked">[[sublist.getVal('cracked')]]</a>
+					/ <a href="hashes.php?hashlist=[[sublist.getVal('id')]]">[[sublist.getVal('hashcount')]]</a>)
+				</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+
+	
