@@ -78,14 +78,14 @@
         				<input type='hidden' name='hashlist' value='[[list.getVal('id')]]'>
         				<input type='submit' class='btn btn-default' value='Generate wordlist'>
         			</form>
-        			<form style='float: left;' action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
+        			<form style='float: left; padding-right: 5px;' action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
         				<input type='hidden' name='action' value='export'>
         				<input type='hidden' name='hashlist' value='[[list.getVal('id')]]'>
         				<input type='submit' class='btn btn-default' value='Export hashes for pre-crack'>
         			</form>
         		{{ENDIF}}
         		{{IF !!list.getVal('cracked')!! < !!list.getVal('hashcount')!!}}
-        			<form action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
+        			<form style='float: left;' action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
         				<input type='hidden' name='action' value='hashlistzap'>
         				<input type='hidden' name='hashlist' value='[[list.getVal('id')]]'>
         				<input type='submit' class='btn btn-default' value='Import pre-cracked hashes'>
