@@ -9,6 +9,19 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'agentwait':
+			// change agent waiting time for idle
+			$agid = intval($_POST["agent"]);
+			$wait = intval($_POST["wait"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET wait=$wait WHERE id=$agid");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change agent idle wait period!</div>";
+			}
+			else{
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
+			}
+			break;
 		case 'setplatform':
 			// change agent platform (none/nvidia/amd)
 			$agid = intval($_POST["agent"]);
