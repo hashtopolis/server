@@ -9,7 +9,26 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		case 'taskprio':
+			// change task priority
+			$task = intval($_POST["task"]);
+			$prio = intval($_POST["priority"]);
+			$res = $FACTORIES::getagentsFactory()->getDB("SELECT 1 FROM tasks WHERE tasks.priority=$prio AND tasks.id!=$task AND tasks.priority>0 AND SIGN(IFNULL(tasks.hashlist,0))=(SELECT SIGN(IFNULL(hashlist,0)) FROM tasks WHERE id=$task) LIMIT 1");
+			if ($res->rowCount() == 1) {
+				// must be unique
+				$message = "<div class='alert alert-danger'>Each task has to have unique priority!</div>";
+			} 
+			else {
+				$res = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE tasks SET priority=$prio WHERE id=$task");
+				if (!$res) {
+					$message = "<div class='alert alert-danger'>Could not change priority!</div>";
+				}
+				else{
+					header("Location: tasks.php");
+					die();
+				}
+			}
+			break;
 	}
 }
 
