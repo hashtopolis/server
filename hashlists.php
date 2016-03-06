@@ -9,6 +9,45 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'wordlist':
+			// create wordlist from hashlist cracked hashes
+			$hlist = intval($_GET["hashlist"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT format FROM hashlists WHERE id=$hlist");
+			$res = $res->fetch();
+			$message = "<div class='alert alert-neutral'>";
+			if ($res) {
+				$format = $res["format"];
+			
+				// create proper superhashlist field if needed
+				list($superhash, $hlisty) = superList($hlist, $format);
+			
+				$kvery = "SELECT plaintext FROM ".Util::getStaticArray($format, 'formattables')." WHERE hashlist IN ($hlisty) AND plaintext IS NOT NULL";
+				$res = $FACTORIES::getagentsFactory()->getDB()->query($kvery);
+				if ($res->rowCount() > 0) {
+					$wlist = "Wordlist_".$hlist."_".date("Y-m-d_H-i-s").".txt";
+					$message .= "Opening wordlist for writing...<br>";
+					$fx = fopen("files/".$wlist, "w");
+					$p = 0;
+					foreach($res as $entry){
+						$plain = $entry["plaintext"];
+						if (strlen($plain) >= 8 && substr($plain,0,5) == "\$HEX[" && substr($plain, strlen($plain)-1, 1) == "]") {
+							// strip $HEX[]
+							$nplain = "";
+							$plain = Util::hextobin(substr($plain, 5, strlen($plain) - 6));
+						}
+						fwrite($fx, $plain."\n");
+						$p++;
+					}
+					fclose($fx);
+					$message .= "Written $p words.<br>";
+					Util::insertFile("files/".$wlist);
+				} 
+				else {
+					$message .= "Nothing cracked.";
+				}
+			}
+			$message .= "</div>";
+			break;
 		case 'hashlistsecret':
 			// switch hashlist secret state
 			$hlist = intval($_POST["hashlist"]);
