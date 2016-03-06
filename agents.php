@@ -9,6 +9,19 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'agenttrusted':
+			// switch agent trusted state
+			$agid = intval($_POST["agent"]);
+			$trusted = intval($_POST["trusted"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->quer("UPDATE agents SET trusted=$trusted WHERE id=$agid");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change agent trust!</div>";
+			}
+			else{
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
+			}
+			break;
 		case 'agentignore':
 			// switch error ignoring for agent
 			$agid = intval($_POST["agent"]);
