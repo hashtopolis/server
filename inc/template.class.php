@@ -261,6 +261,7 @@ class Template {
 					$varname = $setting[0];
 					$objects[$varname] = eval("return ".$setting[1].";");
 					$content = "";
+					echo "for start...<br>";
 					for(;$objects[$varname] < eval("return ".$setting[2].";");$objects[$varname]++){
 						$content .= $this->renderExecute($matches[3][$z], $objects);
 					}
