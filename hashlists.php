@@ -18,7 +18,7 @@ if(isset($_POST['action'])){
 				$FACTORIES::getagentsFactory()->getDB()->exec("DELETE hashlistusers FROM hashlistusers JOIN agents ON agents.id=hashlistusers.agent WHERE hashlistusers.hashlist=$hlist AND agents.trusted<$secret");
 			}
 			if (!$res) {
-				$message = "<div class='alert alert-danger'>Could not change hashlist secrecy!</div>";
+				$message = "<div class='alert alert-danger'>Could not change hashlist secrecy to $secret!</div>";
 			}
 			else{
 				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
