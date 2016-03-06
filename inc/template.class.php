@@ -189,6 +189,7 @@ class Template {
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", $val), $partial);
 			}
 			else{
+				echo $val;
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $partial);
 			}
 			preg_match_all("/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is", $partial, $matches, PREG_PATTERN_ORDER);
