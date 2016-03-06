@@ -9,6 +9,43 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case "finishedtasksdelete";
+		// delete finished tasks
+		$sez=mysqli_query_wrapper($dblink,"SELECT tasks.id,hashlists.format,tasks.hashlist FROM tasks JOIN hashlists ON tasks.hashlist=hashlists.id JOIN (SELECT task,SUM(progress) AS sumprog FROM chunks WHERE rprogress=10000 GROUP BY task) chunks ON chunks.task=tasks.id WHERE (tasks.progress=tasks.keyspace AND chunks.sumprog=tasks.keyspace) OR hashlists.cracked=hashlists.hashcount");
+		$seznam=array();
+		// load the tasks first
+		while($erej=mysqli_fetch_array($sez,MYSQLI_ASSOC)) {
+			$seznam[]=$erej;
+		}
+		// then process them
+		foreach ($seznam as $ttd) {
+			$task=$ttd["id"];
+			$format=$ttd["format"];
+			$hlist=$ttd["hashlist"];
+			mysqli_query_wrapper($dblink,"START TRANSACTION");
+			if (delete_task($task)) {
+				mysqli_query_wrapper($dblink,"COMMIT");
+				echo "Deleted task $task<br>";
+			} else {
+				mysqli_query_wrapper($dblink,"ROLLBACK");
+				echo "<script>alert('Could not delete task $task');</script><br>";
+				}
+				}
+				break;
+		case 'taskdelete':
+			// delete a task
+			$task = intval($_POST["task"]);
+			$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
+			if (Util::delete_task($task)) {
+				$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
+				header("Location: tasks.php");
+				die();
+			} 
+			else {
+				$FACTORIES::getagentsFactory()->getDB()->exec("ROLLBACK");
+				$message = "<div class='alert alert-danger'>Could not delete task!</div>";
+			}
+			break;
 		case 'taskprio':
 			// change task priority
 			$task = intval($_POST["task"]);
