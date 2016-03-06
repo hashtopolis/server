@@ -396,7 +396,7 @@ if(isset($_POST['action'])){
 if(isset($_GET['id'])){
 	//hashlist details
 	$TEMPLATE = new Template("hashlists.detail");
-	$hlist = intval($_GET["hashlist"]);
+	$hlist = intval($_GET["id"]);
 	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE hashlists.id=$hlist");
 	$res = $res->fetch();
 	if($res){
@@ -441,7 +441,6 @@ if(isset($_GET['id'])){
 	else{
 		$TEMPLATE = new Template("hashlists.detail.notfound");
 	}
-	break;
 }
 else{
 	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,hashlists.secret,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE format!=3 ORDER BY id ASC");
