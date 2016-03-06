@@ -34,6 +34,7 @@ if(isset($_POST['action'])){
 					$message .= "Could not delete task $task!<br>";
 				}
 			}
+			$message .= "</div>";
 			break;
 		case 'taskdelete':
 			// delete a task
