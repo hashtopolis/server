@@ -263,14 +263,14 @@ if(isset($_POST['action'])){
 				if($res) {
 					if(Util::insertFile("files/".$tmpfile)) {
 						$message .= "Cracked hashes from hashlist $hlist exported.</div>";
-						if($superhash){
+						/*if($superhash){
 							header("Location: superhashlists.php");
 							die();
 						}
 						else{
 							header("Location: hashlists.php");
 							die();
-						}
+						}*/
 					} 
 					else {
 						$message .= "Cracked hashes exported, but the file is missing.</div>";
@@ -395,6 +395,7 @@ if(isset($_POST['action'])){
 
 if(isset($_GET['id'])){
 	//TODO: hashlist details
+	$TEMPLATE = new Template("hashlists.detail");
 }
 else{
 	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,hashlists.secret,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE format!=3 ORDER BY id ASC");
