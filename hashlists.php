@@ -67,7 +67,10 @@ if(isset($_POST['action'])){
 				$tmpfile = "zaplist_$hlist";
 				$message = "<div class='alert alert-neutral'>";
 				if(Util::uploadFile($tmpfile, $source, $sourcedata)){
-					$hsize = filesize($tmpfile);
+					$hsize = 0;
+					if(file_exists($tmpfile)){
+						$hsize = filesize($tmpfile);
+					}
 					if($hsize>0){
 						$message .= "Opening file $tmpfile ($hsize B)...";
 						$hhandle = fopen($tmpfile, "rb");
@@ -223,7 +226,9 @@ if(isset($_POST['action'])){
 					else {
 						$message .= "Pre-cracked file is empty!";
 					}
-					unlink($tmpfile);
+					if(file_exists($tmpfile)){
+						unlink($tmpfile);
+					}
 				}
 				$message .= "</div>";
 			}
