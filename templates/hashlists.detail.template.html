@@ -95,7 +95,7 @@
         </tr>
 	</table>
 </div>
-{{IF !!list.getVal('format') == 3 && !!numSubHashlists!!}}
+{{IF !!list.getVal('format')!! == 3 && !!numSubHashlists!!}}
 	{%TEMPLATE->hashlists.detail.superhashlist%}
 {{ENDIF}}
 {{IF !!numAssignedTasks!! > 0}}
