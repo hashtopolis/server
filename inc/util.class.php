@@ -24,16 +24,16 @@ class Util{
 		
 		$DB = $FACTORIES::getagentsFactory()->getDB();
 		
-		$ans1 = $DB->exec("DELETE FROM assignments WHERE task=$task");
-		$ans2 = $ans1 && $DB->exec("DELETE FROM errors WHERE task=$task");
-		$ans3 = $ans2 && $DB->exec("DELETE FROM taskfiles WHERE task=$task");
+		$ans1 = $DB->query("DELETE FROM assignments WHERE task=$task");
+		$ans2 = $ans1 && $DB->query("DELETE FROM errors WHERE task=$task");
+		$ans3 = $ans2 && $DB->query("DELETE FROM taskfiles WHERE task=$task");
 		
-		$ans4 = $ans3 && $DB->exec("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
-		$ans5 = $ans4 && $DB->exec("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
-		$ans6 = $ans5 && $DB->exec("DELETE FROM zapqueue WHERE chunk IN (SELECT id FROM chunks WHERE task=$task)");
-		$ans7 = $ans6 && $DB->exec("DELETE FROM chunks WHERE task=$task");
+		$ans4 = $ans3 && $DB->query("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
+		$ans5 = $ans4 && $DB->query("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
+		$ans6 = $ans5 && $DB->query("DELETE FROM zapqueue WHERE chunk IN (SELECT id FROM chunks WHERE task=$task)");
+		$ans7 = $ans6 && $DB->query("DELETE FROM chunks WHERE task=$task");
 		
-		$ans8 = $ans7 && $DB->exec("DELETE FROM tasks WHERE id=$task");
+		$ans8 = $ans7 && $DB->query("DELETE FROM tasks WHERE id=$task");
 		
 		return ($ans8);
 	}
