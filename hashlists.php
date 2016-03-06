@@ -15,7 +15,7 @@ if(isset($_POST['action'])){
 			$secret = intval($_POST["secret"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE hashlists SET secret=$secret WHERE id=$hlist");
 			if ($secret == 1) {
-				$FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM hashlistusers INNER JOIN agents ON agents.id=hashlistusers.agent WHERE hashlistusers.hashlist=$hlist AND agents.trusted<$secret");
+				$FACTORIES::getagentsFactory()->getDB()->exec("DELETE hashlistusers FROM hashlistusers JOIN agents ON agents.id=hashlistusers.agent WHERE hashlistusers.hashlist=$hlist AND agents.trusted<$secret");
 			}
 			if (!$res) {
 				$message = "<div class='alert alert-danger'>Could not change hashlist secrecy!</div>";
