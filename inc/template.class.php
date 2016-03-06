@@ -293,6 +293,7 @@ class Template {
 							$count++;
 						}
 						$objects[$varname] = $entry;
+						echo "setting $varname<br>";
 						//render the subpart of the foreach
 						$content .= $this->renderExecute($matches[3][$z], $objects);
 					}
