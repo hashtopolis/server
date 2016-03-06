@@ -9,6 +9,37 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'preconf':
+			$hlist = intval($_POST["hashlist"]);
+			$DB = $FACTORIES::getagentsFactory()->getDB();
+			$addc = 0; 
+			$filc = 0;
+			if (isset($_POST["task"])) {
+				$res = $DB->query("SELECT IFNULL(MAX(priority),0) AS base FROM tasks WHERE hashlist IS NOT NULL");
+				$task = $res->fetch();
+				$base = $task["base"];
+				foreach($_POST["task"] as $ida) {
+					$id = intval($ida);
+					if ($id > 0) {
+						$res = $DB->query("SELECT name,attackcmd,chunktime,statustimer,autoadjust,priority FROM tasks WHERE tasks.id=$id");
+						$task = $res->fetch();
+						$addq = $DB->query("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, priority) VALUES ('HL".$hlist."_".substr($DB->quote($task["name"]), 1, -1)."', ".$DB->quote($dblink,$erej["attackcmd"]).", $hlist, ".$task["chunktime"].", ".$task["statustimer"].", ".$task["autoadjust"].", ".($task["priority"]>0 ? $base+$task["priority"] : 0).")");
+						$addc += $addq->rowCount();
+						$tid = $DB->lastInsertId();
+						$filq = $DB->query("INSERT INTO taskfiles (task, file) SELECT $tid,file FROM taskfiles WHERE task=$id");
+						$filc += $filq->rowCount();
+						echo "Added task $id as $tid.<br>";
+					}
+				}
+			}
+			if ($addc==0) {
+				$message = "<div class='alert alert-warning'>No new tasks were created!</div>";
+			} 
+			else {
+        		header("Location: tasks.php");
+        		die();
+			}
+			break;
 		case 'wordlist':
 			// create wordlist from hashlist cracked hashes
 			$hlist = intval($_POST["hashlist"]);
