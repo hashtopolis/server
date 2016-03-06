@@ -261,7 +261,6 @@ class Template {
 					$varname = $setting[0];
 					$objects[$varname] = eval("return ".$setting[1].";");
 					$content = "";
-					echo "for start...<br>";
 					for(;$objects[$varname] < eval("return ".$setting[2].";");$objects[$varname]++){
 						$content .= $this->renderExecute($matches[3][$z], $objects);
 					}
@@ -287,6 +286,7 @@ class Template {
 						$partial = str_replace($matches[0][$z], "", $partial);
 						break;
 					}
+					echo "foreach start...<br>";
 					foreach(eval("return ".$setting[1].";") as $entry){
 						if($countVar){
 							$objects[$setting[2]] = $count;
