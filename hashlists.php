@@ -11,7 +11,7 @@ if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'wordlist':
 			// create wordlist from hashlist cracked hashes
-			$hlist = intval($_GET["hashlist"]);
+			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT format FROM hashlists WHERE id=$hlist");
 			$res = $res->fetch();
 			$message = "<div class='alert alert-neutral'>";
@@ -45,6 +45,9 @@ if(isset($_POST['action'])){
 				else {
 					$message .= "Nothing cracked.";
 				}
+			}
+			else{
+				$message .= "No such hashlist!";
 			}
 			$message .= "</div>";
 			break;
