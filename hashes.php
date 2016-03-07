@@ -142,8 +142,6 @@ if($valid){
     }
     $kve .= " FROM ".Util::getStaticArray($format, 'formattables')." ".$viewfilter.$filter[$filt];
     
-    echo $kve;
-    
     $res = $FACTORIES::getagentsFactory()->getDB()->query($kve);
     $res = $res->fetchAll();
     $output = "";
