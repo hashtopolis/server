@@ -122,7 +122,7 @@ if($valid){
     }
     $OBJECTS['filters'] = $filtersSet;
     
-    $filter = array("cracked"=>" AND plaintext IS NOT NULL", "uncracked"=>" AND plaintext IS NULL");
+    $filter = array("cracked"=>" AND plaintext IS NOT NULL", "uncracked"=>" AND plaintext IS NULL", "" => "");
     $kve = "SELECT ";
     switch ($format) {
     	case 0:
