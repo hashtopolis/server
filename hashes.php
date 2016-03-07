@@ -73,6 +73,9 @@ else if ($hlist > 0) {
 }
 
 if($valid){
+	$OBJECTS['src'] = $src;
+	$OBJECTS['srcId'] = $srcId;
+	
 	// create proper superhashlist field if needed
 	list($superhash,$hlisty) = Util::superList($hlist,$format);
 
