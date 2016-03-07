@@ -1,0 +1,77 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+{{IF !!src!! == "chunk"}}
+	<h2>Hashes of chunk [[chunk.getVal('id')]]</h2>
+{{ENDIF}}
+{{IF !!src!! == "task"}}
+	<h2>Hashes of task <a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a></h2>
+{{ENDIF}}
+{{IF !!src!! == "hashlist"}}
+	<h2>Hashes of hashlist <a href="hashlists.php?id=[[list.getVal('id')]]">[[list.getVal('name')]]</a></h2>
+{{ENDIF}}
+[[message]]
+
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>Filter:</th>
+			<th>[[filtering]]</th>
+		</tr>
+		<tr>
+			<th>Displaying:</th>
+			<th>[[displaying]]</th>
+		</tr>
+	</table>
+</div>
+<form class='form-inline' action='hashes.php' method='get'>
+	<input type='hidden' name='[[srcType]]' value='[[srcId]]'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<td>
+					<select name='display' class='form-control' style='float: left;'>
+						{{FOREACH display,!!displays!!}}
+							<option value='[[display.getVal('id')]]'{{IF !!display.getVal('id')!! == !!currentDisplay!!}} selected{{ENDIF}}>[[display.getVal('text')]]</option>
+						{{ENDFOREACH}}
+					</select>
+					{{IF !!src!! == "hashlist"}}
+						<select name="filter" class='form-control'>
+							{{FOREACH filter,!!filters!!}}
+								<option value='[[filter.getVal('id')]]'{{IF !!filter.getVal('id')!! == !!currentFilter!!}} selected{{ENDIF}}>[[filter.getVal('text')]]</option>
+							{{ENDFOREACH}}
+						</select>
+					{{ENDIF}}
+					<input type="submit" value="OK">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+<h3>Matching hashes: [[numMatches]]</h3>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<td>
+				<textarea cols='100' rows='30' style='max-height: 400px;' readonly>[[matches]]</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<script type='text/javascript'>
+					function hex2a(hex) { 
+						var str = ''; 
+						for (var i = 0; i < hex.length; i += 2){
+							str += String.fromCharCode(parseInt(hex.substr(i, 2), 16)); 
+						}
+						return str;
+					}
+				</script>
+				HEX convertor: 
+				$HEX[<input type="text" class='form-control' id="conv">] -> 
+				<input type="text" class='form-control' id="convr" readonly> 
+				<button class='btn btn-default' onclick="javascript:document.getElementById('convr').value=hex2a(document.getElementById('conv').value);">Convert</button>
+			</td>
+		</tr>
+	</table>
+</div>
+{%TEMPLATE->foot%}
