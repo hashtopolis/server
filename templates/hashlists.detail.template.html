@@ -57,7 +57,7 @@
         <tr>
         	<td>Remaining:</td>
         	<td>
-        		<a href="hashes.php?hashlist=[[list.getVal('id')]]&filter=uncracked">[[%%list.getVal('hashcount')%% - %%list.getVal('cracked')%%]]</a> 
+        		<a href="hashes.php?hashlist=[[list.getVal('id')]]&filter=uncracked">[[Util::subtract(%%list.getVal('hashcount')%%, %%list.getVal('cracked')%%)]]</a> 
         		([[Util::showperc(%%list.getVal('hashcount')%% - %%list.getVal('cracked')%%, %%list.getVal('hashcount')%%)]]%)
         	</td>
         </tr>

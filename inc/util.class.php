@@ -19,6 +19,10 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function subtract($x, $y){
+		return ($x - $y);
+	}
+	
 	public static function delete_task($task) {
 		global $FACTORIES;
 		
