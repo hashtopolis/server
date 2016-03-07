@@ -89,6 +89,7 @@ if($valid){
 	}
 	
 	$displaying = $_GET["display"];
+	$filt = $GET['filter'];
     
 	$displays = array("hash"=>"Hashes only", ""=>"Hashes + plaintexts", "plain"=>"Plaintexts only");
     $filters = array("cracked"=>"Cracked", "uncracked"=>"Uncracked", ""=>"All");
@@ -150,8 +151,8 @@ if($valid){
     			}
     			$out .= $CONFIG->getVal('fieldseparator');
     		case 'plain':
-    			if($entry['plain'] != ""){
-    				$out .= $entry['plain'];
+    			if($entry['plaintext'] != ""){
+    				$out .= $entry['plaintext'];
     			}
     			break;
     	}
