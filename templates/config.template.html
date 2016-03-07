@@ -1,0 +1,64 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Server configuration</h2>
+[[message]]
+<form action="config.php" method="POST">
+	<input type='hidden' name='action' value='update'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>Item</th>
+				<th>Value</th>
+			</tr>
+			{{FOREACH conf,!!config!!}}
+				{{IF !!conf.getVal('item')!! != 'password'}}
+					<tr>
+						<td>[[conf.getVal('item')]]</td>
+						<td>
+							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[conf.getVal('value')]]">
+						</td>
+					</tr>
+				{{ENDIF}}
+			{{ENDFOREACH}}
+			<tr>
+				<td colspan="2">
+					<input type="submit" class='btn btn-default' value="Set">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+
+<h3>Database tools:</h3>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<td>
+				<form action='config.php' method='post'>
+					<input type='hidden' name='action' value='rebuildcache'>
+					<input type='submit' class='btn btn-default' value='Rebuild chunk cache'>
+				</form>
+			</td>
+			<td>Counts cracked hashes in all chunks and all hashlists using slow but precise COUNT() function.</td>
+		</tr>
+		<tr>
+			<td>
+				<form action='config.php' method='post'>
+					<input type='hidden' name='action' value='rescanfiles'>
+					<input type='submit' class='btn btn-default' value='Rescan global files'>
+				</form>
+			</td>
+			<td>Scans all global files for size mismatch or inexistence.</td>
+		</tr>
+		<tr>
+			<td>
+				<form action='config.php' method='post'>
+					<input type='hidden' name='action' value='clearall'>
+					<input type='submit' class='btn btn-danger' value='Clear all'>
+				</form>
+			</td>
+			<td>Erases all hashlists, tasks (not pre-configured) and chunks of those tasks.</td>
+		</tr>
+	</table>
+</div>
+{%TEMPLATE->foot%}
