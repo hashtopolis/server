@@ -87,9 +87,14 @@ if($valid){
 			$viewfilter = "WHERE hashlist IN ($hlisty)";
 			break;
 	}
-	
-	$displaying = $_GET["display"];
-	$filt = $GET['filter'];
+	$displaying = "";
+	if(isset($_GET['display'])){
+		$displaying = $_GET["display"];
+	}
+	$filt = "";
+	if(isset($_GET['filter'])){
+		$filt = $_GET['filter'];
+	}
     
 	$displays = array("hash"=>"Hashes only", ""=>"Hashes + plaintexts", "plain"=>"Plaintexts only");
     $filters = array("cracked"=>"Cracked", "uncracked"=>"Uncracked", ""=>"All");
