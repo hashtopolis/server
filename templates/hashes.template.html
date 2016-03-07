@@ -29,7 +29,7 @@
 		<table class="table table-bordered table-nonfluid">
 			<tr>
 				<td>
-					{%TEMPLATE->hashes.selection%}
+					{%TEMPLATE->hashes.selection%}&nbsp;&nbsp;
 					<input type="submit" class='form-control' value="OK">
 				</td>
 			</tr>
@@ -56,9 +56,11 @@
 					}
 				</script>
 				HEX convertor: 
-				$HEX[<input type="text" class='form-control' id="conv">] -> 
-				<input type="text" class='form-control' id="convr" readonly> 
-				<button class='btn btn-default' onclick="javascript:document.getElementById('convr').value=hex2a(document.getElementById('conv').value);">Convert</button>
+				<form class='form-inline' method='get'>
+					$HEX[<input type="text" class='form-control' id="conv">] -> 
+					<input type="text" class='form-control' id="convr" readonly> 
+					<button class='btn btn-default' onclick="javascript:document.getElementById('convr').value=hex2a(document.getElementById('conv').value); return false;">Convert</button>
+				</form>
 			</td>
 		</tr>
 	</table>
