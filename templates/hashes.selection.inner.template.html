@@ -1,0 +1,5 @@
+<select name="filter" class='form-control'>
+	{{FOREACH filter,!!filters!!}}
+		<option value='[[filter.getVal('id')]]'{{IF !!filter.getVal('id')!! == !!currentFilter!!}} selected{{ENDIF}}>[[filter.getVal('text')]]</option>
+	{{ENDFOREACH}}
+</select>
