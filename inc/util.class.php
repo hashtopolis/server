@@ -287,7 +287,6 @@ class Util{
 								if($cas_pinfo < time() - 10){
 									$msg .= Util::nicenum($downed, 1024) . "B...\n";
 									$cas_pinfo = time();
-									flush();
 								}
 							}
 							fclose($floc);
