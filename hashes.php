@@ -91,10 +91,12 @@ if($valid){
 	if(isset($_GET['display'])){
 		$displaying = $_GET["display"];
 	}
+	$OBJECTS['displaying'] = $displaying;
 	$filt = "";
 	if(isset($_GET['filter'])){
 		$filt = $_GET['filter'];
 	}
+	$OBJECTS['filtering'] = $filt;
     
 	$displays = array("hash"=>"Hashes only", ""=>"Hashes + plaintexts", "plain"=>"Plaintexts only");
     $filters = array("cracked"=>"Cracked", "uncracked"=>"Uncracked", ""=>"All");
