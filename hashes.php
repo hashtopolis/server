@@ -147,6 +147,9 @@ if($valid){
     $output = "";
     foreach($res as $entry){
     	$out = "";
+    	if(strlen($entry['hash']) == 0){
+    		continue;
+    	}
     	switch($displaying){
     		case 'hash':
     			$out .= $entry['hash'];
