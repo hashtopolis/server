@@ -117,7 +117,7 @@ switch ($action) {
           $ere=mysqli_fetch_array($kver,MYSQLI_ASSOC);
           $fn="7zr";
           if ($ere["os"]==0) $fn.=".exe";
-          echo file_get_contents($fn);
+          echo file_get_contents("static/".$fn);
         }
         break;
         
