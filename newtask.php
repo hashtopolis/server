@@ -126,8 +126,8 @@ if (isset($_GET["id"])) {
 			$copy->addValue('adjust', $task["autoadjust"]);
 			$copy->addValue('hlist', $task["hashlist"]);
 			$copy->addValue('color', $task["color"]);
-			if ($copy->getVal('hlist') == "" || $copy->getVal('hlist') == NULL){
-				$hlist = "preconf";
+			if ($copy->getVal('hlist') == ""){
+				$copy->addValue('hlist', 'preconf');
 			}
 		} else {
 			$orig = 0;
