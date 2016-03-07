@@ -53,6 +53,10 @@ if(isset($_POST['action'])){
 		case 'taskprio':
 			// change task priority
 			$task = intval($_POST["task"]);
+			$pretask = false;
+			if(isset($_GET['pre'])){
+				$pretask = true;
+			}
 			$prio = intval($_POST["priority"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT 1 FROM tasks WHERE tasks.priority=$prio AND tasks.id!=$task AND tasks.priority>0 AND SIGN(IFNULL(tasks.hashlist,0))=(SELECT SIGN(IFNULL(hashlist,0)) FROM tasks WHERE id=$task) LIMIT 1");
 			if ($res->rowCount() == 1) {
@@ -65,7 +69,12 @@ if(isset($_POST['action'])){
 					$message = "<div class='alert alert-danger'>Could not change priority!</div>";
 				}
 				else{
-					header("Location: tasks.php");
+					if($pretask){
+						header("Location: pretasks.php");
+					}
+					else{
+						header("Location: tasks.php");
+					}
 					die();
 				}
 			}

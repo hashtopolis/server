@@ -30,7 +30,7 @@
         			{{ENDIF}}	
         		</td>
         		<td>
-        			<form class='form-inline' action="tasks.php" method="POST">
+        			<form class='form-inline' action="tasks.php?pre=true" method="POST">
         				<input type="hidden" name="action" value="taskprio">
         				<input type="hidden" name="task" value="[[task.getVal('id')]]">
         				<input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('priority')]]">
