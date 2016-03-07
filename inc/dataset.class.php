@@ -16,4 +16,8 @@ class DataSet {
 		}
 		return false;
 	}
+	
+	public function getAllValues(){
+		return $this->values;
+	}
 }

@@ -13,6 +13,16 @@ if(isset($_POST['action'])){
 	}
 }
 
+$configuration = array();
+$all = $CONFIG->getAllValues();
+foreach($all as $key => $value){
+	$set = new DataSet();
+	$set->addValue('item', $key);
+	$set->addValue('value', $value);
+	$configuration[] = $set;
+}
+
+$OBJECTS['configuration'] = $configuration;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

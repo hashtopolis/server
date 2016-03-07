@@ -10,7 +10,7 @@
 				<th>Item</th>
 				<th>Value</th>
 			</tr>
-			{{FOREACH conf,!!config!!}}
+			{{FOREACH conf,!!configuration!!}}
 				{{IF !!conf.getVal('item')!! != 'password'}}
 					<tr>
 						<td>[[conf.getVal('item')]]</td>
