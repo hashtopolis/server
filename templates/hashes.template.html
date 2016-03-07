@@ -15,11 +15,25 @@
 	<table class="table table-bordered table-nonfluid">
 		<tr>
 			<th>Filter:</th>
-			<td>[[filtering]]</td>
+			<td>
+				{{IF !!filtering!! == ""}}
+					Cracked + Uncracked
+				{{ENDIF}}
+				{{IF !!filtering!! != ""}}
+					[[filtering]]
+				{{ENDIF}}
+			</td>
 		</tr>
 		<tr>
 			<th>Displaying:</th>
-			<td>[[displaying]]</td>
+			<td>
+				{{IF !!displaying!! == ""}}
+					Hash + Plain
+				{{ENDIF}}
+				{{IF !!displaying!! != ""}}
+					[[displaying]]
+				{{ENDIF}}
+			</td>
 		</tr>
 	</table>
 </div>
