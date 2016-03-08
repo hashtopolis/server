@@ -55,6 +55,9 @@ $OBJECTS['menu'] = $MENU;
 if($INSTALL == 'DONE'){
 	$LOGIN = new Login();
 	$OBJECTS['login'] = $LOGIN;
+	if($LOGIN->isLoggedin()){
+		$OBJECTS['user'] = $LOGIN->getUser();
+	}
 }
 
 $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM config");
@@ -64,9 +67,6 @@ foreach($res as $entry){
 }
 $OBJECTS['config'] = $CONFIG;
 
-if($LOGIN->isLoggedin()){
-	$OBJECTS['user'] = $LOGIN->getUser();
-}
 
 
 
