@@ -24,10 +24,9 @@
 				value="[[agent.getVal('benchmark')]]" size="8"> <input
 				type="submit" class='btn btn-default' value="Set">
 		</form>
-		<form id="auto[[agent.getVal('id')]]"
-			action="tasks.php?id=[[task.getVal('id')]]" method="POST">
-			<input type="hidden" name="action" value="agentauto"> <input
-				type="hidden" name="agent" value="[[agent.getVal('id')]]"> <input
+		<form id="auto[[agent.getVal('id')]]" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+			<input type="hidden" name="action" value="agentauto"> 
+			<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> <input
 				type="checkbox" name="auto" value="1"
 				{{IF !!agent.getVal('autoadjust')!! ==
 				1}} checked{{ENDIF}}

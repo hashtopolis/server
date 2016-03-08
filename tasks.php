@@ -9,6 +9,108 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'agentbench':
+			// adjust agent benchmark
+			$agid = intval($_POST["agent"]);
+			$bench = floatval($_POST["bench"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE assignments SET benchmark=$bench WHERE agent=$agid");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not set benchmark!</div>";
+			}
+			break;
+		case 'agentauto':
+			// enable agent benchmark autoadjust for its current assignment
+			$agid = intval($_POST["agent"]);
+			$auto = intval($_POST["auto"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE assignments SET autoadjust=$auto WHERE agent=$agid");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change autoadjust!</div>";
+			}
+			break;
+		case 'chunkabort':
+			// reset chunk state and progress to zero
+			$chunk = intval($_POST["chunk"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE chunks SET state=10 WHERE id=$chunk");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not abort chunk!</div>";
+			}
+			break;
+		case 'chunkreset':
+			// reset chunk state and progress to zero
+			$chunk = intval($_POST["chunk"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE chunks SET state=0,progress=0,rprogress=0,dispatchtime=$cas,solvetime=0 WHERE id=$chunk");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not reset chunk!</div>";
+			}
+			break;
+		case 'taskpurge':
+			// delete all task chunks, forget its keyspace value and reset progress to zero
+			$task = intval($_POST["task"]);
+			$DB = $FACTORIES::getagentsFactory()->getDB();
+			$DB->query("START TRANSACTION");
+			$res1 = $DB->query("UPDATE assignments SET benchmark=0 WHERE task=$task");
+			$res2 = $DB->query("UPDATE hashes SET chunk=NULL WHERE chunk IN (SELECT id FROM chunks WHERE task=$task)");
+			$res3 = $DB->query("UPDATE hashes_binary SET chunk=NULL WHERE chunk IN (SELECT id FROM chunks WHERE task=$task)");
+			$res4 = $DB->query("DELETE FROM zapqueue WHERE chunk IN (SELECT id FROM chunks WHERE task=$task)");
+			$res5 = $DB->query("DELETE FROM chunks WHERE task=$task");
+			$res6 = $DB->query("UPDATE tasks SET keyspace=0,progress=0 WHERE id=$task");
+			if ($res1 && $res2 && $res3 && $res4 && $res5 && $res6) {
+				$DB->exec("COMMIT");
+			} 
+			else {
+				$DB->exec("ROLLBACK");
+				$message = "<div class='alert alert-danger'>Could not purge task!</div>";
+			}
+			break;
+		case 'taskcolor':
+			// change task color
+			$task = intval($_POST["task"]);
+			$color = $_POST["color"];
+			if (preg_match("/[0-9A-Za-z]{6}/",$color)==1) {
+				$color="'$color'";
+			} 
+			else {
+				$color="NULL";
+			}
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE tasks SET color=$color WHERE id=$task");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change color!</div>";
+			}
+			break;
+		case 'taskauto':
+			// enable agent benchmark autoadjust for all subsequent agents added to this task
+			$task = intval($_POST["task"]);
+			$auto = intval($_POST["auto"]);
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE tasks SET autoadjust=$auto WHERE id=$task");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not change autoadjust!</div>";
+			}
+			break;
+		case 'taskchunk':
+			// update task chunk time
+			$task = intval($_POST["task"]);
+			$chunktime = intval($_POST["chunktime"]);
+			$DB = $FACTORIES::getagentsFactory()->getDB();
+			$DB->query("SET autocommit = 0");
+			$res1 = $DB->query("UPDATE assignments JOIN tasks ON tasks.id=assignments.task SET assignments.benchmark=(assignments.benchmark/tasks.chunktime)*$chunktime WHERE assignments.task=$task");
+			$res2 = $DB->query("UPDATE tasks SET chunktime=$chunktime WHERE id=$task");
+			if ($res1 && $res2) {
+				$DB->exec("COMMIT");
+			} 
+			else {
+				$DB->exec("ROLLBACK");
+				$message = "<div class='alert alert-danger'>Could not update task chunk time!</div>";
+			}
+			break;
+		case 'taskrename':
+			// change task name
+			$task = intval($_POST["task"]);
+			$name = $FACTORIES::getagentsFactory()->getDB()->quote(htmlentities($_POST["name"], false, "UTF-8"));
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE tasks SET name=$name WHERE id=$task");
+			if (!$res) {
+				$message = "<div class='alert alert-danger'>Could not rename task!</div>";
+			}
+			break;
 		case "finishedtasksdelete";
 			// delete finished tasks
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT tasks.id,hashlists.format,tasks.hashlist FROM tasks JOIN hashlists ON tasks.hashlist=hashlists.id JOIN (SELECT task,SUM(progress) AS sumprog FROM chunks WHERE rprogress=10000 GROUP BY task) chunks ON chunks.task=tasks.id WHERE (tasks.progress=tasks.keyspace AND chunks.sumprog=tasks.keyspace) OR hashlists.cracked=hashlists.hashcount");

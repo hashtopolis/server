@@ -12,7 +12,7 @@ if(isset($_POST['action'])){
 		case 'newtaskp':
 			// new task creator
 			$DB = $FACTORIES::getagentsFactory()->getDB();
-			$name = $DB->quote($_POST["name"]);
+			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$cmdline = $DB->quote($_POST["cmdline"]);
 			$autoadj = intval($_POST["autoadjust"]);
 			$chunk = intval($_POST["chunk"]);
@@ -79,8 +79,8 @@ if(isset($_POST['action'])){
 								$DB->exec("COMMIT");
 								$message .= "Task created successfuly!";
 								if($forward){
-									/*header("Location: $forward");
-									die();*/
+									header("Location: $forward");
+									die();
 								}
 							} 
 							else {

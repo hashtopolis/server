@@ -254,7 +254,6 @@ switch($action){
 		$res = $DB->query("SELECT 1 FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent JOIN taskfiles ON taskfiles.task=tasks.id JOIN files ON taskfiles.file=files.id WHERE agents.token=$token AND tasks.id=$task AND files.filename='$file' AND agents.trusted>=files.secret");
 		if($res){
 			// and add listing of related files
-			//TODO: update file download here
 			$res = $DB->query("SELECT id FROM files WHERE filename='$file'");
 			$line = $res->fetch();
 			//header("Location: files/$file");
