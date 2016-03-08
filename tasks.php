@@ -175,7 +175,7 @@ if(isset($_POST['action'])){
 						header("Location: pretasks.php");
 					}
 					else{
-						header("Location: tasks.php");
+						header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
 					}
 					die();
 				}
