@@ -264,6 +264,7 @@ if(isset($_GET['id'])){
 			$set = new DataSet();
 			$set->setValues($chunk);
 			$active = (max($chunk['dispatchtime'],$chunk['solvetime'])>time()-$CONFIG->getVal('chunktimeout') && $chunk['progress']<$chunk['length'] && $chunk["state"]<4);
+			$set->addValue('active', $active);
 			$chunks[] = $set;
 		}
 		$OBJECTS['chunks'] = $chunks;
