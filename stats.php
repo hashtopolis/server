@@ -1,8 +1,7 @@
 <?php 
   // draws a forum activity signature
   include("dbconfig.php");
-  ini_set("display_errors", "1");
-  $pik=imagecreatefromgif("img/stats.gif");
+  $pik=imagecreatefromgif("static/stats.gif");
 
   $erej=mysqli_fetch_array(mysqli_query($dblink,"SELECT COUNT(DISTINCT agents.id) AS agents, COUNT(DISTINCT tasks.id) AS tasks, COUNT(DISTINCT tasks.hashlist) AS hashlists, SUM(DISTINCT hashlists.hashcount)-SUM(DISTINCT hashlists.cracked) AS hashes, SUM(assignments.speed) AS speed FROM assignments JOIN tasks ON assignments.task=tasks.id JOIN hashlists ON tasks.hashlist=hashlists.id JOIN agents ON assignments.agent=agents.id JOIN chunks ON chunks.task=tasks.id AND chunks.agent=agents.id AND GREATEST(chunks.dispatchtime,chunks.solvetime)>=UNIX_TIMESTAMP()-(tasks.statustimer*1.2)"),MYSQLI_ASSOC);
   imagestring($pik,3,173,11,$erej["agents"],0);
