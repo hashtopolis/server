@@ -32,7 +32,7 @@ class Login {
 			$sF = new SessionFactory();
 			$filter1 = new QueryFilter("sessionKey", $session, "=");
 			$filter2 = new QueryFilter("isOpen", "1", "=");
-			$filter3 = new QueryFilter("lastAction", time() - 600, ">");
+			$filter3 = new QueryFilter("lastActionDate", time() - 10000, ">");
 			$check = $sF->filter(array('filter' => array($filter1, $filter2, $filter3)));
 			if($check === null || sizeof($check) == 0){
 				setcookie("session", "", time() - 600); //delete invalid or old cookie
@@ -42,9 +42,13 @@ class Login {
 			$uF = new UserFactory();
 			$this->user = $uF->get($s->getUserId());
 			if($this->user !== null){
+				if($s->getLastActionDate() < time() - $this->user->getSessionLifetime()){
+					setcookie("session", "", time() - 600); //delete invalid or old cookie
+					return;
+				}
 				$this->valid = true;
 				$this->session = $s;
-				$s->setLastAction(time());
+				$s->setLastActionDate(time());
 				$sF->update($s);
 				setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime());
 			}
