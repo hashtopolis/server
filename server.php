@@ -255,7 +255,10 @@ switch($action){
 		if($res){
 			// and add listing of related files
 			//TODO: update file download here
-			header("Location: files/$file");
+			$res = $DB->query("SELECT id FROM files WHERE filename='$file'");
+			$line = $res->fetch();
+			//header("Location: files/$file");
+			header("Location: get.php?file=".$line['id']);
 		}
 		break;
 	case "hashes":
