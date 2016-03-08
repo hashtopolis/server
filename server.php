@@ -252,7 +252,7 @@ switch($action){
 		$task = intval($_GET["task"]);
 		$file = substr($DB->quote($_GET["file"]), 1, -1);
 		$res = $DB->query("SELECT 1 FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent JOIN taskfiles ON taskfiles.task=tasks.id JOIN files ON taskfiles.file=files.id WHERE agents.token=$token AND tasks.id=$task AND files.filename='$file' AND agents.trusted>=files.secret");
-		if($res->rowCount() == 1){
+		if($res){
 			// and add listing of related files
 			//TODO: update file download here
 			header("Location: files/$file");
