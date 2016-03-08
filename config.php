@@ -9,7 +9,17 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		case 'update':
+			$DB = $FACTORIES::getagentsFactory()->getDB();
+			foreach ($_POST as $item => $val) {
+				if (substr($item, 0, 7) == "config_") {
+					$item = $DB->quote(substr($item, 7));
+					$val = $DB->quote($val);
+					$DB->exec("INSERT INTO config (item, value) VALUES ($item, $val) ON DUPLICATE KEY UPDATE value=$val");
+				}
+			}
+			$message = "<div class='alert alert-success'>Configuration updated successfully!</div>";
+			break;
 	}
 }
 
