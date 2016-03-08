@@ -38,7 +38,7 @@ if(isset($_POST['action'])){
 		case 'chunkreset':
 			// reset chunk state and progress to zero
 			$chunk = intval($_POST["chunk"]);
-			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE chunks SET state=0,progress=0,rprogress=0,dispatchtime=$cas,solvetime=0 WHERE id=$chunk");
+			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE chunks SET state=0,progress=0,rprogress=0,dispatchtime=".time().",solvetime=0 WHERE id=$chunk");
 			if (!$res) {
 				$message = "<div class='alert alert-danger'>Could not reset chunk!</div>";
 			}
