@@ -32,7 +32,7 @@ class Login {
 			$sF = new SessionFactory();
 			$filter1 = new QueryFilter("sessionKey", $session, "=");
 			$filter2 = new QueryFilter("isOpen", "1", "=");
-			$filter3 = new QueryFilter("lastAction", time() - self::$loginSessionLimit, ">");
+			$filter3 = new QueryFilter("lastAction", time() - 600, ">");
 			$check = $sF->filter(array('filter' => array($filter1, $filter2, $filter3)));
 			if($check === null || sizeof($check) == 0){
 				setcookie("session", "", time() - 600); //delete invalid or old cookie
