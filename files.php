@@ -76,7 +76,7 @@ if(isset($_POST['action'])){
 					$pocet = count($_FILES["upfile"]["name"]);
 					for($i=0;$i<$pocet;$i++) {
 						// copy all uploaded attached files to proper directory
-						$realname = basename($soubory["name"][$i]);
+						$realname = htmlentities(basename($soubory["name"][$i]), false, "UTF-8");
 						if ($realname==""){
 							continue;
 						}
@@ -110,7 +110,7 @@ if(isset($_POST['action'])){
 					$pocet = count($soubory);
 					foreach($soubory as $soubor) {
 						// copy all uploaded attached files to proper directory
-						$realname = basename($soubor);
+						$realname = htmlentities(basename($soubor), false, "UTF-8");
 						$tmpfile = "files/".$realname;
 						$resp = Util::uploadFile($tmpfile,$source,$realname);
 						$message .= $resp[1];
@@ -132,7 +132,7 @@ if(isset($_POST['action'])){
 			
 				case "url":
 					// from url
-					$realname = basename($_POST["url"]);
+					$realname = htmlentities(basename($_POST["url"]), false, "UTF-8");
 					$tmpfile = "files/".$realname;
 					$resp = Util::uploadFile($tmpfile,$source,$_POST["url"]);
 					$message .= $resp[1];
