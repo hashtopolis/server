@@ -64,5 +64,9 @@ foreach($res as $entry){
 }
 $OBJECTS['config'] = $CONFIG;
 
+if($LOGIN->isLoggedin()){
+	$OBJECTS['user'] = $LOGIN->getUser();
+}
+
 
 
