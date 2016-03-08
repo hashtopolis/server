@@ -3,6 +3,8 @@ require_once(dirname(__FILE__)."/inc/load.php");
 set_time_limit(0);
 $exename = "hashtopus.exe";
 
+$separator = "\x01";
+
 $DB = $FACTORIES::getagentsFactory()->getDB();
 
 $action = @$_GET["a"];
