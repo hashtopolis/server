@@ -41,8 +41,20 @@ $length = $size;           // Content length
 $start  = 0;               // Start byte
 $end    = $size - 1;       // End byte
 
-header('Content-type: '.mime_content_type($filename));
 header("Accept-Ranges: bytes");
+
+$exp = explode(".", $filename);
+if($exp[sizeof($exp) - 1] == '7z'){
+	header("Content-Type: application/x-7z-compressed");
+}
+else{
+	//header("Content-Type: text/plain");
+	header("Content-Type: application/force-download");
+}
+
+header("Content-Description: {$line['filename']}");
+header("Content-Disposition: attachment; filename=\"{$line['filename']}\"");
+
 if(isset($_SERVER['HTTP_RANGE'])) {
 
 	$c_start = $start;
@@ -53,7 +65,6 @@ if(isset($_SERVER['HTTP_RANGE'])) {
 	if (strpos($range, ',') !== false) {
 		header('HTTP/1.1 416 Requested Range Not Satisfiable');
 		header("Content-Range: bytes $start-$end/$size");
-		file_put_contents("/stream/log.txt", "$range-$start-$end-$size\n", FILE_APPEND);
 		exit;
 	}
 	if($range == '-') {
