@@ -1,8 +1,7 @@
 <?php
-ini_set("display_errors", "1");
 require_once(dirname(__FILE__)."/inc/load.php");
 
-if(!isset($_POST['email']) || !isset($_POST['password'])){
+if(!isset($_POST['username']) || !isset($_POST['password'])){
 	header("Location: index.php?err=1".time());
 	die();
 }
