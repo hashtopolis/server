@@ -7,6 +7,10 @@ if($INSTALL != 'DONE'){
 	die("Forward to <a href='install/'>Install</a>");
 }
 
+if(isset($_GET['err'])){
+	//TODO: handle error messages
+}
+
 $TEMPLATE = new Template("index");
 
 echo $TEMPLATE->render($OBJECTS);

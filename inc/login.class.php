@@ -87,12 +87,12 @@ class Login {
 	 * @param string $password password which was entered on login form
 	 * @return true on success and false on failure
 	 */
-	public function login($email, $password){
+	public function login($username, $password){
 		if($this->valid == true){
 			return false;
 		}
 		$uF = new UserFactory();
-		$filter = new QueryFilter("email", $email, "=");
+		$filter = new QueryFilter("username", $username, "=");
 		$check = $uF->filter(array('filter' => array($filter)));
 		if($check === null || sizeof($check) == 0){
 			return false;
@@ -104,7 +104,7 @@ class Login {
 		else if($user->getIsConfirmed() != 1){
 			return false;
 		}
-		else if(!Encryption::passwordVerify($user->getEmail(), $password, $user->getPasswordSalt(), $user->getPasswordHash())){
+		else if(!Encryption::passwordVerify($user->getUsername(), $password, $user->getPasswordSalt(), $user->getPasswordHash())){
 			return false;
 		}
 		$this->user = $user;
