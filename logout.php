@@ -1,5 +1,5 @@
 <?php
-require_once("../inc/load.php");
+require_once(dirname(__FILE__)."/inc/load.php");
 
 if(!$LOGIN->isLoggedin()){
 	header("Location: index.php");

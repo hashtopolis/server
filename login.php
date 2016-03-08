@@ -1,5 +1,5 @@
 <?php
-require_once("../inc/load.php");
+require_once(dirname(__FILE__)."/inc/load.php");
 
 if(!isset($_POST['email']) || !isset($_POST['password'])){
 	header("Location: index.php?err=1".time());
