@@ -101,9 +101,6 @@ class Login {
 		if($user->getIsValid() != 1){
 			return false;
 		}
-		else if($user->getIsConfirmed() != 1){
-			return false;
-		}
 		else if(!Encryption::passwordVerify($user->getUsername(), $password, $user->getPasswordSalt(), $user->getPasswordHash())){
 			return false;
 		}
