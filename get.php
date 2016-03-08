@@ -2,6 +2,8 @@
 require_once(dirname(__FILE__)."/inc/load.php");
 ini_set("max_execution_time", 100000);
 
+$DB = $FACTORIES::getagentsFactory()->getDB();
+
 if(!isset($_GET['file'])){
 	die("ERR1 - no file set");
 }
