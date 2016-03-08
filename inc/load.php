@@ -38,6 +38,12 @@ require_once(dirname(__FILE__)."/../models/QueryFilter.class.php");
 
 require_once(dirname(__FILE__)."/../models/agents.class.php");
 require_once(dirname(__FILE__)."/../models/agentsFactory.class.php");
+require_once(dirname(__FILE__)."/../models/User.class.php");
+require_once(dirname(__FILE__)."/../models/UserFactory.class.php");
+require_once(dirname(__FILE__)."/../models/Session.class.php");
+require_once(dirname(__FILE__)."/../models/SessionFactory.class.php");
+require_once(dirname(__FILE__)."/../models/RightGroup.class.php");
+require_once(dirname(__FILE__)."/../models/RightGroupFactory.class.php");
 
 require_once(dirname(__FILE__)."/factory.class.php");
 
