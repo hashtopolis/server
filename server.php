@@ -236,9 +236,9 @@ switch($action){
 			// ok, we have something to begin with
 			echo "task_ok" . $separator . $task["id"] . $separator . $task["wait"] . $separator . $task["attackcmd"] . (strlen($task["cmdpars"]) > 0 ? " " . $task["cmdpars"] : "") . " --hash-type=" . $task["hashtype"] . $separator . $task["hashlist"] . $separator . $task["bench"] . $separator . $task["statustimer"];
 			// and add listing of related files
-			$res = $DB->query("SELECT files.filename,files.id FROM taskfiles JOIN files ON taskfiles.file=files.id WHERE taskfiles.task=" . $task["id"]);
+			$res = $DB->query("SELECT files.filename FROM taskfiles JOIN files ON taskfiles.file=files.id WHERE taskfiles.task=" . $task["id"]);
 			while($file = $res->fetch()){
-				echo $separator . $file["id"];
+				echo $separator . $file["filename"];
 			}
 		}
 		else{
@@ -254,7 +254,8 @@ switch($action){
 		$res = $DB->quote("SELECT 1 FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent JOIN taskfiles ON taskfiles.task=tasks.id JOIN files ON taskfiles.file=files.id WHERE agents.token=$token AND tasks.id=$task AND files.id=$file AND agents.trusted>=files.secret");
 		if($res->rowCount() == 1){
 			// and add listing of related files
-			header("Location: get.php?id=$file");
+			//TODO: update file download here
+			header("Location: files/$file");
 		}
 		break;
 	case "hashes":
