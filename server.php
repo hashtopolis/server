@@ -251,7 +251,7 @@ switch($action){
 		// let agent download adjacent files
 		$task = intval($_GET["task"]);
 		$file = intval($_GET["file"]);
-		$res = $DB->quote("SELECT 1 FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent JOIN taskfiles ON taskfiles.task=tasks.id JOIN files ON taskfiles.file=files.id WHERE agents.token=$token AND tasks.id=$task AND files.id=$file AND agents.trusted>=files.secret");
+		$res = $DB->query("SELECT 1 FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent JOIN taskfiles ON taskfiles.task=tasks.id JOIN files ON taskfiles.file=files.id WHERE agents.token=$token AND tasks.id=$task AND files.id=$file AND agents.trusted>=files.secret");
 		if($res->rowCount() == 1){
 			// and add listing of related files
 			//TODO: update file download here
