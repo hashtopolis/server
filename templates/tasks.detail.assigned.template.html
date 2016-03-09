@@ -1,10 +1,20 @@
 {{FOREACH agent,!!agents!!}}
 <tr>
 	<td>
-		<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
+		{{IF !!login.getLevel()!! >= 20}}
+			<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
+		{{ENDIF}}
+		{{IF !!login.getLevel()!! < 20}}
+			[[agent.getVal('id')]]
+		{{ENDIF}}
 	</td>
 	<td>
-		<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
+		{{IF !!login.getLevel()!! >= 20}}
+			<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
+		{{ENDIF}}
+		{{IF !!login.getLevel()!! < 20}}
+			[[agent.getVal('name')]]
+		{{ENDIF}}
 		{{IF !!agent.getVal('trusted')!! == 1}} 
 			<img src="static/lock.gif" alt="Trusted"> 
 		{{ENDIF}} 
