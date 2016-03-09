@@ -18,6 +18,20 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'deleteuser':
+			$user = $FACTORIES::getUserFactory()->get($_POST['user']);
+			if($user == null){
+				$message = "<div class='alert alert-danger'>Invalid user!</div>";
+				break;
+			}
+			else if($user->getId() == $LOGIN->getUserID()){
+				$message = "<div class='alert alert-danger'>You cannot delete yourself!</div>";
+				break;
+			}
+			$FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET userId='0' WHERE userId=".$user->getId());
+			$FACTORIES::getUserFactory()->delete($user);
+			header("Location: users.php");
+			die();
 		case 'enable':
 			$user = $FACTORIES::getUserFactory()->get($_POST['user']);
 			if($user == null){
