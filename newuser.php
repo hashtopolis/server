@@ -53,6 +53,7 @@ if(isset($_POST['action'])){
 	}
 }
 
+$OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
