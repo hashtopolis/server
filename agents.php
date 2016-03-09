@@ -9,6 +9,31 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'agentowner':
+			// change agent owner
+			$agid = intval($_POST["agent"]);
+			$owner = intval($_POST["owner"]);
+			$valid = true;
+			if($owner != 0){
+				$user = $FACTORIES::getUserFactory()->get($owner);
+				if($user == null){
+					$valid = false;
+				}
+			}
+			if($valid){
+				$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET userId=$owner WHERE id=$agid");
+				if (!$res) {
+					$message = "<div class='alert alert-danger'>Could not change owner!</div>";
+				}
+				else{
+					header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+					die();
+				}
+			}
+			else{
+				$message = "<div class='alert alert-danger'>Invalid user!</div>";
+			}
+			break;
 		case 'agenttrusted':
 			// switch agent trusted state
 			$agid = intval($_POST["agent"]);
@@ -36,7 +61,6 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'setparam':
-			case "agentpars";
 			// change agent extra cmd line parameters for hashcat
 			$agid = intval($_POST["agent"]);
 			$pars = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["cmdpars"]);
