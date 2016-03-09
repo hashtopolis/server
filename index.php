@@ -13,7 +13,7 @@ $message = "";
 if(isset($_GET['err'])){
 	$err = $_GET['err'];
 	$time = substr($err, 1);
-	if(time() - $err < 10){
+	if(time() - $time < 10){
 		switch($err[0]){
 			case '1':
 				$message = "<div class='alert alert-danger'>Invalid form submission!</div>";
