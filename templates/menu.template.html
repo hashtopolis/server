@@ -33,6 +33,9 @@
 						</ul>
 					</li>
 				{{ENDIF}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 0 && !!login.getLevel()!! < 2}}
+					<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
+				{{ENDIF}}
 				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 1 && !!login.getLevel()!! < 20}}
 					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
 						<ul class="dropdown-menu">
@@ -90,7 +93,7 @@
 				{{ENDIF}}
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				{{IF ! !!login.isLoggedin()!!}}
+				{{IF !!login.isLoggedin()!!}}
 					<li><a href="logout.php">Logout</a></li>
 				{{ENDIF}}
 			</ul>
