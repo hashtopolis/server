@@ -30,7 +30,7 @@ if(isset($_GET['id'])){
 	}
 	else{
 		$OBJECTS['user'] = $user;
-		
+		$OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
 	}
 	$TEMPLATE = new Template("users.detail");
 }
