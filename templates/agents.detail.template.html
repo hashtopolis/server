@@ -17,7 +17,7 @@
 			<td>
 				<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="post">
        				<input type='hidden' name='action' value='agentowner'>
-       				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
+       				<input type='hidden' name='agent' value='[[agent.getVal('id')]]'>
        				<select class='form-control' name='owner'>
        					<option value="">---</option>
        					{{FOREACH user,!!users!!}}
