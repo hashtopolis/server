@@ -24,7 +24,7 @@ if(isset($_POST['action'])){
 
 if(isset($_GET['id'])){
 	$user = $FACTORIES::getUserFactory()->get($_GET['id']);
-	if($user == null){
+	if($user === null){
 		$message = "<div class='alert alert-danger'>Invalid user!</div>";
 		$OBJECTS['user'] = false;
 	}
