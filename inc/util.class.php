@@ -19,6 +19,14 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function tickdone($prog,$total) {
+		// show tick of progress is done
+		if($total > 0 && $prog == $total){
+			return " <img src='static/check.png' alt='Finished'>";
+		}
+		return "";
+	}
+	
 	public static function getUsernameById($id){
 		global $FACTORIES;
 		
