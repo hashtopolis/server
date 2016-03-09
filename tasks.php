@@ -178,7 +178,7 @@ if(isset($_POST['action'])){
 			$message .= "</div>";
 			break;
 		case 'taskdelete':
-			if($LOGIN->getLevel() < 20){
+			if($LOGIN->getLevel() < 30){
 				break;
 			}
 			// delete a task
