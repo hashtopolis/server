@@ -2,6 +2,15 @@
 use Bricky\Template;
 require_once(dirname(__FILE__)."/inc/load.php");
 
+if(!$LOGIN->isLoggedin()){
+	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
+	die();
+}
+else if($LOGIN->getLevel() < 30){
+	$TEMPLATE = new Template("restricted");
+	die($TEMPLATE->render($OBJECTS));
+}
+
 $TEMPLATE = new Template("newhashcat");
 $MENU->setActive("hashcat_new");
 $message = "";

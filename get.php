@@ -22,9 +22,21 @@ if(!$line){
 	die("ERR5 - file not found");
 }
 
-//TODO: check user rights to download here:
+//check user rights to download here:
 //if the user is logged in, he need to have the rights to
 //if agent provides his voucher, check it.
+if(!$LOGIN->isLoggedin()){
+	$token = $DB->quote(@$_GET['token']);
+	$res = $DB->query("SELECT * FROM agents WHERE token=$token");
+	$line = $res->fetch();
+	if(!$line){
+		die("No access!");
+	}
+	//TODO: check here trusted status
+}
+else if($LOGIN->getLevel() < 20){
+	die("No access!");
+}
 
 $filename = dirname(__FILE__)."/files/".$line['filename'];
 

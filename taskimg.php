@@ -2,6 +2,11 @@
 // draws a graph of chunk distribution inside task keyspace
 require_once(dirname(__FILE__)."/inc/load.php");
 
+if(!$LOGIN->isLoggedin()){
+	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
+	die();
+}
+
 $imx = min(1920, intval($_GET["x"]));
 $imy = min(1080, intval($_GET["y"]));
 if ($imx==0 || $imy==0){
