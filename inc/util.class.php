@@ -23,7 +23,7 @@ class Util{
 		global $FACTORIES;
 		
 		$user = $FACTORIES::getUserFactory()->get($id);
-		if($user == null){
+		if($user === null){
 			return "Unknown";
 		}
 		return $user->getUsername();
