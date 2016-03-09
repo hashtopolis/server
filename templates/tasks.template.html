@@ -54,7 +54,7 @@
         			{{IF !!task.getVal('hashlist')!! == ""}}
         				(pre-configured task)
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != "" && !!login.getLevel()!! >= 5)}}
+        			{{IF !!task.getVal('hashlist')!! != "" && !!login.getLevel()!! >= 5}}
         				<a href="hashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('hname')]]</a>
         			{{ENDIF}}
         			{{IF !!task.getVal('hashlist')!! != "" && !!login.getLevel()!! < 5}}
