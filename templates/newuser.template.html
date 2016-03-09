@@ -2,9 +2,39 @@
 {%TEMPLATE->menu%}
 <h2>New user</h2>
 [[message]]
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		
-	</table>
-</div>
+<form action='newuser.php' method='post'>
+	<input type='hidden' name='action' value='create'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>Username</th>
+				<td>
+					<input type='text' class='form-control' name='username'>
+				</td>
+			</tr>
+			<tr>
+				<th>Email address</th>
+				<td>
+					<input type='email' class='form-control' name='email'>
+				</td>
+			</tr>
+			<tr>
+				<th>User group</th>
+				<td>
+					<select name='group' class='form-control'>
+						<option value=''>---</option>
+						{{FOREACH group,!!groups!!}}
+							<option value='[[group.getId()]]'>[[group.getGroupName()]]</option>
+						{{ENDFOREACH}}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan='2'>
+					<input type='submit' class='btn btn-success' value='Create'>
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
 {%TEMPLATE->foot%}

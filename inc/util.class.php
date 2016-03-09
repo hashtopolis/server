@@ -422,8 +422,7 @@ class Util{
 	 */
 	public static function sendMail($address, $subject, $text){
 		$header = "Content-type: text/html; charset=utf8\r\n";
-		// TODO: set sender...
-		$header .= "From: Sein Coray Informatics <noreply@coray-it.ch>\r\n";
+		$header .= "From: Hashtopussy <noreply@hashtopussy>\r\n";
 		if(!mail($address, $subject, $text, $header)){
 			return false;
 		}
