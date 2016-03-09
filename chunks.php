@@ -6,7 +6,7 @@ if(!$LOGIN->isLoggedin()){
 	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
 	die();
 }
-else if($LOGIN->getLevel() < 10){
+else if($LOGIN->getLevel() < 5){
 	$TEMPLATE = new Template("restricted");
 	die($TEMPLATE->render($OBJECTS));
 }
