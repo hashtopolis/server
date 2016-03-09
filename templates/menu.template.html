@@ -21,7 +21,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 5 && !!login.getLevel()!! < 30}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 20 && !!login.getLevel()!! < 30}}
 					<li[[menu.isActive('agents_list')]]><a href="agents.php">Agents</a></li>
 				{{ENDIF}}
 				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 20}}
