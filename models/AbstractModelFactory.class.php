@@ -235,6 +235,8 @@ abstract class AbstractModelFactory{
 			}
 			$query = $query . " FROM " . $this->getModelTable();
 			
+			$vals = array();
+			
 			if(array_key_exists("filter", $options)){
 				$query = $query . " WHERE ";
 				
