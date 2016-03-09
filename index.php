@@ -24,6 +24,9 @@ if(isset($_GET['err'])){
 			case '3':
 				$message = "<div class='alert alert-danger'>Wrong username/password!</div>";
 				break;
+			case '4':
+				$message = "<div class='alert alert-warning'>You need to be logged in to view this! Please log in again.</div>";
+				break;
 		}
 	}
 }
