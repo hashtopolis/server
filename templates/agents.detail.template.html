@@ -105,12 +105,8 @@
        	<tr>
       		<td>Trust:</td>
       		<td>
-      			<form id="agenttrusted" action="agents.php?id=[[agent.getVal('id')]]" method="post">
-					<input type='hidden' name='action' value='agenttrusted'>
-       				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-       				<input type="checkbox" name='trusted' value='1'{{IF !!agent.getVal('trusted')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agenttrusted').submit();">
-       				Trust agent with secret data
-       			</form>
+      			{%TEMPLATE->agents.detail.secret1%}
+      			{%TEMPLATE->agents.detail.secret2%}
        		</td>
        	</tr>
        	<tr>
