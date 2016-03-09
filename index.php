@@ -11,7 +11,21 @@ $TEMPLATE = new Template("index");
 $message = "";
 
 if(isset($_GET['err'])){
-	//TODO: handle error messages
+	$err = $_GET['err'];
+	$time = substr($err, 1);
+	if(time() - $err < 10){
+		switch($err[0]){
+			case '1':
+				$message = "<div class='alert alert-danger'>Invalid form submission!</div>";
+				break;
+			case '2':
+				$message = "<div class='alert alert-danger'>You need to fill in both fields!</div>";
+				break;
+			case '3':
+				$message = "<div class='alert alert-danger'>Wrong username/password!</div>";
+				break;
+		}
+	}
 }
 else if(isset($_GET['logout'])){
 	$logout = $_GET['logout'];
