@@ -18,7 +18,68 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		case 'enable':
+			$user = $FACTORIES::getUserFactory()->get($_POST['user']);
+			if($user == null){
+				$message = "<div class='alert alert-danger'>Invalid user!</div>";
+				break;
+			}
+			$user->setIsValid(1);
+			$FACTORIES::getUserFactory()->update($user);
+			header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+			die();
+		case 'disable':
+			$user = $FACTORIES::getUserFactory()->get($_POST['user']);
+			if($user == null){
+				$message = "<div class='alert alert-danger'>Invalid user!</div>";
+				break;
+			}
+			else if($user->getId() == $LOGIN->getUserID()){
+				$message = "<div class='alert alert-danger'>You cannot disable yourself!</div>";
+				break;
+			}
+			$FACTORIES::getUserFactory()->getDB()->query("UPDATE Session SET isOpen='0' WHERE userId=".$user->getId());
+			$user->setIsValid(0);
+			$FACTORIES::getUserFactory()->update($user);
+			header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+			die();
+		case 'setrights':
+			$group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
+			$user = $FACTORIES::getUserFactory()->get($_POST['user']);
+			if($user == null){
+				$message = "<div class='alert alert-danger'>Invalid user!</div>";
+				break;
+			}
+			else if($group == null){
+				$message = "<div class='alert alert-danger'>Invalid group!</div>";
+				break;
+			}
+			else if($user->getId() == $LOGIN->getUserID()){
+				$message = "<div class='alert alert-danger'>You cannot change your own rights!</div>";
+				break;
+			}
+			$user->setRightGroupId($group->getId());
+			$FACTORIES::getUserFactory()->update($user);
+			header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+			die();
+		case 'setpass':
+			$user = $FACTORIES::getUserFactory()->get($_POST['user']);
+			if($user == null){
+				$message = "<div class='alert alert-danger'>Invalid user!</div>";
+				break;
+			}
+			else if($user->getId() == $LOGIN->getUserID()){
+				$message = "<div class='alert alert-danger'>To change your own password go to your settings!</div>";
+				break;
+			}
+			$newSalt = Util::randomString(20);
+			$newHash = Encryption::passwordHash($user->getUsername(), $_POST['pass'], $newSalt);
+			$user->setPasswordHash($newHash);
+			$user->setPasswordSalt($newSalt);
+			$user->setIsComputedPassword(0);
+			$FACTORIES::getUserFactory()->update($user);
+			header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+			die();
 	}
 }
 

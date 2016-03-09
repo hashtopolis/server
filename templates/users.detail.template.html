@@ -6,7 +6,7 @@
 	<table class="table table-bordered table-nonfluid">
 		<tr>
 			<th>User ID</th>
-			<th>[[user.getId()]]</th>
+			<td>[[user.getId()]]</td>
 		</tr>
 		<tr>
 			<th>Username</th>
@@ -28,14 +28,18 @@
 			<th>Enable/Disable user</th>
 			<td>
 				{{IF !!user.getIsValid()!! == 1}}
+					User is currently enabled
 					<form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
 	       				<input type='hidden' name='action' value='disable'>
+	       				<input type='hidden' name='user' value='[[user.getId()]]'>
 	       				<input type="submit" class='btn btn-danger' value="Disable">
 	       			</form>
        			{{ENDIF}}
        			{{IF !!user.getIsValid()!! != 1}}
+       				User is currently disabled
 					<form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
 	       				<input type='hidden' name='action' value='enable'>
+	       				<input type='hidden' name='user' value='[[user.getId()]]'>
 	       				<input type="submit" class='btn btn-success' value="Enable">
 	       			</form>
        			{{ENDIF}}
@@ -46,6 +50,7 @@
 			<td>
 				<form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
        				<input type='hidden' name='action' value='setrights'>
+	       			<input type='hidden' name='user' value='[[user.getId()]]'>
        				<select name='group' class='form-control'>
        					{%TEMPLATE->users.detail.rights%}
        				</select>
@@ -58,6 +63,7 @@
 			<td>
 				<form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
        				<input type='hidden' name='action' value='setpass'>
+	       			<input type='hidden' name='user' value='[[user.getId()]]'>
        				<input type='password' name='pass' class='form-control'>
        				<input type="submit" class='btn btn-default' value="Set">
        			</form>
