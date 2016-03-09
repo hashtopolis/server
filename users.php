@@ -22,6 +22,16 @@ if(isset($_POST['action'])){
 	}
 }
 
+$users = array();
+$res = $FACTORIES::getUserFactory()->filter(array());
+foreach($res as $user){
+	$set = new DataSet();
+	$set->addValue('user', $user);
+	$set->addValue('group', $FACTORIES::getRightGroupFactory()->get($user->getRightGroupId()));
+	$users[] = $set;
+}
+
+$OBJECTS['users'] = $users;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

@@ -15,6 +15,21 @@
 			<th>Right group</th>
 			<th>Action</th>
 		</tr>
+		{{FOREACH entry,!!users!!}}
+			<tr>
+				<td>[[entry.getVal('user').getId()]]</td>
+				<td>[[htmlentities(%%entry.getVal('user').getUsername()%%)]]</td>
+				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getRegisteredSince()]]%%)</td>
+				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getLastLoginDate()]]%%)</td>
+				<td>[[entry.getVal('user').getEmail()]]</td>
+				<td>[[entry.getVal('user').getIsValid()]]</td>
+				<td>[[entry.getVal('user').getSessionLifetime()]]</td>
+				<td>[[entry.getVal('group').getGroupName()]]</td>
+				<td>
+					<a class='btn btn-primary' href="users.php?id=[[entry.getVal('user').getId()]]">Manage</a>
+				</td>
+			</tr>
+		{{ENDFOREACH}}
 	</table>
 </div>
 {%TEMPLATE->foot%}
