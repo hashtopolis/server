@@ -32,6 +32,7 @@ foreach($res as $entry){
 }
 
 $OBJECTS['allUsers'] = $users;
+$OBJECTS['numUsers'] = sizeof($users);
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
