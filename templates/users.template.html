@@ -20,7 +20,7 @@
 				<td>[[entry.getVal('user').getId()]]</td>
 				<td>[[htmlentities(%%entry.getVal('user').getUsername()%%)]]</td>
 				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getRegisteredSince()%%)]]</td>
-				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getLastLoginDate()%%)]]%%</td>
+				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getLastLoginDate()%%)]]</td>
 				<td>[[entry.getVal('user').getEmail()]]</td>
 				<td>
 					{{IF !!entry.getVal('user').getIsValid()!! == 1}}
