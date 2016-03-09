@@ -26,13 +26,13 @@ if(isset($_GET['id'])){
 	$user = $FACTORIES::getUserFactory()->get($_GET['id']);
 	if($user == null){
 		$message = "<div class='alert alert-danger'>Invalid user!</div>";
-		$OBJECTS['user'] = false;
+		$TEMPLATE = new Template("error");
 	}
 	else{
 		$OBJECTS['user'] = $user;
 		$OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
+		$TEMPLATE = new Template("users.detail");
 	}
-	$TEMPLATE = new Template("users.detail");
 }
 else{
 	$users = array();
