@@ -22,17 +22,32 @@ if(isset($_POST['action'])){
 	}
 }
 
-$users = array();
-$res = $FACTORIES::getUserFactory()->filter(array());
-foreach($res as $entry){
-	$set = new DataSet();
-	$set->addValue('user', $entry);
-	$set->addValue('group', $FACTORIES::getRightGroupFactory()->get($entry->getRightGroupId()));
-	$users[] = $set;
+if(isset($_GET['id'])){
+	$user = $FACTORIES::getUserFactory()->get($_GET['id']);
+	if($user == null){
+		$message = "<div class='alert alert-danger'>Invalid user!</div>";
+		$OBJECTS['user'] = false;
+	}
+	else{
+		$OBJECTS['user'] = $user;
+		
+	}
+	$TEMPLATE = new Template("users.detail");
+}
+else{
+	$users = array();
+	$res = $FACTORIES::getUserFactory()->filter(array());
+	foreach($res as $entry){
+		$set = new DataSet();
+		$set->addValue('user', $entry);
+		$set->addValue('group', $FACTORIES::getRightGroupFactory()->get($entry->getRightGroupId()));
+		$users[] = $set;
+	}
+	
+	$OBJECTS['allUsers'] = $users;
+	$OBJECTS['numUsers'] = sizeof($users);
 }
 
-$OBJECTS['allUsers'] = $users;
-$OBJECTS['numUsers'] = sizeof($users);
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

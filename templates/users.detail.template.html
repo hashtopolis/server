@@ -1,0 +1,15 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+{{IF !!user!! == false}}
+	[[message]]
+{{ENDIF}}
+{{IF !!user!!}}
+	<h2>User ([[htmlentities(%%user.getUsername()%%, false, "UTF-8")]])</h2>
+	[[message]]
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			
+		</table>
+	</div>
+{{ENDIF}}
+{%TEMPLATE->foot%}
