@@ -14,11 +14,14 @@ if(isset($_POST['action'])){
 			$agid = intval($_POST["agent"]);
 			$owner = intval($_POST["owner"]);
 			$valid = true;
-			if($owner != 0){
+			if($owner > 0){
 				$user = $FACTORIES::getUserFactory()->get($owner);
 				if($user == null){
 					$valid = false;
 				}
+			}
+			else{
+				$owner = 0;
 			}
 			if($valid){
 				$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET userId=$owner WHERE id=$agid");
