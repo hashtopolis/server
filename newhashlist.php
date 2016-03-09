@@ -21,7 +21,7 @@ if(isset($_POST['action'])){
 		case 'newhashlistp':
 			// new hashlist creator
 			$DB = $FACTORIES::getagentsFactory()->getDB();
-			$name = $DB->quote($_POST["name"]);
+			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1);
 			$fs = $DB->quote($_POST["separator"]);
 			$format = $_POST["format"];
