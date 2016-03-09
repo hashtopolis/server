@@ -10,10 +10,10 @@ This is a wrapper for oclHashcat for distributed hashcracking, based on the sour
 * DBA system (some parts)
 * All GUI elements in templates
 * Add additional sql tables
+* User management
+* Rights management
+* Server config
 
 ### What is missing currently? ###
 
 * Add a install script
-* User management
-* Rights management
-* Server config
