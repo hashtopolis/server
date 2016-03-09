@@ -8,6 +8,7 @@ if(!isset($_POST['username']) || !isset($_POST['password'])){
 
 $username = $_POST['username'];
 $password = $_POST['password'];
+$fw = $_POST['fw'];
 
 if(strlen($username) == 0 || strlen($password) == 0){
 	header("Location: index.php?err=2".time());
@@ -17,6 +18,10 @@ if(strlen($username) == 0 || strlen($password) == 0){
 $LOGIN->login($username, $password);
 
 if($LOGIN->isLoggedin()){
+	if(strlen($fw) > 0){
+		header("Location: ".urldecode($fw));
+		die();
+	}
 	header("Location: index.php");
 	die();
 }

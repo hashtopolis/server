@@ -11,6 +11,8 @@ if(isset($_GET['err'])){
 	//TODO: handle error messages
 }
 
+$OBJECTS['fw'] = @$_GET['fw'];
+
 $TEMPLATE = new Template("index");
 
 echo $TEMPLATE->render($OBJECTS);
