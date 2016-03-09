@@ -120,6 +120,9 @@ class Login {
 		$s->setSessionKey($sessionKey);
 		$sF->update($s);
 		
+		$this->user->setLastLoginDate(time());
+		$uF->update($this->user);
+		
 		$this->valid = true;
 		setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime());
 		return true;
