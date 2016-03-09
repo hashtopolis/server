@@ -39,11 +39,11 @@
         				N/A
         			{{ENDIF}}
         			{{IF !!chunk.getVal('task')!! != ""}}
-        				<a href="tasks.php?id=[[chunk.getVal('task')]]">[[chunk.getVal('name')]]</a>
+        				<a href="tasks.php?id=[[chunk.getVal('task')]]">[[chunk.getVal('tname')]]</a>
         			{{ENDIF}}
        	 		</td>
        	 		<td>
-       	 			{{IF !!chunk.getVal('agent')!! == ""}}
+       	 			{{IF !!chunk.getVal('agent')!! == "" || !!login.getLevel()!! < 20}}
        	 				N/A
        	 			{{ENDIF}}
        	 			{{IF !!chunk.getVal('agent')!! != ""}}

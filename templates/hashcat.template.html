@@ -44,11 +44,13 @@
         			AMD:<br>[[release.getVal('minver_amd')]]
 				</td>
 				<td>
-					<form action="hashcat.php" method="POST" onSubmit="if (!confirm('Really delete Hashcat release [[release.getVal('version')]]?')) return false;">
-				        <input type="hidden" name="action" value="releasedelete">
-				        <input type="hidden" name="release" value="[[release.getVal('version')]]">
-				        <input type="submit" class='btn btn-danger' value="Delete">
-				    </form>
+					{{IF !!login.getLevel()!! >= 30}}
+						<form action="hashcat.php" method="POST" onSubmit="if (!confirm('Really delete Hashcat release [[release.getVal('version')]]?')) return false;">
+					        <input type="hidden" name="action" value="releasedelete">
+					        <input type="hidden" name="release" value="[[release.getVal('version')]]">
+					        <input type="submit" class='btn btn-danger' value="Delete">
+					    </form>
+				    {{ENDIF}}
 				</td>
 			</tr>
 		{{ENDFOREACH}}

@@ -18,12 +18,17 @@
 		<tr>
 			<td>Name:</td>
 			<td>
-		        <form class='form-inline' action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
-			        <input type="hidden" name="action" value="hashlistrename">
-			        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
-			        <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('name')]]">
-			        <input type="submit" class='btn btn-default' value="Change">
-		    	</form>
+				{{IF !!login.getLevel()!! >= 20}}
+			        <form class='form-inline' action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
+				        <input type="hidden" name="action" value="hashlistrename">
+				        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+				        <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('name')]]">
+				        <input type="submit" class='btn btn-default' value="Change">
+			    	</form>
+			    {{ENDIF}}
+			    {{IF !!login.getLevel()!! < 20}}
+			    	[[list.getVal('name')]]
+			    {{ENDIF}}
 		    </td>
 		</tr>
 		<tr>
@@ -64,18 +69,23 @@
         <tr>
         	<td>Secret:</td>
         	<td>
-		        <form id="hashlistsecret" action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
-			        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
-			        <input type="hidden" name="action" value="hashlistsecret">
-			        <input type="checkbox" name="secret" value="1"{{IF !!list.getVal('secret')!! == 1}} checked{{ENDIF}}
-         				onChange="javascript:document.getElementById('hashlistsecret').submit();"> Hashlist contains secret data
-        		</form>
+        		{{IF !!login.getLevel()!! >= 30}}
+			        <form id="hashlistsecret" action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
+				        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+				        <input type="hidden" name="action" value="hashlistsecret">
+				        <input type="checkbox" name="secret" value="1"{{IF !!list.getVal('secret')!! == 1}} checked{{ENDIF}}
+	         				onChange="javascript:document.getElementById('hashlistsecret').submit();"> Hashlist contains secret data
+	        		</form>
+        		{{ENDIF}}
+        		{{IF !!login.getLevel()!! < 30}}
+        			<input type='checkbox'{{IF !!list.getVal('secret')!! == 1}} checked{{ENDIF}}> Hashlist contains secret data
+        		{{ENDIF}}
         	</td>
         </tr>
         <tr>
         	<td>Actions:</td>
         	<td>
-        		{{IF !!list.getVal('cracked')!! > 0}}
+        		{{IF !!list.getVal('cracked')!! > 0 && !!login.getLevel()!! >= 20}}
         			<form style='float: left; padding-right: 5px;' action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
         				<input type='hidden' name='action' value='wordlist'>
         				<input type='hidden' name='hashlist' value='[[list.getVal('id')]]'>
@@ -87,7 +97,7 @@
         				<input type='submit' class='btn btn-default' value='Export hashes for pre-crack'>
         			</form>
         		{{ENDIF}}
-        		{{IF !!list.getVal('cracked')!! < !!list.getVal('hashcount')!!}}
+        		{{IF !!list.getVal('cracked')!! < !!list.getVal('hashcount')!! && !!login.getLevel()!! >= 20}}
         			<form style='float: left;' action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
         				<input type='hidden' name='action' value='hashlistzap'>
         				<input type='hidden' name='hashlist' value='[[list.getVal('id')]]'>

@@ -1,24 +1,31 @@
-<h3>Attached files</h3>
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>ID</th>
-			<th>Filename</th>
-			<th>Size</th>
-		</tr>
-		{{FOREACH attach,!!attachFiles!!}}
+{{IF !!login.getLevel()!! >= 5}}
+	<h3>Attached files</h3>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
 			<tr>
-				<td>[[attach.getVal('id')]]</td>
-				<td>
-					<a href="files.php#[[attach.getVal('id')]]">[[attach.getVal('filename')]]</a>
-					{{IF !!attach.getVal('secret')!! == 1}}
-						<img src="static/lock.gif" alt="Secret">
-					{{ENDIF}}
-				</td>
-				<td class='num'>
-					[[Util::nicenum(%%attach.getVal('size')%%)]]B
-				</td>
+				<th>ID</th>
+				<th>Filename</th>
+				<th>Size</th>
 			</tr>
-		{{ENDFOREACH}}
-	</table>
-</div>
+			{{FOREACH attach,!!attachFiles!!}}
+				<tr>
+					<td>[[attach.getVal('id')]]</td>
+					<td>
+						{{IF !!login.getLevel()!! >= 20}}
+							<a href="files.php#[[attach.getVal('id')]]">[[attach.getVal('filename')]]</a>
+						{{ENDIF}}
+						{{IF !!login.getLevel()!! < 20}}
+							[[attach.getVal('filename')]]
+						{{ENDIF}}
+						{{IF !!attach.getVal('secret')!! == 1}}
+							<img src="static/lock.gif" alt="Secret">
+						{{ENDIF}}
+					</td>
+					<td class='num'>
+						[[Util::nicenum(%%attach.getVal('size')%%)]]B
+					</td>
+				</tr>
+			{{ENDFOREACH}}
+		</table>
+	</div>
+{{ENDIF}}

@@ -6,7 +6,7 @@ if(!$LOGIN->isLoggedin()){
 	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
 	die();
 }
-else if($LOGIN->getLevel() < 30){
+else if($LOGIN->getLevel() < 20){
 	$TEMPLATE = new Template("restricted");
 	die($TEMPLATE->render($OBJECTS));
 }
@@ -19,6 +19,9 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'releasedelete':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			// delete hashcat release
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$release = $DB->quote($_POST["release"]);

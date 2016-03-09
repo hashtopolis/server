@@ -55,11 +55,13 @@
 					</form>
 				</td>
 				<td>
-					<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[list.getVal('id')]]?')) return false;">
-				        <input type="hidden" name="action" value="hashlistdelete">
-				        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
-				        <input type="submit" class='btn btn-danger' value="Delete">
-				    </form>
+					{{IF !!login.getLevel()!! >= 30}}
+						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[list.getVal('id')]]?')) return false;">
+					        <input type="hidden" name="action" value="hashlistdelete">
+					        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+					        <input type="submit" class='btn btn-danger' value="Delete">
+					    </form>
+				    {{ENDIF}}
 				</td>
 			</tr>
 		{{ENDFOREACH}}

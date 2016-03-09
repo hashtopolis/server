@@ -59,19 +59,22 @@
          				[[Util::getStaticArray(%%chunk.getVal('state')%%, 'states')]]
          			</td>
          			<td class="num">
-         				{{IF !!chunk.getVal('cracked')!! > 0}}
+         				{{IF !!chunk.getVal('cracked')!! > 0 && !!login.getLevel() >= 5}}
          					<a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
+         				{{ENDIF}}
+         				{{IF !!chunk.getVal('cracked')!! > 0 && !!login.getLevel() < 5}}
+         					[[chunk.getVal('cracked')]]
          				{{ENDIF}}
          			</td>
          			<td>
-         				{{IF !!chunk.getVal('active')!! == false}}
+         				{{IF !!chunk.getVal('active')!! == false && !!login.getLevel()!! >= 20}}
          					<form action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really reset chunk [[chunk.getVal('id')]]?')) return false;">
 							<input type="hidden" name="action" value="chunkreset">
 							<input type="hidden" name="chunk" value="[[chunk.getVal('id')]]">
 							<input type="submit" class='btn btn-default' value="Reset">
 						</form>
          				{{ENDIF}}
-         				{{IF !!chunk.getVal('active')!!}}
+         				{{IF !!chunk.getVal('active')!! && !!login.getLevel()!! >= 20}}
          					<form action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really abort cracking chunk [[chunk.getVal('id')]]?')) return false;">
 							<input type="hidden" name="action" value="chunkabort">
 							<input type="hidden" name="chunk" value="[[chunk.getVal('id')]]">

@@ -12,22 +12,24 @@
 			<td>ID</td>
 			<td>[[agent.getVal('id')]]</td>
 		</tr>
-		<tr>
-			<td>Owner</td>
-			<td>
-				<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="post">
-       				<input type='hidden' name='action' value='agentowner'>
-       				<input type='hidden' name='agent' value='[[agent.getVal('id')]]'>
-       				<select class='form-control' name='owner'>
-       					<option value="">---</option>
-       					{{FOREACH user,!!users!!}}
-       						<option value='[[user.getId()]]'{{IF !!user.getId()!! == !!agent.getVal('userId')!!}} selected{{ENDIF}}>[[htmlentities(%%user.getUsername()%%, false, "UTF-8")]]</option>
-       					{{ENDFOREACH}}
-       				</select>
-       				<input type="submit" class='btn btn-default' value="Update Owner">
-       			</form>
-			</td>
-		</tr>
+		{{IF !!login.getLevel()!! >= 30}}
+			<tr>
+				<td>Owner</td>
+				<td>
+					<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="post">
+	       				<input type='hidden' name='action' value='agentowner'>
+	       				<input type='hidden' name='agent' value='[[agent.getVal('id')]]'>
+	       				<select class='form-control' name='owner'>
+	       					<option value="">---</option>
+	       					{{FOREACH user,!!users!!}}
+	       						<option value='[[user.getId()]]'{{IF !!user.getId()!! == !!agent.getVal('userId')!!}} selected{{ENDIF}}>[[htmlentities(%%user.getUsername()%%, false, "UTF-8")]]</option>
+	       					{{ENDFOREACH}}
+	       				</select>
+	       				<input type="submit" class='btn btn-default' value="Update Owner">
+	       			</form>
+				</td>
+			</tr>
+		{{ENDIF}}
 		<tr>
 			<td>Activity:</td>
 			<td>

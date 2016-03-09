@@ -19,6 +19,9 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'agentbench':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// adjust agent benchmark
 			$agid = intval($_POST["agent"]);
 			$bench = floatval($_POST["bench"]);
@@ -28,6 +31,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'agentauto':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// enable agent benchmark autoadjust for its current assignment
 			$agid = intval($_POST["agent"]);
 			$auto = intval($_POST["auto"]);
@@ -37,6 +43,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'chunkabort':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// reset chunk state and progress to zero
 			$chunk = intval($_POST["chunk"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE chunks SET state=10 WHERE id=$chunk");
@@ -45,6 +54,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'chunkreset':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// reset chunk state and progress to zero
 			$chunk = intval($_POST["chunk"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE chunks SET state=0,progress=0,rprogress=0,dispatchtime=".time().",solvetime=0 WHERE id=$chunk");
@@ -53,6 +65,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'taskpurge':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// delete all task chunks, forget its keyspace value and reset progress to zero
 			$task = intval($_POST["task"]);
 			$DB = $FACTORIES::getagentsFactory()->getDB();
@@ -72,6 +87,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'taskcolor':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// change task color
 			$task = intval($_POST["task"]);
 			$color = $_POST["color"];
@@ -87,6 +105,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'taskauto':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// enable agent benchmark autoadjust for all subsequent agents added to this task
 			$task = intval($_POST["task"]);
 			$auto = intval($_POST["auto"]);
@@ -96,6 +117,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'taskchunk':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// update task chunk time
 			$task = intval($_POST["task"]);
 			$chunktime = intval($_POST["chunktime"]);
@@ -112,6 +136,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'taskrename':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// change task name
 			$task = intval($_POST["task"]);
 			$name = $FACTORIES::getagentsFactory()->getDB()->quote(htmlentities($_POST["name"], false, "UTF-8"));
@@ -120,7 +147,10 @@ if(isset($_POST['action'])){
 				$message = "<div class='alert alert-danger'>Could not rename task!</div>";
 			}
 			break;
-		case "finishedtasksdelete";
+		case "finishedtasksdelete":
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			// delete finished tasks
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT tasks.id,hashlists.format,tasks.hashlist FROM tasks JOIN hashlists ON tasks.hashlist=hashlists.id JOIN (SELECT task,SUM(progress) AS sumprog FROM chunks WHERE rprogress=10000 GROUP BY task) chunks ON chunks.task=tasks.id WHERE (tasks.progress=tasks.keyspace AND chunks.sumprog=tasks.keyspace) OR hashlists.cracked=hashlists.hashcount");
 			$res = $res->fetchAll();
@@ -148,6 +178,9 @@ if(isset($_POST['action'])){
 			$message .= "</div>";
 			break;
 		case 'taskdelete':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// delete a task
 			$task = intval($_POST["task"]);
 			$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
@@ -162,6 +195,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'taskprio':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// change task priority
 			$task = intval($_POST["task"]);
 			$pretask = false;

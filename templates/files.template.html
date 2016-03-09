@@ -33,23 +33,30 @@
         				{{ENDIF}}
         			</td>
         			<td>
-        				<form id="secret[[file.getVal('id')]]" action="files.php" method="POST">
-        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
-        					<input type="hidden" name="action" value="filesecret">
-        					<input type='hidden' name="secret" value="{{IF !!file.getVal('secret')!! == '0'}}1{{ENDIF}}{{IF !!file.getVal('secret')!! == '1'}}0{{ENDIF}}">
-        					<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getVal('id')]]').submit();"{{IF !!file.getVal('secret')!! == '1'}} checked{{ENDIF}}>
-        				</form>
+        				{{IF !!login.getLevel()!! >= 30}}
+	        				<form id="secret[[file.getVal('id')]]" action="files.php" method="POST">
+	        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
+	        					<input type="hidden" name="action" value="filesecret">
+	        					<input type='hidden' name="secret" value="{{IF !!file.getVal('secret')!! == '0'}}1{{ENDIF}}{{IF !!file.getVal('secret')!! == '1'}}0{{ENDIF}}">
+	        					<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getVal('id')]]').submit();"{{IF !!file.getVal('secret')!! == '1'}} checked{{ENDIF}}>
+	        				</form>
+	        			{{ENDIF}}
+	        			{{IF !!login.getLevel()!! < 30}}
+	        				<input type='checkbox'{{IF !!file.getVal('secret')!! == 1}} checked{{ENDIF}}>
+	        			{{ENDIF}}
         			</td>
         			<td class='num'>
         				[[Util::nicenum(%%file.getVal('size')%%)]]B
         			</td>
         			<td>[[file.getVal('tasks')]]x</td>
         			<td>
-        				<form action="files.php" method="POST" onSubmit="if (!confirm('Really delete file [[file.getVal('filename')]]?')) return false;">
-        					<input type="hidden" name="action" value="filedelete">
-        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
-        					<input type="submit" class='btn btn-danger' value="Delete">
-        				</form>
+        				{{IF !!login.getLevel()!! >= 30}}
+	        				<form action="files.php" method="POST" onSubmit="if (!confirm('Really delete file [[file.getVal('filename')]]?')) return false;">
+	        					<input type="hidden" name="action" value="filedelete">
+	        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
+	        					<input type="submit" class='btn btn-danger' value="Delete">
+	        				</form>
+	        			{{ENDIF}}
         			</td>
         		</tr>
 			{{ENDFOREACH}}

@@ -19,6 +19,9 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'agentowner':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			// change agent owner
 			$agid = intval($_POST["agent"]);
 			$owner = intval($_POST["owner"]);
@@ -130,6 +133,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'agentdelete':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			$agent = $FACTORIES::getagentsFactory()->get($_POST['agent']);
 			$FACTORIES::getagentsFactory()->getDB()->query("START TRANSACTION");
 			if (Util::deleteAgent($agent)) {

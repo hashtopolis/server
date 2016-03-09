@@ -21,7 +21,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 1 && !!login.getLevel()!! < 30}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 5 && !!login.getLevel()!! < 30}}
 					<li[[menu.isActive('agents_list')]]><a href="agents.php">Agents</a></li>
 				{{ENDIF}}
 				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 20}}
@@ -33,10 +33,10 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 0 && !!login.getLevel()!! < 2}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 0 && !!login.getLevel()!! < 5}}
 					<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 1 && !!login.getLevel()!! < 20}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 5 && !!login.getLevel()!! < 20}}
 					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
@@ -54,7 +54,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 1 && !!login.getLevel()!! < 20}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 5 && !!login.getLevel()!! < 20}}
 					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
@@ -76,7 +76,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! > 1 && !!login.getLevel()!! < 30}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 5 && !!login.getLevel()!! < 30}}
 					<li[[menu.isActive('hashcat_list')]]><a href="hashcat.php">Hashcat releases</a></li>
 				{{ENDIF}}
 				{{IF !!login.isLoggedin()!!}}

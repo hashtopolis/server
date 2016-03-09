@@ -19,6 +19,9 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'preconf':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			$hlist = intval($_POST["hashlist"]);
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$addc = 0; 
@@ -37,7 +40,6 @@ if(isset($_POST['action'])){
 						$tid = $DB->lastInsertId();
 						$filq = $DB->query("INSERT INTO taskfiles (task, file) SELECT $tid,file FROM taskfiles WHERE task=$id");
 						$filc += $filq->rowCount();
-						echo "Added task $id as $tid.<br>";
 					}
 				}
 			}
@@ -50,6 +52,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'wordlist':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// create wordlist from hashlist cracked hashes
 			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT format FROM hashlists WHERE id=$hlist");
@@ -92,6 +97,9 @@ if(isset($_POST['action'])){
 			$message .= "</div>";
 			break;
 		case 'hashlistsecret':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			// switch hashlist secret state
 			$hlist = intval($_POST["hashlist"]);
 			$secret = intval($_POST["secret"]);
@@ -108,6 +116,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'hashlistrename':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// change hashlist name
 			$hlist = intval($_POST["hashlist"]);
 			$name = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["name"]);
@@ -121,6 +132,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'hashlistzapp':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// pre-crack hashes processor
 			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,IFNULL(hashes.salted,0) AS salted FROM hashlists LEFT JOIN (SELECT hashlist,1 AS salted FROM hashes WHERE hashlist=$hlist AND salt!='' LIMIT 1) hashes ON hashlists.format=0 AND hashes.hashlist=hashlists.id WHERE hashlists.id=$hlist");
@@ -319,6 +333,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'export':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			// export cracked hashes to a file
 			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT format FROM hashlists WHERE id=$hlist");
@@ -401,6 +418,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'hashlistzap':
+			if($LOGIN->getLevel() < 20){
+				break;
+			}
 			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,IFNULL(hashes.salted,0) AS salted FROM hashlists LEFT JOIN (SELECT hashlist,1 AS salted FROM hashes WHERE hashlist=$hlist AND salt!='' LIMIT 1) hashes ON hashlists.format=0 AND hashes.hashlist=hashlists.id WHERE hashlists.id=$hlist");
 			$list = $res->fetch();
@@ -426,6 +446,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'hashlistdelete':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			// delete hashlist
 			$message = "<div class='alert alert-neutral'>";
 			$hlist = intval($_POST["hashlist"]);

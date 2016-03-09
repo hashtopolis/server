@@ -13,7 +13,7 @@
 			<td>Keyspace dispatched:</td>
 			<td>
 				[[task.getVal('progress')]] ([[Util::showperc(%%task.getVal('progress')%%, %%task.getVal('keyspace')%%)]]%)
-				{{IF !!task.getVal('active')!! == 0}}
+				{{IF !!task.getVal('active')!! == 0 && !!login.getLevel()!! >= 20}}
 					<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getVal('id')]]?')) return false;">
 						<input type="hidden" name="action" value="taskpurge">
 						<input type="hidden" name="task" value="[[task.getVal('id')]]">

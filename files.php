@@ -19,6 +19,9 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'filedelete':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			// delete global file
 			$fid = intval($_POST["file"]);
 			$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
@@ -53,6 +56,9 @@ if(isset($_POST['action'])){
 			}
 			break;
 		case 'filesecret':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
 			// switch global file secret state
 			$fid = intval($_POST["file"]);
 			$secret = intval($_POST["secret"]);
