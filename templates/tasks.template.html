@@ -30,11 +30,22 @@
 	    			{{IF !!strlen(%%task.getVal('color')%%)!! > 0}}
 	    				style='background-color: #[[task.getVal('color')]]'
 	    			{{ENDIF}}
-	    			><a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('task')]]</a>
+	    			>
+	    			{{IF !!login.getLevel()!! >= 5}}
+	    				<a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('task')]]</a>
+	    			{{ENDIF}}
+	    			{{IF !!login.getLevel()!! < 5}}
+	    				[[task.getVal('task')]]
+	    			{{ENDIF}}
     			</td>
     			<td title="[[task.getVal('attackcmd')]]">
-    				<a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('name')]]</a>
-        			[[Util::tickdone(%%task.getVal('sumprog')%%,%%task.getVal('keyspace')%%)]]
+    				{{IF !!login.getLevel()!! >= 5}}
+    					<a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('name')]]</a>
+    				{{ENDIF}}
+    				{{IF !!login.getLevel()!! < 5}}
+    					[[task.getVal('name')]]
+    				{{ENDIF}}
+        			[[Util::tickdone(%%task.getVal('sumprog')%%, %%task.getVal('keyspace')%%)]]
         			{{IF !!task.getVal('active')!! == 1 && !!task.getVal('sumprog')!! < !!task.getVal('keyspace')!!}}
         				<img src="static/active.gif" alt="Active">
         			{{ENDIF}}
@@ -43,8 +54,11 @@
         			{{IF !!task.getVal('hashlist')!! == ""}}
         				(pre-configured task)
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != ""}}
+        			{{IF !!task.getVal('hashlist')!! != "" && !!login.getLevel()!! >= 5)}}
         				<a href="hashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('hname')]]</a>
+        			{{ENDIF}}
+        			{{IF !!task.getVal('hashlist')!! != "" && !!login.getLevel()!! < 5}}
+        				[[task.getVal('hname')]]
         			{{ENDIF}}
         			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hsecret')!! == 1}}
         				<img src="static/lock.gif" alt="Secret">
@@ -69,8 +83,11 @@
         			<td colspan='2'>Keyspace unknown</td>
         		{{ENDIF}}
         		<td class='num'>
-        			{{IF !!task.getVal('pcount')!! > 0}}
+        			{{IF !!task.getVal('pcount')!! > 0 && !!login.getLevel()!! >= 5}}
         				<a href="hashes.php?task=[[task.getVal('task')]]&filter=cracked">[[task.getVal('pcount')]]</a>
+        			{{ENDIF}}
+        			{{IF !!task.getVal('pcount')!! > 0 && !!login.getLevel()!! < 5}}
+        				[[task.getVal('pcount')]]
         			{{ENDIF}}
         		</td>
         		<td class='num'>
