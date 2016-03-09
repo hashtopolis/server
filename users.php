@@ -31,9 +31,7 @@ foreach($res as $entry){
 	$users[] = $set;
 }
 
-print_r($users);
-
-$OBJECTS['users'] = $users;
+$OBJECTS['allUsers'] = $users;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

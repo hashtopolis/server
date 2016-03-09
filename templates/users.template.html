@@ -15,7 +15,7 @@
 			<th>Right group</th>
 			<th>Action</th>
 		</tr>
-		{{FOREACH entry,!!users!!}}
+		{{FOREACH entry,!!allUsers!!}}
 			<tr>
 				<td>[[entry.getVal('user').getId()]]</td>
 				<td>[[htmlentities(%%entry.getVal('user').getUsername()%%)]]</td>
