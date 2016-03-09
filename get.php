@@ -28,8 +28,8 @@ if(!$line){
 if(!$LOGIN->isLoggedin()){
 	$token = $DB->quote(@$_GET['token']);
 	$res = $DB->query("SELECT * FROM agents WHERE token=$token");
-	$line = $res->fetch();
-	if(!$line){
+	$agent = $res->fetch();
+	if(!$agent){
 		die("No access!");
 	}
 	//TODO: check here trusted status
