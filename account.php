@@ -14,7 +14,17 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		case 'setemail':
+			$email = $_POST['email'];
+			if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+				$message = "<div class='alert alert-danger'>Invalid email address!</div>";
+				break;
+			}
+			$user = $LOGIN->getUser();
+			$user->setEmail($email);
+			$FACTORIES::getUserFactory()->update($user);
+			header("Location: account.php");
+			die();
 	}
 }
 
