@@ -33,17 +33,8 @@
         				{{ENDIF}}
         			</td>
         			<td>
-        				{{IF !!login.getLevel()!! >= 30}}
-	        				<form id="secret[[file.getVal('id')]]" action="files.php" method="POST">
-	        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
-	        					<input type="hidden" name="action" value="filesecret">
-	        					<input type='hidden' name="secret" value="{{IF !!file.getVal('secret')!! == '0'}}1{{ENDIF}}{{IF !!file.getVal('secret')!! == '1'}}0{{ENDIF}}">
-	        					<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getVal('id')]]').submit();"{{IF !!file.getVal('secret')!! == '1'}} checked{{ENDIF}}>
-	        				</form>
-	        			{{ENDIF}}
-	        			{{IF !!login.getLevel()!! < 30}}
-	        				<input type='checkbox'{{IF !!file.getVal('secret')!! == 1}} checked{{ENDIF}}>
-	        			{{ENDIF}}
+        				{%TEMPLATE->files.secret1%}
+        				{%TEMPLATE->files.secret2%}
         			</td>
         			<td class='num'>
         				[[Util::nicenum(%%file.getVal('size')%%)]]B
