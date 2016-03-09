@@ -24,10 +24,10 @@ if(isset($_POST['action'])){
 
 $users = array();
 $res = $FACTORIES::getUserFactory()->filter(array());
-foreach($res as $user){
+foreach($res as $entry){
 	$set = new DataSet();
-	$set->addValue('user', $user);
-	$set->addValue('group', $FACTORIES::getRightGroupFactory()->get($user->getRightGroupId()));
+	$set->addValue('user', $entry);
+	$set->addValue('group', $FACTORIES::getRightGroupFactory()->get($entry->getRightGroupId()));
 	$users[] = $set;
 }
 
