@@ -22,7 +22,14 @@
 				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getRegisteredSince()%%)]]</td>
 				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getLastLoginDate()%%)]]%%</td>
 				<td>[[entry.getVal('user').getEmail()]]</td>
-				<td>[[entry.getVal('user').getIsValid()]]</td>
+				<td>
+					{{IF !!entry.getVal('user').getIsValid()!! == 1}}
+						Valid
+					{{ENDIF}}
+					{{IF !!entry.getVal('user').getIsValid()!! != 1}}
+						Invalid/Not activated
+					{{ENDIF}}
+				</td>
 				<td>[[entry.getVal('user').getSessionLifetime()]]</td>
 				<td>[[entry.getVal('group').getGroupName()]]</td>
 				<td>
