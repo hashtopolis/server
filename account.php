@@ -18,6 +18,9 @@ if(isset($_POST['action'])){
 	}
 }
 
+$group = $FACTORIES::getRightGroupFactory()->get($LOGIN->getUser()->getRightGroupId());
+
+$OBJECTS['group'] = $group;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
