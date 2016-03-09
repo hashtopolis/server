@@ -18,7 +18,7 @@
 				<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="post">
        				<input type='hidden' name='action' value='agentowner'>
        				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
-       				<select class='form-control' name='user'>
+       				<select class='form-control' name='owner'>
        					<option value="">---</option>
        					{{FOREACH user,!!users!!}}
        						<option value='[[user.getId()]]'{{IF !!user.getId()!! == !!agent.getVal('userId')!!}} selected{{ENDIF}}>[[htmlentities(%%user.getUsername()%%, false, "UTF-8")]]</option>
