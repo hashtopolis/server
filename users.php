@@ -25,6 +25,7 @@ if(isset($_POST['action'])){
 $users = array();
 $res = $FACTORIES::getUserFactory()->filter(array());
 foreach($res as $entry){
+	print_r($entry);
 	$set = new DataSet();
 	$set->addValue('user', $entry);
 	$set->addValue('group', $FACTORIES::getRightGroupFactory()->get($entry->getRightGroupId()));
