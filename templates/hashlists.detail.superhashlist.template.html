@@ -13,7 +13,7 @@
 				</td>
 				<td>
 					<a href="hashlists.php?id=[[sublist.getVal('id')]]">[[sublist.getVal('name')]]</a>
-					{{IF !!sublist.getVal('secret') == 1}}
+					{{IF !!sublist.getVal('secret')!! == 1}}
 						<img src="static/lock.gif" alt="Secret">
 					{{ENDIF}}
 					[[Util::tickdone(%%sublist.getVal('cracked')%%, %%sublist.getVal('hashcount')%%)]]
