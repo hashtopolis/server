@@ -17,7 +17,9 @@
 			<th>Last activity</th>
 			<th>Owner</th>
 			<th>Assignment</th>
-			<th>Action</th>
+			{{IF !!login.getLevel()!! >= 30}}
+				<th>Action</th>
+			{{ENDIF}}
 		</tr>
 		{{FOREACH set,!!sets!!}}
 			<tr>
@@ -75,13 +77,15 @@
         				</select>
         			</form>
         		</td>
-        		<td>
-        			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('id')]]?')) return false;">
-        				<input type='hidden' name='action' value='agentdelete'>
-        				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
-        				<input type="submit" class='btn btn-danger' value="Delete">
-        			</form>
-        		</td>
+        		{{IF !!login.getLevel()!! >= 30}}
+	        		<td>
+	        			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('id')]]?')) return false;">
+	        				<input type='hidden' name='action' value='agentdelete'>
+	        				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
+	        				<input type="submit" class='btn btn-danger' value="Delete">
+	        			</form>
+	        		</td>
+        		{{ENDIF}}
 		{{ENDFOREACH}}
 	</table>
 </div>
