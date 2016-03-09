@@ -257,8 +257,7 @@ switch($action){
 			$res = $DB->query("SELECT id FROM files WHERE filename='$file'");
 			$line = $res->fetch();
 			//header("Location: files/$file");
-			die("Location: get.php?file=".$line['id']."&token=".substr($token, 1 -1));
-			header("Location: get.php?file=".$line['id']."&token=".substr($token, 1 -1));
+			header("Location: get.php?file=".$line['id']."&token=".substr($token, 1, -1));
 		}
 		break;
 	case "hashes":
