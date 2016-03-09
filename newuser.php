@@ -46,7 +46,7 @@ if(isset($_POST['action'])){
 			$user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
 			$FACTORIES::getUserFactory()->save($user);
 			$tmpl = new Template("email.creation");
-			$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME]."/".$_SERVER[REQUEST_URI]);
+			$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME]."/");
 			Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
 			header("Location: users.php");
 			die();
