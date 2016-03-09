@@ -65,7 +65,7 @@
 				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 20}}
 					<li[[menu.isActive('files')]]><a href="files.php">Files</a></li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 10}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 5}}
 					<li[[menu.isActive('chunks')]]><a href="chunks.php">Chunk activity</a></li>
 				{{ENDIF}}
 				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 30}}
@@ -76,7 +76,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 5 && !!login.getLevel()!! < 30}}
+				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 10 && !!login.getLevel()!! < 30}}
 					<li[[menu.isActive('hashcat_list')]]><a href="hashcat.php">Hashcat releases</a></li>
 				{{ENDIF}}
 				{{IF !!login.isLoggedin()!!}}
