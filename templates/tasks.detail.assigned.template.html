@@ -34,6 +34,9 @@
 				{{IF !!login.getLevel()!! >= 20}}
 					onChange="javascript:document.getElementById('auto[[agent.getVal('id')]]').submit();"
 				{{ENDIF}}
+				{{IF !!login.getLevel()!! < 20}}
+					disabled
+				{{ENDIF}}
 				> Auto
 		</form>
 	</td>
