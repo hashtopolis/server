@@ -24,7 +24,7 @@ class Util{
 		
 		$user = $FACTORIES::getUserFactory()->get($id);
 		if($user === null){
-			return "Unknown";
+			return "Unknown-$id";
 		}
 		return $user->getUsername();
 	}
