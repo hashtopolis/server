@@ -57,7 +57,7 @@
         		</td>
         		<td>
         			{{IF !!set.getVal('userId')!! > 0}}
-        				[[Util::getUsernameById(%%!!set.getVal('userId')%%)]]
+        				[[Util::getUsernameById(%%set.getVal('userId')%%)]]
         			{{ENDIF}}
         			{{IF !!set.getVal('userId')!! <= 0}}
         				---
