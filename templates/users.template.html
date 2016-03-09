@@ -1,52 +1,19 @@
 {%TEMPLATE->head%}
 {%TEMPLATE->menu%}
-<h2>My Account ([[htmlentities(%%user.getUsername()%%, false, "UTF-8")]])</h2>
+<h2>All users</h2>
 [[message]]
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
-			<th>User type</th>
-			<td>
-				[[group.getGroupName()]]
-			</td>
-		</tr>
-		<tr>
-			<th>Register date</th>
-			<td>
-				[[date(%%config.getVal('timefmt')%%, %%user.getRegisteredSince()%%)]]
-			</td>
-		</tr>
-		<tr>
-			<th>Email address</th>
-			<td>
-				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='setemail'>
-       				<input type='email' name='email' class='form-control' value='[[user.getEmail()]]'>
-       				<input type="submit" class='btn btn-default' value="Update">
-       			</form>
-			</td>	
-		</tr>
-		<tr>
-			<th>Set session length</th>
-			<td>
-				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='updatelifetime'>
-       				<input type='text' name='lifetime' class='form-control' value='[[user.getSessionLifetime()]]'> seconds
-       				<input type="submit" class='btn btn-default' value="Update">
-       			</form>
-			</td>	
-		</tr>
-		<tr>
-			<th>Password</th>
-			<td>
-				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='changepass'>
-       				<input type='password' name='oldpass' class='form-control' placeholder='Old password here...'>
-       				<input type='password' name='newpass' class='form-control' placeholder='New password here...'>
-       				<input type='password' name='reppass' class='form-control' placeholder='Repeat password...'>
-       				<input type="submit" class='btn btn-default' value="Change Password">
-       			</form>
-			</td>
+			<th>ID</th>
+			<th>Username</th>
+			<th>Creation date</th>
+			<th>Last login</th>
+			<th>Email</th>
+			<th>Validity</th>
+			<th>Session lifetime</th>
+			<th>Right group</th>
+			<th>Action</th>
 		</tr>
 	</table>
 </div>
