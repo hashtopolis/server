@@ -225,7 +225,7 @@ if(isset($_POST['action'])){
 	}
 }
 
-if(isset($_GET['id'])){
+if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 	$TEMPLATE = new Template("tasks.detail");
 	
 	// show task details
