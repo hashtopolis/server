@@ -163,6 +163,9 @@ if(isset($_GET['id'])){
 		$message = "<div class='alert alert-danger'>Agent not found!</div>";
 	}
 	else{
+		$users = $FACTORIES::getUserFactory()->filter(array());
+		$OBJECTS['users'] = $users;
+		
 		$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT agents.*,assignments.task,SUM(GREATEST(chunks.solvetime,chunks.dispatchtime)-chunks.dispatchtime) AS spent FROM agents LEFT JOIN assignments ON assignments.agent=agents.id LEFT JOIN chunks ON chunks.agent=agents.id WHERE agents.id=".$agent->getId());
 		$agentSet = new DataSet();
 		$agentSet->setValues($res->fetch());
