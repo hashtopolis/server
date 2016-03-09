@@ -69,17 +69,7 @@
         <tr>
         	<td>Secret:</td>
         	<td>
-        		{{IF !!login.getLevel()!! >= 30}}
-			        <form id="hashlistsecret" action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
-				        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
-				        <input type="hidden" name="action" value="hashlistsecret">
-				        <input type="checkbox" name="secret" value="1"{{IF !!list.getVal('secret')!! == 1}} checked{{ENDIF}}
-	         				onChange="javascript:document.getElementById('hashlistsecret').submit();"> Hashlist contains secret data
-	        		</form>
-        		{{ENDIF}}
-        		{{IF !!login.getLevel()!! < 30}}
-        			<input type='checkbox'{{IF !!list.getVal('secret')!! == 1}} checked{{ENDIF}}> Hashlist contains secret data
-        		{{ENDIF}}
+        		{%TEMPLATE->hashlists.detail.secret%}
         	</td>
         </tr>
         <tr>
