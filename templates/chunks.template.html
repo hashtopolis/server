@@ -43,11 +43,14 @@
         			{{ENDIF}}
        	 		</td>
        	 		<td>
-       	 			{{IF !!chunk.getVal('agent')!! == "" || !!login.getLevel()!! < 20}}
+       	 			{{IF !!chunk.getVal('agent')!! == ""}}
        	 				N/A
        	 			{{ENDIF}}
-       	 			{{IF !!chunk.getVal('agent')!! != ""}}
+       	 			{{IF !!chunk.getVal('agent')!! != "" && !!login.getLevel()!! >= 20}}
        	 				<a href="agents.php?id=[[chunk.getVal('agent')]]">[[chunk.getVal('aname')]]</a>
+       	 			{{ENDIF}}
+       	 			{{IF !!chunk.getVal('agent')!! != "" && !!login.getLevel()!! < 20}}
+       	 				[[chunk.getVal('aname')]]
        	 			{{ENDIF}}
         		</td>
         		<td>
