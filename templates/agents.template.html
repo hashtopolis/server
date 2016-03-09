@@ -15,6 +15,7 @@
 			<th>GPUs</th>
 			<th>Hashcat</th>
 			<th>Last activity</th>
+			<th>Owner</th>
 			<th>Assignment</th>
 			<th>Action</th>
 		</tr>
@@ -53,6 +54,14 @@
         		<td>
         			[[set.getVal('lastact')]] at [[date(%%config.getVal('timefmt')%%, %%set.getVal('lasttime')%%)]]<br>
         			IP: [[set.getVal('lastip')]]
+        		</td>
+        		<td>
+        			{{IF !!set.getVal('userId')!! > 0}}
+        				[[Util::getUsernameById(%%!!set.getVal('userId')%%)]]
+        			{{ENDIF}}
+        			{{IF !!set.getVal('userId')!! <= 0}}
+        				---
+        			{{ENDIF}}
         		</td>
         		<td>
         			<form id="assign[[set.getVal('id')]]" action="agents.php" method="post">

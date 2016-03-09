@@ -19,6 +19,16 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function getUsernameById($id){
+		global $FACTORIES;
+		
+		$user = $FACTORIES::getUserFactory()->get($id);
+		if($user == null){
+			return "Unknown";
+		}
+		return $user->getUsername();
+	}
+	
 	public static function writecache(){
 		// flush temporary cache to the actual tables
 		global $tbl, $crack_cas, $cid, $agid, $superhash, $hlist, $DB;
