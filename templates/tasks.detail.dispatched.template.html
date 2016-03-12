@@ -59,10 +59,10 @@
          				[[Util::getStaticArray(%%chunk.getVal('state')%%, 'states')]]
          			</td>
          			<td class="num">
-         				{{IF !!chunk.getVal('cracked')!! > 0 && !!login.getLevel() >= 5}}
+         				{{IF !!chunk.getVal('cracked')!! > 0 && !!login.getLevel()!! >= 5}}
          					<a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
          				{{ENDIF}}
-         				{{IF !!chunk.getVal('cracked')!! > 0 && !!login.getLevel() < 5}}
+         				{{IF !!chunk.getVal('cracked')!! > 0 && !!login.getLevel()!! < 5}}
          					[[chunk.getVal('cracked')]]
          				{{ENDIF}}
          			</td>

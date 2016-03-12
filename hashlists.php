@@ -35,7 +35,7 @@ if(isset($_POST['action'])){
 					if ($id > 0) {
 						$res = $DB->query("SELECT name,attackcmd,chunktime,statustimer,autoadjust,priority FROM tasks WHERE tasks.id=$id");
 						$task = $res->fetch();
-						$addq = $DB->query("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, priority) VALUES ('HL".$hlist."_".substr($DB->quote($task["name"]), 1, -1)."', ".$DB->quote($dblink,$erej["attackcmd"]).", $hlist, ".$task["chunktime"].", ".$task["statustimer"].", ".$task["autoadjust"].", ".($task["priority"]>0 ? $base+$task["priority"] : 0).")");
+						$addq = $DB->query("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, priority) VALUES ('HL".$hlist."_".substr($DB->quote($task["name"]), 1, -1)."', ".$DB->quote($task["attackcmd"]).", $hlist, ".$task["chunktime"].", ".$task["statustimer"].", ".$task["autoadjust"].", ".($task["priority"]>0 ? $base+$task["priority"] : 0).")");
 						$addc += $addq->rowCount();
 						$tid = $DB->lastInsertId();
 						$filq = $DB->query("INSERT INTO taskfiles (task, file) SELECT $tid,file FROM taskfiles WHERE task=$id");
