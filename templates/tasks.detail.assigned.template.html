@@ -28,7 +28,7 @@
 	<td>
 		{{IF !!login.getLevel()!! >= 20}}
 			<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
-				<input type="hidden" name="return" value="agentbench"> 
+				<input type="hidden" name="action" value="agentbench"> 
 				<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
 				<input type="text" class='form-control' name="bench" value="[[agent.getVal('benchmark')]]" size="8"> 
 				<input type="submit" class='btn btn-default' value="Set">
