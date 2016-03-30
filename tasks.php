@@ -182,6 +182,10 @@ if(isset($_POST['action'])){
 			$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
 			if (Util::delete_task($task)) {
 				$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
+				if(isset($_POST['refer']) && $_POST['refer'] == 'pretask'){
+					header("Location: pretasks.php");
+					die();
+				}
 				header("Location: tasks.php");
 				die();
 			} 
