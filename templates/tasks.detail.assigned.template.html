@@ -53,7 +53,8 @@
 	<td class="num">
 		{{IF !!agent.getVal('working')!! == 1}}
 			[[Util::nicenum(%%agent.getVal('speed')%%, 100000, 1000)]]H/s
-		{{ENDIF}}</td>
+		{{ENDIF}}
+	</td>
 	<td class="num">
 		{{IF !!task.getVal('keyspace')!! > 0}}
 			[[agent.getVal('searched')]]
@@ -62,9 +63,11 @@
 	</td>
 	<td class="num">[[Util::sectotime(%%agent.getVal('spent')%%)]]</td>
 	<td class="num">[[agent.getVal('cracked')]]</td>
-	<td>{{IF !!agent.getVal('time')!! > 0}}
-		[[date(%%config.getVal('timefmt')%%, %%agent.getVal('time')%%)]]
-		{{ENDIF}}</td>
+	<td>
+		{{IF !!agent.getVal('time')!! > 0}}
+			[[date(%%config.getVal('timefmt')%%, %%agent.getVal('time')%%)]]
+		{{ENDIF}}
+	</td>
 	<td>
 		{{IF !!login.getLevel()!! >= 20}}
 			<form action="agents.php?task=[[task.getVal('id')]]" method="POST">

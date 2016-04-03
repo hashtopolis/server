@@ -9,7 +9,6 @@
 				<th>Time spent</th>
 				<th>Cracked</th>
 				<th>Last activity</th>
-				<th>Action</th>
 			</tr>
 			{{FOREACH agent,!!allAgents!!}}
 				<tr>
@@ -46,17 +45,9 @@
 					</td>
 					<td class="num">[[Util::sectotime(%%agent.getVal('spent')%%)]]</td>
 					<td class="num">[[agent.getVal('cracked')]]</td>
-					<td>{{IF !!agent.getVal('time')!! > 0}}
-						[[date(%%config.getVal('timefmt')%%, %%agent.getVal('time')%%)]]
-						{{ENDIF}}</td>
 					<td>
-						{{IF !!login.getLevel()!! >= 20}}
-							<form action="agents.php?task=[[task.getVal('id')]]" method="POST">
-								<input type="hidden" name="action" value="agentassign"> 
-								<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
-								<input type="hidden" name="task" value=""> 
-								<input type="submit" class='btn btn-default' value="Unassign">
-							</form>
+						{{IF !!agent.getVal('time')!! > 0}}
+							[[date(%%config.getVal('timefmt')%%, %%agent.getVal('time')%%)]]
 						{{ENDIF}}
 					</td>
 				</tr>
