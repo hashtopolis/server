@@ -8,7 +8,6 @@
 			<th>Id</th>
 			<th>Act</th>
 			<th>Name / Owner</th>
-			<th>OS / CPU</th>
 			<th>GPU brand / Driver</th>
 			<th>GPUs</th>
 			<th>Hashcat</th>
@@ -45,7 +44,6 @@
         				---
         			{{ENDIF}}
         		</td>
-        		<td>[[Util::getStaticArray(%%set.getVal('os')%%, 'os')]] [[set.getVal('cputype')]]-bit</td>
         		<td>[[Util::getStaticArray(%%set.getVal('gpubrand')%%, 'platforms')]] / [[set.getVal('gpudriver')]]</td>
         		<td>
 	        		{{FOREACH gpu,!!set.getVal('gpus')!!}}
