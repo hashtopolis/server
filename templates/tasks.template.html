@@ -3,7 +3,7 @@
 <h2>Tasks ([[numTasks]])</h2>
 [[message]]
 {{IF !!login.getLevel()!! >= 30}}
-	<form action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
+	<form action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
 		<input type='hidden' name='action' value='finishedtasksdelete'>
 	    <input type="submit" value="Delete finished" class='btn btn-default'>
 	</form>
