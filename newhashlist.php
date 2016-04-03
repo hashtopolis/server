@@ -24,10 +24,6 @@ if(isset($_POST['action'])){
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1);
 			$fs = substr($DB->quote($_POST["separator"]), 1, -1);
-			if($salted){
-				echo "salted!";
-			}
-			die("--".$fs."--");
 			$format = $_POST["format"];
 			$hashtype = intval($_POST["hashtype"]);
 			$message = "<div class='alert alert-neutral'>";
@@ -245,8 +241,8 @@ if(isset($_POST['action'])){
 							}
 							unlink($tmpfile);
 						}
-						header("Location: hashlists.php");
-						die();
+						/*header("Location: hashlists.php");
+						die();*/
 					} 
 					else {
 						$message .= "ERROR: ".$DB->errorInfo();
