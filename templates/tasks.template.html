@@ -3,11 +3,10 @@
 <h2>Tasks ([[numTasks]])</h2>
 [[message]]
 {{IF !!login.getLevel()!! >= 30}}
-	<form action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
+	<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
 		<input type='hidden' name='action' value='finishedtasksdelete'>
 	    <input type="submit" value="Delete finished" class='btn btn-default'>
 	</form>
-	<br>
 {{ENDIF}}
 {%TEMPLATE->tasks.autorefresh%}
 <div class="panel panel-default">
@@ -104,7 +103,7 @@
         				<img src="static/lock.gif" alt="Secret">
         			{{ENDIF}}
         		</td>
-        		<td>
+        		<td style='min-width: 150px'>
         			{{IF !!login.getLevel()!! >= 20}}
 	        			<form class="form-inline" action="tasks.php" method="POST">
 	        				<input type='hidden' name='action' value='taskprio'>
@@ -117,7 +116,7 @@
         				[[task.getVal('priority')]]
         			{{ENDIF}}
         		</td>
-        		<td>
+        		<td style='min-width: 150px'>
         			{{IF !!login.getLevel()!! >= 30}}
 	        			<form style ='float: left; padding-right: 5px;' action="newtask.php?id=[[task.getVal('task')]]" method="post">
 	        				<input type="submit" class='btn btn-default' value="Copy">
