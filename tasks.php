@@ -319,7 +319,7 @@ if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 		foreach($res as $agent){
 			$set = new DataSet();
 			$set->setValues($agent);
-			$agents[] = $set;
+			$allAgents[] = $set;
 		}
 		$OBJECTS['allAgents'] = $allAgents;
 		$showAll = false;
