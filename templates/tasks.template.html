@@ -98,12 +98,15 @@
         				[[task.getVal('assigncount')]]
         			{{ENDIF}}
         		</td>
-        		<td style='min-width: 90px'>
+        		<td style='min-width: 95px'>
         			{{IF !!task.getVal('filescount')!! > 0}}
-        				[[task.getVal('filescount')]]<br>([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
+        				[[task.getVal('filescount')]]
         			{{ENDIF}}
         			{{IF !!task.getVal('secret')!! == 1}}
         				<img src="static/lock.gif" alt="Secret">
+        			{{ENDIF}}
+        			{{IF !!task.getVal('filescount')!! > 0}}
+        				<br>([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
         			{{ENDIF}}
         		</td>
         		<td style='min-width: 130px'>
