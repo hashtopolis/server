@@ -310,6 +310,9 @@ if(isset($_POST['action'])){
 						}
 						$message .= "Pre-cracking completed ($zapy hashes pre-cracked, $skipy skipped for duplicity or empty plaintext, $chyby SQL errors, took ".($cas_stop-$cas_start)." sec)";
 						fclose($hhandle);
+						if(file_exists($tmpfile)){
+							unlink($tmpfile);
+						}
 						if($superhash){
 							header("Location: superhashlists.php");
 							die();
