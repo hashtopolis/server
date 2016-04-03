@@ -98,7 +98,7 @@
         				[[task.getVal('assigncount')]]
         			{{ENDIF}}
         		</td>
-        		<td>
+        		<td style='min-width: 90px'>
         			{{IF !!task.getVal('filescount')!! > 0}}
         				[[task.getVal('filescount')]]<br>([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
         			{{ENDIF}}
