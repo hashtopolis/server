@@ -18,6 +18,10 @@
 	    	<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 	    <![endif]-->
 	    
+	    {{IF !!autorefresh!! > 0}}
+	    	<meta http-equiv="refresh" content="[[autorefresh]]">
+	    {{ENDIF}}
+	    
 	    <script type='text/javascript'>
 			function sourceChange(valu) {
 				var pasteObject = document

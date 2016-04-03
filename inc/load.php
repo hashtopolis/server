@@ -80,6 +80,7 @@ foreach($res as $entry){
 }
 $OBJECTS['config'] = $CONFIG;
 
-
+//set autorefresh to false for all pages
+$OBJECTS['autorefresh'] = 0;
 
 

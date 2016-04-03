@@ -229,6 +229,28 @@ if(isset($_POST['action'])){
 	}
 }
 
+//test if auto-reload is enabled
+$autorefresh = 0;
+if(isset($_COOKIE['autorefresh']) && $_COOKIE['autorefresh'] == 'On'){
+	$autorefresh = 10;
+}
+if(isset($_POST['toggleautorefresh'])){
+	if($autorefresh != 0){
+		$autorefresh = 0;
+		setcookie("autorefresh", "", time() - 600);
+	}
+	else{
+		$autorefresh = 10;
+	}
+}
+if($autorefresh > 0){
+	setcookie("autorefresh", "On", time() + 3600*24);
+}
+if(isset($_POST['action'])){
+	$autorefresh = 0;
+}
+$OBJECTS['autorefresh'] = $autorefresh;
+
 if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 	$TEMPLATE = new Template("tasks.detail");
 	
