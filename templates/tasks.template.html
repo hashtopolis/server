@@ -11,6 +11,7 @@
 	{{ENDIF}}
 	{%TEMPLATE->tasks.autorefresh%}
 </div>
+<br>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
     	<tr>
@@ -99,7 +100,7 @@
         		</td>
         		<td>
         			{{IF !!task.getVal('filescount')!! > 0}}
-        				[[task.getVal('filescount')]] ([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
+        				[[task.getVal('filescount')]]<br>([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
         			{{ENDIF}}
         			{{IF !!task.getVal('secret')!! == 1}}
         				<img src="static/lock.gif" alt="Secret">
