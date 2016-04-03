@@ -2,13 +2,15 @@
 {%TEMPLATE->menu%}
 <h2>Tasks ([[numTasks]])</h2>
 [[message]]
-{{IF !!login.getLevel()!! >= 30}}
-	<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
-		<input type='hidden' name='action' value='finishedtasksdelete'>
-	    <input type="submit" value="Delete finished" class='btn btn-default'>
-	</form>
-{{ENDIF}}
-{%TEMPLATE->tasks.autorefresh%}
+<div style='overflow: auto;'>
+	{{IF !!login.getLevel()!! >= 30}}
+		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
+			<input type='hidden' name='action' value='finishedtasksdelete'>
+		    <input type="submit" value="Delete finished" class='btn btn-default'>
+		</form>
+	{{ENDIF}}
+	{%TEMPLATE->tasks.autorefresh%}
+</div>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
     	<tr>
@@ -103,7 +105,7 @@
         				<img src="static/lock.gif" alt="Secret">
         			{{ENDIF}}
         		</td>
-        		<td style='min-width: 150px'>
+        		<td style='min-width: 130px'>
         			{{IF !!login.getLevel()!! >= 20}}
 	        			<form class="form-inline" action="tasks.php" method="POST">
 	        				<input type='hidden' name='action' value='taskprio'>
@@ -116,7 +118,7 @@
         				[[task.getVal('priority')]]
         			{{ENDIF}}
         		</td>
-        		<td style='min-width: 150px'>
+        		<td style='min-width: 120px'>
         			{{IF !!login.getLevel()!! >= 30}}
 	        			<form style ='float: left; padding-right: 5px;' action="newtask.php?id=[[task.getVal('task')]]" method="post">
 	        				<input type="submit" class='btn btn-default' value="Copy">
