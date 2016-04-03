@@ -5,8 +5,6 @@
 			<tr>
 				<th>ID</th>
 				<th>Name</th>
-				<th>Benchmark</th>
-				<th>Speed</th>
 				<th>Keyspace searched</th>
 				<th>Time spent</th>
 				<th>Cracked</th>
@@ -40,35 +38,6 @@
 							<img src="static/pause.gif" alt="Paused"> 
 						{{ENDIF}}
 					</td>
-					<td>
-						{{IF !!login.getLevel()!! >= 20}}
-							<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
-								<input type="hidden" name="action" value="agentbench"> 
-								<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
-								<input type="text" class='form-control' name="bench" value="[[agent.getVal('benchmark')]]" size="8"> 
-								<input type="submit" class='btn btn-default' value="Set">
-							</form>
-						{{ENDIF}}
-						{{IF !!login.getLevel()!! < 20}}
-							[[agent.getVal('benchmark')]]
-						{{ENDIF}}
-						<form id="auto[[agent.getVal('id')]]" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
-							<input type="hidden" name="action" value="agentauto"> 
-							<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
-							<input type="checkbox" name="auto" value="1"{{IF !!agent.getVal('autoadjust')!! == 1}} checked{{ENDIF}}
-								{{IF !!login.getLevel()!! >= 20}}
-									onChange="javascript:document.getElementById('auto[[agent.getVal('id')]]').submit();"
-								{{ENDIF}}
-								{{IF !!login.getLevel()!! < 20}}
-									disabled
-								{{ENDIF}}
-								> Auto
-						</form>
-					</td>
-					<td class="num">
-						{{IF !!agent.getVal('working')!! == 1}}
-							[[Util::nicenum(%%agent.getVal('speed')%%, 100000, 1000)]]H/s
-						{{ENDIF}}</td>
 					<td class="num">
 						{{IF !!task.getVal('keyspace')!! > 0}}
 							[[agent.getVal('searched')]]
