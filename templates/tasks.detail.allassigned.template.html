@@ -1,82 +1,97 @@
 {{IF !!showAllAgents!!}}
 	<h3>All assigned Agents (over all task time)</h3>
-	{{FOREACH agent,!!allAgents!!}}
-		<tr>
-			<td>
-				{{IF !!login.getLevel()!! >= 20}}
-					<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
-				{{ENDIF}}
-				{{IF !!login.getLevel()!! < 20}}
-					[[agent.getVal('id')]]
-				{{ENDIF}}
-			</td>
-			<td>
-				{{IF !!login.getLevel()!! >= 20}}
-					<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
-				{{ENDIF}}
-				{{IF !!login.getLevel()!! < 20}}
-					[[agent.getVal('name')]]
-				{{ENDIF}}
-				{{IF !!agent.getVal('trusted')!! == 1}} 
-					<img src="static/lock.gif" alt="Trusted"> 
-				{{ENDIF}} 
-				{{IF !!agent.getVal('working')!! == 1}}
-					<img src="static/active.gif" alt="Active"> 
-				{{ENDIF}} 
-				{{IF !!agent.getVal('active')!! == 0}} 
-					<img src="static/pause.gif" alt="Paused"> 
-				{{ENDIF}}
-			</td>
-			<td>
-				{{IF !!login.getLevel()!! >= 20}}
-					<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
-						<input type="hidden" name="action" value="agentbench"> 
-						<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
-						<input type="text" class='form-control' name="bench" value="[[agent.getVal('benchmark')]]" size="8"> 
-						<input type="submit" class='btn btn-default' value="Set">
-					</form>
-				{{ENDIF}}
-				{{IF !!login.getLevel()!! < 20}}
-					[[agent.getVal('benchmark')]]
-				{{ENDIF}}
-				<form id="auto[[agent.getVal('id')]]" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
-					<input type="hidden" name="action" value="agentauto"> 
-					<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
-					<input type="checkbox" name="auto" value="1"{{IF !!agent.getVal('autoadjust')!! == 1}} checked{{ENDIF}}
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Benchmark</th>
+				<th>Speed</th>
+				<th>Keyspace searched</th>
+				<th>Time spent</th>
+				<th>Cracked</th>
+				<th>Last activity</th>
+				<th>Action</th>
+			</tr>
+			{{FOREACH agent,!!allAgents!!}}
+				<tr>
+					<td>
 						{{IF !!login.getLevel()!! >= 20}}
-							onChange="javascript:document.getElementById('auto[[agent.getVal('id')]]').submit();"
+							<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
 						{{ENDIF}}
 						{{IF !!login.getLevel()!! < 20}}
-							disabled
+							[[agent.getVal('id')]]
 						{{ENDIF}}
-						> Auto
-				</form>
-			</td>
-			<td class="num">
-				{{IF !!agent.getVal('working')!! == 1}}
-					[[Util::nicenum(%%agent.getVal('speed')%%, 100000, 1000)]]H/s
-				{{ENDIF}}</td>
-			<td class="num">
-				{{IF !!task.getVal('keyspace')!! > 0}}
-					[[agent.getVal('searched')]]
-					([[Util::showperc(%%agent.getVal('searched')%%, %%task.getVal('keyspace')%%)]]%) 
-				{{ENDIF}}
-			</td>
-			<td class="num">[[Util::sectotime(%%agent.getVal('spent')%%)]]</td>
-			<td class="num">[[agent.getVal('cracked')]]</td>
-			<td>{{IF !!agent.getVal('time')!! > 0}}
-				[[date(%%config.getVal('timefmt')%%, %%agent.getVal('time')%%)]]
-				{{ENDIF}}</td>
-			<td>
-				{{IF !!login.getLevel()!! >= 20}}
-					<form action="agents.php?task=[[task.getVal('id')]]" method="POST">
-						<input type="hidden" name="action" value="agentassign"> 
-						<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
-						<input type="hidden" name="task" value=""> 
-						<input type="submit" class='btn btn-default' value="Unassign">
-					</form>
-				{{ENDIF}}
-			</td>
-		</tr>
-	{{ENDFOREACH}}
+					</td>
+					<td>
+						{{IF !!login.getLevel()!! >= 20}}
+							<a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
+						{{ENDIF}}
+						{{IF !!login.getLevel()!! < 20}}
+							[[agent.getVal('name')]]
+						{{ENDIF}}
+						{{IF !!agent.getVal('trusted')!! == 1}} 
+							<img src="static/lock.gif" alt="Trusted"> 
+						{{ENDIF}} 
+						{{IF !!agent.getVal('working')!! == 1}}
+							<img src="static/active.gif" alt="Active"> 
+						{{ENDIF}} 
+						{{IF !!agent.getVal('active')!! == 0}} 
+							<img src="static/pause.gif" alt="Paused"> 
+						{{ENDIF}}
+					</td>
+					<td>
+						{{IF !!login.getLevel()!! >= 20}}
+							<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+								<input type="hidden" name="action" value="agentbench"> 
+								<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
+								<input type="text" class='form-control' name="bench" value="[[agent.getVal('benchmark')]]" size="8"> 
+								<input type="submit" class='btn btn-default' value="Set">
+							</form>
+						{{ENDIF}}
+						{{IF !!login.getLevel()!! < 20}}
+							[[agent.getVal('benchmark')]]
+						{{ENDIF}}
+						<form id="auto[[agent.getVal('id')]]" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+							<input type="hidden" name="action" value="agentauto"> 
+							<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
+							<input type="checkbox" name="auto" value="1"{{IF !!agent.getVal('autoadjust')!! == 1}} checked{{ENDIF}}
+								{{IF !!login.getLevel()!! >= 20}}
+									onChange="javascript:document.getElementById('auto[[agent.getVal('id')]]').submit();"
+								{{ENDIF}}
+								{{IF !!login.getLevel()!! < 20}}
+									disabled
+								{{ENDIF}}
+								> Auto
+						</form>
+					</td>
+					<td class="num">
+						{{IF !!agent.getVal('working')!! == 1}}
+							[[Util::nicenum(%%agent.getVal('speed')%%, 100000, 1000)]]H/s
+						{{ENDIF}}</td>
+					<td class="num">
+						{{IF !!task.getVal('keyspace')!! > 0}}
+							[[agent.getVal('searched')]]
+							([[Util::showperc(%%agent.getVal('searched')%%, %%task.getVal('keyspace')%%)]]%) 
+						{{ENDIF}}
+					</td>
+					<td class="num">[[Util::sectotime(%%agent.getVal('spent')%%)]]</td>
+					<td class="num">[[agent.getVal('cracked')]]</td>
+					<td>{{IF !!agent.getVal('time')!! > 0}}
+						[[date(%%config.getVal('timefmt')%%, %%agent.getVal('time')%%)]]
+						{{ENDIF}}</td>
+					<td>
+						{{IF !!login.getLevel()!! >= 20}}
+							<form action="agents.php?task=[[task.getVal('id')]]" method="POST">
+								<input type="hidden" name="action" value="agentassign"> 
+								<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
+								<input type="hidden" name="task" value=""> 
+								<input type="submit" class='btn btn-default' value="Unassign">
+							</form>
+						{{ENDIF}}
+					</td>
+				</tr>
+			{{ENDFOREACH}}
+		</table>
+	</div>
 {{ENDIF}}

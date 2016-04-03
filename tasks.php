@@ -314,7 +314,7 @@ if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 		$OBJECTS['agents'] = $agents;
 		
 		$allAgents = array();
-		$res = $DB->query("SELECT agents.id,agents.active,agents.trusted,agents.name,1 AS working,IFNULL(chunks.lastact,0) AS time,IFNULL(chunks.searched,0) AS searched,chunks.spent,IFNULL(chunks.cracked,0) AS cracked FROM agents LEFT JOIN (SELECT agent,SUM(progress) AS searched,SUM(solvetime-dispatchtime) AS spent,SUM(cracked) AS cracked,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks WHERE task=$task AND solvetime>dispatchtime GROUP BY agent) chunks ON chunks.agent=agents.id WHERE spent IS NOT NULL GROUP BY agents.id ORDER BY agents.id");
+		$res = $DB->query("SELECT agents.id,agents.active,agents.trusted,agents.name,IF(chunks.lastact>=".(time()-$CONFIG->getVal('chunktimeout')).",1,0) AS working,IFNULL(chunks.lastact,0) AS time,IFNULL(chunks.searched,0) AS searched,chunks.spent,IFNULL(chunks.cracked,0) AS cracked FROM agents LEFT JOIN (SELECT agent,SUM(progress) AS searched,SUM(solvetime-dispatchtime) AS spent,SUM(cracked) AS cracked,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks WHERE task=$task AND solvetime>dispatchtime GROUP BY agent) chunks ON chunks.agent=agents.id WHERE spent IS NOT NULL GROUP BY agents.id ORDER BY agents.id");
 		$res = $res->fetchAll();
 		foreach($res as $agent){
 			$set = new DataSet();
