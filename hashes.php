@@ -2,6 +2,8 @@
 use Bricky\Template;
 require_once(dirname(__FILE__)."/inc/load.php");
 
+ini_set("memory_limit", "1G");
+
 if(!$LOGIN->isLoggedin()){
 	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
 	die();
