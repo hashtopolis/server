@@ -5,11 +5,30 @@
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
-			<th>In progress...</th>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Tasks</th>
+			<th>Actions</th>
 		</tr>
 		{{FOREACH supertask,!!supertasks!!}}
 			<tr>
-				<td></td>
+				<td><a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]">[[supertask.getVal('id')]]</a></td>
+				<td><a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]">[[supertask.getVal('name')]]</a></td>
+				<td>
+					{{FOREACH task,!!supertask.getVal('tasks')!!}}
+						[[task.getVal('name')]]<br>
+					{{ENDFOREACH}}
+				</td>
+				<td>
+					<form style ='float: left; padding-right: 5px;' action="newtask.php?supertask=[[supertask.getVal('supertaskId')]]" method="post">
+        				<input type="submit" class='btn btn-default' value="Copy">
+        			</form>
+        			<form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getVal('supertaskId')]]?')) return false;">
+        				<input type="hidden" name="action" value="taskdelete">
+        				<input type="hidden" name="supertask" value="[[supertask.getVal('supertaskId')]]">
+        				<input type="submit" class='btn btn-danger' value="X">
+        			</form>
+				</td>
 			</tr>
 		{{ENDFOREACH}}
 	</table>
