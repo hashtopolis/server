@@ -7,6 +7,11 @@
 		<tr>
 			<th>In progress...</th>
 		</tr>
+		{{FOREACH supertask,!!supertasks!!}}
+			<tr>
+				<td><pre>[[print_r(%%supertask%%)]]</pre></td>
+			</tr>
+		{{ENDFOREACH}}
 	</table>
 </div>
 {%TEMPLATE->foot%}
