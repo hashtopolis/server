@@ -23,7 +23,7 @@ if(isset($_POST['action'])){
 }
 
 $supertasks = array();
-$res = $DB->query("SELECT * FROM Supertask,tasks INNER JOIN SupertaskTask ON SupertaskTask.supertaskId=Supertask.supertaskId WHERE tasks.id=SuperTaskTask.taskId ORDER BY supertaskId");
+$res = $DB->query("SELECT * FROM Supertask,tasks INNER JOIN SupertaskTask ON SupertaskTask.supertaskId=Supertask.supertaskId WHERE tasks.id=SupertaskTask.taskId ORDER BY Supertask.supertaskId");
 $res = $res->fetchAll();
 foreach($res as $supertask){
 	$set = new DataSet();
