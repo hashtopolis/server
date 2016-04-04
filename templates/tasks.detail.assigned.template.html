@@ -70,7 +70,7 @@
 	</td>
 	<td>
 		{{IF !!login.getLevel()!! >= 20}}
-			<form action="agents.php?task=[[task.getVal('id')]]" method="POST">
+			<form style='float: left; padding-right: 5px;' action="agents.php?task=[[task.getVal('id')]]" method="POST">
 				<input type="hidden" name="action" value="agentassign"> 
 				<input type="hidden" name="agent" value="[[agent.getVal('id')]]"> 
 				<input type="hidden" name="task" value=""> 
