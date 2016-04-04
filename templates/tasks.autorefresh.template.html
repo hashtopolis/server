@@ -1,13 +1,13 @@
 <div style='overflow: auto;'>
 	{{IF !!autorefresh!! > 0}}
-		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST">
+		<form style ='float: left; padding-right: 5px;' action="" class='form-inline' method="POST">
 			<input type='hidden' name='toggleautorefresh' value='Off'>
 		    <input type="submit" value="Turn off auto-reload" class='btn btn-warning'>
 		</form>
 		<br>
 	{{ENDIF}}
 	{{IF !!autorefresh!! <= 0}}
-		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST">
+		<form style ='float: left; padding-right: 5px;' action="" class='form-inline' method="POST">
 			<input type='hidden' name='toggleautorefresh' value='On'>
 		    <input type="submit" value="Turn on auto-reload" class='btn btn-success'>
 		</form>
