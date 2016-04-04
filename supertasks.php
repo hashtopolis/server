@@ -23,11 +23,19 @@ if(isset($_POST['action'])){
 }
 
 $supertasks = array();
-$res = $DB->query("SELECT * FROM Supertask,tasks,SupertaskTask WHERE tasks.id=SupertaskTask.taskId AND SupertaskTask.supertaskId=Supertask.supertaskId GROUP BY Supertask.supertaskId ORDER BY Supertask.supertaskId");
+$res = $DB->query("SELECT * FROM Supertask ORDER BY Supertask.supertaskId");
 $res = $res->fetchAll();
 foreach($res as $supertask){
 	$set = new DataSet();
 	$set->setValues($supertask);
+	$ans = $DB->query("SELECT * FROM tasks WHERE tasks.id IN (SELECT taskId FROM SupertaskTask WHERE supertaskId=".$supertask['supertaskId'].")");
+	$tasks = array();
+	foreach($ans as $task){
+		$subset = new DataSet();
+		$subset->setValues($task);
+		$tasks[] = $subset;
+	}
+	$set->addValue("tasks", $tasks);
 	$supertasks[] = $set;
 }
 
