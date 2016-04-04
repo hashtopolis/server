@@ -243,7 +243,7 @@ if(isset($_POST['toggleautorefresh'])){
 		$autorefresh = 10;
 		setcookie("autorefresh", "On", time() + 3600*24);
 	}
-	header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+	header("Location: ".$_SERVER['REQUEST_URI']);
 	die();
 }
 if($autorefresh > 0){
