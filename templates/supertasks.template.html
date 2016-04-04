@@ -12,11 +12,11 @@
 		</tr>
 		{{FOREACH supertask,!!supertasks!!}}
 			<tr>
-				<td><a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]">[[supertask.getVal('id')]]</a></td>
+				<td><a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]">[[supertask.getVal('supertaskId')]]</a></td>
 				<td><a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]">[[supertask.getVal('name')]]</a></td>
 				<td>
 					{{FOREACH task,!!supertask.getVal('tasks')!!}}
-						[[task.getVal('name')]]<br>
+						<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a><br>
 					{{ENDFOREACH}}
 				</td>
 				<td>
