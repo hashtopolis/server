@@ -15,7 +15,7 @@ $TEMPLATE = new Template("hashtypes");
 $MENU->setActive("config_hashtypes");
 $message = "";
 
-//catch agents actions here...
+//catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'delete':
@@ -43,7 +43,8 @@ if(isset($_POST['action'])){
 				$message = "<div class='alert alert-danger'>This hashtype already exists!</div>";
 				break;
 			}
-			else if(strlen($desc) || $id < 0){
+			else if(strlen($desc) == 0 || $id < 0){
+				$message = "<div class='alert alert-danger'>Invalid inputs!</div>";
 				break;
 			}
 			$DB->query("INSERT INTO hashtypes (id, description) VALUES (".$DB->quote($id).", ".$DB->quote($desc).")");
