@@ -84,6 +84,12 @@
 					<li[[menu.isActive('account')]]><a href="account.php">My Account</a></li>
 				{{ENDIF}}
 				{{IF !!login.isLoggedin()!! && !!login.getLevel()!! >= 40}}
+					<li class="dropdown[[menu.isActive('config', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Config <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li[[menu.isActive('config_server')]]><a href="config.php">Server</a></li>
+							<li[[menu.isActive('config_hashtypes')]]><a href="newuser.php">Hashtypes</a></li>
+						</ul>
+					</li>
 					<li[[menu.isActive('config')]]><a href="config.php">Server config</a></li>
 					<li class="dropdown[[menu.isActive('users', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
 						<ul class="dropdown-menu">

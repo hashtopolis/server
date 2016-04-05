@@ -12,7 +12,7 @@ else if($LOGIN->getLevel() < 40){
 }
 
 $TEMPLATE = new Template("config");
-$MENU->setActive("config");
+$MENU->setActive("config_server");
 $message = "";
 
 //catch agents actions here...
