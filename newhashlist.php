@@ -270,6 +270,14 @@ if(file_exists("import") && is_dir("import")) {
 	$OBJECTS['impfiles'] = $impfiles;
 }
 
+$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id, description FROM hashtypes");
+$res = $res->fetchAll();
+$hashtypes = array();
+foreach($res as $type){
+	$hashtypes[] = new DataSet($type);
+}
+
+$OBJECTS['hashtypes'] = $hashtypes; 
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
