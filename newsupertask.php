@@ -75,11 +75,14 @@ if(isset($_POST['action'])){
 								$message .= "OK (id: $id)<br>";
 								// attach files
 								$attachok = true;
-								if (isset($_POST["adfile"])) {
-									foreach($_POST["adfile"] as $fid) {
-										if ($fid > 0) {
-											$message .= "Attaching file $fid...";
-											if ($DB->exec("INSERT INTO taskfiles (task,file) VALUES ($id, $fid)")) {
+								$ans = $DB->query("SELECT * FROM taskfiles WHERE task=".$task['id']);
+								$ans = $ans->fetchAll();
+								
+								if (sizeof($ans) > 0) {
+									foreach($ans as $fid) {
+										if ($fid['file'] > 0) {
+											$message .= "Attaching file {$fid['file']}...";
+											if ($DB->exec("INSERT INTO taskfiles (task,file) VALUES ($id, {$fid['file']})")) {
 												$message .= "OK";
 											}
 											else {
