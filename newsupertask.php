@@ -116,8 +116,8 @@ if(isset($_POST['action'])){
 				}
 				$message .= "</div>";
 			}
-			header("Location: tasks.php");
-			die();
+			//header("Location: tasks.php");
+			//die();
 			break;
 	}
 }
