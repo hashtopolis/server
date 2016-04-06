@@ -39,10 +39,10 @@ if(isset($_POST['action'])){
 			foreach($res as $task){
 				$DB = $FACTORIES::getagentsFactory()->getDB();
 				$name = $DB->quote(htmlentities($task['name'], false, "UTF-8"));
-				$cmdline = $DB->quote($task["cmdline"]);
+				$cmdline = $DB->quote($task["attackcmd"]);
 				$autoadj = intval($task["autoadjust"]);
-				$chunk = intval($task["chunk"]);
-				$status = intval($task["status"]);
+				$chunk = intval($task["chunktime"]);
+				$status = intval($task["statustimer"]);
 				$color = $task["color"];
 				$message = "<div class='alert alert-neutral'>";
 				$forward = "";
