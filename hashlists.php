@@ -225,12 +225,22 @@ if(isset($_POST['action'])){
 							if ($salted == 1) {
 								if (count($datko) >= 3) {
 									//TODO: fix salted hashes recognition problem
-									$zaphash=$datko[0];
-									$zapsalt=$datko[1];
-									$zapplain=$datko[2];
-									for ($i=3;$i<count($datko);$i++) {
-										$zapplain .= $fs.$datko[$i];
+									$zaphash = $datko[0];
+									$zapsalt = $datko[1];
+									$zapplain = $datko[2];
+									if(count($datko) > 3){
+										$ans = $DB->query("SELECT * FROM $zaptable WHERE hash=".$DB->quote($zaphash)." AND hashlist=$hlist");
+										$data = $ans->fetch();
+										if($data){
+											$complete = $data['hash'].$fs.$data['salt'].$fs;
+											$zapplain = str_replace($complete, "", $dato);
+											$zaphash = $data['hash'];
+											$zapsalt = $data['salt'];
+										}
 									}
+									/*for ($i=3;$i<count($datko);$i++) {
+										$zapplain .= $fs.$datko[$i];
+									}*/
 								} 
 								else {
 									$message .= "Bad line: $dato<br>";
