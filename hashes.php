@@ -17,10 +17,10 @@ $TEMPLATE = new Template("hashes");
 $MENU->setActive("hashes");
 $message = "";
 
-//catch agents actions here...
+//catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		//
 	}
 }
 

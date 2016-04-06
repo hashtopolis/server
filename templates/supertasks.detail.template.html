@@ -1,0 +1,20 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Supertask Details</h2>
+[[message]]
+{{IF ! !!supertask!!}}
+	<div class='alert alert-danger'>Invalid supertask!</div>
+{{ENDIF}}
+{{IF !!supertask!!}}
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Tasks</th>
+				<th>Actions</th>
+			</tr>
+		</table>
+	</div>
+{{ENDIF}}
+{%TEMPLATE->foot%}

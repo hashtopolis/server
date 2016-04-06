@@ -224,6 +224,7 @@ if(isset($_POST['action'])){
 							// distribute data into vars
 							if ($salted == 1) {
 								if (count($datko) >= 3) {
+									//TODO: fix salted hashes recognition problem
 									$zaphash=$datko[0];
 									$zapsalt=$datko[1];
 									$zapplain=$datko[2];
