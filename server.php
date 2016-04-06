@@ -717,7 +717,7 @@ switch($action){
 											// salted hashes
 											$salt = substr($DB->quote($elementy[1]), 1, -1);
 											$plain = substr($DB->quote($elementy[2]), 1, -1);
-											file_put_contents("salt_log.txt", "$hash###$salt###$plain\n", FILE_APPEND);
+											file_put_contents("salt_log.txt", "$dato\n$hash###$salt###$plain\n", FILE_APPEND);
 											break;
 									}
 									$podminka = "$tbl.hash='$hash' AND $tbl.salt='$salt'";
