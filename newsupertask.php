@@ -11,8 +11,8 @@ else if($LOGIN->getLevel() < 20){
 	die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("newtask");
-$MENU->setActive("tasks_new");
+$TEMPLATE = new Template("newsupertask");
+$MENU->setActive("tasks_super");
 $message = "";
 
 //catch agents actions here...
