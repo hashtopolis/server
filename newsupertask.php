@@ -34,7 +34,7 @@ if(isset($_POST['action'])){
 				break;
 			}
 			
-			$res = $DB->query("SELECT * FROM SupertaskTask INNER JOIN tasks ON tasks.id=SupertaskTask.taskId WHERE supertaskId=".$supertask['supertaskId']);
+			$res = $DB->query("SELECT tasks.* FROM SupertaskTask INNER JOIN tasks ON tasks.id=SupertaskTask.taskId WHERE supertaskId=".$supertask['supertaskId']);
 			$res = $res->fetchAll();
 			foreach($res as $task){
 				$DB = $FACTORIES::getagentsFactory()->getDB();
