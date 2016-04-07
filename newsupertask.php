@@ -12,7 +12,7 @@ else if($LOGIN->getLevel() < 20){
 }
 
 $TEMPLATE = new Template("newsupertask");
-$MENU->setActive("tasks_super");
+$MENU->setActive("tasks_supernew");
 $message = "";
 
 //catch agents actions here...
@@ -96,10 +96,6 @@ if(isset($_POST['action'])){
 								if ($attachok == true) {
 									$DB->exec("COMMIT");
 									$message .= "Task created successfuly!";
-									/*if($forward){
-										header("Location: $forward");
-										die();
-									}*/
 								}
 								else {
 									$DB->exec("ROLLBACK");
@@ -119,30 +115,42 @@ if(isset($_POST['action'])){
 				}
 				$message .= "</div>";
 			}
-			//header("Location: tasks.php");
-			//die();
+			header("Location: tasks.php");
+			die();
 			break;
 	}
 }
 
-$orig = 0;
 if (isset($_GET["id"])) {
 	//copied from a task
 	$orig = intval($_GET["id"]);
+	$OBJECTS['orig'] = $orig;
+	
+	$lists = array();
+	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id,name FROM hashlists ORDER BY id ASC");
+	$res = $res->fetchAll();
+	foreach($res as $list){
+		$set = new DataSet();
+		$set->setValues($list);
+		$lists[] = $set;
+	}
+	
+	$OBJECTS['lists'] = $lists;
+}
+else{
+	$TEMPLATE = new Template("supertaskcreate");
+	
+	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id,name,attackcmd,color FROM tasks WHERE hashlist IS NULL ORDER BY priority DESC, id ASC");
+	$res = $res->fetchAll();
+	$preTasks = array();
+	foreach($res as $task){
+		$set = new DataSet();
+		$set->setValues($task);
+		$preTasks[] = $set;
+	}
+	$OBJECTS['preTasks'] = $preTasks;
 }
 
-$OBJECTS['orig'] = $orig;
-
-$lists = array();
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id,name FROM hashlists ORDER BY id ASC");
-$res = $res->fetchAll();
-foreach($res as $list){
-	$set = new DataSet();
-	$set->setValues($list);
-	$lists[] = $set;
-}
-
-$OBJECTS['lists'] = $lists;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
