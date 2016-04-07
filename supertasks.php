@@ -18,7 +18,21 @@ $message = "";
 //catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//currently no actions
+		case 'taskdelete':
+			$supertask = intval($_POST['supertask']);
+			$res = $DB->query("SELECT * FROM Supertask WHERE supertaskId=$supertask");
+			$supertask = $res->fetch();
+			if(!$supertask){
+				$message = "<div class='alert alert-danger'>Invalid Supertask!</div>";
+				break;
+			}
+			$DB->query("START TRANSACTION");
+			$DB->query("DELETE FROM SupertaskTask WHERE supertaskId=".$supertask['supertaskId']);
+			$DB->query("DELETE FROM Supertask WHERE supertaskId=".$supertask['supertaskId']);
+			$DB->query("COMMIT");
+			header("Location: supertasks.php");
+			die();
+			break;
 	}
 }
 

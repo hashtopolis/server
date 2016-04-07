@@ -118,6 +118,23 @@ if(isset($_POST['action'])){
 			header("Location: tasks.php");
 			die();
 			break;
+		case 'createsupertask':
+			$name = htmlentities($_POST['name'], false, "UTF-8");
+			$tasks = $_POST['task'];
+			$DB->query("START TRANSACTION");
+			$DB->query("INSERT INTO Supertask (name) VALUES (".$DB->quote($name).")");
+			$sid = $DB->lastInsertId();
+			foreach($tasks as $task){
+				$res = $DB->query("SELECT * FROM tasks WHERE id=".intval($task));
+				$task = $res->fetch();
+				if($task){
+					$DB->query("INSERT INTO SupertaskTask (supertaskId, taskId) VALUES ('$sid', '{$task['id']}')");
+				}
+			}
+			$DB->query("COMMIT");
+			header("Location: supertasks.php");
+			die();
+			break;
 	}
 }
 
