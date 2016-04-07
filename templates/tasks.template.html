@@ -2,13 +2,16 @@
 {%TEMPLATE->menu%}
 <h2>Tasks ([[numTasks]])</h2>
 [[message]]
-{{IF !!login.getLevel()!! >= 30}}
-	<form action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
-		<input type='hidden' name='action' value='finishedtasksdelete'>
-	    <input type="submit" value="Delete finished" class='btn btn-default'>
-	</form>
+<div style='overflow: auto;'>
+	{{IF !!login.getLevel()!! >= 30}}
+		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
+			<input type='hidden' name='action' value='finishedtasksdelete'>
+		    <input type="submit" value="Delete finished" class='btn btn-default'>
+		</form>
+	{{ENDIF}}
+	{%TEMPLATE->tasks.autorefresh%}
+</div>
 <br>
-{{ENDIF}}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
     	<tr>
@@ -95,20 +98,23 @@
         				[[task.getVal('assigncount')]]
         			{{ENDIF}}
         		</td>
-        		<td>
+        		<td style='min-width: 95px'>
         			{{IF !!task.getVal('filescount')!! > 0}}
-        				[[task.getVal('filescount')]] ([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
+        				[[task.getVal('filescount')]]
         			{{ENDIF}}
         			{{IF !!task.getVal('secret')!! == 1}}
         				<img src="static/lock.gif" alt="Secret">
         			{{ENDIF}}
+        			{{IF !!task.getVal('filescount')!! > 0}}
+        				<br>([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
+        			{{ENDIF}}
         		</td>
-        		<td>
+        		<td style='min-width: 130px'>
         			{{IF !!login.getLevel()!! >= 20}}
 	        			<form class="form-inline" action="tasks.php" method="POST">
 	        				<input type='hidden' name='action' value='taskprio'>
 	        				<input type="hidden" name="task" value="[[task.getVal('task')]]">
-	        				<input type="text" class='form-control' style='width: 40px;' name="priority" size="4" value="[[task.getVal('priority')]]">
+	        				<input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getVal('priority')]]">
 	        				<input type="submit" class='btn btn-default' value="Set">
 	        			</form>
         			{{ENDIF}}
@@ -116,7 +122,7 @@
         				[[task.getVal('priority')]]
         			{{ENDIF}}
         		</td>
-        		<td>
+        		<td style='min-width: 120px'>
         			{{IF !!login.getLevel()!! >= 30}}
 	        			<form style ='float: left; padding-right: 5px;' action="newtask.php?id=[[task.getVal('task')]]" method="post">
 	        				<input type="submit" class='btn btn-default' value="Copy">

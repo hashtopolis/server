@@ -7,15 +7,11 @@
 		<tr>
 			<th>Id</th>
 			<th>Act</th>
-			<th>Name</th>
-			<th>OS</th>
-			<th>CPU</th>
-			<th>GPU brand</th>
-			<th>Driver</th>
+			<th>Name / Owner</th>
+			<th>GPU brand / Driver</th>
 			<th>GPUs</th>
 			<th>Hashcat</th>
 			<th>Last activity</th>
-			<th>Owner</th>
 			<th>Assignment</th>
 			<th>Action</th>
 		</tr>
@@ -40,28 +36,25 @@
         			{{IF !!set.getVal('active')!! == 0}}
         				<img src="static/pause.gif" alt="Paused">
         			{{ENDIF}}
-        		</td>
-        		<td>[[Util::getStaticArray(%%set.getVal('os')%%, 'os')]]</td>
-        		<td>[[set.getVal('cputype')]]-bit</td>
-        		<td>[[Util::getStaticArray(%%set.getVal('gpubrand')%%, 'platforms')]]</td>
-        		<td>[[set.getVal('gpudriver')]]</td>
-        		<td>
-	        		{{FOREACH gpu,!!set.getVal('gpus')!!}}
-	        			[[Util::shortenstring(%%gpu%%, 32)]]<br>
-	        		{{ENDFOREACH}}
-        		</td>
-        		<td>[[set.getVal('hcversion')]]</td>
-        		<td>
-        			[[set.getVal('lastact')]] at [[date(%%config.getVal('timefmt')%%, %%set.getVal('lasttime')%%)]]<br>
-        			IP: [[set.getVal('lastip')]]
-        		</td>
-        		<td>
+        			<br>
         			{{IF !!set.getVal('userId')!! > 0}}
         				[[Util::getUsernameById(%%set.getVal('userId')%%)]]
         			{{ENDIF}}
         			{{IF !!set.getVal('userId')!! <= 0}}
         				---
         			{{ENDIF}}
+        		</td>
+        		<td>[[Util::getStaticArray(%%set.getVal('gpubrand')%%, 'platforms')]] / [[set.getVal('gpudriver')]]</td>
+        		<td>
+	        		{{FOREACH gpu,!!set.getVal('gpus')!!}}
+	        			[[Util::shortenstring(%%gpu%%, 20)]]<br>
+	        		{{ENDFOREACH}}
+        		</td>
+        		<td>[[set.getVal('hcversion')]]</td>
+        		<td>
+        			[[set.getVal('lastact')]] at <br>
+        			[[date(%%config.getVal('timefmt')%%, %%set.getVal('lasttime')%%)]]<br>
+        			IP: [[set.getVal('lastip')]]
         		</td>
         		<td>
         			<form id="assign[[set.getVal('id')]]" action="agents.php" method="post">

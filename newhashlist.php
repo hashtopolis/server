@@ -23,7 +23,7 @@ if(isset($_POST['action'])){
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1);
-			$fs = $DB->quote($_POST["separator"]);
+			$fs = substr($DB->quote($_POST["separator"]), 1, -1);
 			$format = $_POST["format"];
 			$hashtype = intval($_POST["hashtype"]);
 			$message = "<div class='alert alert-neutral'>";
@@ -241,8 +241,8 @@ if(isset($_POST['action'])){
 							}
 							unlink($tmpfile);
 						}
-						header("Location: hashlists.php");
-						die();
+						/*header("Location: hashlists.php");
+						die();*/
 					} 
 					else {
 						$message .= "ERROR: ".$DB->errorInfo();
@@ -270,6 +270,14 @@ if(file_exists("import") && is_dir("import")) {
 	$OBJECTS['impfiles'] = $impfiles;
 }
 
+$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id,description FROM hashtypes WHERE 1 ORDER BY id");
+$res = $res->fetchAll();
+$hashtypes = array();
+foreach($res as $type){
+	$hashtypes[] = new DataSet($type);
+}
+
+$OBJECTS['hashtypes'] = $hashtypes; 
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

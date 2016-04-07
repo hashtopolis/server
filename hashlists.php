@@ -35,7 +35,7 @@ if(isset($_POST['action'])){
 					if ($id > 0) {
 						$res = $DB->query("SELECT name,attackcmd,chunktime,statustimer,autoadjust,priority FROM tasks WHERE tasks.id=$id");
 						$task = $res->fetch();
-						$addq = $DB->query("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, priority) VALUES ('HL".$hlist."_".substr($DB->quote($task["name"]), 1, -1)."', ".$DB->quote($dblink,$erej["attackcmd"]).", $hlist, ".$task["chunktime"].", ".$task["statustimer"].", ".$task["autoadjust"].", ".($task["priority"]>0 ? $base+$task["priority"] : 0).")");
+						$addq = $DB->query("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, priority) VALUES ('HL".$hlist."_".substr($DB->quote($task["name"]), 1, -1)."', ".$DB->quote($task["attackcmd"]).", $hlist, ".$task["chunktime"].", ".$task["statustimer"].", ".$task["autoadjust"].", ".($task["priority"]>0 ? $base+$task["priority"] : 0).")");
 						$addc += $addq->rowCount();
 						$tid = $DB->lastInsertId();
 						$filq = $DB->query("INSERT INTO taskfiles (task, file) SELECT $tid,file FROM taskfiles WHERE task=$id");
@@ -224,11 +224,18 @@ if(isset($_POST['action'])){
 							// distribute data into vars
 							if ($salted == 1) {
 								if (count($datko) >= 3) {
-									$zaphash=$datko[0];
-									$zapsalt=$datko[1];
-									$zapplain=$datko[2];
-									for ($i=3;$i<count($datko);$i++) {
-										$zapplain .= $fs.$datko[$i];
+									$zaphash = $datko[0];
+									$zapsalt = $datko[1];
+									$zapplain = $datko[2];
+									if(count($datko) > 3){
+										$ans = $DB->query("SELECT * FROM $zaptable WHERE hash=".$DB->quote($zaphash)." AND hashlist=$hlist");
+										$data = $ans->fetch();
+										if($data){
+											$complete = $data['hash'].$fs.$data['salt'].$fs;
+											$zapplain = str_replace($complete, "", $dato);
+											$zaphash = $data['hash'];
+											$zapsalt = $data['salt'];
+										}
 									}
 								} 
 								else {
@@ -310,6 +317,9 @@ if(isset($_POST['action'])){
 						}
 						$message .= "Pre-cracking completed ($zapy hashes pre-cracked, $skipy skipped for duplicity or empty plaintext, $chyby SQL errors, took ".($cas_stop-$cas_start)." sec)";
 						fclose($hhandle);
+						if(file_exists($tmpfile)){
+							unlink($tmpfile);
+						}
 						if($superhash){
 							header("Location: superhashlists.php");
 							die();

@@ -229,7 +229,7 @@ INSERT INTO `hashtypes` (`id`, `description`) VALUES
 (3200, 'bcrypt, Blowfish(OpenBSD)'),
 (3710, 'md5($salt.md5($pass))'),
 (3711, 'Mediawiki B type'),
-(3800, 'md5($pass.$salt.$pass)'),
+(3800, 'md5($salt.$pass.$salt)'),
 (4300, 'md5(strtoupper(md5($pass)))'),
 (4400, 'md5(sha1($pass))'),
 (4500, 'Double SHA1'),

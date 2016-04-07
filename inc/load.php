@@ -18,6 +18,11 @@ include(dirname(__FILE__)."/load.ini");
 
 $INSTALL = "pending...";
 
+if($CONN['installed']){
+	$INSTALL = "DONE"; 	//if set in load.ini, installation should be done
+						//(either manually or via the installation script)
+}
+
 //manually force the system to think it is installed
 //this should be removed in release!!!
 $INSTALL = 'DONE';
@@ -49,6 +54,14 @@ require_once(dirname(__FILE__)."/factory.class.php");
 
 $FACTORIES = new Factory();
 
+$gitcommit = "not versioned";
+$out = array();
+exec("git rev-parse HEAD", $out);
+if(isset($out[0])){
+	$gitcommit = substr($out[0], 0, 7);
+}
+$OBJECTS['gitcommit'] = $gitcommit;
+
 $LOGIN = null;
 $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
@@ -67,6 +80,9 @@ foreach($res as $entry){
 }
 $OBJECTS['config'] = $CONFIG;
 
+//set autorefresh to false for all pages
+$OBJECTS['autorefresh'] = 0;
 
+$DB = $FACTORIES::getagentsFactory()->getDB();
 
 

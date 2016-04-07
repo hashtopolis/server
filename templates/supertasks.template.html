@@ -1,0 +1,36 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Supertasks ([[numSupertasks]])</h2>
+[[message]]
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Tasks</th>
+			<th>Actions</th>
+		</tr>
+		{{FOREACH supertask,!!supertasks!!}}
+			<tr>
+				<td><!-- <a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]"> -->[[supertask.getVal('supertaskId')]]<!-- </a> --></td>
+				<td><!-- <a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]"> -->[[supertask.getVal('name')]]<!-- </a> --></td>
+				<td>
+					{{FOREACH task,!!supertask.getVal('tasks')!!}}
+						<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a><br>
+					{{ENDFOREACH}}
+				</td>
+				<td>
+					<form style ='float: left; padding-right: 5px;' action="newsupertask.php?id=[[supertask.getVal('supertaskId')]]" method="post">
+        				<input type="submit" class='btn btn-default' value="Copy">
+        			</form>
+        			<form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getVal('supertaskId')]]?')) return false;">
+        				<input type="hidden" name="action" value="taskdelete">
+        				<input type="hidden" name="supertask" value="[[supertask.getVal('supertaskId')]]">
+        				<input type="submit" class='btn btn-danger' value="X">
+        			</form>
+				</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+{%TEMPLATE->foot%}

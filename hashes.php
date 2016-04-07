@@ -2,6 +2,8 @@
 use Bricky\Template;
 require_once(dirname(__FILE__)."/inc/load.php");
 
+ini_set("memory_limit", "1G");
+
 if(!$LOGIN->isLoggedin()){
 	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
 	die();
@@ -15,10 +17,10 @@ $TEMPLATE = new Template("hashes");
 $MENU->setActive("hashes");
 $message = "";
 
-//catch agents actions here...
+//catch actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
-		//TODO:
+		//
 	}
 }
 

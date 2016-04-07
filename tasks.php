@@ -182,6 +182,10 @@ if(isset($_POST['action'])){
 			$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
 			if (Util::delete_task($task)) {
 				$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
+				if(isset($_POST['refer']) && $_POST['refer'] == 'pretask'){
+					header("Location: pretasks.php");
+					die();
+				}
 				header("Location: tasks.php");
 				die();
 			} 
@@ -224,6 +228,31 @@ if(isset($_POST['action'])){
 			break;
 	}
 }
+
+//test if auto-reload is enabled
+$autorefresh = 0;
+if(isset($_COOKIE['autorefresh']) && $_COOKIE['autorefresh'] == 'On'){
+	$autorefresh = 10;
+}
+if(isset($_POST['toggleautorefresh'])){
+	if($autorefresh != 0){
+		$autorefresh = 0;
+		setcookie("autorefresh", "", time() - 600);
+	}
+	else{
+		$autorefresh = 10;
+		setcookie("autorefresh", "On", time() + 3600*24);
+	}
+	header("Location: ".$_SERVER['REQUEST_URI']);
+	die();
+}
+if($autorefresh > 0){
+	setcookie("autorefresh", "On", time() + 3600*24);
+}
+if(isset($_POST['action'])){
+	$autorefresh = 0;
+}
+$OBJECTS['autorefresh'] = $autorefresh;
 
 if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 	$TEMPLATE = new Template("tasks.detail");
@@ -283,6 +312,21 @@ if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 			$agents[] = $set;
 		}
 		$OBJECTS['agents'] = $agents;
+		
+		$allAgents = array();
+		$res = $DB->query("SELECT agents.id,agents.active,agents.trusted,agents.name,IF(chunks.lastact>=".(time()-$CONFIG->getVal('chunktimeout')).",1,0) AS working,IFNULL(chunks.lastact,0) AS time,IFNULL(chunks.searched,0) AS searched,chunks.spent,IFNULL(chunks.cracked,0) AS cracked FROM agents LEFT JOIN (SELECT agent,SUM(progress) AS searched,SUM(solvetime-dispatchtime) AS spent,SUM(cracked) AS cracked,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks WHERE task=$task AND solvetime>dispatchtime GROUP BY agent) chunks ON chunks.agent=agents.id WHERE spent IS NOT NULL GROUP BY agents.id ORDER BY agents.id");
+		$res = $res->fetchAll();
+		foreach($res as $agent){
+			$set = new DataSet();
+			$set->setValues($agent);
+			$allAgents[] = $set;
+		}
+		$OBJECTS['allAgents'] = $allAgents;
+		$showAll = false;
+		if(isset($_GET['allagents'])){
+			$showAll = true;
+		}
+		$OBJECTS['showAllAgents'] = $showAll;
 		
 		$assignAgents = array();
 		$res = $DB->query("SELECT agents.id,agents.name FROM agents LEFT JOIN assignments ON assignments.agent=agents.id WHERE IFNULL(assignments.task,0)!=$task ORDER BY agents.id ASC");

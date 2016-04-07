@@ -2,6 +2,7 @@
 {%TEMPLATE->menu%}
 <h2>Task details</h2>
 [[message]]
+{%TEMPLATE->tasks.autorefresh%}
 {%TEMPLATE->tasks.detail.static%}
 		{{IF !!task.getVal('hashlist')!! != ""}}
 			{%TEMPLATE->tasks.detail.part1%}
@@ -30,6 +31,7 @@
 			{%TEMPLATE->tasks.detail.assign%}
 		</table>
 	</div>
+	{%TEMPLATE->tasks.detail.allassigned%}
 	{%TEMPLATE->tasks.detail.dispatched%}
 {{ENDIF}}
 {%TEMPLATE->foot%}

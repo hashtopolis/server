@@ -1,0 +1,56 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>Hashtypes</h2>
+[[message]]
+<form action="hashtypes.php" method="POST">
+	<input type='hidden' name='action' value='add'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th colspan='2' style='text-align: center;'>
+					<b>Add new Hashtype</b>
+				</th>
+			</tr>
+			<tr>
+				<th>Hashtype (Hashcat -m)</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>
+					<input type='text' name='id' class='form-control'>
+				</td>
+				<td>
+					<input type='text' name='description' class='form-control'>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<input type="submit" class='btn btn-success' value="Add">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>Hashtype (Hashcat -m)</th>
+			<th>Description</th>
+			<th>&nbsp;</th>
+		</tr>
+		{{FOREACH type,!!hashtypes!!}}
+			<tr>
+				<td>[[type.getVal('id')]]</td>
+				<td>[[type.getVal('description')]]</td>
+				<td>
+					<form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getVal('id')]]?')) return false;">
+        				<input type="hidden" name="action" value="delete">
+        				<input type="hidden" name="type" value="[[type.getVal('id')]]">
+        				<input type="submit" class='btn btn-danger' value="Delete">
+        			</form>
+				</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+{%TEMPLATE->foot%}

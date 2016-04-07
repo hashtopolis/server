@@ -30,7 +30,12 @@
 			<tr>
 				<td>Hashtype:</td>
 				<td>
-					<input type="text" class='form-control' name="hashtype" size="5">
+					<select name="hashtype" class='form-control'>
+						<option value=''>&nbsp;</option>
+						{{FOREACH type,!!hashtypes!!}}
+							<option value="[[type.getVal('id')]]"> [[type.getVal('id')]] - [[htmlentities(%%type.getVal('description')%%)]]</option>
+						{{ENDFOREACH}}
+					</select>
 				</td>
 			</tr>
 			<tr>

@@ -1,6 +1,10 @@
 <?php
 class DataSet {
 	private $values;
+	
+	public function __construct($arr = array()){
+		$this->values = $arr;
+	}
 
 	public function setValues($arr){
 		$this->values = $arr;

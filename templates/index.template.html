@@ -38,5 +38,6 @@
 {{ENDIF}}
 {{IF !!login.isLoggedin()!!}}
 	<div class='alert alert-success'>Hi [[user.getUsername()]], welcome back!</div>
+	{%TEMPLATE->help%}
 {{ENDIF}}
 {%TEMPLATE->foot%}

@@ -8,7 +8,7 @@ $separator = "\x01";
 $DB = $FACTORIES::getagentsFactory()->getDB();
 
 $action = @$_GET["a"];
-$token = $DB->quote(@$_GET["token"]);
+$token = $DB->quote(str_replace("\n", "", str_replace("\r", "", @$_GET["token"])));
 header("Content-Type: application/octet-stream");
 
 switch($action){
@@ -37,10 +37,10 @@ switch($action){
 				}
 			}
 			// create access token
-			$token = generate_random(10);
+			$token = Util::randomString(10);
 				
 			// save the new agent to the db or update existing one with the same hdd-serial
-			if($DB->query("INSERT INTO agents (name, uid, os, cputype, gpubrand, gpus, token) VALUES ($name, $uid, $os, $cpu, $brand,$gpu,$token)")){
+			if($DB->query("INSERT INTO agents (name, uid, os, cputype, gpubrand, gpus, token) VALUES ($name, $uid, $os, $cpu, $brand, $gpu, '$token')")){
 				echo "reg_ok" . $separator . $token;
 			}
 			else{
@@ -51,6 +51,7 @@ switch($action){
 			echo "reg_nok" . $separator . "Provided voucher does not exist.";
 		}
 		$DB->exec("COMMIT");
+		$token = "'$token'";
 		break;
 	case "log":
 		// login to master server with previously provided token
@@ -716,6 +717,7 @@ switch($action){
 											// salted hashes
 											$salt = substr($DB->quote($elementy[1]), 1, -1);
 											$plain = substr($DB->quote($elementy[2]), 1, -1);
+											file_put_contents("salt_log.txt", "$dato\n$hash###$salt###$plain\n", FILE_APPEND);
 											break;
 									}
 									$podminka = "$tbl.hash='$hash' AND $tbl.salt='$salt'";
