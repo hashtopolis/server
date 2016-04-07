@@ -43,6 +43,7 @@ if(isset($_POST['action'])){
 				$autoadj = intval($task["autoadjust"]);
 				$chunk = intval($task["chunktime"]);
 				$status = intval($task["statustimer"]);
+				$priority = intval($task['priority']);
 				$color = $task["color"];
 				$message = "<div class='alert alert-neutral'>";
 				$forward = "";
@@ -68,7 +69,7 @@ if(isset($_POST['action'])){
 							$DB->exec("SET autocommit = 0");
 							$DB->exec("START TRANSACTION");
 							$message .= "Creating task in the DB...";
-							$res = $DB->exec("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, color) VALUES ($name, $cmdline, $hashlist, $chunk, $status, $autoadj, $color)");
+							$res = $DB->exec("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, color, priority) VALUES ($name, $cmdline, $hashlist, $chunk, $status, $autoadj, $color, $priority)");
 							if ($res) {
 								// insert succeeded
 								$id = $DB->lastInsertId();
