@@ -12,8 +12,8 @@
 		</tr>
 		{{FOREACH supertask,!!supertasks!!}}
 			<tr>
-				<td><a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]">[[supertask.getVal('supertaskId')]]</a></td>
-				<td><a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]">[[supertask.getVal('name')]]</a></td>
+				<td><!-- <a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]"> -->[[supertask.getVal('supertaskId')]]<!-- </a> --></td>
+				<td><!-- <a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]"> -->[[supertask.getVal('name')]]<!-- </a> --></td>
 				<td>
 					{{FOREACH task,!!supertask.getVal('tasks')!!}}
 						<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a><br>
