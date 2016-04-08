@@ -181,7 +181,7 @@ if($valid){
     			break;
     	}
     	if(strlen($out) > 0){
-    		$output .= "$out\n";
+    		$output .= htmlentities($out, false, "UTF-8")."\n";
     	}
     }
     $OBJECTS['matches'] = $output;
