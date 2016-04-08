@@ -23,6 +23,13 @@ if(isset($_POST['action'])){
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1);
+			$hexsalted = (isset($_POST["hexsalted"]) && $salted && intval($_POST["hexsalted"]) == 1);
+			if($hexsalted){
+				$hexsalted = 1;
+			}
+			else{
+				$hexsalted = 0;
+			}
 			$fs = substr($DB->quote($_POST["separator"]), 1, -1);
 			$format = $_POST["format"];
 			$hashtype = intval($_POST["hashtype"]);
@@ -33,7 +40,7 @@ if(isset($_POST['action'])){
 				} 
 				else {
 					$message .= "Creating hashlist in the DB...";
-					$vysledek = $DB->exec("INSERT INTO hashlists (name,format,hashtype) VALUES ($name, $format, $hashtype)");
+					$vysledek = $DB->exec("INSERT INTO hashlists (name,format,hashtype, hexsalt) VALUES ($name, $format, $hashtype, $hexsalted)");
 					if($vysledek){
 						// insert succeeded
 						$id = $DB->lastInsertId();
