@@ -63,7 +63,7 @@ if(isset($_POST['action'])){
 							$res = $DB->query("SELECT * FROM hashlists WHERE id=".$hashlist);
 							$hl = $res->fetch();
 							if($hl['hexsalt'] == 1 && strpos($cmdline, "--hex-salt") === false){
-								$cmdline = "--hex-salt ".$cmdline;
+								$cmdline = "'--hex-salt ".substr($cmdline, 1, -1)."'";
 							}
 						}
 						$DB->exec("SET autocommit = 0");
