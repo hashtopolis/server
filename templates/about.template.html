@@ -1,0 +1,14 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>About Hashtopussy</h2>
+<p>
+	Hashtopussy version [[version]] running on [[host]].<br>
+	{{IF !!gitcommit!! != "not versioned"}}
+		Hashtopussy is running versioned, updates can be retreived with <code>git pull</code>. Latest commit:
+		<code>[[gitcommit]]</code>.
+	{{ENDIF}}
+</p>
+<p>
+	TODO
+</p>
+{%TEMPLATE->foot%}
