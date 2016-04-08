@@ -124,6 +124,9 @@ if(isset($_POST['action'])){
 					$soubory = $_POST["imfile"];
 					$pocet = count($soubory);
 					foreach($soubory as $soubor) {
+						if($soubor[0] ==  '.'){
+							continue;
+						}
 						// copy all uploaded attached files to proper directory
 						$realname = htmlentities(basename($soubor), false, "UTF-8");
 						$tmpfile = "files/".$realname;
