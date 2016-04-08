@@ -191,7 +191,7 @@ $impfiles = array();
 if(file_exists("import") && is_dir("import")) {
 	$impdir = opendir("import");
 	while($f = readdir($impdir)){
-		if(($f!=".") && ($f!="..") && (!is_dir($f))){
+		if($f[0] != '.' && (!is_dir($f))){
 			$set = new DataSet();
 			$set->addValue('name', $f);
 			$set->addValue('size', filesize("import/".$f));
