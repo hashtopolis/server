@@ -18,6 +18,20 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'agentrename':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
+			$name = htmlentities($_POST['name'], false, "UTF-8");
+			$agent = intval($_POST['agent']);
+			$res = $DB->query("SELECT * FROM agents WHERE id=$agent");
+			$agent = $res->fetch();
+			if($agent && strlen($name) > 0){
+				$DB->query("UPDATE agent SET name=".$DB->quote($name)." WHERE id=".$agent['id']);
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
+			}
+			break;
 		case 'agentowner':
 			if($LOGIN->getLevel() < 30){
 				break;
