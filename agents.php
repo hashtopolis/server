@@ -27,7 +27,7 @@ if(isset($_POST['action'])){
 			$res = $DB->query("SELECT * FROM agents WHERE id=$agent");
 			$agent = $res->fetch();
 			if($agent && strlen($name) > 0){
-				$DB->query("UPDATE agent SET name=".$DB->quote($name)." WHERE id=".$agent['id']);
+				$DB->query("UPDATE agents SET name=".$DB->quote($name)." WHERE id=".$agent['id']);
 				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
 				die();
 			}
