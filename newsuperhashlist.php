@@ -37,7 +37,7 @@ if(isset($_POST['action'])){
 					$DB->exec("SET autocommit = 0");
 					$DB->exec("START TRANSACTION");
 					$message .= "Creating superhashlist in the DB...<br>";
-					$name = $DB->quote($_POST["name"]);
+					$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 					if ($name=="''") {
 						$name = "SHL_".$res['hashtype'];
 					}
