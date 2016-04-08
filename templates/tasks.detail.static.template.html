@@ -26,7 +26,7 @@
 		</tr>
 		<tr>
 			<td>Attack command:</td>
-			<td><pre>[[task.getVal('attackcmd')]]</pre></td>
+			<td><pre>[[htmlentities(%%task.getVal('attackcmd')%%, false, "UTF-8")]]</pre></td>
 		</tr>
 		<tr>
 			<td>Chunk size:</td>

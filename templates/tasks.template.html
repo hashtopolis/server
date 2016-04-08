@@ -41,7 +41,7 @@
 	    				[[task.getVal('task')]]
 	    			{{ENDIF}}
     			</td>
-    			<td title="[[task.getVal('attackcmd')]]">
+    			<td title="[[htmlentities(%%task.getVal('attackcmd')%%, false, "UTF-8")]]">
     				{{IF !!login.getLevel()!! >= 5}}
     					<a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('name')]]</a>
     				{{ENDIF}}
