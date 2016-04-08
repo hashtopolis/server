@@ -23,10 +23,12 @@ if(isset($_POST['action'])){
 				break;
 			}
 			$hlist = intval($_POST["hashlist"]);
+			$res = $DB->query("SELECT * FROM hashlists WHERE id=$hlist");
+			$hashlist = $res->fetch();
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$addc = 0; 
 			$filc = 0;
-			if (isset($_POST["task"])) {
+			if (isset($_POST["task"]) && $hashlist) {
 				$res = $DB->query("SELECT IFNULL(MAX(priority),0) AS base FROM tasks WHERE hashlist IS NOT NULL");
 				$task = $res->fetch();
 				$base = $task["base"];
@@ -35,6 +37,9 @@ if(isset($_POST['action'])){
 					if ($id > 0) {
 						$res = $DB->query("SELECT name,attackcmd,chunktime,statustimer,autoadjust,priority FROM tasks WHERE tasks.id=$id");
 						$task = $res->fetch();
+						if($hashlist['hexsalt'] == 1 && strpos($task['attackcmd'], "--hex-salt") === false){
+							$task['attackcmd'] = "--hex-salt ".$task['attackcmd'];
+						}
 						$addq = $DB->query("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, priority) VALUES ('HL".$hlist."_".substr($DB->quote($task["name"]), 1, -1)."', ".$DB->quote($task["attackcmd"]).", $hlist, ".$task["chunktime"].", ".$task["statustimer"].", ".$task["autoadjust"].", ".($task["priority"]>0 ? $base+$task["priority"] : 0).")");
 						$addc += $addq->rowCount();
 						$tid = $DB->lastInsertId();

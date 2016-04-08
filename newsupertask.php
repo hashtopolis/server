@@ -66,6 +66,13 @@ if(isset($_POST['action'])){
 					}
 					if ($hashlist != "") {
 						if ($status>0 && $chunk>0 && $chunk>$status) {
+							if($hashlist != "NULL"){
+								$res = $DB->query("SELECT * FROM hashlists WHERE id=".$hashlist);
+								$hl = $res->fetch();
+								if($hl['hexsalt'] == 1 && strpos($cmdline, "--hex-salt") === false){
+									$cmdline = "'--hex-salt ".substr($cmdline, 1, -1)."'";
+								}
+							}
 							$DB->exec("SET autocommit = 0");
 							$DB->exec("START TRANSACTION");
 							$message .= "Creating task in the DB...";

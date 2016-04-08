@@ -44,7 +44,12 @@
 		</tr>
         <tr>
         	<td>Format:</td>
-        	<td>[[Util::getStaticArray(%%list.getVal('format')%%, 'formats')]]</td>
+        	<td>
+        		[[Util::getStaticArray(%%list.getVal('format')%%, 'formats')]]
+        		{{IF !!list.getVal('hexsalt')!! == 1}}
+        			(salt in hex-format)
+        		{{ENDIF}}
+        	</td>
         </tr>
         <tr>
         	<td>Hashes:</td>

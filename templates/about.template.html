@@ -1,0 +1,25 @@
+{%TEMPLATE->head%}
+{%TEMPLATE->menu%}
+<h2>About Hashtopussy</h2>
+<div class='alert alert-info'>
+	Hashtopussy version <code>[[version]]</code> running on <code>[[host]]</code>.<br>
+	{{IF !!gitcommit!! != "not versioned"}}
+		Hashtopussy is running versioned, updates can be retreived with <code>git pull</code>. Latest commit:
+		<code>[[gitcommit]]</code>.
+	{{ENDIF}}
+</div>
+<div class='alert alert-neutral'>
+	Hashtopussy is based on Hashtopus with some improvements and additional features included. Some of the
+	differences to Hashtopus:<br>
+	<ul>
+		<li><b>User Management:</b> There is not a single user anymore which can do everything, an admin user
+			can create new users with given rights to view/edit different parts in Hashtopussy</li>
+		<li><b>File protection:</b> Files cannot be downloaded anymore just with the given path, even if the
+			client which is accessing is not logged in and is not a Hashtopus client. This prevents someone
+			just "steal" the files by downloading when he knows the url of Hashtopus.</li>
+		<li><b>Supertasks:</b> Makes it possible to create multiple tasks at once for some basic runs.</li>
+		<li><b>And a lot of other small features:</b> Auto-reload, automatic hex-salt, fixed salted found
+			importing, agent owner, better password hashing, hashtype management, etc..
+	</ul>
+</div>
+{%TEMPLATE->foot%}
