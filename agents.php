@@ -92,7 +92,7 @@ if(isset($_POST['action'])){
 		case 'setparam':
 			// change agent extra cmd line parameters for hashcat
 			$agid = intval($_POST["agent"]);
-			$pars = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["cmdpars"]);
+			$pars = $DB->quote(htmlentities($_POST["cmdpars"], false, "UTF-8"));
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET cmdpars=$pars WHERE id=$agid");
 			if (!$res) {
 				$message = "<div class='alert alert-danger'>Could not change agent-specific parameters!</div>";
