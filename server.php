@@ -20,9 +20,9 @@ switch($action){
 		if($tc->rowCount() == 1){
 			$DB->exec("DELETE FROM regvouchers WHERE voucher=$voucher");
 			$cpu = intval($_POST["cpu"]);
-			$gpu = $DB->quote($_POST["gpus"]);
-			$uid = $DB->quote($_POST["uid"]);
-			$name = $DB->quote($_POST["name"]);
+			$gpu = $_POST["gpus"];
+			$uid = $DB->quote(htmlentities($_POST["uid"], false, "UTF-8"));
+			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$os = intval($_POST["os"]);
 				
 			$brand = 0;
@@ -40,6 +40,7 @@ switch($action){
 			$token = Util::randomString(10);
 				
 			// save the new agent to the db or update existing one with the same hdd-serial
+			$gpu = $DB->quote(htmlentities($gpu, false, "UTF-8"));
 			if($DB->query("INSERT INTO agents (name, uid, os, cputype, gpubrand, gpus, token) VALUES ($name, $uid, $os, $cpu, $brand, $gpu, '$token')")){
 				echo "reg_ok" . $separator . $token;
 			}
