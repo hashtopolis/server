@@ -126,7 +126,7 @@ if(isset($_POST['action'])){
 			}
 			// change hashlist name
 			$hlist = intval($_POST["hashlist"]);
-			$name = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["name"]);
+			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$kv = $FACTORIES::getagentsFactory()->getDB()->exec("UPDATE hashlists SET name=$name WHERE id=$hlist");
 			if (!$kv) {
 				$message = "<div class='alert alert-danger'>Could not rename hashlist!</div>";

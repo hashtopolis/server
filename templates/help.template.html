@@ -65,17 +65,17 @@
 	In this manual and in the Hashtopussy itself, I use several terms. So
 	let's make them clear:<br><br>
 	<b>Agent</b><br>
-	A computer running Hashtopussy.exe and Hashcat doing the cracking itself.
+	A computer running Hashtopussy.exe and Hashcat doing the cracking itself.<br>
 	<b>Hashlist</b><br>
 	A list of hashes saved in the database. Hashlist can be text, HCCAP or
-	binary with most hashlists being the first category.
+	binary with most hashlists being the first category.<br>
 	<b>Task</b><br>
 	A specific attack. Every task has a command line defining how will
 	Hashcat be executed. Files can be assigned to a task (word lists, rules,
-	...).
+	...).<br>
 	<b>Key space</b><br>
 	Every task has a predefined key space which says precisely how big set of
-	keys will be searched.
+	keys will be searched.<br>
 	<b>Chunk</b><br>
 	A chunk is a part of a key-space assigned to a specific agent. If a chunk
 	times out, it (or its part) will be reassigned to next free agent.
@@ -165,7 +165,7 @@
 		access to agent data, Files, hashcat releases. User can create tasks, preconf tasks,
 		supertasks, hashlists, and superhashlists.  User cannot create agents,
 		hashcat releases, modify agents they do not own, or create other users</li>
-		<li>Superuser (20): Has read/write on everything except creating other users or 
+		<li>Superuser (30): Has read/write on everything except creating other users or 
 		modifying user accounts</li>
 		<li>Admin (50): All hail our dark lord and master!</li>
 	</ul>

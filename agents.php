@@ -18,6 +18,20 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'agentrename':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
+			$name = htmlentities($_POST['name'], false, "UTF-8");
+			$agent = intval($_POST['agent']);
+			$res = $DB->query("SELECT * FROM agents WHERE id=$agent");
+			$agent = $res->fetch();
+			if($agent && strlen($name) > 0){
+				$DB->query("UPDATE agents SET name=".$DB->quote($name)." WHERE id=".$agent['id']);
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
+			}
+			break;
 		case 'agentowner':
 			if($LOGIN->getLevel() < 30){
 				break;
@@ -78,7 +92,7 @@ if(isset($_POST['action'])){
 		case 'setparam':
 			// change agent extra cmd line parameters for hashcat
 			$agid = intval($_POST["agent"]);
-			$pars = $FACTORIES::getagentsFactory()->getDB()->quote($_POST["cmdpars"]);
+			$pars = $DB->quote(htmlentities($_POST["cmdpars"], false, "UTF-8"));
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("UPDATE agents SET cmdpars=$pars WHERE id=$agid");
 			if (!$res) {
 				$message = "<div class='alert alert-danger'>Could not change agent-specific parameters!</div>";
