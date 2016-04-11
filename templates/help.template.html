@@ -1,5 +1,5 @@
 <h1>Manual</h1>
-<h3>Key features</h3>
+<h3>Key features:</h3>
 <div class='alert alert-neutral'>
 	<ul>
 		<li>Easy and comfortable to use</li>
@@ -21,7 +21,7 @@
 		<li>User Permission levels</li>
 	</ul>
 </div>
-<h3>Architecture concept</h3>
+<h3>Architecture concept:</h3>
 <div class='alert alert-neutral'>
 	Hashtopussy is a multi platform client-server tool to distribute
 	oclHashcat/cudaHashcat tasks between multiple computers and is strongly
@@ -44,7 +44,7 @@
 	to understand and text-readable). If you have proxy server configured in
 	your system, Hashtopussy will use it, as per standard .NET feature.
 </div>
-<h3>Usage concept</h3>
+<h3>Usage concept:</h3>
 <div class='alert alert-neutral'>
 	The server part runs on PHP using MySQL as database back end. It is vital
 	that your
@@ -60,29 +60,25 @@
 	one-time password generated in the admin, which protects your server
 	from hashes/files leaking to rogue or fake agents.
 </div>
-<h3>Terminology</h3>
+<h3>Terminology:</h3>
 <div class='alert alert-neutral'>
 	In this manual and in the Hashtopussy itself, I use several terms. So
-	let's make them clear:<br><br>
-	<b>Agent</b><br>
-	A computer running Hashtopussy.exe and Hashcat doing the cracking itself.<br>
-	<b>Hashlist</b><br>
-	A list of hashes saved in the database. Hashlist can be text, HCCAP or
-	binary with most hashlists being the first category.<br>
-	<b>Task</b><br>
-	A specific attack. Every task has a command line defining how will
+	let's make them clear:<br>
+	<br><b>Agent:</b> A computer running Hashtopussy.exe and Hashcat doing the cracking itself.
+	<br><b>Hashlist:</b> A list of hashes saved in the database. Hashlist can be text, HCCAP or binary with most hashlists being the first category.
+	<br><b>Task:</b> A specific attack. Every task has a command line defining how will
 	Hashcat be executed. Files can be assigned to a task (word lists, rules,
-	...).<br>
-	<b>Key space</b><br>
-	Every task has a predefined key space which says precisely how big set of
-	keys will be searched.<br>
-	<b>Chunk</b><br>
-	A chunk is a part of a key-space assigned to a specific agent. If a chunk
+	...).
+	<br><b>Key space:</b>
+	 Every task has a predefined key space which says precisely how big set of
+	keys will be searched.
+	<br><b>Chunk:</b>
+	 A chunk is a part of a key-space assigned to a specific agent. If a chunk
 	times out, it (or its part) will be reassigned to next free agent.
 </div>
 <hr>
 <h1>First steps</h1>
-<h3>Prerequisites</h3>
+<h3>Prerequisites:</h3>
 <div class='alert alert-neutral'>
 	<b>Server</b><br>
 	<ul>
@@ -99,11 +95,11 @@
 		debian-based systems, use
 		<b>apt-get install mono-complete</b> to install desired runtime
 		environment.</li>
-		<li><b>Sufficient GPU drivers (see Hashcat website)</b></li>
-		<li><b>HTTPS connectivity to server</b></li>
+		<li>Sufficient GPU drivers (see Hashcat website)</li>
+		<li>HTTPS connectivity to server</li>
 	</ul>
 </div>
-<h3>Installation</h3>
+<h3>Installation:</h3>
 <div class='alert alert-neutral'>
 	If you meet all prerequisites, let's start with server installation.
 	Unpack the entire installation package to your web-accessible directory.
@@ -116,28 +112,28 @@
 	Doing just that, the environment should be ready to use. Now open
 	your web-root from a web browser. <...install script....>
 </div>
-<h3>Initial configuration</h3>
+<h3>Initial configuration:</h3>
 <div class='alert alert-neutral'>
 	Adjust the configuration variables to your need:
 	<ul>
-		<li>agenttimeout - How long will agent ask for work if there was
+		<li><b>agenttimeout</b> - How long will agent ask for work if there was
 			none last time</li>
-		<li>bench time - How long should benchmarking each agent take
+		<li><b>bench time</b> - How long should benchmarking each agent take
 			(seconds)</li>
-		<li>chunk time - Default chunk time (read below) (seconds)</li>
-		<li>chunktimeout - How long does the chunk need to be inactive,
+		<li><b>chunk time</b> - Default chunk time (read below) (seconds)</li>
+		<li><b>chunktimeout</b> - How long does the chunk need to be inactive,
 			before considered timed out (seconds)</li>
-		<li>Emailaddr - Email to send Notifications to.</li>
-		<li>Emailerror - Email agent errors to the set email address.</li>
-		<li>Emailhldone - Email when a hashlist is completed.</li>
-		<li>Emailtaskdone - Email when a tasks is completed.</li>
-		<li>fieldseparator - Default field separator for data
+		<li><b>Emailaddr</b> - Email to send Notifications to.</li>
+		<li><b>Emailerror</b> - Email agent errors to the set email address.</li>
+		<li><b>Emailhldone</b> - Email when a hashlist is completed.</li>
+		<li><b>Emailtaskdone</b> - Email when a tasks is completed.</li>
+		<li><b>fieldseparator</b> - Default field separator for data
 			import/export</li>
-		<li>HashlistAlias - Identifier used to tell the client
+		<li><b>HashlistAlias</b> - Identifier used to tell the client
 		the name and location of the hashlist.</li>
-		<li>statustimer - Default for how often should agent report its
+		<li><b>statustimer</b> - Default for how often should agent report its
 			status during cracking (seconds)</li>
-		<li>timefmt - Date/time format to display in admin (see PHP
+		<li><b>timefmt</b> - Date/time format to display in admin (see PHP
 			function date() for this)</li>
 	</ul>
 	You should also take your time to configure the Hashcat releases.
@@ -148,29 +144,30 @@
 	be released, you will need to add them to your releases. Further info is
 	explained in the Releases menu item documentation.
 </div>
-<h3>Users</h3>
+<h3>Users:</h3>
 <div class='alert alert-neutral'>
 	Add remove and change user permissions:
+
+	<br>One of the largest differences between hashtopus and hashtopussy
+	is user accounts. These accounts allow you to set user privileges
+	to specific users.<br>
 	<ul>
-		<li>One of the largest differences between hashtopus and hashtopussy
-		is user accounts. These accounts allow you to set user privileges
-		to specific users.</li>
-		<li>View user (1): This user can only see their own account information and
+		<br><b><li>View user (1):</b> This user can only see their own account information and
 		Tasks this includes task progress and number of cracks. 
 		They cannot see plain text password cracks or any other information.</li>
-		<li>Read only user (5): Has the same permissions as lower users (1) plus
+		<b><li>Read only user (5):</b> Has the same permissions as lower users (1) plus
 		they can see Hashlists, Superhashlists, tasks, Chunk Activity and 
 		plain text password cracks</li>
-		<li>Normal User (20): Has the same permissions as lower users (1,5) plus
+		<b><li>Normal User (20):</b> Has the same permissions as lower users (1,5) plus
 		access to agent data, Files, hashcat releases. User can create tasks, preconf tasks,
 		supertasks, hashlists, and superhashlists.  User cannot create agents,
 		hashcat releases, modify agents they do not own, or create other users</li>
-		<li>Superuser (30): Has read/write on everything except creating other users or 
+		<b><li>Superuser (20):</b> Has read/write on everything except creating other users or 
 		modifying user accounts</li>
-		<li>Admin (50): All hail our dark lord and master!</li>
+		<b><li>Admin (50):</b> All hail our dark lord and master!</li>
 	</ul>
 </div>
-<h3>Uploading files</h3>
+<h3>Uploading files:</h3>
 <div class='alert alert-neutral'>
 	If you are not new to cracking hashes, you probably have a nice
 	collection of word lists and rules. If you want to use those files in a
@@ -178,7 +175,7 @@
 	be done three different ways and all of them are covered in Global files
 	menu item documentation.
 </div>
-<h3>Pre-configured tasks</h3>
+<h3>Pre-configured tasks:</h3>
 <div class='alert alert-neutral'>
 	As you might have noticed, you often apply the same kinds of attacks
 	against every hashlist you acquire. It would be a waste of time to
@@ -190,19 +187,19 @@
 	in the defined order (priority).
 </div>
 <hr>
-<h1>Features documentation</h1>
+<h1>Features documentation:</h1>
 <div class='alert alert-neutral'>
 	This section documents each feature by its menu item. The features are
 	sorted by chronological order, in which they are likely to be used.
 </div>
-<h3>Server configuration</h3>
+<h3>Server configuration:</h3>
 <div class='alert alert-neutral'>
 	Allows you to set configuration values for your server.
 	<br>
 	You also have a set of DB-cleaning tools in case you get yourself into
 	some inconsistency trouble.
 </div>
-<h3>Hashcat releases</h3>
+<h3>Hashcat releases:</h3>
 <div class='alert alert-neutral'>
 	This section contains list of defined Hashcat releases. Each release has
 	numerous values that describe what to do with it. There are separate
@@ -223,14 +220,14 @@
 	Last column gives you the opportunity to delete old releases. If a
 	release is still used by some agent, you won't be allowed to delete it.
 </div>
-<h3>New release</h3>
+<h3>New release:</h3>
 <div class='alert alert-neutral'>
 	As the name suggests, this is the place to define new Hashcat releases.
 	Every time you open this form, it will be pre-filled by the data of the
 	last release previous to it, as most of the fields barely change. The
 	URL has to be absolute. All files are space-separated.
 </div>
-<h3>Global files</h3>
+<h3>Global files:</h3>
 <div class='alert alert-neutral'>
 	Think of this as a file server. Every word list and rule set needs to be
 	added to this list before you can use it in your tasks. You have three
@@ -258,7 +255,7 @@
 	lock icon. This will allow only trusted agents to download the file.
 	Agents not marked as trusted won't even see such task to begin with.
 </div>
-<h3>Pre-conf tasks</h3>
+<h3>Pre-conf tasks:</h3>
 <div class='alert alert-neutral'>
 	There are Three types of tasks in Hashtopussy. Regular ones, Supertasks
 	and pre-configured tasks. They are actually the same thing with one
@@ -277,7 +274,7 @@
 	All of the fields are also in the regular tasks list, so they will be
 	described there.
 </div>
-<h3>New task</h3>
+<h3>New task:</h3>
 <div class='alert alert-neutral'>
 	In this form, you can define new task, should it be pre-configured or
 	not. Every task needs to have a name (if you don't specify any it will
@@ -318,7 +315,7 @@
 	of the file inside of the archive so you must use the file name inside the archive
 	in the task command line.
 </div>
-<h3>Agent deployer</h3>
+<h3>Agent deployer:</h3>
 <div class='alert alert-neutral'>
 	Since you have set up all things need to crack hashes, you need some
 	computing power! The Agent deployer menu is just the place to start. On
@@ -335,7 +332,7 @@
 	and will never ask for password unless you delete that token or delete
 	the agent from the administration panel.
 </div>
-<h3>Agents</h3>
+<h3>Agents:</h3>
 <div class='alert alert-neutral'>
 	Assuming you have your agents registered, you will see them in this list
 	along with lots of useful information:
@@ -382,7 +379,7 @@
 	If there was already some activity by this agent, you can see uploaded
 	errors and dispatched chunks down the page.
 </div>
-<h3>Hashlists</h3>
+<h3>Hashlists:</h3>
 <div class='alert alert-neutral'>
 	This is the storage of all your cracking targets. A hashlist, as the
 	name suggests, is a list of hashes, even if there should be only one
@@ -413,7 +410,7 @@
 	sum of the maximum priority of the regular tasks and the priority of
 	their pre-conf originals.
 </div>
-<h3>New hashlist</h3>
+<h3>New hashlist:</h3>
 <div class='alert alert-neutral'>
 	With all that computing power, you might as well start cracking
 	something. The New hashlist option gives you what you need. Again, every
@@ -441,7 +438,7 @@
 	are having issues with LOAD DATA from file have a look at your web-root permissions
 	and	'apparmor' Configuration.
 </div>
-<h3>New superhashlist</h3>
+<h3>New superhashlist:</h3>
 <div class='alert alert-neutral'>
 	Sometimes you find yourself in a situation where you have multiple
 	hashlists of the same hash type. Naturally, the fastest way is to merge
@@ -459,7 +456,7 @@
 	Should the superhashlist itself be marked as secret, no task cracking
 	this superhashlist will be given to untrusted agent in the first place.
 </div>
-<h3>Tasks</h3>
+<h3>Tasks:</h3>
 <div class='alert alert-neutral'>
 	Let's assume you have created a hashlist and either assigned a bunch of
 	pre-conf tasks to it or simply created new tasks from scratch, just for
@@ -489,26 +486,24 @@
 		will be directed to the most prioritized task.
 		<br> A lock icon in any column marks secret data.</li>
 		<li><b>Action</b> As in every page, an option to delete the task.</li>
-	</ul>
-	Clicking on task name will take you to task detail, which is one of the
-	most important screens in the system. You can see all the information
-	about the task from the task list plus estimated and spent time, and
-	current cracking speed. You can also see the full command line.
-	<br>
-	Notice that some options are changeable - you can redefine chunk size
-	and after you do that, all agents' benchmarks will be recalculated to
-	match it.
-	<br>
-	Under the main table is a visual representation of a task. This picture
-	shows the exact chunk spread amongst the key space including if anything
-	was cracked in each chunk (green filling) or if there were any problems
-	and the chunk was trimmed (red border).
-	<br>
-	Below is the list of attached files (click able to detail in Global files
-	section).
-	<br>
-	The table under it shows information about agents assigned to this task:
-	<ul>
+		Clicking on task name will take you to task detail, which is one of the
+		most important screens in the system. You can see all the information
+		about the task from the task list plus estimated and spent time, and
+		current cracking speed. You can also see the full command line.
+		<br>
+		Notice that some options are changeable - you can redefine chunk size
+		and after you do that, all agents' benchmarks will be recalculated to
+		match it.
+		<br>
+		Under the main table is a visual representation of a task. This picture
+		shows the exact chunk spread amongst the key space including if anything
+		was cracked in each chunk (green filling) or if there were any problems
+		and the chunk was trimmed (red border).
+		<br>
+		Below is the list of attached files (click able to detail in Global files
+		section).
+		<br>
+		The table under it shows information about agents assigned to this task:
 		<li><b>Name</b> Name of agent that will link you to agent detail.</li>
 		<li><b>Benchmark</b> How big chunk will be dispatched to this agent with
 		the ability to set auto-adjusting of this size.
@@ -532,10 +527,8 @@
 		<li>Show All Assignments is an option that allows you to see stats on a task
 		without clients currently assigned. If a client spent time assigned to the task
 		its data should be seen such as key space searched and time spent.</li>
-	</ul>
-	Last and also very informative table shows the actual chunks that were
-	dispatched in this task. You see numerous values there:
-	<ul>
+		Last and also very informative table shows the actual chunks that were
+		dispatched in this task. You see numerous values there:
 		<li><b>Start</b> Where exactly in the key space does this chunk start.</li>
 		<li><b>Length</b> How long the chunk is, key space-wise</li>
 		<li><b>Checkpoint</b> If the agent crashed, from where would the chunk
@@ -558,7 +551,7 @@
 		redundant work.</li>
 	</ul>
 </div>
-<h3>Chunk activity</h3>
+<h3>Chunk activity:</h3>
 <div class='alert alert-neutral'>
 	This is the same table as in task or agent details, but shows chunks for
 	ALL tasks and ALL agents.
@@ -566,7 +559,7 @@
 	A good place to monitor overall cracking activity.
 </div>
 <hr>
-<h1>Command line</h1>
+<h1>Command line:</h1>
 <div class='alert alert-neutral'>
 	The Hashtopussy agent (client) has several command line parameters you can use to
 	alter the behaviour of the agent. Those parameters are invoked as
