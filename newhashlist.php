@@ -149,6 +149,8 @@ if(isset($_POST['action'])){
 											$message .= "fail, inserting...";
 											$slow = fopen("chunk_$id", "r");
 											$DB->exec("START TRANSACTION");
+											$buffer = array();
+											$bufferCount = 0;
 											while (!feof($slow)) {
 												$dato = stream_get_line($slow, 1024, $ls);
 												if ($fs == "") {
@@ -168,11 +170,17 @@ if(isset($_POST['action'])){
 												}
 												$hash = $DB->quote($hash);
 												$salt = $DB->quote($salt);
-												$kvr = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ($id, $hash, $salt)");
-												if ($kvr) {
-													$pocet += $kvr->rowCount();
+												$buffer[] = "($id, $hash, $salt)";
+												$bufferCount++;
+												if($bufferCount >= 500){
+													$res = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+													$pocet += $res->rowCount();
+													$buffer = array();
+													$bufferCount = 0;
 												}
 											}
+											$res = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+											$pocet += $res->rowCount();
 											fclose($slow);
 											$DB->exec("COMMIT");
 										}
