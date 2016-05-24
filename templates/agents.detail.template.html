@@ -49,6 +49,9 @@
 			<td>GPU platform:</td>
 			<td>
 				{%TEMPLATE->agents.detail.platform%}
+				{{IF !!agent.getVal('owner')!! != !!login.getUserId()!! && !!login.getLevel()!! < 30}}
+					[[Util::getStaticArray(%%agent.getVal('gpubrand')%%, 'platforms')]]
+				{{ENDIF}}
 			</td>
 		</tr>
 		<tr>
