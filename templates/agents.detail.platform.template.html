@@ -1,0 +1,16 @@
+{{IF !!agent.getVal('owner')!! == !!login.getUserId()!! || !!login.getLevel()!! >= 30}}
+	<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="POST">
+		<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+		<input type="hidden" name="action" value="setplatform">
+		<select class='form-control' name="platform">
+			{{FOREACH platform,!!platforms!!}}
+				<option value='[[platform.getVal('key')]]'{{IF !!platform.getVal('key')!! == !!agent.getVal('gpubrand')!!}} selected{{ENDIF}}>[[platform.getVal('val')]]</option>
+			{{ENDFOREACH}}
+		</select>
+		<input type="submit" class='btn btn-default' value="Set">
+	</form>
+{{ENDIF}}
+{{IF !!agent.getVal('owner')!! != !!login.getUserId()!! && !!login.getLevel()!! < 30}}
+	[[Util::getStaticArray(%%agent.getVal('gpubrand')%%, 'platforms')]]
+{{ENDIF}}
+    	

@@ -19,6 +19,7 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'newhashlistp':
+			//TODO: add Cassandra 1
 			// new hashlist creator
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
