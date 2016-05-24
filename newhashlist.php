@@ -19,6 +19,7 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'newhashlistp':
+			//TODO: add Cassandra 1
 			// new hashlist creator
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
@@ -148,6 +149,8 @@ if(isset($_POST['action'])){
 											$message .= "fail, inserting...";
 											$slow = fopen("chunk_$id", "r");
 											$DB->exec("START TRANSACTION");
+											$buffer = array();
+											$bufferCount = 0;
 											while (!feof($slow)) {
 												$dato = stream_get_line($slow, 1024, $ls);
 												if ($fs == "") {
@@ -167,11 +170,17 @@ if(isset($_POST['action'])){
 												}
 												$hash = $DB->quote($hash);
 												$salt = $DB->quote($salt);
-												$kvr = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ($id, $hash, $salt)");
-												if ($kvr) {
-													$pocet += $kvr->rowCount();
+												$buffer[] = "($id, $hash, $salt)";
+												$bufferCount++;
+												if($bufferCount >= 10000){
+													$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+													$pocet += $check->rowCount();
+													$buffer = array();
+													$bufferCount = 0;
 												}
 											}
+											$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+											$pocet += $check->rowCount();
 											fclose($slow);
 											$DB->exec("COMMIT");
 										}

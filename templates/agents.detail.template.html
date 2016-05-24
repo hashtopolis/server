@@ -26,12 +26,7 @@
 		<tr>
 			<td>Machine name:</td>
 			<td>
-				<form class='form-inline' id="active[[agent.getVal('id')]]" action="agents.php?id=[[agent.getVal('id')]]" method="post">
-					<input type='hidden' name='action' value='agentrename'>
-       				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-       				<input type="text" name='name' value="[[agent.getVal('name')]]" class='form-control'>&nbsp;&nbsp;
-       				<input type='submit' class='btn btn-default' value='Change'>
-       			</form>
+				{%TEMPLATE->agents.detail.name%}
 			</td>
 		</tr>
 		<tr>
@@ -53,16 +48,7 @@
 		<tr>
 			<td>GPU platform:</td>
 			<td>
-				<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="POST">
-      				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-      				<input type="hidden" name="action" value="setplatform">
-      				<select class='form-control' name="platform">
-      					{{FOREACH platform,!!platforms!!}}
-      						<option value='[[platform.getVal('key')]]'{{IF !!platform.getVal('key')!! == !!agent.getVal('gpubrand')!!}} selected{{ENDIF}}>[[platform.getVal('val')]]</option>
-      					{{ENDFOREACH}}
-      				</select>
-      				<input type="submit" class='btn btn-default' value="Set">
-      			</form>
+				{%TEMPLATE->agents.detail.platform%}
 			</td>
 		</tr>
 		<tr>
@@ -79,12 +65,7 @@
 		<tr>
 			<td>Idle wait:</td>
 			<td>
-				<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="POST">
-      				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-      				<input type="hidden" name="action" value="agentwait">
-      				<input type="text" name="wait" class='form-control' value="[[agent.getVal('wait')]]" size="4"> seconds
-      				<input type="submit" class='btn btn-default' value="Set">
-      			</form>
+				{%TEMPLATE->agents.detail.idle%}
 			</td>
 		</tr>
 		<tr>
