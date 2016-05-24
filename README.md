@@ -17,3 +17,5 @@ This is a wrapper for oclHashcat for distributed hashcracking, based on the sour
 ### What is missing currently? ###
 
 * Add a install script
+* Fancy password analysis
+* Some graphical informations about tasks
