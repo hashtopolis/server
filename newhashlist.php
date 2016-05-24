@@ -172,7 +172,7 @@ if(isset($_POST['action'])){
 												$salt = $DB->quote($salt);
 												$buffer[] = "($id, $hash, $salt)";
 												$bufferCount++;
-												if($bufferCount >= 500){
+												if($bufferCount >= 10000){
 													$res = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
 													$pocet += $res->rowCount();
 													$buffer = array();

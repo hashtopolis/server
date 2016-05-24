@@ -508,13 +508,13 @@ if(isset($_POST['action'])){
 							$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
 							while($kolik > 0) {
 								$kver = "DELETE FROM ".Util::getStaticArray(0, 'formattables')." WHERE hashlist=$hlist LIMIT 1000";
-								$ans1 = $FACTORIES::getagentsFactory()->getDB()->query($kver);
+								$ans1 = $DB->query($kver);
 								$kolik = $ans1->rowCount();
 								$hdelete += $kolik;
 								if(time() >= $cas_pinfo + 10){
 									$message .= "Progress: $hdelete/$hcount, time spent: ".(time()-$cas_start)." sec<br>";
-									$FACTORIES::getagentsFactory()->getDB()->exec("COMMIT");
-									$FACTORIES::getagentsFactory()->getDB()->exec("START TRANSACTION");
+									$DB->exec("COMMIT");
+									$DB->exec("START TRANSACTION");
 									$cas_pinfo = time();
 								}
 							}
@@ -524,8 +524,9 @@ if(isset($_POST['action'])){
 							$message .= "This was the last hashlist, truncating the table.";
 							$FACTORIES::getagentsFactory()->getDB()->exec("TRUNCATE TABLE ".$formattables[$list["format"]]);
            	 			}
-           	 			header("Location: hashlists.php");
-           	 			die();
+           	 			//TODO: uncomment after debugging
+           	 			//header("Location: hashlists.php");
+           	 			//die();
 						break;
 			
 					case 1:

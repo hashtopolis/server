@@ -84,6 +84,5 @@ $OBJECTS['config'] = $CONFIG;
 $OBJECTS['autorefresh'] = 0;
 
 $DB = $FACTORIES::getagentsFactory()->getDB();
-$CASSANDRA = new Cassandra();
 
 
