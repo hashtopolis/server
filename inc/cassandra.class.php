@@ -7,8 +7,8 @@
  */
 
 class CrawlyCassandra {
-	public static $loginUser = "crawly";
-	public static $loginPassword = "F97673gKJGKFGkfeiz67352";
+	public static $loginUser = "__USER__";
+	public static $loginPassword = "__PW__";
 	
 	private $statementInsertDomain; //insert new domain
 	private $statementUpdateDomain; //update domain data
@@ -21,7 +21,7 @@ class CrawlyCassandra {
 	private $statementSelectReferenceTo;
 	
 	private function prepareStatements(){
-		$this->statementInsertDomain = $this->session->prepare("INSERT INTO Crawl (domainName, httpStatus, time, generatorMeta, chunkId) VALUES (?, ?, ?, ?, ?)");
+		/*$this->statementInsertDomain = $this->session->prepare("INSERT INTO Crawl (domainName, httpStatus, time, generatorMeta, chunkId) VALUES (?, ?, ?, ?, ?)");
 		$this->statementUpdateDomain = $this->session->prepare("UPDATE Crawl SET httpStatus=?, time=?, generatorMeta=?, chunkId=? WHERE domainName=?");
 		$this->statementDeleteDomain = $this->session->prepare("DELETE FROM Crawl WHERE domainName=?");
 		$this->statementSelectDomain = $this->session->prepare("SELECT * FROM Crawl WHERE domainName=?");
@@ -29,13 +29,7 @@ class CrawlyCassandra {
 		$this->statementInsertReference = $this->session->prepare("INSERT INTO Reference (id, fromDomain, toDomain) VALUES (?, ?, ?)");
 		$this->statementDeleteReference = $this->session->prepare("DELETE FROM Reference WHERE id=?");
 		$this->statementSelectReferenceFrom = $this->session->prepare("SELECT * FROM Reference WHERE fromDomain=?");
-		$this->statementSelectReferenceTo = $this->session->prepare("SELECT * FROM Reference WHERE toDomain=?");
-	}
-	
-	public function replaceDomain($domainold, $domainnew){
-		$res = $this->selectDomain($domainold);
-		$this->deleteDomain($res['domainname']);
-		$this->insertDomain(array(array($domainnew, $res['httpstatus'], $res['time'], $res['generatormeta'], $res['chunkid'])));
+		$this->statementSelectReferenceTo = $this->session->prepare("SELECT * FROM Reference WHERE toDomain=?");*/
 	}
 	
 	public function __construct(){
@@ -47,6 +41,17 @@ class CrawlyCassandra {
 	
 	public function getPointer(){
 		return $this->session;
+	}
+	
+	
+	
+	
+	
+	##COPIED CODE, USED AS EXAMPLES!!
+	public function replaceDomain($domainold, $domainnew){
+		$res = $this->selectDomain($domainold);
+		$this->deleteDomain($res['domainname']);
+		$this->insertDomain(array(array($domainnew, $res['httpstatus'], $res['time'], $res['generatormeta'], $res['chunkid'])));
 	}
 	
 	public function updateDomain($list){
