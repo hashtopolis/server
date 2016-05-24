@@ -173,14 +173,14 @@ if(isset($_POST['action'])){
 												$buffer[] = "($id, $hash, $salt)";
 												$bufferCount++;
 												if($bufferCount >= 10000){
-													$res = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
-													$pocet += $res->rowCount();
+													$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+													$pocet += $check->rowCount();
 													$buffer = array();
 													$bufferCount = 0;
 												}
 											}
-											$res = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
-											$pocet += $res->rowCount();
+											$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+											$pocet += $check->rowCount();
 											fclose($slow);
 											$DB->exec("COMMIT");
 										}
