@@ -7,8 +7,8 @@
  */
 
 class CrawlyCassandra {
-	public static $loginUser = "__USER__";
-	public static $loginPassword = "__PW__";
+	public static $loginUser = '';
+	public static $loginPassword = '';
 	
 	private $statementInsertDomain; //insert new domain
 	private $statementUpdateDomain; //update domain data
@@ -33,8 +33,12 @@ class CrawlyCassandra {
 	}
 	
 	public function __construct(){
+		global $CONN;
+		
+		$this->loginUser = $CONN['csuser'];
+		$this->loginPassword = $CONN['cspass'];
 		$cluster  = Cassandra::cluster()->withPersistentSessions(false)->withCredentials(CrawlyCassandra::$loginUser, CrawlyCassandra::$loginPassword)->build();
-		$keyspace  = 'crawly';
+		$keyspace  = $CONN['csspace'];
 		$this->session = $cluster->connect($keyspace);
 		$this->prepareStatements();
 	}
