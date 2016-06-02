@@ -36,7 +36,7 @@ if(isset($_POST['action'])){
 			$hashtype = intval($_POST["hashtype"]);
 			$message = "<div class='alert alert-neutral'>";
 			if ($format >= 0 && $format <= 2) {
-				if ($name == "") {
+				if (strlen($name) == 0) {
 					$message .= "You must specify hashlist name";
 				} 
 				else {
