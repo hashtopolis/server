@@ -46,7 +46,7 @@ class Template {
 	 */
 	public function getCode(){
 		//include all templates
-		preg_match_all("/\{\%(.*?)\%\}/mis", $this->template, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/\\{\\%(.*?)\\%\\}/mis", $this->template, $matches, PREG_PATTERN_ORDER);
 
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			$command = explode("->", $matches[1][$x]); //just the command
@@ -86,7 +86,7 @@ class Template {
 		$render = $this->render($objects);
 
 		//delete one-line comments
-		preg_match_all("/\/\/(.*?)\\n/mis", $this->template, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/\\/\\/(.*?)\\n/mis", $this->template, $matches, PREG_PATTERN_ORDER);
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			$command = explode("->", $matches[1][$x]); //just the command
 			$replace = $matches[0][$x]; //whole part which will be replaced
@@ -94,7 +94,7 @@ class Template {
 		}
 
 		//delete multiline comments
-		preg_match_all("/\/\*(.*?)\*\//mis", $this->template, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/\\/\\*(.*?)\\*\\//mis", $this->template, $matches, PREG_PATTERN_ORDER);
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			$command = explode("->", $matches[1][$x]); //just the command
 			$replace = $matches[0][$x]; //whole part which will be replaced
@@ -120,15 +120,15 @@ class Template {
 		$render = $this->renderExecute($this->template, $objects);
 
 		//remove all HTML comments
-		$render = preg_replace("/\<\!\-\- (.*?) \-\-\>\\n/", "", $render);
+		$render = preg_replace("/\\<\\!\\-\\- (.*?) \\-\\-\\>\\n/", "", $render);
 
 		//search for to be special treated variables
-		preg_match_all("/^(?:(?!\{\{).)*?(\?\?\?(.*?)\?\?\?)/is", $render, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/^(?:(?!\\{\\{).)*?(\\?\\?\\?(.*?)\\?\\?\\?)/is", $render, $matches, PREG_PATTERN_ORDER);
 		while(sizeof($matches[0]) > 0){
 			$matches[2][0] = "!!".$matches[2][0]."!!";
 			$val = $this->getCondition($matches[2][0], $objects);
 			$render = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $render);
-			preg_match_all("/^(?:(?!\{\{).)*?(\?\?\?(.*?)\?\?\?)/is", $render, $matches, PREG_PATTERN_ORDER);
+			preg_match_all("/^(?:(?!\\{\\{).)*?(\\?\\?\\?(.*?)\\?\\?\\?)/is", $render, $matches, PREG_PATTERN_ORDER);
 		}
 		
 		//go through loops recursively and at the end replace all language strings
@@ -161,7 +161,7 @@ class Template {
 		}
 
 		//search for all language strings
-		preg_match_all("/\_\_(.*?)\_\_/mis", $text, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/\\_\\_(.*?)\\_\\_/mis", $text, $matches, PREG_PATTERN_ORDER);
 
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			$replace = $matches[0][$x]; //whole part which will be replaced
@@ -181,7 +181,7 @@ class Template {
 	 */
 	private function varReplace($partial, $objects, $inner = false){
 		//search for outer variables
-		preg_match_all("/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is", $partial, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/^(?:(?!\\{\\{).)*?(\\[\\[(.*?)\\]\\])/is", $partial, $matches, PREG_PATTERN_ORDER);
 		while(sizeof($matches[0]) > 0){
 			$matches[2][0] = "!!".$matches[2][0]."!!";
 			$val = $this->getCondition($matches[2][0], $objects);
@@ -191,11 +191,11 @@ class Template {
 			else{
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $partial);
 			}
-			preg_match_all("/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is", $partial, $matches, PREG_PATTERN_ORDER);
+			preg_match_all("/^(?:(?!\\{\\{).)*?(\\[\\[(.*?)\\]\\])/is", $partial, $matches, PREG_PATTERN_ORDER);
 		}
 		
 		//search for inner variables
-		preg_match_all("/^(?:(?!\{\{).)*?(\%\%(.*?)\%\%)/is", $partial, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/^(?:(?!\\{\\{).)*?(\\%\\%(.*?)\\%\\%)/is", $partial, $matches, PREG_PATTERN_ORDER);
 		while(sizeof($matches[0]) > 0){
 			$matches[2][0] = "!!".$matches[2][0]."!!";
 			$val = $this->getCondition($matches[2][0], $objects);
@@ -205,7 +205,7 @@ class Template {
 			else{
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $partial);
 			}
-			preg_match_all("/^(?:(?!\{\{).)*?(\%\%(.*?)\%\%)/is", $partial, $matches, PREG_PATTERN_ORDER);
+			preg_match_all("/^(?:(?!\\{\\{).)*?(\\%\\%(.*?)\\%\\%)/is", $partial, $matches, PREG_PATTERN_ORDER);
 		}
 		
 		return $partial;
@@ -222,7 +222,7 @@ class Template {
 		$partial = $this->varReplace($partial, $objects);
 
 		//search for if, for and foreach loops
-		preg_match_all("/\{\{(.*?)\s(.*?)\}\}(.*?)\{\{(END\\1)\}\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/\\{\\{(.*?)\\s(.*?)\\}\\}(.*?)\\{\\{(END\\1)\\}\\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
 		
 		$rest = $partial;
 		for($x=0;$x<sizeof($matches[0]);$x++){
@@ -231,7 +231,7 @@ class Template {
 		
 		//if not a valid configuration is detected with lazy search, try it with greedy
 		if(substr_count($rest, "{{ENDIF}}") != substr_count($rest, "{{IF ") || substr_count($rest, "{{ENDFOR}}") != substr_count($rest, "{{FOR ") || substr_count($rest, "{{ENDFOREACH}}") != substr_count($rest, "{{FOREACH ")){
-			preg_match_all("/\{\{(.*?)\s(.*?)\}\}(.*)\{\{(END\\1)\}\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
+			preg_match_all("/\\{\\{(.*?)\\s(.*?)\\}\\}(.*)\\{\\{(END\\1)\\}\\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
 		}
 		for($z=0;$z<sizeof($matches[0]);$z++){
 			switch($matches[1][$z]){
@@ -302,7 +302,7 @@ class Template {
 		}
 		
 		//include all templates
-		preg_match_all("/\{\%(.*?)\%\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/\\{\\%(.*?)\\%\\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
 		
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			$command = explode("->", $matches[1][$x]); //just the command
@@ -344,7 +344,7 @@ class Template {
 
 		//search for variable identifications inside of a expression used for calling objects
 		//or accessing variables
-		preg_match_all("/\!\!(.*?)\!\!/mis", $condition, $vals, PREG_PATTERN_ORDER);
+		preg_match_all("/\\!\\!(.*?)\\!\\!/mis", $condition, $vals, PREG_PATTERN_ORDER);
 		//$vals[0] contains complete match, $vals[1] contains inside match
 		for($x=0;$x<sizeof($vals[0]);$x++){
 			$complete = $vals[1][$x];
@@ -359,7 +359,7 @@ class Template {
 				//is a variable/object provided in objects
 				$condition = str_replace($vals[0][$x], "\$objects['$varname']".$calls, $condition);
 			}
-			else if(is_callable(preg_replace("/\(.*\)/", "", $complete))){
+			else if(is_callable(preg_replace("/\\(.*\\)/", "", $complete))){
 				//is a static function call
 				$condition = str_replace($vals[0][$x], $complete, $condition);
 			}
