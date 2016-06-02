@@ -257,8 +257,8 @@ if(isset($_POST['action'])){
 							}
 							unlink($tmpfile);
 						}
-						header("Location: hashlists.php");
-						die();
+						/*header("Location: hashlists.php");
+						die();*/
 					} 
 					else {
 						$message .= "ERROR: ".$DB->errorInfo();
