@@ -41,7 +41,7 @@ if(isset($_POST['action'])){
 				} 
 				else {
 					$message .= "Creating hashlist in the DB...";
-					$vysledek = $DB->exec("INSERT INTO hashlists (name,format,hashtype, hexsalt) VALUES ($name, $format, $hashtype, $hexsalted)");
+					$vysledek = $DB->exec("INSERT INTO hashlists (name, format,hashtype, hexsalt) VALUES ($name, $format, $hashtype, $hexsalted)");
 					if($vysledek){
 						// insert succeeded
 						$id = $DB->lastInsertId();
@@ -257,8 +257,8 @@ if(isset($_POST['action'])){
 							}
 							unlink($tmpfile);
 						}
-						/*header("Location: hashlists.php");
-						die();*/
+						header("Location: hashlists.php");
+						die();
 					} 
 					else {
 						$message .= "ERROR: ".$DB->errorInfo();
