@@ -181,7 +181,7 @@ class Template {
 	 */
 	private function varReplace($partial, $objects, $inner = false){
 		//search for outer variables
-		preg_match_all("/^(?:(?!\{\{).)*?(\\[\\[(.*?)\\]\\])/is", $partial, $matches, PREG_PATTERN_ORDER);
+		preg_match_all("/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is", $partial, $matches, PREG_PATTERN_ORDER);
 		while(sizeof($matches[0]) > 0){
 			$matches[2][0] = "!!".$matches[2][0]."!!";
 			$val = $this->getCondition($matches[2][0], $objects);
