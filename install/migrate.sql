@@ -1,5 +1,6 @@
 /* Add new column to existing agents table */
 ALTER TABLE agents ADD `userId` int(11) NOT NULL DEFAULT '0';
+ALTER TABLE hashlists ADD `hexsalt` int(11) NOT NULL DEFAULT '0';
 
 CREATE TABLE IF NOT EXISTS `RightGroup` (
   `rightGroupId` int(11) NOT NULL AUTO_INCREMENT,
