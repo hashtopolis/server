@@ -36,7 +36,7 @@ if($task > 0){
 		}
 		else{
 			// draw dark yellow for ok chunks
-			imagerectangle($pik, $zacatek, 0, $konec, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
+			//imagerectangle($pik, $zacatek, 0, $konec, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
 		}
 		if($konec - $zacatek >= 2){
 			$zacatek++;
@@ -59,4 +59,3 @@ if($task > 0){
 
 
 
-?>
