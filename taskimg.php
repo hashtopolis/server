@@ -50,6 +50,7 @@ if($task > 0){
 			imagefilledrectangle($pik, $zacatek, 1, $real, ($imy - 2), imagecolorallocate($pik, 128 - $gr, 255, 0));
 		}
 	}
+	imagerectangle($pik, 0, 0, $keyspace, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
 	// simply return the header for png and output the picture
 	header("Content-type: image/png");
 	header("Cache-Control: no-cache");
