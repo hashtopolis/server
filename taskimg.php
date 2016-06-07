@@ -53,7 +53,7 @@ if($task > 0){
 		}
 	}
 	if($end > 0){
-		imagerectangle($pik, 0, 0, $end, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
+		imagerectangle($pik, 0, 0, $end, ($imy - 1), imagecolorallocate($pik, 192, 192, 192));
 	}
 	// simply return the header for png and output the picture
 	header("Content-type: image/png");
