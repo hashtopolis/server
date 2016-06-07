@@ -25,6 +25,7 @@ if($task > 0){
 	$progress = $line["progress"];
 	$keyspace = max(1, $line["keyspace"]);
 	$res = $DB->query("SELECT * FROM chunks WHERE task=$task ORDER BY state ASC");
+	$end = 0;
 	while($line = $res->fetch()){
 		$zacatek = ($imx - 1) * $line["skip"] / $keyspace;
 		$konec = ($imx - 1) * ($line["skip"] + $line["length"]) / $keyspace;
@@ -38,6 +39,7 @@ if($task > 0){
 			// draw dark yellow for ok chunks
 			//imagerectangle($pik, $zacatek, 0, $konec, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
 		}
+		$end = $konec;
 		if($konec - $zacatek >= 2){
 			$zacatek++;
 		}
@@ -50,7 +52,9 @@ if($task > 0){
 			imagefilledrectangle($pik, $zacatek, 1, $real, ($imy - 2), imagecolorallocate($pik, 128 - $gr, 255, 0));
 		}
 	}
-	imagerectangle($pik, 0, 0, $zacatek, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
+	if($end > 0){
+		imagerectangle($pik, 0, 0, $zacatek, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
+	}
 	// simply return the header for png and output the picture
 	header("Content-type: image/png");
 	header("Cache-Control: no-cache");
