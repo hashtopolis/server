@@ -59,10 +59,10 @@ foreach($res as $chunk){
 	//draw rectangles for chunk
 	if($chunk['state'] >= 6){
 		//there occured an error on the chunk
-		imagerectangle($image, $begin, 0, $end, $size[1] - 1, $red);
+		imagerectangle($image, $start, 0, $end, $size[1] - 1, $red);
 	}
 	else{
-		imagerectangle($image, $begin, 0, $end, $size[1] - 1, $grey);
+		imagerectangle($image, $start, 0, $end, $size[1] - 1, $grey);
 	}
 	if($end - $start >= 2){
 		//we can only really draw a rectangle around the chunk if he needs at least 2 pixels
@@ -73,10 +73,10 @@ foreach($res as $chunk){
 		$current--;
 	}
 	if($chunk['cracked'] > 0){
-		imagefilledrectangle($image, $end, 1, $current, $size[1] - 2, $green);
+		imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $green);
 	}
 	else{
-		imagefilledrectangle($image, $end, 1, $current, $size[1] - 2, $yellow);
+		imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $yellow);
 	}
 }
 
