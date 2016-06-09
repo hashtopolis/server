@@ -54,6 +54,8 @@ foreach($res as $chunk){
 	//division by 10000 is required because rprogress is saved in percents with two decimals
 	$current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace);
 	
+	echo "$start-$end-$current<br>\n";
+	
 	if($end - $start < 3){
 		if($chunk['state'] >= 6){
 			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
@@ -82,9 +84,9 @@ foreach($res as $chunk){
 }
 
 //send image data to output
-header("Content-type: image/png");
+/*header("Content-type: image/png");
 header("Cache-Control: no-cache");
-imagepng($image);
+imagepng($image);*/
 
 
 
