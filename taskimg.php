@@ -15,7 +15,7 @@ if(!$LOGIN->isLoggedin()){
 
 //get image dimenstions
 $size[] = array(min(1920, intval($_GET["x"])), min(1080, intval($_GET["y"])));
-if ($imx == 0 || $imy == 0){
+if ($size[0] == 0 || $size[0] == 0){
 	die();
 }
 
