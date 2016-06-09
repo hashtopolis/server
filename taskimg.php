@@ -80,7 +80,7 @@ foreach($res as $chunk){
 			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
 		}
 		else{
-			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
+			imagefilledrectangle($image, $start + 1, 1, $end - 1, $size[1] - 2, $yellow);
 		}
 	}
 }
