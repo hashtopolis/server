@@ -52,7 +52,7 @@ foreach($res as $chunk){
 	$start = ($size[0] - 1) * $chunk['skip'] / $keyspace;
 	$end = ($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace;
 	//division by 10000 is required because rprogress is saved in percents with two decimals
-	$current = ($size[0] - 1) * ($line['skip'] + $line['length'] * $line['rprogress']) / 10000 / $keyspace;
+	$current = ($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace;
 	
 	echo "chunk ".$chunk['id'].": $start-$end-$current\n";
 	
