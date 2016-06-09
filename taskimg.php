@@ -54,25 +54,30 @@ foreach($res as $chunk){
 	//division by 10000 is required because rprogress is saved in percents with two decimals
 	$current = ($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace;
 	
-	//draw rectangles for chunk
-	//imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $yellow);
-	if($chunk['state'] >= 6){
-		//there occured an error on the chunk
-		imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
+	if($end - $start < 3){
+		if($chunk['state'] >= 6){
+			imagefilledrectangle($image, $start, 0, $current, $size[1] - 1, $red);
+		}
+		else if($chunk['cracked'] > 0){
+			imagefilledrectangle($image, $start, 0, $current, $size[1] - 1, $green);
+		}
+		else{
+			imagefilledrectangle($image, $start, 0, $current, $size[1] - 1, $yellow);
+		}
 	}
 	else{
-		imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
-	}
-	if($end - $start >= 2){
-		//we can only really draw a rectangle around the chunk if he needs at least 2 pixels
-		$start++; 
-	}
-	if($current - $start >= 1){
-		//if the current is at least at 1 we can draw the rectangle around it
-		$current--;
-	}
-	if($chunk['cracked'] > 0){
-		imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $green);
+		if($chunk['state'] >= 6){
+			imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
+		}
+		else{
+			imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
+		}
+		if($chunk['cracked'] > 0){
+			imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $green);
+		}
+		else{
+			imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $yellow);
+		}
 	}
 }
 
