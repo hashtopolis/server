@@ -55,7 +55,7 @@ foreach($res as $chunk){
 	$current = ($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace;
 	
 	//draw rectangles for chunk
-	imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $yellow);
+	//imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $yellow);
 	if($chunk['state'] >= 6){
 		//there occured an error on the chunk
 		imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
