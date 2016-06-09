@@ -52,7 +52,7 @@ foreach($res as $chunk){
 	$start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
 	$end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace) - 1;
 	//division by 10000 is required because rprogress is saved in percents with two decimals
-	$current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace);
+	$current = min(floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace), $end);
 	
 	echo "$start-$end-$current<br>\n";
 	
