@@ -81,9 +81,9 @@ foreach($res as $chunk){
 }
 
 //send image data to output
-header("Content-type: image/png");
+/*header("Content-type: image/png");
 header("Cache-Control: no-cache");
-imagepng($image);
+imagepng($image);*/
 
 
 
