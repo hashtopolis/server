@@ -49,12 +49,10 @@ $taskid = $task['id'];
 $res = $DB->query("SELECT * FROM chunks WHERE task=$taskid ORDER BY state ASC");
 $res = $res->fetchAll();
 foreach($res as $chunk){
-	$start = ($size[0] - 1) * $chunk['skip'] / $keyspace;
-	$end = ($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace;
+	$start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
+	$end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace);
 	//division by 10000 is required because rprogress is saved in percents with two decimals
-	$current = ($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace;
-	
-	echo "$end-$current";
+	$current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace);
 	
 	if($end - $start < 3){
 		if($chunk['state'] >= 6){
@@ -84,9 +82,9 @@ foreach($res as $chunk){
 }
 
 //send image data to output
-/*header("Content-type: image/png");
+header("Content-type: image/png");
 header("Cache-Control: no-cache");
-imagepng($image);*/
+imagepng($image);
 
 
 
