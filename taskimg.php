@@ -52,39 +52,34 @@ foreach($res as $chunk){
 	$start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
 	$end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace) - 1;
 	//division by 10000 is required because rprogress is saved in percents with two decimals
-	$current = min(array(floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace), $end));
+	$current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace);
 	
-	//echo "$start-$end-$current<br>\n";
+	if($current > $end){
+		$current = $end;
+	}
 	
 	if($end - $start < 3){
 		if($chunk['state'] >= 6){
-			//echo "fillrectangle red: ".$start."-0:$end-".($size[1] - 1)."<br>\n";
 			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
 		}
 		else if($chunk['cracked'] > 0){
-			//echo "fillrectangle green: ".$start."-0:$end-".($size[1] - 1)."<br>\n";
 			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $green);
 		}
 		else{
-			//echo "fillrectangle yellow: ".$start."-0:$end-".($size[1] - 1)."<br>\n";
 			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $yellow);
 		}
 	}
 	else{
 		if($chunk['state'] >= 6){
-			//echo "rectangle red: ".$start."-0:$end-".($size[1] - 1)."<br>\n";
 			imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
 		}
 		else{
-			//echo "rectangle grey: ".$start."-0:$end-".($size[1] - 1)."<br>\n";
 			imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
 		}
 		if($chunk['cracked'] > 0){
-			//echo "fillrectangle green: ".($start + 1)."-1:".($current - 1)."-".($size[1] - 2)."<br>\n";
 			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
 		}
 		else{
-			//echo "fillrectangle yellow: ".($start + 1)."-1:".($current - 1)."-".($size[1] - 2)."<br>\n";
 			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
 		}
 	}
