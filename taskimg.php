@@ -58,10 +58,10 @@ foreach($res as $chunk){
 	imagefilledrectangle($image, $start, 1, $current, $size[1] - 2, $yellow);
 	if($chunk['state'] >= 6){
 		//there occured an error on the chunk
-		imagerectangle($image, $start, 0, $end, $size[1] - 1, $red);
+		imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
 	}
 	else{
-		imagerectangle($image, $start, 0, $end, $size[1] - 1, $grey);
+		imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
 	}
 	if($end - $start >= 2){
 		//we can only really draw a rectangle around the chunk if he needs at least 2 pixels
