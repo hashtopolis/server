@@ -56,13 +56,13 @@ foreach($res as $chunk){
 	
 	if($end - $start < 3){
 		if($chunk['state'] >= 6){
-			imagefilledrectangle($image, $start, 0, $current, $size[1] - 1, $red);
+			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
 		}
 		else if($chunk['cracked'] > 0){
-			imagefilledrectangle($image, $start, 0, $current, $size[1] - 1, $green);
+			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $green);
 		}
 		else{
-			imagefilledrectangle($image, $start, 0, $current, $size[1] - 1, $yellow);
+			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $yellow);
 		}
 	}
 	else{
