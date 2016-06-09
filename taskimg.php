@@ -85,7 +85,7 @@ foreach($res as $chunk){
 		}
 		else{
 			//echo "fillrectangle yellow: ".($start + 1)."-1:".($current - 1)."-".($size[1] - 2)."<br>\n";
-			imagefilledrectangle($image, $start + 1, 1, $end - 1, $size[1] - 2, $yellow);
+			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
 		}
 	}
 }
