@@ -77,19 +77,19 @@ foreach($res as $chunk){
 			imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
 		}
 		if($chunk['cracked'] > 0){
-			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
+			imagefilledrectangle($image, $start + 1, 1, $start + $current - 1, $size[1] - 2, $green);
 		}
 		else{
-			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
-			echo ($start + 1)."-".($current - 1)."<br>\n";
+			imagefilledrectangle($image, $start + 1, 1, $start + $current - 1, $size[1] - 2, $yellow);
+			//echo ($start + 1)."-".($current - 1)."<br>\n";
 		}
 	}
 }
 
 //send image data to output
-/*header("Content-type: image/png");
+header("Content-type: image/png");
 header("Cache-Control: no-cache");
-imagepng($image);*/
+imagepng($image);
 
 
 
