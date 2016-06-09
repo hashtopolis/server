@@ -21,7 +21,7 @@ if ($size[0] == 0 || $size[0] == 0){
 
 //check if task exists and get information
 $taskid = intval($_GET["task"]);
-$res = $DB->query("SELECT * FROM tasks WHERE id=$task");
+$res = $DB->query("SELECT * FROM tasks WHERE id=$taskid");
 $task = $res->fetch();
 if(!$task){
 	die("Not a valid task!");
