@@ -81,11 +81,11 @@ foreach($res as $chunk){
 		}
 		if($chunk['cracked'] > 0){
 			//echo "fillrectangle green: ".($start + 1)."-1:".($current - 1)."-".($size[1] - 2)."<br>\n";
-			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
+			//imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
 		}
 		else{
 			//echo "fillrectangle yellow: ".($start + 1)."-1:".($current - 1)."-".($size[1] - 2)."<br>\n";
-			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
+			//imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
 		}
 	}
 }
