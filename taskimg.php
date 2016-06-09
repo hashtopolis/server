@@ -1,65 +1,87 @@
 <?php 
-// draws a graph of chunk distribution inside task keyspace
+/*
+ * This file is completely rewritten for Hashtopussy
+ * Copyright 2016 by s3in!c
+ * 
+ * Draws graphic about chunk progress
+ */
 require_once(dirname(__FILE__)."/inc/load.php");
 
+//check if there is a session
 if(!$LOGIN->isLoggedin()){
 	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
 	die();
 }
 
-$imx = min(1920, intval($_GET["x"]));
-$imy = min(1080, intval($_GET["y"]));
-if ($imx==0 || $imy==0){
+//get image dimenstions
+$size[] = array(min(1920, intval($_GET["x"])), min(1080, intval($_GET["y"])));
+if ($imx == 0 || $imy == 0){
 	die();
 }
 
-$DB = $FACTORIES::getagentsFactory()->getDB();
-
-$task = intval($_GET["task"]);
-if($task > 0){
-	$pik = imagecreatetruecolor($imx, $imy);
-	imagesavealpha($pik, true);
-	imagefill($pik, 0, 0, imagecolorallocatealpha($pik, 0, 0, 0, 127));
-	$res = $DB->query("SELECT progress,keyspace FROM tasks WHERE id=$task");
-	$line = $res->fetch();
-	$progress = $line["progress"];
-	$keyspace = max(1, $line["keyspace"]);
-	$res = $DB->query("SELECT * FROM chunks WHERE task=$task ORDER BY state ASC");
-	$end = 0;
-	while($line = $res->fetch()){
-		$zacatek = ($imx - 1) * $line["skip"] / $keyspace;
-		$konec = ($imx - 1) * ($line["skip"] + $line["length"]) / $keyspace;
-		$real = ($imx - 1) * ($line["skip"] + ($line["length"] * $line["rprogress"]) / 10000) / $keyspace;
-		imagefilledrectangle($pik, $zacatek, 1, $real, ($imy - 2), imagecolorallocate($pik, 255, 255, 0));
-		if($line["state"] >= 6){
-			// draw red rectangle for chunks with problem state
-			imagerectangle($pik, $zacatek, 0, $konec, ($imy - 1), imagecolorallocate($pik, 255, 0, 0));
-		}
-		else{
-			// draw dark yellow for ok chunks
-			//imagerectangle($pik, $zacatek, 0, $konec, ($imy - 1), imagecolorallocate($pik, 192, 192, 0));
-		}
-		$end = max($end, max($konec, $real));
-		if($konec - $zacatek >= 2){
-			$zacatek++;
-		}
-		if($real - $zacatek >= 1){
-			$real--;
-		}
-		if($line["cracked"] > 0){
-			// the more cracked hashes, the greener color
-			$gr = min(strlen(strval($line["cracked"])) * 16, 128);
-			imagefilledrectangle($pik, $zacatek, 1, $real, ($imy - 2), imagecolorallocate($pik, 128 - $gr, 255, 0));
-		}
-	}
-	if($end > 0){
-		imagerectangle($pik, 0, 0, $end, ($imy - 1), imagecolorallocate($pik, 192, 192, 192));
-	}
-	// simply return the header for png and output the picture
-	header("Content-type: image/png");
-	header("Cache-Control: no-cache");
-	imagepng($pik);
+//check if task exists and get information
+$taskid = intval($_GET["task"]);
+$res = $DB->query("SELECT * FROM tasks WHERE id=$task");
+$task = $res->fetch();
+if(!$task){
+	die("Not a valid task!");
 }
+
+//create image
+$image = imagecreatetruecolor($size[0], $size[1]);
+imagesavealpha($image, true);
+
+//set colors
+$transparency = imagecolorallocatealpha($image, 0, 0, 0, 127);
+$yellow = imagecolorallocate($image, 255, 255, 0);
+$red = imagecolorallocate($image, 255, 0, 0);
+$grey = imagecolorallocate($image, 192, 192, 192);
+$green = imagecolorallocate($image, 0, 255, 0);
+
+//prepare image
+imagefill($image, 0, 0, $transparency);
+
+$progress = $task['progress'];
+$keyspace = max($task['keyspace'], 1);
+$taskid = $task['id'];
+
+//load chunks
+$res = $DB->query("SELECT * FROM chunks WHERE task=$taskid ORDER BY state ASC");
+$res = $res->fetchAll();
+foreach($res as $chunk){
+	$start = ($size[0] - 1) * $chunk['skip'] / $keyspace;
+	$end = ($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace;
+	//division by 10000 is required because rprogress is saved in percents with two decimals
+	$current = ($size[0] - 1) * ($line['skip'] + $line['length'] * $line['rprogress']) / 10000 / $keyspace;
+	
+	//draw rectangles for chunk
+	if($chunk['state'] >= 6){
+		//there occured an error on the chunk
+		imagerectangle($image, $begin, 0, $end, $size[1] - 1, $red);
+	}
+	else{
+		imagerectangle($image, $begin, 0, $end, $size[1] - 1, $grey);
+	}
+	if($end - $start >= 2){
+		//we can only really draw a rectangle around the chunk if he needs at least 2 pixels
+		$start++; 
+	}
+	if($current - $start >= 1){
+		//if the current is at least at 1 we can draw the rectangle around it
+		$current--;
+	}
+	if($chunk['cracked'] > 0){
+		imagefilledrectangle($image, $end, 1, $current, $size[1] - 2, $green);
+	}
+	else{
+		imagefilledrectangle($image, $end, 1, $current, $size[1] - 2, $yellow);
+	}
+}
+
+//send image data to output
+header("Content-type: image/png");
+header("Cache-Control: no-cache");
+imagepng($image);
 
 
 
