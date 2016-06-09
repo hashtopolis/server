@@ -52,7 +52,7 @@ foreach($res as $chunk){
 	$start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
 	$end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace) - 1;
 	//division by 10000 is required because rprogress is saved in percents with two decimals
-	$current = min(floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace), $end);
+	$current = min(array(floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace), $end));
 	
 	//echo "$start-$end-$current<br>\n";
 	
@@ -81,7 +81,7 @@ foreach($res as $chunk){
 		}
 		if($chunk['cracked'] > 0){
 			//echo "fillrectangle green: ".($start + 1)."-1:".($current - 1)."-".($size[1] - 2)."<br>\n";
-			//imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
+			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
 		}
 		else{
 			//echo "fillrectangle yellow: ".($start + 1)."-1:".($current - 1)."-".($size[1] - 2)."<br>\n";
