@@ -54,6 +54,8 @@ foreach($res as $chunk){
 	//division by 10000 is required because rprogress is saved in percents with two decimals
 	$current = ($size[0] - 1) * ($line['skip'] + $line['length'] * $line['rprogress']) / 10000 / $keyspace;
 	
+	echo "chunk ".$chunk['id'].": $start-$end-$current\n";
+	
 	//draw rectangles for chunk
 	if($chunk['state'] >= 6){
 		//there occured an error on the chunk
