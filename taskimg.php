@@ -52,7 +52,7 @@ foreach($res as $chunk){
 	$start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
 	$end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace) - 1;
 	//division by 10000 is required because rprogress is saved in percents with two decimals
-	$current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace);
+	$current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress']) / 10000 / $keyspace) - 1;
 	
 	if($current > $end){
 		$current = $end;
@@ -80,7 +80,7 @@ foreach($res as $chunk){
 			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
 		}
 		else{
-			imagefilledrectangle($image, $start + 1, 1, $end - 1, $size[1] - 2, $yellow);
+			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
 		}
 	}
 }
