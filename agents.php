@@ -267,8 +267,7 @@ else{
 	$res = $res->fetchAll();
 	$agents = array();
 	foreach($res as $agent){
-		echo "SELECT IF(count(*)>0,1,0) as working FROM chunks INNER JOIN assignments ON assignments.task=chunks.task INNER JOIN agents ON agents.id=assignments.agent WHERE agents.id=".$agent['id']." AND MAX(dispatchtime, solvetime)>".(time() - $CONFIG->getVal('chunktimeout'));
-		$ans = $DB->query("SELECT IF(count(*)>0,1,0) as working FROM chunks INNER JOIN assignments ON assignments.task=chunks.task INNER JOIN agents ON agents.id=assignments.agent WHERE agents.id=".$agent['id']." AND MAX(dispatchtime, solvetime)>".(time() - $CONFIG->getVal('chunktimeout')));
+		$ans = $DB->query("SELECT IF(count(*)>0,1,0) as working FROM chunks INNER JOIN assignments ON assignments.task=chunks.task INNER JOIN agents ON agents.id=assignments.agent WHERE agents.id=".$agent['id']." AND GREATEST(dispatchtime, solvetime)>".(time() - $CONFIG->getVal('chunktimeout')));
 		$line = $ans->fetch();
 		$agent['working'] = $line['working'];
 		$set = new DataSet($agent);
