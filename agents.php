@@ -267,6 +267,7 @@ else{
 		$line = $ans->fetch();
 		$agent['working'] = $line['working'];
 		$agent['task'] = $line['task'];
+		print_r($agent);
 		$set = new DataSet($agent);
 		$set->addValue('gpus', explode("\x01", $agent['gpus']));
 		$agents[] = $set;
