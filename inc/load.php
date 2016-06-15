@@ -3,6 +3,8 @@
 //set to 0 after finished debugging
 ini_set("display_errors", "1");
 
+ini_set('pcre.jit', '0');
+
 $OBJECTS = array();
 
 $VERSION = "0.1.".substr(md5("3.14"), 0, 6);

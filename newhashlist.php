@@ -19,9 +19,7 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'newhashlistp':
-			//TODO: add Cassandra 1
 			// new hashlist creator
-			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1);
 			$hexsalted = (isset($_POST["hexsalted"]) && $salted && intval($_POST["hexsalted"]) == 1);
@@ -41,8 +39,8 @@ if(isset($_POST['action'])){
 				} 
 				else {
 					$message .= "Creating hashlist in the DB...";
-					$vysledek = $DB->exec("INSERT INTO hashlists (name, format,hashtype, hexsalt) VALUES ($name, $format, $hashtype, $hexsalted)");
-					if($vysledek){
+					$res = $DB->exec("INSERT INTO hashlists (name, format,hashtype, hexsalt) VALUES ($name, $format, $hashtype, $hexsalted)");
+					if($res){
 						// insert succeeded
 						$id = $DB->lastInsertId();
 						$message .= "OK (id: $id)<br>";
@@ -66,12 +64,12 @@ if(isset($_POST['action'])){
 							$hsize = filesize($tmpfile);
 							if ($hsize>0) {
 								$message .= "Opening file $tmpfile ($hsize B)...";
-								$hhandle=fopen($tmpfile,"rb");
+								$hhandle = fopen($tmpfile,"rb");
 								$message .= "OK<br>";
 					
-								$pocet=0;
-								$chyby=0;
-								$cas_start=time();
+								$pocet = 0;
+								$chyby = 0;
+								$cas_start = time();
 					
 								switch ($format) {
 								case 0:
@@ -167,6 +165,9 @@ if(isset($_POST['action'])){
 														$hash = $dato;
 														$salt = "";
 													}
+												}
+												if(strlen($hash) == 0){
+													continue; //this is a problem from files which contain empty lines
 												}
 												$hash = $DB->quote($hash);
 												$salt = $DB->quote($salt);
