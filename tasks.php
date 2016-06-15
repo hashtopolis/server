@@ -263,8 +263,12 @@ if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 	$task = intval($_GET["id"]);
 	$filter = intval(isset($_GET["all"]) ? $_GET["all"] : "");
 
-	$res = $DB->query("SELECT tasks.*,hashlists.name AS hname,hashlists.format,hashlists.hashtype AS htype,hashtypes.description AS htypename,ROUND(chunks.cprogress) AS cprogress,SUM(assignments.speed*IFNULL(achunks.working,0)) AS taskspeed,IF(chunks.lastact>".(time()-$CONFIG->getVal('chunktimeout')).",1,0) AS active FROM tasks LEFT JOIN hashlists ON hashlists.id=tasks.hashlist LEFT JOIN hashtypes ON hashlists.hashtype=hashtypes.id LEFT JOIN (SELECT task,SUM(progress) AS cprogress,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks GROUP BY task) chunks ON chunks.task=tasks.id LEFT JOIN assignments ON assignments.task=tasks.id LEFT JOIN (SELECT DISTINCT agent,1 AS working FROM chunks WHERE task=$task AND GREATEST(dispatchtime,solvetime)>".(time()-$CONFIG->getVal('chunktimeout')).") achunks ON achunks.agent=assignments.agent WHERE tasks.id=$task");
+	//$res = $DB->query("SELECT tasks.*,hashlists.name AS hname,hashlists.format,hashlists.hashtype AS htype,hashtypes.description AS htypename,ROUND(chunks.cprogress) AS cprogress,SUM(assignments.speed*IFNULL(achunks.working,0)) AS taskspeed,IF(chunks.lastact>".(time()-$CONFIG->getVal('chunktimeout')).",1,0) AS active FROM tasks LEFT JOIN hashlists ON hashlists.id=tasks.hashlist LEFT JOIN hashtypes ON hashlists.hashtype=hashtypes.id LEFT JOIN (SELECT task,SUM(progress) AS cprogress,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks GROUP BY task) chunks ON chunks.task=tasks.id LEFT JOIN assignments ON assignments.task=tasks.id LEFT JOIN (SELECT DISTINCT agent,1 AS working FROM chunks WHERE task=$task AND GREATEST(dispatchtime,solvetime)>".(time()-$CONFIG->getVal('chunktimeout')).") achunks ON achunks.agent=assignments.agent WHERE tasks.id=$task GROUP BY tasks.id");
+	$res = $DB->query("SELECT * FROM tasks WHERE tasks.id=$task");
 	$taskEntry = $res->fetch();
+	$res = $DB->query("SELECT hashlists.name AS hname,hashlists.format,hashlists.hashtype AS htype,hashtypes.description AS htypename FROM hashlists INNER JOIN hashtypes ON hashlists.hashtype=hashtypes.id WHERE hashlists.id=".$taskEntry['id']);
+	$taskEntry = array_merge($taskEntry, $res->fetch());
+	
 	if($taskEntry){
 		$taskSet->setValues($taskEntry);
 		$taskSet->addValue("filter", $filter);
