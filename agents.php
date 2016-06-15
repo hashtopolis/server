@@ -266,6 +266,7 @@ else{
 		$ans = $DB->query("SELECT IF(count(*)>0,1,0) as working, assignments.task as task FROM chunks INNER JOIN assignments ON assignments.task=chunks.task INNER JOIN agents ON agents.id=assignments.agent WHERE agents.id=".$agent['id']." AND GREATEST(dispatchtime, solvetime)>".(time() - $CONFIG->getVal('chunktimeout')));
 		$line = $ans->fetch();
 		$agent['working'] = $line['working'];
+		$agent['task'] = $line['task'];
 		$set = new DataSet($agent);
 		$set->addValue('gpus', explode("\x01", $agent['gpus']));
 		$agents[] = $set;
