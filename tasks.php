@@ -270,8 +270,8 @@ if(isset($_GET['id']) && $LOGIN->getLevel() >= 5){
 	$taskEntry = array_merge($taskEntry, $res->fetch());
 	$res = $DB->query("SELECT task,SUM(progress) AS cprogress,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks WHERE task=".$taskEntry['id']." GROUP BY task");
 	$taskEntry = array_merge($taskEntry, $res->fetch());
-	
-	//$res = $DB->query("SELECT  chunks ON chunks.task=tasks.id LEFT JOIN assignments ON assignments.task=tasks.id LEFT JOIN (SELECT DISTINCT agent,1 AS working FROM chunks WHERE task=$task AND GREATEST(dispatchtime,solvetime)>".(time()-$CONFIG->getVal('chunktimeout')).") achunks ON achunks.agent=assignments.agent WHERE tasks.id=$task GROUP BY tasks.id")
+	$res = $DB->query("SELECT * FROM assignments WHERE assignments.task=".$taskEntry['id']." LEFT JOIN (SELECT DISTINCT agent,1 AS working FROM chunks WHERE task=".$taskEntry['id']." AND GREATEST(dispatchtime,solvetime)>".(time()-$CONFIG->getVal('chunktimeout')).") achunks ON achunks.agent=assignments.agent WHERE tasks.id=".$taskEntry['id']." GROUP BY tasks.id");
+	$taskEntry = array_merge($taskEntry, $res->fetch());
 	
 	if($taskEntry){
 		$taskSet->setValues($taskEntry);
