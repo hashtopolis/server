@@ -176,7 +176,7 @@ if($valid){
     			$out .= $CONFIG->getVal('fieldseparator');
     		case 'plain':
     			if($entry['plaintext'] != ""){
-    				$out .= $entry['plaintext'];
+    				$out .= str_replace(" ", "[space]", $entry['plaintext']);
     			}
     			break;
     	}
