@@ -32,7 +32,9 @@ if(!$LOGIN->isLoggedin()){
 	if(!$agent){
 		die("No access!");
 	}
-	//TODO: check here trusted status
+	if($agent['trusted'] == '0' && $line['secret'] == '1'){
+		die("No access!");
+	}
 }
 else if($LOGIN->getLevel() < 20){
 	die("No access!");
