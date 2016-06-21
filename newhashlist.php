@@ -180,8 +180,10 @@ if(isset($_POST['action'])){
 													$bufferCount = 0;
 												}
 											}
-											$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
-											$pocet += $check->rowCount();
+											if(sizeof($buffer) > 0){
+												$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+												$pocet += $check->rowCount();
+											}
 											fclose($slow);
 											$DB->exec("COMMIT");
 										}
