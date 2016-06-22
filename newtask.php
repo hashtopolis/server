@@ -23,7 +23,7 @@ if(isset($_POST['action'])){
 			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$cmdline = $DB->quote($_POST["cmdline"]);
-			$autoadj = intval($_POST["autoadjust"]);
+			$autoadj = intval(@$_POST["autoadjust"]);
 			$chunk = intval($_POST["chunk"]);
 			$status = intval($_POST["status"]);
 			$color = $_POST["color"];
