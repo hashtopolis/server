@@ -60,7 +60,7 @@ if(isset($_POST['action'])){
 								break;
 						}
 						$tmpfile = "hashlist_$id";
-						if (Util::uploadFile($tmpfile, $source, $sourcedata)) {
+						if (Util::uploadFile($tmpfile, $source, $sourcedata) && file_exists($tmpfile)) {
 							$hsize = filesize($tmpfile);
 							if ($hsize>0) {
 								$message .= "Opening file $tmpfile ($hsize B)...";

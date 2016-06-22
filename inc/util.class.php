@@ -499,4 +499,12 @@ class Util{
 		}
 		return $nonDuplicates;
 	}
+	
+	public function hextobin($data) {
+		$res = "";
+		for ($i=0;$i<strlen($data)-1;$i+=2) {
+			$res.=chr(hexdec(substr($data, $i, 2)));
+		}
+		return $res;
+	}
 }
