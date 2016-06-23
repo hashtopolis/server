@@ -2,8 +2,8 @@
 {%TEMPLATE->menu%}
 <h2>New task</h2>
 [[message]]
-<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
-	<form class='form-inline' action="newtask.php" method="POST" enctype="multipart/form-data">
+<form class='form-inline' action="newtask.php" method="POST" enctype="multipart/form-data">
+	<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
 		<input type='hidden' name='action' value='newtaskp'>
 		<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid">
@@ -73,56 +73,55 @@
       			</tr>
 			</table>
 		</div>
-	</form>
-</div>
-<div class='col-md-4' style='padding: 0px;'>
-	<script type='text/javascript'>
-		function assignFile(cmdLine,addObject,fileName) { 
-			if (fileName.indexOf('.7z') != -1) {
-				fileName=fileName.substring(0,fileName.length-2)+'???';
-			} 
-			var cmdObject = document.getElementById(cmdLine); 
-			if (addObject == true) { 
-				if (cmdObject.value.indexOf(fileName) == -1) { 
-					if (cmdObject.value.length>0 && cmdObject.value.slice(-1)!=' ') {
-						cmdObject.value += ' '; 
-					}
-					cmdObject.value += fileName; 
-				} 
-			} 
-			else { 
-				cmdObject.value = cmdObject.value.replace(fileName,''); 
-				while (cmdObject.value.slice(-1)==' ') {
-					cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1); 
-				}
-				while (cmdObject.value.substring(0,1)==' ') {
-					cmdObject.value=cmdObject.value.substring(1); 
-				}
-			} 
-		}
-	</script>
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th>Filename</th>
-				<th>Size</th>
-			</tr>
-			{{FOREACH file,!!files!!}}
-				<tr>
-					<td>
-						<input type="checkbox" name="adfile[]" value="[[file.getVal('id')]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('filename')]]');"{{IF !!file.getVal('che')!! == 1}} checked{{ENDIF}}>
-        				[[file.getVal('filename')]]
-        				{{IF !!file.getVal('secret')!! == 1}}
-        					<img src="static/lock.gif" alt="Secret">
-        				{{ENDIF}}
-        			</td>
-        			<td>
-        				[[Util::nicenum(%%file.getVal('size')%%)]]B
-        			</td>
-        		</tr>
-			{{ENDFOREACH}}
-		</table>
-	</form>
 	</div>
-</div>
+	<div class='col-md-4' style='padding: 0px;'>
+		<script type='text/javascript'>
+			function assignFile(cmdLine,addObject,fileName) { 
+				if (fileName.indexOf('.7z') != -1) {
+					fileName=fileName.substring(0,fileName.length-2)+'???';
+				} 
+				var cmdObject = document.getElementById(cmdLine); 
+				if (addObject == true) { 
+					if (cmdObject.value.indexOf(fileName) == -1) { 
+						if (cmdObject.value.length>0 && cmdObject.value.slice(-1)!=' ') {
+							cmdObject.value += ' '; 
+						}
+						cmdObject.value += fileName; 
+					} 
+				} 
+				else { 
+					cmdObject.value = cmdObject.value.replace(fileName,''); 
+					while (cmdObject.value.slice(-1)==' ') {
+						cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1); 
+					}
+					while (cmdObject.value.substring(0,1)==' ') {
+						cmdObject.value=cmdObject.value.substring(1); 
+					}
+				} 
+			}
+		</script>
+		<div class="panel panel-default">
+			<table class="table table-bordered table-nonfluid">
+				<tr>
+					<th>Filename</th>
+					<th>Size</th>
+				</tr>
+				{{FOREACH file,!!files!!}}
+					<tr>
+						<td>
+							<input type="checkbox" name="adfile[]" value="[[file.getVal('id')]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('filename')]]');"{{IF !!file.getVal('che')!! == 1}} checked{{ENDIF}}>
+	        				[[file.getVal('filename')]]
+	        				{{IF !!file.getVal('secret')!! == 1}}
+	        					<img src="static/lock.gif" alt="Secret">
+	        				{{ENDIF}}
+	        			</td>
+	        			<td>
+	        				[[Util::nicenum(%%file.getVal('size')%%)]]B
+	        			</td>
+	        		</tr>
+				{{ENDFOREACH}}
+			</table>
+		</div>
+	</div>
+</form>
 {%TEMPLATE->foot%}
