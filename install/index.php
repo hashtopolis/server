@@ -42,6 +42,7 @@ switch($STEP){
 	case 0: //installation start
 		if(!Util::checkWriteFiles($write_files)){
 			setcookie("step", "50", time() + 3600);
+			setcookie("prev", "0", time() + 3600);
 			header("Location: index.php");
 			die();
 		}
@@ -50,11 +51,13 @@ switch($STEP){
 			$type = $_GET['type'];
 			if($type == 'upgrade'){
 				//hashtopus upgrade
-				setcookie("step", "100", time() + 3600);
+				setcookie("step", "51", time() + 3600);
+				setcookie("prev", "100", time() + 3600);
 			}
 			else{
 				//clean install
-				setcookie("step", "1", time() + 3600);
+				setcookie("step", "51", time() + 3600);
+				setcookie("prev", "1", time() + 3600);
 			}
 			header("Location: index.php");
 			die();
@@ -62,16 +65,54 @@ switch($STEP){
 		$TEMPLATE = new Template("install0");
 		echo $TEMPLATE->render(array());
 		break;
+	case 1: //clean installation was selected
+		break;
 	case 50: //one or more files/dir is not writeable
 		if(isset($_GET['check'])){
 			if(Util::checkWriteFiles($write_files)){
-				setcookie("step", "0", time() + 3600);
+				setcookie("step", "$PREV", time() + 3600);
 				header("Location: index.php");
 				die();
 			}
 		}
 		$TEMPLATE = new Template("install50");
 		echo $TEMPLATE->render(array());
+		break;
+	case 51: //enter database connection details
+		$fail = false;
+		if($CONN['user'] != "__DBUSER__"){
+			//it might be already configured, so we'll continue
+			setcookie("step", "$PREV", time() + 3600);
+			header("Location: index.php");
+			die();
+		}
+		if(isset($_POST['check'])){
+			//check db connection
+			$CONN = array(
+					'user' => $_POST['user'], 
+					'pass' => $_POST['pass'], 
+					'server' => $_POST['server'], 
+					'db' => $_POST['db']
+			);
+			if($FACTORIES::getUserFactory()->getDB(true) === false){
+				//connection not valid
+				$fail = true;
+			}
+			else{
+				//save database details
+				$file = file_get_contents(dirname(__FILE__)."/../inc/load.php");
+				$file = str_replace("__DBUSER__", $_POST['user']);
+				$file = str_replace("__DBPASS__", $_POST['pass']);
+				$file = str_replace("__DBSERVER__", $_POST['server']);
+				$file = str_replace("__DBDB__", $_POST['db']);
+				file_put_contents(dirname(__FILE__)."/../inc/load.php", $file);
+				setcookie("step", "$PREV", time() + 3600);
+				header("Location: index.php");
+				die();
+			}
+		}
+		$TEMPLATE = new Template("install51");
+		echo $TEMPLATE->render(array('failed' => $fail));
 		break;
 	default:
 		die("Some error with steps happened, please start again!");
