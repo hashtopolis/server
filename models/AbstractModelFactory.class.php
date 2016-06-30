@@ -485,7 +485,6 @@ abstract class AbstractModelFactory{
 		}
 		catch(PDOException $e){
 			if($test){
-				die($e->getMessage());
 				return false;
 			}
 			die("Fatal Error ! Database connection failed");

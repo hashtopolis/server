@@ -101,10 +101,10 @@ switch($STEP){
 			else{
 				//save database details
 				$file = file_get_contents(dirname(__FILE__)."/../inc/load.php");
-				$file = str_replace("__DBUSER__", $_POST['user']);
-				$file = str_replace("__DBPASS__", $_POST['pass']);
-				$file = str_replace("__DBSERVER__", $_POST['server']);
-				$file = str_replace("__DBDB__", $_POST['db']);
+				$file = str_replace("__DBUSER__", $_POST['user'], $file);
+				$file = str_replace("__DBPASS__", $_POST['pass'], $file);
+				$file = str_replace("__DBSERVER__", $_POST['server'], $file);
+				$file = str_replace("__DBDB__", $_POST['db'], $file);
 				file_put_contents(dirname(__FILE__)."/../inc/load.php", $file);
 				setcookie("step", "$PREV", time() + 3600);
 				header("Location: index.php");
