@@ -19,6 +19,15 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function checkWriteFiles($arr){
+		foreach($arr as $path){
+			if(!is_writable($path)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public static function tickdone($prog,$total) {
 		// show tick of progress is done
 		if($total > 0 && $prog == $total){

@@ -16,6 +16,8 @@ use Bricky\Template;
 
 require_once(dirname(__FILE__)."/../inc/load.php");
 
+$write_files = array(".", "../inc/crypt.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates");
+
 if($INSTALL == 'DONE'){
 	die("Installation is already done!");
 }
@@ -24,9 +26,26 @@ $STEP = 0;
 if(isset($_COOKIE['step'])){
 	$STEP = $_COOKIE['step'];
 }
+$PREV = 0;
+if(isset($_COOKIE['prev'])){
+	$PREV = $_COOKIE['prev'];
+}
+
+//TODO: this is only for testing
+if(isset($_GET['reset'])){
+	setcookie("step", "", time() - 10);
+	header("Location: index.php");
+	die();
+}
 
 switch($STEP){
-	case 0:
+	case 0: //installation start
+		if(!Util::checkWriteFiles($write_files)){
+			setcookie("step", "50", time() + 3600);
+			header("Location: index.php");
+			die();
+		}
+		
 		if(isset($_GET['type'])){
 			$type = $_GET['type'];
 			if($type == 'upgrade'){
@@ -41,6 +60,17 @@ switch($STEP){
 			die();
 		}
 		$TEMPLATE = new Template("install0");
+		echo $TEMPLATE->render(array());
+		break;
+	case 50: //one or more files/dir is not writeable
+		if(isset($_GET['check'])){
+			if(Util::checkWriteFiles($write_files)){
+				setcookie("step", "0", time() + 3600);
+				header("Location: index.php");
+				die();
+			}
+		}
+		$TEMPLATE = new Template("install50");
 		echo $TEMPLATE->render(array());
 		break;
 	default:
