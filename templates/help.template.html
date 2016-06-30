@@ -94,8 +94,12 @@
 	<b>Agent</b><br>
 	<ul>
 		<li><b>.NET 2.0 compatible environment (MS .NET 2.0 or Mono 2.0)</b> On
-		debian-based systems, use
-		<b>apt-get install mono-complete ca-certificates-mono</b> to install desired runtime
+		debian-based systems, use</li>
+		<li>sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+		echo "deb http://download.mono-project.com/repo/debian wheezy main" </li> 
+		<li>sudo tee /etc/apt/sources.list.d/mono-xamarin.list</li>
+		<li>sudo apt-get update</li>
+		<li><b>apt-get install mono-complete ca-certificates-mono</b> to install desired runtime
 		environment.</li>
 		<li><b>Sufficient GPU drivers (see Hashcat website)</b></li>
 		<li><b>HTTPS connectivity to server</b></li>
