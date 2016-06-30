@@ -75,18 +75,18 @@ if($INSTALL == 'DONE'){
 	if($LOGIN->isLoggedin()){
 		$OBJECTS['user'] = $LOGIN->getUser();
 	}
+
+	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM config");
+	$CONFIG = new DataSet();
+	foreach($res as $entry){
+		$CONFIG->addValue($entry['item'], $entry['value']);
+	}
+	$OBJECTS['config'] = $CONFIG;
+	
+	//set autorefresh to false for all pages
+	$OBJECTS['autorefresh'] = 0;
+	
+	$DB = $FACTORIES::getagentsFactory()->getDB();
 }
-
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM config");
-$CONFIG = new DataSet();
-foreach($res as $entry){
-	$CONFIG->addValue($entry['item'], $entry['value']);
-}
-$OBJECTS['config'] = $CONFIG;
-
-//set autorefresh to false for all pages
-$OBJECTS['autorefresh'] = 0;
-
-$DB = $FACTORIES::getagentsFactory()->getDB();
 
 
