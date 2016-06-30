@@ -15,7 +15,7 @@ class Encryption {
 	 * @return string base64 encoded hash
 	 */
 	public static function sessionHash($id, $startTime, $username){
-		$PEPPER = "1zGPsHVXh4NwkV10EMrnQGHYchw9gaU5kYzDPAVF";
+		$PEPPER = "__PEPPER1__";
 	
 		$KEY = pack('H*', hash("sha256", $startTime));
 		$cycles = Encryption::getCount($username.$startTime, 500, 1000);
@@ -67,7 +67,7 @@ class Encryption {
 	 * @return string hash
 	 */
 	public static function passwordHash($username, $password, $salt){
-		$PEPPER = "a0t9EQvT2W0EdtxjevJXxRbzHAIXnsXfGNCYbo1B";
+		$PEPPER = "__PEPPER2__";
 	
 		$cycles = Encryption::getCount($salt, 2, 5);
 		$CIPHER = $PEPPER.$password.$salt;
@@ -77,7 +77,7 @@ class Encryption {
 	}
 	
 	public static function passwordVerify($username, $password, $salt, $hash){
-		$PEPPER = "a0t9EQvT2W0EdtxjevJXxRbzHAIXnsXfGNCYbo1B";
+		$PEPPER = "__PEPPER2__";
 
 		$CIPHER = $PEPPER.$password.$salt;
 		if(!password_verify($CIPHER, $hash)){
@@ -103,7 +103,7 @@ class Encryption {
 	 * @return string base64 encoded hash
 	 */
 	public static function validationHash($id, $username){
-		$PEPPER = "t3SraGhGuPKvX9BPK78ch1GFKXSff6CllSJfgytp";
+		$PEPPER = "__PEPPER3__";
 	
 		$KEY = pack('H*', hash("sha256", $id));
 		$cycles = Encryption::getCount($username.$PEPPER, 500, 1000);

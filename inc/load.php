@@ -3,6 +3,7 @@
 //set to 0 after finished debugging
 ini_set("display_errors", "1");
 
+//is required for running well with php7
 ini_set('pcre.jit', '0');
 
 $OBJECTS = array();
@@ -16,7 +17,12 @@ if(strpos($HOST, ":") !== false){
 $OBJECTS['version'] = $VERSION;
 $OBJECTS['host'] = $HOST;
 
-include(dirname(__FILE__)."/load.ini");
+//this is for final release
+$CONN['user'] = '__DBUSER__';
+$CONN['pass'] = '__DBPASS__';
+$CONN['server'] = '__DBSERVER__';
+$CONN['db'] = '__DBDB__';
+$CONN['installed'] = false;
 
 $INSTALL = "pending...";
 
@@ -24,10 +30,6 @@ if($CONN['installed']){
 	$INSTALL = "DONE"; 	//if set in load.ini, installation should be done
 						//(either manually or via the installation script)
 }
-
-//manually force the system to think it is installed
-//this should be removed in release!!!
-$INSTALL = 'DONE';
 
 require_once(dirname(__FILE__)."/crypt.class.php");
 require_once(dirname(__FILE__)."/dataset.class.php");
