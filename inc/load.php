@@ -25,9 +25,8 @@ $CONN['db'] = '__DBDB__';
 $CONN['installed'] = false;
 
 $INSTALL = "pending...";
-
 if($CONN['installed']){
-	$INSTALL = "DONE"; 	//if set in load.ini, installation should be done
+	$INSTALL = "DONE"; 	//if set in load.php correctly, installation should be done
 						//(either manually or via the installation script)
 }
 
