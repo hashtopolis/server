@@ -66,6 +66,22 @@ switch($STEP){
 		echo $TEMPLATE->render(array());
 		break;
 	case 1: //clean installation was selected
+		if(isset($_GET['next'])){
+			$query = file_get_contents(dirname(__FILE__)."/hashtopussy.sql");
+			$FACTORIES::getUserFactory()->getDB()->query($query);
+			setcookie("step", "52", time() + 3600);
+			setcookie("prev", "2", time() + 3600);
+			header("Location: index.php");
+		}
+		$TEMPLATE = new Template("install1");
+		echo $TEMPLATE->render(array());
+		break;
+	case 2: //installation should be finished now and user should be able to log in
+		$load = file_get_contents(dirname(__FILE__)."/../inc/load.php");
+		$load = str_replace('$CONN[\'installed\'] = false;', '$CONN[\'installed\'] = true;', $load);
+		file_put_contents(dirname(__FILE__)."/../inc/load.php", $load);
+		$TEMPLATE = new Template("install2");
+		echo $TEMPLATE->render(array());
 		break;
 	case 50: //one or more files/dir is not writeable
 		if(isset($_GET['check'])){
@@ -113,6 +129,45 @@ switch($STEP){
 		}
 		$TEMPLATE = new Template("install51");
 		echo $TEMPLATE->render(array('failed' => $fail));
+		break;
+	case 52: //database is filled with initial data now we create the user now
+		//create pepper (this is required here that when we create the user, the included file already contains the right peppers
+		$pepper = array(Util::randomString(50), Util::randomString(50), Util::randomString(50));
+		$crypt = file_get_contents(dirname(__FILE__)."/../inc/crypt.class.php");
+		$crypt = str_replace("__PEPPER1__", $pepper[0], str_replace("__PEPPER2__", $pepper[1], str_replace("__PEPPER3__", $pepper[2], $crypt)));
+		file_put_contents(dirname(__FILE__)."/../inc/crypt.class.php", $crytpt);
+		
+		$message = "";
+		if(isset($_POST['create'])){
+			$username = htmlentities(@$_POST['username'], false, "UTF-8");
+			$password = @$_POST['password'];
+			$email = @$_POST['email'];
+			$repeat = @$_POST['repeat'];
+			
+			//do checks
+			if(strlen($username) == 0 || strlen($password) == 0 || strlen($email) == 0 || strlen($repeat) == 0){
+				$message = Util::getMessage('danger', "You need to fill in all fields!");
+			}
+			else if($password != $check){
+				$message = Util::getMessage('danger', "Your entered passwords do not match!");
+			}
+			else{
+				$qF = new QueryFilter("level", "50", "=");
+				$group = $FACTORIES::getRightGroupFactory()->filter(array($qF));
+				$group = $group[0];
+				$newSalt = Util::randomString(20);
+				$newHash = Encryption::passwordHash($username, $password, $newSalt);
+				$user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
+				$FACTORIES::getUserFactory()->save($user);
+				setcookie("step", "$PREV", time() + 3600);
+				header("Location: index.php");
+				die();
+			}
+		}
+		$TEMPLATE = new Template("install52");
+		echo $TEMPLATE->render(array('message' => $message));
+		break;
+	case 100: //here we start on the upgrade process
 		break;
 	default:
 		die("Some error with steps happened, please start again!");

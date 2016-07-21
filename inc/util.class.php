@@ -516,4 +516,8 @@ class Util{
 		}
 		return $res;
 	}
+	
+	public static function getMessage($type, $msg){
+		return "<div class='alert alert-$type'>$msg</div>";
+	}
 }
