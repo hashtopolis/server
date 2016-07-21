@@ -281,8 +281,8 @@ $OBJECTS['impfiles'] = array();
 if(file_exists("import") && is_dir("import")) {
 	$impdir = opendir("import");
 	$impfiles = array();
-	while ($f=readdir($impdir)) {
-		if (($f!=".") && ($f!="..") && (!is_dir($f))) {
+	while($f = readdir($impdir)) {
+		if($f[0] != '.' && $f!="." && $f!=".." && !is_dir($f)){
 			$impfiles[] = $f;
 		}
 	}

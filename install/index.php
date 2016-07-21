@@ -80,6 +80,10 @@ switch($STEP){
 		$load = file_get_contents(dirname(__FILE__)."/../inc/load.php");
 		$load = str_replace('$CONN[\'installed\'] = false;', '$CONN[\'installed\'] = true;', $load);
 		file_put_contents(dirname(__FILE__)."/../inc/load.php", $load);
+		if(!file_exists(dirname(__FILE__)."/../import")){
+			mkdir(dirname(__FILE__)."/../import");
+		}
+		file_put_contents(dirname(__FILE__)."/../import/.htaccess", "Order deny,allow\nDeny from all");
 		$TEMPLATE = new Template("install2");
 		echo $TEMPLATE->render(array());
 		break;
@@ -168,6 +172,29 @@ switch($STEP){
 		echo $TEMPLATE->render(array('message' => $message));
 		break;
 	case 100: //here we start on the upgrade process
+		break;
+	case 101: //upgrade installation with sql upgrade
+		if(isset($_GET['next'])){
+			$query = file_get_contents(dirname(__FILE__)."/migrate.sql");
+			$FACTORIES::getUserFactory()->getDB()->query($query);
+			setcookie("step", "52", time() + 3600);
+			setcookie("prev", "102", time() + 3600);
+			header("Location: index.php");
+		}
+		$TEMPLATE = new Template("install101");
+		echo $TEMPLATE->render(array());
+		break;
+	case 102: //upgrade process should be done now
+		$load = file_get_contents(dirname(__FILE__)."/../inc/load.php");
+		$load = str_replace('$CONN[\'installed\'] = false;', '$CONN[\'installed\'] = true;', $load);
+		file_put_contents(dirname(__FILE__)."/../inc/load.php", $load);
+		if(!file_exists(dirname(__FILE__)."/../import")){
+			mkdir(dirname(__FILE__)."/../import");
+		}
+		file_put_contents(dirname(__FILE__)."/../import/.htaccess", "Order deny,allow\nDeny from all");
+		$TEMPLATE = new Template("install102");
+		echo $TEMPLATE->render(array());
+		break;
 		break;
 	default:
 		die("Some error with steps happened, please start again!");
