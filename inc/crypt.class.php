@@ -86,6 +86,14 @@ class Encryption {
 		return true;
 	}
 	
+	/**
+	 * Get the number of cycles for a given string
+	 * 
+	 * @param string $string
+	 * @param number $mincycles
+	 * @param number $maxcycles
+	 * @return number num cycles
+	 */
 	private static function getCount($string, $mincycles = 3000, $maxcycles = 5000){
 		$count = 0;
 		for($x=0;$x<strlen($string);$x++){
