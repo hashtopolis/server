@@ -152,7 +152,7 @@ switch($STEP){
 			if(strlen($username) == 0 || strlen($password) == 0 || strlen($email) == 0 || strlen($repeat) == 0){
 				$message = Util::getMessage('danger', "You need to fill in all fields!");
 			}
-			else if($password != $check){
+			else if($password != $repeat){
 				$message = Util::getMessage('danger', "Your entered passwords do not match!");
 			}
 			else{
