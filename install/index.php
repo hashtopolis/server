@@ -156,7 +156,7 @@ switch($STEP){
 				$message = Util::getMessage('danger', "Your entered passwords do not match!");
 			}
 			else{
-				$qF = new QueryFilter("level", "50", "=");
+				$qF = new QueryFilter("groupName", "Administrator", "=");
 				$group = $FACTORIES::getRightGroupFactory()->filter(array($qF));
 				$group = $group[0];
 				$newSalt = Util::randomString(20);
