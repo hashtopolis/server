@@ -172,6 +172,12 @@ switch($STEP){
 		echo $TEMPLATE->render(array('message' => $message));
 		break;
 	case 100: //here we start on the upgrade process
+		if(isset($_GET['next'])){
+			setcookie("step", "101", time() + 3600);
+			header("Location: index.php");
+		}
+		$TEMPLATE = new Template("install100");
+		echo $TEMPLATE->render(array());
 		break;
 	case 101: //upgrade installation with sql upgrade
 		if(isset($_GET['next'])){
