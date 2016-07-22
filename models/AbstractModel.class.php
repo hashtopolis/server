@@ -1,7 +1,4 @@
 <?php
-/**
- * TODO:
- */
 abstract class AbstractModel {
 	/**
 	 * Returns a dict with all keys and associated values for this array

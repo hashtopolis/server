@@ -71,7 +71,6 @@ if(isset($_POST['action'])){
 				// create proper superhashlist field if needed
 				list($superhash, $hlisty) = Util::superList($hlist, $format);
 				
-				//TODO: add Cassandra
 				$kvery = "SELECT plaintext FROM ".Util::getStaticArray($format, 'formattables')." WHERE hashlist IN ($hlisty) AND plaintext IS NOT NULL";
 				$res = $FACTORIES::getagentsFactory()->getDB()->query($kvery);
 				if ($res->rowCount() > 0) {
@@ -142,7 +141,6 @@ if(isset($_POST['action'])){
 				break;
 			}
 			// pre-crack hashes processor
-			//TODO: add Cassandra
 			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,IFNULL(hashes.salted,0) AS salted FROM hashlists LEFT JOIN (SELECT hashlist,1 AS salted FROM hashes WHERE hashlist=$hlist AND salt!='' LIMIT 1) hashes ON hashlists.format=0 AND hashes.hashlist=hashlists.id WHERE hashlists.id=$hlist");
 			$list = $res->fetch();
@@ -354,7 +352,6 @@ if(isset($_POST['action'])){
 				break;
 			}
 			// export cracked hashes to a file
-			//TODO: add Cassandra
 			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT format FROM hashlists WHERE id=$hlist");
 			$list = $res->fetch();
@@ -439,7 +436,6 @@ if(isset($_POST['action'])){
 			if($LOGIN->getLevel() < 20){
 				break;
 			}
-			//TODO: add Cassandra
 			$hlist = intval($_POST["hashlist"]);
 			$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,IFNULL(hashes.salted,0) AS salted FROM hashlists LEFT JOIN (SELECT hashlist,1 AS salted FROM hashes WHERE hashlist=$hlist AND salt!='' LIMIT 1) hashes ON hashlists.format=0 AND hashes.hashlist=hashlists.id WHERE hashlists.id=$hlist");
 			$list = $res->fetch();
