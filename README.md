@@ -16,9 +16,9 @@ If you would like to use Hashtopussy with the older versions, please checkout co
 * User management
 * Rights management
 * Server config
+* install script
 
 ### What is missing currently? 
 
-* Add a install script
 * Fancy password analysis
 * Some graphical informations about tasks
