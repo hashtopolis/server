@@ -522,7 +522,7 @@ if(isset($_POST['action'])){
 						} 
 						else {
 							$message .= "This was the last hashlist, truncating the table.";
-							$FACTORIES::getagentsFactory()->getDB()->exec("TRUNCATE TABLE ".$formattables[$list["format"]]);
+							$FACTORIES::getagentsFactory()->getDB()->exec("TRUNCATE TABLE ".Util::getStaticArray($list["format"], 'formattables'));
            	 			}
            	 			//TODO: uncomment after debugging
            	 			//header("Location: hashlists.php");
