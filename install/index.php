@@ -15,7 +15,7 @@ use Bricky\Template;
 
 require_once(dirname(__FILE__)."/../inc/load.php");
 
-$write_files = array(".", "../inc/crypt.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates");
+$write_files = array(".", "../inc/crypt.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
 
 if($INSTALL == 'DONE'){
 	die("Installation is already done!");
