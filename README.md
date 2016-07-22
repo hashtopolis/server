@@ -12,6 +12,7 @@ Please visit the [wiki](https://bitbucket.org/seinlc/hashtopussy/wiki/Home) to g
 * winxp for testing, writing help texts and a lot of input ideas
 * blazer for modifying the agent to get it working with hashcat v3
 * CynoSure Prime for testing (in Hashkiller Contest 2016)
+* curlyboi for the original Hashtopus code
 
 ### What is working? 
 
