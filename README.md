@@ -5,6 +5,10 @@ This is a wrapper for hashcat for distributed hashcracking, based on the source 
 Notice: We decided to just publish Hashtopussy working with hashcat v3 and not focussing on also supporting the older versions. 
 If you would like to use Hashtopussy with the older versions, please checkout commit cc3513b6e638beb0d70d75f44a2fbd0452c0ded7 where it was the state before adding hc v3 support.
 
+## WARNING
+
+This branch is highly unstable as there is active development and testing running on it!
+
 ### What is working? 
 
 * Templating
