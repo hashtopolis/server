@@ -164,7 +164,8 @@ class Util{
 		$platforms = array(
 				"unknown",
 				"NVidia",
-				"AMD" 
+				"AMD",
+				"CPU"
 		);
 		$oses = array(
 				"<img src='static/win.png' alt='Win' title='Windows'>",

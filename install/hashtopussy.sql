@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS `hashcatreleases` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='oclHashcat releases';
 
 INSERT INTO `hashcatreleases` (`version`, `time`, `url_nvidia`, `url_amd`, `common_files`, `32_nvidia`, `64_nvidia`, `32_amd`, `64_amd`, `rootdir_nvidia`, `rootdir_amd`, `minver_nvidia`, `minver_amd`) VALUES
-('2.01', 1457330572, 'http://hashcat.net/files/cudaHashcat-2.01.7z', 'http://hashcat.net/files/oclHashcat-2.01.7z', 'hashcat.hcstat hashcat.keyfile', 'kernels/4318/*32.cubin', 'kernels/4318/*64.cubin', 'kernels/4098/*.llvmir', 'kernels/4098/*.llvmir', 'cudaHashcat-2.01', 'oclHashcat-2.01', 34659, 1409);
+('3.00', 1457330572, 'https://hashcat.net/files/hashcat-3.00.7z', 'https://hashcat.net/files/hashcat-3.00.7z', 'hashcat.hcstat hashcat.keyfile', 'kernels/4318/*32.cubin', 'kernels/4318/*64.cubin', 'kernels/4098/*.llvmir', 'kernels/4098/*.llvmir', 'hashcat-3.00', 'hashcat-3.00', 34659, 1409);
 
 CREATE TABLE IF NOT EXISTS `hashes` (
   hashesId int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,

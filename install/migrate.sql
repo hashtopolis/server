@@ -43,3 +43,5 @@ CREATE TABLE IF NOT EXISTS `User` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
 
+INSERT INTO `hashcatreleases` (`version`, `time`, `url_nvidia`, `url_amd`, `common_files`, `32_nvidia`, `64_nvidia`, `32_amd`, `64_amd`, `rootdir_nvidia`, `rootdir_amd`, `minver_nvidia`, `minver_amd`) VALUES
+('3.00', 1457330572, 'https://hashcat.net/files/hashcat-3.00.7z', 'https://hashcat.net/files/hashcat-3.00.7z', 'hashcat.hcstat hashcat.keyfile', 'kernels/4318/*32.cubin', 'kernels/4318/*64.cubin', 'kernels/4098/*.llvmir', 'kernels/4098/*.llvmir', 'hashcat-3.00', 'hashcat-3.00', 34659, 1409);
