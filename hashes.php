@@ -170,7 +170,7 @@ if($valid){
     			break;
     		case '':
     			$out .= $entry['hash'];
-    			if($entry['salt'] != ""){
+    			if(isset($entry['salt']) && $entry['salt'] != ""){
     				$out .= $CONFIG->getVal('fieldseparator').$entry['salt'];
     			}
     			$out .= $CONFIG->getVal('fieldseparator');
