@@ -468,7 +468,6 @@ if(isset($_POST['action'])){
 			if($LOGIN->getLevel() < 30){
 				break;
 			}
-			//TODO: add Cassandra
 			// delete hashlist
 			$message = "<div class='alert alert-neutral'>";
 			$hlist = intval($_POST["hashlist"]);
@@ -522,11 +521,10 @@ if(isset($_POST['action'])){
 						} 
 						else {
 							$message .= "This was the last hashlist, truncating the table.";
-							$FACTORIES::getagentsFactory()->getDB()->exec("TRUNCATE TABLE ".Util::getStaticArray($list["format"], 'formattables'));
+							$FACTORIES::getagentsFactory()->getDB()->exec("TRUNCATE TABLE ".Util::getStaticArray(0, 'formattables'));
            	 			}
-           	 			//TODO: uncomment after debugging
-           	 			//header("Location: hashlists.php");
-           	 			//die();
+           	 			header("Location: hashlists.php");
+           	 			die();
 						break;
 			
 					case 1:
