@@ -31,13 +31,6 @@ if(isset($_COOKIE['prev'])){
 	$PREV = $_COOKIE['prev'];
 }
 
-//TODO: this is only for testing
-if(isset($_GET['reset'])){
-	setcookie("step", "", time() - 10);
-	header("Location: index.php");
-	die();
-}
-
 switch($STEP){
 	case 0: //installation start
 		if(!Util::checkWriteFiles($write_files)){
@@ -84,6 +77,8 @@ switch($STEP){
 			mkdir(dirname(__FILE__)."/../import");
 		}
 		file_put_contents(dirname(__FILE__)."/../import/.htaccess", "Order deny,allow\nDeny from all");
+		setcookie("step", "", time() - 10);
+		setcookie("prev", "", time() - 10);
 		$TEMPLATE = new Template("install2");
 		echo $TEMPLATE->render(array());
 		break;
@@ -198,9 +193,10 @@ switch($STEP){
 			mkdir(dirname(__FILE__)."/../import");
 		}
 		file_put_contents(dirname(__FILE__)."/../import/.htaccess", "Order deny,allow\nDeny from all");
+		setcookie("step", "", time() - 10);
+		setcookie("prev", "", time() - 10);
 		$TEMPLATE = new Template("install102");
 		echo $TEMPLATE->render(array());
-		break;
 		break;
 	default:
 		die("Some error with steps happened, please start again!");
