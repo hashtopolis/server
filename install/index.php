@@ -121,6 +121,7 @@ switch($STEP){
 				$file = str_replace("__DBDB__", $_POST['db'], $file);
 				file_put_contents(dirname(__FILE__)."/../inc/load.php", $file);
 				setcookie("step", "$PREV", time() + 3600);
+				sleep(1); // some times there are problems when reading to fast again and the file is not written to disk then
 				header("Location: index.php");
 				die();
 			}
