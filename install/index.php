@@ -1,7 +1,6 @@
 <?php
 use Bricky\Template;
 
-//TODO: check here if there is already a load.ini set which gives a good connection to a good sql server
 // -> if there is a valid connection, check if we can determine the hashtopus tables...
 //   -> if it's hashtopus original, we can run update script, create a new admin user and we are done
 //   -> if its already a hashtopussy installation, we just can mark it as installed and check that there is an admin user
@@ -16,7 +15,7 @@ use Bricky\Template;
 
 require_once(dirname(__FILE__)."/../inc/load.php");
 
-$write_files = array(".", "../inc/crypt.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates");
+$write_files = array(".", "../inc/crypt.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
 
 if($INSTALL == 'DONE'){
 	die("Installation is already done!");
@@ -122,6 +121,7 @@ switch($STEP){
 				$file = str_replace("__DBDB__", $_POST['db'], $file);
 				file_put_contents(dirname(__FILE__)."/../inc/load.php", $file);
 				setcookie("step", "$PREV", time() + 3600);
+				sleep(1); // some times there are problems when reading to fast again and the file is not written to disk then
 				header("Location: index.php");
 				die();
 			}

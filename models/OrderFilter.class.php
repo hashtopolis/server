@@ -1,7 +1,4 @@
 <?php
-/**
- * TODO:
- */
 class OrderFilter{
 	private $by;
 	private $type;
