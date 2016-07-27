@@ -3,27 +3,150 @@
 $CONF = array();
 
 //config SQL here
-$CONF['agents'] = array(
-		'id',
+$CONF['Agent'] = array(
+		'agentId',
 		'name',
 		'uid',
 		'os',
-		'cputype',
-		'gpubrand',
-		'gpudriver',
+		'cpuType',
+		'gpuBrand',
+		'gpuDriver',
 		'gpus',
-		'hcversion',
-		'cmdpars',
+		'hcVersion',
+		'cmdPars',
 		'wait',
-		'ignoreerrors',
-		'active',
-		'trusted',
+		'ignoreErrors',
+		'isActive',
+		'isTrusted',
 		'token',
-		'lastact',
-		'lasttime',
-		'lastip',
-		'userId'
+		'lastAct',
+		'lastTime',
+		'lastIp',
+		'userId',
+		'cpuOnly'
 );
+$CONF['Assignment'] = array(
+		'assignmentId',
+		'taskId',
+		'agentId',
+		'benchmark',
+		'autoAdjust',
+		'speed'
+);
+$CONF['Chunk'] = array(
+		'chunkId',
+		'taskId',
+		'skip',
+		'length',
+		'agentId',
+		'dispatchTime',
+		'progress',
+		'rprogress',
+		'state',
+		'cracked',
+		'solveTime'
+);
+$CONF['Config'] = array(
+		'configId',
+		'item',
+		'value'
+);
+$CONF['Error'] = array(
+		'errorId',
+		'agentId',
+		'taskId',
+		'time',
+		'error'
+);
+$CONF['File'] = array(
+		'fileId',
+		'filename',
+		'size',
+		'secret',
+		'fileType'
+);
+$CONF['HashcatRelease'] = array(
+		'hashcatReleaseId',
+		'version',
+		'time',
+		'url',
+		'common_files',
+		'32binary',
+		'64binary',
+		'rootdir',
+		'minver'
+);
+$CONF['Hash'] = array(
+		'hashId',
+		'hashlistId',
+		'hash',
+		'salt',
+		'plaintext',
+		'time',
+		'chunk'
+);
+$CONF['HashBinary'] = array(
+		'hashBinaryId',
+		'hahslistId',
+		'essid',
+		'hash',
+		'plaintext',
+		'time',
+		'chunk'
+);
+$CONF['Hashlist'] = array(
+		'hashlistId',
+		'hashlistName',
+		'format',
+		'hashTypeId',
+		'hashCount',
+		'cracked',
+		'secret',
+		'hexSalt'
+);
+$CONF['HashlistAgent'] = array(
+		'hashlistAgentId',
+		'hashlistId',
+		'agentId'
+);
+$CONF['HashType'] = array(
+		'hashTypeId',
+		'description'
+);
+$CONF['RegVoucher'] = array(
+		'regVoucherId',
+		'voucher',
+		'time'
+);
+$CONF['SuperHashlist'] = array(
+		'superHashlistId'
+);
+$CONF['SuperHashlistHashlist'] = array(
+		'superHashlistHashlistId',
+		'superHashlistId',
+		'hashlistId'
+);
+$CONF['TaskFile'] = array(
+		'taskFileId',
+		'taskId',
+		'fileId'
+);
+$CONF['Task'] = array(
+		'taskId',
+		'taskName',
+		'attackCmd',
+		'hashlistId',
+		'chunkTime',
+		'statusTimer',
+		'autoAdjust',
+		'keyspace',
+		'progress',
+		'priority',
+		'color',
+		'isSmall',
+		'isCpuTask'
+);
+
 $CONF['User'] = array(
 		'userId',
 		'username',
