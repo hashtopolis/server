@@ -110,7 +110,7 @@ if($INSTALL == 'DONE'){
 		$OBJECTS['user'] = $LOGIN->getUser();
 	}
 
-	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM config");
+	$res = $FACTORIES::getConfigFactory()->filter(array());
 	$CONFIG = new DataSet();
 	foreach($res as $entry){
 		$CONFIG->addValue($entry['item'], $entry['value']);
