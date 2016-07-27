@@ -24,23 +24,23 @@ class Login {
 	 * running. It updates the session lifetime again up to the session limit.
 	 */
 	public function __construct(){
+		global $FACTORIES;
+		
 		$this->user = null;
 		$this->session = null;
 		$this->valid = false;
 		if(isset($_COOKIE['session'])){
 			$session = $_COOKIE['session'];
-			$sF = new SessionFactory();
 			$filter1 = new QueryFilter("sessionKey", $session, "=");
 			$filter2 = new QueryFilter("isOpen", "1", "=");
 			$filter3 = new QueryFilter("lastActionDate", time() - 10000, ">");
-			$check = $sF->filter(array('filter' => array($filter1, $filter2, $filter3)));
+			$check = $FACTORIES::getSessionFactory()->filter(array('filter' => array($filter1, $filter2, $filter3)));
 			if($check === null || sizeof($check) == 0){
 				setcookie("session", "", time() - 600); //delete invalid or old cookie
 				return;
 			}
 			$s = $check[0];
-			$uF = new UserFactory();
-			$this->user = $uF->get($s->getUserId());
+			$this->user = $FACTORIES::getUserFactory()->get($s->getUserId());
 			if($this->user !== null){
 				if($s->getLastActionDate() < time() - $this->user->getSessionLifetime()){
 					setcookie("session", "", time() - 600); //delete invalid or old cookie
@@ -49,7 +49,7 @@ class Login {
 				$this->valid = true;
 				$this->session = $s;
 				$s->setLastActionDate(time());
-				$sF->update($s);
+				$FACTORIES::getSessionFactory()->update($s);
 				setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime());
 			}
 		}
@@ -66,9 +66,10 @@ class Login {
 	 * Logs the current user out and closes his session
 	 */
 	public function logout(){
-		$sF = new SessionFactory();
+		global $FACTORIES;
+		
 		$this->session->setIsOpen(0);
-		$sF->update($this->session);
+		$FACTORIES::getSessionFactory()->update($this->session);
 		setcookie("session", "", time() - 600);
 	}
 	
@@ -92,12 +93,13 @@ class Login {
 	 * @return true on success and false on failure
 	 */
 	public function login($username, $password){
+		global $FACTORIES;
+		
 		if($this->valid == true){
 			return false;
 		}
-		$uF = new UserFactory();
 		$filter = new QueryFilter("username", $username, "=");
-		$check = $uF->filter(array('filter' => array($filter)));
+		$check = $FACTORIES::getUserFactory()->filter(array('filter' => array($filter)));
 		if($check === null || sizeof($check) == 0){
 			return false;
 		}
@@ -111,17 +113,16 @@ class Login {
 		$this->user = $user;
 		$startTime = time();
 		$s = new Session(0, $this->user->getId(), time(), time(), 1, $this->user->getSessionLifetime(), "");
-		$sF = new SessionFactory();
-		$s = $sF->save($s);
+		$s = $FACTORIES::getSessionFactory()->save($s);
 		if($s === null){
 			return false;
 		}
 		$sessionKey = Encryption::sessionHash($s->getId(), $startTime, $user->getEmail());
 		$s->setSessionKey($sessionKey);
-		$sF->update($s);
+		$FACTORIES::getSessionFactory()->update($s);
 		
 		$this->user->setLastLoginDate(time());
-		$uF->update($this->user);
+		$FACTORIES::getUserFactory()->update($this->user);
 		
 		$this->valid = true;
 		setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime());
