@@ -1,7 +1,7 @@
 <?php
 
 //set to 1 for debugging
-ini_set("display_errors", "0");
+ini_set("display_errors", "1");
 //is required for running well with php7
 ini_set('pcre.jit', '0');
 
