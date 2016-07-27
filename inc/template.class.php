@@ -126,7 +126,7 @@ class Template {
 		preg_match_all("/^(?:(?!\{\{).)*?(\?\?\?(.*?)\?\?\?)/is", $render, $matches, PREG_PATTERN_ORDER);
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			if(strpos($matches[2][$x], "\n") !== false){
-				continue;
+				continue; // this is required because it get's problems when using tasks where the replacement for unknown extensions is ???
 			}
 			$matches[2][$x] = "!!".$matches[2][$x]."!!";
 			$val = $this->getCondition($matches[2][$x], $objects);
