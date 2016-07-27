@@ -113,7 +113,7 @@ if($INSTALL == 'DONE'){
 	$res = $FACTORIES::getConfigFactory()->filter(array());
 	$CONFIG = new DataSet();
 	foreach($res as $entry){
-		$CONFIG->addValue($entry['item'], $entry['value']);
+		$CONFIG->addValue($entry->getItem(), $entry->getValue());
 	}
 	$OBJECTS['config'] = $CONFIG;
 	
