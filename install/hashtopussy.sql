@@ -117,11 +117,11 @@ INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `Error`
+-- Tabellenstruktur für Tabelle `AgentError`
 --
 
-CREATE TABLE `Error` (
-  `errorId` int(11) NOT NULL,
+CREATE TABLE `AgentError` (
+  `agentErrorId` int(11) NOT NULL,
   `agentId` int(11) NOT NULL,
   `taskId` int(11) NOT NULL,
   `time` int(11) NOT NULL,

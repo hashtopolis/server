@@ -51,8 +51,8 @@ $CONF['Config'] = array(
 		'item',
 		'value'
 );
-$CONF['Error'] = array(
-		'errorId',
+$CONF['AgentError'] = array(
+		'agentErrorId',
 		'agentId',
 		'taskId',
 		'time',

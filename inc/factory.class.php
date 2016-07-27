@@ -7,7 +7,7 @@ class Factory{
 	private static $assignmentFactory = null;
 	private static $chunkFactory = null;
 	private static $configFactory = null;
-	private static $errorFactory = null;
+	private static $agentErrorFactory = null;
 	private static $fileFactory = null;
 	private static $hashcatReleaseFactory = null;
 	private static $hashFactory = null;
@@ -70,14 +70,14 @@ class Factory{
 		}
 	}
 
-	public static function getErrorFactory(){
-		if(self::$errorFactory == null){
-			$f = new ErrorFactory();
-			self::$errorFactory = $f;
+	public static function getAgentErrorFactory(){
+		if(self::$agentErrorFactory == null){
+			$f = new AgentErrorFactory();
+			self::$agentErrorFactory = $f;
 			return $f;
 		}
 		else{
-			return self::$errorFactory;
+			return self::$agentErrorFactory;
 		}
 	}
 
