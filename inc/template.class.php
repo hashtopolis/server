@@ -124,10 +124,13 @@ class Template {
 
 		//search for to be special treated variables
 		preg_match_all("/^(?:(?!\{\{).)*?(\?\?\?(.*?)\?\?\?)/is", $render, $matches, PREG_PATTERN_ORDER);
-		while(sizeof($matches[0]) > 0){
-			$matches[2][0] = "!!".$matches[2][0]."!!";
-			$val = $this->getCondition($matches[2][0], $objects);
-			$render = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $render);
+		for($x=0;$x<sizeof($matches[0]);$x++){
+			if(strpos($matches[2][$x], "\n") !== false){
+				continue;
+			}
+			$matches[2][$x] = "!!".$matches[2][$x]."!!";
+			$val = $this->getCondition($matches[2][$x], $objects);
+			$render = $this->str_replace_first($matches[1][$x], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $render);
 			preg_match_all("/^(?:(?!\{\{).)*?(\?\?\?(.*?)\?\?\?)/is", $render, $matches, PREG_PATTERN_ORDER);
 		}
 
