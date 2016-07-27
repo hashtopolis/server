@@ -187,6 +187,7 @@ class Template {
 			$val = $this->getCondition($matches[2][0], $objects);
 			if($inner){
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", $val), $partial);
+				echo "{$matches[1][0]}:::$val\n";
 			}
 			else{
 				$partial = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $partial);
@@ -358,7 +359,6 @@ class Template {
 			if(isset($objects[$varname])){
 				//is a variable/object provided in objects
 				$condition = str_replace($vals[0][$x], "\$objects['$varname']".$calls, $condition);
-				echo $varname."---".$calls."\n";
 			}
 			else if(is_callable(preg_replace("/\(.*\)/", "", $complete))){
 				//is a static function call
