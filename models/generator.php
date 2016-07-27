@@ -5,7 +5,7 @@ $CONF = array();
 //config SQL here
 $CONF['Agent'] = array(
 		'agentId',
-		'name',
+		'agentName',
 		'uid',
 		'os',
 		'cpuType',
