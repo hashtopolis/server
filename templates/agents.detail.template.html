@@ -137,7 +137,14 @@
 			<th>Time</th>
 			<th>Task</th>
 			<th>Chunk</th>
-			<th>Error message</th>
+			<th>
+				Message 
+				<form action='agents.php' method='post'>
+					<input type='hidden' name='action' value='clearerrors'>
+					<input type='hidden' name='agent' value="[[agent.getVal('id')]]'">
+					<input type='submit' class='btn btn-danger' value='Delete All'>
+				</form>
+			</th>
 		</tr>
 		{{FOREACH error,!!errors!!}}
 			<tr>

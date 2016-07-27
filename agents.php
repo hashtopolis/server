@@ -18,6 +18,14 @@ $message = "";
 //catch agents actions here...
 if(isset($_POST['action'])){
 	switch($_POST['action']){
+		case 'clearerrors':
+			if($LOGIN->getLevel() < 30){
+				break;
+			}
+			$agent = intval($_POST['agent']);
+			$DB->query("DELETE FROM errors WHERE agent=$agent");
+			header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+			die();
 		case 'agentrename':
 			if($LOGIN->getLevel() < 30){
 				break;
