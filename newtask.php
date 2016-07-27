@@ -137,7 +137,6 @@ if (isset($_GET["id"])) {
 		if ($task = $res->fetch()) {
 			$copy->addValue('name', $task["name"]." (copy)");
 			$copy->addValue('cmd', $task["attackcmd"]);
-			echo "---".$task['attackcmd']."---\n";
 			$copy->addValue('chunksize', $task["chunktime"]);
 			$copy->addValue('status', $task["statustimer"]);
 			$copy->addValue('adjust', $task["autoadjust"]);

@@ -358,6 +358,7 @@ class Template {
 			if(isset($objects[$varname])){
 				//is a variable/object provided in objects
 				$condition = str_replace($vals[0][$x], "\$objects['$varname']".$calls, $condition);
+				echo $varname."---".$calls."\n";
 			}
 			else if(is_callable(preg_replace("/\(.*\)/", "", $complete))){
 				//is a static function call
