@@ -131,20 +131,18 @@
 	</table>
 </div>
 <h3>Error messages:</h3>
+<form action="agents.php?id=[[agent.getVal('id')]]" method='post' class='form-inline'>
+	<input type='hidden' name='action' value='clearerrors'>
+	<input type='hidden' name='agent' value="[[agent.getVal('id')]]">
+	<input type='submit' class='btn btn-danger' value='Delete All'>
+</form>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
 			<th>Time</th>
 			<th>Task</th>
 			<th>Chunk</th>
-			<th>
-				Message 
-				<form action="agents.php?id=[[agent.getVal('id')]]" method='post' class='form-inline'>
-					<input type='hidden' name='action' value='clearerrors'>
-					<input type='hidden' name='agent' value="[[agent.getVal('id')]]">
-					<input type='submit' class='btn btn-danger' value='Delete All'>
-				</form>
-			</th>
+			<th>Message</th>
 		</tr>
 		{{FOREACH error,!!errors!!}}
 			<tr>
