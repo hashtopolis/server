@@ -139,9 +139,9 @@
 			<th>Chunk</th>
 			<th>
 				Message 
-				<form action='agents.php' method='post'>
+				<form action="agents.php?id=[[agent.getVal('id')]]" method='post' class='form-inline'>
 					<input type='hidden' name='action' value='clearerrors'>
-					<input type='hidden' name='agent' value="[[agent.getVal('id')]]'">
+					<input type='hidden' name='agent' value="[[agent.getVal('id')]]">
 					<input type='submit' class='btn btn-danger' value='Delete All'>
 				</form>
 			</th>
