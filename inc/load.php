@@ -120,7 +120,7 @@ if($INSTALL == 'DONE'){
 	//set autorefresh to false for all pages
 	$OBJECTS['autorefresh'] = 0;
 	
-	$DB = $FACTORIES::getagentsFactory()->getDB();
+	$DB = $FACTORIES::getAgentFactory()->getDB();
 }
 
 
