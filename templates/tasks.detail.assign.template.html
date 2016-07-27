@@ -15,7 +15,12 @@
 			</td>
 			<td colspan="8">
 				<input type="submit" class='btn btn-default' value="Assign">&nbsp;&nbsp;&nbsp;
-				<a href="tasks.php?id=[[task.getVal('id')]]&allagents=true" class='btn btn-success'>Show all Assignments</a>
+				{{IF !!showAllAgents!!}}
+					<a href="tasks.php?id=[[task.getVal('id')]]" class='btn btn-warning'>Hide all Assignments</a>
+				{{ENDIF}}
+				{{IF ! !!showAllAgents!!}}
+					<a href="tasks.php?id=[[task.getVal('id')]]&allagents=true" class='btn btn-success'>Show all Assignments</a>
+				{{ENDIF}}
 			</form>
 		</td>
 	</tr>
