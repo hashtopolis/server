@@ -193,6 +193,7 @@ $OBJECTS['files'] = $files;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
+file_put_contents("debug.log", $TEMPLATE->render($OBJECTS));
 
 
 
