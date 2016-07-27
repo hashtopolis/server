@@ -8,7 +8,7 @@ namespace Bricky;
 
 /**
  * This class does some magic voodoo shit to generate the real page out of the template :)
- * This file is exported out of a project and some functions are not neccessary for Bricky 
+ * This file is exported out of a project and some functions are not neccessary for Bricky
  * and/or are not working outside of this specific project.
  *
  * @author Sein
@@ -41,7 +41,7 @@ class Template {
 	/**
 	 * Just loads the code which is received when all templates are put together
 	 * without any replacement of objects or language strings.
-	 * 
+	 *
 	 * @return mixed false on failure, otherwise the code will be returned as string
 	 */
 	public function getCode(){
@@ -78,7 +78,7 @@ class Template {
 	/**
 	 * This function is used to parse javascript templates to replace any language strings
 	 * present in javascript code to also add multilingual support to the interactive scripts.
-	 * 
+	 *
 	 * @param array $objects objects required to render the template
 	 * @return string rendered javascript code
 	 */
@@ -112,7 +112,7 @@ class Template {
 
 	/**
 	 * Render the current template with all objects and language parts.
-	 * 
+	 *
 	 * @param array $objects objects and variables which are needed to generate all templates and sub-templates
 	 * @return string rendered html code
 	 */
@@ -130,11 +130,11 @@ class Template {
 			$render = $this->str_replace_first($matches[1][0], str_replace("\n", "---NEWLINE---", eval("return ".$val.";")), $render);
 			preg_match_all("/^(?:(?!\{\{).)*?(\?\?\?(.*?)\?\?\?)/is", $render, $matches, PREG_PATTERN_ORDER);
 		}
-		
+
 		//go through loops recursively and at the end replace all language strings
 		return str_replace("---NEWLINE---", "\n", $this->renderLanguage($render));
 	}
-	
+
 	/**
 	 * Similar to str_replace, except that it only replaces the first occurence.
 	 *
@@ -149,13 +149,13 @@ class Template {
 
 	/**
 	 * Checks the given code for all language definitions and replaces them with the corresponding string.
-	 * 
+	 *
 	 * @param string $text text to check for language definitions
 	 * @return string rendered text code
 	 */
 	private function renderLanguage($text){
 		global $LANGUAGE;
-		
+
 		if(!isset($LANGUAGE)){
 			return $text;
 		}
@@ -173,7 +173,7 @@ class Template {
 	/**
 	 * Searches for variable formatting in template code and replaces the corresponding code with the result
 	 * of the formatting code.
-	 * 
+	 *
 	 * @param string $partial code to check
 	 * @param array $objects objects and variables which are required to render
 	 * @param bool $inner is set to true if it is inside a condition or a function call
@@ -181,7 +181,7 @@ class Template {
 	 */
 	private function varReplace($partial, $objects, $inner = false){
 		//search for outer variables
-		preg_match_all("/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is", $partial, $matches, PREG_PATTERN_ORDER);
+		preg_match_all('/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is', $partial, $matches, PREG_PATTERN_ORDER);
 		while(sizeof($matches[0]) > 0){
 			$matches[2][0] = "!!".$matches[2][0]."!!";
 			$val = $this->getCondition($matches[2][0], $objects);
@@ -193,7 +193,7 @@ class Template {
 			}
 			preg_match_all("/^(?:(?!\{\{).)*?(\[\[(.*?)\]\])/is", $partial, $matches, PREG_PATTERN_ORDER);
 		}
-		
+
 		//search for inner variables
 		preg_match_all("/^(?:(?!\{\{).)*?(\%\%(.*?)\%\%)/is", $partial, $matches, PREG_PATTERN_ORDER);
 		while(sizeof($matches[0]) > 0){
@@ -207,13 +207,13 @@ class Template {
 			}
 			preg_match_all("/^(?:(?!\{\{).)*?(\%\%(.*?)\%\%)/is", $partial, $matches, PREG_PATTERN_ORDER);
 		}
-		
+
 		return $partial;
 	}
 
 	/**
 	 * Searches for the loops and if statements inside the code and executes the actions to be done on them.
-	 * 
+	 *
 	 * @param string $partial code part to render
 	 * @param array $objects objects and variables required to render
 	 * @return mixed false on failure, otherwise the rendered code is returned
@@ -223,12 +223,12 @@ class Template {
 
 		//search for if, for and foreach loops
 		preg_match_all("/\{\{(.*?)\s(.*?)\}\}(.*?)\{\{(END\\1)\}\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
-		
+
 		$rest = $partial;
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			$rest = str_replace($matches[0][$x], "", $rest);
 		}
-		
+
 		//if not a valid configuration is detected with lazy search, try it with greedy
 		if(substr_count($rest, "{{ENDIF}}") != substr_count($rest, "{{IF ") || substr_count($rest, "{{ENDFOR}}") != substr_count($rest, "{{FOR ") || substr_count($rest, "{{ENDFOREACH}}") != substr_count($rest, "{{FOREACH ")){
 			preg_match_all("/\{\{(.*?)\s(.*?)\}\}(.*)\{\{(END\\1)\}\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
@@ -300,14 +300,14 @@ class Template {
 					break;
 			}
 		}
-		
+
 		//include all templates
 		preg_match_all("/\{\%(.*?)\%\}/mis", $partial, $matches, PREG_PATTERN_ORDER);
-		
+
 		for($x=0;$x<sizeof($matches[0]);$x++){
 			$command = explode("->", $matches[1][$x]); //just the command
 			$replace = $matches[0][$x]; //whole part which will be replaced
-		
+
 			if(sizeof($command) != 2){
 				return false;
 			}
@@ -328,13 +328,13 @@ class Template {
 					break;
 			}
 		}
-		
+
 		return $this->varReplace($partial, $objects); //varReplace is required again for variables after all loops
 	}
 
 	/**
 	 * Generates the condition to check on a if or loop condition which then can be checked with eval.
-	 * 
+	 *
 	 * @param string $condition code from the condition
 	 * @param array $objects objects and variable required to render
 	 * @return string condition which can be checked with eval

@@ -19,9 +19,7 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'newhashlistp':
-			//TODO: add Cassandra 1
 			// new hashlist creator
-			$DB = $FACTORIES::getagentsFactory()->getDB();
 			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
 			$salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1);
 			$hexsalted = (isset($_POST["hexsalted"]) && $salted && intval($_POST["hexsalted"]) == 1);
@@ -36,13 +34,13 @@ if(isset($_POST['action'])){
 			$hashtype = intval($_POST["hashtype"]);
 			$message = "<div class='alert alert-neutral'>";
 			if ($format >= 0 && $format <= 2) {
-				if ($name == "") {
+				if (strlen($name) == 0) {
 					$message .= "You must specify hashlist name";
 				} 
 				else {
 					$message .= "Creating hashlist in the DB...";
-					$vysledek = $DB->exec("INSERT INTO hashlists (name,format,hashtype, hexsalt) VALUES ($name, $format, $hashtype, $hexsalted)");
-					if($vysledek){
+					$res = $DB->exec("INSERT INTO hashlists (name, format,hashtype, hexsalt) VALUES ($name, $format, $hashtype, $hexsalted)");
+					if($res){
 						// insert succeeded
 						$id = $DB->lastInsertId();
 						$message .= "OK (id: $id)<br>";
@@ -62,16 +60,16 @@ if(isset($_POST['action'])){
 								break;
 						}
 						$tmpfile = "hashlist_$id";
-						if (Util::uploadFile($tmpfile, $source, $sourcedata)) {
+						if (Util::uploadFile($tmpfile, $source, $sourcedata) && file_exists($tmpfile)) {
 							$hsize = filesize($tmpfile);
 							if ($hsize>0) {
 								$message .= "Opening file $tmpfile ($hsize B)...";
-								$hhandle=fopen($tmpfile,"rb");
+								$hhandle = fopen($tmpfile,"rb");
 								$message .= "OK<br>";
 					
-								$pocet=0;
-								$chyby=0;
-								$cas_start=time();
+								$pocet = 0;
+								$chyby = 0;
+								$cas_start = time();
 					
 								switch ($format) {
 								case 0:
@@ -168,6 +166,9 @@ if(isset($_POST['action'])){
 														$salt = "";
 													}
 												}
+												if(strlen($hash) == 0){
+													continue; //this is a problem from files which contain empty lines
+												}
 												$hash = $DB->quote($hash);
 												$salt = $DB->quote($salt);
 												$buffer[] = "($id, $hash, $salt)";
@@ -179,8 +180,10 @@ if(isset($_POST['action'])){
 													$bufferCount = 0;
 												}
 											}
-											$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
-											$pocet += $check->rowCount();
+											if(sizeof($buffer) > 0){
+												$check = $DB->query("INSERT IGNORE INTO hashes (hashlist,hash,salt) VALUES ".implode(", ", $buffer));
+												$pocet += $check->rowCount();
+											}
 											fclose($slow);
 											$DB->exec("COMMIT");
 										}
@@ -278,8 +281,8 @@ $OBJECTS['impfiles'] = array();
 if(file_exists("import") && is_dir("import")) {
 	$impdir = opendir("import");
 	$impfiles = array();
-	while ($f=readdir($impdir)) {
-		if (($f!=".") && ($f!="..") && (!is_dir($f))) {
+	while($f = readdir($impdir)) {
+		if($f[0] != '.' && $f!="." && $f!=".." && !is_dir($f)){
 			$impfiles[] = $f;
 		}
 	}

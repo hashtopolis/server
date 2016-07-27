@@ -19,6 +19,15 @@ class Util{
 		return filter_var($email, FILTER_VALIDATE_EMAIL);
 	}
 	
+	public static function checkWriteFiles($arr){
+		foreach($arr as $path){
+			if(!is_writable($path)){
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public static function tickdone($prog,$total) {
 		// show tick of progress is done
 		if($total > 0 && $prog == $total){
@@ -155,7 +164,8 @@ class Util{
 		$platforms = array(
 				"unknown",
 				"NVidia",
-				"AMD" 
+				"AMD",
+				"CPU"
 		);
 		$oses = array(
 				"<img src='static/win.png' alt='Win' title='Windows'>",
@@ -498,5 +508,17 @@ class Util{
 			}
 		}
 		return $nonDuplicates;
+	}
+	
+	public function hextobin($data) {
+		$res = "";
+		for ($i=0;$i<strlen($data)-1;$i+=2) {
+			$res.=chr(hexdec(substr($data, $i, 2)));
+		}
+		return $res;
+	}
+	
+	public static function getMessage($type, $msg){
+		return "<div class='alert alert-$type'>$msg</div>";
 	}
 }

@@ -1,7 +1,4 @@
 <?php
-/**
- * TODO:
- */
 class QueryFilter{
 	private $key;
 	private $value;

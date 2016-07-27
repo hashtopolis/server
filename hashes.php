@@ -170,13 +170,13 @@ if($valid){
     			break;
     		case '':
     			$out .= $entry['hash'];
-    			if($entry['salt'] != ""){
+    			if(isset($entry['salt']) && $entry['salt'] != ""){
     				$out .= $CONFIG->getVal('fieldseparator').$entry['salt'];
     			}
     			$out .= $CONFIG->getVal('fieldseparator');
     		case 'plain':
     			if($entry['plaintext'] != ""){
-    				$out .= $entry['plaintext'];
+    				$out .= str_replace(" ", "[space]", $entry['plaintext']);
     			}
     			break;
     	}

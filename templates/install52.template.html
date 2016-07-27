@@ -1,0 +1,31 @@
+{%TEMPLATE->install_head%}
+<p>
+	<b>Create Admin User</b><br>
+	Please fill in the form below to create an admin user.
+</p>
+[[message]]
+<form action='index.php' method='post'>
+	<table border='1'>
+		<tr>
+			<td>Username</td>
+			<td><input type='text' name='username'></td>
+		</tr>
+		<tr>
+			<td>Email Address</td>
+			<td><input type='email' name='email'></td>
+		</tr>
+		<tr>
+			<td>Password</td>
+			<td><input type='password' name='password'></td>
+		</tr>
+		<tr>
+			<td>Repeat password</td>
+			<td><input type='password' name='repeat'></td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td><input type='submit' name='create' value='Create'></td>
+		</tr>
+	</table>
+</form>
+{%TEMPLATE->install_foot%}

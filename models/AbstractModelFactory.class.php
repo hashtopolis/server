@@ -467,7 +467,7 @@ abstract class AbstractModelFactory{
 	/**
 	 * Returns the DB connection if possible
 	 */
-	public function getDB(){
+	public function getDB($test = false){
 		global $CONN;
 		
 		$dsn = 'mysql:dbname=' . $CONN['db'] . ";" . "host=" . $CONN['server'];
@@ -484,6 +484,9 @@ abstract class AbstractModelFactory{
 			return $this->dbh;
 		}
 		catch(PDOException $e){
+			if($test){
+				return false;
+			}
 			die("Fatal Error ! Database connection failed");
 		}
 	}

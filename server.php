@@ -36,6 +36,9 @@ switch($action){
 					$brand = 1;
 				}
 			}
+			if($brand == 0){
+				$brand = 3;
+			}
 			// create access token
 			$token = Util::randomString(10);
 				
@@ -117,7 +120,8 @@ switch($action){
 					$postf = array(
 							"",
 							"nvidia",
-							"amd"
+							"amd",
+							"nvidia" //just give the nvidia link for the cpus
 					);
 					$platf = $postf[$gpu];
 						
@@ -135,16 +139,11 @@ switch($action){
 		
 						$force = (isset($_GET["force"]) ? 1 : 0);
 		
-						$prefix = array(
-								"",
-								"cuda",
-								"ocl"
-						);
 						$postfix = array(
 								"exe",
 								"bin"
 						);
-						$exe = $prefix[$gpu] . "Hashcat$cpu." . $postfix[$os];
+						$exe = "hashcat$cpu." . $postfix[$os];
 		
 						if(($agent["hcversion"] != $verze) || ($force == 1)){
 							// the agent needs updating

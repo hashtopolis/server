@@ -1,11 +1,13 @@
 <?php
 
-//set to 0 after finished debugging
-ini_set("display_errors", "1");
+//set to 1 for debugging
+ini_set("display_errors", "0");
+//is required for running well with php7
+ini_set('pcre.jit', '0');
 
 $OBJECTS = array();
 
-$VERSION = "0.1.".substr(md5("3.14"), 0, 6);
+$VERSION = "0.1.0 BETA";
 $HOST = $_SERVER['HTTP_HOST'];
 if(strpos($HOST, ":") !== false){
 	$HOST = substr($HOST, 0, strpos($HOST, ":"));
@@ -14,18 +16,18 @@ if(strpos($HOST, ":") !== false){
 $OBJECTS['version'] = $VERSION;
 $OBJECTS['host'] = $HOST;
 
-include(dirname(__FILE__)."/load.ini");
+//START CONFIG
+$CONN['user'] = '__DBUSER__';
+$CONN['pass'] = '__DBPASS__';
+$CONN['server'] = '__DBSERVER__';
+$CONN['db'] = '__DBDB__';
+$CONN['installed'] = false; //set this to true if you config the mysql and setup manually
+//END CONFIG
 
 $INSTALL = "pending...";
-
 if($CONN['installed']){
-	$INSTALL = "DONE"; 	//if set in load.ini, installation should be done
-						//(either manually or via the installation script)
+	$INSTALL = "DONE";
 }
-
-//manually force the system to think it is installed
-//this should be removed in release!!!
-$INSTALL = 'DONE';
 
 require_once(dirname(__FILE__)."/crypt.class.php");
 require_once(dirname(__FILE__)."/dataset.class.php");
@@ -71,18 +73,18 @@ if($INSTALL == 'DONE'){
 	if($LOGIN->isLoggedin()){
 		$OBJECTS['user'] = $LOGIN->getUser();
 	}
+
+	$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM config");
+	$CONFIG = new DataSet();
+	foreach($res as $entry){
+		$CONFIG->addValue($entry['item'], $entry['value']);
+	}
+	$OBJECTS['config'] = $CONFIG;
+	
+	//set autorefresh to false for all pages
+	$OBJECTS['autorefresh'] = 0;
+	
+	$DB = $FACTORIES::getagentsFactory()->getDB();
 }
-
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM config");
-$CONFIG = new DataSet();
-foreach($res as $entry){
-	$CONFIG->addValue($entry['item'], $entry['value']);
-}
-$OBJECTS['config'] = $CONFIG;
-
-//set autorefresh to false for all pages
-$OBJECTS['autorefresh'] = 0;
-
-$DB = $FACTORIES::getagentsFactory()->getDB();
 
 

@@ -104,16 +104,17 @@ CREATE TABLE IF NOT EXISTS `hashcatreleases` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='oclHashcat releases';
 
 INSERT INTO `hashcatreleases` (`version`, `time`, `url_nvidia`, `url_amd`, `common_files`, `32_nvidia`, `64_nvidia`, `32_amd`, `64_amd`, `rootdir_nvidia`, `rootdir_amd`, `minver_nvidia`, `minver_amd`) VALUES
-('2.01', 1457330572, 'http://hashcat.net/files/cudaHashcat-2.01.7z', 'http://hashcat.net/files/oclHashcat-2.01.7z', 'hashcat.hcstat hashcat.keyfile', 'kernels/4318/*32.cubin', 'kernels/4318/*64.cubin', 'kernels/4098/*.llvmir', 'kernels/4098/*.llvmir', 'cudaHashcat-2.01', 'oclHashcat-2.01', 34659, 1409);
+('3.00', 1457330572, 'https://hashcat.net/files/hashcat-3.00.7z', 'https://hashcat.net/files/hashcat-3.00.7z', 'hashcat.hcstat hashcat.keyfile', 'kernels/4318/*32.cubin', 'kernels/4318/*64.cubin', 'kernels/4098/*.llvmir', 'kernels/4098/*.llvmir', 'hashcat-3.00', 'hashcat-3.00', 34659, 1409);
 
 CREATE TABLE IF NOT EXISTS `hashes` (
+  hashesId int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `hashlist` int(11) NOT NULL COMMENT 'Hashlist ID',
   `hash` varchar(512) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL COMMENT 'Hash',
   `salt` varchar(64) COLLATE latin1_bin NOT NULL DEFAULT '' COMMENT 'Optional salt',
   `plaintext` varchar(128) COLLATE latin1_bin DEFAULT NULL COMMENT 'Cracked plaintext',
   `time` bigint(20) DEFAULT NULL COMMENT 'Time of crack',
   `chunk` int(11) DEFAULT NULL COMMENT 'Chunk in which the hash was cracked',
-  PRIMARY KEY (`hashlist`,`hash`,`salt`),
+  UNIQUE KEY (`hashlist`,`hash`,`salt`),
   KEY `download` (`hashlist`,`plaintext`),
   KEY `adm_chunk` (`chunk`),
   KEY `download_zaps` (`hashlist`,`time`,`chunk`)
@@ -139,8 +140,28 @@ CREATE TABLE IF NOT EXISTS `hashlists` (
   `hashcount` int(11) NOT NULL DEFAULT '0' COMMENT 'Total count of hashes',
   `cracked` int(11) NOT NULL DEFAULT '0' COMMENT 'Total count of cracked hashes',
   `secret` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Is hashlist secret?',
+  hexsalt int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`,`format`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='List of hashlists' AUTO_INCREMENT=28 ;
+
+CREATE TABLE `Supertask` (
+  `supertaskId` int(11) NOT NULL,
+  `name` varchar(100) COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+ALTER TABLE `Supertask`
+  ADD PRIMARY KEY (`supertaskId`);
+ALTER TABLE `Supertask`
+  MODIFY `supertaskId` int(11) NOT NULL AUTO_INCREMENT;
+  
+CREATE TABLE `SupertaskTask` (
+  `supertaskTaskId` int(11) NOT NULL,
+  `supertaskId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+ALTER TABLE `SupertaskTask`
+  ADD PRIMARY KEY (`supertaskTaskId`);
+ALTER TABLE `SupertaskTask`
+  MODIFY `supertaskTaskId` int(11) NOT NULL AUTO_INCREMENT;
 
 CREATE TABLE IF NOT EXISTS `hashlistusers` (
   `hashlist` int(11) NOT NULL COMMENT 'Used hashlist',

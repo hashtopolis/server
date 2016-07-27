@@ -1,7 +1,4 @@
 <?php
-/**
- * TODO:
- */
 class JoinFilter{
 	private $otherFactory;
 	private $match1;

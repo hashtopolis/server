@@ -98,6 +98,9 @@
 						</ul>
 					</li>
 				{{ENDIF}}
+				{{IF !!login.isLoggedin()!!}}
+					<li[[menu.isActive('fix')]]><a href="fix.php" style='color: #ffa500;'>FIX ME</a></li>
+				{{ENDIF}}
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				{{IF !!login.isLoggedin()!!}}
