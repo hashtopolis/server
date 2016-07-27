@@ -7,6 +7,8 @@ If you would like to use Hashtopussy with the older versions, please checkout co
 
 Please visit the [wiki](https://bitbucket.org/seinlc/hashtopussy/wiki/Home) to get more information on setup and upgrade.
 
+IMPORTANT: This branch currently is not working as there is a complete change in DB structure!!!!
+
 ## Thanks
 
 * winxp for testing, writing help texts and a lot of input ideas
