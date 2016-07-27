@@ -246,11 +246,12 @@ if(isset($_POST['toggleautorefresh'])){
 	header("Location: ".$_SERVER['REQUEST_URI']);
 	die();
 }
-if($autorefresh > 0){
+if($autorefresh > 0){ //renew cookie
 	setcookie("autorefresh", "On", time() + 3600*24);
 }
 if(isset($_POST['action'])){
-	$autorefresh = 0;
+	//not sure why this was done, currently commented to fix an issue
+	//$autorefresh = 0; 
 }
 $OBJECTS['autorefresh'] = $autorefresh;
 
