@@ -23,7 +23,7 @@ class HashBinaryFactory extends AbstractModelFactory {
 	}
 	
 	function createObjectFromDict($pk, $dict) {
-		$o = new HashBinary($pk, $dict['hahslistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['time'], $dict['chunk']);
+		$o = new HashBinary($pk, $dict['hahslistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['time'], $dict['chunkId']);
 		return $o;
 	}
 }

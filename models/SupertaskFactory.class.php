@@ -1,12 +1,12 @@
 <?php
 
-class HashFactory extends AbstractModelFactory {
+class SupertaskFactory extends AbstractModelFactory {
 	function getModelName() {
-		return "Hash";
+		return "Supertask";
 	}
 	
 	function getModelTable() {
-		return "Hash";
+		return "Supertask";
 	}
 	
 	function isCachable() {
@@ -18,12 +18,12 @@ class HashFactory extends AbstractModelFactory {
 	}
 	
 	function getNullObject() {
-		$o = new Hash(-1, null, null, null, null, null, null);
+		$o = new Supertask(-1, null);
 		return $o;
 	}
 	
 	function createObjectFromDict($pk, $dict) {
-		$o = new Hash($pk, $dict['hashlistId'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['time'], $dict['chunkId']);
+		$o = new Supertask($pk, $dict['supertaskName']);
 		return $o;
 	}
 }

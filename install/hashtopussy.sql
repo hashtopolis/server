@@ -1,181 +1,242 @@
+-- phpMyAdmin SQL Dump
+-- version 4.5.4.1deb2ubuntu2
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Erstellungszeit: 27. Jul 2016 um 14:33
+-- Server-Version: 5.7.13-0ubuntu0.16.04.2
+-- PHP-Version: 7.0.8-0ubuntu0.16.04.1
 
-CREATE TABLE IF NOT EXISTS `agents` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE latin1_bin NOT NULL COMMENT 'Friendly machine name',
-  `uid` varchar(36) COLLATE latin1_bin NOT NULL COMMENT 'HDD serial number',
-  `os` tinyint(4) NOT NULL COMMENT '0=Win, 1=Unix',
-  `cputype` tinyint(4) NOT NULL COMMENT '32/64',
-  `gpubrand` tinyint(4) NOT NULL COMMENT '1=NVidia, 2=AMD',
-  `gpudriver` int(11) NOT NULL DEFAULT '0' COMMENT 'GPU driver version',
-  `gpus` text COLLATE latin1_bin NOT NULL COMMENT 'List of GPUs',
-  `hcversion` varchar(10) COLLATE latin1_bin DEFAULT '' COMMENT 'Version of oclHashcat delivered to agent',
-  `cmdpars` varchar(128) COLLATE latin1_bin DEFAULT NULL COMMENT 'Agent specific command line',
-  `wait` int(11) NOT NULL DEFAULT '0' COMMENT 'Idle wait before cracking',
-  `ignoreerrors` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Don''t pause agent on errors',
-  `active` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Flag if agent is active',
-  `trusted` tinyint(1) NOT NULL DEFAULT '1' COMMENT 'Is agent trusted for secret data?',
-  `token` varchar(10) COLLATE latin1_bin NOT NULL COMMENT 'Generated access token',
-  `lastact` varchar(10) COLLATE latin1_bin NOT NULL DEFAULT '' COMMENT 'Last action',
-  `lasttime` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Last action time',
-  `lastip` varchar(15) COLLATE latin1_bin NOT NULL DEFAULT '' COMMENT 'Last action IP',
-  `userId` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `assignment_verify` (`token`,`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='List of Hashtopus agents' AUTO_INCREMENT=10 ;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
-CREATE TABLE IF NOT EXISTS `assignments` (
-  `task` int(11) NOT NULL COMMENT 'Task ID',
-  `agent` int(11) NOT NULL COMMENT 'Agent ID',
-  `benchmark` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Agent''s benchmark for this task',
-  `autoadjust` tinyint(4) NOT NULL COMMENT 'Autoadjust override',
-  `speed` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Current cracking speed',
-  UNIQUE KEY `assigned_all` (`agent`),
-  KEY `assigned_active` (`task`,`agent`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Information about agents assignments';
 
-CREATE TABLE IF NOT EXISTS `chunks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `task` int(11) DEFAULT NULL COMMENT 'Task ID',
-  `skip` bigint(20) NOT NULL COMMENT 'Keyspace skip',
-  `length` bigint(20) NOT NULL COMMENT 'Keyspace length',
-  `agent` int(11) DEFAULT NULL COMMENT 'Agent ID',
-  `dispatchtime` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Time of dispatching',
-  `progress` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Confirmed progress in chunk (0 to length)',
-  `rprogress` smallint(20) NOT NULL DEFAULT '0' COMMENT 'Real progress within chunk',
-  `state` smallint(6) NOT NULL DEFAULT '0' COMMENT 'Actual state of the chunk',
-  `cracked` int(11) NOT NULL DEFAULT '0' COMMENT 'Number of cracked hashes',
-  `solvetime` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Time of last activity',
-  PRIMARY KEY (`id`),
-  KEY `solve_verify` (`id`,`task`,`agent`),
-  KEY `chunk_redispatch` (`task`,`agent`,`progress`,`length`,`dispatchtime`,`solvetime`,`skip`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Dispatched chunks of work' AUTO_INCREMENT=42 ;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
-CREATE TABLE IF NOT EXISTS `config` (
-  `item` varchar(16) COLLATE latin1_bin NOT NULL,
-  `value` varchar(64) COLLATE latin1_bin NOT NULL,
-  PRIMARY KEY (`item`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Global configuration values';
+--
+-- Datenbank: `htp2`
+--
 
-INSERT INTO `config` (`item`, `value`) VALUES
-('agenttimeout', '30'),
-('benchtime', '10'),
-('chunktime', '600'),
-('chunktimeout', '30'),
-('emailaddr', 'email@example.org'),
-('emailerror', '0'),
-('emailhldone', '0'),
-('emailtaskdone', '0'),
-('fieldseparator', ':'),
-('hashlistAlias', '#HL#'),
-('statustimer', '5'),
-('timefmt', 'd.m.Y, H:i:s');
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `errors` (
-  `agent` int(11) NOT NULL COMMENT 'Agent ID',
-  `task` int(11) DEFAULT NULL COMMENT 'Task ID',
-  `time` bigint(20) NOT NULL COMMENT 'Error time',
-  `error` text COLLATE latin1_bin NOT NULL COMMENT 'Error message'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Error output received from agents';
+--
+-- Tabellenstruktur für Tabelle `Agent`
+--
 
-CREATE TABLE IF NOT EXISTS `files` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'File id',
-  `filename` varchar(64) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL COMMENT 'Filename',
-  `size` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Size of the file',
-  `secret` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Is file secret?',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Files that can be added to tasks' AUTO_INCREMENT=34 ;
-
-CREATE TABLE IF NOT EXISTS `hashcatreleases` (
-  `version` varchar(10) COLLATE latin1_bin NOT NULL,
-  `time` bigint(20) NOT NULL,
-  `url_nvidia` varchar(128) COLLATE latin1_bin NOT NULL,
-  `url_amd` varchar(128) COLLATE latin1_bin NOT NULL,
-  `common_files` varchar(128) COLLATE latin1_bin NOT NULL,
-  `32_nvidia` varchar(128) COLLATE latin1_bin NOT NULL,
-  `64_nvidia` varchar(128) COLLATE latin1_bin NOT NULL,
-  `32_amd` varchar(128) COLLATE latin1_bin NOT NULL,
-  `64_amd` varchar(128) COLLATE latin1_bin NOT NULL,
-  `rootdir_nvidia` varchar(32) COLLATE latin1_bin NOT NULL,
-  `rootdir_amd` varchar(32) COLLATE latin1_bin NOT NULL,
-  `minver_nvidia` int(11) NOT NULL,
-  `minver_amd` int(11) NOT NULL,
-  PRIMARY KEY (`version`),
-  KEY `newest_search` (`time`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='oclHashcat releases';
-
-INSERT INTO `hashcatreleases` (`version`, `time`, `url_nvidia`, `url_amd`, `common_files`, `32_nvidia`, `64_nvidia`, `32_amd`, `64_amd`, `rootdir_nvidia`, `rootdir_amd`, `minver_nvidia`, `minver_amd`) VALUES
-('3.00', 1457330572, 'https://hashcat.net/files/hashcat-3.00.7z', 'https://hashcat.net/files/hashcat-3.00.7z', 'hashcat.hcstat hashcat.keyfile', 'kernels/4318/*32.cubin', 'kernels/4318/*64.cubin', 'kernels/4098/*.llvmir', 'kernels/4098/*.llvmir', 'hashcat-3.00', 'hashcat-3.00', 34659, 1409);
-
-CREATE TABLE IF NOT EXISTS `hashes` (
-  hashesId int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `hashlist` int(11) NOT NULL COMMENT 'Hashlist ID',
-  `hash` varchar(512) CHARACTER SET latin1 COLLATE latin1_general_ci NOT NULL COMMENT 'Hash',
-  `salt` varchar(64) COLLATE latin1_bin NOT NULL DEFAULT '' COMMENT 'Optional salt',
-  `plaintext` varchar(128) COLLATE latin1_bin DEFAULT NULL COMMENT 'Cracked plaintext',
-  `time` bigint(20) DEFAULT NULL COMMENT 'Time of crack',
-  `chunk` int(11) DEFAULT NULL COMMENT 'Chunk in which the hash was cracked',
-  UNIQUE KEY (`hashlist`,`hash`,`salt`),
-  KEY `download` (`hashlist`,`plaintext`),
-  KEY `adm_chunk` (`chunk`),
-  KEY `download_zaps` (`hashlist`,`time`,`chunk`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Hashes for specific hashlists';
-
-CREATE TABLE IF NOT EXISTS `hashes_binary` (
-  `hashlist` int(11) NOT NULL COMMENT 'hashlist ID',
-  `essid` varchar(36) COLLATE latin1_bin NOT NULL DEFAULT '' COMMENT 'AP name',
-  `hash` longblob NOT NULL COMMENT 'Raw binary hash',
-  `plaintext` varchar(128) COLLATE latin1_bin DEFAULT NULL COMMENT 'Cracked plaintext',
-  `time` bigint(20) DEFAULT NULL COMMENT 'Time of crack',
-  `chunk` int(11) DEFAULT NULL COMMENT 'Chunk in which the hash was cracked',
-  PRIMARY KEY (`hashlist`,`essid`),
-  UNIQUE KEY `download` (`hashlist`,`plaintext`),
-  KEY `adm_chunk` (`chunk`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Hashes for specific WPA hashlist';
-
-CREATE TABLE IF NOT EXISTS `hashlists` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE latin1_bin NOT NULL COMMENT 'Name of the hashlist',
-  `format` int(11) NOT NULL DEFAULT '0' COMMENT '0 = text, 1 = wpa, 2 = bin',
-  `hashtype` int(11) NOT NULL COMMENT 'Hashtype',
-  `hashcount` int(11) NOT NULL DEFAULT '0' COMMENT 'Total count of hashes',
-  `cracked` int(11) NOT NULL DEFAULT '0' COMMENT 'Total count of cracked hashes',
-  `secret` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Is hashlist secret?',
-  hexsalt int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`,`format`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='List of hashlists' AUTO_INCREMENT=28 ;
-
-CREATE TABLE `Supertask` (
-  `supertaskId` int(11) NOT NULL,
-  `name` varchar(100) COLLATE utf8_bin NOT NULL
+CREATE TABLE `Agent` (
+  `agentId` int(11) NOT NULL,
+  `agentName` varchar(200) COLLATE utf8_bin NOT NULL,
+  `uid` varchar(200) COLLATE utf8_bin NOT NULL COMMENT 'HDD number',
+  `os` int(11) NOT NULL,
+  `cpuType` int(11) NOT NULL,
+  `gpuBrand` int(11) NOT NULL,
+  `gpuDriver` int(11) NOT NULL,
+  `gpus` text COLLATE utf8_bin NOT NULL,
+  `hcVersion` varchar(20) COLLATE utf8_bin NOT NULL,
+  `cmdPars` varchar(200) COLLATE utf8_bin NOT NULL,
+  `wait` int(11) NOT NULL COMMENT 'idle wait before cracking',
+  `ignoreErrors` int(11) NOT NULL,
+  `isActive` int(11) NOT NULL,
+  `isTrusted` int(11) NOT NULL,
+  `token` varchar(50) COLLATE utf8_bin NOT NULL,
+  `lastAct` int(11) NOT NULL,
+  `lastTime` int(11) NOT NULL,
+  `lastIp` varchar(50) COLLATE utf8_bin NOT NULL,
+  `userId` int(11) NOT NULL,
+  `cpuOnly` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-ALTER TABLE `Supertask`
-  ADD PRIMARY KEY (`supertaskId`);
-ALTER TABLE `Supertask`
-  MODIFY `supertaskId` int(11) NOT NULL AUTO_INCREMENT;
-  
-CREATE TABLE `SupertaskTask` (
-  `supertaskTaskId` int(11) NOT NULL,
-  `supertaskId` int(11) NOT NULL,
-  `taskId` int(11) NOT NULL
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Assignment`
+--
+
+CREATE TABLE `Assignment` (
+  `assignmentId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `agentId` int(11) NOT NULL,
+  `benchmark` bigint(20) NOT NULL,
+  `autoAdjust` int(11) NOT NULL,
+  `speed` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-ALTER TABLE `SupertaskTask`
-  ADD PRIMARY KEY (`supertaskTaskId`);
-ALTER TABLE `SupertaskTask`
-  MODIFY `supertaskTaskId` int(11) NOT NULL AUTO_INCREMENT;
 
-CREATE TABLE IF NOT EXISTS `hashlistusers` (
-  `hashlist` int(11) NOT NULL COMMENT 'Used hashlist',
-  `agent` int(11) NOT NULL COMMENT 'Using agent',
-  PRIMARY KEY (`hashlist`,`agent`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Marks if an agent is using a hashlist';
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `hashtypes` (
-  `id` int(11) NOT NULL COMMENT 'Hashtype',
-  `description` varchar(64) COLLATE latin1_bin NOT NULL COMMENT 'Hash description',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin;
+--
+-- Tabellenstruktur für Tabelle `Chunk`
+--
 
-INSERT INTO `hashtypes` (`id`, `description`) VALUES
+CREATE TABLE `Chunk` (
+  `chunkId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `skip` bigint(20) NOT NULL,
+  `length` bigint(20) NOT NULL,
+  `agentId` int(11) NOT NULL,
+  `dispatchTime` int(11) NOT NULL,
+  `progress` bigint(20) NOT NULL,
+  `rprogress` int(11) NOT NULL,
+  `state` int(11) NOT NULL,
+  `cracked` int(11) NOT NULL,
+  `solveTime` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Config`
+--
+
+CREATE TABLE `Config` (
+  `configId` int(11) NOT NULL,
+  `item` varchar(100) COLLATE utf8_bin NOT NULL,
+  `value` varchar(200) COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Daten für Tabelle `Config`
+--
+
+INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
+(1, 'agenttimeout', '30'),
+(2, 'benchtime', '30'),
+(3, 'chunktime', '600'),
+(4, 'chunktimeout', '30'),
+(5, 'emailaddr', 'email@example.org'),
+(6, 'emailerror', '0'),
+(7, 'emailhldone', '0'),
+(8, 'emailtaskdone', '0'),
+(9, 'fieldseparator', ':'),
+(10, 'hashlistAlias', '#HL#'),
+(11, 'statustimer', '5'),
+(12, 'timefmt', 'd.m.Y, H:i:s');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Error`
+--
+
+CREATE TABLE `Error` (
+  `errorId` int(11) NOT NULL,
+  `agentId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `time` int(11) NOT NULL,
+  `error` text COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `File`
+--
+
+CREATE TABLE `File` (
+  `fileId` int(11) NOT NULL,
+  `filename` varchar(200) COLLATE utf8_bin NOT NULL,
+  `size` bigint(20) NOT NULL,
+  `secret` int(11) NOT NULL,
+  `fileType` int(11) NOT NULL COMMENT '0 -> dict, 1 -> rule'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Hash`
+--
+
+CREATE TABLE `Hash` (
+  `hashId` int(11) NOT NULL,
+  `hashlistId` int(11) NOT NULL,
+  `hash` varchar(512) COLLATE utf8_bin NOT NULL,
+  `salt` varchar(200) COLLATE utf8_bin NOT NULL,
+  `plaintext` varchar(200) COLLATE utf8_bin NOT NULL,
+  `time` int(11) NOT NULL,
+  `chunkId` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `HashBinary`
+--
+
+CREATE TABLE `HashBinary` (
+  `hashBinaryId` int(11) NOT NULL,
+  `hashlistId` int(11) NOT NULL,
+  `essid` varchar(100) COLLATE utf8_bin NOT NULL,
+  `hash` longblob NOT NULL,
+  `plaintext` varchar(200) COLLATE utf8_bin NOT NULL,
+  `time` int(11) NOT NULL,
+  `chunkId` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `HashcatRelease`
+--
+
+CREATE TABLE `HashcatRelease` (
+  `hashcatReleaseId` int(11) NOT NULL,
+  `version` varchar(50) COLLATE utf8_bin NOT NULL,
+  `time` int(11) NOT NULL,
+  `url` varchar(200) COLLATE utf8_bin NOT NULL,
+  `commonFiles` varchar(200) COLLATE utf8_bin NOT NULL,
+  `binary32` varchar(200) COLLATE utf8_bin NOT NULL,
+  `binary64` varchar(200) COLLATE utf8_bin NOT NULL,
+  `rootdir` varchar(200) COLLATE utf8_bin NOT NULL,
+  `minver` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Hashlist`
+--
+
+CREATE TABLE `Hashlist` (
+  `hashlistId` int(11) NOT NULL,
+  `hashlistName` varchar(200) COLLATE utf8_bin NOT NULL,
+  `format` int(11) NOT NULL COMMENT '0 -> text, 1 -> wpa, 2 -> bin',
+  `hashTypeId` int(11) NOT NULL,
+  `hashCount` int(11) NOT NULL,
+  `cracked` int(11) NOT NULL,
+  `secret` int(11) NOT NULL,
+  `hexSalt` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `HashlistAgent`
+--
+
+CREATE TABLE `HashlistAgent` (
+  `hashlistAgentId` int(11) NOT NULL,
+  `hashlistId` int(11) NOT NULL,
+  `agentId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `HashType`
+--
+
+CREATE TABLE `HashType` (
+  `hashTypeId` int(11) NOT NULL,
+  `description` varchar(200) COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Daten für Tabelle `HashType`
+--
+
+INSERT INTO `HashType` (`hashTypeId`, `description`) VALUES
 (0, 'MD5'),
 (10, 'md5($pass.$salt)'),
 (11, 'Joomla < 2.5.18'),
@@ -328,18 +389,33 @@ INSERT INTO `hashtypes` (`id`, `description`) VALUES
 (11500, 'CRC32'),
 (11600, '7-Zip');
 
-CREATE TABLE IF NOT EXISTS `regvouchers` (
-  `voucher` varchar(10) COLLATE latin1_bin NOT NULL COMMENT 'Registration vouchers',
-  `time` bigint(20) NOT NULL COMMENT 'Timestamp of creation',
-  PRIMARY KEY (`voucher`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Tokens allowing agent registration';
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `RightGroup` (
-  `rightGroupId` int(11) NOT NULL AUTO_INCREMENT,
+--
+-- Tabellenstruktur für Tabelle `RegVoucher`
+--
+
+CREATE TABLE `RegVoucher` (
+  `regVoucherId` int(11) NOT NULL,
+  `voucher` varchar(50) COLLATE utf8_bin NOT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `RightGroup`
+--
+
+CREATE TABLE `RightGroup` (
+  `rightGroupId` int(11) NOT NULL,
   `groupName` varchar(30) COLLATE utf8_bin NOT NULL,
-  `level` int(11) NOT NULL,
-  PRIMARY KEY (`rightGroupId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=6 ;
+  `level` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+--
+-- Daten für Tabelle `RightGroup`
+--
 
 INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
 (1, 'View User', 1),
@@ -348,48 +424,109 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
 (4, 'Superuser', 30),
 (5, 'Administrator', 50);
 
-CREATE TABLE IF NOT EXISTS `Session` (
-  `sessionId` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Session`
+--
+
+CREATE TABLE `Session` (
+  `sessionId` int(11) NOT NULL,
   `userId` int(11) NOT NULL,
   `sessionStartDate` int(11) NOT NULL,
   `lastActionDate` int(11) NOT NULL,
   `isOpen` tinyint(4) NOT NULL,
   `sessionLifetime` int(11) NOT NULL,
-  `sessionKey` varchar(500) NOT NULL,
-  PRIMARY KEY (`sessionId`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+  `sessionKey` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE IF NOT EXISTS `superhashlists` (
-  `id` int(11) NOT NULL,
-  `hashlist` int(11) NOT NULL COMMENT 'Included hashlist',
-  KEY `hashlists` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin;
+-- --------------------------------------------------------
 
-CREATE TABLE IF NOT EXISTS `taskfiles` (
-  `task` int(11) NOT NULL COMMENT 'Task ID',
-  `file` int(11) NOT NULL COMMENT 'Attached file ID',
-  KEY `task` (`task`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Files associated to tasks (wordlist, rulesets, etc)';
+--
+-- Tabellenstruktur für Tabelle `SuperHashlist`
+--
 
-CREATE TABLE IF NOT EXISTS `tasks` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) COLLATE latin1_bin NOT NULL COMMENT 'Task name',
-  `attackcmd` varchar(256) COLLATE latin1_bin NOT NULL COMMENT 'Hashcat command line',
-  `hashlist` int(11) DEFAULT NULL COMMENT 'Hashlist ID',
-  `chunktime` int(11) NOT NULL COMMENT 'Chunk size in seconds',
-  `statustimer` int(11) NOT NULL COMMENT 'Interval for sending status',
-  `autoadjust` tinyint(4) NOT NULL COMMENT 'Indicator if agents benchmarks are automaticaly adjusted',
-  `keyspace` bigint(20) NOT NULL DEFAULT '0' COMMENT 'Keyspace size (calculated by Hashcat)',
-  `progress` bigint(20) NOT NULL DEFAULT '0' COMMENT 'How far have chunks been dispatched',
-  `priority` int(11) NOT NULL DEFAULT '0' COMMENT 'Assignment priority',
-  `color` varchar(6) COLLATE latin1_bin DEFAULT NULL COMMENT 'Color of task shown in admin',
-  PRIMARY KEY (`id`),
-  KEY `adm_usage` (`hashlist`),
-  KEY `autoassign` (`progress`,`keyspace`,`priority`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='List of tasks' AUTO_INCREMENT=48 ;
+CREATE TABLE `SuperHashlist` (
+  `superHashlistId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `User` (
-  `userId` int(11) NOT NULL AUTO_INCREMENT,
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `SuperHashlistHashlist`
+--
+
+CREATE TABLE `SuperHashlistHashlist` (
+  `superHashlistHashlistId` int(11) NOT NULL,
+  `superHashlistId` int(11) NOT NULL,
+  `hashlistId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Supertask`
+--
+
+CREATE TABLE `Supertask` (
+  `supertaskId` int(11) NOT NULL,
+  `supertaskName` varchar(100) COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `SupertaskTask`
+--
+
+CREATE TABLE `SupertaskTask` (
+  `supertaskTaskId` int(11) NOT NULL,
+  `supertaskId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `Task`
+--
+
+CREATE TABLE `Task` (
+  `taskId` int(11) NOT NULL,
+  `taskName` varchar(200) COLLATE utf8_bin NOT NULL,
+  `attackCmd` varchar(512) COLLATE utf8_bin NOT NULL,
+  `hashlistId` int(11) NOT NULL,
+  `chunkTime` int(11) NOT NULL,
+  `statusTimer` int(11) NOT NULL,
+  `autoAdjust` int(11) NOT NULL,
+  `keyspace` bigint(20) NOT NULL,
+  `progress` bigint(20) NOT NULL,
+  `priority` int(11) NOT NULL,
+  `color` varchar(10) COLLATE utf8_bin NOT NULL,
+  `isSmall` int(11) NOT NULL,
+  `isCpuTask` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `TaskFile`
+--
+
+CREATE TABLE `TaskFile` (
+  `taskFileId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `fileId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `User`
+--
+
+CREATE TABLE `User` (
+  `userId` int(11) NOT NULL,
   `username` varchar(50) COLLATE utf8_bin NOT NULL,
   `passwordHash` varchar(512) COLLATE utf8_bin NOT NULL,
   `email` varchar(512) COLLATE utf8_bin NOT NULL,
@@ -399,15 +536,395 @@ CREATE TABLE IF NOT EXISTS `User` (
   `lastLoginDate` int(11) NOT NULL,
   `registeredSince` int(11) NOT NULL,
   `sessionLifetime` int(11) NOT NULL DEFAULT '600',
-  `rightGroupId` int(11) NOT NULL DEFAULT '1',
-  PRIMARY KEY (`userId`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;
+  `rightGroupId` int(11) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
-CREATE TABLE IF NOT EXISTS `zapqueue` (
-  `hashlist` int(11) NOT NULL COMMENT 'Hashlist to zap',
-  `agent` int(11) NOT NULL COMMENT 'For which agent',
-  `time` bigint(20) NOT NULL COMMENT 'When were the hashes cracked',
-  `chunk` int(11) NOT NULL COMMENT 'Chunk where the hashes were cracked',
-  PRIMARY KEY (`hashlist`,`agent`,`time`,`chunk`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin COMMENT='Contains zapping instruction for all involved agents';
+--
+-- Indizes der exportierten Tabellen
+--
+
+--
+-- Indizes für die Tabelle `Agent`
+--
+ALTER TABLE `Agent`
+  ADD PRIMARY KEY (`agentId`),
+  ADD KEY `userId` (`userId`);
+
+--
+-- Indizes für die Tabelle `Assignment`
+--
+ALTER TABLE `Assignment`
+  ADD PRIMARY KEY (`assignmentId`),
+  ADD KEY `taskId` (`taskId`),
+  ADD KEY `agentId` (`agentId`);
+
+--
+-- Indizes für die Tabelle `Chunk`
+--
+ALTER TABLE `Chunk`
+  ADD PRIMARY KEY (`chunkId`),
+  ADD KEY `taskId` (`taskId`),
+  ADD KEY `agentId` (`agentId`);
+
+--
+-- Indizes für die Tabelle `Config`
+--
+ALTER TABLE `Config`
+  ADD PRIMARY KEY (`configId`);
+
+--
+-- Indizes für die Tabelle `Error`
+--
+ALTER TABLE `Error`
+  ADD PRIMARY KEY (`errorId`),
+  ADD KEY `agentId` (`agentId`),
+  ADD KEY `taskId` (`taskId`);
+
+--
+-- Indizes für die Tabelle `File`
+--
+ALTER TABLE `File`
+  ADD PRIMARY KEY (`fileId`);
+
+--
+-- Indizes für die Tabelle `Hash`
+--
+ALTER TABLE `Hash`
+  ADD PRIMARY KEY (`hashId`),
+  ADD KEY `hashlistId` (`hashlistId`),
+  ADD KEY `chunkId` (`chunkId`);
+
+--
+-- Indizes für die Tabelle `HashBinary`
+--
+ALTER TABLE `HashBinary`
+  ADD PRIMARY KEY (`hashBinaryId`),
+  ADD KEY `hashlistId` (`hashlistId`),
+  ADD KEY `chunkId` (`chunkId`);
+
+--
+-- Indizes für die Tabelle `HashcatRelease`
+--
+ALTER TABLE `HashcatRelease`
+  ADD PRIMARY KEY (`hashcatReleaseId`);
+
+--
+-- Indizes für die Tabelle `Hashlist`
+--
+ALTER TABLE `Hashlist`
+  ADD PRIMARY KEY (`hashlistId`),
+  ADD KEY `hashTypeId` (`hashTypeId`);
+
+--
+-- Indizes für die Tabelle `HashlistAgent`
+--
+ALTER TABLE `HashlistAgent`
+  ADD PRIMARY KEY (`hashlistAgentId`),
+  ADD KEY `hashlistId` (`hashlistId`),
+  ADD KEY `agentId` (`agentId`);
+
+--
+-- Indizes für die Tabelle `HashType`
+--
+ALTER TABLE `HashType`
+  ADD PRIMARY KEY (`hashTypeId`);
+
+--
+-- Indizes für die Tabelle `RegVoucher`
+--
+ALTER TABLE `RegVoucher`
+  ADD PRIMARY KEY (`regVoucherId`);
+
+--
+-- Indizes für die Tabelle `RightGroup`
+--
+ALTER TABLE `RightGroup`
+  ADD PRIMARY KEY (`rightGroupId`);
+
+--
+-- Indizes für die Tabelle `Session`
+--
+ALTER TABLE `Session`
+  ADD PRIMARY KEY (`sessionId`),
+  ADD KEY `userId` (`userId`);
+
+--
+-- Indizes für die Tabelle `SuperHashlist`
+--
+ALTER TABLE `SuperHashlist`
+  ADD PRIMARY KEY (`superHashlistId`);
+
+--
+-- Indizes für die Tabelle `SuperHashlistHashlist`
+--
+ALTER TABLE `SuperHashlistHashlist`
+  ADD PRIMARY KEY (`superHashlistHashlistId`),
+  ADD KEY `superHashlistId` (`superHashlistId`),
+  ADD KEY `hashlistId` (`hashlistId`);
+
+--
+-- Indizes für die Tabelle `Supertask`
+--
+ALTER TABLE `Supertask`
+  ADD PRIMARY KEY (`supertaskId`);
+
+--
+-- Indizes für die Tabelle `SupertaskTask`
+--
+ALTER TABLE `SupertaskTask`
+  ADD PRIMARY KEY (`supertaskTaskId`),
+  ADD KEY `supertaskId` (`supertaskId`),
+  ADD KEY `taskId` (`taskId`);
+
+--
+-- Indizes für die Tabelle `Task`
+--
+ALTER TABLE `Task`
+  ADD PRIMARY KEY (`taskId`),
+  ADD KEY `hashlistId` (`hashlistId`);
+
+--
+-- Indizes für die Tabelle `TaskFile`
+--
+ALTER TABLE `TaskFile`
+  ADD PRIMARY KEY (`taskFileId`),
+  ADD KEY `taskId` (`taskId`),
+  ADD KEY `fileId` (`fileId`);
+
+--
+-- Indizes für die Tabelle `User`
+--
+ALTER TABLE `User`
+  ADD PRIMARY KEY (`userId`),
+  ADD UNIQUE KEY `username` (`username`),
+  ADD KEY `rightGroupId` (`rightGroupId`);
+
+--
+-- AUTO_INCREMENT für exportierte Tabellen
+--
+
+--
+-- AUTO_INCREMENT für Tabelle `Agent`
+--
+ALTER TABLE `Agent`
+  MODIFY `agentId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `Assignment`
+--
+ALTER TABLE `Assignment`
+  MODIFY `assignmentId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `Chunk`
+--
+ALTER TABLE `Chunk`
+  MODIFY `chunkId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `Config`
+--
+ALTER TABLE `Config`
+  MODIFY `configId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+--
+-- AUTO_INCREMENT für Tabelle `Error`
+--
+ALTER TABLE `Error`
+  MODIFY `errorId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `File`
+--
+ALTER TABLE `File`
+  MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `Hash`
+--
+ALTER TABLE `Hash`
+  MODIFY `hashId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `HashBinary`
+--
+ALTER TABLE `HashBinary`
+  MODIFY `hashBinaryId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `HashcatRelease`
+--
+ALTER TABLE `HashcatRelease`
+  MODIFY `hashcatReleaseId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `Hashlist`
+--
+ALTER TABLE `Hashlist`
+  MODIFY `hashlistId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `HashlistAgent`
+--
+ALTER TABLE `HashlistAgent`
+  MODIFY `hashlistAgentId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `HashType`
+--
+ALTER TABLE `HashType`
+  MODIFY `hashTypeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11601;
+--
+-- AUTO_INCREMENT für Tabelle `RegVoucher`
+--
+ALTER TABLE `RegVoucher`
+  MODIFY `regVoucherId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `RightGroup`
+--
+ALTER TABLE `RightGroup`
+  MODIFY `rightGroupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+--
+-- AUTO_INCREMENT für Tabelle `Session`
+--
+ALTER TABLE `Session`
+  MODIFY `sessionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=685;
+--
+-- AUTO_INCREMENT für Tabelle `SuperHashlist`
+--
+ALTER TABLE `SuperHashlist`
+  MODIFY `superHashlistId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `SuperHashlistHashlist`
+--
+ALTER TABLE `SuperHashlistHashlist`
+  MODIFY `superHashlistHashlistId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `Supertask`
+--
+ALTER TABLE `Supertask`
+  MODIFY `supertaskId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `SupertaskTask`
+--
+ALTER TABLE `SupertaskTask`
+  MODIFY `supertaskTaskId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `Task`
+--
+ALTER TABLE `Task`
+  MODIFY `taskId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `TaskFile`
+--
+ALTER TABLE `TaskFile`
+  MODIFY `taskFileId` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT für Tabelle `User`
+--
+ALTER TABLE `User`
+  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+--
+-- Constraints der exportierten Tabellen
+--
+
+--
+-- Constraints der Tabelle `Agent`
+--
+ALTER TABLE `Agent`
+  ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+
+--
+-- Constraints der Tabelle `Assignment`
+--
+ALTER TABLE `Assignment`
+  ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Assignment_ibfk_3` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
+
+--
+-- Constraints der Tabelle `Chunk`
+--
+ALTER TABLE `Chunk`
+  ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Chunk_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Chunk_ibfk_3` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Chunk_ibfk_4` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
+
+--
+-- Constraints der Tabelle `Error`
+--
+ALTER TABLE `Error`
+  ADD CONSTRAINT `Error_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Error_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Error_ibfk_3` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Error_ibfk_4` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
+
+--
+-- Constraints der Tabelle `Hash`
+--
+ALTER TABLE `Hash`
+  ADD CONSTRAINT `Hash_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`),
+  ADD CONSTRAINT `Hash_ibfk_3` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `Hash_ibfk_4` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
+
+--
+-- Constraints der Tabelle `HashBinary`
+--
+ALTER TABLE `HashBinary`
+  ADD CONSTRAINT `HashBinary_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`),
+  ADD CONSTRAINT `HashBinary_ibfk_3` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `HashBinary_ibfk_4` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
+
+--
+-- Constraints der Tabelle `Hashlist`
+--
+ALTER TABLE `Hashlist`
+  ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`),
+  ADD CONSTRAINT `Hashlist_ibfk_2` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
+
+--
+-- Constraints der Tabelle `HashlistAgent`
+--
+ALTER TABLE `HashlistAgent`
+  ADD CONSTRAINT `HashlistAgent_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `HashlistAgent_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `HashlistAgent_ibfk_3` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `HashlistAgent_ibfk_4` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
+
+--
+-- Constraints der Tabelle `Session`
+--
+ALTER TABLE `Session`
+  ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`),
+  ADD CONSTRAINT `Session_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+
+--
+-- Constraints der Tabelle `SuperHashlistHashlist`
+--
+ALTER TABLE `SuperHashlistHashlist`
+  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_1` FOREIGN KEY (`superHashlistId`) REFERENCES `SuperHashlist` (`superHashlistId`),
+  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_3` FOREIGN KEY (`superHashlistId`) REFERENCES `SuperHashlist` (`superHashlistId`),
+  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_4` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
+
+--
+-- Constraints der Tabelle `SupertaskTask`
+--
+ALTER TABLE `SupertaskTask`
+  ADD CONSTRAINT `SupertaskTask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`),
+  ADD CONSTRAINT `SupertaskTask_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
+
+--
+-- Constraints der Tabelle `Task`
+--
+ALTER TABLE `Task`
+  ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
+
+--
+-- Constraints der Tabelle `TaskFile`
+--
+ALTER TABLE `TaskFile`
+  ADD CONSTRAINT `TaskFile_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `TaskFile_ibfk_2` FOREIGN KEY (`fileId`) REFERENCES `File` (`fileId`);
+
+--
+-- Constraints der Tabelle `User`
+--
+ALTER TABLE `User`
+  ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

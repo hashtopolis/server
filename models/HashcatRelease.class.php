@@ -8,21 +8,21 @@ class HashcatRelease extends AbstractModel {
 	private $version;
 	private $time;
 	private $url;
-	private $common_files;
-	private $32binary;
-	private $64binary;
+	private $commonFiles;
+	private $binary32;
+	private $binary64;
 	private $rootdir;
 	private $minver;
 	
 	
-	function __construct($hashcatReleaseId, $version, $time, $url, $common_files, $32binary, $64binary, $rootdir, $minver) {
+	function __construct($hashcatReleaseId, $version, $time, $url, $commonFiles, $binary32, $binary64, $rootdir, $minver) {
 		$this->hashcatReleaseId = $hashcatReleaseId;
 		$this->version = $version;
 		$this->time = $time;
 		$this->url = $url;
-		$this->common_files = $common_files;
-		$this->32binary = $32binary;
-		$this->64binary = $64binary;
+		$this->commonFiles = $commonFiles;
+		$this->binary32 = $binary32;
+		$this->binary64 = $binary64;
 		$this->rootdir = $rootdir;
 		$this->minver = $minver;
 
@@ -34,9 +34,9 @@ class HashcatRelease extends AbstractModel {
 		$dict['version'] = $this->version;
 		$dict['time'] = $this->time;
 		$dict['url'] = $this->url;
-		$dict['common_files'] = $this->common_files;
-		$dict['32binary'] = $this->32binary;
-		$dict['64binary'] = $this->64binary;
+		$dict['commonFiles'] = $this->commonFiles;
+		$dict['binary32'] = $this->binary32;
+		$dict['binary64'] = $this->binary64;
 		$dict['rootdir'] = $this->rootdir;
 		$dict['minver'] = $this->minver;
 		
@@ -83,28 +83,28 @@ class HashcatRelease extends AbstractModel {
 		$this->url = $url;
 	}
 
-	function getCommon_files(){
-		return $this->common_files;
+	function getCommonFiles(){
+		return $this->commonFiles;
 	}
 
-	function setCommon_files($common_files){
-		$this->common_files = $common_files;
+	function setCommonFiles($commonFiles){
+		$this->commonFiles = $commonFiles;
 	}
 
-	function get32binary(){
-		return $this->32binary;
+	function getBinary32(){
+		return $this->binary32;
 	}
 
-	function set32binary($32binary){
-		$this->32binary = $32binary;
+	function setBinary32($binary32){
+		$this->binary32 = $binary32;
 	}
 
-	function get64binary(){
-		return $this->64binary;
+	function getBinary64(){
+		return $this->binary64;
 	}
 
-	function set64binary($64binary){
-		$this->64binary = $64binary;
+	function setBinary64($binary64){
+		$this->binary64 = $binary64;
 	}
 
 	function getRootdir(){

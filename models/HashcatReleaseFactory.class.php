@@ -23,7 +23,7 @@ class HashcatReleaseFactory extends AbstractModelFactory {
 	}
 	
 	function createObjectFromDict($pk, $dict) {
-		$o = new HashcatRelease($pk, $dict['version'], $dict['time'], $dict['url'], $dict['common_files'], $dict['32binary'], $dict['64binary'], $dict['rootdir'], $dict['minver']);
+		$o = new HashcatRelease($pk, $dict['version'], $dict['time'], $dict['url'], $dict['commonFiles'], $dict['binary32'], $dict['binary64'], $dict['rootdir'], $dict['minver']);
 		return $o;
 	}
 }

@@ -10,17 +10,17 @@ class HashBinary extends AbstractModel {
 	private $hash;
 	private $plaintext;
 	private $time;
-	private $chunk;
+	private $chunkId;
 	
 	
-	function __construct($hashBinaryId, $hahslistId, $essid, $hash, $plaintext, $time, $chunk) {
+	function __construct($hashBinaryId, $hahslistId, $essid, $hash, $plaintext, $time, $chunkId) {
 		$this->hashBinaryId = $hashBinaryId;
 		$this->hahslistId = $hahslistId;
 		$this->essid = $essid;
 		$this->hash = $hash;
 		$this->plaintext = $plaintext;
 		$this->time = $time;
-		$this->chunk = $chunk;
+		$this->chunkId = $chunkId;
 
 	}
 	
@@ -32,7 +32,7 @@ class HashBinary extends AbstractModel {
 		$dict['hash'] = $this->hash;
 		$dict['plaintext'] = $this->plaintext;
 		$dict['time'] = $this->time;
-		$dict['chunk'] = $this->chunk;
+		$dict['chunkId'] = $this->chunkId;
 		
 		return $dict;
 	}
@@ -93,11 +93,11 @@ class HashBinary extends AbstractModel {
 		$this->time = $time;
 	}
 
-	function getChunk(){
-		return $this->chunk;
+	function getChunkId(){
+		return $this->chunkId;
 	}
 
-	function setChunk($chunk){
-		$this->chunk = $chunk;
+	function setChunkId($chunkId){
+		$this->chunkId = $chunkId;
 	}
 }

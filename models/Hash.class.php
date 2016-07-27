@@ -10,17 +10,17 @@ class Hash extends AbstractModel {
 	private $salt;
 	private $plaintext;
 	private $time;
-	private $chunk;
+	private $chunkId;
 	
 	
-	function __construct($hashId, $hashlistId, $hash, $salt, $plaintext, $time, $chunk) {
+	function __construct($hashId, $hashlistId, $hash, $salt, $plaintext, $time, $chunkId) {
 		$this->hashId = $hashId;
 		$this->hashlistId = $hashlistId;
 		$this->hash = $hash;
 		$this->salt = $salt;
 		$this->plaintext = $plaintext;
 		$this->time = $time;
-		$this->chunk = $chunk;
+		$this->chunkId = $chunkId;
 
 	}
 	
@@ -32,7 +32,7 @@ class Hash extends AbstractModel {
 		$dict['salt'] = $this->salt;
 		$dict['plaintext'] = $this->plaintext;
 		$dict['time'] = $this->time;
-		$dict['chunk'] = $this->chunk;
+		$dict['chunkId'] = $this->chunkId;
 		
 		return $dict;
 	}
@@ -93,11 +93,11 @@ class Hash extends AbstractModel {
 		$this->time = $time;
 	}
 
-	function getChunk(){
-		return $this->chunk;
+	function getChunkId(){
+		return $this->chunkId;
 	}
 
-	function setChunk($chunk){
-		$this->chunk = $chunk;
+	function setChunkId($chunkId){
+		$this->chunkId = $chunkId;
 	}
 }

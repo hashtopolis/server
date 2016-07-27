@@ -70,9 +70,9 @@ $CONF['HashcatRelease'] = array(
 		'version',
 		'time',
 		'url',
-		'common_files',
-		'32binary',
-		'64binary',
+		'commonFiles',
+		'binary32',
+		'binary64',
 		'rootdir',
 		'minver'
 );
@@ -83,7 +83,7 @@ $CONF['Hash'] = array(
 		'salt',
 		'plaintext',
 		'time',
-		'chunk'
+		'chunkId'
 );
 $CONF['HashBinary'] = array(
 		'hashBinaryId',
@@ -92,7 +92,7 @@ $CONF['HashBinary'] = array(
 		'hash',
 		'plaintext',
 		'time',
-		'chunk'
+		'chunkId'
 );
 $CONF['Hashlist'] = array(
 		'hashlistId',
@@ -145,6 +145,15 @@ $CONF['Task'] = array(
 		'color',
 		'isSmall',
 		'isCpuTask'
+);
+$CONF['Supertask'] = array(
+		'supertaskId',
+		'supertaskName'
+);
+$CONF['SupertaskTask'] = array(
+		'supertaskTaskId',
+		'taskId',
+		'supertaskId'
 );
 
 $CONF['User'] = array(

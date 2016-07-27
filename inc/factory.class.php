@@ -20,6 +20,8 @@ class Factory{
 	private static $superHashlistHashlistFactory = null;
 	private static $taskFileFactory = null;
 	private static $taskFactory = null;
+	private static $supertaskFactory = null;
+	private static $supertaskTaskFactory = null;
 	private static $userFactory = null;
 	private static $sessionFactory = null;
 	private static $rightGroupFactory = null;
@@ -208,6 +210,28 @@ class Factory{
 		}
 		else{
 			return self::$taskFactory;
+		}
+	}
+
+	public static function getSupertaskFactory(){
+		if(self::$supertaskFactory == null){
+			$f = new SupertaskFactory();
+			self::$supertaskFactory = $f;
+			return $f;
+		}
+		else{
+			return self::$supertaskFactory;
+		}
+	}
+
+	public static function getSupertaskTaskFactory(){
+		if(self::$supertaskTaskFactory == null){
+			$f = new SupertaskTaskFactory();
+			self::$supertaskTaskFactory = $f;
+			return $f;
+		}
+		else{
+			return self::$supertaskTaskFactory;
 		}
 	}
 
