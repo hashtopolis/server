@@ -463,6 +463,36 @@ abstract class AbstractModelFactory{
 			));
 		}
 	}
+	
+	public function massDeletion($options){
+		$query = "DELETE FROM ".$this->getModelTable();
+			
+		$vals = array();
+			
+		if(array_key_exists("filter", $options)){
+			$query = $query . " WHERE ";
+	
+	
+			$filterOptions = $options['filter'];
+			$vals = array();
+	
+			for($i = 0; $i < count($filterOptions); $i++){
+				$option = $filterOptions[$i];
+				array_push($vals, $option->getValue());
+					
+				if($i != count($filterOptions) - 1){
+					$query = $query . $option->getQueryString() . " AND ";
+				}
+				else{
+					$query = $query . $option->getQueryString();
+				}
+			}
+		}
+			
+		$dbh = $this->getDB();
+		$stmt = $dbh->prepare($query);
+		return $stmt->execute($vals);
+	}
 
 	/**
 	 * Returns the DB connection if possible
