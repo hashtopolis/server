@@ -112,7 +112,7 @@ class Login {
 		}
 		$this->user = $user;
 		$startTime = time();
-		$s = new Session(0, $this->user->getId(), time(), time(), 1, $this->user->getSessionLifetime(), "");
+		$s = new Session(0, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
 		$s = $FACTORIES::getSessionFactory()->save($s);
 		if($s === null){
 			return false;
