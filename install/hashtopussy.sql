@@ -31,8 +31,6 @@ CREATE TABLE `Agent` (
   `agentName` varchar(200) COLLATE utf8_bin NOT NULL,
   `uid` varchar(200) COLLATE utf8_bin NOT NULL COMMENT 'HDD number',
   `os` int(11) NOT NULL,
-  `cpuType` int(11) NOT NULL,
-  `gpuBrand` int(11) NOT NULL,
   `gpuDriver` int(11) NOT NULL,
   `gpus` text COLLATE utf8_bin NOT NULL,
   `hcVersion` varchar(20) COLLATE utf8_bin NOT NULL,
@@ -573,10 +571,10 @@ ALTER TABLE `Config`
   ADD PRIMARY KEY (`configId`);
 
 --
--- Indizes für die Tabelle `Error`
+-- Indizes für die Tabelle `AgentError`
 --
-ALTER TABLE `Error`
-  ADD PRIMARY KEY (`errorId`),
+ALTER TABLE `AgentError`
+  ADD PRIMARY KEY (`agentErrorId`),
   ADD KEY `agentId` (`agentId`),
   ADD KEY `taskId` (`taskId`);
 
@@ -724,10 +722,10 @@ ALTER TABLE `Chunk`
 ALTER TABLE `Config`
   MODIFY `configId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 --
--- AUTO_INCREMENT für Tabelle `Error`
+-- AUTO_INCREMENT für Tabelle `AgentError`
 --
-ALTER TABLE `Error`
-  MODIFY `errorId` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `AgentError`
+  MODIFY `agentErrorId` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `File`
 --
@@ -841,9 +839,9 @@ ALTER TABLE `Chunk`
   ADD CONSTRAINT `Chunk_ibfk_4` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
 --
--- Constraints der Tabelle `Error`
+-- Constraints der Tabelle `AgentError`
 --
-ALTER TABLE `Error`
+ALTER TABLE `AgentError`
   ADD CONSTRAINT `Error_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Error_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Error_ibfk_3` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),

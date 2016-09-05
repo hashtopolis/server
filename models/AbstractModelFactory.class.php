@@ -246,7 +246,9 @@ abstract class AbstractModelFactory{
 				
 				for($i = 0; $i < count($filterOptions); $i++){
 					$option = $filterOptions[$i];
-					array_push($vals, $option->getValue());
+					if($option->getValue() != null){
+						array_push($vals, $option->getValue());
+					}
 					
 					if($i != count($filterOptions) - 1){
 						$query = $query . $option->getQueryString() . " AND ";
@@ -296,12 +298,7 @@ abstract class AbstractModelFactory{
 				array_push($objects, $model);
 			}
 			
-			if(count($objects) == 0){
-				return null;
-			}
-			else{
-				return $objects;
-			}
+			return $objects;
 		}
 	}
 

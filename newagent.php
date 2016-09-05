@@ -19,28 +19,18 @@ $message = "";
 if(isset($_POST['action'])){
 	switch($_POST['action']){
 		case 'vouchercreate':
-			$voucher = $DB->quote(htmlentities($_POST["newvoucher"], false, "UTF-8"));
-			$FACTORIES::getagentsFactory()->getDB()->query("INSERT INTO regvouchers (voucher,time) VALUES ($voucher, ".time().")");
-			header("Location: newagent.php");
-			die();
-			break;
+			$key = htmlentities($_POST["newvoucher"], false, "UTF-8");
+			$voucher = new RegVoucher(0, $key, time());
+			$FACTORIES::getRegVoucherFactory()->save($voucher);
+			Util::refresh();
 		case 'voucherdelete':
-			$voucher = $DB->quote(htmlentities($_POST["voucher"], false, "UTF-8"));
-			$FACTORIES::getagentsFactory()->getDB()->query("DELETE FROM regvouchers WHERE voucher=$voucher");
-			header("Location: newagent.php");
-			die();
-			break;
+			$voucher = $FACTORIES::getRegVoucherFactory()->get(intval($_POST["voucher"]));
+			$FACTORIES::getRegVoucherFactory()->delete($voucher);
+			Util::refresh();
 	}
 }
 
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT voucher,time FROM regvouchers");
-$res = $res->fetchAll();
-$vouchers = array();
-foreach($res as $entry){
-	$set = new DataSet();
-	$set->setValues($entry);
-	$vouchers[] = $set;
-}
+$vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
 
 $OBJECTS['vouchers'] = $vouchers;
 $OBJECTS['message'] = $message;

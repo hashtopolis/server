@@ -5,7 +5,7 @@ $exename = "hashtopus.exe";
 
 $separator = "\x01";
 
-$DB = $FACTORIES::getagentsFactory()->getDB();
+$DB = $FACTORIES::getAgentErrorFactory()->getDB();
 
 $action = @$_GET["a"];
 $token = $DB->quote(str_replace("\n", "", str_replace("\r", "", @$_GET["token"])));

@@ -7,6 +7,11 @@ use Bricky\Template;
  *         Bunch of useful static functions.
  */
 class Util{
+	
+	public static function refresh(){
+		header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+		die();
+	}
 
 	/**
 	 * Checks if a given email is of valid syntax
@@ -68,11 +73,17 @@ class Util{
 	public static function delete_task($task) {
 		global $FACTORIES;
 		
-		$DB = $FACTORIES::getagentsFactory()->getDB();
+		$qF = new QueryFilter("taskId", $task, "=");
+		$FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
+		$FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => array($qF)));
+		$FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => array($qF)));
 		
-		$ans1 = $DB->query("DELETE FROM assignments WHERE task=$task");
-		$ans2 = $ans1 && $DB->query("DELETE FROM errors WHERE task=$task");
-		$ans3 = $ans2 && $DB->query("DELETE FROM taskfiles WHERE task=$task");
+		$chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF)));
+		if($chunks){
+			foreach($chunks as $chunk){
+				$qF = new QueryFilter("", $value, $operator);
+			}
+		} //TODO: will not work until refactored
 		
 		$ans4 = $ans3 && $DB->query("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
 		$ans5 = $ans4 && $DB->query("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
@@ -112,6 +123,8 @@ class Util{
 
 	public static function deleteAgent($agent){
 		global $FACTORIES;
+		
+		//TODO: update agant deletion function
 		
 		$DB = $FACTORIES::getagentsFactory()->getDB();
 		

@@ -23,21 +23,19 @@ if(isset($_POST['action'])){
 				break;
 			}
 			$agent = intval($_POST['agent']);
-			$DB->query("DELETE FROM errors WHERE agent=$agent");
-			header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-			die();
+			$qF = new QueryFilter("agentId", $agent, "=");
+			$FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => array($qF)));
+			Util::refresh();
 		case 'agentrename':
 			if($LOGIN->getLevel() < 30){
 				break;
 			}
 			$name = htmlentities($_POST['name'], false, "UTF-8");
-			$agent = intval($_POST['agent']);
-			$res = $DB->query("SELECT * FROM agents WHERE id=$agent");
-			$agent = $res->fetch();
+			$agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
 			if($agent && strlen($name) > 0){
-				$DB->query("UPDATE agents SET name=".$DB->quote($name)." WHERE id=".$agent['id']);
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
+				$agent->setAgentName($name);
+				$FACTORIES::getAgentFactory()->update($agent);
+				Util::refresh();
 			}
 			break;
 		case 'agentowner':
@@ -45,191 +43,170 @@ if(isset($_POST['action'])){
 				break;
 			}
 			// change agent owner
-			$agid = intval($_POST["agent"]);
-			$owner = intval($_POST["owner"]);
-			$valid = true;
-			if($owner > 0){
-				$user = $FACTORIES::getUserFactory()->get($owner);
-				if($user == null){
-					$valid = false;
-				}
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST['agent']));
+			if(!$agent){
+				$message = "<div class='alert alert-danger'>Invalid agent!</div>";
+				break;
 			}
-			else{
-				$owner = 0;
+			else if($_POST['owner'] == 0){
+				$agent->setUserId(0);
+				$FACTORIES::getAgentFactory()->update($agent);
+				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+				die();
 			}
-			if($valid){
-				$res = $DB->query("UPDATE agents SET userId=$owner WHERE id=$agid");
-				if (!$res) {
-					$message = "<div class='alert alert-danger'>Could not change owner!</div>";
-				}
-				else{
-					header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-					die();
-				}
-			}
-			else{
+			$owner = $FACTORIES::getUserFactory()->get(intval($_POST["owner"]));
+			if(!$owner){
 				$message = "<div class='alert alert-danger'>Invalid user!</div>";
+				break;
 			}
-			break;
+			$agent->setUserId($owner->getId());
+			$FACTORIES::getAgentFactory()->update($agent);
+			Util::refresh();
 		case 'agenttrusted':
 			// switch agent trusted state
-			$agid = intval($_POST["agent"]);
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
 			$trusted = intval($_POST["trusted"]);
-			$res = $DB->query("UPDATE agents SET trusted=$trusted WHERE id=$agid");
-			if (!$res) {
+			if(!$agent){
 				$message = "<div class='alert alert-danger'>Could not change agent trust!</div>";
+				break;
 			}
-			else{
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
-			}
-			break;
+			$agent->setIsTrusted($trusted);
+			$FACTORIES::getAgentFactory()->update($agent);
+			Util::refresh();
 		case 'agentignore':
 			// switch error ignoring for agent
-			$agid = intval($_POST["agent"]);
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
 			$ignore = intval($_POST["ignore"]);
-			$res = $DB->query("UPDATE agents SET ignoreerrors=$ignore WHERE id=$agid");
-			if (!$res) {
+			if(!$agent){
 				$message = "<div class='alert alert-danger'>Could not change error ignoring!</div>";
+				break;
 			}
-			else{
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
-			}
-			break;
+			$agent->setIgnoreErrors($ignore);
+			$FACTORIES::getAgentFactory()->update($agent);
+			Util::refresh();
 		case 'setparam':
 			// change agent extra cmd line parameters for hashcat
-			$agid = intval($_POST["agent"]);
-			$pars = $DB->quote(htmlentities($_POST["cmdpars"], false, "UTF-8"));
-			$res = $DB->query("UPDATE agents SET cmdpars=$pars WHERE id=$agid");
-			if (!$res) {
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
+			$pars = htmlentities($_POST["cmdpars"], false, "UTF-8");
+			if(!$agent){
 				$message = "<div class='alert alert-danger'>Could not change agent-specific parameters!</div>";
+				break;
 			}
-			else{
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
-			}
-			break;
+			$agent->setCmdPars($pars);
+			$FACTORIES::getAgentFactory()->update($agent);
+			Util::refresh();
 		case 'agentwait':
 			// change agent waiting time for idle
-			$agid = intval($_POST["agent"]);
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
 			$wait = intval($_POST["wait"]);
-			$res = $DB->query("UPDATE agents SET wait=$wait WHERE id=$agid");
-			if (!$res) {
+			if(!$agent){
 				$message = "<div class='alert alert-danger'>Could not change agent idle wait period!</div>";
+				break;
 			}
-			else{
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
-			}
-			break;
-		case 'setplatform':
-			// change agent platform (none/nvidia/amd)
-			$agid = intval($_POST["agent"]);
-			$pf = intval($_POST["platform"]);
-			$res = $DB->query("UPDATE agents SET gpubrand=$pf,gpudriver=0 WHERE id=$agid");
-			if (!$res) {
-				$message = "<div class='alert alert-danger'>Could not change platform!</div>";
-			}
-			else{
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
-			}
-			break;
+			$agent->setWait($wait);
+			$FACTORIES::getAgentFactory()->update($agent);
+			Util::refresh();
 		case 'agentactive':
-			$agent = $FACTORIES::getagentsFactory()->get($_POST["agent"]);
-			if($agent === null){
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
+			if(!$agent){
 				$message = "<div class='alert alert-danger'>Could not change agent activity!</div>";
+				break;
 			}
-			else if($agent->getActive() == 1){
-				$agent->setActive(0);
-				$FACTORIES::getagentsFactory()->update($agent);
+			else if($agent->getIsActive() == 1){
+				$agent->setIsActive(0);
 			}
 			else{
-				$agent->setActive(1);
-				$FACTORIES::getagentsFactory()->update($agent);
+				$agent->setIsActive(1);
 			}
-			if(strlen($message) == 0){
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
-			}
-			break;
+			$FACTORIES::getAgentFactory()->update($agent);
+			Util::refresh();
 		case 'agentdelete':
 			if($LOGIN->getLevel() < 30){
 				break;
 			}
-			$agent = $FACTORIES::getagentsFactory()->get($_POST['agent']);
-			$DB->query("START TRANSACTION");
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST['agent']));
+			$FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
 			if (Util::deleteAgent($agent)) {
-				$DB->query("COMMIT");
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
+				$FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
 			} 
 			else {
-				$DB->query("ROLLBACK");
+				$FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
 				$message = "<div class='alert alert-danger'>Could not delete agent!</div>";
+				break;
 			}
-			break;
+			Util::refresh();
 		case 'agentassign':
-			$agent = $FACTORIES::getagentsFactory()->get($_POST["agent"]);
-			$ans = true;
-			if($agent === null){
-				$message = "<div class='alert alert-danger'>Invalid agent id!</div>";
+			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
+			if(!$agent){
+				$message = "<div class='alert alert-danger'>Invalid agent!</div>";
+				break;
 			}
 			else if(intval($_POST['task']) == 0){
 				//unassign
-				$DB->query("DELETE FROM assignments WHERE agent=".$agent->getId());
+				$qF = new QueryFilter("agentId", $agent->getId(), "=");
+				$FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
+				Util::refresh();
 			}
-			else {
-				$task = intval($_POST['task']);
-				$ans = $DB->query("SELECT task FROM assignments WHERE agent=".$agent->getId());
-				// keep the clever pre-bench query in variable
-				$asskv = "IFNULL((SELECT length FROM chunks WHERE solvetime>dispatchtime AND progress=length AND state IN (4,5) AND agent=".$agent->getId()." AND task=$task ORDER BY solvetime DESC LIMIT 1),0)";
-				$line = $ans->fetch();
-				if($line){
-					// agent was assigned to something, change the assignment
-					$ans = $DB->query("UPDATE assignments JOIN tasks ON tasks.id=$task SET assignments.task=tasks.id,assignments.benchmark=$asskv,assignments.autoadjust=tasks.autoadjust,assignments.speed=0 WHERE assignments.agent=".$agent->getId());
-				} 
-				else {
-					// agent was not assigned, we need a new assignment
-					$ans = $DB->query("INSERT INTO assignments (task,agent,benchmark,autoadjust) SELECT id,".$agent->getId().",$asskv,autoadjust FROM tasks WHERE id=$task");
+			
+			$task = $FACTORIES::getTaskFactory()->get(intval($_POST['task']));
+			if(!$task){
+				$message = "<div class='alert alert-danger'>Invalid task!</div>";
+				break;
+			}
+			$qF = new QueryFilter("agentId", $agent->getId(), "=");
+			$assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
+
+			//determine benchmark number
+			$benchmark = 0;
+			$qF1 = new ComparisonFilter("solveTime", "dispatchTime", ">");
+			$qF2 = new ComparisonFilter("progress", "length", "=");
+			$qF3 = new ContainFilter("state", array("4, 5"));
+			$qF4 = new QueryFilter("agentId", $agent->getId(), "=");
+			$qF5 = new QueryFilter("taskId", $task->getId(), "=");
+			$oF = new OrderFilter("solveTime", "DESC");
+			$entries = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4, $qF5), 'order' => array($oF)));
+			if(sizeof($entries) > 0){
+				$benchmark = $entries[0]->getLength();
+			}
+			unset($entries);
+			
+			if(sizeof($assignments) > 0){
+				for($i=1;$i<sizeof($assignments);$i++){ // clean up if required
+					$FACTORIES::getAssignmentFactory()->delete($assignments[$i]);
 				}
+				$assignment = $assignments[0];
+				$assignment->setTaskId($task->getId());
+				$assignment->setBenchmark($benchmark);
+				$assignment->setautoAdjust($task->getAutoAdjust());
+				$assignment->setSpeed(0);
+				$FACTORIES::getAssignmentFactory()->update($assignment);
 			}
-			if(!$ans){
-				$message = "<div class='alert alert-danger'>Failed to apply task change!</div>";
+			else{
+				$assignment = new Assignment(0, $task->getId(), $agent->getId(), $benchmark, $task->getAutoAdjust(), 0);
+				$FACTORIES::getAssignmentFactory()->save($assignment);
 			}
-			else if(strlen($message) == 0) {
-				if(isset($_GET['task'])){
-					header("Location: tasks.php?id=".$_GET['task']);
-					die();
-				}
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
+			if(isset($_GET['task'])){
+				header("Location: tasks.php?id=".intval($_GET['task']));
 				die();
 			}
-			break;
+			Util::refresh();
 	}
 }
 
-$ans = $DB->query("SELECT id,name FROM tasks WHERE hashlist IS NOT NULL ORDER BY id ASC");
-$ans = $ans->fetchAll();
-$allTasks = array();
-foreach($ans as $task){
-	$set = new DataSet();
-	$set->setValues($task);
-	$allTasks[] = $set;
-}
+$allTasks = $FACTORIES::getTaskFactory()->filter(array());
 
 if(isset($_GET['id'])){
 	//show agent detail
 	$TEMPLATE = new Template("agents.detail");
-	$agent = $FACTORIES::getagentsFactory()->get($_GET['id']);
-	if($agent === null){
+	$agent = $FACTORIES::getAgentFactory()->get(intval($_GET['id']));
+	if(!$agent){
 		$message = "<div class='alert alert-danger'>Agent not found!</div>";
 	}
 	else{
 		$users = $FACTORIES::getUserFactory()->filter(array());
 		$OBJECTS['users'] = $users;
 		
+		//TODO: not done yet
 		$res = $DB->query("SELECT agents.*,assignments.task,SUM(GREATEST(chunks.solvetime,chunks.dispatchtime)-chunks.dispatchtime) AS spent FROM agents LEFT JOIN assignments ON assignments.agent=agents.id LEFT JOIN chunks ON chunks.agent=agents.id WHERE agents.id=".$agent->getId());
 		$agentSet = new DataSet();
 		$agentSet->setValues($res->fetch());
@@ -264,23 +241,38 @@ if(isset($_GET['id'])){
 		$OBJECTS['agent'] = $agentSet;
 		$OBJECTS['errors'] = $errors;
 		$OBJECTS['chunks'] = $chunks;
+		//TODO: until here
 	}
 }
 else{
-	$res = $DB->query("SELECT * FROM agents ORDER BY id ASC");
-	$res = $res->fetchAll();
-	$agents = array();
-	foreach($res as $agent){
-		$ans = $DB->query("SELECT IF(count(*)>0,1,0) as working, assignments.task as task FROM chunks INNER JOIN assignments ON assignments.task=chunks.task INNER JOIN agents ON agents.id=assignments.agent WHERE agents.id=".$agent['id']." AND GREATEST(dispatchtime, solvetime)>".(time() - $CONFIG->getVal('chunktimeout')));
-		$line = $ans->fetch();
-		$agent['working'] = $line['working'];
-		$agent['task'] = $line['task'];
-		$set = new DataSet($agent);
-		$set->addValue('gpus', explode("\x01", $agent['gpus']));
-		$agents[] = $set;
+	$oF = new OrderFilter("agentId", "ASC");
+	$agents = $FACTORIES::getAgentFactory()->filter(array('order' => array($oF)));
+	$allAgents = array();
+	foreach($agents as $agent){
+		$set = new DataSet($agent->getKeyValueDict());
+		$set->addValue('gpus', explode("\x01", $agent->getGpus()));
+		
+		$qF = new QueryFilter("agentId", $agent->getId(), "=");
+		$assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
+		$working = 0;
+		$taskId = 0;
+		if(sizeof($assignments) > 0){
+			$assignment = $assignments[0];
+			$qF = new QueryFilter("taskId", $assignment->getTaskId(), "=");
+			$chunks = $FACTORIES::getChunkFactory()->filter();
+			foreach($chunks as $chunk){
+				if(max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal('chunktimeout')){
+					$working = 1;
+					$taskId = $assignment->getTaskId();
+				}
+			}
+		}
+		$set->addValue("working", $working);
+		$set->addValue("taskId", $taskId);
+		$allAgents[] = $set;
 	}
-	$OBJECTS['numAgents'] = sizeof($agents);
-	$OBJECTS['sets'] = $agents;
+	$OBJECTS['numAgents'] = sizeof($allAgents);
+	$OBJECTS['sets'] = $allAgents;
 }
 
 $OBJECTS['allTasks'] = $allTasks;

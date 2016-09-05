@@ -8,8 +8,6 @@ $CONF['Agent'] = array(
 		'agentName',
 		'uid',
 		'os',
-		'cpuType',
-		'gpuBrand',
 		'gpuDriver',
 		'gpus',
 		'hcVersion',

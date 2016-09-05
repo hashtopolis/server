@@ -12,12 +12,12 @@
 		<table class="table table-bordered table-nonfluid">
 			{{FOREACH voucher,!!vouchers!!}}
 				<tr>
-					<td><code>[[voucher.getVal('voucher')]]</code></td>
-          			<td>[[date(%%config.getVal('timefmt')%%, %%voucher.getVal('time')%%)]]</td>
+					<td><code>[[voucher.getVoucher()]]</code></td>
+          			<td>[[date(%%config.getVal('timefmt')%%, %%voucher.getTime()%%)]]</td>
           			<td>
           				<form action="newagent.php" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
           					<input type="hidden" name="action" value="voucherdelete">
-          					<input type="hidden" name="voucher" value="[[voucher.getVal('voucher')]]">
+          					<input type="hidden" name="voucher" value="[[voucher.getId()]]">
           					<input type="submit" class='btn btn-danger' value="Delete">
           				</form>
           			</td>
