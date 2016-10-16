@@ -48,4 +48,49 @@
 	} 
 	\end{verbatim}
 	The token will be the one, the client should use for his following connections on this server.
+	
+	\subsection*{Login}
+	The client logs in to the server.
+	\begin{verbatim}
+	{
+	  "action":"login",
+	  "token":"GHhgdf(/&"
+	}
+	\end{verbatim}
+	As response, the client will get back the agent timeout setting of the server (in seconds) if the login
+	was successful.
+	\begin{verbatim}
+	{
+	  "action":"login",
+	  "response":"SUCCESS",
+	  "timeout":30
+	}
+	\end{verbatim}
+	
+	\subsection*{Update}
+	This is used by the client to check if there is an update available for the client script.
+	\begin{verbatim}
+	{
+	  "action":"update",
+	  "version":"0.1.0 ALPHA"
+	}
+	\end{verbatim}
+	The server responds either with
+	\begin{verbatim}
+	{
+	  "action":"update",
+	  "response":"SUCCESS",
+	  "version":"OK"
+	}
+	\end{verbatim}
+	if the client has the newest version. Or he sends
+	\begin{verbatim}
+	{
+	  "action":"update",
+	  "response":"SUCCESS",
+	  "version":"NEW",
+	  "data":"........"
+	}
+	\end{verbatim}
+	with 'data' containing the new version of the script.
 \end{document}

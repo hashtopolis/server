@@ -67,27 +67,42 @@ class API{
 		$agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, "", 0, Util::getIP(), 0, $cpuOnly);
 		$FACTORIES::getRegVoucherFactory()->delete($voucher);
 		if($FACTORIES::getAgentFactory()->save($agent)){
-			$RESPONSE = array("action" => "register", "response" => "SUCCESS", "token" => $token);
-			API::sendResponse($RESPONSE);
+			API::sendResponse(array("action" => "register", "response" => "SUCCESS", "token" => $token));
 		}
 		else{
 			API::sendErrorResponse("register", "Could not register you to server.");
 		}
 	}
 
-	public static function loginAgent(){
-		global $FACTORIES, $TOKEN, $SEPARATOR, $CONFIG;
+	public static function loginAgent($QUERY){
+		global $FACTORIES, $CONFIG;
 		
 		// login to master server with previously provided token
-		$qF = new QueryFilter("token", $TOKEN, "=");
+		$qF = new QueryFilter("token", $QUERY['token'], "=");
 		$agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
-		if($agent !== null){
-			API::updateAgent($QUERY, $agent);
-			echo "log_ok".$SEPARATOR.$gpu.$SEPARATOR.$CONFIG->getVal("agenttimeout");
+		if($agent == null){
+			// token was not found
+			API::sendErrorResponse("login", "Unknown token, register again!");
+		}
+		API::updateAgent($QUERY, $agent);
+		API::sendResponse(array("action" => "login", "response" => "SUCCESS", "timeout" => $CONFIG->getVal("agenttimeout")));
+	}
+
+	public static function checkClientUpdate($QUERY){
+		global $SCRIPTVERSION, $SCRIPTNAME;
+		
+		// check if provided hash is the same as script and send file contents if not
+		if(API::checkValues($QUERY, array('version'))){
+			API::sendErrorResponse('update', 'Version value missing!');
+		}
+		
+		$version = $QUERY['version'];
+		
+		if($version != $SCRIPTVERSION){
+			API::sendResponse(array('action' => 'update', 'response' => 'SUCCESS', 'version' => 'NEW', 'data' => file_get_contents(dirname(__FILE__)."/../static/$SCRIPTNAME")));
 		}
 		else{
-			// token was not found
-			echo "log_unknown".$SEPARATOR."Unknown token, register again";
+			API::sendResponse(array('action' => 'update', 'response' => 'SUCCESS', 'version' => 'OK'));
 		}
 	}
 }

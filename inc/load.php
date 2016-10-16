@@ -14,6 +14,9 @@ if(strpos($HOST, ":") !== false){
 	$HOST = substr($HOST, 0, strpos($HOST, ":"));
 }
 
+$SCRIPTVERSION = "0.1.0 ALPHA";
+$SCRIPTNAME = "hashtopussy.php";
+
 $OBJECTS['version'] = $VERSION;
 $OBJECTS['host'] = $HOST;
 

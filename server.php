@@ -16,14 +16,7 @@ switch($QUERY['action']){
 		API::loginAgent($QUERY);
 		break;
 	case "update":
-		// check if provided hash is the same as executable and send file contents if not
-		$hash = (isset($_GET["hash"]) ? $_GET["hash"] : "");
-		$htexe = file_get_contents("static/" . $exename) . "http" . (isset($_SERVER['HTTPS']) ? "s" : "") . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
-		$myhash = md5($htexe);
-		if($hash != $myhash){
-			header("Content-Disposition: attachment; filename=\"$exename\"");
-			echo $htexe;
-		}
+		API::checkClientUpdate($QUERY);
 		break;
 	case "down":
 		// provide agent with requested download
