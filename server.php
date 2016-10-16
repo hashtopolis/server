@@ -5,13 +5,14 @@ set_time_limit(0);
 $QUERY = json_decode(@$_POST['query'], true);
 header("Content-Type: application/json");
 
-file_put_contents("query.log", Util::getIP()."=".$_POST['query']."\n", FILE_APPEND);
+//debug logging
+file_put_contents("query.log", Util::getIP()."=".$_POST['query'], FILE_APPEND);
 
 switch($QUERY['action']){
 	case "register":
 		API::registerAgent($QUERY);
 		break;
-	case "log":
+	case "login":
 		API::loginAgent($QUERY);
 		break;
 	case "update":

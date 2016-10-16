@@ -1,0 +1,51 @@
+\documentclass{article}
+\author{seinlc}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\begin{document}
+	\title{Hashtopussy Communication Protocol}
+	\maketitle
+	\section*{Introduction}
+	The communication between Hashtopussy Clients and Server is always in JSON formatted values. When sending a request to the server, it should be a POST with value
+	"query=[JSON]".
+	
+	\section*{Errors}
+	In case of an error with the query which the client sends to the server, the response will have following format with the corresponding action which was requested and the error message which should help in getting information about this error.
+	\begin{verbatim}
+	{
+	  "action":"register",
+	  "response":"ERROR",
+	  "message":"Provided voucher does not exist."
+	}
+	\end{verbatim}
+	\pagebreak
+	\section*{Commands}
+	
+	\subsection*{Register}
+	When registering a new client to the server, following query should be used:
+	\begin{verbatim}
+	{  
+	  "action":"register",
+	  "voucher":"89GD78tf",
+	  "uid":"230-34-345-345",
+	  "name":"client name",
+	  "os":0,
+	  "gpus":[  
+	    "ATI HD7970",
+	    "ATI HD7970"
+	  ]
+	}
+	\end{verbatim}
+	All values are required and must not be empty. The operating system should be set as following: 0 => Linux, 1 => Windows, 2 => Mac OS X.
+	
+	As response the server will send following on success:
+	\begin{verbatim}
+	{
+	  "action":"register",
+	  "response":"SUCCESS",
+	  "token":"GHhgdf(/&"
+	} 
+	\end{verbatim}
+	The token will be the one, the client should use for his following connections on this server.
+\end{document}
