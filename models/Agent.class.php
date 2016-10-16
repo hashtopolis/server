@@ -8,7 +8,6 @@ class Agent extends AbstractModel {
 	private $agentName;
 	private $uid;
 	private $os;
-	private $gpuDriver;
 	private $gpus;
 	private $hcVersion;
 	private $cmdPars;
@@ -24,12 +23,11 @@ class Agent extends AbstractModel {
 	private $cpuOnly;
 	
 	
-	function __construct($agentId, $agentName, $uid, $os, $gpuDriver, $gpus, $hcVersion, $cmdPars, $wait, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly) {
+	function __construct($agentId, $agentName, $uid, $os, $gpus, $hcVersion, $cmdPars, $wait, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly) {
 		$this->agentId = $agentId;
 		$this->agentName = $agentName;
 		$this->uid = $uid;
 		$this->os = $os;
-		$this->gpuDriver = $gpuDriver;
 		$this->gpus = $gpus;
 		$this->hcVersion = $hcVersion;
 		$this->cmdPars = $cmdPars;
@@ -52,7 +50,6 @@ class Agent extends AbstractModel {
 		$dict['agentName'] = $this->agentName;
 		$dict['uid'] = $this->uid;
 		$dict['os'] = $this->os;
-		$dict['gpuDriver'] = $this->gpuDriver;
 		$dict['gpus'] = $this->gpus;
 		$dict['hcVersion'] = $this->hcVersion;
 		$dict['cmdPars'] = $this->cmdPars;
@@ -108,14 +105,6 @@ class Agent extends AbstractModel {
 
 	function setOs($os){
 		$this->os = $os;
-	}
-
-	function getGpuDriver(){
-		return $this->gpuDriver;
-	}
-
-	function setGpuDriver($gpuDriver){
-		$this->gpuDriver = $gpuDriver;
 	}
 
 	function getGpus(){

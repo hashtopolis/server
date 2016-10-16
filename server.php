@@ -3,59 +3,15 @@ require_once(dirname(__FILE__)."/inc/load.php");
 set_time_limit(0);
 $exename = "hashtopus.exe";
 
-$separator = "\x01";
-
-$DB = $FACTORIES::getAgentErrorFactory()->getDB();
+$SEPARATOR = "\x01";
 
 $action = @$_GET["a"];
-$token = $DB->quote(str_replace("\n", "", str_replace("\r", "", @$_GET["token"])));
+$token = str_replace("\n", "", str_replace("\r", "", @$_GET["token"]));
 header("Content-Type: application/octet-stream");
 
 switch($action){
 	case "reg":
-		// register at master server - user will be given a token
-		$voucher = $DB->quote($_POST["voucher"]);
-		$DB->exec("START TRANSACTION");
-		$tc = $DB->query("SELECT 1 FROM regvouchers WHERE voucher=$voucher");
-		if($tc->rowCount() == 1){
-			$DB->exec("DELETE FROM regvouchers WHERE voucher=$voucher");
-			$cpu = intval($_POST["cpu"]);
-			$gpu = $_POST["gpus"];
-			$uid = $DB->quote(htmlentities($_POST["uid"], false, "UTF-8"));
-			$name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
-			$os = intval($_POST["os"]);
-				
-			$brand = 0;
-			// detect brand strings
-			foreach(explode($separator, strtolower($gpu)) as $karta){
-				if((strpos($karta, "amd") !== false) || (strpos($karta, "ati ") !== false) || (strpos($karta, "radeon") !== false)){
-					$brand = 2;
-					break;
-				}
-				if(strpos($karta, "nvidia") !== false){
-					$brand = 1;
-				}
-			}
-			if($brand == 0){
-				$brand = 3;
-			}
-			// create access token
-			$token = Util::randomString(10);
-				
-			// save the new agent to the db or update existing one with the same hdd-serial
-			$gpu = $DB->quote(htmlentities($gpu, false, "UTF-8"));
-			if($DB->query("INSERT INTO agents (name, uid, os, cputype, gpubrand, gpus, token) VALUES ($name, $uid, $os, $cpu, $brand, $gpu, '$token')")){
-				echo "reg_ok" . $separator . $token;
-			}
-			else{
-				echo "reg_nok" . $separator . "Could not register you to server.";
-			}
-		}
-		else{
-			echo "reg_nok" . $separator . "Provided voucher does not exist.";
-		}
-		$DB->exec("COMMIT");
-		$token = "'$token'";
+		API::registerAgent(@$_POST['voucher']);
 		break;
 	case "log":
 		// login to master server with previously provided token

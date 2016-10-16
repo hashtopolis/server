@@ -8,7 +8,6 @@ $CONF['Agent'] = array(
 		'agentName',
 		'uid',
 		'os',
-		'gpuDriver',
 		'gpus',
 		'hcVersion',
 		'cmdPars',
@@ -228,7 +227,7 @@ foreach($CONF as $NAME => $COLUMNS){
 	}
 	$class .= "}\n";
 
-	if(!file_exists(dirname(__FILE__)."/".$NAME.".class.php")){
+	if(true || !file_exists(dirname(__FILE__)."/".$NAME.".class.php")){
 		file_put_contents(dirname(__FILE__)."/".$NAME.".class.php", $class);
 	}
 
@@ -253,7 +252,7 @@ foreach($CONF as $NAME => $COLUMNS){
 	}
 	$factory .= ");\n		return \$o;\n	}\n}";
 	
-	if(!file_exists(dirname(__FILE__)."/".$NAME."Factory.class.php")){
+	if(true || !file_exists(dirname(__FILE__)."/".$NAME."Factory.class.php")){
 		file_put_contents(dirname(__FILE__)."/".$NAME."Factory.class.php", $factory);
 	}
 }
@@ -278,7 +277,7 @@ foreach($CONF as $NAME => $COLUMNS){
 }
 $singleton .= "}\n";
 
-if(!file_exists(dirname(__FILE__)."/../inc/factory.class.php")){
+if(true || !file_exists(dirname(__FILE__)."/../inc/factory.class.php")){
 	file_put_contents(dirname(__FILE__)."/../inc/factory.class.php", $singleton);
 }
 
