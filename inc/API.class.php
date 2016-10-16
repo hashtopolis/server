@@ -38,4 +38,19 @@ class API{
 			echo "reg_nok".$SEPARATOR."Provided voucher does not exist.";
 		}
 	}
+
+	public static function loginAgent(){
+		global $FACTORIES, $TOKEN, $SEPARATOR, $CONFIG;
+		
+		// login to master server with previously provided token
+		$qF = new QueryFilter("token", $TOKEN, "=");
+		$agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
+		if($agent !== null){
+			echo "log_ok".$SEPARATOR.$gpu.$SEPARATOR.$CONFIG->getVal("agenttimeout");
+		}
+		else{
+			// token was not found
+			echo "log_unknown".$SEPARATOR."Unknown token, register again";
+		}
+	}
 }

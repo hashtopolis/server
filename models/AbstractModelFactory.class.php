@@ -215,7 +215,7 @@ abstract class AbstractModelFactory{
 	 *
 	 * @return array Returns a list of matching objects or Null
 	 */
-	public function filter($options){
+	public function filter($options, $single = false){
 		// Check if we need to join and if so pass on to internal Function
 		if(array_key_exists('join', $options)){
 			return $this->filterWithJoin($options);
@@ -296,6 +296,15 @@ abstract class AbstractModelFactory{
 				$pk = $row[$pkName];
 				$model = $this->createObjectFromDict($pk, $row);
 				array_push($objects, $model);
+			}
+			
+			if($single){
+				if(sizeof($single) == 0){
+					return null;
+				}
+				else{
+					return $objects[0];
+				}
 			}
 			
 			return $objects;

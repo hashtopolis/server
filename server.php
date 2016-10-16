@@ -6,7 +6,7 @@ $exename = "hashtopus.exe";
 $SEPARATOR = "\x01";
 
 $action = @$_GET["a"];
-$token = str_replace("\n", "", str_replace("\r", "", @$_GET["token"]));
+$TOKEN = str_replace("\n", "", str_replace("\r", "", @$_GET["token"]));
 header("Content-Type: application/octet-stream");
 
 switch($action){
@@ -14,26 +14,7 @@ switch($action){
 		API::registerAgent(@$_POST['voucher']);
 		break;
 	case "log":
-		// login to master server with previously provided token
-		$res = $DB->query("SELECT agents.cputype,agents.gpubrand,agents.os FROM agents WHERE agents.token=$token");
-		if($res->rowCount() == 1){
-			// there is a user with this token in the db
-			$line = $res->fetch();
-			$cpu = intval($line["cputype"]);
-			$gpu = intval($line["gpubrand"]);
-			$os = intval($line["os"]);
-			if(($gpu == 0) || (($cpu != 32) && ($cpu != 64))){
-				echo "log_nok" . $separator . "Unknown platform, wait to be manually assigned.";
-			}
-			else{
-				// craft executable name
-				echo "log_ok" . $separator . $gpu . $separator . $CONFIG->getVal("agenttimeout");
-			}
-		}
-		else{
-			// token was not found
-			echo "log_unknown" . $separator . "Unknown token, register again";
-		}
+		API::loginAgent();
 		break;
 	case "update":
 		// check if provided hash is the same as executable and send file contents if not
