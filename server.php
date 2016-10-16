@@ -1,20 +1,16 @@
 <?php
 require_once(dirname(__FILE__)."/inc/load.php");
 set_time_limit(0);
-$exename = "hashtopus.exe";
 
-$SEPARATOR = "\x01";
+$QUERY = json_decode(@$_POST['query'], true);
+header("Content-Type: application/json");
 
-$action = @$_GET["a"];
-$TOKEN = str_replace("\n", "", str_replace("\r", "", @$_GET["token"]));
-header("Content-Type: application/octet-stream");
-
-switch($action){
-	case "reg":
-		API::registerAgent(@$_POST['voucher']);
+switch($QUERY['action']){
+	case "register":
+		API::registerAgent($QUERY);
 		break;
 	case "log":
-		API::loginAgent();
+		API::loginAgent($QUERY);
 		break;
 	case "update":
 		// check if provided hash is the same as executable and send file contents if not
@@ -882,9 +878,8 @@ switch($action){
 			@mail($CONFIG->getVal("emailaddr"), "Hashtopus: agent error", "Your agent $agid just encountered a hashcat error and was paused.");
 		}
 		break;
+	default:
+		die("Invalid query!");
 }
-
-$lastip = $_SERVER['REMOTE_ADDR'];
-$DB->query("UPDATE agents SET lasttime='".time()."', lastip='$lastip', lastact='$action' WHERE token=$token");
 
 ?>

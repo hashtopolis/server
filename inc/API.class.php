@@ -1,13 +1,20 @@
 <?php
 class API{
-	public static function registerAgent($key){
-		global $FACTORIES, $SEPARATOR;
+	private static function updateAgent($QUERY, $agent){
+		global $FACTORIES;
 		
-		$qF = new QueryFilter("voucher", $key, "=");
-		$voucher = $FACTORIES::getRegVoucherFactory()->filter(array('filter' => array($qF)));
-		if($voucher !== null && sizeof($voucher) > 0){
-			$voucher = $voucher[0];
-			$FACTORIES::getRegVoucherFactory()->delete($voucher);
+		$agent->setLastIp(Util::getIP());
+		$agent->setLastAction($QUERY['action']);
+		$agent->setLastTime(time());
+		$FACTORIES->getAgentFactory()->update($agent);
+	}
+	
+	public static function registerAgent($QUERY){
+		global $FACTORIES;
+		
+		$qF = new QueryFilter("voucher", $QUERY['voucher'], "=");
+		$voucher = $FACTORIES::getRegVoucherFactory()->filter(array('filter' => array($qF)), true);
+		if($voucher !== null){
 			$gpu = $_POST["gpus"];
 			$uid = htmlentities($_POST["uid"], false, "UTF-8");
 			$name = htmlentities($_POST["name"], false, "UTF-8");
@@ -27,6 +34,7 @@ class API{
 			//save agent details
 			$gpu = htmlentities($gpu, false, "UTF-8");
 			$agent = new Agent(0, $name, $uid, $os, $gpu, "", "", "", "", 1, 0, $token, "", 0, Util::getIP(), 0, $cpuOnly);
+			$FACTORIES::getRegVoucherFactory()->delete($voucher);
 			if($FACTORIES::getAgentFactory()->save($agent)){
 				echo "reg_ok".$SEPARATOR.$token;
 			}
@@ -46,6 +54,7 @@ class API{
 		$qF = new QueryFilter("token", $TOKEN, "=");
 		$agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
 		if($agent !== null){
+			API::updateAgent($QUERY, $agent);
 			echo "log_ok".$SEPARATOR.$gpu.$SEPARATOR.$CONFIG->getVal("agenttimeout");
 		}
 		else{
