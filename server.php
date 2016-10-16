@@ -5,7 +5,7 @@ set_time_limit(0);
 $QUERY = json_decode(@$_POST['query'], true);
 header("Content-Type: application/json");
 
-print_r($QUERY);
+file_put_contents("query.log", Util::getIP()."=".$_POST['query']."\n", FILE_APPEND);
 
 switch($QUERY['action']){
 	case "register":
