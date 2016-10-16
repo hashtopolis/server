@@ -5,6 +5,8 @@ set_time_limit(0);
 $QUERY = json_decode(@$_POST['query'], true);
 header("Content-Type: application/json");
 
+print_r($QUERY);
+
 switch($QUERY['action']){
 	case "register":
 		API::registerAgent($QUERY);
