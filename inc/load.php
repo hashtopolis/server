@@ -33,7 +33,7 @@ if($CONN['installed']){
 //include all .class.php files in inc dir
 $dir = scandir(dirname(__FILE__));
 foreach($dir as $entry){
-	if(strpos($entry, ".class.php") !== false && strpos($entry, "aa_") !== false){
+	if(strpos($entry, ".class.php") !== false){
 		require_once(dirname(__FILE__)."/".$entry);
 	}
 }

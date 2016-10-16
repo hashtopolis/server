@@ -1,7 +1,4 @@
 <?php
-/**
- * This class d€scrib€s a singl€ton patt€rn for all factori€s
- */
 class Factory{
 	private static $agentFactory = null;
 	private static $assignmentFactory = null;
