@@ -2,7 +2,7 @@
 require_once(dirname(__FILE__)."/inc/load.php");
 set_time_limit(0);
 
-$QUERY = json_decode(@$_POST['query'], true);
+$QUERY = json_decode(@$_POST, true);
 header("Content-Type: application/json");
 
 switch($QUERY['action']){

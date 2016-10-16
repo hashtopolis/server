@@ -1,0 +1,17 @@
+Protocol Client -> Server Hashtopussy
+
+
+Registering
+
+{  
+  "query":{  
+    "action":"register",
+    "uid":"230-34-345-345",
+    "name":"client name",
+    "os":0,
+    "gpus":[  
+      "ATI HD7970",
+      "ATI HD7970"
+    ]
+  }
+}
