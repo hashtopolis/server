@@ -12,6 +12,20 @@ class Util{
 		header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
 		die();
 	}
+	
+	public static function getIP(){
+		if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+			$ip = $_SERVER['HTTP_CLIENT_IP'];
+		} elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+			$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+		} else {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		if(!$ip){
+			return "0.0.0.0";
+		}
+		return $ip;
+	}
 
 	/**
 	 * Checks if a given email is of valid syntax
