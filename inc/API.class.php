@@ -18,7 +18,7 @@ class API{
 		return true;
 	}
 	
-	private static function sendErrorResponse($action, $msg){
+	public static function sendErrorResponse($action, $msg){
 		$ANS = array();
 		$ANS['action'] = $action;
 		$ANS['response'] = "ERROR";
@@ -28,6 +28,17 @@ class API{
 		die();
 	}
 
+	public static function checkToken($QUERY){
+		global $FACTORIES;
+		
+		$qF = new QueryFilter("token", $QUERY['token'], "=");
+		$token = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
+		if($token != null){
+			return true;
+		}
+		return false;
+	}
+	
 	private static function sendResponse($RESPONSE){
 		header("Content-Type: application/json");
 		echo json_encode($RESPONSE, true);
@@ -77,6 +88,10 @@ class API{
 	public static function loginAgent($QUERY){
 		global $FACTORIES, $CONFIG;
 		
+		if(API::checkValues($QUERY, array('token'))){
+			API::sendErrorResponse("login", "Invalid login query!");
+		}
+		
 		// login to master server with previously provided token
 		$qF = new QueryFilter("token", $QUERY['token'], "=");
 		$agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
@@ -103,6 +118,53 @@ class API{
 		}
 		else{
 			API::sendResponse(array('action' => 'update', 'response' => 'SUCCESS', 'version' => 'OK'));
+		}
+	}
+
+	public static function downloadApp($QUERY){
+		global $FACTORIES;
+		
+		if(API::checkValues($QUERY, array('token', 'type'))){
+			API::sendErrorResponse("download", "Invalid download query!");
+		}
+		$qF = new QueryFilter("token", $QUERY['token'], "=");
+		$agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
+		
+		// provide agent with requested download
+		switch($QUERY['type']){
+			case "7zr":
+				// downloading 7zip
+				$filename = "7zr".($agent->getOs() == 1)?".exe":"";
+				header_remove("Content-Type");
+				header('Content-Type: application/octet-stream');
+				header("Content-Disposition: attachment; filename=\"".$filename."\"");
+				echo file_get_contents("static/".$filename);
+				die();
+			case "hashcat":
+				$oF = new OrderFilter("time", "DESC LIMIT 1");
+				$hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => array($oF)), true);
+				if($hashcat == null){
+					API::sendErrorResponse("download", "No Hashcat release available!");
+				}
+				
+				$postfix = array("bin", "exe");
+				$executable = "hashcat64".$postfix[$agent->getOs()];
+				
+				if(@$QUERY['version'] == $hashcat->getVersion() && (!isset($QUERY['force']) || $QUERY['force'] != '1')){
+					API::sendResponse(array("action" => 'download', 'response' => 'SUCCESS', 'version' => 'OK', 'executable' => $executable));
+				}
+				
+				$url = $hashcat->getUrl();
+				$files = explode("\n", str_replace(" ", "\n", $hashcat->getCommonFiles()));
+				$files[] = $executable;
+				$rootdir = $hashcat->getRootdir();
+				
+				$agent->setHcVersion($hashcat->getVersion());
+				$FACTORIES::getAgentFactory()->update($agent);
+				API::sendResponse(array('action' => 'download', 'response' => 'SUCCESS', 'version' => 'NEW', 'url' => $url, 'files' => $files, 'rootdir' => $rootdir, 'executable' => $executable));
+				break;
+			default:
+				API::sendErrorResponse('download', "Unknown download type!");
 		}
 	}
 }

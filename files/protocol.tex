@@ -93,4 +93,27 @@
 	}
 	\end{verbatim}
 	with 'data' containing the new version of the script.
+	
+	\subsection*{Download}
+	This command is used to either download the 7z binary to extract Hashcat, or to get information where to download the newest Hashcat version and some additional informations about it.
+	\begin{verbatim}
+	{
+	  "action":"download",
+	  "type":"7zr",
+	  "token":"GHhgdf(/&"
+	}
+	\end{verbatim}
+	This will result in a non-JSON response. The server will simply provide the corresponding 7z binary for the agent as download.\\
+	To check if a new Hashcat binary is available, following command is used.
+	\begin{verbatim}
+	{
+	  "action":"download",
+	  "type":"hashcat",
+	  "token":"GHhgdf(/&",
+	  "version":"3.0.1",
+	  "force":1
+	}
+	\end{verbatim}
+	'force' is optional and should be used when the server should send version information anyway, even if the client already has the newest version. 'version' contains the current version the client has.\\
+	The server will respond with following information:
 \end{document}

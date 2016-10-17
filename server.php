@@ -18,89 +18,11 @@ switch($QUERY['action']){
 	case "update":
 		API::checkClientUpdate($QUERY);
 		break;
-	case "down":
-		// provide agent with requested download
-		$typ = $_GET["type"];
-		switch($typ){
-			case "7zr":
-				// downloading 7zip
-				$res = $DB->query("SELECT os FROM agents WHERE token=$token");
-				if($res->rowCount() == 1){
-					// agent is ok
-					$line = $res->fetch();
-					$fn = "7zr";
-					if($line["os"] == 0){
-						$fn .= ".exe";
-					}
-					echo file_get_contents("static/" . $fn);
-				}
-				break;
-			case "hc":
-				// downloading hashcat
-				$res = $DB->query("SELECT id,cputype,gpubrand,hcversion,os FROM agents WHERE token=$token");
-				if($res->rowCount() == 1){
-					// agent is ok
-					$agent = $res->fetch();
-						
-					$id = $agent["id"];
-					$cpu = $agent["cputype"];
-					$gpu = $agent["gpubrand"];
-					$os = $agent["os"];
-					$postf = array(
-							"",
-							"nvidia",
-							"amd",
-							"nvidia" //just give the nvidia link for the cpus
-					);
-					$platf = $postf[$gpu];
-						
-					$driver = intval($_GET["driver"]);
-						
-					// find out newest version
-					$res = $DB->query("SELECT * FROM hashcatreleases WHERE minver_$platf<=$driver ORDER BY time DESC LIMIT 1");
-					$line = $res->fetch();
-					if($line){
-						// there are some releases defined
-						$verze = $line["version"];
-						$minver = $line["minver_$platf"];
-						$url = $line["url_$platf"];
-						$rootdir = $line["rootdir_$platf"];
-		
-						$force = (isset($_GET["force"]) ? 1 : 0);
-		
-						$postfix = array(
-								"exe",
-								"bin"
-						);
-						$exe = "hashcat$cpu." . $postfix[$os];
-		
-						if(($agent["hcversion"] != $verze) || ($force == 1)){
-							// the agent needs updating
-							$files = $line["common_files"] . " " . $line[$cpu . "_" . $platf];
-								
-							// give the agent oclhashcat url, a name of root dir and list of files to extract from the archive
-							echo "down_ok" . $separator . $url . $separator . $files . $separator . $rootdir . $separator . $exe;
-						}
-						else{
-							// the agent has up2date version
-							echo "down_na" . $separator . $exe;
-						}
-					}
-					else{
-						// no release was found at all
-						$verze = $agent["hcversion"];
-						echo "down_nok" . $separator . "No hashcat releases found for this driver!";
-					}
-					$DB->query("UPDATE agents SET hcversion='$verze',gpudriver=$driver WHERE id=$id");
-				}
-				else{
-					echo "down_nok" . $separator . "Access token invalid.";
-				}
-				break;
-					
-			default:
-				echo "down_nok" . $separator . "Unknown download type.";
+	case "download":
+		if(API::checkToken($QUERY)){
+			API::sendErrorResponse('download', "Invalid token!");
 		}
+		API::downloadApp($QUERY);
 		break;
 	case "task":
 		// tell agent information about its task
