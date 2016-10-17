@@ -24,6 +24,9 @@ switch($QUERY['action']){
 		}
 		API::downloadApp($QUERY);
 		break;
+	case 'error':
+		API::agentError($QUERY);
+		break;
 	case "task":
 		// tell agent information about its task
 		
@@ -745,55 +748,6 @@ switch($QUERY['action']){
 		}
 		else{
 			echo "solve_nok" . $separator . "Chunk does not exist or you are not assigned to it.";
-		}
-		break;
-	case 'err':
-		// upload hashcat output errors or messages
-		$task = intval($_GET["task"]);
-		$res = $DB->query("SELECT id,os FROM agents WHERE agents.token=$token");
-		if($res->rowCount() == 1){
-			// agent is assigned to this task
-			$line = $res->fetch();
-			if($line["os"] == 1){
-				$newline = "\n";
-			}
-			else{
-				$newline = "\r\n";
-			}
-			$agid = $line["id"];
-			$rawdata = file_get_contents("php://input");
-			$data = explode($newline, $rawdata);
-			$i = 0;
-			$j = 0;
-			foreach($data as $dato){
-				// for non empty lines add error to the db
-				if($dato == ""){
-					continue;
-				}
-				$j++;
-				// $dato=bin2hex($dato);
-				$ndato = Util::bintohex($dato);
-				if($DB->query("INSERT INTO errors (agent,task,time,error) VALUES ($agid,$task,".time().",x'$ndato')")){
-					$i++;
-				}
-			}
-			if($i == $j){
-				echo "err_ok" . $separator . $i;
-			}
-			else{
-				echo "err_nok" . $separator . "Uploaded $i/$j errors.";
-				file_put_contents("err_" . $agid . "_" . time() . ".txt", $rawdata);
-			}
-		}
-		else{
-			echo "err_nok" . $separator . "Task does not exist or you are not assigned to it.";
-		}
-		// pause any agent activity because of error
-		$DB->query("UPDATE agents SET active=0 WHERE id=$agid AND ignoreerrors=0");
-		
-		// email agent error
-		if($CONFIG->getVal("emailerror") == "1"){
-			@mail($CONFIG->getVal("emailaddr"), "Hashtopus: agent error", "Your agent $agid just encountered a hashcat error and was paused.");
 		}
 		break;
 	default:

@@ -130,4 +130,21 @@
 	  "executable":"hashcat64.bin"
 	}
 	\end{verbatim}
+	
+	\subsection*{Error}
+	In case there happens an error with Hashcat on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page.
+	\begin{verbatim}
+	{
+	  "action":"error",
+	  "task":45,
+	  "message":"This is a sample error message!"
+	}
+	\end{verbatim}
+	The server will confirm the error messages:
+	\begin{verbatim}
+	{
+	  "action":"error",
+	  "response":"SUCCESS"
+	}
+	\end{verbatim}
 \end{document}

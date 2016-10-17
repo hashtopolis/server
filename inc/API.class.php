@@ -170,4 +170,40 @@ class API{
 				API::sendErrorResponse('download', "Unknown download type!");
 		}
 	}
+
+	public static function agentError($QUERY){
+		global $FACTORIES;
+		
+		//check required values
+		if(API::checkValues($QUERY, array('token', 'task', 'message'))){
+			API::sendErrorResponse("error", "Invalid error query!");
+		}
+
+		//check agent and task
+		$qF = new QueryFilter("token", $QUERY['token'], "=");
+		$agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
+		$task = $FACTORIES::getTaskFactory()->get($QUERY['task']);
+		if($task == null){
+			API::sendErrorResponse("error", "Invalid task!");
+		}
+		
+		//check assignment
+		$qF1 = new QueryFilter("agentId", $agent->getId(), "=");
+		$qF2 = new QueryFilter("taskId", $task->getId(), "=");
+		$assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
+		if($assignment == null){
+			API::sendErrorResponse("error", "You are not assigned to this task!");
+		}
+		
+		//save error message
+		$error = new AgentError(0, $agent->getId(), $task->getId(), time(), $message);
+		$FACTORIES::getAgentErrorFactory()->save($error);
+		
+		if($agent->getIgnoreErrors() == 0){
+			//deactivate agent 
+			$agent->setIsActive(0);
+			$FACTORIES::getAgentFactory()->update($agent);
+		}
+		API::sendResponse(array('action' => 'error', 'response' => 'SUCCESS'));
+	}
 }
