@@ -114,6 +114,20 @@
 	  "force":1
 	}
 	\end{verbatim}
-	'force' is optional and should be used when the server should send version information anyway, even if the client already has the newest version. 'version' contains the current version the client has.\\
+	'force' is optional and is be used when the server should send version information anyway, even if the client already has the newest version. 'version' contains the current version the client has.\\
 	The server will respond with following information:
+	\begin{verbatim}
+	{
+	  "action":"download",
+	  "response":"SUCCESS",
+	  "version":"NEW",
+	  "url":"https://hashcat.net/files/hashcat-3.01.7z",
+	  "files":[
+	    "hashcat.hctune",
+	    "hashcat64.bin"
+	  ],
+	  "rootdir":"hashcat-3.0.1",
+	  "executable":"hashcat64.bin"
+	}
+	\end{verbatim}
 \end{document}

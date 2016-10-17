@@ -141,6 +141,9 @@ class API{
 				echo file_get_contents("static/".$filename);
 				die();
 			case "hashcat":
+				if(API::checkValues($QUERY, array('version'))){
+					API::sendErrorResponse("download", "Invalid download (hashcat) query!");
+				}
 				$oF = new OrderFilter("time", "DESC LIMIT 1");
 				$hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => array($oF)), true);
 				if($hashcat == null){
@@ -150,7 +153,7 @@ class API{
 				$postfix = array("bin", "exe");
 				$executable = "hashcat64".$postfix[$agent->getOs()];
 				
-				if(@$QUERY['version'] == $hashcat->getVersion() && (!isset($QUERY['force']) || $QUERY['force'] != '1')){
+				if($QUERY['version'] == $hashcat->getVersion() && (!isset($QUERY['force']) || $QUERY['force'] != '1')){
 					API::sendResponse(array("action" => 'download', 'response' => 'SUCCESS', 'version' => 'OK', 'executable' => $executable));
 				}
 				
