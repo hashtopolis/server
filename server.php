@@ -6,6 +6,7 @@ $QUERY = json_decode(@$_POST['query'], true);
 header("Content-Type: application/json");
 
 //debug logging
+//TODO: remove later
 file_put_contents("query.log", Util::getIP()."=".$_POST['query'], FILE_APPEND);
 
 switch($QUERY['action']){
@@ -25,8 +26,17 @@ switch($QUERY['action']){
 		API::downloadApp($QUERY);
 		break;
 	case 'error':
+		if(API::checkToken($QUERY)){
+			API::sendErrorResponse('error', "Invalid token!");
+		}
 		API::agentError($QUERY);
 		break;
+	case 'file':
+		API::getFile($QUERY);
+		break;
+		
+		
+		
 	case "task":
 		// tell agent information about its task
 		
@@ -100,19 +110,6 @@ switch($QUERY['action']){
 			// there was nothing
 			$DB->query("UPDATE assignments JOIN agents ON assignments.agent=agents.id AND agents.token=$token SET assignments.speed=0");
 			echo "task_nok" . $separator . "No active tasks.";
-		}
-		break;
-	case 'file':
-		// let agent download adjacent files
-		$task = intval($_GET["task"]);
-		$file = substr($DB->quote($_GET["file"]), 1, -1);
-		$res = $DB->query("SELECT 1 FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent JOIN taskfiles ON taskfiles.task=tasks.id JOIN files ON taskfiles.file=files.id WHERE agents.token=$token AND tasks.id=$task AND files.filename='$file' AND agents.trusted>=files.secret");
-		if($res){
-			// and add listing of related files
-			$res = $DB->query("SELECT id FROM files WHERE filename='$file'");
-			$line = $res->fetch();
-			//header("Location: files/$file");
-			header("Location: get.php?file=".$line['id']."&token=".substr($token, 1, -1));
 		}
 		break;
 	case "hashes":

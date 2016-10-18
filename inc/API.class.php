@@ -206,4 +206,45 @@ class API{
 		}
 		API::sendResponse(array('action' => 'error', 'response' => 'SUCCESS'));
 	}
+
+	public static function getFile($QUERY){
+		global $FACTORIES;
+		
+		//check required values
+		if(API::checkValues($QUERY, array('token', 'task', 'filename'))){
+			API::sendErrorResponse("file", "Invalid file query!");
+		}
+		
+		// let agent download adjacent files
+		$task = $FACTORIES::getTaskFactory()->get($QUERY['task']);
+		if($task == null){
+			API::sendErrorResponse('file', "Invalid task!");
+		}
+		
+		$filename = $QUERY['filename'];
+		$qF = new QueryFilter("filename", $filename, "=");
+		$file = $FACTORIES::getFileFactory()->filter(array('filter' => array($qF)), true);
+		if($file == null){
+			API::sendErrorResponse('file', "Invalid file!");
+		}
+		
+		$qF1 = new QueryFilter("taskId", $task->getId(), "=");
+		$qF2 = new QueryFilter("agentId", $agent->getId(), "=");
+		$assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
+		if($assignment == null){
+			API::sendErrorResponse('file', "Client is not assigned to this task!");
+		}
+		
+		$qF1 = new QueryFilter("taskId", $task->getId(), "=");
+		$qF2 = new QueryFilter("fileId", $file->getId(), "=");
+		$taskFile = $FACTORIES::getTaskFileFactory()->filter(array('filter' => array($qF1, $qF2)), true);
+		if($taskFile == null){
+			API::sendErrorResponse('file', "This files is not used for the specified task!");
+		}
+		
+		if($agent->getIsTrusted() < $file->getSecret()){
+			API::sendErrorResponse('file', "You have no access to get this file!");
+		}
+		API::sendResponse(array('action' => 'file', 'response' => 'SUCCESS', 'url' => 'get.php?file='.$file->getId()."&token=".$agent->getToken()));
+	}
 }

@@ -137,6 +137,7 @@
 	{
 	  "action":"error",
 	  "task":45,
+	  "token":"GHhgdf(/&",
 	  "message":"This is a sample error message!"
 	}
 	\end{verbatim}
@@ -145,6 +146,25 @@
 	{
 	  "action":"error",
 	  "response":"SUCCESS"
+	}
+	\end{verbatim}
+	
+	\subsection*{Get File}
+	If the client needs a file for running a task (Wordlist or Rule File) he needs to request the url for downloading it.
+	\begin{verbatim}
+	{
+	  "action":"file",
+	  "token":"GHhgdf(/&",
+	  "task":56,
+	  "filename":"rockyou.txt"
+	}
+	\end{verbatim}
+	The server sends then the url, where the client can download the file from.
+	\begin{verbatim}
+	{
+	  "action":"file",
+	  "response":"SUCCESS",
+	  "url":"get.php?file=5&token=GHhgdf(/&"
 	}
 	\end{verbatim}
 \end{document}
