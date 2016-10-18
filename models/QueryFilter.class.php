@@ -14,6 +14,10 @@ class QueryFilter{
 		if($table != ""){
 			$table = $table . ".";
 		}
+		if($this->value == 'NULL'){
+			return $table.$this->key." IS NULL";
+		}
+		
 		return $table . $this->key . $this->operator . "?";
 	}
 

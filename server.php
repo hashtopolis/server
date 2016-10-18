@@ -32,7 +32,16 @@ switch($QUERY['action']){
 		API::agentError($QUERY);
 		break;
 	case 'file':
+		if(API::checkToken($QUERY)){
+			API::sendErrorResponse('file', "Invalid token!");
+		}
 		API::getFile($QUERY);
+		break;
+	case "hashes":
+		if(API::checkToken($QUERY)){
+			API::sendErrorResponse('hashes', "Invalid token!");
+		}
+		API::getHashes($QUERY);
 		break;
 		
 		
@@ -112,94 +121,7 @@ switch($QUERY['action']){
 			echo "task_nok" . $separator . "No active tasks.";
 		}
 		break;
-	case "hashes":
-		// download list of uncracked hashes from server
-		$hlist = intval($_GET["hashlist"]);
-		$res = $DB->query("SELECT agents.id,agents.os,agents.trusted,tasks.hashlist,hashlists.format FROM agents JOIN assignments ON assignments.agent=agents.id JOIN tasks ON tasks.id=assignments.task JOIN hashlists ON hashlists.id=tasks.hashlist WHERE hashlists.id=$hlist AND agents.token=$token AND agents.trusted>=hashlists.secret");
-		$line = $res->fetch();
-		if($line){
-			// agent is assigned to an existing task
-			if($line["os"] == 1){
-				$newline = "\n";
-			}
-			else{
-				$newline = "\r\n";
-			}
-			$agid = $line["id"];
-			$format = $line["format"];
-			$trusted = $line["trusted"];
-			// superhashlist detection
-			if($format == 3){
-				$superhash = true;
-			}
-			else{
-				$superhash = false;
-			}
-				
-			// handle superhahslist - give agent hashes from included hashlists
-			// and only those that his trust level is allowed to get
-			$hlistar = array();
-			if($superhash){
-				$ans = $DB->query("SELECT hashlists.id,hashlists.format FROM superhashlists JOIN hashlists ON superhashlists.hashlist=hashlists.id WHERE superhashlists.id=$hlist AND hashlists.secret<=$trusted");
-				while($l = $ans->fetch()){
-					$format = $l["format"];
-					$hlistar[] = $l["id"];
-				}
-			}
-			else{
-				$hlistar[] = $hlist;
-			}
-			if(count($hlistar) > 0){
-				$hlisty = implode(",", $hlistar);
-		
-				// dump unresolved hashes
-				switch($format){
-					case 0:
-						// for text file
-						$ans = $DB->query("SELECT DISTINCT hash,salt FROM hashes WHERE hashlist IN ($hlisty) AND plaintext IS NULL");
-						if($ans->rowCount() > 0){
-							// there are hashes for this task
-							while($l = $ans->fetch()){
-								echo $l["hash"];
-								if($l["salt"] != ""){
-									echo $separator . $l["salt"];
-								}
-								echo $newline;
-							}
-						}
-						else{
-							// there are no hashes
-							echo "hashes_na" . $separator . "No hashes to crack.";
-						}
-						break;
-					case 1:
-					case 2:
-						// for binary file
-						$res = $DB->query("SELECT hash FROM hashes_binary WHERE hashlist IN ($hlisty) AND plaintext IS NULL");
-						if($res->rowCount() > 0){
-							// there are binary hash(es) for this task
-							while($line = $res->fetch()){
-								// simply concat the binary blobs one after another
-								echo $line["hash"];
-							}
-						}
-						else{
-							// there are no hashes
-							echo "hashes_na" . $separator . "No binary hashes to crack.";
-						}
-						break;
-				}
-				// update the last time when the agent was given complete hashlist
-				$DB->query("INSERT IGNORE INTO hashlistusers (hashlist,agent) SELECT id,$agid FROM hashlists WHERE id IN ($hlisty)");
-			}
-			else{
-				echo "hashes_nok" . $separator . "No hashes are available for you.";
-			}
-		}
-		else{
-			echo "hashes_nok" . $separator . "Task does not exist or you are not assigned to it.";
-		}
-		break;
+	
 	case "chunk":
 		// assign a correctly sized chunk to agent
 		

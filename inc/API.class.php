@@ -247,4 +247,129 @@ class API{
 		}
 		API::sendResponse(array('action' => 'file', 'response' => 'SUCCESS', 'url' => 'get.php?file='.$file->getId()."&token=".$agent->getToken()));
 	}
+
+	public static function getHashes($QUERY){
+		global $FACTORIES;
+		
+		//check required values
+		if(API::checkValues($QUERY, array('token', 'hashlist'))){
+			API::sendErrorResponse("hashes", "Invalid hashes query!");
+		}
+		
+		$hashlist = $FACTORIES::getHashlistFactory()->get($QUERY['hashlist']);
+		if($hashlist == null){
+			API::sendErrorResponse('hashes', "Invalid hashlist!");
+		}
+		
+		$qF = new QueryFilter("token", $QUERY['token'], "=");
+		$agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
+		if($agent == null){
+			API::sendErrorResponse('hashes', "Invalid agent!");
+		}
+		
+		$qF = new QueryFilter("agentId", $agent->getId(), "=");
+		$assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)), true);
+		if($assignment == null){
+			API::sendErrorResponse('hashes', "Agent is not assigned to a task!");
+		}
+		
+		$task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+		if($task == null){
+			API::sendErrorResponse('hashes', "Assignment contains invalid task!");
+		}
+		
+		if($task->getHashlistId() != $hashlist->getId()){
+			API::sendErrorResponse('hashes', "This hashlist is not used for the assigned task!");
+		}
+		else if($agent->getIsTrusted() < $hashlist->getSecret()){
+			API::sendErrorResponse('hashes', "You have not access to this hashlist!");
+		}
+		$LINEDELIM = "\n";
+		if($agent->getOs() == 1){
+			$LINEDELIM = "\r\n";
+		}
+		
+		$hashlists = array();
+		$format = $hashlist->getFormat();
+		if($hashlist->getFormat() == 3){
+			//we have a superhashlist
+			$qF = new QueryFilter("superHashlistId", $hashlist->getId(), "=");
+			$lists = $FACTORIES->getSuperHashlistHashlistFactory()->filter(array('filter' => array($qF)));
+			foreach($lists as $list){
+				$hl = $FACTORIES::getHashlistFactory()->get($list->getHashlistId());
+				if($hl->getSecret() > $agent->getIsTrusted()){
+					continue;
+				}
+				$hashlists[] = $list->getHashlistId();
+			}
+		}
+		else{
+			$hashlists[] = $hashlist->getId();
+		}
+		
+		if(sizeof($hashlists) == 0){
+			API::sendErrorResponse('hashes', "No hashlists selected!");
+		}
+		$count = 0;
+		switch($format){
+			case 0:
+				header_remove("Content-Type");
+				header('Content-Type: text/plain');
+				foreach($hashlists as $list){
+					$limit = 0;
+					$size = 50000;
+					do {
+						$oF = new OrderFilter("hashId", "ASC LIMIT $limit,$size");
+						$qF1 = new QueryFilter("hashlistId", $list->getId(), "=");
+						$qF2 = new QueryFilter("plaintext", "NULL", "=");
+						$current = $FACTORIES::getHashFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
+						
+						$output = "";
+						$count += sizeof($current);
+						foreach($current as $entry){
+							$output += $entry->getHash();
+							if(strlen($entry->getSalt()) > 0){
+								$output += $list->getSaltSeparator().$entry->getSalt();
+							}
+							$output += $LINEDELIM;
+						}
+						echo $output;
+						
+						$limit += $size;
+					} while (sizeof($current) > 0);
+				}
+				break;
+			case 1:
+			case 2:
+				header_remove("Content-Type");
+				header('Content-Type: application/octet-stream');
+				foreach($hashlists as $list){
+					$qF1 = new QueryFilter("hashlistId", $list->getId(), "=");
+					$qF2 = new QueryFilter("plaintext", "NULL", "=");
+					$current = $FACTORIES::getHashBinaryFactory()->filter(array('filter' => array($qF1, $qF2)));
+					$count += sizeof($current);
+					$output = "";
+					foreach($current as $entry){
+						$output += $entry->getHash();
+					}
+					echo $output;
+				}
+				break;
+		}
+		
+		//update that the agent has downloaded the hashlist
+		foreach($hashlists as $list){
+			$qF1 = new QueryFilter("agentId", $agent->getId(), "=");
+			$qF2 = new QueryFilter("hashlistId", $list->getId(), "=");
+			$check = $FACTORIES::getHashlistAgentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
+			if($check == null){
+				$downloaded = new HashlistAgent(0, $list->getId(), $agent->getId());
+				$FACTORIES::getHashlistAgentFactory()->save($downloaded);
+			}
+		}
+		
+		if($count == 0){
+			API::sendErrorResponse('hashes', "No hashes are available to crack!");
+		}
+	}
 }

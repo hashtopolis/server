@@ -167,4 +167,15 @@
 	  "url":"get.php?file=5&token=GHhgdf(/&"
 	}
 	\end{verbatim}
+	
+	\subsection*{Get Hashlist}
+	The client can download a Hashlist/Superhashlist.
+	\begin{verbatim}
+	{
+	  "action":"hashes",
+	  "token":"GHhgdf(/&",
+	  "hashlist":23
+	}
+	\end{verbatim}
+	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send a list of hashes which were requested.
 \end{document}

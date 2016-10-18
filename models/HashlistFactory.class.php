@@ -18,12 +18,12 @@ class HashlistFactory extends AbstractModelFactory {
 	}
 	
 	function getNullObject() {
-		$o = new Hashlist(-1, null, null, null, null, null, null, null);
+		$o = new Hashlist(-1, null, null, null, null, null, null, null, null);
 		return $o;
 	}
 	
 	function createObjectFromDict($pk, $dict) {
-		$o = new Hashlist($pk, $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['cracked'], $dict['secret'], $dict['hexSalt']);
+		$o = new Hashlist($pk, $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['secret'], $dict['hexSalt']);
 		return $o;
 	}
 }

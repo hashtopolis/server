@@ -9,17 +9,19 @@ class Hashlist extends AbstractModel {
 	private $format;
 	private $hashTypeId;
 	private $hashCount;
+	private $saltSeparator;
 	private $cracked;
 	private $secret;
 	private $hexSalt;
 	
 	
-	function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $cracked, $secret, $hexSalt) {
+	function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $secret, $hexSalt) {
 		$this->hashlistId = $hashlistId;
 		$this->hashlistName = $hashlistName;
 		$this->format = $format;
 		$this->hashTypeId = $hashTypeId;
 		$this->hashCount = $hashCount;
+		$this->saltSeparator = $saltSeparator;
 		$this->cracked = $cracked;
 		$this->secret = $secret;
 		$this->hexSalt = $hexSalt;
@@ -33,6 +35,7 @@ class Hashlist extends AbstractModel {
 		$dict['format'] = $this->format;
 		$dict['hashTypeId'] = $this->hashTypeId;
 		$dict['hashCount'] = $this->hashCount;
+		$dict['saltSeparator'] = $this->saltSeparator;
 		$dict['cracked'] = $this->cracked;
 		$dict['secret'] = $this->secret;
 		$dict['hexSalt'] = $this->hexSalt;
@@ -86,6 +89,14 @@ class Hashlist extends AbstractModel {
 
 	function setHashCount($hashCount){
 		$this->hashCount = $hashCount;
+	}
+
+	function getSaltSeparator(){
+		return $this->saltSeparator;
+	}
+
+	function setSaltSeparator($saltSeparator){
+		$this->saltSeparator = $saltSeparator;
 	}
 
 	function getCracked(){

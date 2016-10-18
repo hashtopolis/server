@@ -16,7 +16,6 @@ class Factory{
 	private static $hashlistAgentFactory = null;
 	private static $hashTypeFactory = null;
 	private static $regVoucherFactory = null;
-	private static $superHashlistFactory = null;
 	private static $superHashlistHashlistFactory = null;
 	private static $taskFileFactory = null;
 	private static $taskFactory = null;
@@ -166,17 +165,6 @@ class Factory{
 		}
 		else{
 			return self::$regVoucherFactory;
-		}
-	}
-
-	public static function getSuperHashlistFactory(){
-		if(self::$superHashlistFactory == null){
-			$f = new SuperHashlistFactory();
-			self::$superHashlistFactory = $f;
-			return $f;
-		}
-		else{
-			return self::$superHashlistFactory;
 		}
 	}
 

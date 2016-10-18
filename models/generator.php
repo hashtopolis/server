@@ -97,6 +97,7 @@ $CONF['Hashlist'] = array(
 		'format',
 		'hashTypeId',
 		'hashCount',
+		'saltSeparator',
 		'cracked',
 		'secret',
 		'hexSalt'
@@ -114,9 +115,6 @@ $CONF['RegVoucher'] = array(
 		'regVoucherId',
 		'voucher',
 		'time'
-);
-$CONF['SuperHashlist'] = array(
-		'superHashlistId'
 );
 $CONF['SuperHashlistHashlist'] = array(
 		'superHashlistHashlistId',
