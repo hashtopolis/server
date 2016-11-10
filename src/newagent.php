@@ -15,19 +15,11 @@ $TEMPLATE = new Template("agents.new");
 $MENU->setActive("agents_new");
 $message = "";
 
-//catch agents actions here...
+//catch actions here...
 if(isset($_POST['action'])){
-	switch($_POST['action']){
-		case 'vouchercreate':
-			$key = htmlentities($_POST["newvoucher"], false, "UTF-8");
-			$voucher = new RegVoucher(0, $key, time());
-			$FACTORIES::getRegVoucherFactory()->save($voucher);
-			Util::refresh();
-		case 'voucherdelete':
-			$voucher = $FACTORIES::getRegVoucherFactory()->get(intval($_POST["voucher"]));
-			$FACTORIES::getRegVoucherFactory()->delete($voucher);
-			Util::refresh();
-	}
+    $agentHandler = new AgentHandler();
+    $agentHandler->handle($_POST['action']);
+    Util::refresh();
 }
 
 $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());

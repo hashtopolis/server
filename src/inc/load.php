@@ -45,7 +45,7 @@ foreach($dir as $entry){
 $dir = scandir(dirname(__FILE__)."/handlers/");
 foreach($dir as $entry){
     if(strpos($entry, ".class.php") !== false){
-        require_once(dirname(__FILE__)."/".$entry);
+        require_once(dirname(__FILE__)."/handlers/".$entry);
     }
 }
 

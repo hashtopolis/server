@@ -15,8 +15,7 @@ $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
 $message = "";
 
-
-//catch agents actions here...
+//catch actions here...
 if(isset($_POST['action'])){
     $agentHandler = new AgentHandler($_POST['agentId']);
     $agentHandler->handle($_POST['action']);
@@ -79,12 +78,13 @@ else{
 	$agents = $FACTORIES::getAgentFactory()->filter(array('order' => array($oF)));
 	$allAgents = array();
 	foreach($agents as $agent){
-		$set = new DataSet($agent->getKeyValueDict());
-		$set->addValue('gpus', explode("\n", $agent->getGpus()));
+		$set = new DataSet();
+        $agent->setGpus(explode("\n", $agent->getGpus()));
+        $set->addValue("agent", $agent);
 		
 		$qF = new QueryFilter("agentId", $agent->getId(), "=");
 		$assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
-		$working = 0;
+		$isWorking = 0;
 		$taskId = 0;
 		if(sizeof($assignments) > 0){
 			$assignment = $assignments[0];
@@ -92,12 +92,12 @@ else{
 			$chunks = $FACTORIES::getChunkFactory()->filter();
 			foreach($chunks as $chunk){
 				if(max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal('chunktimeout')){
-					$working = 1;
+					$isWorking = 1;
 					$taskId = $assignment->getTaskId();
 				}
 			}
 		}
-		$set->addValue("working", $working);
+		$set->addValue("isWorking", $isWorking);
 		$set->addValue("taskId", $taskId);
 		$allAgents[] = $set;
 	}
