@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once(dirname(__FILE__) . "/inc/load.php");
 $DB = $FACTORIES::getagentsFactory()->getDB();
 
@@ -11,15 +11,15 @@ imagestring($pik, 3, 173, 11, $line["agents"], 0);
 imagestring($pik, 3, 173, 23, $line["tasks"], 0);
 imagestring($pik, 3, 173, 35, $line["hashlists"], 0);
 imagestring($pik, 3, 173, 47, $line["hashes"], 0);
-imagestring($pik, 3, 173, 59, Util::nicenum($line["speed"], 100000, 1000)."H/s", 0);
+imagestring($pik, 3, 173, 59, Util::nicenum($line["speed"], 100000, 1000) . "H/s", 0);
 
 $res = $DB->query("SELECT (SELECT COUNT(id) FROM tasks WHERE progress=keyspace AND keyspace>0 AND hashlist IS NOT NULL) AS tasks, (SELECT COUNT(id) FROM hashlists WHERE cracked=hashcount) AS hashlists, (SELECT SUM(cracked) FROM hashlists) AS hashes");
-$line = $res->fetch();  
-  
+$line = $res->fetch();
+
 imagestring($pik, 3, 267, 11, "-", 0);
 imagestring($pik, 3, 267, 23, $line["tasks"], 0);
 imagestring($pik, 3, 267, 35, $line["hashlists"], 0);
-imagestring($pik, 3, 267, 47, Util::nicenum($line["hashes"], 1000, 1000), 0);  
+imagestring($pik, 3, 267, 47, Util::nicenum($line["hashes"], 1000, 1000), 0);
 
 $res = $DB->query("SELECT (SELECT COUNT(id) FROM agents) AS agents, (SELECT COUNT(id) FROM tasks WHERE hashlist IS NOT NULL) AS tasks, (SELECT COUNT(id) FROM hashlists) AS hashlists, (SELECT SUM(hashcount) FROM hashlists) AS hashes");
 $line = $res->fetch();

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * This file is completely rewritten for Hashtopussy
  * Copyright 2016 by s3in!c
@@ -8,23 +8,23 @@
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 //check if there is a session
-if(!$LOGIN->isLoggedin()){
-	header("Location: index.php?err=4".time()."&fw=".urlencode($_SERVER['PHP_SELF']));
-	die();
+if (!$LOGIN->isLoggedin()) {
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
+  die();
 }
 
 //get image dimenstions
 $size = array(min(1920, intval($_GET["x"])), min(1080, intval($_GET["y"])));
-if ($size[0] == 0 || $size[0] == 0){
-	die();
+if ($size[0] == 0 || $size[0] == 0) {
+  die();
 }
 
 //check if task exists and get information
 $taskid = intval($_GET["task"]);
 $res = $DB->query("SELECT * FROM tasks WHERE id=$taskid");
 $task = $res->fetch();
-if(!$task){
-	die("Not a valid task!");
+if (!$task) {
+  die("Not a valid task!");
 }
 
 //create image
@@ -48,41 +48,41 @@ $taskid = $task['id'];
 //load chunks
 $res = $DB->query("SELECT * FROM chunks WHERE task=$taskid ORDER BY state ASC");
 $res = $res->fetchAll();
-foreach($res as $chunk){
-	$start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
-	$end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace) - 1;
-	//division by 10000 is required because rprogress is saved in percents with two decimals
-	$current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress'] / 10000) / $keyspace) - 1;
-	
-	if($current > $end){
-		$current = $end;
-	}
-	
-	if($end - $start < 3){
-		if($chunk['state'] >= 6){
-			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
-		}
-		else if($chunk['cracked'] > 0){
-			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $green);
-		}
-		else{
-			imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $yellow);
-		}
-	}
-	else{
-		if($chunk['state'] >= 6){
-			imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
-		}
-		else{
-			imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
-		}
-		if($chunk['cracked'] > 0){
-			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
-		}
-		else{
-			imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
-		}
-	}
+foreach ($res as $chunk) {
+  $start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
+  $end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace) - 1;
+  //division by 10000 is required because rprogress is saved in percents with two decimals
+  $current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress'] / 10000) / $keyspace) - 1;
+  
+  if ($current > $end) {
+    $current = $end;
+  }
+  
+  if ($end - $start < 3) {
+    if ($chunk['state'] >= 6) {
+      imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
+    }
+    else if ($chunk['cracked'] > 0) {
+      imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $green);
+    }
+    else {
+      imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $yellow);
+    }
+  }
+  else {
+    if ($chunk['state'] >= 6) {
+      imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
+    }
+    else {
+      imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
+    }
+    if ($chunk['cracked'] > 0) {
+      imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
+    }
+    else {
+      imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $yellow);
+    }
+  }
 }
 
 //send image data to output

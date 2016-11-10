@@ -3,84 +3,86 @@
 <h2>Agents ([[numAgents]])</h2>
 [[message]]
 <div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>Id</th>
-			<th>Act</th>
-			<th>Name / Owner</th>
-			<th>GPU Driver</th>
-			<th>GPUs</th>
-			<th>Hashcat</th>
-			<th>Last activity</th>
-			<th>Assignment</th>
-			<th>Action</th>
-		</tr>
-		{{FOREACH set,!!sets!!}}
-			<tr>
-				<td><a href="agents.php?id=[[set.getVal('agent').getId()]]">[[set.getVal('agent').getId()]]</a></td>
-				<td>
-					<form id="active[[set.getVal('agent').getId()]]" action="agents.php" method="post">
-						<input type='hidden' name='action' value='agentactive'>
-        				<input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
-        				<input type="checkbox" {{IF !!set.getVal('agent').getIsActive()!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('agent').getId()]]').submit();">
-        			</form>
-        		</td>
-        		<td>
-        			<a href="agents.php?id=[[set.getVal('agent').getId()]]">[[set.getVal('agent').getAgentName()]]</a>
-        			{{IF !!set.getVal('agent').getIsTrusted()!! == 1}}
-        				<img src="static/lock.gif" alt="Trusted">
-        			{{ENDIF}}
-        			{{IF !!set.getVal('isWorking')!! == 1}}
-        				<img src="static/active.gif" alt="Active" title="[[Util::nicenum(%%set.getVal('agent').getSpeed()%%, 100000, 1000)]]H/s">
-        			{{ENDIF}}
-        			{{IF !!set.getVal('agent').getIsActive()!! == 0}}
-        				<img src="static/pause.gif" alt="Paused">
-        			{{ENDIF}}
-        			<br>
-        			{{IF !!set.getVal('agent').getUserId()!! > 0}}
-        				[[Util::getUsernameById(%%set.getVal('agent').getUserId()%%)]]
-        			{{ENDIF}}
-        			{{IF !!set.getVal('agent').getUserId()!! <= 0}}
-        				---
-        			{{ENDIF}}
-        		</td>
-        		<td><!--TODO: save agent as property of agent --></td>
-        		<td>
-	        		{{FOREACH gpu,!!set.getVal('agent').getGpus()!!}}
-	        			[[Util::shortenstring(%%gpu%%, 20)]]<br>
-	        		{{ENDFOREACH}}
-        		</td>
-        		<td>[[set.getVal('agent').getHcVersion()]]</td>
-        		<td>
-        			[[set.getVal('agent').getLastAct()]] at <br>
-        			[[date(%%config.getVal('timefmt')%%, %%set.getVal('agent').getLastTime()%%)]]<br>
-        			IP: <code>[[set.getVal('agent').getLastIp()]]</code>
-        		</td>
-        		<td>
-        			<form id="assign[[set.getVal('agent').getId()]]" action="agents.php" method="post">
-        				<input type='hidden' name='action' value='agentassign'>
-        				<input type='hidden' name='agent' value='[[set.getVal('agent').getId()]]'>
-        				<select name='task' size='1' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
-        					<option value="">(unassigned)</option>
-        					{{FOREACH task,!!allTasks!!}}
-        						<option value='[[task.getId()]]'{{IF !!task.getId()!! == !!set.getVal('taskId')!!}} selected{{ENDIF}}>[[task.getTaskName()]]</option>
-        					{{ENDFOREACH}}
-        				</select>
-        			</form>
-        		</td>
-        		{{IF !!login.getLevel()!! >= 30}}
-	        		<td>
-	        			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('agent').getId()]]?')) return false;">
-	        				<input type='hidden' name='action' value='agentdelete'>
-	        				<input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
-	        				<input type="submit" class='btn btn-danger' value="Delete">
-	        			</form>
-	        		</td>
-        		{{ENDIF}}
-        		{{IF !!login.getLevel()!! < 30}}
-        			<td>&nbsp;</td>
-        		{{ENDIF}}
-		{{ENDFOREACH}}
-	</table>
+  <table class="table table-bordered table-nonfluid">
+    <tr>
+      <th>Id</th>
+      <th>Act</th>
+      <th>Name / Owner</th>
+      <th>GPU Driver</th>
+      <th>GPUs</th>
+      <th>Hashcat</th>
+      <th>Last activity</th>
+      <th>Assignment</th>
+      <th>Action</th>
+    </tr>
+    {{FOREACH set,!!sets!!}}
+    <tr>
+      <td><a href="agents.php?id=[[set.getVal('agent').getId()]]">[[set.getVal('agent').getId()]]</a></td>
+      <td>
+        <form id="active[[set.getVal('agent').getId()]]" action="agents.php" method="post">
+          <input type='hidden' name='action' value='agentactive'>
+          <input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
+          <input type="checkbox" {{IF !!set.getVal('agent').getIsActive()!! == 1}} checked{{ENDIF}}
+          onChange="javascript:document.getElementById('active[[set.getVal('agent').getId()]]').submit();">
+        </form>
+      </td>
+      <td>
+        <a href="agents.php?id=[[set.getVal('agent').getId()]]">[[set.getVal('agent').getAgentName()]]</a>
+        {{IF !!set.getVal('agent').getIsTrusted()!! == 1}}
+        <img src="static/lock.gif" alt="Trusted">
+        {{ENDIF}}
+        {{IF !!set.getVal('isWorking')!! == 1}}
+        <img src="static/active.gif" alt="Active" title="[[Util::nicenum(%%set.getVal('agent').getSpeed()%%, 100000, 1000)]]H/s">
+        {{ENDIF}}
+        {{IF !!set.getVal('agent').getIsActive()!! == 0}}
+        <img src="static/pause.gif" alt="Paused">
+        {{ENDIF}}
+        <br>
+        {{IF !!set.getVal('agent').getUserId()!! > 0}}
+        [[Util::getUsernameById(%%set.getVal('agent').getUserId()%%)]]
+        {{ENDIF}}
+        {{IF !!set.getVal('agent').getUserId()!! <= 0}}
+        ---
+        {{ENDIF}}
+      </td>
+      <td><!--TODO: save agent as property of agent --></td>
+      <td>
+        {{FOREACH gpu,!!set.getVal('agent').getGpus()!!}}
+        [[Util::shortenstring(%%gpu%%, 20)]]<br>
+        {{ENDFOREACH}}
+      </td>
+      <td>[[set.getVal('agent').getHcVersion()]]</td>
+      <td>
+        [[set.getVal('agent').getLastAct()]] at <br>
+        [[date(%%config.getVal('timefmt')%%, %%set.getVal('agent').getLastTime()%%)]]<br>
+        IP: <code>[[set.getVal('agent').getLastIp()]]</code>
+      </td>
+      <td>
+        <form id="assign[[set.getVal('agent').getId()]]" action="agents.php" method="post">
+          <input type='hidden' name='action' value='agentassign'>
+          <input type='hidden' name='agent' value='[[set.getVal(' agent').getId()]]'>
+          <select name='task' size='1' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
+            <option value="">(unassigned)</option>
+            {{FOREACH task,!!allTasks!!}}
+            <option value='[[task.getId()]]' {{IF !!task.getId()!!== !!set.getVal(
+            'taskId')!!}} selected{{ENDIF}}>[[task.getTaskName()]]</option>
+            {{ENDFOREACH}}
+          </select>
+        </form>
+      </td>
+      {{IF !!login.getLevel()!! >= 30}}
+      <td>
+        <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('agent').getId()]]?')) return false;">
+          <input type='hidden' name='action' value='agentdelete'>
+          <input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
+          <input type="submit" class='btn btn-danger' value="Delete">
+        </form>
+      </td>
+      {{ENDIF}}
+      {{IF !!login.getLevel()!! < 30}}
+      <td>&nbsp;</td>
+      {{ENDIF}}
+      {{ENDFOREACH}}
+  </table>
 </div>
 {%TEMPLATE->foot%}
