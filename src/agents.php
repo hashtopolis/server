@@ -11,186 +11,16 @@ else if($LOGIN->getLevel() < 20){
 	die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("agents");
+$TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
 $message = "";
 
+
 //catch agents actions here...
 if(isset($_POST['action'])){
-	switch($_POST['action']){
-		case 'clearerrors':
-			if($LOGIN->getLevel() < 30){
-				break;
-			}
-			$agent = intval($_POST['agent']);
-			$qF = new QueryFilter("agentId", $agent, "=");
-			$FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => array($qF)));
-			Util::refresh();
-		case 'agentrename':
-			if($LOGIN->getLevel() < 30){
-				break;
-			}
-			$name = htmlentities($_POST['name'], false, "UTF-8");
-			$agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
-			if($agent && strlen($name) > 0){
-				$agent->setAgentName($name);
-				$FACTORIES::getAgentFactory()->update($agent);
-				Util::refresh();
-			}
-			break;
-		case 'agentowner':
-			if($LOGIN->getLevel() < 30){
-				break;
-			}
-			// change agent owner
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST['agent']));
-			if(!$agent){
-				$message = "<div class='alert alert-danger'>Invalid agent!</div>";
-				break;
-			}
-			else if($_POST['owner'] == 0){
-				$agent->setUserId(0);
-				$FACTORIES::getAgentFactory()->update($agent);
-				header("Location: ".$_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']);
-				die();
-			}
-			$owner = $FACTORIES::getUserFactory()->get(intval($_POST["owner"]));
-			if(!$owner){
-				$message = "<div class='alert alert-danger'>Invalid user!</div>";
-				break;
-			}
-			$agent->setUserId($owner->getId());
-			$FACTORIES::getAgentFactory()->update($agent);
-			Util::refresh();
-		case 'agenttrusted':
-			// switch agent trusted state
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
-			$trusted = intval($_POST["trusted"]);
-			if(!$agent){
-				$message = "<div class='alert alert-danger'>Could not change agent trust!</div>";
-				break;
-			}
-			$agent->setIsTrusted($trusted);
-			$FACTORIES::getAgentFactory()->update($agent);
-			Util::refresh();
-		case 'agentignore':
-			// switch error ignoring for agent
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
-			$ignore = intval($_POST["ignore"]);
-			if(!$agent){
-				$message = "<div class='alert alert-danger'>Could not change error ignoring!</div>";
-				break;
-			}
-			$agent->setIgnoreErrors($ignore);
-			$FACTORIES::getAgentFactory()->update($agent);
-			Util::refresh();
-		case 'setparam':
-			// change agent extra cmd line parameters for hashcat
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
-			$pars = htmlentities($_POST["cmdpars"], false, "UTF-8");
-			if(!$agent){
-				$message = "<div class='alert alert-danger'>Could not change agent-specific parameters!</div>";
-				break;
-			}
-			$agent->setCmdPars($pars);
-			$FACTORIES::getAgentFactory()->update($agent);
-			Util::refresh();
-		case 'agentwait':
-			// change agent waiting time for idle
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
-			$wait = intval($_POST["wait"]);
-			if(!$agent){
-				$message = "<div class='alert alert-danger'>Could not change agent idle wait period!</div>";
-				break;
-			}
-			$agent->setWait($wait);
-			$FACTORIES::getAgentFactory()->update($agent);
-			Util::refresh();
-		case 'agentactive':
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
-			if(!$agent){
-				$message = "<div class='alert alert-danger'>Could not change agent activity!</div>";
-				break;
-			}
-			else if($agent->getIsActive() == 1){
-				$agent->setIsActive(0);
-			}
-			else{
-				$agent->setIsActive(1);
-			}
-			$FACTORIES::getAgentFactory()->update($agent);
-			Util::refresh();
-		case 'agentdelete':
-			if($LOGIN->getLevel() < 30){
-				break;
-			}
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST['agent']));
-			$FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-			if (Util::deleteAgent($agent)) {
-				$FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-			} 
-			else {
-				$FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
-				$message = "<div class='alert alert-danger'>Could not delete agent!</div>";
-				break;
-			}
-			Util::refresh();
-		case 'agentassign':
-			$agent = $FACTORIES::getAgentFactory()->get(intval($_POST["agent"]));
-			if(!$agent){
-				$message = "<div class='alert alert-danger'>Invalid agent!</div>";
-				break;
-			}
-			else if(intval($_POST['task']) == 0){
-				//unassign
-				$qF = new QueryFilter("agentId", $agent->getId(), "=");
-				$FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
-				Util::refresh();
-			}
-			
-			$task = $FACTORIES::getTaskFactory()->get(intval($_POST['task']));
-			if(!$task){
-				$message = "<div class='alert alert-danger'>Invalid task!</div>";
-				break;
-			}
-			$qF = new QueryFilter("agentId", $agent->getId(), "=");
-			$assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
-
-			//determine benchmark number
-			$benchmark = 0;
-			$qF1 = new ComparisonFilter("solveTime", "dispatchTime", ">");
-			$qF2 = new ComparisonFilter("progress", "length", "=");
-			$qF3 = new ContainFilter("state", array("4, 5"));
-			$qF4 = new QueryFilter("agentId", $agent->getId(), "=");
-			$qF5 = new QueryFilter("taskId", $task->getId(), "=");
-			$oF = new OrderFilter("solveTime", "DESC");
-			$entries = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4, $qF5), 'order' => array($oF)));
-			if(sizeof($entries) > 0){
-				$benchmark = $entries[0]->getLength();
-			}
-			unset($entries);
-			
-			if(sizeof($assignments) > 0){
-				for($i=1;$i<sizeof($assignments);$i++){ // clean up if required
-					$FACTORIES::getAssignmentFactory()->delete($assignments[$i]);
-				}
-				$assignment = $assignments[0];
-				$assignment->setTaskId($task->getId());
-				$assignment->setBenchmark($benchmark);
-				$assignment->setautoAdjust($task->getAutoAdjust());
-				$assignment->setSpeed(0);
-				$FACTORIES::getAssignmentFactory()->update($assignment);
-			}
-			else{
-				$assignment = new Assignment(0, $task->getId(), $agent->getId(), $benchmark, $task->getAutoAdjust(), 0);
-				$FACTORIES::getAssignmentFactory()->save($assignment);
-			}
-			if(isset($_GET['task'])){
-				header("Location: tasks.php?id=".intval($_GET['task']));
-				die();
-			}
-			Util::refresh();
-	}
+    $agentHandler = new AgentHandler($_POST['agentId']);
+    $agentHandler->handle($_POST['action']);
+    Util::refresh();
 }
 
 $allTasks = $FACTORIES::getTaskFactory()->filter(array());
@@ -250,7 +80,7 @@ else{
 	$allAgents = array();
 	foreach($agents as $agent){
 		$set = new DataSet($agent->getKeyValueDict());
-		$set->addValue('gpus', explode("\x01", $agent->getGpus()));
+		$set->addValue('gpus', explode("\n", $agent->getGpus()));
 		
 		$qF = new QueryFilter("agentId", $agent->getId(), "=");
 		$assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));

@@ -134,28 +134,6 @@ class Util{
 		$vysledek .= gmdate("H:i:s", $soucet);
 		return $vysledek;
 	}
-
-	public static function deleteAgent($agent){
-		global $FACTORIES;
-		
-		//TODO: update agant deletion function
-		
-		$DB = $FACTORIES::getagentsFactory()->getDB();
-		
-		$vysledek1 = $DB->query("DELETE FROM assignments WHERE agent=".$agent->getId());
-		$vysledek2 = $vysledek1 && $DB->query("DELETE FROM errors WHERE agent=".$agent->getId());
-		$vysledek3 = $vysledek2 && $DB->query("DELETE FROM hashlistusers WHERE agent=".$agent->getId());
-		$vysledek4 = $vysledek3 && $DB->query("DELETE FROM zapqueue WHERE agent=".$agent->getId());
-		
-		// orphan the chunks
-		$vysledek5 = $vysledek4 && $DB->query("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.agent=".$agent->getId()." SET chunk=NULL");
-		$vysledek6 = $vysledek5 && $DB->query("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.agent=".$agent->getId()." SET chunk=NULL");
-		$vysledek7 = $vysledek6 && $DB->query("UPDATE chunks SET agent=NULL WHERE agent=".$agent->getId());
-		
-		$vysledek8 = $vysledek7 && $DB->query("DELETE FROM agents WHERE id=".$agent->getId());
-		
-		return ($vysledek8);
-	}
 	
 	public static function superList($hlist,&$format) {
 		// detect superhashlists and create array of its contents

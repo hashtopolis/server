@@ -41,6 +41,14 @@ foreach($dir as $entry){
 	}
 }
 
+//include all handlers
+$dir = scandir(dirname(__FILE__)."/handlers/");
+foreach($dir as $entry){
+    if(strpos($entry, ".class.php") !== false){
+        require_once(dirname(__FILE__)."/".$entry);
+    }
+}
+
 //include all model files in models dir
 $dir = scandir(dirname(__FILE__)."/../models");
 foreach($dir as $entry){

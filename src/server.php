@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 
 //debug logging
 //TODO: remove later
-file_put_contents("query.log", Util::getIP()."=".$_POST['query'], FILE_APPEND);
+file_put_contents("query.log", Util::getIP()."=".$_POST['query']."\n", FILE_APPEND);
 
 switch($QUERY['action']){
 	case "register":

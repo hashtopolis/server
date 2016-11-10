@@ -299,7 +299,7 @@ abstract class AbstractModelFactory{
 			}
 			
 			if($single){
-				if(sizeof($single) == 0){
+				if(sizeof($objects) == 0){
 					return null;
 				}
 				else{

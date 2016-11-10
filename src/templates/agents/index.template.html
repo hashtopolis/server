@@ -8,7 +8,7 @@
 			<th>Id</th>
 			<th>Act</th>
 			<th>Name / Owner</th>
-			<th>GPU brand / Driver</th>
+			<th>GPU Driver</th>
 			<th>GPUs</th>
 			<th>Hashcat</th>
 			<th>Last activity</th>
@@ -17,23 +17,23 @@
 		</tr>
 		{{FOREACH set,!!sets!!}}
 			<tr>
-				<td><a href="agents.php?id=[[set.getVal('id')]]">[[set.getVal('id')]]</a></td>
+				<td><a href="agents.php?id=[[set.getVal('agentId')]]">[[set.getVal('agentId')]]</a></td>
 				<td>
-					<form id="active[[set.getVal('id')]]" action="agents.php" method="post">
+					<form id="active[[set.getVal('agentId')]]" action="agents.php" method="post">
 						<input type='hidden' name='action' value='agentactive'>
-        				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
-        				<input type="checkbox" {{IF !!set.getVal('active')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('id')]]').submit();">
+        				<input type="hidden" name="agent" value="[[set.getVal('agentId')]]">
+        				<input type="checkbox" {{IF !!set.getVal('isActive')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('agentId')]]').submit();">
         			</form>
         		</td>
         		<td>
-        			<a href="agents.php?id=[[set.getVal('id')]]">[[set.getVal('name')]]</a>
-        			{{IF !!set.getVal('trusted')!! == 1}}
+        			<a href="agents.php?id=[[set.getVal('id')]]">[[set.getVal('agentName')]]</a>
+        			{{IF !!set.getVal('isTrusted')!! == 1}}
         				<img src="static/lock.gif" alt="Trusted">
         			{{ENDIF}}
         			{{IF !!set.getVal('working')!! == 1}}
         				<img src="static/active.gif" alt="Active" title="[[Util::nicenum(%%set.getVal('speed')%%, 100000, 1000)]]H/s">
         			{{ENDIF}}
-        			{{IF !!set.getVal('active')!! == 0}}
+        			{{IF !!set.getVal('isActive')!! == 0}}
         				<img src="static/pause.gif" alt="Paused">
         			{{ENDIF}}
         			<br>
@@ -44,23 +44,23 @@
         				---
         			{{ENDIF}}
         		</td>
-        		<td>[[Util::getStaticArray(%%set.getVal('gpubrand')%%, 'platforms')]] / [[set.getVal('gpudriver')]]</td>
+        		<td>[[set.getVal('gpudriver')]]</td>
         		<td>
 	        		{{FOREACH gpu,!!set.getVal('gpus')!!}}
 	        			[[Util::shortenstring(%%gpu%%, 20)]]<br>
 	        		{{ENDFOREACH}}
         		</td>
-        		<td>[[set.getVal('hcversion')]]</td>
+        		<td>[[set.getVal('hcVersion')]]</td>
         		<td>
-        			[[set.getVal('lastact')]] at <br>
-        			[[date(%%config.getVal('timefmt')%%, %%set.getVal('lasttime')%%)]]<br>
-        			IP: [[set.getVal('lastip')]]
+        			[[set.getVal('lastAct')]] at <br>
+        			[[date(%%config.getVal('timefmt')%%, %%set.getVal('lastTime')%%)]]<br>
+        			IP: <code>[[set.getVal('lastIp')]]</code>
         		</td>
         		<td>
         			<form id="assign[[set.getVal('id')]]" action="agents.php" method="post">
         				<input type='hidden' name='action' value='agentassign'>
         				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
-        				<select name='task' size='1' onChange="javascript:document.getElementById('assign[[set.getVal('id')]]').submit();">
+        				<select name='task' size='1' onChange="javascript:document.getElementById('assign[[set.getVal('agentId')]]').submit();">
         					<option value="">(unassigned)</option>
         					{{FOREACH task,!!allTasks!!}}
         						<option value='[[task.getVal('id')]]'{{IF !!task.getVal('id')!! == !!set.getVal('task')!!}} selected{{ENDIF}}>[[task.getVal('name')]]</option>
@@ -70,9 +70,9 @@
         		</td>
         		{{IF !!login.getLevel()!! >= 30}}
 	        		<td>
-	        			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('id')]]?')) return false;">
+	        			<form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('agentId')]]?')) return false;">
 	        				<input type='hidden' name='action' value='agentdelete'>
-	        				<input type="hidden" name="agent" value="[[set.getVal('id')]]">
+	        				<input type="hidden" name="agent" value="[[set.getVal('agentId')]]">
 	        				<input type="submit" class='btn btn-danger' value="Delete">
 	        			</form>
 	        		</td>

@@ -46,10 +46,10 @@ class API{
     }
 
     public static function registerAgent($QUERY){
-        global $FACTORIES, $CONFIG, $SEPARATOR;
+        global $FACTORIES, $CONFIG;
 
         //check required values
-        if(API::checkValues($QUERY, array('voucher', 'gpus', 'uid', 'name', 'os'))){
+        if(!API::checkValues($QUERY, array('voucher', 'gpus', 'uid', 'name', 'os'))){
             API::sendErrorResponse("register", "Invalid registering query!");
         }
 
@@ -59,14 +59,15 @@ class API{
             API::sendErrorResponse("register", "Provided voucher does not exist.");
         }
 
-        $gpu = $_POST["gpus"];
-        $uid = htmlentities($_POST["uid"], false, "UTF-8");
-        $name = htmlentities($_POST["name"], false, "UTF-8");
-        $os = intval($_POST["os"]);
+        $gpu = $QUERY["gpus"];
+        $uid = htmlentities($QUERY["uid"], false, "UTF-8");
+        $name = htmlentities($QUERY["name"], false, "UTF-8");
+        $os = intval($QUERY["os"]);
 
         //determine if the client has cpu only
         $cpuOnly = 1;
-        foreach(explode($SEPARATOR, strtolower($gpu)) as $card){
+        foreach($gpu as $card){
+            $card = strtolower($card);
             if((strpos($card, "amd") !== false) || (strpos($card, "ati ") !== false) || (strpos($card, "radeon") !== false) || strpos($card, "nvidia") !== false){
                 $cpuOnly = 0;
             }
@@ -74,8 +75,8 @@ class API{
 
         //create access token & save agent details
         $token = Util::randomString(10);
-        $gpu = htmlentities($gpu, false, "UTF-8");
-        $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, "", 0, Util::getIP(), 0, $cpuOnly);
+        $gpu = htmlentities(implode("\n", $gpu), false, "UTF-8");
+        $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, "register", time(), Util::getIP(), 0, $cpuOnly);
         $FACTORIES::getRegVoucherFactory()->delete($voucher);
         if($FACTORIES::getAgentFactory()->save($agent)){
             API::sendResponse(array("action" => "register", "response" => "SUCCESS", "token" => $token));
@@ -88,7 +89,7 @@ class API{
     public static function loginAgent($QUERY){
         global $FACTORIES, $CONFIG;
 
-        if(API::checkValues($QUERY, array('token'))){
+        if(!API::checkValues($QUERY, array('token'))){
             API::sendErrorResponse("login", "Invalid login query!");
         }
 
@@ -107,7 +108,7 @@ class API{
         global $SCRIPTVERSION, $SCRIPTNAME;
 
         // check if provided hash is the same as script and send file contents if not
-        if(API::checkValues($QUERY, array('version'))){
+        if(!API::checkValues($QUERY, array('version'))){
             API::sendErrorResponse('update', 'Version value missing!');
         }
 
@@ -124,7 +125,7 @@ class API{
     public static function downloadApp($QUERY){
         global $FACTORIES;
 
-        if(API::checkValues($QUERY, array('token', 'type'))){
+        if(!API::checkValues($QUERY, array('token', 'type'))){
             API::sendErrorResponse("download", "Invalid download query!");
         }
         $qF = new QueryFilter("token", $QUERY['token'], "=");
@@ -175,7 +176,7 @@ class API{
         global $FACTORIES;
 
         //check required values
-        if(API::checkValues($QUERY, array('token', 'task', 'message'))){
+        if(!API::checkValues($QUERY, array('token', 'task', 'message'))){
             API::sendErrorResponse("error", "Invalid error query!");
         }
 
@@ -211,7 +212,7 @@ class API{
         global $FACTORIES;
 
         //check required values
-        if(API::checkValues($QUERY, array('token', 'task', 'filename'))){
+        if(!API::checkValues($QUERY, array('token', 'task', 'filename'))){
             API::sendErrorResponse("file", "Invalid file query!");
         }
 
@@ -255,7 +256,7 @@ class API{
         global $FACTORIES;
 
         //check required values
-        if(API::checkValues($QUERY, array('token', 'hashlist'))){
+        if(!API::checkValues($QUERY, array('token', 'hashlist'))){
             API::sendErrorResponse("hashes", "Invalid hashes query!");
         }
 
