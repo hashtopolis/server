@@ -10,74 +10,66 @@
 		</tr>
 		<tr>
 			<td>ID</td>
-			<td>[[agent.getVal('id')]]</td>
+			<td>[[agent.getId()]]</td>
 		</tr>
-		{%TEMPLATE->agents.detail.owner%}
+		{%TEMPLATE->agents/detail/owner%}
 		<tr>
 			<td>Activity:</td>
 			<td>
-				<form id="active[[agent.getVal('id')]]" action="agents.php?id=[[agent.getVal('id')]]" method="post">
+				<form id="active[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
 					<input type='hidden' name='action' value='agentactive'>
-       				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-       				<input type="checkbox" {{IF !!agent.getVal('active')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getVal('id')]]').submit();">
+       				<input type="hidden" name="agent" value="[[agent.getId()]]">
+       				<input type="checkbox" {{IF !!agent.getIsActive()!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getId()]]').submit();">
        			</form>
 			</td>
 		</tr>
 		<tr>
 			<td>Machine name:</td>
 			<td>
-				{%TEMPLATE->agents.detail.name%}
+				{%TEMPLATE->agents/detail/name%}
 			</td>
 		</tr>
 		<tr>
 			<td>Operating system:</td>
-			<td>[[Util::getStaticArray(%%agent.getVal('os')%%, 'os')]]</td>
+			<td>[[Util::getStaticArray(%%agent.getOs()%%, 'os')]]</td>
 		</tr>
 		<tr>
 			<td>Access token:</td>
-			<td>[[agent.getVal('token')]]</td>
+			<td>[[agent.getToken()]]</td>
 		</tr>
 		<tr>
 			<td>Machine ID:</td>
-			<td>[[agent.getVal('uid')]]</td>
-		</tr>
-		<tr>
-			<td>CPU platform:</td>
-			<td>[[agent.getVal('cputype')]]-bit</td>
+			<td>[[agent.getUid()]]</td>
 		</tr>
 		<tr>
 			<td>GPU platform:</td>
 			<td>
-				{%TEMPLATE->agents.detail.platform%}
-				{{IF !!agent.getVal('owner')!! != !!login.getUserId()!! && !!login.getLevel()!! < 30}}
+				{%TEMPLATE->agents/detail/platform%}
+				<!--{{IF !!agent.getUserId()!! != !!login.getUserId()!! && !!login.getLevel()!! < 30}}
 					[[Util::getStaticArray(%%agent.getVal('gpubrand')%%, 'platforms')]]
-				{{ENDIF}}
+				{{ENDIF}}-->
 			</td>
 		</tr>
 		<tr>
-			<td>GPU driver:</td>
-			<td>[[agent.getVal('gpudriver')]]</td>
-		</tr>
-		<tr>
 			<td>Graphic cards:</td>
-			<td>[[str_replace("\x01","<br>",%%agent.getVal('gpus')%%)]]</td></tr>
+			<td>[[str_replace("\n","<br>",%%agent.getGpus()%%)]]</td></tr>
 		<tr>
 			<td>Hashcat version:</td>
-			<td>[[agent.getVal('hcversion')]]</td>
+			<td>[[agent.getHcVersion()]]</td>
 		</tr>
 		<tr>
 			<td>Idle wait:</td>
 			<td>
-				{%TEMPLATE->agents.detail.idle%}
+				{%TEMPLATE->agents/detail/idle%}
 			</td>
 		</tr>
 		<tr>
 			<td>Extra parameters:</td>
 			<td>
-      			<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="POST">
-      				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+      			<form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="POST">
+      				<input type="hidden" name="agent" value="[[agent.getId()]]">
       				<input type="hidden" name="action" value="setparam">
-      				<input type="text" class='form-control' name="cmdpars" value="[[agent.getVal('cmdpars')]]" size="30">
+      				<input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30">
       				<input type="submit" class='btn btn-default' value="Set">
       			</form>
       		</td>
@@ -85,10 +77,10 @@
       	<tr>
       		<td>Hashcat errors:</td>
       		<td>
-      			<form id="agentignore" action="agents.php?id=[[agent.getVal('id')]]" method="post">
+      			<form id="agentignore" action="agents.php?id=[[agent.getId()]]" method="post">
 					<input type='hidden' name='action' value='agentignore'>
-       				<input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-       				<input type="checkbox" name='ignore' value='1'{{IF !!agent.getVal('ignoreerrors')!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
+       				<input type="hidden" name="agent" value="[[agent.getId()]]">
+       				<input type="checkbox" name='ignore' value='1'{{IF !!agent.getIgnoreErrors()!! == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
        				Ignore <br><i>(Be careful, this might lead to endless loops!)</i>
        			</form>
        		</td>
@@ -96,44 +88,44 @@
        	<tr>
       		<td>Trust:</td>
       		<td>
-      			{%TEMPLATE->agents.detail.secret1%}
-      			{%TEMPLATE->agents.detail.secret2%}
+      			{%TEMPLATE->agents/detail/secret1%}
+      			{%TEMPLATE->agents/detail/secret2%}
        		</td>
        	</tr>
        	<tr>
        		<td>Assignment:</td>
        		<td>
-       			<form class='form-inline' action="agents.php?id=[[agent.getVal('id')]]" method="post">
+       			<!--<form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
        				<input type='hidden' name='action' value='agentassign'>
-       				<input type='hidden' name='agent' value='[[set.getVal('id')]]'>
+       				<input type='hidden' name='agent' value='[[agent.getId()]]'>
        				<select class='form-control' name='task' size='1'>
        					<option value="">(unassigned)</option>
        					{{FOREACH task,!!allTasks!!}}
-       						<option value='[[task.getVal('id')]]'{{IF !!task.getVal('id')!! == !!agent.getVal('task')!!}} selected{{ENDIF}}>[[task.getVal('name')]]</option>
+       						<option value='[[task.getId()]]'{{IF !!task.getId()!! == !!agent.getVal('task')!!}} selected{{ENDIF}}>[[task.getTaskName()]]</option>
        					{{ENDFOREACH}}
        				</select>
        				<input type="submit" class='btn btn-default' value="Assign">
-       			</form>
+       			</form>-->
        		</td>
        	</tr>
        	<tr>
        		<td>Last activity:</td>
        		<td>
-      			Action: [[agent.getVal('lastact')]]<br>
-      			Time: [[date(%%config.getVal('timefmt')%%, %%agent.getVal('lasttime')%%)]]<br>
-      			IP: [[agent.getVal('lastip')]]
+      			Action: [[agent.getLastAct()]]<br>
+      			Time: [[date(%%config.getVal('timefmt')%%, %%agent.getLastTime()%%)]]<br>
+      			IP: [[agent.getLastIp()]]
       		</td>
       	</tr>
       	<tr>
       		<td>Time spent cracking:</td>
-      		<td>[[Util::sectotime(%%agent.getVal('spent')%%)]]</td>
+      		<td><!--[[Util::sectotime(%%agent.getVal('spent')%%)]]--></td>
       	</tr>
 	</table>
 </div>
 <h3>Error messages:</h3>
-<form action="agents.php?id=[[agent.getVal('id')]]" method='post' class='form-inline'>
+<form action="agents.php?id=[[agent.getId()]]" method='post' class='form-inline'>
 	<input type='hidden' name='action' value='clearerrors'>
-	<input type='hidden' name='agent' value="[[agent.getVal('id')]]">
+	<input type='hidden' name='agent' value="[[agent.getId()]]">
 	<input type='submit' class='btn btn-danger' value='Delete All'>
 </form>
 <br>

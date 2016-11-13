@@ -15,4 +15,9 @@ class UI {
     echo $TEMPLATE->render($OBJECTS);
     die();
   }
+  
+  public static function printFatalError($message){
+    echo $message;
+    die();
+  }
 }

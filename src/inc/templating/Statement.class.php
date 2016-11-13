@@ -95,7 +95,12 @@ class Statement {
         UI::printFatalError("Variable starting at $varPos not closed!");
       }
       $output .= substr($content, $pos, $varPos - $pos);
-      $output .= $result[0];
+      if(strlen($output) == 0){
+        $output = $result[0]; //required to handle passed arrays
+      }
+      else {
+        $output .= $result[0];
+      }
       $pos = $varPos + $result[1];
     }
     return $output;
@@ -119,7 +124,7 @@ class Statement {
       if($value === null){
         UI::printFatalError("Failed to get value for '".substr($content, 0, $closePos)."'!");
       }
-      $output .= $value;
+      $output = $value;
       return array($output, $closePos + 4);
     }
     else{

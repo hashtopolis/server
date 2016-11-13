@@ -15,9 +15,9 @@ class Template {
       $this->content = $template;
     }
     else {
-      $path = dirname(__FILE__) . "/../templates/" . $template . ".template.html";
+      $path = dirname(__FILE__) . "/../../templates/" . $template . ".template.html";
       if (!file_exists($path)) {
-        $path = dirname(__FILE__) . "/../templates/" . $template;
+        $path = dirname(__FILE__) . "/../../templates/" . $template;
         if (!file_exists($path)) {
           if (ini_get("display_errors") == 1) {
             echo "ERROR: Template $template not found!\n";

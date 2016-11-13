@@ -40,6 +40,8 @@ foreach ($dir as $entry) {
     require_once(dirname(__FILE__) . "/" . $entry);
   }
 }
+require_once(dirname(__FILE__)."/templating/Statement.class.php");
+require_once(dirname(__FILE__)."/templating/Template.class.php");
 
 //include all handlers
 $dir = scandir(dirname(__FILE__) . "/handlers/");

@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -35,9 +34,10 @@ if (isset($_GET['id'])) {
   else {
     $users = $FACTORIES::getUserFactory()->filter(array());
     $OBJECTS['users'] = $users;
+    $OBJECTS['agent'] = $agent;
     
     //TODO: not done yet
-    $res = $DB->query("SELECT agents.*,assignments.task,SUM(GREATEST(chunks.solvetime,chunks.dispatchtime)-chunks.dispatchtime) AS spent FROM agents LEFT JOIN assignments ON assignments.agent=agents.id LEFT JOIN chunks ON chunks.agent=agents.id WHERE agents.id=" . $agent->getId());
+    /*$res = $DB->query("SELECT agents.*,assignments.task,SUM(GREATEST(chunks.solvetime,chunks.dispatchtime)-chunks.dispatchtime) AS spent FROM agents LEFT JOIN assignments ON assignments.agent=agents.id LEFT JOIN chunks ON chunks.agent=agents.id WHERE agents.id=" . $agent->getId());
     $agentSet = new DataSet();
     $agentSet->setValues($res->fetch());
     
@@ -70,7 +70,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['platforms'] = $platforms;
     $OBJECTS['agent'] = $agentSet;
     $OBJECTS['errors'] = $errors;
-    $OBJECTS['chunks'] = $chunks;
+    $OBJECTS['chunks'] = $chunks;*/
     //TODO: until here
   }
 }
