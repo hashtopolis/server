@@ -1,6 +1,4 @@
 <?php
-use Bricky\Template;
-
 // -> if there is a valid connection, check if we can determine the hashtopus tables...
 //   -> if it's hashtopus original, we can run update script, create a new admin user and we are done
 //   -> if its already a hashtopussy installation, we just can mark it as installed and check that there is an admin user
@@ -54,7 +52,7 @@ switch($STEP){
 			header("Location: index.php");
 			die();
 		}
-		$TEMPLATE = new Template("install0");
+		$TEMPLATE = new Template("install/0");
 		echo $TEMPLATE->render(array());
 		break;
 	case 1: //clean installation was selected
@@ -78,7 +76,7 @@ switch($STEP){
 		file_put_contents(dirname(__FILE__)."/../import/.htaccess", "Order deny,allow\nDeny from all");
 		setcookie("step", "", time() - 10);
 		setcookie("prev", "", time() - 10);
-		$TEMPLATE = new Template("install2");
+		$TEMPLATE = new Template("install/2");
 		echo $TEMPLATE->render(array());
 		break;
 	case 50: //one or more files/dir is not writeable
@@ -89,7 +87,7 @@ switch($STEP){
 				die();
 			}
 		}
-		$TEMPLATE = new Template("install50");
+		$TEMPLATE = new Template("install/50");
 		echo $TEMPLATE->render(array());
 		break;
 	case 51: //enter database connection details
@@ -126,7 +124,7 @@ switch($STEP){
 				die();
 			}
 		}
-		$TEMPLATE = new Template("install51");
+		$TEMPLATE = new Template("install/51");
 		echo $TEMPLATE->render(array('failed' => $fail));
 		break;
 	case 52: //database is filled with initial data now we create the user now
@@ -163,7 +161,7 @@ switch($STEP){
 				die();
 			}
 		}
-		$TEMPLATE = new Template("install52");
+		$TEMPLATE = new Template("install/52");
 		echo $TEMPLATE->render(array('message' => $message));
 		break;
 	case 100: //here we start on the upgrade process
@@ -171,7 +169,7 @@ switch($STEP){
 			setcookie("step", "101", time() + 3600);
 			header("Location: index.php");
 		}
-		$TEMPLATE = new Template("install100");
+		$TEMPLATE = new Template("install/100");
 		echo $TEMPLATE->render(array());
 		break;
 	case 101: //upgrade installation with sql upgrade
@@ -182,7 +180,7 @@ switch($STEP){
 			setcookie("prev", "102", time() + 3600);
 			header("Location: index.php");
 		}
-		$TEMPLATE = new Template("install101");
+		$TEMPLATE = new Template("install/101");
 		echo $TEMPLATE->render(array());
 		break;
 	case 102: //upgrade process should be done now
@@ -195,7 +193,7 @@ switch($STEP){
 		file_put_contents(dirname(__FILE__)."/../import/.htaccess", "Order deny,allow\nDeny from all");
 		setcookie("step", "", time() - 10);
 		setcookie("prev", "", time() - 10);
-		$TEMPLATE = new Template("install102");
+		$TEMPLATE = new Template("install/102");
 		echo $TEMPLATE->render(array());
 		break;
 	default:

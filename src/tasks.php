@@ -1,6 +1,4 @@
 <?php
-use Bricky\Template;
-
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 if (!$LOGIN->isLoggedin()) {

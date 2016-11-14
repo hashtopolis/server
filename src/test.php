@@ -3,6 +3,7 @@ ini_set("display_errors", "1");
 
 /*
  * This file just consists of some examples to test the templating engine
+ * TODO: this should be removed as soon as it is released
  */
 
 require_once(dirname(__FILE__) . "/inc/templating/Statement.class.php");
