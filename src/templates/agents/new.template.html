@@ -7,13 +7,13 @@
 	<a href='server.php?a=update'>Download Agent</a><br><br>
 	Used vouchers are automaticaly deleted to prevent double spending.
 </div>
-{{IF !!sizeof(%%vouchers%%)!! > 0}}
+{{IF [[sizeof(%%vouchers%%)]] > 0}}
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
-			{{FOREACH voucher,!!vouchers!!}}
+			{{FOREACH voucher;[[vouchers]]}}
 				<tr>
 					<td><code>[[voucher.getVoucher()]]</code></td>
-          			<td>[[date(%%config.getVal('timefmt')%%, %%voucher.getTime()%%)]]</td>
+          			<td>[[date([[config.getVal('timefmt')]], [[voucher.getTime()]])]]</td>
           			<td>
           				<form action="newagent.php" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
           					<input type="hidden" name="action" value="voucherdelete">

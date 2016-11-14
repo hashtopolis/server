@@ -8,6 +8,7 @@ ini_set("display_errors", "1");
 require_once(dirname(__FILE__) . "/inc/templating/Statement.class.php");
 require_once(dirname(__FILE__) . "/inc/templating/Template.class.php");
 require_once(dirname(__FILE__) . "/inc/UI.class.php");
+require_once(dirname(__FILE__) . "/inc/dataset.class.php");
 
 class Test {
   public function getString(){
@@ -33,6 +34,12 @@ $text10 = "hello [[user]], how are you? {{IF [[fine]] == 1}}I'm fine!{{ELSE}}I'm
 $text11 = "hello {{FOR x;[[start]];[[end]]}}user[[x]]\n{{ENDFOR}}";
 $text12 = "hello {{IF [[var]] == 1}} user1 {{IF [[varr]] == 2}} varr is equal 2{{ENDIF}}{{ENDIF}}";
 $objects10 = array('user' => "s3in!c", "fine" => 1, "start" => 5, "end" => 10, "var" => 0, "varr" => 2);
+
+$text20 = "hello [[substr([[user]], 0, 2)]]. hello [[date([[test.getVal('timefmt')]], [[test.getVal('agent')]])]] I'm well";
+$set = new DataSet();
+$set->addValue('timefmt', "d.m.Y - H:i:s");
+$set->addValue('agent', time());
+$objects20 = array('test' => $set, 'user' => 'testuser');
 
 
 $TEMPLATE = new Template($text1, true);

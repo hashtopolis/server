@@ -90,7 +90,7 @@ class Statement {
         $output .= substr($content, $pos);
         return $output;
       }
-      $result = $this->renderVariable(substr($content, $varPos + 2), $objects, $inner);
+      $result = $this->renderVariable(substr($content, $varPos), $objects, $inner);
       if ($result === false) {
         UI::printFatalError("Variable starting at $varPos not closed!");
       }
@@ -107,29 +107,43 @@ class Statement {
   }
   
   private function renderVariable($content, $objects, $inner = false){
-    $closePos = strpos($content, "]]");
-    $nextPos = strpos($content, "[[");
-    $output = "";
-    if($nextPos !== false && $nextPos < $closePos){
-      $output .= substr($content, 0, $nextPos);
-      $result = $this->renderVariable(substr($content, $nextPos + 2), $objects, true);
-      $output .= $result[0];
-      $output .= substr($content, $nextPos + $result[1]);
-      $result = $this->renderVariable($output, $objects, $inner);
-      $result[1] -= $nextPos + 1;
-      return $result;
-    }
-    else if($closePos !== false){
-      $value = $this->evalResult(substr($content, 0, $closePos), $objects, $inner);
-      if($value === null){
-        UI::printFatalError("Failed to get value for '".substr($content, 0, $closePos)."'!");
+    $opencount = 1;
+    $pos = 2;
+    while($opencount > 0){
+      if($pos > strlen($content)){
+        UI::printFatalError("Syntax error when parsing variable $content, not closed!");
       }
-      $output = $value;
-      return array($output, $closePos + 4);
+      $nextOpen = strpos($content, "[[", $pos);
+      $nextClose = strpos($content, "]]", $pos);
+      if($nextOpen === false && $nextClose === false){
+        UI::printFatalError("Syntax error when parsing variable $content!");
+      }
+      else if($nextOpen === false){
+        $opencount--;
+        $pos = $nextClose + 2;
+      }
+      else if($nextClose === false){
+        $opencount++;
+        $pos = $nextOpen + 2;
+      }
+      else if($nextClose < $nextOpen){
+        $opencount--;
+        $pos = $nextClose + 2;
+      }
+      else{
+        $opencount++;
+        $pos = $nextOpen + 2;
+      }
+    }
+    $varcontent = substr($content, 2, $pos - 4);
+    if(strpos($varcontent, "[[") === false){
+      $output = $this->evalResult($varcontent, $objects, $inner);
     }
     else{
-      return false;
+      $output = $this->renderContent($varcontent, $objects, true);
+      $output = $this->evalResult($output, $objects, $inner);
     }
+    return array($output, $pos);
   }
   
   private function evalResult($value, $objects, $inner){
