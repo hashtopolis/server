@@ -11,7 +11,7 @@
 				<th>Name</th>
 				<th>Hash type</th>
 			</tr>
-			{{FOREACH list,!!lists!!}}
+			{{FOREACH list;[[lists]]}}
 				<tr>
 					<td>
 						<input type="checkbox" name="hlist[]" value="[[list.getVal('id')]]"> [[list.getVal('id')]]

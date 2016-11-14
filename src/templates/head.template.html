@@ -6,18 +6,18 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<meta name="description" content="">
 		<meta name="author" content="">
-		
+
 		<title>Hashtopussy [[version]] [ [[host]] ]</title>
-		
+
 		<link href="static/bootstrap.min.css" rel="stylesheet">
 		<link href="static/navbar.css" rel="stylesheet">
 		<script type="text/javascript" src="jscolor/jscolor.js"></script>
-	    
-	    {{IF [[autorefresh]] > 0}}
-	    	<meta http-equiv="refresh" content="[[autorefresh]]">
-	    {{ENDIF}}
-	    
-	    <script type='text/javascript'>
+
+			{{IF [[autorefresh]] > 0}}
+				<meta http-equiv="refresh" content="[[autorefresh]]">
+			{{ENDIF}}
+
+			<script type='text/javascript'>
 			function sourceChange(valu) {
 				var pasteObject = document
 						.getElementById("pasteLine");
@@ -57,7 +57,7 @@
 					break;
 				}
 			}
-			
+
 			function checkAll(formname, checktoggle) {
 				var checkboxes = new Array();
 				checkboxes = document.getElementById(formname)

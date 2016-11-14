@@ -1,6 +1,6 @@
 {%TEMPLATE->head%}
 {%TEMPLATE->menu%}
-<h2>My Account ([[htmlentities(%%user.getUsername()%%, false, "UTF-8")]])</h2>
+<h2>My Account ([[htmlentities([[user.getUsername()]], false, "UTF-8")]])</h2>
 [[message]]
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
@@ -13,7 +13,7 @@
 		<tr>
 			<th>Register date</th>
 			<td>
-				[[date(%%config.getVal('timefmt')%%, %%user.getRegisteredSince()%%)]]
+				[[date([[config.getVal('timefmt')]], [[user.getRegisteredSince()]])]]
 			</td>
 		</tr>
 		<tr>

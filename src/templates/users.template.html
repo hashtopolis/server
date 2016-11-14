@@ -15,18 +15,17 @@
 			<th>Right group</th>
 			<th>Action</th>
 		</tr>
-		{{FOREACH entry,!!allUsers!!}}
+		{{FOREACH entry;[[allUsers]]}}
 			<tr>
 				<td>[[entry.getVal('user').getId()]]</td>
-				<td>[[htmlentities(%%entry.getVal('user').getUsername()%%)]]</td>
-				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getRegisteredSince()%%)]]</td>
-				<td>[[date(%%config.getVal('timefmt')%%, %%entry.getVal('user').getLastLoginDate()%%)]]</td>
+				<td>[[htmlentities([[entry.getVal('user').getUsername()]], false, "UTF-8")]]</td>
+				<td>[[date([[config.getVal('timefmt')]], [[entry.getVal('user').getRegisteredSince()]])]]</td>
+				<td>[[date([[config.getVal('timefmt')]], [[entry.getVal('user').getLastLoginDate()]])]]</td>
 				<td>[[entry.getVal('user').getEmail()]]</td>
 				<td>
-					{{IF !!entry.getVal('user').getIsValid()!! == 1}}
+					{{IF [[entry.getVal('user').getIsValid()]] == 1}}
 						Valid
-					{{ENDIF}}
-					{{IF !!entry.getVal('user').getIsValid()!! != 1}}
+					{{ELSE}}
 						Invalid/Not activated
 					{{ENDIF}}
 				</td>

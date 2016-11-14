@@ -11,35 +11,33 @@
 		<tr>
 			<td>Name:</td>
 			<td>
-				{{IF !!login.getLevel()!! >= 20}}
+				{{IF [[login.getLevel()]] >= 20}}
 					<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
 						<input type="hidden" name="action" value="taskrename">
 						<input type="hidden" name="task" value="[[task.getVal('id')]]">
 						<input type="text" class='form-control' name="name" size="25" value="[[task.getVal('name')]]">
 						<input type="submit" class='btn btn-default' value="Change">
 					</form>
-				{{ENDIF}}
-				{{IF !!login.getLevel()!! < 20}}
+				{{ELSE}}
 					[[task.getVal('name')]]
 				{{ENDIF}}
 			</td>
 		</tr>
 		<tr>
 			<td>Attack command:</td>
-			<td><pre>[[htmlentities(%%task.getVal('attackcmd')%%, false, "UTF-8")]]</pre></td>
+			<td><pre>[[htmlentities([[task.getVal('attackcmd')]], false, "UTF-8")]]</pre></td>
 		</tr>
 		<tr>
 			<td>Chunk size:</td>
 			<td>
-				{{IF !!login.getLevel()!! >= 20}}
+				{{IF [[login.getLevel()]] >= 20}}
 					<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
 						<input type="hidden" name="action" value="taskchunk">
 						<input type="hidden" name="task" value="[[task.getVal('id')]]">
 						<input type="text" class='form-control' name="chunktime" size="5" value="[[task.getVal('chunktime')]]"> seconds 
 						<input type="submit" class='btn btn-default' value="Set">
 					</form>
-				{{ENDIF}}
-				{{IF !!login.getLevel()!! < 20}}
+				{{ELSE}}
 					[[task.getVal('chunktime')]] seconds
 				{{ENDIF}}
 			</td>
@@ -50,7 +48,7 @@
 				<form id="taskauto" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
 					<input type="hidden" name="action" value="taskauto">
 					<input type="hidden" name="task" value="[[task.getVal('id')]]">
-					<input type="checkbox" name="auto" value="1"{{IF !!task.getVal('autoadjust')!! == 1}} checked{{ENDIF}}
+					<input type="checkbox" name="auto" value="1"{{IF [[task.getVal('autoadjust')]] == 1}} checked{{ENDIF}}
 						onChange="javascript:document.getElementById('taskauto').submit();"> Autoadjust by default
 				</form>
 			</td>
@@ -62,7 +60,7 @@
 					<input type="hidden" name="action" value="taskcolor">
 					<input type="hidden" name="task" value="[[task.getVal('id')]]">
 					#<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getVal('color')]]">
-					{{IF !!login.getLevel()!! >= 20}}
+					{{IF [[login.getLevel()]] >= 20}}
 						<input type="submit" class='btn btn-default' value="Set">
 					{{ENDIF}}
 				</form>
@@ -75,15 +73,14 @@
 		<tr>
 			<td>Priority:</td>
 			<td>
-				{{IF !!login.getLevel()!! >= 20}}
+				{{IF [[login.getLevel()]] >= 20}}
 					<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
 						<input type="hidden" name="action" value="taskprio">
 						<input type="hidden" name="task" value="[[task.getVal('id')]]">
 						<input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('priority')]]"> 
 						<input type="submit" class='btn btn-default' value="Set">
 					</form>
-				{{ENDIF}}
-				{{IF !!login.getLevel()!! < 20}}
+				{{ELSE}}
 					[[task.getVal('priority')]]
 				{{ENDIF}}
 			</td>

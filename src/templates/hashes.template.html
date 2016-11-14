@@ -1,12 +1,12 @@
 {%TEMPLATE->head%}
 {%TEMPLATE->menu%}
-{{IF !!src!! == "chunk"}}
+{{IF [[src]] == "chunk"}}
 	<h2>Hashes of chunk [[chunk.getVal('id')]]</h2>
 {{ENDIF}}
-{{IF !!src!! == "task"}}
+{{IF [[src]] == "task"}}
 	<h2>Hashes of task <a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a></h2>
 {{ENDIF}}
-{{IF !!src!! == "hashlist"}}
+{{IF [[src]] == "hashlist"}}
 	<h2>Hashes of hashlist <a href="hashlists.php?id=[[list.getVal('id')]]">[[list.getVal('name')]]</a></h2>
 {{ENDIF}}
 [[message]]
@@ -16,10 +16,9 @@
 		<tr>
 			<th>Filter:</th>
 			<td>
-				{{IF !!filtering!! == ""}}
+				{{IF [[filtering]] == ""}}
 					Cracked + Uncracked
-				{{ENDIF}}
-				{{IF !!filtering!! != ""}}
+				{{ELSE}}
 					[[filtering]]
 				{{ENDIF}}
 			</td>
@@ -27,10 +26,9 @@
 		<tr>
 			<th>Displaying:</th>
 			<td>
-				{{IF !!displaying!! == ""}}
+				{{IF [[displaying]] == ""}}
 					Hash + Plain
-				{{ENDIF}}
-				{{IF !!displaying!! != ""}}
+				{{ELSE}}
 					[[displaying]]
 				{{ENDIF}}
 			</td>
@@ -55,7 +53,7 @@
 	<table class="table table-bordered table-nonfluid">
 		<tr>
 			<td>
-				<pre style='max-height: 400px;' readonly>[[htmlentities(%%matches%%, false, "UTF-8")]]</pre>
+				<pre style='max-height: 400px;' readonly>[[htmlentities([[matches]], false, "UTF-8")]]</pre>
 			</td>
 		</tr>
 		<tr>

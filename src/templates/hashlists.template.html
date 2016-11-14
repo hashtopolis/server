@@ -2,7 +2,7 @@
 {%TEMPLATE->menu%}
 <h2>Hashlists ([[numHashlists]])</h2>
 [[message]]
-{{IF !!zap!!}}
+{{IF [[zap]]}}
 	{%TEMPLATE->hashlists.zap%}
 {{ENDIF}}
 <div class="panel panel-default">
@@ -16,52 +16,51 @@
 			<th>Pre-cracked</th>
 			<th>Action</th>
 		</tr>
-		{{FOREACH list,!!hashlists!!}}
+		{{FOREACH list;[[hashlists]]}}
 			<tr>
 				<td>
 					<a href="hashlists.php?id=[[list.getVal('id')]]">[[list.getVal('id')]]</a>
 				</td>
 				<td>
 					<a href="hashlists.php?id=[[list.getVal('id')]]">[[list.getVal('name')]]</a>
-					{{IF !!list.getVal('secret')!! == 1}}
+					{{IF [[list.getVal('secret')]] == 1}}
 						<img src="static/lock.gif" alt="Secret">
 					{{ENDIF}}
-					[[Util::tickdone(%%list.getVal('cracked')%%, %%list.getVal('hashcount')%%)]]
+					[[Util::tickdone([[list.getVal('cracked')]], [[list.getVal('hashcount')]])]]
 				</td>
 				<td>
-					{{IF !!list.getVal('description')!! == ""}}
+					{{IF [[list.getVal('description')]] == ""}}
 						[[list.getVal('hashtype')]]
-					{{ENDIF}}
-					{{IF !!list.getVal('description')!! != ""}}
+					{{ELSE}}
 						[[list.getVal('description')]]
 					{{ENDIF}}
 				</td>
-				<td>[[Util::getStaticArray(%%list.getVal('format')%%, 'formats')]]</td>
+				<td>[[Util::getStaticArray([[list.getVal('format')]], 'formats')]]</td>
 				<td class='num'>
-					[[Util::showperc(%%list.getVal('cracked')%%, %%list.getVal('hashcount')%%)]]%
+					[[Util::showperc([[list.getVal('cracked')]], [[list.getVal('hashcount')]])]]%
 					(<a href="hashes.php?hashlist=[[list.getVal('id')]]&filter=cracked">[[list.getVal('cracked')]]</a> / 
 					<a href="hashes.php?hashlist=[[list.getVal('id')]]">[[list.getVal('hashcount')]]</a>)
 				</td>
 				<td>
 					<form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
-				        <input type="hidden" name="action" value="hashlistzap">
-				        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
-				        <input type="submit" class='btn btn-default' value="Import">
-				    </form>
-				    <form style ='float: left;' action="hashlists.php" method="POST">
+						<input type="hidden" name="action" value="hashlistzap">
+						<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+						<input type="submit" class='btn btn-default' value="Import">
+					</form>
+					<form style ='float: left;' action="hashlists.php" method="POST">
 						<input type="hidden" name="action" value="export">
 						<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
 						<input type="submit" class='btn btn-default' value="Export">
 					</form>
 				</td>
 				<td>
-					{{IF !!login.getLevel()!! >= 30}}
+					{{IF [[login.getLevel()]] >= 30}}
 						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[list.getVal('id')]]?')) return false;">
-					        <input type="hidden" name="action" value="hashlistdelete">
-					        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
-					        <input type="submit" class='btn btn-danger' value="Delete">
-					    </form>
-				    {{ENDIF}}
+							<input type="hidden" name="action" value="hashlistdelete">
+							<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+							<input type="submit" class='btn btn-danger' value="Delete">
+						</form>
+					{{ENDIF}}
 				</td>
 			</tr>
 		{{ENDFOREACH}}

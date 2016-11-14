@@ -23,12 +23,12 @@
 				<th>Used</th>
 				<th>Action</th>
 			</tr>
-			{{FOREACH file,!!files!!}}
+			{{FOREACH file;[[files]]}}
 				<tr>
 					<td>[[file.getVal('id')]]</td>
 					<td>
 						<a name="[[file.getVal('id')]]" href="get.php?file=[[file.getVal('id')]]" target="_blank">[[file.getVal('filename')]]</a>
-        				{{IF !!file.getVal('secret')!! == '1'}}
+        				{{IF [[file.getVal('secret')]] == '1'}}
         					<img src="static/lock.gif" alt="Secret">
         				{{ENDIF}}
         			</td>
@@ -37,11 +37,11 @@
         				{%TEMPLATE->files.secret2%}
         			</td>
         			<td class='num'>
-        				[[Util::nicenum(%%file.getVal('size')%%)]]B
+        				[[Util::nicenum([[file.getVal('size')]])]]B
         			</td>
         			<td>[[file.getVal('tasks')]]x</td>
         			<td>
-        				{{IF !!login.getLevel()!! >= 30}}
+        				{{IF [[login.getLevel()]] >= 30}}
 	        				<form action="files.php" method="POST" onSubmit="if (!confirm('Really delete file [[file.getVal('filename')]]?')) return false;">
 	        					<input type="hidden" name="action" value="filedelete">
 	        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
@@ -83,20 +83,19 @@
 				<tr>
 					<th>Import files</th>
 				</tr>
-				{{FOREACH impfile,!!impfiles!!}}
+				{{FOREACH impfile;[[impfiles]]}}
 					<tr>
 						<td>
 							<input type="checkbox" name="imfile[]" value="[[impfile.getVal('name')]]">
-							[[impfile.getVal('name')]] ([[Util::nicenum(%%impfile.getVal('size')%%)]]B)
+							[[impfile.getVal('name')]] ([[Util::nicenum([[impfile.getVal('size')]])]]B)
 						</td>
 					</tr>
 				{{ENDFOREACH}}
-				{{IF !!sizeof(%%impfiles%%)!! == 0}}
+				{{IF [[sizeof([[impfiles]])]] == 0}}
 					<tr>
 						<td>'import' directory is empty.</td>
 					</tr>
-				{{ENDIF}}
-				{{IF !!sizeof(%%impfiles%%)!! != 0}}
+				{{ELSE}}
 					<tr>
 						<td>
 							<input type="submit" class='btn btn-default' value="Import files"> 

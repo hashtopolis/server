@@ -38,16 +38,16 @@
 			<th>Description</th>
 			<th>&nbsp;</th>
 		</tr>
-		{{FOREACH type,!!hashtypes!!}}
+		{{FOREACH type;[[hashtypes]]}}
 			<tr>
 				<td>[[type.getVal('id')]]</td>
 				<td>[[type.getVal('description')]]</td>
 				<td>
 					<form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getVal('id')]]?')) return false;">
-        				<input type="hidden" name="action" value="delete">
-        				<input type="hidden" name="type" value="[[type.getVal('id')]]">
-        				<input type="submit" class='btn btn-danger' value="Delete">
-        			</form>
+						<input type="hidden" name="action" value="delete">
+						<input type="hidden" name="type" value="[[type.getVal('id')]]">
+						<input type="submit" class='btn btn-danger' value="Delete">
+					</form>
 				</td>
 			</tr>
 		{{ENDFOREACH}}

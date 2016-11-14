@@ -1,10 +1,9 @@
 		<tr>
 			<td>Keyspace size:</td>
 			<td>
-				{{IF !!task.getVal('keyspace')!! > 0}}
+				{{IF [[task.getVal('keyspace')]] > 0}}
 					[[task.getVal('keyspace')]]
-				{{ENDIF}}
-				{{IF !!task.getVal('keyspace')!! == 0}}
+				{{ELSE}}
 					N/A
 				{{ENDIF}}
 			</td>
@@ -12,60 +11,59 @@
 		<tr>
 			<td>Keyspace dispatched:</td>
 			<td>
-				[[task.getVal('progress')]] ([[Util::showperc(%%task.getVal('progress')%%, %%task.getVal('keyspace')%%)]]%)
-				{{IF !!task.getVal('active')!! == 0 && !!login.getLevel()!! >= 20}}
+				[[task.getVal('progress')]] ([[Util::showperc([[task.getVal('progress')]], [[task.getVal('keyspace')]])]]%)
+				{{IF [[task.getVal('active')]] == 0 && [[login.getLevel()]] >= 20}}
 					<form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getVal('id')]]?')) return false;">
 						<input type="hidden" name="action" value="taskpurge">
 						<input type="hidden" name="task" value="[[task.getVal('id')]]">
 						<input type="submit" class='btn btn-danger' value="Purge">
 					</form>
 				{{ENDIF}}
-       		</td>
-       	</tr>
-       	<tr>
-       		<td>Keyspace searched:</td>
-       		<td>
-       			{{IF !!task.getVal('keyspace')!! > 0}}
-       				[[task.getVal('cprogress')]] ([[Util::showperc(%%task.getVal('cprogress')%%, %%task.getVal('keyspace')%%)]]%)
-       			{{ENDIF}}
-       			{{IF !!task.getVal('keyspace')!! == 0}}
-       				N/A
-       			{{ENDIF}}
-       		</td>
-       	</tr>
-       	<tr>
-       		<td>Time spent:</td>
-       		<td>
-       			[[Util::sectotime(%%task.getVal('soucet')%%)]]
-       		</td>
-       	</tr>
-       	<tr>
-       		<td>Estimated time:</td>
-       		<td>[[Util::sectotime(%%task.getVal('eta'%%))]]</td>
-       	</tr>
-       	<tr>
-       		<td>Speed:</td>
-       		<td>[[Util::nicenum(%%task.getVal('taskspeed')%%, 100000, 1000)]]H/s</td>
-       	</tr>
-       	<tr>
-       		<td>
-       			{{IF !!task.getVal('format')!! == 3}}Superhashlist{{ENDIF}}
-       			{{IF !!task.getVal('format')!! != 3}}Hashlist{{ENDIF}}
-       		</td>
-       		<td>
-       			{%TEMPLATE->tasks.detail.part1.list1%}
-       			{%TEMPLATE->tasks.detail.part1.list2%}
-       		</td>
-       	</tr>
-       </table>
-   </div>
-   <div class="panel panel-default">
+			</td>
+		</tr>
+		<tr>
+			<td>Keyspace searched:</td>
+			<td>
+				{{IF [[task.getVal('keyspace')]] > 0}}
+					[[task.getVal('cprogress')]] ([[Util::showperc([[task.getVal('cprogress')]], [[task.getVal('keyspace')]])]]%)
+				{{ELSE}}
+					N/A
+				{{ENDIF}}
+			</td>
+		</tr>
+		<tr>
+			<td>Time spent:</td>
+			<td>
+				[[Util::sectotime([[task.getVal('soucet')]])]]
+			</td>
+		</tr>
+		<tr>
+			<td>Estimated time:</td>
+			<td>[[Util::sectotime([[task.getVal('eta')]])]]</td>
+		</tr>
+		<tr>
+			<td>Speed:</td>
+			<td>[[Util::nicenum([[task.getVal('taskspeed')]], 100000, 1000)]]H/s</td>
+		</tr>
+		<tr>
+			<td>
+				{{IF [[task.getVal('format')]] == 3}}Superhashlist
+				{{ELSE}}Hashlist{{ENDIF}}
+			</td>
+			<td>
+				{%TEMPLATE->tasks.detail.part1.list1%}
+				{%TEMPLATE->tasks.detail.part1.list2%}
+			</td>
+		</tr>
+	</table>
+</div>
+<div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
-        <tr>
-        	<td>Visual representation</td>
-        </tr>
-        <tr>
-        	<td>
-        		<img class='img-responsive' style="height: 32px" src="taskimg.php?task=[[task.getVal('id')]]&x=1500&y=32">
-        	</td>
-        </tr>
+		<tr>
+			<td>Visual representation</td>
+		</tr>
+		<tr>
+			<td>
+				<img class='img-responsive' style="height: 32px" src="taskimg.php?task=[[task.getVal('id')]]&x=1500&y=32">
+			</td>
+		</tr>

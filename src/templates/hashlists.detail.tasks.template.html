@@ -8,26 +8,26 @@
 			<th>Searched</th>
 			<th>Cracked</th>
 		</tr>
-		{{FOREACH task,!!tasks!!}}
+		{{FOREACH task;[[tasks]]}}
 			<tr>
 				<td>
 					<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('id')]]</a>
 				</td>
 				<td>
 					<a href="tasks.php?id=[[task.getVal('id')]]" title="[[task.getVal('attackcmd')]]">[[task.getVal('name')]]</a>
-            		[[Util::tickdone(%%task.getVal('progress')%%, %%task.getVal('keyspace')%%)]]
-            		{{IF !!task.getVal('active')!! == 1 && !!task.getVal('sumprog')!! < !!task.getVal('keyspace')!!}}
+            		[[Util::tickdone([[task.getVal('progress')]], [[task.getVal('keyspace')]])]]
+            		{{IF [[task.getVal('active')]] == 1 && [[task.getVal('sumprog')]] < [[task.getVal('keyspace')]]}}
             			<img src="static/active.gif" alt="Active">
             		{{ENDIF}}
             	</td>
             	<td class="num">
-            		[[Util::showperc(%%task.getVal('progress')%%, %%task.getVal('keyspace')%%)]]%
+            		[[Util::showperc([[task.getVal('progress')]], [[task.getVal('keyspace')]])]]%
             	</td>
             	<td class="num">
-	            	[[Util::showperc(%%task.getVal('sumprog')%%, %%task.getVal('keyspace')%%)]]%
+	            	[[Util::showperc([[task.getVal('sumprog')]], [[task.getVal('keyspace')]])]]%
 	            </td>
 	            <td class="num">
-	            	{{IF !!task.getVal('cracked')!! > 0}}
+	            	{{IF [[task.getVal('cracked')]] > 0}}
 	            		<a href="hashes.php?task=[[task.getVal('id')]]">[[task.getVal('cracked')]]</a>
 	            	{{ENDIF}}
             	</td>

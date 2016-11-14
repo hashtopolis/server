@@ -15,20 +15,20 @@
 			<tr>
 				<th colspan='2'>Select tasks assigned to this supertask:</th>
 			</tr>
-			{{FOREACH task,!!preTasks!!}}
+			{{FOREACH task;[[preTasks]]}}
 				<tr>
 					<td>&nbsp;</td>
-		           	<td>
-		           		<input type="checkbox" name="task[]" value="[[task.getVal('id')]]">
-		           		<a href="tasks.php?id=[[task.getVal('id')]]" title="[[task.getVal('attackcmd')]]">[[task.getVal('name')]]</a>
-		           	</td>
+					<td>
+						<input type="checkbox" name="task[]" value="[[task.getVal('id')]]">
+						<a href="tasks.php?id=[[task.getVal('id')]]" title="[[task.getVal('attackcmd')]]">[[task.getVal('name')]]</a>
+					</td>
 				</tr>
 			{{ENDFOREACH}}
-   			<tr>
-   				<td colspan="2">
-   					<input type="submit" class='btn btn-default' value="Create Supertask">
-   				</td>
-   			</tr>
+			<tr>
+				<td colspan="2">
+					<input type="submit" class='btn btn-default' value="Create Supertask">
+				</td>
+			</tr>
 		</table>
 	</div>
 </form>

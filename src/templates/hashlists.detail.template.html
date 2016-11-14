@@ -2,7 +2,7 @@
 {%TEMPLATE->menu%}
 <h2>Hashlist details</h2>
 [[message]]
-{{IF !!zap!!}}
+{{IF [[zap]]}}
 	{%TEMPLATE->hashlists.zap%}
 {{ENDIF}}
 <div class="panel panel-default">
@@ -18,26 +18,24 @@
 		<tr>
 			<td>Name:</td>
 			<td>
-				{{IF !!login.getLevel()!! >= 20}}
-			        <form class='form-inline' action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
-				        <input type="hidden" name="action" value="hashlistrename">
-				        <input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
-				        <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('name')]]">
-				        <input type="submit" class='btn btn-default' value="Change">
-			    	</form>
-			    {{ENDIF}}
-			    {{IF !!login.getLevel()!! < 20}}
-			    	[[list.getVal('name')]]
-			    {{ENDIF}}
-		    </td>
+				{{IF [[login.getLevel()]] >= 20}}
+					<form class='form-inline' action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
+						<input type="hidden" name="action" value="hashlistrename">
+						<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+						<input type="text" class='form-control' name="name" size="20" value="[[list.getVal('name')]]">
+						<input type="submit" class='btn btn-default' value="Change">
+					</form>
+				{{ELSE}}
+					[[list.getVal('name')]]
+				{{ENDIF}}
+			</td>
 		</tr>
 		<tr>
 			<td>Hash type:</td>
 			<td>
-				{{IF !!list.getVal('description')!! == ""}}
+				{{IF [[list.getVal('description')]] == ""}}
 					[[list.getVal('hashtype')]]
-				{{ENDIF}}
-				{{IF !!list.getVal('description')!! != ""}}
+				{{ELSE}}
 					[[list.getVal('description')]]
 				{{ENDIF}}
 			</td>
@@ -45,8 +43,8 @@
         <tr>
         	<td>Format:</td>
         	<td>
-        		[[Util::getStaticArray(%%list.getVal('format')%%, 'formats')]]
-        		{{IF !!list.getVal('hexsalt')!! == 1}}
+        		[[Util::getStaticArray([[list.getVal('format')]], 'formats')]]
+        		{{IF [[list.getVal('hexsalt')]] == 1}}
         			(salt in hex-format)
         		{{ENDIF}}
         	</td>
@@ -61,14 +59,14 @@
         	<td>Cracked:</td>
         	<td>
         		<a href="hashes.php?hashlist=[[list.getVal('id')]]&filter=cracked">[[list.getVal('cracked')]]</a> 
-        		([[Util::showperc(%%list.getVal('cracked')%%, %%list.getVal('hashcount')%%)]]%)
+        		([[Util::showperc([[list.getVal('cracked')]], [[list.getVal('hashcount')]])]]%)
         	</td>
         </tr>
         <tr>
         	<td>Remaining:</td>
         	<td>
-        		<a href="hashes.php?hashlist=[[list.getVal('id')]]&filter=uncracked">[[Util::subtract(%%list.getVal('hashcount')%%, %%list.getVal('cracked')%%)]]</a> 
-        		([[Util::showperc(%%list.getVal('hashcount')%% - %%list.getVal('cracked')%%, %%list.getVal('hashcount')%%)]]%)
+        		<a href="hashes.php?hashlist=[[list.getVal('id')]]&filter=uncracked">[[Util::subtract([[list.getVal('hashcount')]], [[list.getVal('cracked')]])]]</a>
+        		([[Util::showperc([[list.getVal('hashcount')]] - [[list.getVal('cracked')]], [[list.getVal('hashcount')]])]]%)
         	</td>
         </tr>
         <tr>
@@ -81,7 +79,7 @@
         <tr>
         	<td>Actions:</td>
         	<td>
-        		{{IF !!list.getVal('cracked')!! > 0 && !!login.getLevel()!! >= 20}}
+        		{{IF [[list.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 20}}
         			<form style='float: left; padding-right: 5px;' action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
         				<input type='hidden' name='action' value='wordlist'>
         				<input type='hidden' name='hashlist' value='[[list.getVal('id')]]'>
@@ -93,7 +91,7 @@
         				<input type='submit' class='btn btn-default' value='Export hashes for pre-crack'>
         			</form>
         		{{ENDIF}}
-        		{{IF !!list.getVal('cracked')!! < !!list.getVal('hashcount')!! && !!login.getLevel()!! >= 20}}
+        		{{IF [[list.getVal('cracked')]] < [[list.getVal('hashcount')]] && [[login.getLevel()]] >= 20}}
         			<form style='float: left;' action='hashlists.php?id=[[list.getVal('id')]]' method='post'>
         				<input type='hidden' name='action' value='hashlistzap'>
         				<input type='hidden' name='hashlist' value='[[list.getVal('id')]]'>
@@ -104,13 +102,13 @@
         </tr>
 	</table>
 </div>
-{{IF !!list.getVal('format')!! == 3 && !!numSubHashlists!!}}
+{{IF [[list.getVal('format')]] == 3 && [[numSubHashlists]]}}
 	{%TEMPLATE->hashlists.detail.superhashlist%}
 {{ENDIF}}
-{{IF !!numAssignedTasks!! > 0}}
+{{IF [[numAssignedTasks]] > 0}}
 	{%TEMPLATE->hashlists.detail.tasks%}
 {{ENDIF}}
-{{IF !!numPreconfTasks!! > 0}}
+{{IF [[numPreconfTasks]] > 0}}
 	{%TEMPLATE->hashlists.detail.pretasks%}
 {{ENDIF}}
 {%TEMPLATE->foot%}

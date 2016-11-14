@@ -21,8 +21,8 @@
 					<td>Hashlist:</td>
 					<td>
 						<select class='form-control' name="hashlist">
-							{{FOREACH list,!!lists!!}}
-								<option value="[[list.getVal('id')]]"{{IF !!list.getVal('id')!! == !!copy.getVal('hlist')!!}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+							{{FOREACH list;[[lists]]}}
+								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[copy.getVal('hlist')]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
 							{{ENDFOREACH}}
 						</select> (hashlist needs to be created before task)
 					</td>
@@ -56,7 +56,7 @@
       			<tr>
       				<td>Benchmark:</td>
       				<td>
-      					<input type="checkbox" name="autoadjust" value='1'{{IF !!copy.getVal('adjust')!! == 1}} checked{{ENDIF}}> 
+      					<input type="checkbox" name="autoadjust" value='1'{{IF [[copy.getVal('adjust')]] == 1}} checked{{ENDIF}}>
       					Auto adjust<br>(Not recommended for AMD and/or in combination with small chunks sizes)
       				</td>
       			</tr>
@@ -106,19 +106,19 @@
 					<th>Filename</th>
 					<th>Size</th>
 				</tr>
-				{{FOREACH file,!!files!!}}
+				{{FOREACH file;[[files]]}}
 					<tr>
 						<td>
-							<input type="checkbox" name="adfile[]" value="[[file.getVal('id')]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('filename')]]');"{{IF !!file.getVal('che')!! == 1}} checked{{ENDIF}}>
-	        				[[file.getVal('filename')]]
-	        				{{IF !!file.getVal('secret')!! == 1}}
-	        					<img src="static/lock.gif" alt="Secret">
-	        				{{ENDIF}}
-	        			</td>
-	        			<td>
-	        				[[Util::nicenum(%%file.getVal('size')%%)]]B
-	        			</td>
-	        		</tr>
+							<input type="checkbox" name="adfile[]" value="[[file.getVal('id')]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('filename')]]');"{{IF [[file.getVal('che')]] == 1}} checked{{ENDIF}}>
+							[[file.getVal('filename')]]
+							{{IF !!file.getVal('secret')!! == 1}}
+								<img src="static/lock.gif" alt="Secret">
+							{{ENDIF}}
+						</td>
+						<td>
+							[[Util::nicenum([[file.getVal('size')]])]]B
+						</td>
+					</tr>
 				{{ENDFOREACH}}
 			</table>
 		</div>

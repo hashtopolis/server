@@ -4,15 +4,15 @@
 [[message]]
 {%TEMPLATE->tasks.autorefresh%}
 {%TEMPLATE->tasks.detail.static%}
-		{{IF !!task.getVal('hashlist')!! != ""}}
+		{{IF [[task.getVal('hashlist')]] != ""}}
 			{%TEMPLATE->tasks.detail.part1%}
 		{{ENDIF}}
 	</table>
 </div>
-{{IF !!sizeof(%%attachFiles%%)!! > 0}}
+{{IF [[sizeof(%%attachFiles%%)]] > 0}}
 	{%TEMPLATE->tasks.detail.attached%}
 {{ENDIF}}
-{{IF !!task.getVal('hashlist')!! != ""}}
+{{IF [[task.getVal('hashlist')]] != ""}}
 	<h3>Assigned agents</h3>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">

@@ -3,10 +3,10 @@
 <h2>Tasks ([[numTasks]])</h2>
 [[message]]
 <div style='overflow: auto;'>
-	{{IF !!login.getLevel()!! >= 30}}
+	{{IF [[login.getLevel()]] >= 30}}
 		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
 			<input type='hidden' name='action' value='finishedtasksdelete'>
-		    <input type="submit" value="Delete finished" class='btn btn-default'>
+			<input type="submit" value="Delete finished" class='btn btn-default'>
 		</form>
 	{{ENDIF}}
 	{%TEMPLATE->tasks.autorefresh%}
@@ -27,103 +27,99 @@
     		<th>Priority</th>
     		<th>Action</th>
     	</tr>
-    	{{FOREACH task,!!tasks!!}}
+    	{{FOREACH task;[[tasks]]}}
     		<tr>
     			<td
-	    			{{IF !!strlen(%%task.getVal('color')%%)!! > 0}}
+	    			{{IF [[strlen([[task.getVal('color')]])]] > 0}}
 	    				style='background-color: #[[task.getVal('color')]]'
 	    			{{ENDIF}}
 	    			>
-	    			{{IF !!login.getLevel()!! >= 5}}
+	    			{{IF [[login.getLevel()]] >= 5}}
 	    				<a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('task')]]</a>
-	    			{{ENDIF}}
-	    			{{IF !!login.getLevel()!! < 5}}
+	    			{{ELSE}}
 	    				[[task.getVal('task')]]
 	    			{{ENDIF}}
     			</td>
-    			<td title="[[htmlentities(%%task.getVal('attackcmd')%%, false, "UTF-8")]]">
-    				{{IF !!login.getLevel()!! >= 5}}
+    			<td title="[[htmlentities([[task.getVal('attackcmd')]], false, "UTF-8")]]">
+    				{{IF [[login.getLevel()]] >= 5}}
     					<a href="tasks.php?id=[[task.getVal('task')]]">[[task.getVal('name')]]</a>
-    				{{ENDIF}}
-    				{{IF !!login.getLevel()!! < 5}}
+    				{{ELSE}}
     					[[task.getVal('name')]]
     				{{ENDIF}}
-        			[[Util::tickdone(%%task.getVal('sumprog')%%, %%task.getVal('keyspace')%%)]]
-        			{{IF !!task.getVal('active')!! == 1 && !!task.getVal('sumprog')!! < !!task.getVal('keyspace')!!}}
-        				<img src="static/active.gif" alt="Active">
-        			{{ENDIF}}
-        		</td>
-        		<td>
-        			{{IF !!task.getVal('hashlist')!! == ""}}
+						[[Util::tickdone([[task.getVal('sumprog')]], [[task.getVal('keyspace')]])]]
+						{{IF [[task.getVal('active')]] == 1 && [[task.getVal('sumprog')]] < [[task.getVal('keyspace')]]}}
+							<img src="static/active.gif" alt="Active">
+						{{ENDIF}}
+					</td>
+					<td>
+        			{{IF [[task.getVal('hashlist')]] == ""}}
         				(pre-configured task)
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != "" && !!login.getLevel()!! >= 5}}
+        			{{IF [[task.getVal('hashlist')]] != "" && [[login.getLevel()]] >= 5}}
         				<a href="hashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('hname')]]</a>
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != "" && !!login.getLevel()!! < 5}}
+        			{{IF [[task.getVal('hashlist')]] != "" && [[login.getLevel()]] < 5}}
         				[[task.getVal('hname')]]
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hsecret')!! == 1}}
+        			{{IF [[task.getVal('hashlist')]] != "" && [[task.getVal('hsecret')]] == 1}}
         				<img src="static/lock.gif" alt="Secret">
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hlinc')!! == 0}}
+        			{{IF [[task.getVal('hashlist')]] != "" && [[task.getVal('hlinc')]] == 0}}
         				[[Util::tickdone(1, 1)]]
         			{{ENDIF}}
-        			{{IF !!task.getVal('hashlist')!! != "" && !!task.getVal('hlinc')!! == 1}}
+        			{{IF [[task.getVal('hashlist')]] != "" && [[task.getVal('hlinc')]] == 1}}
         				[[Util::tickdone(0, 1)]]
         			{{ENDIF}}
         		</td>
         		<td class="num">[[task.getVal('ccount')]]@[[task.getVal('chunktime')]]s</td>
-        		{{IF !!task.getVal('keyspace')!! > 0}}
-        			<td class='num'>
-        				[[Util::showperc(%%task.getVal('progress')%%, %%task.getVal('keyspace')%%)]]%
-        			</td>
-        			<td class='num'>
-        				[[Util::showperc(%%task.getVal('sumprog')%%, %%task.getVal('keyspace')%%)]]%
-        			</td>
-        		{{ENDIF}}
-        		{{IF !!task.getVal('keyspace')!! == 0}}
-        			<td colspan='2'>Keyspace unknown</td>
-        		{{ENDIF}}
+						{{IF [[task.getVal('keyspace')]] > 0}}
+							<td class='num'>
+								[[Util::showperc([[task.getVal('progress')]], [[task.getVal('keyspace')]])]]%
+							</td>
+							<td class='num'>
+								[[Util::showperc([[task.getVal('sumprog')]], [[task.getVal('keyspace')]])]]%
+							</td>
+						{{ELSE}}
+							<td colspan='2'>Keyspace unknown</td>
+						{{ENDIF}}
         		<td class='num'>
-        			{{IF !!task.getVal('pcount')!! > 0 && !!login.getLevel()!! >= 5}}
+        			{{IF [[task.getVal('pcount')]] > 0 && [[login.getLevel()]] >= 5}}
         				<a href="hashes.php?task=[[task.getVal('task')]]&filter=cracked">[[task.getVal('pcount')]]</a>
         			{{ENDIF}}
-        			{{IF !!task.getVal('pcount')!! > 0 && !!login.getLevel()!! < 5}}
+        			{{IF [[task.getVal('pcount')]] > 0 && [[login.getLevel()]] < 5}}
         				[[task.getVal('pcount')]]
         			{{ENDIF}}
         		</td>
         		<td class='num'>
-        			{{IF !!task.getVal('assigncount')!! > 0}}
+        			{{IF [[task.getVal('assigncount')]] > 0}}
         				[[task.getVal('assigncount')]]
         			{{ENDIF}}
         		</td>
         		<td style='min-width: 95px'>
-        			{{IF !!task.getVal('filescount')!! > 0}}
+        			{{IF [[task.getVal('filescount')]] > 0}}
         				[[task.getVal('filescount')]]
         			{{ENDIF}}
-        			{{IF !!task.getVal('secret')!! == 1}}
+        			{{IF [[task.getVal('secret')]] == 1}}
         				<img src="static/lock.gif" alt="Secret">
         			{{ENDIF}}
-        			{{IF !!task.getVal('filescount')!! > 0}}
-        				<br>([[Util::nicenum(%%task.getVal('filesize')%%)]]B)
+        			{{IF [[task.getVal('filescount')]] > 0}}
+        				<br>([[Util::nicenum([[task.getVal('filesize')]])]]B)
         			{{ENDIF}}
         		</td>
         		<td style='min-width: 130px'>
-        			{{IF !!login.getLevel()!! >= 20}}
+        			{{IF [[login.getLevel()]] >= 20}}
 	        			<form class="form-inline" action="tasks.php" method="POST">
 	        				<input type='hidden' name='action' value='taskprio'>
 	        				<input type="hidden" name="task" value="[[task.getVal('task')]]">
 	        				<input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getVal('priority')]]">
 	        				<input type="submit" class='btn btn-default' value="Set">
 	        			</form>
-        			{{ENDIF}}
-        			{{IF !!login.getLevel()!! < 20}}
+        			{{ELSE}}
         				[[task.getVal('priority')]]
         			{{ENDIF}}
         		</td>
         		<td style='min-width: 120px'>
-        			{{IF !!login.getLevel()!! >= 30}}
+        			{{IF [[login.getLevel()]] >= 30}}
 	        			<form style ='float: left; padding-right: 5px;' action="newtask.php?id=[[task.getVal('task')]]" method="post">
 	        				<input type="submit" class='btn btn-default' value="Copy">
 	        			</form>
@@ -135,7 +131,7 @@
 	        		{{ENDIF}}
         		</td>
     		</tr>
-    		{{IF !!task.getVal('sumprog')!! < !!task.getVal('keyspace')!!}}
+    		{{IF [[task.getVal('sumprog')]] < [[task.getVal('keyspace')]]}}
     			<tr>
     				<td colspan="11">
     					<img style="width: 100%; height: 6px;" src="taskimg.php?task=[[task.getVal('task')]]&x=800&y=6">

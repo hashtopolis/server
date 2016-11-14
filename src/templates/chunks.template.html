@@ -17,63 +17,62 @@
 			<th>State</th>
 			<th>Cracked</th>
 		</tr>
-		{{FOREACH chunk,!!chunks!!}}
+		{{FOREACH chunk;[[chunks]]}}
 			<tr>
 				<td>
 					[[chunk.getVal('id')]]
-					{{IF !!max(%%chunk.getVal('solvetime')%%, %%chunk.getVal('dispatchtime')%%)!! > !!time()!! - !!config.getVal('chunktimeout')!! && !!chunk.getVal('progress')!! < !!chunk.getVal('length')!! && !!chunk.getVal('state')!! < 4}}
-						<img src="static/active.gif" alt="Active" title="[[Util::nicenum(%%chunk.getVal('speed')%%, 100000, 1000)]]H/s">
+					{{IF [[max([[chunk.getVal('solvetime')]], [[chunk.getVal('dispatchtime')]])]] > [[time()]] - [[config.getVal('chunktimeout')]] && [[chunk.getVal('progress')]] < [[chunk.getVal('length')]] && [[chunk.getVal('state')]] < 4}}
+						<img src="static/active.gif" alt="Active" title="[[Util::nicenum([[chunk.getVal('speed')]], 100000, 1000)]]H/s">
 					{{ENDIF}}
-	           	</td>
-	           	<td class="num">[[chunk.getVal('skip')]]</td>
-	           	<td class="num">[[chunk.getVal('length')]]</td>
-	           	<td class="num">
-	           		[[chunk.getVal('progress')]]
-	           		{{IF !!chunk.getVal('progress')!! > 0 && !!chunk.getVal('progress')!! != !!chunk.getVal('length')!!}}
-	           			<br>([[Util::showperc(%%chunk.getVal('progress')%%, %%chunk.getVal('length')%%)]]%)
-	           		{{ENDIF}}
-        		</td>
-        		<td class="num">[[Util::showperc(%%chunk.getVal('rprogress')%%, 10000)]]%</td>
-        		<td>
-        			{{IF !!chunk.getVal('task')!! == ""}}
-        				N/A
-        			{{ENDIF}}
-        			{{IF !!chunk.getVal('task')!! != ""}}
-        				<a href="tasks.php?id=[[chunk.getVal('task')]]">[[chunk.getVal('tname')]]</a>
-        			{{ENDIF}}
-       	 		</td>
-       	 		<td>
-       	 			{{IF !!chunk.getVal('agent')!! == ""}}
-       	 				N/A
-       	 			{{ENDIF}}
-       	 			{{IF !!chunk.getVal('agent')!! != "" && !!login.getLevel()!! >= 20}}
-       	 				<a href="agents.php?id=[[chunk.getVal('agent')]]">[[chunk.getVal('aname')]]</a>
-       	 			{{ENDIF}}
-       	 			{{IF !!chunk.getVal('agent')!! != "" && !!login.getLevel()!! < 20}}
-       	 				[[chunk.getVal('aname')]]
-       	 			{{ENDIF}}
-        		</td>
-        		<td>
-        			[[date(%%config.getVal('timefmt')%%, %%chunk.getVal('dispatchtime')%%)]]
-        		</td>
-        		<td>
-        			{{IF !!chunk.getVal('solvetime')!! == 0}}
-        				(no activity)</td><td>
-        			{{ENDIF}}
-        			{{IF !!chunk.getVal('solvetime')!! != 0}}
-        				[[date(%%config.getVal('timefmt')%%, %%chunk.getVal('solvetime')%%)]]
-						</td><td class="num">
-						[[Util::sectotime(%%chunk.getVal('spent')%%)]]
-        			{{ENDIF}}
-        		</td>
-        		<td>
-        			[[Util::getStaticArray(%%chunk.getVal('state')%%, 'states')]]
-        		</td>
-        		<td class="num">
-        			{{IF !!chunk.getVal('cracked')!! > 0}}
-        				<a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
-        			{{ENDIF}}
-			    </td>
+				</td>
+				<td class="num">[[chunk.getVal('skip')]]</td>
+				<td class="num">[[chunk.getVal('length')]]</td>
+				<td class="num">
+					[[chunk.getVal('progress')]]
+					{{IF [[chunk.getVal('progress')]] > 0 && [[chunk.getVal('progress')]] != [[chunk.getVal('length')]]}}
+						<br>([[Util::showperc([[chunk.getVal('progress')]], [[chunk.getVal('length')]])]]%)
+					{{ENDIF}}
+				</td>
+				<td class="num">[[Util::showperc([[chunk.getVal('rprogress')]], 10000)]]%</td>
+				<td>
+					{{IF [[chunk.getVal('task')]] == ""}}
+						N/A
+					{{ELSE}}
+						<a href="tasks.php?id=[[chunk.getVal('task')]]">[[chunk.getVal('tname')]]</a>
+					{{ENDIF}}
+				</td>
+				<td>
+					{{IF [[chunk.getVal('agent')]] == ""}}
+						N/A
+					{{ENDIF}}
+					{{IF [[chunk.getVal('agent')]] != "" && [[login.getLevel()]] >= 20}}
+						<a href="agents.php?id=[[chunk.getVal('agent')]]">[[chunk.getVal('aname')]]</a>
+					{{ENDIF}}
+					{{IF [[chunk.getVal('agent')]] != "" && [[login.getLevel()]] < 20}}
+						[[chunk.getVal('aname')]]
+					{{ENDIF}}
+				</td>
+				<td>
+					[[date([[config.getVal('timefmt')]], [[chunk.getVal('dispatchtime')]])]]
+				</td>
+				<td>
+					{{IF [[chunk.getVal('solvetime')]] == 0}}
+						  (no activity)</td><td>
+					{{ELSE}}
+						  [[date([[config.getVal('timefmt')]], [[chunk.getVal('solvetime')]])]]
+            </td>
+            <td class="num">
+              [[Util::sectotime([[chunk.getVal('spent')]])]]
+          {{ENDIF}}
+        </td>
+        <td>
+          [[Util::getStaticArray([[chunk.getVal('state')]], 'states')]]
+        </td>
+        <td class="num">
+          {{IF [[chunk.getVal('cracked')]] > 0}}
+            <a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
+          {{ENDIF}}
+        </td>
 			</tr>
 		{{ENDFOREACH}}
 	</table>

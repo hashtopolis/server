@@ -2,10 +2,9 @@
 {%TEMPLATE->menu%}
 <h2>Supertask Details</h2>
 [[message]]
-{{IF ! !!supertask!!}}
+{{IF ! [[supertask]]}}
 	<div class='alert alert-danger'>Invalid supertask!</div>
-{{ENDIF}}
-{{IF !!supertask!!}}
+{{ELSE}}
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>

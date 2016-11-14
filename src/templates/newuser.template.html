@@ -23,7 +23,7 @@
 				<td>
 					<select name='group' class='form-control'>
 						<option value=''>---</option>
-						{{FOREACH group,!!groups!!}}
+						{{FOREACH group;[[groups]]}}
 							<option value='[[group.getId()]]'>[[group.getGroupName()]] ([[group.getLevel()]])</option>
 						{{ENDFOREACH}}
 					</select>

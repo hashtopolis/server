@@ -1,4 +1,4 @@
-{{IF !!login.getLevel()!! >= 20}}
+{{IF [[login.getLevel()]] >= 20}}
 	<h3>Create pre-configured tasks:</h3>
 	<form id="preconf" action="hashlists.php?id=[[list.getVal('id')]]" method="POST">
 		<input type='hidden' name='action' value='preconf'>
@@ -9,16 +9,16 @@
 					<th>ID</th>
 					<th>Name</th>
 				</tr>
-				{{FOREACH task,!!preTasks!!}}
+				{{FOREACH task;[[preTasks]]}}
 					<tr>
-						<td{{IF !!strlen(%%task.getVal('color')%%)!! > 0}} style="background-color: #[[task.getVal('color')]]""{{ENDIF}}>
-			           		<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('id')]]</a>
-			           	</td>
-			           	<td>
-			           		<input type="checkbox" name="task[]" value="[[task.getVal('id')]]">
-			           		<a href="tasks.php?id=[[task.getVal('id')]]" title="[[htmlentities(%%task.getVal('attackcmd')%%, false, "UTF-8")]]">[[task.getVal('name')]]</a>
-			           	</td>
-			        </tr>
+						<td{{IF [[strlen([[task.getVal('color')]])]] > 0}} style="background-color: #[[task.getVal('color')]]""{{ENDIF}}>
+							<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('id')]]</a>
+						</td>
+						<td>
+							<input type="checkbox" name="task[]" value="[[task.getVal('id')]]">
+							<a href="tasks.php?id=[[task.getVal('id')]]" title="[[htmlentities([[task.getVal('attackcmd')]], false, "UTF-8")]]">[[task.getVal('name')]]</a>
+						</td>
+					</tr>
 				{{ENDFOREACH}}
 				<tr>
 					<td colspan="2">
