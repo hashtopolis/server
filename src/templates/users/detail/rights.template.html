@@ -1,3 +1,0 @@
-{{FOREACH group;[[groups]]}}
-	<option value='[[group.getId()]]'{{IF [[group.getId()]] == [[user.getRightGroupId()]]}} selected{{ENDIF}}>[[group.getGroupName()]] ([[group.getLevel()]])</option>
-{{ENDFOREACH}}

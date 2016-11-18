@@ -1,7 +1,7 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>All users ([[numUsers]])</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
@@ -38,4 +38,4 @@
 		{{ENDFOREACH}}
 	</table>
 </div>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

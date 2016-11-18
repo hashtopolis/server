@@ -512,6 +512,62 @@ class AbstractModelFactory {
   }
   
   /**
+   * Updates all matching objects of the model. Matching objects can be given by query filters
+   *
+   * @param $options
+   * @return bool
+   */
+  public function massUpdate($options) {
+    $query = "UPDATE " . $this->getModelTable();
+    
+    $vals = array();
+  
+    if (array_key_exists("update", $options)) {
+      $query = $query . " SET ";
+    
+    
+      $updateOptions = $options['update'];
+      $vals = array();
+    
+      for ($i = 0; $i < count($updateOptions); $i++) {
+        $option = $updateOptions[$i];
+        array_push($vals, $option->getValue());
+      
+        if ($i != count($updateOptions) - 1) {
+          $query = $query . $option->getQuery() . " , ";
+        }
+        else {
+          $query = $query . $option->getQuery();
+        }
+      }
+    }
+    
+    if (array_key_exists("filter", $options)) {
+      $query = $query . " WHERE ";
+      
+      
+      $filterOptions = $options['filter'];
+      $vals = array();
+      
+      for ($i = 0; $i < count($filterOptions); $i++) {
+        $option = $filterOptions[$i];
+        array_push($vals, $option->getValue());
+        
+        if ($i != count($filterOptions) - 1) {
+          $query = $query . $option->getQueryString() . " AND ";
+        }
+        else {
+          $query = $query . $option->getQueryString();
+        }
+      }
+    }
+    
+    $dbh = $this->getDB();
+    $stmt = $dbh->prepare($query);
+    return $stmt->execute($vals);
+  }
+  
+  /**
    * Returns the DB connection if possible
    */
   public function getDB($test = false) {

@@ -1,7 +1,7 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>User ([[htmlentities([[user.getUsername()]], false, "UTF-8")]])</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
@@ -51,7 +51,9 @@
 					<input type='hidden' name='action' value='setrights'>
 					<input type='hidden' name='user' value='[[user.getId()]]'>
 					<select name='group' class='form-control'>
-						{%TEMPLATE->users.detail.rights%}
+						{{FOREACH group;[[groups]]}}
+							<option value='[[group.getId()]]'{{IF [[group.getId()]] == [[user.getRightGroupId()]]}} selected{{ENDIF}}>[[group.getGroupName()]] ([[group.getLevel()]])</option>
+						{{ENDFOREACH}}
 					</select>
 					<input type="submit" class='btn btn-default' value="Set">
 				</form>
@@ -80,4 +82,4 @@
 		</tr>
 	</table>
 </div>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}
