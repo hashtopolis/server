@@ -6,7 +6,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$TEMPLATE = new Template("tasks");
+$TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");
 $message = "";
 

@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -14,7 +13,7 @@ else if ($LOGIN->getLevel() < 5) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("hashes");
+$TEMPLATE = new Template("hashes/index");
 $MENU->setActive("hashes");
 $message = "";
 

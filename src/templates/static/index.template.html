@@ -1,5 +1,5 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 {{IF ![[login.isLoggedin()]]}}
   <h2>Login</h2>
   [[message]]
@@ -38,6 +38,6 @@
   </div>
 {{ELSE}}
   <div class='alert alert-success'>Hi [[user.getUsername()]], welcome back!</div>
-  {%TEMPLATE->help%}
+  {%TEMPLATE->static/help%}
 {{ENDIF}}
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

@@ -6,7 +6,7 @@
  * Date: 10.11.16
  * Time: 14:38
  */
-class AgentHandler {
+class AgentHandler implements Handler {
   private $agent;
   
   public function __construct($agentId = null) {

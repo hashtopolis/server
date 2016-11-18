@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -12,7 +11,7 @@ else if ($LOGIN->getLevel() < 50) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("newuser");
+$TEMPLATE = new Template("new/user");
 $MENU->setActive("users_new");
 $message = "";
 

@@ -1,6 +1,8 @@
 <?php
 require_once(dirname(__FILE__) . "/inc/load.php");
 
+//TODO: this should be removed soon
+
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
   die();

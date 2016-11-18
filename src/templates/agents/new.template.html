@@ -1,5 +1,5 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Add new agent</h2>
 [[message]]
 <div class='alert alert-info'>
@@ -7,7 +7,7 @@
 	<a href='server.php?a=update'>Download Agent</a><br><br>
 	Used vouchers are automaticaly deleted to prevent double spending.
 </div>
-{{IF [[sizeof(%%vouchers%%)]] > 0}}
+{{IF [[sizeof([[vouchers]])]] > 0}}
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			{{FOREACH voucher;[[vouchers]]}}
@@ -42,4 +42,4 @@
 		</table>
 	</div>
 </form>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -16,24 +15,11 @@ $TEMPLATE = new Template("config");
 $MENU->setActive("config_server");
 $message = "";
 
-//catch agents actions here...
+//catch actions here...
 if (isset($_POST['action'])) {
-  switch ($_POST['action']) {
-    case 'update':
-      $DB = $FACTORIES::getagentsFactory()->getDB();
-      $CONFIG = new DataSet();
-      foreach ($_POST as $item => $val) {
-        if (substr($item, 0, 7) == "config_") {
-          $CONFIG->addValue(substr($item, 7), $val);
-          $item = $DB->quote(substr($item, 7));
-          $val = $DB->quote($val);
-          $DB->exec("INSERT INTO config (item, value) VALUES ($item, $val) ON DUPLICATE KEY UPDATE value=$val");
-        }
-      }
-      $message = "<div class='alert alert-success'>Configuration updated successfully!</div>";
-      $OBJECTS['config'] = $CONFIG;
-      break;
-  }
+  $configHandler = new ConfigHandler();
+  $configHandler->handle($_POST['action']);
+  Util::refresh();
 }
 
 $configuration = array();

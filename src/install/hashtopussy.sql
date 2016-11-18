@@ -1,35 +1,8 @@
--- phpMyAdmin SQL Dump
--- version 4.5.4.1deb2ubuntu2
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Erstellungszeit: 27. Jul 2016 um 14:33
--- Server-Version: 5.7.13-0ubuntu0.16.04.2
--- PHP-Version: 7.0.8-0ubuntu0.16.04.1
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
---
--- Datenbank: `htp2`
---
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Agent`
---
 
 CREATE TABLE `Agent` (
   `agentId` int(11) NOT NULL,
   `agentName` varchar(200) COLLATE utf8_bin NOT NULL,
-  `uid` varchar(200) COLLATE utf8_bin NOT NULL COMMENT 'HDD number',
+  `uid` varchar(200) COLLATE utf8_bin NOT NULL,
   `os` int(11) NOT NULL,
   `gpuDriver` int(11) NOT NULL,
   `gpus` text COLLATE utf8_bin NOT NULL,
@@ -47,12 +20,6 @@ CREATE TABLE `Agent` (
   `cpuOnly` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Assignment`
---
-
 CREATE TABLE `Assignment` (
   `assignmentId` int(11) NOT NULL,
   `taskId` int(11) NOT NULL,
@@ -61,12 +28,6 @@ CREATE TABLE `Assignment` (
   `autoAdjust` int(11) NOT NULL,
   `speed` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Chunk`
---
 
 CREATE TABLE `Chunk` (
   `chunkId` int(11) NOT NULL,
@@ -82,21 +43,11 @@ CREATE TABLE `Chunk` (
   `solveTime` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Config`
---
-
 CREATE TABLE `Config` (
   `configId` int(11) NOT NULL,
   `item` varchar(100) COLLATE utf8_bin NOT NULL,
   `value` varchar(200) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- Daten für Tabelle `Config`
---
 
 INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
 (1, 'agenttimeout', '30'),
@@ -112,12 +63,6 @@ INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
 (11, 'statustimer', '5'),
 (12, 'timefmt', 'd.m.Y, H:i:s');
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentError`
---
-
 CREATE TABLE `AgentError` (
   `agentErrorId` int(11) NOT NULL,
   `agentId` int(11) NOT NULL,
@@ -126,12 +71,6 @@ CREATE TABLE `AgentError` (
   `error` text COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `File`
---
-
 CREATE TABLE `File` (
   `fileId` int(11) NOT NULL,
   `filename` varchar(200) COLLATE utf8_bin NOT NULL,
@@ -139,12 +78,6 @@ CREATE TABLE `File` (
   `secret` int(11) NOT NULL,
   `fileType` int(11) NOT NULL COMMENT '0 -> dict, 1 -> rule'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Hash`
---
 
 CREATE TABLE `Hash` (
   `hashId` int(11) NOT NULL,
@@ -156,12 +89,6 @@ CREATE TABLE `Hash` (
   `chunkId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashBinary`
---
-
 CREATE TABLE `HashBinary` (
   `hashBinaryId` int(11) NOT NULL,
   `hashlistId` int(11) NOT NULL,
@@ -171,12 +98,6 @@ CREATE TABLE `HashBinary` (
   `time` int(11) NOT NULL,
   `chunkId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashcatRelease`
---
 
 CREATE TABLE `HashcatRelease` (
   `hashcatReleaseId` int(11) NOT NULL,
@@ -190,12 +111,6 @@ CREATE TABLE `HashcatRelease` (
   `minver` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Hashlist`
---
-
 CREATE TABLE `Hashlist` (
   `hashlistId` int(11) NOT NULL,
   `hashlistName` varchar(200) COLLATE utf8_bin NOT NULL,
@@ -207,32 +122,16 @@ CREATE TABLE `Hashlist` (
   `hexSalt` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashlistAgent`
---
-
 CREATE TABLE `HashlistAgent` (
   `hashlistAgentId` int(11) NOT NULL,
   `hashlistId` int(11) NOT NULL,
   `agentId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashType`
---
-
 CREATE TABLE `HashType` (
   `hashTypeId` int(11) NOT NULL,
   `description` varchar(200) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
---
--- Daten für Tabelle `HashType`
---
 
 INSERT INTO `HashType` (`hashTypeId`, `description`) VALUES
 (0, 'MD5'),
@@ -387,23 +286,11 @@ INSERT INTO `HashType` (`hashTypeId`, `description`) VALUES
 (11500, 'CRC32'),
 (11600, '7-Zip');
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `RegVoucher`
---
-
 CREATE TABLE `RegVoucher` (
   `regVoucherId` int(11) NOT NULL,
   `voucher` varchar(50) COLLATE utf8_bin NOT NULL,
   `time` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `RightGroup`
---
 
 CREATE TABLE `RightGroup` (
   `rightGroupId` int(11) NOT NULL,
@@ -411,22 +298,12 @@ CREATE TABLE `RightGroup` (
   `level` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Daten für Tabelle `RightGroup`
---
-
 INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
 (1, 'View User', 1),
 (2, 'Read Only User', 5),
 (3, 'Normal User', 20),
 (4, 'Superuser', 30),
 (5, 'Administrator', 50);
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Session`
---
 
 CREATE TABLE `Session` (
   `sessionId` int(11) NOT NULL,
@@ -438,21 +315,9 @@ CREATE TABLE `Session` (
   `sessionKey` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `SuperHashlist`
---
-
 CREATE TABLE `SuperHashlist` (
   `superHashlistId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `SuperHashlistHashlist`
---
 
 CREATE TABLE `SuperHashlistHashlist` (
   `superHashlistHashlistId` int(11) NOT NULL,
@@ -460,34 +325,16 @@ CREATE TABLE `SuperHashlistHashlist` (
   `hashlistId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Supertask`
---
-
 CREATE TABLE `Supertask` (
   `supertaskId` int(11) NOT NULL,
   `supertaskName` varchar(100) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `SupertaskTask`
---
 
 CREATE TABLE `SupertaskTask` (
   `supertaskTaskId` int(11) NOT NULL,
   `supertaskId` int(11) NOT NULL,
   `taskId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Task`
---
 
 CREATE TABLE `Task` (
   `taskId` int(11) NOT NULL,
@@ -505,23 +352,11 @@ CREATE TABLE `Task` (
   `isCpuTask` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `TaskFile`
---
-
 CREATE TABLE `TaskFile` (
   `taskFileId` int(11) NOT NULL,
   `taskId` int(11) NOT NULL,
   `fileId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `User`
---
 
 CREATE TABLE `User` (
   `userId` int(11) NOT NULL,
@@ -537,392 +372,224 @@ CREATE TABLE `User` (
   `rightGroupId` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
---
--- Indizes der exportierten Tabellen
---
-
---
--- Indizes für die Tabelle `Agent`
---
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `Assignment`
---
 ALTER TABLE `Assignment`
   ADD PRIMARY KEY (`assignmentId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `Chunk`
---
 ALTER TABLE `Chunk`
   ADD PRIMARY KEY (`chunkId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `Config`
---
 ALTER TABLE `Config`
   ADD PRIMARY KEY (`configId`);
 
---
--- Indizes für die Tabelle `AgentError`
---
 ALTER TABLE `AgentError`
   ADD PRIMARY KEY (`agentErrorId`),
   ADD KEY `agentId` (`agentId`),
   ADD KEY `taskId` (`taskId`);
 
---
--- Indizes für die Tabelle `File`
---
 ALTER TABLE `File`
   ADD PRIMARY KEY (`fileId`);
 
---
--- Indizes für die Tabelle `Hash`
---
 ALTER TABLE `Hash`
   ADD PRIMARY KEY (`hashId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`);
 
---
--- Indizes für die Tabelle `HashBinary`
---
 ALTER TABLE `HashBinary`
   ADD PRIMARY KEY (`hashBinaryId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`);
 
---
--- Indizes für die Tabelle `HashcatRelease`
---
 ALTER TABLE `HashcatRelease`
   ADD PRIMARY KEY (`hashcatReleaseId`);
 
---
--- Indizes für die Tabelle `Hashlist`
---
 ALTER TABLE `Hashlist`
   ADD PRIMARY KEY (`hashlistId`),
   ADD KEY `hashTypeId` (`hashTypeId`);
 
---
--- Indizes für die Tabelle `HashlistAgent`
---
 ALTER TABLE `HashlistAgent`
   ADD PRIMARY KEY (`hashlistAgentId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `HashType`
---
 ALTER TABLE `HashType`
   ADD PRIMARY KEY (`hashTypeId`);
 
---
--- Indizes für die Tabelle `RegVoucher`
---
 ALTER TABLE `RegVoucher`
   ADD PRIMARY KEY (`regVoucherId`);
 
---
--- Indizes für die Tabelle `RightGroup`
---
 ALTER TABLE `RightGroup`
   ADD PRIMARY KEY (`rightGroupId`);
 
---
--- Indizes für die Tabelle `Session`
---
 ALTER TABLE `Session`
   ADD PRIMARY KEY (`sessionId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `SuperHashlist`
---
 ALTER TABLE `SuperHashlist`
   ADD PRIMARY KEY (`superHashlistId`);
 
---
--- Indizes für die Tabelle `SuperHashlistHashlist`
---
 ALTER TABLE `SuperHashlistHashlist`
   ADD PRIMARY KEY (`superHashlistHashlistId`),
   ADD KEY `superHashlistId` (`superHashlistId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
---
--- Indizes für die Tabelle `Supertask`
---
 ALTER TABLE `Supertask`
   ADD PRIMARY KEY (`supertaskId`);
 
---
--- Indizes für die Tabelle `SupertaskTask`
---
 ALTER TABLE `SupertaskTask`
   ADD PRIMARY KEY (`supertaskTaskId`),
   ADD KEY `supertaskId` (`supertaskId`),
   ADD KEY `taskId` (`taskId`);
 
---
--- Indizes für die Tabelle `Task`
---
 ALTER TABLE `Task`
   ADD PRIMARY KEY (`taskId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
---
--- Indizes für die Tabelle `TaskFile`
---
 ALTER TABLE `TaskFile`
   ADD PRIMARY KEY (`taskFileId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `fileId` (`fileId`);
 
---
--- Indizes für die Tabelle `User`
---
 ALTER TABLE `User`
   ADD PRIMARY KEY (`userId`),
   ADD UNIQUE KEY `username` (`username`),
   ADD KEY `rightGroupId` (`rightGroupId`);
 
---
--- AUTO_INCREMENT für exportierte Tabellen
---
-
---
--- AUTO_INCREMENT für Tabelle `Agent`
---
 ALTER TABLE `Agent`
   MODIFY `agentId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Assignment`
---
+
 ALTER TABLE `Assignment`
   MODIFY `assignmentId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Chunk`
---
+
 ALTER TABLE `Chunk`
   MODIFY `chunkId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Config`
---
+
 ALTER TABLE `Config`
   MODIFY `configId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
---
--- AUTO_INCREMENT für Tabelle `AgentError`
---
+
 ALTER TABLE `AgentError`
   MODIFY `agentErrorId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `File`
---
+
 ALTER TABLE `File`
   MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Hash`
---
+
 ALTER TABLE `Hash`
   MODIFY `hashId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashBinary`
---
+
 ALTER TABLE `HashBinary`
   MODIFY `hashBinaryId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashcatRelease`
---
+
 ALTER TABLE `HashcatRelease`
   MODIFY `hashcatReleaseId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Hashlist`
---
+
 ALTER TABLE `Hashlist`
   MODIFY `hashlistId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashlistAgent`
---
+
 ALTER TABLE `HashlistAgent`
   MODIFY `hashlistAgentId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashType`
---
+
 ALTER TABLE `HashType`
   MODIFY `hashTypeId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11601;
---
--- AUTO_INCREMENT für Tabelle `RegVoucher`
---
+
 ALTER TABLE `RegVoucher`
   MODIFY `regVoucherId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `RightGroup`
---
+
 ALTER TABLE `RightGroup`
   MODIFY `rightGroupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
---
--- AUTO_INCREMENT für Tabelle `Session`
---
+
 ALTER TABLE `Session`
   MODIFY `sessionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=685;
---
--- AUTO_INCREMENT für Tabelle `SuperHashlist`
---
+
 ALTER TABLE `SuperHashlist`
   MODIFY `superHashlistId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `SuperHashlistHashlist`
---
+
 ALTER TABLE `SuperHashlistHashlist`
   MODIFY `superHashlistHashlistId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Supertask`
---
+
 ALTER TABLE `Supertask`
   MODIFY `supertaskId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `SupertaskTask`
---
+
 ALTER TABLE `SupertaskTask`
   MODIFY `supertaskTaskId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Task`
---
+
 ALTER TABLE `Task`
   MODIFY `taskId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `TaskFile`
---
+
 ALTER TABLE `TaskFile`
   MODIFY `taskFileId` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `User`
---
+
 ALTER TABLE `User`
   MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
---
--- Constraints der exportierten Tabellen
---
 
---
--- Constraints der Tabelle `Agent`
---
 ALTER TABLE `Agent`
   ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `Assignment`
---
 ALTER TABLE `Assignment`
   ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Assignment_ibfk_3` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `Chunk`
---
 ALTER TABLE `Chunk`
   ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Chunk_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Chunk_ibfk_3` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Chunk_ibfk_4` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `AgentError`
---
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `Error_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Error_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Error_ibfk_3` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Error_ibfk_4` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
---
--- Constraints der Tabelle `Hash`
---
 ALTER TABLE `Hash`
   ADD CONSTRAINT `Hash_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`),
   ADD CONSTRAINT `Hash_ibfk_3` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `Hash_ibfk_4` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
 
---
--- Constraints der Tabelle `HashBinary`
---
 ALTER TABLE `HashBinary`
   ADD CONSTRAINT `HashBinary_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`),
   ADD CONSTRAINT `HashBinary_ibfk_3` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `HashBinary_ibfk_4` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
 
---
--- Constraints der Tabelle `Hashlist`
---
 ALTER TABLE `Hashlist`
   ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`),
   ADD CONSTRAINT `Hashlist_ibfk_2` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
 
---
--- Constraints der Tabelle `HashlistAgent`
---
 ALTER TABLE `HashlistAgent`
   ADD CONSTRAINT `HashlistAgent_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `HashlistAgent_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `HashlistAgent_ibfk_3` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `HashlistAgent_ibfk_4` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `Session`
---
 ALTER TABLE `Session`
   ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`),
   ADD CONSTRAINT `Session_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `SuperHashlistHashlist`
---
 ALTER TABLE `SuperHashlistHashlist`
   ADD CONSTRAINT `SuperHashlistHashlist_ibfk_1` FOREIGN KEY (`superHashlistId`) REFERENCES `SuperHashlist` (`superHashlistId`),
   ADD CONSTRAINT `SuperHashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `SuperHashlistHashlist_ibfk_3` FOREIGN KEY (`superHashlistId`) REFERENCES `SuperHashlist` (`superHashlistId`),
   ADD CONSTRAINT `SuperHashlistHashlist_ibfk_4` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
 
---
--- Constraints der Tabelle `SupertaskTask`
---
 ALTER TABLE `SupertaskTask`
   ADD CONSTRAINT `SupertaskTask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`),
   ADD CONSTRAINT `SupertaskTask_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
---
--- Constraints der Tabelle `Task`
---
 ALTER TABLE `Task`
   ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
 
---
--- Constraints der Tabelle `TaskFile`
---
 ALTER TABLE `TaskFile`
   ADD CONSTRAINT `TaskFile_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `TaskFile_ibfk_2` FOREIGN KEY (`fileId`) REFERENCES `File` (`fileId`);
 
---
--- Constraints der Tabelle `User`
---
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

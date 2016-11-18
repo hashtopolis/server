@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -12,7 +11,7 @@ else if ($LOGIN->getLevel() < 5) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("supertasks");
+$TEMPLATE = new Template("supertasks/index");
 $MENU->setActive("tasks_super");
 $message = "";
 

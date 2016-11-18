@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -12,7 +11,7 @@ else if ($LOGIN->getLevel() < 30) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("newhashcat");
+$TEMPLATE = new Template("new/hashcat");
 $MENU->setActive("hashcat_new");
 $message = "";
 

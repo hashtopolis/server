@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -12,7 +11,7 @@ else if ($LOGIN->getLevel() < 30) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("agents.new");
+$TEMPLATE = new Template("agents/new");
 $MENU->setActive("agents_new");
 $message = "";
 
@@ -29,7 +28,6 @@ $OBJECTS['vouchers'] = $vouchers;
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
-
 
 
 

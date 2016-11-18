@@ -7,7 +7,7 @@ if ($INSTALL != 'DONE') {
   die("Forward to <a href='install'>Install</a>");
 }
 
-$TEMPLATE = new Template("index");
+$TEMPLATE = new Template("static/index");
 $message = "";
 
 if (isset($_GET['err'])) {
