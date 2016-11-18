@@ -79,7 +79,7 @@ class AgentHandler implements Handler {
         $this->deleteVoucher();
         break;
       default:
-        UI::printError("FATAL", "Invalid action!");
+        UI::addMessage("danger", "Invalid action!");
         break;
     }
   }

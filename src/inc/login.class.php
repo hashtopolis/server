@@ -19,6 +19,10 @@ class Login {
     }
     return 0;
   }
+
+  public function setUser($user){
+    $this->user = $user;
+  }
   
   /**
    * Creates a Login-Instance and checks automatically if there is a session

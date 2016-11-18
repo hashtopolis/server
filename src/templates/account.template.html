@@ -1,7 +1,7 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>My Account ([[htmlentities([[user.getUsername()]], false, "UTF-8")]])</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
@@ -50,4 +50,4 @@
 		</tr>
 	</table>
 </div>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

@@ -17,7 +17,7 @@ class ConfigHandler implements Handler {
         $this->updateConfig();
         break;
       default:
-        UI::printError("FATAL", "Invalid action!");
+        UI::addMessage("danger", "Invalid action!");
         break;
       //TODO: implement the handler for the global actions
     }
