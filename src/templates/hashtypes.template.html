@@ -1,7 +1,7 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Hashtypes</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <form action="hashtypes.php" method="POST">
 	<input type='hidden' name='action' value='add'>
 	<div class="panel panel-default">
@@ -40,12 +40,12 @@
 		</tr>
 		{{FOREACH type;[[hashtypes]]}}
 			<tr>
-				<td>[[type.getVal('id')]]</td>
-				<td>[[type.getVal('description')]]</td>
+				<td>[[type.getId()]]</td>
+				<td>[[type.getDescription()]]</td>
 				<td>
-					<form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getVal('id')]]?')) return false;">
+					<form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getId()]]?')) return false;">
 						<input type="hidden" name="action" value="delete">
-						<input type="hidden" name="type" value="[[type.getVal('id')]]">
+						<input type="hidden" name="type" value="[[type.getId()]]">
 						<input type="submit" class='btn btn-danger' value="Delete">
 					</form>
 				</td>
@@ -53,4 +53,4 @@
 		{{ENDFOREACH}}
 	</table>
 </div>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

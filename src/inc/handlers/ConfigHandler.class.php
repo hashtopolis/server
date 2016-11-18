@@ -7,8 +7,6 @@
  */
 
 class ConfigHandler implements Handler {
-  private $config;
-  
   public function __construct($configId = null) {
     //we need nothing to load
   }
@@ -17,6 +15,9 @@ class ConfigHandler implements Handler {
     switch ($action) {
       case 'update':
         $this->updateConfig();
+        break;
+      default:
+        UI::printError("FATAL", "Invalid action!");
         break;
       //TODO: implement the handler for the global actions
     }

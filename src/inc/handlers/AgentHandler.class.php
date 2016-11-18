@@ -78,6 +78,9 @@ class AgentHandler implements Handler {
       case 'voucherdelete':
         $this->deleteVoucher();
         break;
+      default:
+        UI::printError("FATAL", "Invalid action!");
+        break;
     }
   }
   

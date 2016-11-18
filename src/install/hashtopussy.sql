@@ -117,6 +117,7 @@ CREATE TABLE `Hashlist` (
   `format` int(11) NOT NULL COMMENT '0 -> text, 1 -> wpa, 2 -> bin',
   `hashTypeId` int(11) NOT NULL,
   `hashCount` int(11) NOT NULL,
+  `saltSeparator` varchar(10) NOT NULL,
   `cracked` int(11) NOT NULL,
   `secret` int(11) NOT NULL,
   `hexSalt` int(11) NOT NULL

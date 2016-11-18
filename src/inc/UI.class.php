@@ -20,4 +20,10 @@ class UI {
     echo $message;
     die();
   }
+  
+  public static function addMessage($type, $message){
+    global $OBJECTS;
+    
+    $OBJECTS['messages'][] = new DataSet(array('type' => $type, 'message' => $message));
+  }
 }

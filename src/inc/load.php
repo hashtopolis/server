@@ -73,6 +73,7 @@ $OBJECTS['gitcommit'] = $gitcommit;
 $LOGIN = null;
 $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
+$OBJECTS['messages'] = array();
 if ($INSTALL == 'DONE') {
   $LOGIN = new Login();
   $OBJECTS['login'] = $LOGIN;
