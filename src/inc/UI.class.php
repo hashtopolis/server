@@ -16,12 +16,12 @@ class UI {
     die();
   }
   
-  public static function printFatalError($message){
+  public static function printFatalError($message) {
     echo $message;
     die();
   }
   
-  public static function addMessage($type, $message){
+  public static function addMessage($type, $message) {
     global $OBJECTS;
     
     $OBJECTS['messages'][] = new DataSet(array('type' => $type, 'message' => $message));

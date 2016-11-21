@@ -1,5 +1,9 @@
 <?php
 
+/*
+ * TODO: This file should be merged into superhashlists.php and later deleted
+ */
+
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 if (!$LOGIN->isLoggedin()) {

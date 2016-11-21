@@ -19,8 +19,8 @@ class Login {
     }
     return 0;
   }
-
-  public function setUser($user){
+  
+  public function setUser($user) {
     $this->user = $user;
   }
   

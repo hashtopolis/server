@@ -9,7 +9,7 @@ ini_set("display_errors", "1");
 require_once(dirname(__FILE__) . "/inc/templating/Statement.class.php");
 require_once(dirname(__FILE__) . "/inc/templating/Template.class.php");
 require_once(dirname(__FILE__) . "/inc/UI.class.php");
-require_once(dirname(__FILE__) . "/inc/dataset.class.php");
+require_once(dirname(__FILE__) . "/inc/Dataset.class.php");
 
 class Test {
   public function getString(){

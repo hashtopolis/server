@@ -23,12 +23,12 @@ if (isset($_POST['action'])) {
 
 if(isset($_GET['new'])){
   //TODO: create new user
+  $TEMPLATE = new Template("users/new");
 }
 else if (isset($_GET['id'])) {
   $user = $FACTORIES::getUserFactory()->get($_GET['id']);
   if ($user == null) {
-    $message = "<div class='alert alert-danger'>Invalid user!</div>";
-    $TEMPLATE = new Template("error");
+    UI::printError("ERROR", "Invalid user!");
   }
   else {
     $OBJECTS['user'] = $user;

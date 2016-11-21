@@ -13,7 +13,7 @@
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
-$write_files = array(".", "../inc/crypt.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
+$write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
 
 if($INSTALL == 'DONE'){
 	die("Installation is already done!");
@@ -130,9 +130,9 @@ switch($STEP){
 	case 52: //database is filled with initial data now we create the user now
 		//create pepper (this is required here that when we create the user, the included file already contains the right peppers
 		$pepper = array(Util::randomString(50), Util::randomString(50), Util::randomString(50));
-		$crypt = file_get_contents(dirname(__FILE__)."/../inc/crypt.class.php");
+		$crypt = file_get_contents(dirname(__FILE__)."/../inc/Encryption.class.php");
 		$crypt = str_replace("__PEPPER1__", $pepper[0], str_replace("__PEPPER2__", $pepper[1], str_replace("__PEPPER3__", $pepper[2], $crypt)));
-		file_put_contents(dirname(__FILE__)."/../inc/crypt.class.php", $crypt);
+		file_put_contents(dirname(__FILE__)."/../inc/Encryption.class.php", $crypt);
 		
 		$message = "";
 		if(isset($_POST['create'])){

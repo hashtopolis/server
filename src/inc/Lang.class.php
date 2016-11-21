@@ -1,10 +1,4 @@
 <?php
-/*
-* This file is part of Bricky (https://github.com/s3inlc/bricky)
-* Copyright 2016 by Sein Coray
-*/
-
-namespace Bricky;
 
 /**
  * Handles the languages, you can get all available languages and get the replacements

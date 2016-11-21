@@ -64,7 +64,7 @@ $FACTORIES = new Factory();
 
 $gitcommit = "not versioned";
 $out = array();
-exec("git rev-parse HEAD", $out);
+exec("cd '".dirname(__FILE__)."/../' && git rev-parse HEAD", $out);
 if (isset($out[0])) {
   $gitcommit = substr($out[0], 0, 7);
 }

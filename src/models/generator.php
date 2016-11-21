@@ -275,8 +275,8 @@ foreach ($CONF as $NAME => $COLUMNS) {
 }
 $singleton .= "}\n";
 
-if (true || !file_exists(dirname(__FILE__) . "/../inc/factory.class.php")) {
-  file_put_contents(dirname(__FILE__) . "/../inc/factory.class.php", $singleton);
+if (true || !file_exists(dirname(__FILE__) . "/../inc/Factory.class.php")) {
+  file_put_contents(dirname(__FILE__) . "/../inc/Factory.class.php", $singleton);
 }
 
 

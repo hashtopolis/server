@@ -1,7 +1,7 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>New user</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <form action='newuser.php' method='post'>
 	<input type='hidden' name='action' value='create'>
 	<div class="panel panel-default">
@@ -37,4 +37,4 @@
 		</table>
 	</div>
 </form>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

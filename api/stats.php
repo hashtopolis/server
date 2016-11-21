@@ -2,7 +2,7 @@
 require_once(dirname(__FILE__) . "/inc/load.php");
 $DB = $FACTORIES::getagentsFactory()->getDB();
 
-$pik = imagecreatefromgif("static/stats.gif");
+$pik = imagecreatefromgif(dirname(__FILE__)."/../static/stats.gif");
 
 $res = $DB->query("SELECT COUNT(DISTINCT agents.id) AS agents, COUNT(DISTINCT tasks.id) AS tasks, COUNT(DISTINCT tasks.hashlist) AS hashlists, SUM(DISTINCT hashlists.hashcount)-SUM(DISTINCT hashlists.cracked) AS hashes, SUM(assignments.speed) AS speed FROM assignments JOIN tasks ON assignments.task=tasks.id JOIN hashlists ON tasks.hashlist=hashlists.id JOIN agents ON assignments.agent=agents.id JOIN chunks ON chunks.task=tasks.id AND chunks.agent=agents.id AND GREATEST(chunks.dispatchtime,chunks.solvetime)>=UNIX_TIMESTAMP()-(tasks.statustimer*1.2)");
 $line = $res->fetch();

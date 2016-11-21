@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 //check if there is a session
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
+  header("Location: ../index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
   die();
 }
 
