@@ -101,9 +101,8 @@ class Template {
             }
             else{
               //there is some inner statement inside the if
-              if($elsePos !== false){
+              if($elsePos !== false && $elsePos < $closePos){
                 $ifContent = array();
-                $elsePosition = -1;
                 //check if the else is the next position
                 if($elsePos == $nextPos){
                   //until the else statement we have a clean if
