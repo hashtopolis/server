@@ -1,19 +1,21 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>New hashlist</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <script type='text/javascript'>
 	function formatChange(valu) { 
-		var txtObject=document.getElementById('textopt'); 
-		if (valu == '0') { 
-			txtObject.style.display = ''; 
-		} 
-		else { 
-			txtObject.style.display = 'none'; 
-		} 
+		var txtObjects = document.getElementsByClassName('textopt');
+    txtObjects.forEach(function(txtObject){
+      if (valu == '0') {
+        txtObject.style.display = '';
+      }
+      else {
+        txtObject.style.display = 'none';
+      }
+    });
 	}
 </script>
-<form class='form-inline' action="newhashlist.php" method="POST" enctype="multipart/form-data">
+<form class='form-inline' action="hashlists.php?new=true" method="POST" enctype="multipart/form-data">
 	<input type='hidden' name='action' value='newhashlistp'>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
@@ -33,7 +35,7 @@
 					<select name="hashtype" class='form-control'>
 						<option value=''>&nbsp;</option>
 						{{FOREACH type;[[hashtypes]]}}
-							<option value="[[type.getVal('id')]]"> [[type.getVal('id')]] - [[htmlentities([[type.getVal('description')]])]]</option>
+							<option value="[[type.getId()]]"> [[type.getId()]] - [[htmlentities([[type.getDescription()]])]]</option>
 						{{ENDFOREACH}}
 					</select>
 				</td>
@@ -46,12 +48,12 @@
 						<option value="1">HCCAP file</option>
 						<option value="2">Binary file (single hash)</option>
 					</select>
-					<span id="textopt">
+					<span class="textopt">
 						<br>
 						<input type="checkbox" name="salted" value="1"> Salted hashes, separator
 						<input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1">
 					</span>
-					<span id="textopt">
+					<span class="textopt">
 						<br>
 						<input type="checkbox" name="hexsalted" value="1"> Salt is in hex (only when salted hashes)
 					</span>
@@ -64,9 +66,9 @@
 				</td>
 				<td>
 					<input type="radio" name="source" onChange="sourceChange(this.value);" value="paste"> Paste<br>
-			<input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked> Upload<br>
-			<input type="radio" name="source" onChange="sourceChange(this.value);" value="import"> Import<br>
-			<input type="radio" name="source" onChange="sourceChange(this.value);" value="url"> URL download
+          <input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked> Upload<br>
+          <input type="radio" name="source" onChange="sourceChange(this.value);" value="import"> Import<br>
+          <input type="radio" name="source" onChange="sourceChange(this.value);" value="url"> URL download
 				</td>
 			</tr>
 			<tr id="pasteLine" style="display: none;">
@@ -105,4 +107,4 @@
 		</table>
 	</div>
 </form>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

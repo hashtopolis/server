@@ -1,9 +1,9 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
 <h2>Hashlists ([[numHashlists]])</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 {{IF [[zap]]}}
-	%TEMPLATE->hashlists/zap%
+	{%TEMPLATE->hashlists/zap%}
 {{ENDIF}}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">

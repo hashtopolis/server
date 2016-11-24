@@ -2,7 +2,8 @@
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
-			<th>ID</th>
+			<th class="col-md-1">ID</th>
+      <th class="col-md-1">Color</th>
 			<th>Name</th>
 			<th>Dispatched</th>
 			<th>Searched</th>
@@ -13,6 +14,9 @@
 				<td>
 					<a href="tasks.php?id=[[task.getVal('task')->getId()]]">[[task.getVal('task')->getId()]]</a>
 				</td>
+        <td{{IF [[strlen([[task.getVal('task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('task').getColor()]]""{{ENDIF}}>
+          &nbsp;
+        </td>
 				<td>
 					<a href="tasks.php?id=[[task.getVal('task')->getId()]]" title="[[task.getVal('task')->getAttackCmd()]]">[[task.getVal('task')->getTaskName()]]</a>
           [[Util::tickdone([[task.getVal('task')->getProgress()]], [[task.getVal('task')->getKeyspace()]])]]

@@ -1,5 +1,4 @@
 <?php
-use Bricky\Template;
 
 /**
  *
@@ -8,6 +7,20 @@ use Bricky\Template;
  *         Bunch of useful static functions.
  */
 class Util {
+  
+  public static function scanImportDirectory(){
+    if (file_exists(dirname(__FILE__)."/import") && is_dir(dirname(__FILE__)."/import")) {
+      $impdir = opendir(dirname(__FILE__)."/import");
+      $impfiles = array();
+      while ($f = readdir($impdir)) {
+        if ($f[0] != '.' && $f != "." && $f != ".." && !is_dir($f)) {
+          $impfiles[] = $f;
+        }
+      }
+      return $impfiles;
+    }
+    return array();
+  }
   
   //OLD PART
   public static function refresh() {
