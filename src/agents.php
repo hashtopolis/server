@@ -26,7 +26,7 @@ $allTasks = $FACTORIES::getTaskFactory()->filter(array());
 
 if (isset($_GET['id'])) {
   //show agent detail
-  $TEMPLATE = new Template("agents/detail/index");
+  $TEMPLATE = new Template("agents/detail");
   $agent = $FACTORIES::getAgentFactory()->get(intval($_GET['id']));
   if (!$agent) {
     $message = "<div class='alert alert-danger'>Agent not found!</div>";
