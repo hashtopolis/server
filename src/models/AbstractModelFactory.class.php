@@ -338,10 +338,10 @@ class AbstractModelFactory {
     $query = "SELECT " . $ownTablePrefixed . " , " . $otherTablePrefixed . " FROM " . $ownTable . " AS " . $ownTable . " INNER JOIN " . $otherTable . " ON " . $ownTable . "." . $match1 . "=" . $otherTable . "." . $match2;
     
     // Apply all normal filter to this query
+    $vals = array();
     if (array_key_exists("filter", $options)) {
       $query = $query . " WHERE ";
       $filterOptions = $options['filter'];
-      $vals = array();
       
       for ($i = 0; $i < count($filterOptions); $i++) {
         $option = $filterOptions[$i];
