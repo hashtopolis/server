@@ -9,19 +9,19 @@
 		{{FOREACH sublist;[[sublists]]}}
 			<tr>
 				<td>
-					<a href="hashlists.php?id=[[sublist.getVal('id')]]">[[sublist.getVal('id')]]</a>
+					<a href="hashlists.php?id=[[sublist.getVal('hashlist')->getId()]]">[[sublist.getVal('hashlist')->getId()]]</a>
 				</td>
 				<td>
-					<a href="hashlists.php?id=[[sublist.getVal('id')]]">[[sublist.getVal('name')]]</a>
-					{{IF [[sublist.getVal('secret')]] == 1}}
+					<a href="hashlists.php?id=[[sublist.getVal('hashlist')->getId()]]">[[sublist.getVal('hashlist')->getHashlistName()]]</a>
+					{{IF [[sublist.getVal('hashlist')->getSecret()]] == 1}}
 						<img src="static/lock.gif" alt="Secret">
 					{{ENDIF}}
-					[[Util::tickdone([[sublist.getVal('cracked')]], [[sublist.getVal('hashcount')]])]]
+					[[Util::tickdone([[sublist.getVal('hashlist')->getCracked()]], [[sublist.getVal('hashlist')->getHashCount()]])]]
 				</td>
 				<td class="num">
-					[[Util::showperc([[sublist.getVal('cracked')]], [[sublist.getVal('hashcount')]])]]%<br>
-					(<a href="hashes.php?hashlist=[[sublist.getVal('id')]]&filter=cracked">[[sublist.getVal('cracked')]]</a>
-					/ <a href="hashes.php?hashlist=[[sublist.getVal('id')]]">[[sublist.getVal('hashcount')]]</a>)
+					[[Util::showperc([[sublist.getVal('hashlist')->getCracked()]], [[sublist.getVal('hashlist')->getHashCount()]])]]%<br>
+					(<a href="hashes.php?hashlist=[[sublist.getVal('hashlist')->getId()]]&filter=cracked">[[sublist.getVal('hashlist')->getCracked()]]</a>
+					/ <a href="hashes.php?hashlist=[[sublist.getVal('hashlist')->getId()]]">[[sublist.getVal('hashlist')->getHashCount()]]</a>)
 				</td>
 			</tr>
 		{{ENDFOREACH}}

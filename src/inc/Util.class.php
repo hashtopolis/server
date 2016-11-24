@@ -9,6 +9,7 @@ use Bricky\Template;
  */
 class Util {
   
+  //OLD PART
   public static function refresh() {
     header("Location: " . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']);
     die();

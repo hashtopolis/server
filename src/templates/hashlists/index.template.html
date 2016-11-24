@@ -1,9 +1,9 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Hashlists ([[numHashlists]])</h2>
 [[message]]
 {{IF [[zap]]}}
-	{%TEMPLATE->hashlists.zap%}
+	%TEMPLATE->hashlists/zap%
 {{ENDIF}}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
@@ -16,48 +16,44 @@
 			<th>Pre-cracked</th>
 			<th>Action</th>
 		</tr>
-		{{FOREACH list;[[hashlists]]}}
+		{{FOREACH entry;[[hashlists]]}}
 			<tr>
 				<td>
-					<a href="hashlists.php?id=[[list.getVal('id')]]">[[list.getVal('id')]]</a>
+					<a href="hashlists.php?id=[[entry.getVal('hashlist').getId()]]">[[entry.getVal('hashlist').getId()]]</a>
 				</td>
 				<td>
-					<a href="hashlists.php?id=[[list.getVal('id')]]">[[list.getVal('name')]]</a>
-					{{IF [[list.getVal('secret')]] == 1}}
+					<a href="hashlists.php?id=[[entry.getVal('hashlist').getId()]]">[[entry.getVal('hashlist').getHashlistName()]]</a>
+					{{IF [[entry.getVal('hashlist').getSecret()]] == 1}}
 						<img src="static/lock.gif" alt="Secret">
 					{{ENDIF}}
-					[[Util::tickdone([[list.getVal('cracked')]], [[list.getVal('hashcount')]])]]
+					[[Util::tickdone([[entry.getVal('hashlist').getCracked()]], [[entry.getVal('hashlist').getHashCount()]])]]
 				</td>
 				<td>
-					{{IF [[list.getVal('description')]] == ""}}
-						[[list.getVal('hashtype')]]
-					{{ELSE}}
-						[[list.getVal('description')]]
-					{{ENDIF}}
+					[[entry.getVal('hashtype').getDescription()]]
 				</td>
-				<td>[[Util::getStaticArray([[list.getVal('format')]], 'formats')]]</td>
+				<td>[[Util::getStaticArray([[entry.getVal('hashlist').getFormat()]], 'formats')]]</td>
 				<td class='num'>
-					[[Util::showperc([[list.getVal('cracked')]], [[list.getVal('hashcount')]])]]%
-					(<a href="hashes.php?hashlist=[[list.getVal('id')]]&filter=cracked">[[list.getVal('cracked')]]</a> / 
-					<a href="hashes.php?hashlist=[[list.getVal('id')]]">[[list.getVal('hashcount')]]</a>)
+					[[Util::showperc([[entry.getVal('hashlist').getCracked()]], [[entry.getVal('hashlist').getHashCount()]])]]%
+					(<a href="hashes.php?hashlist=[[entry.getVal('hashlist').getId()]]&filter=cracked">[[entry.getVal('hashlist').getCracked()]]</a> /
+					<a href="hashes.php?hashlist=[[entry.getVal('hashlist').getId()]]">[[entry.getVal('hashlist').getHashCount()]]</a>)
 				</td>
 				<td>
 					<form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
 						<input type="hidden" name="action" value="hashlistzap">
-						<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+						<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
 						<input type="submit" class='btn btn-default' value="Import">
 					</form>
 					<form style ='float: left;' action="hashlists.php" method="POST">
 						<input type="hidden" name="action" value="export">
-						<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+						<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
 						<input type="submit" class='btn btn-default' value="Export">
 					</form>
 				</td>
 				<td>
 					{{IF [[login.getLevel()]] >= 30}}
-						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[list.getVal('id')]]?')) return false;">
+						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[entry.getVal('hashlist').getId()]]?')) return false;">
 							<input type="hidden" name="action" value="hashlistdelete">
-							<input type="hidden" name="hashlist" value="[[list.getVal('id')]]">
+							<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
 							<input type="submit" class='btn btn-danger' value="Delete">
 						</form>
 					{{ENDIF}}
@@ -66,4 +62,4 @@
 		{{ENDFOREACH}}
 	</table>
 </div>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

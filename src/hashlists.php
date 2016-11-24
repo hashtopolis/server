@@ -13,11 +13,11 @@ else if ($LOGIN->getLevel() < 5) {
 
 $TEMPLATE = new Template("hashlists/index");
 $MENU->setActive("lists_norm");
-$message = "";
 
 //catch agents actions here...
 if (isset($_POST['action'])) {
   switch ($_POST['action']) {
+    //TODO: handler needs to be done + add new hashlists handling there
     case 'preconf':
       if ($LOGIN->getLevel() < 20) {
         break;
@@ -548,68 +548,66 @@ if (isset($_POST['action'])) {
 }
 
 if (isset($_GET['id'])) {
-  //hashlist details
-  $TEMPLATE = new Template("hashlists.detail");
-  $hlist = intval($_GET["id"]);
-  $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.*,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE hashlists.id=$hlist");
-  $res = $res->fetch();
-  if ($res) {
-    $list = new DataSet();
-    $list->setValues($res);
-    $OBJECTS['list'] = $list;
-    if ($list->getVal('format') == 3) {
-      $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.* FROM superhashlists JOIN hashlists ON superhashlists.hashlist=hashlists.id WHERE superhashlists.id=" . $list->getVal('id'));
-      $res = $res->fetchAll();
-      $OBJECTS['numSubHashlists'] = sizeof($res);
-      $sublists = array();
-      foreach ($res as $l) {
-        $set = new DataSet();
-        $set->setValues($l);
-        $sublists[] = $set;
+  //show hashlist detail page
+  $jF = new JoinFilter($FACTORIES::getHashTypeFactory(), "hashtypeId", "hashtypeId");
+  $qF = new QueryFilter("hashlistId", $_GET['id'], "=");
+  $joined = $FACTORIES::getHashlistFactory()->filter(array('join' => array($jF), 'filter' => array($qF)));
+  if(sizeof($joined['Hashlist']) == 0){
+    UI::printError("ERROR", "Hashlist not found!");
+  }
+  $list = new DataSet(array('hashlist' => $joined['Hashlist'][0], 'hashtype' => $joined['HashType'][0]));
+  $OBJECTS['list'] = $list;
+  
+  //check if the list is a superhashlist
+  if ($list->getVal('hashlist')->getFormat() == 3) {
+    $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), "hashlistId", "hashlistId");
+    $qF = new QueryFilter("superhashlistId", $list->getVal('hashlist')->getId(), "=");
+    $joined = $FACTORIES::getHashlistFactory()->filter(array('join' => array($jF), 'filter' => array($qF)));
+    $sublists = array();
+    for($x=0;$x<sizeof($joined['Hashlist']);$x++){
+      $sublists[] = new DataSet(array('hashlist' => $joined['Hashlist'][$x], 'superhashlist' => $joined['SuperHashlist'][$x]));
+    }
+    $OBJECTS['sublists'] = $sublists;
+  }
+  
+  //load tasks assigned to hashlist
+  $qF = new QueryFilter("hashlistId", $list->getVal('hashlist')->getId(), "=");
+  $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF)));
+  $hashlistTasks = array();
+  foreach($tasks as $task){
+    $isActive = false;
+    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF)));
+    $sum = array('dispatched' => $task->getProgress(), 'searched' => 0, 'cracked' => 0);
+    foreach($chunks as $chunk){
+      $sum['searched'] += $chunk->getProgress();
+      $sum['cracked'] += $chunk->getCracked();
+      if(time() - $CONFIG->getVal('chunktimeout') < max($chunk->getDispatchTime(), $chunk->getSolveTime())){
+        $isActive = true;
       }
-      $OBJECTS['sublists'] = $sublists;
     }
-    
-    $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT tasks.id,tasks.name,tasks.attackcmd,tasks.progress,chunks.sumprog,tasks.keyspace,IFNULL(chunks.cracked,0) AS cracked,IF(chunks.lastact>" . (time() - $CONFIG->getVal('chunktimeout')) . ",1,0) AS active FROM tasks LEFT JOIN (SELECT task,SUM(cracked) AS cracked,SUM(progress) AS sumprog,GREATEST(MAX(dispatchtime),MAX(solvetime)) AS lastact FROM chunks GROUP BY task) chunks ON chunks.task=tasks.id WHERE tasks.hashlist=" . $list->getVal('id') . " ORDER by tasks.priority DESC,tasks.id ASC");
-    $res = $res->fetchAll();
-    $tasks = array();
-    foreach ($res as $task) {
-      $set = new DataSet();
-      $set->setValues($task);
-      $tasks[] = $set;
-    }
-    $OBJECTS['tasks'] = $tasks;
-    $OBJECTS['numAssignedTasks'] = sizeof($tasks);
-    
-    $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id,name,attackcmd,color FROM tasks WHERE hashlist IS NULL ORDER BY priority DESC, id ASC");
-    $res = $res->fetchAll();
-    $preTasks = array();
-    foreach ($res as $task) {
-      $set = new DataSet();
-      $set->setValues($task);
-      $preTasks[] = $set;
-    }
-    $OBJECTS['preTasks'] = $preTasks;
-    $OBJECTS['numPreconfTasks'] = sizeof($preTasks);
+    $set = new DataSet(array('task' => $task, 'isActive' => $isActive, 'searched' => $sum['searched'], 'dispatched' => $sum['dispatched'], 'cracked' =>$sum['cracked']));
+    $hashlistTasks[] = $set;
   }
-  else {
-    $TEMPLATE = new Template("hashlists.detail.notfound");
-  }
+  $OBJECTS['tasks'] = $hashlistTasks;
+  
+  //load list of available preconfigured tasks
+  $qF = new QueryFilter("hashlistId", "0", "=");
+  $preTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF)));
+  $OBJECTS['preTasks'] = $preTasks;
+  $TEMPLATE = new Template("hashlists/detail");
 }
 else {
-  $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,hashlists.secret,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype WHERE format!=3 ORDER BY id ASC");
-  $res = $res->fetchAll();
+  //load all hashlists
+  $jF = new JoinFilter($FACTORIES::getHashTypeFactory(), "hashtypeId", "hashtypeId");
+  $joinedHashlists = $FACTORIES::getHashlistFactory()->filter(array('join' => array($jF)));
   $hashlists = array();
-  foreach ($res as $list) {
-    $set = new DataSet();
-    $set->setValues($list);
-    $hashlists[] = $set;
+  for($x=0;$x<sizeof($joinedHashlists['Hashlist']);$x++){
+    $hashlists[] = new DataSet(array('hashlist' => $joinedHashlists['Hashlist'][$x], 'hashtype' => $joinedHashlists['HashType'][$x]));
   }
   $OBJECTS['hashlists'] = $hashlists;
   $OBJECTS['numHashlists'] = sizeof($hashlists);
 }
-
-$OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
 
