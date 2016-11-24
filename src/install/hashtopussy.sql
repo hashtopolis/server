@@ -13,10 +13,10 @@ CREATE TABLE `Agent` (
   `isActive` int(11) NOT NULL,
   `isTrusted` int(11) NOT NULL,
   `token` varchar(50) COLLATE utf8_bin NOT NULL,
-  `lastAct` int(11) NOT NULL,
+  `lastAct` varchar(20) NOT NULL,
   `lastTime` int(11) NOT NULL,
   `lastIp` varchar(50) COLLATE utf8_bin NOT NULL,
-  `userId` int(11) NOT NULL,
+  `userId` int(11) NULL,
   `cpuOnly` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 

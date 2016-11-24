@@ -15,7 +15,7 @@ else if ($LOGIN->getLevel() < 50) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("new/user");
+$TEMPLATE = new Template("users/new");
 $MENU->setActive("users_new");
 $message = "";
 

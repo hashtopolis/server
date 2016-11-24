@@ -24,6 +24,7 @@ if (isset($_POST['action'])) {
 
 $allTasks = $FACTORIES::getTaskFactory()->filter(array());
 
+//TODO: put code for new agent here
 if (isset($_GET['id'])) {
   //show agent detail
   $TEMPLATE = new Template("agents/detail");
