@@ -40,7 +40,7 @@
 					</td>
 					<td>
 						{{IF [[login.getLevel()]] >= 30}}
-							<form id="secret[[file.getId()]]" action="files.php" method="POST">
+							<form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="hidden" name="action" value="filesecret">
 								<input type='hidden' name="secret" value="{{IF [[file.getSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
@@ -56,7 +56,7 @@
 					<td>TODO x</td>
 					<td>
 						{{IF [[login.getLevel()]] >= 30}}
-							<form action="files.php" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
+							<form action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
 								<input type="hidden" name="action" value="filedelete">
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="submit" class='btn btn-danger' value="Delete">

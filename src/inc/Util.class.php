@@ -22,6 +22,21 @@ class Util {
     return array();
   }
   
+  public static function insertFile($path, $name, $type){
+    global $FACTORIES;
+    
+    $fileType = 0;
+    if($type == 'rule'){
+      $fileType = 1;
+    }
+    $file = new File(0, $name, Util::filesize($path), 1, $fileType);
+    $file = $FACTORIES::getFileFactory()->save($file);
+    if($file == null){
+      return false;
+    }
+    return true;
+  }
+  
   public static function getNextTask($agent){
     global $FACTORIES;
   
