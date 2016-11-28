@@ -314,6 +314,66 @@ class AbstractModelFactory {
     }
   }
   
+  public function countFilter($options) {
+    $query = "SELECT COUNT(*) AS count ";
+    $query = $query . " FROM " . $this->getModelTable();
+  
+    $vals = array();
+  
+    if (array_key_exists("filter", $options)) {
+      $query = $query . " WHERE ";
+    
+    
+      $filterOptions = $options['filter'];
+      $vals = array();
+    
+      for ($i = 0; $i < count($filterOptions); $i++) {
+        $option = $filterOptions[$i];
+        if ($option->getValue() != null) {
+          array_push($vals, $option->getValue());
+        }
+      
+        if ($i != count($filterOptions) - 1) {
+          $query = $query . $option->getQueryString() . " AND ";
+        }
+        else {
+          $query = $query . $option->getQueryString();
+        }
+      }
+    }
+  
+    if (!array_key_exists("order", $options)) {
+      // Add a asc order on the primary keys as a standard
+      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
+      $orderOptions = array(
+        $oF
+      );
+      $options['order'] = $orderOptions;
+    }
+    if (count($options['order']) != 0) {
+      $query = $query . " ORDER BY ";
+      $orderOptions = $options['order'];
+    
+      for ($i = 0; $i < count($orderOptions); $i++) {
+        if ($i != count($orderOptions) - 1) {
+          $order = $orderOptions[$i];
+          $query = $query . $order->getQueryString() . ",";
+        }
+        else {
+          $order = $orderOptions[$i];
+          $query = $query . $order->getQueryString();
+        }
+      }
+    }
+  
+    $dbh = $this->getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+  
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row['count'];
+  }
+  
   /**
    * Private function used to compute a filter when a join is used.
    * This is put here to avoid putting too much stuff in the filter

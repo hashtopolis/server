@@ -80,7 +80,8 @@ $CONF['Hash'] = array(
   'salt',
   'plaintext',
   'time',
-  'chunkId'
+  'chunkId',
+  'isCracked'
 );
 $CONF['HashBinary'] = array(
   'hashBinaryId',
@@ -89,7 +90,8 @@ $CONF['HashBinary'] = array(
   'hash',
   'plaintext',
   'time',
-  'chunkId'
+  'chunkId',
+  'isCracked'
 );
 $CONF['Hashlist'] = array(
   'hashlistId',
@@ -100,7 +102,8 @@ $CONF['Hashlist'] = array(
   'saltSeparator',
   'cracked',
   'secret',
-  'hexSalt'
+  'hexSalt',
+  'isSalted'
 );
 $CONF['HashlistAgent'] = array(
   'hashlistAgentId',
@@ -225,7 +228,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
   }
   $class .= "}\n";
   
-  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . ".class.php")) {
+  if (!file_exists(dirname(__FILE__) . "/" . $NAME . ".class.php")) {
     file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
   }
   
@@ -250,7 +253,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
   }
   $factory .= ");\n		return \$o;\n	}\n}";
   
-  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . "Factory.class.php")) {
+  if (!file_exists(dirname(__FILE__) . "/" . $NAME . "Factory.class.php")) {
     file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $factory);
   }
 }

@@ -89,7 +89,7 @@ if ($INSTALL == 'DONE') {
   $OBJECTS['config'] = $CONFIG;
   
   //set autorefresh to false for all pages
-  $OBJECTS['autorefresh'] = 0;
+  $OBJECTS['autorefresh'] = -1;
 }
 
 

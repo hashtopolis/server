@@ -4,7 +4,7 @@ class ContainFilter {
   private $key;
   private $values;
   
-  function __construct($key1, $values) {
+  function __construct($key, $values) {
     $this->key = $key;
     $this->values = $values;
   }
@@ -13,7 +13,7 @@ class ContainFilter {
     if ($table != "") {
       $table = $table . ".";
     }
-    return $table . $this->key1 . " IN ?";
+    return $table . $this->key . " IN ?";
   }
   
   function getValue() {

@@ -22,11 +22,34 @@ class Util {
     return array();
   }
   
-  //OLD PART
+  public static function filesize($file){
+    //TODO: put code for 64-bit file size determination here
+    if(!file_exists($file)){
+      return 0;
+    }
+    return filesize($file);
+  }
+  
   public static function refresh() {
-    header("Location: " . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']);
+    header("Location: " . $_SERVER['PHP_SELF'] . (strlen($_SERVER['QUERY_STRING'])>0)?"?":"" . $_SERVER['QUERY_STRING']);
     die();
   }
+  
+  public static function checkSuperHashlist($list) {
+    global $FACTORIES;
+    //detect superhashlists and create array of all lists
+    
+    if ($list->getFormat() == 3) {
+      $jF = new JoinFilter("Hashlist", "hashlistId", "hashlistId");
+      $qF = new QueryFilter("superHashlistId", $list->getId(), "=");
+      $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('join' => array($jF), 'filter' => array($qF)));
+      $lists = $joined['Hashlist'];
+      return $lists;
+    }
+    return array($list);
+  }
+  
+  //OLD PART
   
   public static function getIP() {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
@@ -150,36 +173,6 @@ class Util {
     }
     $vysledek .= gmdate("H:i:s", $soucet);
     return $vysledek;
-  }
-  
-  public static function superList($hlist, &$format) {
-    // detect superhashlists and create array of its contents
-    global $FACTORIES;
-    
-    if ($format == 3) {
-      $superhash = true;
-    }
-    else {
-      $superhash = false;
-    }
-    
-    $hlistar = array();
-    if ($superhash) {
-      $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.format FROM superhashlists JOIN hashlists ON superhashlists.hashlist=hashlists.id WHERE superhashlists.id=$hlist");
-      $res = $res->fetchAll();
-      foreach ($res as $entry) {
-        $format = $entry['format'];
-        $hlistar[] = $entry['id'];
-      }
-    }
-    else {
-      $hlistar[] = $hlist;
-    }
-    $hlisty = implode(",", $hlistar);
-    return array(
-      $superhash,
-      $hlisty
-    );
   }
   
   public static function getStaticArray($val, $id) {
@@ -376,28 +369,6 @@ class Util {
     }
     $msg .= "<br>";
     return array($povedlo, $msg);
-  }
-  
-  public static function insertFile($tmpfile) {
-    // insert existing file into global files
-    global $FACTORIES;
-    $allok = false;
-    $msg = "";
-    if (file_exists($tmpfile)) {
-      $velikost = filesize($tmpfile);
-      $nazev = $FACTORIES::getagentsFactory()->getDB()->quote(basename($tmpfile));
-      $msg .= "Inserting <a href='$tmpfile' target='_blank'>$nazev</a> into global files...";
-      if ($FACTORIES::getagentsFactory()->getDB()->exec("INSERT INTO files (filename,size) VALUES ($nazev,$velikost)")) {
-        $fid = $FACTORIES::getagentsFactory()->getDB()->lastInsertId();
-        $msg .= "OK (<a href='files.php#$fid'>list</a>)";
-        $allok = true;
-      }
-      else {
-        $msg .= "DB ERROR";
-      }
-    }
-    $msg .= "<br>";
-    return array($allok, $msg);
   }
   
   public static function niceround($num, $dec) {

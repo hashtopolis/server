@@ -86,7 +86,8 @@ CREATE TABLE `Hash` (
   `salt` varchar(200) COLLATE utf8_bin NOT NULL,
   `plaintext` varchar(200) COLLATE utf8_bin NOT NULL,
   `time` int(11) NOT NULL,
-  `chunkId` int(11) DEFAULT NULL
+  `chunkId` int(11) DEFAULT NULL,
+  `isCracked` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `HashBinary` (
@@ -96,7 +97,8 @@ CREATE TABLE `HashBinary` (
   `hash` longblob NOT NULL,
   `plaintext` varchar(200) COLLATE utf8_bin NOT NULL,
   `time` int(11) NOT NULL,
-  `chunkId` int(11) DEFAULT NULL
+  `chunkId` int(11) DEFAULT NULL,
+  `isCracked` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `HashcatRelease` (
@@ -120,7 +122,8 @@ CREATE TABLE `Hashlist` (
   `saltSeparator` varchar(10) NOT NULL,
   `cracked` int(11) NOT NULL,
   `secret` int(11) NOT NULL,
-  `hexSalt` int(11) NOT NULL
+  `hexSalt` int(11) NOT NULL,
+  `isSalted` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE `HashlistAgent` (

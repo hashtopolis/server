@@ -26,4 +26,11 @@ class UI {
     
     $OBJECTS['messages'][] = new DataSet(array('type' => $type, 'message' => $message));
   }
+  
+  public static function setForward($url, $delay){
+    global $OBJECTS;
+    
+    $OBJECTS['autorefresh'] = $delay;
+    $OBJECTS['autorefreshUrl'] = $url;
+  }
 }
