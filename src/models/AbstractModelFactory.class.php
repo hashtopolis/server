@@ -109,6 +109,51 @@ class AbstractModelFactory {
     }
   }
   
+  public function massSave($models) {
+    if(sizeof($models) == 0){
+      return false;
+    }
+    $dict = $models[0]->getKeyValueDict();
+    
+    $query = "INSERT INTO " . $this->getModelTable() . "(";
+    $keys = array_keys($dict);
+    
+    $placeHolder = "(";
+    for ($i = 0; $i < count($keys); $i++) {
+      if ($i != count($keys) - 1) {
+        $query = $query . $keys[$i] . ",";
+        $placeHolder = $placeHolder . "?,";
+      }
+      else {
+        $query = $query . $keys[$i];
+        $placeHolder = $placeHolder . "?";
+      }
+    }
+    $query = $query . ")";
+    $placeHolder = $placeHolder . ")";
+    
+    $query = $query . " VALUES ";
+    $vals = array();
+    for($x=0;$x<sizeof($models);$x++){
+      $query .= $placeHolder;
+      if($x < sizeof($models) - 1){
+        $query .= ", ";
+      }
+      if($models[$x]->getId() == 0){
+        $models[$x]->setId(null);
+      }
+      $dict = $models[$x]->getKeyValueDict();
+      foreach(array_values($dict) as $val){
+        $vals[] = $val;
+      }
+    }
+    
+    $dbh = $this->getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    return $stmt;
+  }
+  
   /**
    * Updates the database entry for the model
    *
@@ -190,9 +235,9 @@ class AbstractModelFactory {
     $query = $query . " WHERE " . $this->getNullObject()->getPrimaryKey() . "=?";
     
     $stmt = $this->getDB()->prepare($query);
-    $stmt->execute(array(
-      $pk
-    )
+      $stmt->execute(array(
+        $pk
+      )
     );
     if ($stmt->rowCount() != 0) {
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -245,12 +290,19 @@ class AbstractModelFactory {
         
         
         $filterOptions = $options['filter'];
-        $vals = array();
         
         for ($i = 0; $i < count($filterOptions); $i++) {
           $option = $filterOptions[$i];
           if ($option->getValue() != null) {
-            array_push($vals, $option->getValue());
+            $v = $option->getValue();
+            if(is_array($v)){
+              foreach($v as $val){
+                array_push($vals, $val);
+              }
+            }
+            else {
+              array_push($vals, $v);
+            }
           }
           
           if ($i != count($filterOptions) - 1) {
@@ -567,8 +619,11 @@ class AbstractModelFactory {
     }
     
     $dbh = $this->getDB();
+    echo "$query\n";
+    print_r($vals);
     $stmt = $dbh->prepare($query);
-    return $stmt->execute($vals);
+    $stmt->execute($vals);
+    return $stmt;
   }
   
   /**

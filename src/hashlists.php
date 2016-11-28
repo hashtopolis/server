@@ -16,10 +16,8 @@ $MENU->setActive("lists_norm");
 
 //catch agents actions here...
 if (isset($_POST['action'])) {
-  switch ($_POST['action']) {
-    //TODO: handler needs to be done + add new hashlists handling there
-    
-  }
+  $hashlistHandler = new HashlistHandler();
+  $hashlistHandler->handle($_POST['action']);
 }
 
 if(isset($_GET['new'])){

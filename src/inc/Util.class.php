@@ -22,6 +22,21 @@ class Util {
     return array();
   }
   
+  public static function zapCleaning(){
+    global $FACTORIES;
+    
+    $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
+    if($entry == null){
+      $entry = new StoredValue("lastZapCleaning", 0);
+      $entry = $FACTORIES::getStoredValueFactory()->save($entry);
+    }
+    if(time() - $entry->getVal() > 600){
+      //TODO: zap cleaning
+      $entry->setVal(time());
+      $FACTORIES::getStoredValueFactory()->update($entry);
+    }
+  }
+  
   public static function filesize($file){
     //TODO: put code for 64-bit file size determination here
     if(!file_exists($file)){
@@ -31,7 +46,13 @@ class Util {
   }
   
   public static function refresh() {
-    header("Location: " . $_SERVER['PHP_SELF'] . (strlen($_SERVER['QUERY_STRING'])>0)?"?":"" . $_SERVER['QUERY_STRING']);
+    global $_SERVER;
+    
+    $url = $_SERVER['PHP_SELF'];
+    if(strlen($_SERVER['QUERY_STRING'])>0){
+      $url .= "?".$_SERVER['QUERY_STRING'];
+    }
+    header("Location: $url");
     die();
   }
   

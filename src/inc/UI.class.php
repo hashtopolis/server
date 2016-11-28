@@ -9,7 +9,7 @@
 class UI {
   public static function printError($level, $message) {
     $OBJECTS = array();
-    $TEMPLATE = new Template("error");
+    $TEMPLATE = new Template("errors/error");
     $OBJECTS['message'] = $message;
     $OBJECTS['level'] = $level;
     echo $TEMPLATE->render($OBJECTS);

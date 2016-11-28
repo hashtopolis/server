@@ -24,6 +24,8 @@ class Factory{
 	private static $userFactory = null;
 	private static $sessionFactory = null;
 	private static $rightGroupFactory = null;
+	private static $zapFactory = null;
+	private static $storedValueFactory = null;
 
 	public static function getAgentFactory(){
 		if(self::$agentFactory == null){
@@ -253,6 +255,28 @@ class Factory{
 		}
 		else{
 			return self::$rightGroupFactory;
+		}
+	}
+
+	public static function getZapFactory(){
+		if(self::$zapFactory == null){
+			$f = new ZapFactory();
+			self::$zapFactory = $f;
+			return $f;
+		}
+		else{
+			return self::$zapFactory;
+		}
+	}
+
+	public static function getStoredValueFactory(){
+		if(self::$storedValueFactory == null){
+			$f = new StoredValueFactory();
+			self::$storedValueFactory = $f;
+			return $f;
+		}
+		else{
+			return self::$storedValueFactory;
 		}
 	}
 

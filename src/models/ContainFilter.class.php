@@ -13,11 +13,15 @@ class ContainFilter {
     if ($table != "") {
       $table = $table . ".";
     }
-    return $table . $this->key . " IN ?";
+    $placeholders = array();
+    for($x=0;$x<sizeof($this->values);$x++){
+      $placeholders[] = "?";
+    }
+    return $table . $this->key . " IN (".implode(",", $placeholders).")";
   }
   
   function getValue() {
-    return implode(",", $this->values);
+    return $this->values;
   }
 }
 

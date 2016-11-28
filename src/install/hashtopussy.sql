@@ -20,6 +20,18 @@ CREATE TABLE `Agent` (
   `cpuOnly` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+CREATE TABLE `Zap` (
+  `zapId` int(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  `hash` varchar(512) NOT NULL,
+  `solveTime` int(11) NOT NULL,
+  `hashlistId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE `StoredValue` (
+  `storedValueId` varchar(127) PRIMARY KEY NOT NULL,
+  `val` varchar(127) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
 CREATE TABLE `Assignment` (
   `assignmentId` int(11) NOT NULL,
   `taskId` int(11) NOT NULL,

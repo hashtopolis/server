@@ -181,6 +181,16 @@ $CONF['RightGroup'] = array(
   'groupName',
   'level'
 );
+$CONF['Zap'] = array(
+  'zapId',
+  'hash',
+  'solveTime',
+  'hashlistId'
+);
+$CONF['StoredValue'] = array(
+  'storedValueId',
+  'val'
+);
 
 foreach ($CONF as $NAME => $COLUMNS) {
   
