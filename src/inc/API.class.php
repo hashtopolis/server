@@ -438,7 +438,7 @@ class API {
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array('join' => $jF, 'filter' => $qF));
     $files = array();
     for($x=0;$x<sizeof($joinedFiles['File']);$x++){
-      $files[] = $joinedFiles['File'][$x];
+      $files[] = $joinedFiles['File'][$x]->getId();
     }
   
     API::sendResponse(array(

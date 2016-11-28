@@ -151,6 +151,7 @@ class FileHandler implements Handler {
     }
     else{
       $FACTORIES::getFileFactory()->delete($file);
+      unlink(dirname(__FILE__)."/../../files/".$file->getFilename());
       UI::addMessage("success", "Successfully deleted file!");
     }
   }

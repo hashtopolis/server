@@ -177,5 +177,41 @@
 	  "hashlist":23
 	}
 	\end{verbatim}
-	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send a list of hashes which were requested.
+	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send a list of hashes which were requested.\\\\
+	TODO: reponse
+	
+	\subsection*{Get Task}
+	The client requests the current task he should work on.
+	\begin{verbatim}
+	{
+	  "action":"task",
+	  "token":"GHhgdf(/&"
+	}
+	\end{verbatim}
+	The server will send then a task to do:
+	\begin{verbatim}
+	{
+	  "action":"task",
+	  "response":"SUCCESS",
+	  "task" => 25,
+	  "wait" => 0,
+	  "attackcmd" => "#HL# -a 3 ?a?a?a?a",
+	  "cmdpars" => "--hash-type=0",
+	  "hashlist" => 13,
+	  "bench" => "new",
+	  "statustimer" => 5,
+	  "files" => [
+	    "5",
+	    "6"
+	  ]
+	}
+	\end{verbatim}
+	or send this if there is no task available:
+	\begin{verbatim}
+	{
+	  "action":"task",
+	  "response":"SUCCESS",
+	  "task":"NONE"
+	}
+	\end{verbatim}
 \end{document}
