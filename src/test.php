@@ -6,10 +6,7 @@ ini_set("display_errors", "1");
  * TODO: this should be removed as soon as it is released
  */
 
-require_once(dirname(__FILE__) . "/inc/templating/Statement.class.php");
-require_once(dirname(__FILE__) . "/inc/templating/Template.class.php");
-require_once(dirname(__FILE__) . "/inc/UI.class.php");
-require_once(dirname(__FILE__) . "/inc/Dataset.class.php");
+require_once(dirname(__FILE__) . "/inc/load.php");
 
 class Test {
   public function getString(){
@@ -43,5 +40,17 @@ $set->addValue('agent', time());
 $objects20 = array('test' => $set, 'user' => 'testuser');
 
 
-$TEMPLATE = new Template($text1, true);
-echo $TEMPLATE->render($objects);
+/*$TEMPLATE = new Template($text1, true);
+echo $TEMPLATE->render($objects);*/
+
+$agent = $FACTORIES::getAgentFactory()->get(3);
+
+$qF1 = new QueryFilter("priority", 0, ">");
+$qF2 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
+$qF3 = new QueryFilter("isCpuTask", $agent->getCpuOnly() , "="); //assign non-cpu tasks only to non-cpu agents and vice versa
+$qF4 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
+$jF1 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
+$jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
+$jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
+$result = $FACTORIES::getTaskFactory()->filter2(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1, $jF2, $jF3)));
+print_r($result);

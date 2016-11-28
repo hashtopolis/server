@@ -5,13 +5,15 @@ class JoinFilter {
   private $match1;
   private $match2;
   private $otherTableName;
+  private $overrideOwnFactory;
   
-  function __construct($otherFactory, $matching1, $matching2) {
+  function __construct($otherFactory, $matching1, $matching2, $overrideOwnFactory = null) {
     $this->otherFactory = $otherFactory;
     $this->match1 = $matching1;
     $this->match2 = $matching2;
     
     $this->otherTableName = $this->otherFactory->getModelTable();
+    $this->overrideOwnFactory = $overrideOwnFactory;
   }
   
   function getOtherFactory() {
@@ -28,6 +30,10 @@ class JoinFilter {
   
   function getOtherTableName() {
     return $this->otherTableName;
+  }
+  
+  function getOverrideOwnFactory(){
+    return $this->overrideOwnFactory;
   }
 }
 

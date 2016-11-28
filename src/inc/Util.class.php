@@ -22,6 +22,21 @@ class Util {
     return array();
   }
   
+  public static function getNextTask($agent){
+    global $FACTORIES;
+  
+    $qF1 = new QueryFilter("priority", 0, ">");
+    $qF2 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
+    $qF3 = new QueryFilter("isCpuTask", $agent->getCpuOnly() , "="); //assign non-cpu tasks only to non-cpu agents and vice versa
+    $qF4 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
+    $jF1 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
+    $jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
+    $jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId");
+    $oF = new OrderFilter("priority", "DESC LIMIT 1");
+    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2), 'join' => array($jF), 'order' => array($oF)), true);
+    return $nextTask;
+  }
+  
   public static function zapCleaning(){
     global $FACTORIES;
     
@@ -480,22 +495,11 @@ class Util {
   }
   
   public static function createPrefixedString($table, $dict) {
-    $concat = "";
-    $counter = 0;
-    $size = count($dict);
-    
+    $arr = array();
     foreach ($dict as $key => $val) {
-      if ($counter < $size - 1) {
-        $concat = $concat . "`" . $table . "`" . "." . "`" . $key . "`" . " AS " . $val . ",";
-        $counter = $counter + 1;
-      }
-      else {
-        $concat = $concat . "`" . $table . "`" . "." . "`" . $key . "`" . " AS " . $val;
-        $counter = $counter + 1;
-      }
+      $arr[] = "`" . $table . "`" . "." . "`" . $key . "`" . " AS `" . $table.".".$key."`";
     }
-    
-    return $concat;
+    return implode(", ", $arr);
   }
   
   public static function startsWith($search, $pattern) {

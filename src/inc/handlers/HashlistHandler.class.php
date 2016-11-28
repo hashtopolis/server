@@ -193,6 +193,7 @@ class HashlistHandler implements Handler {
           $added += $result->rowCount();
         }
         fclose($file);
+        unlink($tmpfile);
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
@@ -218,6 +219,8 @@ class HashlistHandler implements Handler {
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }
+        fclose($file);
+        unlink($tmpfile);
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
@@ -228,6 +231,8 @@ class HashlistHandler implements Handler {
           $hash = new HashBinary(0, $this->hashlist->getId(), "", Util::bintohex($data), "", 0, 0, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
         }
+        fclose($file);
+        unlink($tmpfile);
         $this->hashlist->setHashCount(1);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         header("Location: hashlists.php?id=" . $this->hashlist->getId());

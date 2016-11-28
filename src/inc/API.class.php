@@ -386,10 +386,64 @@ class API {
     if ($agent == null) {
       API::sendErrorResponse('task', "Invalid token!");
     }
+    else if($agent->getIsActive() == 0){
+      API::sendResponse(array('action' => 'task', 'response' => 'SUCCESS', 'task' => 'NONE'));
+    }
     
     $qF = new QueryFilter("agentId", $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)), true);
+    $assignedTask = null;
+    if($assignment == null){
+      //search which task we should assign to the agent
+      
+    }
+    else{
+      //check if the agent is assigned to the correct task, if not assign him the right one
+      $task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+      $finished = false;
+      
+      //check if the task is finished
+      if($task->getKeyspace() == $task->getProgress() && $task->getKeyspace() != 0){
+        //task is finished
+        $task->setPriority(0);
+        $FACTORIES::getTaskFactory()->update($task);
+        $finished = true;
+      }
+      
+      $qF = new QueryFilter("priority", $task->getPriority(), ">");
+      $oF = new OrderFilter("priority", "DESC LIMIT 1");
+      $highPriorityTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF), 'order' => array($oF)), true);
+      if($highPriorityTask != null){
+        //there is a more important task
+        $FACTORIES::getAssignmentFactory()->delete($assignment);
+        $assignment = new Assignment(0, $highPriorityTask->getId(), $agent->getId(), 0, $highPriorityTask->getAutoadjust(), 0);
+        $FACTORIES::getAssignmentFactory()->save($assignment);
+        $assignedTask = $highPriorityTask;
+      }
+      else{
+        if(!$finished) {
+          $assignedTask = $task;
+        }
+      }
+    }
     
+    if($assignedTask == null){
+      //no task available
+      API::sendResponse(array('action' => 'task', 'response' => 'SUCCESS', 'task' => 'NONE'));
+    }
+  
+    API::sendResponse(array(
+      'action' => 'task',
+      'response' => 'SUCCESS',
+      'task' => $assignedTask->getId(),
+      'wait' => $agent->getWait(),
+      'attackcmd' => $assignedTask->getAttackCmd(),
+      'cmdpars' => $agent->getCmdPars()." --hash-type=".$assignedTask->getHashTypeId(),
+      'hashlist' => $assignedTask->getHashlistId(),
+      'bench' => 'new', //TODO: here we should tell him new or continue depending if he was already worked on this hashlist or not
+      'statustimer' => $assignedTask->getStatusTimer()
+      )
+    );
     
     // tell agent information about its task
     

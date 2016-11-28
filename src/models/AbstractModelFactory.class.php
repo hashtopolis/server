@@ -248,6 +248,167 @@ class AbstractModelFactory {
     }
   }
   
+  private function applyFilters(&$vals, $filters){
+    $parts = array();
+  
+    foreach($filters as $filter) {
+      $v = $filter->getValue();
+      if(is_array($v)){
+        foreach($v as $val){
+          array_push($vals, $val);
+        }
+      }
+      else {
+        array_push($vals, $v);
+      }
+      
+      $parts[] = $filter->getQueryString();
+    }
+    return " WHERE ".implode(" AND ", $parts);
+  }
+  
+  private function applyOrder($orders){
+    $orderQueries = array();
+    if(!is_array($orders)){
+      $orders = array($orders);
+    }
+    foreach($orders as $order){
+      $orderQueries[] = $order->getQueryString($this->getModelTable());
+    }
+    return " ORDER BY " . implode(", ", $orderQueries);
+  }
+  
+  private function filterWithJoin($options) {
+    $keys = array_keys($this->getNullObject()->getKeyValueDict());
+    $prefixedKeys = array();
+    $factories = array($this);
+    foreach($keys as $key){
+      $prefixedKeys[] = $this->getModelTable().".".$key;
+      $tables[] = $this->getModelTable();
+    }
+    $query = "SELECT ".Util::createPrefixedString($this->getModelTable(), $this->getNullObject()->getKeyValueDict());
+    $vals = array();
+    foreach($options['join'] as $join){
+      $joinFactory = $join->getOtherFactory();
+      $factories[] = $joinFactory;
+      $query .= ", ".Util::createPrefixedString($joinFactory->getModelTable(), $joinFactory->getNullObject()->getKeyValueDict());
+    }
+    $query .= " FROM " . $this->getModelTable();
+    
+    foreach($options['join'] as $join){
+      $joinFactory = $join->getOtherFactory();
+      $localFactory = $this;
+      if($join->getOverrideOwnFactory() != null){
+        $localFactory = $join->getOverrideOwnFactory();
+      }
+      $match1 = $join->getMatch1();
+      $match2 = $join->getMatch2();
+      $query .= " INNER JOIN ".$joinFactory->getModelTable()." ON ".$localFactory->getModelTable().".".$match1."=".$joinFactory->getModelTable().".".$match2." ";
+    }
+    
+    // Apply all normal filter to this query
+    $vals = array();
+    if (array_key_exists("filter", $options)) {
+      $query .= $this->applyFilters($vals, $options['filter']);
+    }
+    
+    // Apply order filter
+    if (!array_key_exists("order", $options)) {
+      // Add a asc order on the primary keys as a standard
+      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
+      $orderOptions = array(
+        $oF
+      );
+      $options['order'] = $orderOptions;
+    }
+    $query .= $this->applyOrder($options['order']);
+      
+    
+    $dbh = $this->getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    $res = array();
+    $primaryKey = array();
+    $values = array();
+    foreach($factories as $factory){
+      $res[$factory->getModelTable()] = array();
+      $values[$factory->getModelTable()] = array();
+    }
+    
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      foreach ($row as $k => $v) {
+        foreach($factories as $factory){
+          if(Util::startsWith($k, $factory->getModelTable())){
+            $column = str_replace($factory->getModelTable().".", "", $k);
+            if($column != $factory->getNullObject()->getPrimaryKey()){
+              $values[$factory->getModelTable()][$column] = $v;
+            }
+            else{
+              $primaryKey[$factory->getModelTable()] = $v;
+            }
+          }
+        }
+      }
+      
+      foreach($factories as $factory){
+        $model = $factory->createObjectFromDict($primaryKey[$factory->getModelTable()], $values[$factory->getModelTable()]);
+        array_push($res[$factory->getModelTable()], $model);
+      }
+    }
+    
+    return $res;
+  }
+  
+  public function filter($options, $single = false) {
+    // Check if we need to join and if so pass on to internal Function
+    if (array_key_exists('join', $options)) {
+      return $this->filterWithJoin2($options);
+    }
+    
+    $keys = array_keys($this->getNullObject()->getKeyValueDict());
+    $query = "SELECT ".implode(", ", $keys)." FROM " . $this->getModelTable();
+    $vals = array();
+    
+    if (array_key_exists("filter", $options)) {
+      $query .= $this->applyFilters($vals, $options['filter']);
+    }
+    
+    if (!array_key_exists("order", $options)) {
+      // Add a asc order on the primary keys as a standard
+      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
+      $orderOptions = array($oF);
+      $options['order'] = $orderOptions;
+    }
+    $query .= $this->applyOrder($options['order']);
+    
+    $dbh = $this->getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    $objects = array();
+    
+    // Loop over all entries and create an object from dict for each
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+      $pkName = $this->getNullObject()->getPrimaryKey();
+      
+      $pk = $row[$pkName];
+      $model = $this->createObjectFromDict($pk, $row);
+      array_push($objects, $model);
+    }
+    
+    if ($single) {
+      if (sizeof($objects) == 0) {
+        return null;
+      }
+      else {
+        return $objects[0];
+      }
+    }
+    
+    return $objects;
+  }
+  
   /**
    * Filters the database for a set of options
    *
@@ -263,7 +424,7 @@ class AbstractModelFactory {
    *
    * @return array Returns a list of matching objects or Null
    */
-  public function filter($options, $single = false) {
+  public function filterOld($options, $single = false) {
     // Check if we need to join and if so pass on to internal Function
     if (array_key_exists('join', $options)) {
       return $this->filterWithJoin($options);
@@ -431,7 +592,7 @@ class AbstractModelFactory {
    * This is put here to avoid putting too much stuff in the filter
    * method. It should only be called from filter()
    */
-  private function filterWithJoin($options) {
+  private function filterWithJoinOld($options) {
     $joinOptions = $options['join'];
     
     $jO = $joinOptions[0];
@@ -444,7 +605,7 @@ class AbstractModelFactory {
     $otherTable = $jO->getOtherFactory()->getModelTable();
     $otherTablePrefixed = Util::createPrefixedString($otherTable, $this->getPrefixedKeys($otherTable));
     
-    // Get macthing colums
+    // Get matching colums
     $match1 = $jO->getMatch1();
     $match2 = $jO->getMatch2();
     $query = "SELECT " . $ownTablePrefixed . " , " . $otherTablePrefixed . " FROM " . $ownTable . " AS " . $ownTable . " INNER JOIN " . $otherTable . " ON " . $ownTable . "." . $match1 . "=" . $otherTable . "." . $match2;
@@ -459,11 +620,16 @@ class AbstractModelFactory {
         $option = $filterOptions[$i];
         array_push($vals, $option->getValue());
         
+        $table = $ownTable;
+        if($option->getFactory() != null){
+          $table = $option->getFactory()->getModelTable();
+        }
+        
         if ($i != count($filterOptions) - 1) {
-          $query = $query . $option->getQueryString($ownTable) . " AND ";
+          $query = $query . $option->getQueryString($table) . " AND ";
         }
         else {
-          $query = $query . $option->getQueryString($ownTable);
+          $query = $query . $option->getQueryString($table);
         }
       }
     }
@@ -494,6 +660,7 @@ class AbstractModelFactory {
     }
     
     $dbh = $this->getDB();
+    echo $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
