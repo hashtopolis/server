@@ -18,6 +18,7 @@ $message = "";
 //catch actions here...
 if (isset($_POST['action'])) {
   switch ($_POST['action']) {
+    //TODO: implement file handler
     case 'filedelete':
       if ($LOGIN->getLevel() < 30) {
         break;
@@ -178,32 +179,18 @@ if (isset($_POST['action'])) {
   }
 }
 
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT files.id,files.filename,files.secret,files.size,IFNULL(taskfiles.tasks,0) AS tasks FROM files LEFT JOIN (SELECT   file,COUNT(task) AS tasks FROM taskfiles GROUP BY file) taskfiles ON taskfiles.file=files.id ORDER BY filename ASC");
-$res = $res->fetchAll();
-$files = array();
-foreach ($res as $file) {
-  $set = new DataSet();
-  $set->setValues($file);
-  $files[] = $set;
+$view = "dict";
+if(isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))){
+  $view = $_GET['view'];
 }
 
-$OBJECTS['files'] = $files;
-$OBJECTS['numFiles'] = sizeof($files);
 
-$impfiles = array();
-if (file_exists("import") && is_dir("import")) {
-  $impdir = opendir("import");
-  while ($f = readdir($impdir)) {
-    if ($f[0] != '.' && (!is_dir($f))) {
-      $set = new DataSet();
-      $set->addValue('name', $f);
-      $set->addValue('size', filesize("import/" . $f));
-      $impfiles[] = $set;
-    }
-  }
-}
-
-$OBJECTS['impfiles'] = $impfiles;
+$qF = new QueryFilter("fileType", array_search($view, array('dict', 'rule')), "=");
+$oF = new OrderFilter("filename", "ASC");
+$OBJECTS['fileType'] = ($view == "dict")?"Wordlists":"Rules";
+$OBJECTS['view'] = $view;
+$OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'order' => $oF));;
+$OBJECTS['impfiles'] = Util::scanImportDirectory();
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

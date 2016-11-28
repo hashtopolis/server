@@ -8,11 +8,11 @@ if (!$LOGIN->isLoggedin()) {
 
 $TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");
-$message = "";
 
 //catch agents actions here...
 if (isset($_POST['action'])) {
   switch ($_POST['action']) {
+    //TODO: implement task handler
     case 'agentbench':
       if ($LOGIN->getLevel() < 20) {
         break;
@@ -230,31 +230,27 @@ if (isset($_POST['action'])) {
 
 //test if auto-reload is enabled
 $autorefresh = 0;
-if (isset($_COOKIE['autorefresh']) && $_COOKIE['autorefresh'] == 'On') {
+if (isset($_COOKIE['autorefresh']) && $_COOKIE['autorefresh'] == '1') {
   $autorefresh = 10;
 }
 if (isset($_POST['toggleautorefresh'])) {
   if ($autorefresh != 0) {
     $autorefresh = 0;
-    setcookie("autorefresh", "", time() - 600);
+    setcookie("autorefresh", "0", time() - 600);
   }
   else {
     $autorefresh = 10;
-    setcookie("autorefresh", "On", time() + 3600 * 24);
+    setcookie("autorefresh", "1", time() + 3600 * 24);
   }
-  header("Location: " . $_SERVER['REQUEST_URI']);
-  die();
+  Util::refresh();
 }
 if ($autorefresh > 0) { //renew cookie
-  setcookie("autorefresh", "On", time() + 3600 * 24);
-}
-if (isset($_POST['action'])) {
-  //not sure why this was done, currently commented to fix an issue
-  //$autorefresh = 0;
+  setcookie("autorefresh", "1", time() + 3600 * 24);
 }
 $OBJECTS['autorefresh'] = $autorefresh;
 
 if (isset($_GET['id']) && $LOGIN->getLevel() >= 5) {
+  //TODO: update single task view
   $TEMPLATE = new Template("tasks.detail");
   
   // show task details
@@ -367,19 +363,66 @@ if (isset($_GET['id']) && $LOGIN->getLevel() >= 5) {
   }
 }
 else {
-  $res = $DB->query("SELECT tasks.id AS task,tasks.chunktime,tasks.priority,tasks.color,tasks.name,tasks.attackcmd,tasks.hashlist,tasks.progress,IFNULL(chunks.sumprog,0) AS sumprog,tasks.keyspace,IFNULL(chunks.pcount,0) AS pcount,IFNULL(chunks.ccount,0) AS ccount,IFNULL(taskfiles.secret,0) AS secret,IF(chunks.lastact>" . (time() - $CONFIG->getVal('chunktimeout')) . ",1,0) AS active,IFNULL(assignments.acount,0) AS assigncount,taskfiles.fcount AS filescount,IFNULL(taskfiles.fsize,0) AS filesize,hashlists.name AS hname,hashlists.secret AS hsecret,IF(hashlists.cracked<hashlists.hashcount,1,0) AS hlinc FROM tasks JOIN hashlists ON hashlists.id=tasks.hashlist LEFT JOIN (SELECT task,SUM(cracked) AS pcount,COUNT(1) AS ccount,GREATEST(MAX(dispatchtime),MAX(solvetime)) AS lastact,SUM(progress) AS sumprog FROM chunks GROUP BY task) chunks ON chunks.task=tasks.id LEFT JOIN (SELECT task,COUNT(1) AS acount FROM assignments GROUP BY task) assignments ON assignments.task=tasks.id LEFT JOIN (SELECT taskfiles.task,COUNT(1) AS fcount,SUM(files.size) AS fsize,MAX(files.secret) AS secret FROM taskfiles JOIN files ON files.id=taskfiles.file GROUP BY taskfiles.task) taskfiles ON taskfiles.task=tasks.id ORDER BY active DESC, tasks.priority DESC, tasks.id ASC");
-  $res = $res->fetchAll();
+  $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
+  $oF1 = new OrderFilter("priority", "DESC");
+  $oF2 = new OrderFilter("taskId", "ASC");
+  $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('join' => $jF, 'order' => array($oF1, $oF2)));
   $tasks = array();
-  foreach ($res as $task) {
+  for($x=0;$x<sizeof($joinedTasks['Task']);$x++){
     $set = new DataSet();
-    $set->setValues($task);
+    $set->addValue('Task', $joinedTasks['Task'][$x]);
+    $set->addValue('Hashlist', $joinedTasks['Hashlist'][$x]);
+    
+    $task = $joinedTasks['Task'][$x];
+    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter'=> $qF));
+    $progress = 0;
+    $cracked = 0;
+    $maxTime = 0;
+    foreach($chunks as $chunk){
+      $progress += $chunk->getProgress();
+      $cracked += $chunk->getCracked();
+      if($chunk->getDispatchTime() > $maxTime){
+        $maxTime = $chunk->getDispatchTime();
+      }
+      if($chunk->getSolveTime() > $maxTime){
+        $maxTime = $chunk->getSolveTime();
+      }
+    }
+    
+    $isActive = false;
+    if(time() - $maxTime < $CONFIG->getVal('chunktimeout')){
+      $isActive = true;
+    }
+    
+    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
+    
+    $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());
+    $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), "fileId", "fileId");
+    $joinedFiles = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'join' => $jF));
+    $sizes = 0;
+    $secret = false;
+    for($x=0;$x<sizeof($joinedFiles['File']);$x++){
+      $sizes += $joinedFiles['File'][$x]->getSize();
+      if($joinedFiles['File'][$x]->getSecret() == '1'){
+        $secret = true;
+      }
+    }
+    
+    $set->addValue('numFiles', sizeof($joinedFiles['File']));
+    $set->addValue('filesSize', $sizes);
+    $set->addValue('fileSecret', $secret);
+    $set->addValue('numAssignments', sizeof($assignments));
+    $set->addValue('isActive', $isActive);
+    $set->addValue('sumprog', $progress);
+    $set->addValue('cracked', $cracked);
+    $set->addValue('numChunks', sizeof($chunks));
+    
     $tasks[] = $set;
+    $OBJECTS['tasks'] = $tasks;
   }
-  
-  $OBJECTS['numTasks'] = sizeof($tasks);
-  $OBJECTS['tasks'] = $tasks;
 }
-$OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
 

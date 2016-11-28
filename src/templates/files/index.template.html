@@ -1,5 +1,5 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Files</h2>
 <script>
 	function addLine(tablename) { 
@@ -10,53 +10,67 @@
 		cell.innerHTML= '<input type="file" class="form-control" name="upfile[]"><br>'; 
 	}
 </script>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
-	<h3>Existing files ([[numFiles]])</h3>
+	<div class='btn-toolbar'>
+		<div class='btn-group'>
+			<button class='btn btn-default{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
+			<button class='btn btn-default{{IF [[view]] == "dict"}} active{{ENDIF}}' onclick="window.location='files.php?view=dict'">Wordlists</button>
+		</div>
+	</div>
+	<h3>Existing [[fileType]] ([[sizeof([[files]])]])</h3>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>
 				<th>ID</th>
 				<th>File</th>
 				<th><img src="static/lock.gif" alt="Secret"></th>
-				<th>Size</th>
+				<th style="text-align: right">Size</th>
 				<th>Used</th>
 				<th>Action</th>
 			</tr>
 			{{FOREACH file;[[files]]}}
 				<tr>
-					<td>[[file.getVal('id')]]</td>
+					<td>[[file.getId()]]</td>
 					<td>
-						<a name="[[file.getVal('id')]]" href="get.php?file=[[file.getVal('id')]]" target="_blank">[[file.getVal('filename')]]</a>
-        				{{IF [[file.getVal('secret')]] == '1'}}
-        					<img src="static/lock.gif" alt="Secret">
-        				{{ENDIF}}
-        			</td>
-        			<td>
-        				{%TEMPLATE->files.secret1%}
-        				{%TEMPLATE->files.secret2%}
-        			</td>
-        			<td class='num'>
-        				[[Util::nicenum([[file.getVal('size')]])]]B
-        			</td>
-        			<td>[[file.getVal('tasks')]]x</td>
-        			<td>
-        				{{IF [[login.getLevel()]] >= 30}}
-	        				<form action="files.php" method="POST" onSubmit="if (!confirm('Really delete file [[file.getVal('filename')]]?')) return false;">
-	        					<input type="hidden" name="action" value="filedelete">
-	        					<input type="hidden" name="file" value="[[file.getVal('id')]]">
-	        					<input type="submit" class='btn btn-danger' value="Delete">
-	        				</form>
-	        			{{ENDIF}}
-        			</td>
-        		</tr>
+						<a name="[[file.getId()]]" href="get.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
+						{{IF [[file.getSecret()]] == '1'}}
+							<img src="static/lock.gif" alt="Secret">
+						{{ENDIF}}
+					</td>
+					<td>
+						{{IF [[login.getLevel()]] >= 30}}
+							<form id="secret[[file.getId()]]" action="files.php" method="POST">
+								<input type="hidden" name="file" value="[[file.getId()]]">
+								<input type="hidden" name="action" value="filesecret">
+								<input type='hidden' name="secret" value="{{IF [[file.getSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
+								<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getSecret()]] == '1'}} checked{{ENDIF}}>
+							</form>
+						{{ELSE}}
+							<input type='checkbox'{{IF [[file.getSecret()]] == 1}} checked{{ENDIF}} disabled>
+						{{ENDIF}}
+					</td>
+					<td class='num'>
+						[[Util::nicenum([[file.getSize()]])]]B
+					</td>
+					<td>TODO x</td>
+					<td>
+						{{IF [[login.getLevel()]] >= 30}}
+							<form action="files.php" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
+								<input type="hidden" name="action" value="filedelete">
+								<input type="hidden" name="file" value="[[file.getId()]]">
+								<input type="submit" class='btn btn-danger' value="Delete">
+							</form>
+						{{ENDIF}}
+					</td>
+				</tr>
 			{{ENDFOREACH}}
 		</table>
 	</div>
 </div>
 <div class='col-md-4' style='padding: 0px;'>
-	<h3>Add new files</h3>
-	<form action="files.php" method="POST" enctype="multipart/form-data">
+	<h3>Add new [[fileType]]</h3>
+	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="source" value="upload">
 		<input type="hidden" name="action" value="addfile">
 		<div class="panel panel-default">
@@ -75,7 +89,7 @@
 			</table>
 		</div>
 	</form>
-	<form id="impfiles" action="files.php" method="POST" enctype="multipart/form-data">
+	<form id="impfiles" action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
     	<input type="hidden" name="source" value="import">
     	<input type="hidden" name="action" value="addfile">
       	<div class="panel panel-default">
@@ -106,7 +120,7 @@
 			</table>
 		</div>
 	</form>
-	<form action="files.php" method="POST" enctype="multipart/form-data">
+	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="action" value="addfile">
       	<input type="hidden" name="source" value="url">
       	<div class="panel panel-default">
@@ -129,4 +143,4 @@
 		</div>
 	</form>
 </div>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}
