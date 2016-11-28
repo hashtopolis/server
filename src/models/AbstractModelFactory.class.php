@@ -250,6 +250,9 @@ class AbstractModelFactory {
   
   private function applyFilters(&$vals, $filters){
     $parts = array();
+    if(!is_array($filters)){
+      $filters = array($filters);
+    }
   
     foreach($filters as $filter) {
       $v = $filter->getValue();
@@ -279,6 +282,10 @@ class AbstractModelFactory {
   }
   
   private function filterWithJoin($options) {
+    $joins = $options['join'];
+    if(!is_array($joins)){
+      $joins = array($joins);
+    }
     $keys = array_keys($this->getNullObject()->getKeyValueDict());
     $prefixedKeys = array();
     $factories = array($this);
@@ -288,14 +295,14 @@ class AbstractModelFactory {
     }
     $query = "SELECT ".Util::createPrefixedString($this->getModelTable(), $this->getNullObject()->getKeyValueDict());
     $vals = array();
-    foreach($options['join'] as $join){
+    foreach($joins as $join){
       $joinFactory = $join->getOtherFactory();
       $factories[] = $joinFactory;
       $query .= ", ".Util::createPrefixedString($joinFactory->getModelTable(), $joinFactory->getNullObject()->getKeyValueDict());
     }
     $query .= " FROM " . $this->getModelTable();
     
-    foreach($options['join'] as $join){
+    foreach($joins as $join){
       $joinFactory = $join->getOtherFactory();
       $localFactory = $this;
       if($join->getOverrideOwnFactory() != null){

@@ -395,7 +395,10 @@ class API {
     $assignedTask = null;
     if($assignment == null){
       //search which task we should assign to the agent
-      
+      $nextTask = Util::getNextTask($agent);
+      $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0, $nextTask->getAutoadjust(), 0);
+      $FACTORIES::getAssignmentFactory()->save($assignment);
+      $assignedTask = $nextTask;
     }
     else{
       //check if the agent is assigned to the correct task, if not assign him the right one
@@ -410,9 +413,7 @@ class API {
         $finished = true;
       }
       
-      $qF = new QueryFilter("priority", $task->getPriority(), ">");
-      $oF = new OrderFilter("priority", "DESC LIMIT 1");
-      $highPriorityTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF), 'order' => array($oF)), true);
+      $highPriorityTask = Util::getNextTask($agent);
       if($highPriorityTask != null){
         //there is a more important task
         $FACTORIES::getAssignmentFactory()->delete($assignment);
@@ -431,6 +432,14 @@ class API {
       //no task available
       API::sendResponse(array('action' => 'task', 'response' => 'SUCCESS', 'task' => 'NONE'));
     }
+    
+    $qF = new QueryFilter("taskId", $assignedTask->getId(), "=");
+    $jF = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId");
+    $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array('join' => $jF, 'filter' => $qF));
+    $files = array();
+    for($x=0;$x<sizeof($joinedFiles['File']);$x++){
+      $files[] = $joinedFiles['File'][$x];
+    }
   
     API::sendResponse(array(
       'action' => 'task',
@@ -441,82 +450,9 @@ class API {
       'cmdpars' => $agent->getCmdPars()." --hash-type=".$assignedTask->getHashTypeId(),
       'hashlist' => $assignedTask->getHashlistId(),
       'bench' => 'new', //TODO: here we should tell him new or continue depending if he was already worked on this hashlist or not
-      'statustimer' => $assignedTask->getStatusTimer()
+      'statustimer' => $assignedTask->getStatusTimer(),
+      'files' => array($files)
       )
     );
-    
-    // tell agent information about its task
-    
-    // elaborate select where first line is agent's current assigned task (should there be any)
-    // and the second is the following task the agent should be assigned to once his current is completed
-    // (if agent is not assigned to any task, the next assigned is in the first line - this is
-    // identified by column named 'this', where 0=to be assigned, and >0=is assigned)
-    $res = $DB->query("SELECT tasks.id,tasks.autoadjust AS autotask,agents.wait,tasks.attackcmd,hashlists.hashtype,hashlists.format,agents.cmdpars,tasks.statustimer,tasks.hashlist,tasks.priority,IF(tasks.hashlist=atasks.hashlist AND atasks.hashlist IS NOT NULL AND tasks.hashlist IS NOT NULL,'continue','new') AS bench,IF(chunks.sumdispatch=tasks.keyspace AND tasks.progress=tasks.keyspace AND tasks.keyspace>0,0,1) AS taskinc,IF(hashlists.cracked<hashlists.hashcount,1,0) AS hlinc,IF(atasks.id=tasks.id,agents.id,0) AS this FROM tasks JOIN hashlists ON tasks.hashlist=hashlists.id LEFT JOIN (SELECT taskfiles.task,MAX(secret) AS secret FROM taskfiles JOIN files ON taskfiles.file=files.id GROUP BY taskfiles.task) taskfiles ON taskfiles.task=tasks.id JOIN agents ON agents.token=$token AND agents.active=1 AND agents.trusted>=GREATEST(IFNULL(taskfiles.secret,0),hashlists.secret) LEFT JOIN assignments ON assignments.agent=agents.id LEFT JOIN tasks atasks ON assignments.task=atasks.id LEFT JOIN (SELECT chunks.task,SUM(chunks.length) AS sumdispatch FROM chunks JOIN tasks ON chunks.task=tasks.id WHERE chunks.progress=chunks.length OR GREATEST(chunks.solvetime,chunks.dispatchtime)>=" . (time() - $CONFIG->getVal("chunktimeout")) . " GROUP BY chunks.task) chunks ON chunks.task=tasks.id WHERE atasks.id=tasks.id OR ((tasks.progress<tasks.keyspace OR IFNULL(chunks.sumdispatch,0)<tasks.keyspace OR tasks.keyspace=0) AND tasks.priority>0 AND hashlists.cracked<hashlists.hashcount) ORDER BY this DESC, tasks.priority DESC LIMIT 2");
-    $task = $res->fetch();
-    if ($task) {
-      // first line is valid
-      if ($task["this"] > 0) {
-        // this agent is assigned to this task
-        // is the current task done?
-        $curdone = ($task["taskinc"] == 0 || $task["hlinc"] == 0);
-        
-        // read the following task
-        if ($newtask = $res->fetch()) {
-          $reass = true;
-          $newdone = ($newtask["taskinc"] == 0 || $newtask["hlinc"] == 0);
-        }
-        else {
-          // there is no other prioritized task
-          $reass = false;
-          $newdone = true;
-        }
-        
-        if ($reass && !$newdone) {
-          // there is some other incomplete prioritized task
-          if ($curdone || $newtask["priority"] > $task["priority"]) {
-            // the current task is done or the next one has higher priority
-            // so reassign the agent to the next one
-            $DB->query("UPDATE assignments SET task=" . $newtask["id"] . ",benchmark=IFNULL((SELECT length FROM chunks WHERE solvetime>dispatchtime AND progress=length AND state IN (4,5) AND agent=" . $task["this"] . " AND task=" . $newtask["id"] . " ORDER BY solvetime DESC LIMIT 1),0),speed=0,autoadjust=" . $newtask["autotask"] . " WHERE agent=" . $task["this"]);
-            // but keep agressivity of the previous one
-            $task = $newtask;
-          }
-        }
-        else {
-          // there is nothing else to move on
-          if ($curdone) {
-            // the current task is done so we unassign from it
-            $DB->query("DELETE FROM assignments WHERE agent=" . $task["this"]);
-            // erase hashlist users, they will be returned on joining next task
-            if ($task["format"] == 3) {
-              $DB->query("DELETE FROM hashlistusers WHERE hashlist IN (SELECT hashlist FROM superhashlists WHERE id=" . $task["hashlist"] . ") AND agent=" . $task["this"]);
-              $DB->query("DELETE FROM zapqueue WHERE hashlist IN (SELECT hashlist FROM superhashlists WHERE id=" . $task["hashlist"] . ") agent=" . $task["this"]);
-            }
-            else {
-              $DB->query("DELETE FROM hashlistusers WHERE hashlist=" . $task["hashlist"] . " AND agent=" . $task["this"]);
-              $DB->query("DELETE FROM zapqueue WHERE hashlist=" . $task["hashlist"] . " AND agent=" . $task["this"]);
-            }
-            echo "task_nok" . $separator . "No more active tasks.";
-            break;
-          }
-        }
-      }
-      else {
-        // the first line is the task to be assigned to (agent is not assigned to anything)
-        $DB->query("INSERT INTO assignments (agent,task,autoadjust,benchmark) SELECT agents.id," . $task["id"] . "," . $task["autotask"] . ",IFNULL(chunks.length,0) FROM agents LEFT JOIN chunks ON agents.id=chunks.agent AND chunks.solvetime>chunks.dispatchtime AND chunks.state IN (4,5) AND chunks.progress=chunks.length AND chunks.task=" . $task["id"] . " WHERE agents.token=$token ORDER BY chunks.solvetime DESC LIMIT 1");
-      }
-      
-      // ok, we have something to begin with
-      echo "task_ok" . $separator . $task["id"] . $separator . $task["wait"] . $separator . $task["attackcmd"] . (strlen($task["cmdpars"]) > 0 ? " " . $task["cmdpars"] : "") . " --hash-type=" . $task["hashtype"] . $separator . $task["hashlist"] . $separator . $task["bench"] . $separator . $task["statustimer"];
-      // and add listing of related files
-      $res = $DB->query("SELECT files.filename FROM taskfiles JOIN files ON taskfiles.file=files.id WHERE taskfiles.task=" . $task["id"]);
-      while ($file = $res->fetch()) {
-        echo $separator . $file["filename"];
-      }
-    }
-    else {
-      // there was nothing
-      $DB->query("UPDATE assignments JOIN agents ON assignments.agent=agents.id AND agents.token=$token SET assignments.speed=0");
-      echo "task_nok" . $separator . "No active tasks.";
-    }
   }
 }
