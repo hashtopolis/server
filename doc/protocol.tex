@@ -201,8 +201,8 @@
 	  "bench" => "new",
 	  "statustimer" => 5,
 	  "files" => [
-	    "5",
-	    "6"
+	    5,
+	    6
 	  ]
 	}
 	\end{verbatim}
@@ -214,4 +214,53 @@
 	  "task":"NONE"
 	}
 	\end{verbatim}
+	
+	\subsection*{Get Chunk}
+	The client requests the current task he should work on.
+	\begin{verbatim}
+	{
+	  "action":"chunk",
+   	  "token":"GHhgdf(/&",
+	  "taskId": 5
+	}
+	\end{verbatim}
+	The server will send then a chunk to work on:
+	\begin{verbatim}
+	{
+	  "action":"chunk",
+	  "response":"SUCCESS",
+	  "chunk" => 13,
+	  "skip" => 45000,
+	  "length" => 10000
+	}
+	\end{verbatim}
+	or he can send one of the following answers which should be done then:
+	
+	In case it is required to measure the keyspace of the corresponding task.
+	\begin{verbatim}
+	{
+	  "action":"chunk",
+	  "response":"SUCCESS",
+	  "chunk":"keyspace_required"
+	}
+	\end{verbatim}
+	
+	In case the current task is already fully dispatched and the agent should request for a new task.
+	\begin{verbatim}
+	{
+	"action":"chunk",
+	"response":"SUCCESS",
+	"chunk":"fully_dispatched"
+	}
+	\end{verbatim}
+	
+	In case there is no benchmark for this task on the current agent. So it should start benchmarking then.
+	\begin{verbatim}
+	{
+	"action":"chunk",
+	"response":"SUCCESS",
+	"chunk":"benchmark"
+	}
+	\end{verbatim}
+	
 \end{document}

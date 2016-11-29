@@ -49,136 +49,14 @@ switch ($QUERY['action']) {
     }
     API::getTask($QUERY);
     break;
-  
-  
   case "chunk":
-    // assign a correctly sized chunk to agent
-    
-    // default: 1.2 (120%) this says that if desired chunk size is X and remaining keyspace is 1.2 * X then
-    // it will be assigned as a whole instead of first assigning X and then 0.2 * X (which would be very small
-    // and therefore very slow due to lack of GPU utilization)
-    $disptolerance = 1.2;
-    
-    $task = intval($_GET["task"]);
-    $res = $DB->query("SELECT assignments.benchmark,agents.id,tasks.chunktime,tasks.progress,IFNULL(chunks.sumdispatch,0) AS sumdispatch,tasks.keyspace FROM agents JOIN assignments ON assignments.agent=agents.id JOIN tasks ON tasks.id=assignments.task LEFT JOIN (SELECT chunks.task,SUM(chunks.length) AS sumdispatch FROM chunks JOIN tasks ON chunks.task=tasks.id WHERE chunks.progress=chunks.length OR GREATEST(chunks.solvetime,chunks.dispatchtime)>=" . (time() - $CONFIG->getVal('chunktimeout')) . " GROUP BY chunks.task) chunks ON chunks.task=tasks.id WHERE agents.active=1 AND agents.token=$token AND tasks.id=$task");
-    if ($res->rowCount() == 1) {
-      $line = $res->fetch();
-      $chunktime = $line["chunktime"];
-      $bench = floatval($line["benchmark"]);
-      $agid = $line["id"];
-      if ($line["keyspace"] > 0) {
-        // we know the keyspace already
-        if ($line["progress"] < $line["keyspace"] || $line["sumdispatch"] < $line["keyspace"]) {
-          // there are either some uncomplete chunks among fully dispatched chunk
-          // or it was not fully dispatched yet
-          if ($bench > 0) {
-            // valid agent benchmark
-            $DB->exec("START TRANSACTION");
-            $res = $DB->query("SELECT chunks.id,chunks.length,chunks.skip,chunks.progress,chunks.agent,chunks.dispatchtime FROM chunks JOIN tasks ON chunks.task=tasks.id WHERE chunks.task=$task AND chunks.progress<chunks.length AND ((GREATEST(chunks.dispatchtime,chunks.solvetime)<" . (time() - $CONFIG->getVal('chunktimeout')) . " AND (chunks.agent!=$agid OR chunks.agent IS NULL)) OR (chunks.agent=$agid) OR (chunks.state=6) OR (chunks.state=10)) ORDER BY chunks.skip ASC LIMIT 1");
-            $createnew = false;
-            $cid = -1;
-            $line = $res->fetch();
-            if ($line) {
-              // there is an unfinished chunk for too long
-              $ocid = $line["id"];
-              $oagid = $line["agent"];
-              if ($oagid == "") {
-                $oagid = "NULL";
-              }
-              $skip = $line["skip"];
-              $delka = $line["length"];
-              $prog = $line["progress"];
-              $dpt = $line["dispatchtime"];
-              
-              // move on by checkpoint
-              $skip += $prog;
-              $delka -= $prog;
-              
-              if ($delka > $bench * $disptolerance && $oagid != $agid) {
-                // if the remains are bigger than curent agent's benchmark, we assign the biggest possible part and create new chunk from the rest
-                // this is the remaining ending part (the new chunk will be cut from starting point)
-                $nskip = $skip + $bench;
-                $ndelka = $delka - $bench;
-                $DB->query("INSERT INTO chunks (task,skip,length,agent,dispatchtime,state) VALUES ($task,$nskip,$ndelka,$oagid,$dpt,9)");
-                // and this is the length of the part that's being redispatched
-                $delka = $bench;
-              }
-              
-              if ($prog == 0) {
-                // the remains of the incomplete chunk are in fact the whole chunk - there was no progress
-                // we will transfer it to the new agent
-                $DB->query("UPDATE chunks SET agent=$agid,length=$delka,rprogress=0,dispatchtime=" . time() . ",solvetime=0,state=0 WHERE id=$ocid");
-                $cid = $ocid;
-              }
-              else {
-                // some of the chunk was complete, cut the complete part to standalone finished chunk
-                $DB->query("UPDATE chunks SET length=progress,rprogress=10000,state=9 WHERE id=$ocid");
-                // and set indicator to create a new one
-                $createnew = true;
-              }
-            }
-            else {
-              // all chunks are OK, cut a new one
-              $res = $DB->query("SELECT progress,keyspace FROM tasks WHERE id=$task");
-              $line = $res->fetch();
-              $progress = $line["progress"];
-              $keyspac = $line["keyspace"];
-              
-              $remains = $keyspac - $progress;
-              
-              if ($remains > 0) {
-                // calculate length of next chunk (either benchmark or whole remaining keyspace, whichever is smaller)
-                $delka = min($remains, $bench);
-                // but if the proposed length is in the tolerance of what is remaining, just take it all
-                if ($remains / $delka <= $disptolerance) {
-                  $delka = $remains;
-                }
-                $nprogres = $progress + $delka;
-                $DB->query("UPDATE tasks SET progress=$nprogres WHERE id=$task");
-                // set indicator to create a new one
-                $createnew = true;
-                $skip = $progress;
-              }
-            }
-            
-            if ($createnew == true) {
-              // now create a new chunk for the client
-              $createnew = $DB->query("INSERT INTO chunks (task,skip,length,agent,dispatchtime) VALUES ($task,$skip,$delka,$agid," . time() . ")");
-              if ($createnew && $createnew->rowCount() == 1) {
-                // new chunk created, set the id
-                $cid = $DB->lastInsertId();
-              }
-            }
-            
-            if ($cid > 0) {
-              // the chunk creation query executed correctly or the chunk was reassigned
-              $DB->exec("COMMIT");
-              echo "chunk_ok" . $separator . $cid . $separator . $skip . $separator . $delka;
-            }
-            else {
-              $DB->exec("ROLLBACK");
-              echo "chunk_nok" . $separator . "Could not request a chunk.";
-            }
-          }
-          else {
-            // benchmark is not set or invalid, request it
-            echo "bench_req" . $separator . $CONFIG->getVal('benchtime');
-          }
-        }
-        else {
-          // the task is fully dispatched into chunks
-          echo "chunk_nok" . $separator . "The task has already been fully dispatched.";
-        }
-      }
-      else {
-        // the task doesn't know its keyspace yet
-        echo "keyspace_req" . $separator;
-      }
+    if (API::checkToken($QUERY)) {
+      API::sendErrorResponse('task', "Invalid token!");
     }
-    else {
-      echo "chunk_nok" . $separator . "Task does not exist or you are not assigned to it.";
-    }
+    API::getChunk($QUERY);
     break;
+    
+    
   case "keyspace":
     // agent submits keyspace size for this task
     $task = intval($_GET["task"]);
