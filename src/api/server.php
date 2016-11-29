@@ -405,7 +405,7 @@ switch ($QUERY['action']) {
     }
     break;
   default:
-    die("Invalid query!");
+    API::sendErrorResponse("INV", "Invalid query!");
 }
 
 ?>

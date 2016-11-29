@@ -101,7 +101,7 @@ class Template {
             }
             else{
               //there is some inner statement inside the if
-              if($elsePos !== false && $elsePos < $closePos){
+              if($elsePos !== false/* && $elsePos < $closePos*/){
                 $ifContent = array();
                 //check if the else is the next position
                 if($elsePos == $nextPos){
@@ -145,35 +145,50 @@ class Template {
                   $result = $this->parse($innerContent);
                   $elsePos = $result[1] + $startContent;
                   if($elsePos != strpos($content, "{{ELSE}}", $elsePos)){
-                    UI::printFatalError("IF statement, else not correctly at $elsePos!");
-                  }
-                  foreach($result[0] as $stat){
-                    $ifContent[] = $stat;
-                  }
-                  $elsePosition = sizeof($ifContent);
-  
-                  $nextPos = strpos($content, "{{", $elsePos + 2);
-                  if($nextPos == $closePos){
-                    //there is no other statement between else and endif
-                    $startContent = $elsePos + 8;
-                    $endContent = $closePos;
-                    $subContent = substr($content, $startContent, $endContent - $startContent);
-                    $contentStatement = new Statement("CONTENT", $subContent, array());
-                    $ifContent[] = $contentStatement;
-                    $pos = $closePos + 9;
-                  }
-                  else{
-                    //there is some other statement between the else and the endif
-                    $innerContent = substr($content, $elsePos + 8);
-                    $result = $this->parse($innerContent);
-                    $endPos = $result[1] + $elsePos + 8;
-                    if($endPos != strpos($content, "{{ENDIF}}", $endPos)){
-                      UI::printFatalError("IF statement not closed correctly at $endPos!");
+                    if($elsePos != strpos($content, "{{ENDIF}}", $elsePos)){
+                      UI::printFatalError("IF statement, else not correctly at $elsePos!");
                     }
                     foreach($result[0] as $stat){
                       $ifContent[] = $stat;
                     }
-                    $pos = $endPos + 9;
+                    $closePos = $elsePos;
+                    /*$startContent = $elsePos + 8;
+                    $endContent = $closePos;
+                    $subContent = substr($content, $startContent, $endContent - $startContent);
+                    $contentStatement = new Statement("CONTENT", $subContent, array());
+                    $ifContent[] = $contentStatement;*/
+                    $pos = $closePos + 9;
+                    $elsePosition = -1;
+                  }
+                  else {
+                    foreach ($result[0] as $stat) {
+                      $ifContent[] = $stat;
+                    }
+                    $elsePosition = sizeof($ifContent);
+  
+                    $nextPos = strpos($content, "{{", $elsePos + 2);
+                    if ($nextPos == $closePos) {
+                      //there is no other statement between else and endif
+                      $startContent = $elsePos + 8;
+                      $endContent = $closePos;
+                      $subContent = substr($content, $startContent, $endContent - $startContent);
+                      $contentStatement = new Statement("CONTENT", $subContent, array());
+                      $ifContent[] = $contentStatement;
+                      $pos = $closePos + 9;
+                    }
+                    else {
+                      //there is some other statement between the else and the endif
+                      $innerContent = substr($content, $elsePos + 8);
+                      $result = $this->parse($innerContent);
+                      $endPos = $result[1] + $elsePos + 8;
+                      if ($endPos != strpos($content, "{{ENDIF}}", $endPos)) {
+                        UI::printFatalError("IF statement not closed correctly at $endPos!");
+                      }
+                      foreach ($result[0] as $stat) {
+                        $ifContent[] = $stat;
+                      }
+                      $pos = $endPos + 9;
+                    }
                   }
                 }
                 $setting[1] = $elsePosition;
@@ -186,7 +201,6 @@ class Template {
                 $result = $this->parse($innerContent);
                 $endPos = $result[1] + $endCondition + 2;
                 if($endPos != strpos($content, "{{ENDIF}}", $endPos-4)){
-                  echo $endPos."-".strpos($content, "{{ENDIF}}", $endPos-40)."\n";
                   UI::printFatalError("IF statement not closed correctly at $endPos!");
                 }
                 $ifStatement = new Statement("IF", $result[0], $setting);

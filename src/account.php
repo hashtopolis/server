@@ -9,7 +9,6 @@ if (!$LOGIN->isLoggedin()) {
 
 $TEMPLATE = new Template("account");
 $MENU->setActive("account");
-$message = "";
 
 //catch actions here...
 if (isset($_POST['action'])) {
@@ -18,9 +17,7 @@ if (isset($_POST['action'])) {
 }
 
 $group = $FACTORIES::getRightGroupFactory()->get($LOGIN->getUser()->getRightGroupId());
-
 $OBJECTS['group'] = $group;
-$OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
 

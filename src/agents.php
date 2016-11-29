@@ -13,7 +13,6 @@ else if ($LOGIN->getLevel() < 20) {
 
 $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
-$message = "";
 
 //catch actions here...
 if (isset($_POST['action'])) {
@@ -28,51 +27,34 @@ $allTasks = $FACTORIES::getTaskFactory()->filter(array());
 if (isset($_GET['id'])) {
   //show agent detail
   $TEMPLATE = new Template("agents/detail");
-  $agent = $FACTORIES::getAgentFactory()->get(intval($_GET['id']));
+  $agent = $FACTORIES::getAgentFactory()->get($_GET['id']);
   if (!$agent) {
-    $message = "<div class='alert alert-danger'>Agent not found!</div>";
+    UI::printError("ERROR", "Agent not found!");
   }
   else {
-    $users = $FACTORIES::getUserFactory()->filter(array());
-    $OBJECTS['users'] = $users;
     $OBJECTS['agent'] = $agent;
+    $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array());
+    $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array());
     
-    //TODO: not done yet
-    /*$res = $DB->query("SELECT agents.*,assignments.task,SUM(GREATEST(chunks.solvetime,chunks.dispatchtime)-chunks.dispatchtime) AS spent FROM agents LEFT JOIN assignments ON assignments.agent=agents.id LEFT JOIN chunks ON chunks.agent=agents.id WHERE agents.id=" . $agent->getId());
-    $agentSet = new DataSet();
-    $agentSet->setValues($res->fetch());
-    
-    $res = $DB->query("SELECT errors.*,chunks.id FROM errors LEFT JOIN chunks ON (errors.time BETWEEN chunks.dispatchtime AND chunks.solvetime) AND chunks.agent=errors.agent WHERE errors.agent=" . $agent->getId() . " ORDER BY time DESC");
-    $res = $res->fetchAll();
-    $errors = array();
-    foreach ($res as $error) {
-      $set = new DataSet();
-      $set->setValues($error);
-      $errors[] = $set;
+    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF), true);
+    $currentTask = 0;
+    if($assignment != null){
+      $currentTask = $assignment->getTaskId();
     }
+    $OBJECTS['currentTask'] = $currentTask;
     
-    $res = $DB->query("SELECT chunks.*,GREATEST(chunks.dispatchtime,chunks.solvetime)-chunks.dispatchtime AS spent,tasks.name AS taskname FROM chunks JOIN tasks ON chunks.task=tasks.id WHERE agent=" . $agent->getId() . " ORDER BY chunks.dispatchtime DESC,chunks.skip DESC LIMIT 100");
-    $res = $res->fetchAll();
-    $chunks = array();
-    foreach ($res as $chunk) {
-      $set = new DataSet();
-      $set->setValues($chunk);
-      $chunks[] = $set;
-    }
+    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $OBJECTS['errors'] = $FACTORIES::getAgentErrorFactory()->filter(array('filter' => $qF));
     
-    $platforms = array();
-    $plt = Util::getStaticArray('-1', 'platforms');
-    foreach ($plt as $key => $platform) {
-      $set = new DataSet();
-      $set->addValue('key', $key);
-      $set->addValue('val', $platform);
-      $platforms[] = $set;
+    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+    $timeSpent = 0;
+    foreach($chunks as $chunk){
+      $timeSpent += max($chunk->getSoleTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
     }
-    $OBJECTS['platforms'] = $platforms;
-    $OBJECTS['agent'] = $agentSet;
-    $OBJECTS['errors'] = $errors;
-    $OBJECTS['chunks'] = $chunks;*/
-    //TODO: until here
+    $OBJECTS['chunks'] = $chunks;
+    $OBJECTS['timeSpent'] = $timeSpent;
   }
 }
 else {
@@ -108,7 +90,6 @@ else {
 }
 
 $OBJECTS['allTasks'] = $allTasks;
-$OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
 
