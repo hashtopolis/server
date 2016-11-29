@@ -55,39 +55,11 @@ switch ($QUERY['action']) {
     }
     API::getChunk($QUERY);
     break;
-    
-    
   case "keyspace":
-    // agent submits keyspace size for this task
-    $task = intval($_GET["task"]);
-    $ks = floatval($_GET["keyspace"]);
-    $res = $DB->query("SELECT tasks.keyspace FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent WHERE agents.token=$token AND tasks.id=$task");
-    if ($res->rowCount() == 1) {
-      $line = $res->fetch();
-      if ($line["keyspace"] == 0) {
-        // if the keyspace is still unknown
-        if ($ks > 0) {
-          // its properly measured
-          if ($DB->query("UPDATE tasks SET keyspace=$ks WHERE id=$task")) {
-            echo "keyspace_ok";
-          }
-          else {
-            echo "keyspace_nok" . $separator . "Could not set keyspace for this task.";
-          }
-        }
-        else {
-          // it came out to zero
-          echo "keyspace_nok" . $separator . "You returned zero result.";
-        }
-      }
-      else {
-        // its already defined - pretend it's ok
-        echo "keyspace_ok";
-      }
+    if (API::checkToken($QUERY)) {
+      API::sendErrorResponse('task', "Invalid token!");
     }
-    else {
-      echo "keyspace_nok" . $separator . "Task does not exist or you are not assigned to it.";
-    }
+    API::setKeyspace($QUERY);
     break;
   case "bench":
     // agent submits benchmark for task

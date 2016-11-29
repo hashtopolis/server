@@ -19,6 +19,32 @@ class API {
     return true;
   }
   
+  public static function setKeyspace($QUERY){
+    global $FACTORIES;
+  
+    // agent submits keyspace size for this task
+    $keyspace = floatval($_GET["keyspace"]);
+    $task = $FACTORIES::getTaskFactory()->get($QUERY['taskId']);
+    if($task == null){
+      API::sendErrorResponse("keyspace", "Invalid task ID!");
+    }
+    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
+    $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF2 = new QueryFilter("taskId", $task->getId(), "=");
+    $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
+    if($assignment == null){
+      API::sendErrorResponse("keyspace", "You are not assigned to this task!");
+    }
+    
+    if($task->getKeyspace() == 0){
+      // keyspace is still required
+      $task->setKeyspace($keyspace);
+      $FACTORIES::getTaskFactory()->update($task);
+    }
+    API::sendResponse(array("action" => "keyspace", "respone" => "SUCCESS", "keyspace" => "OK"));
+  }
+  
   public static function getChunk($QUERY){
     global $FACTORIES, $CONFIG;
   

@@ -229,9 +229,9 @@
 	{
 	  "action":"chunk",
 	  "response":"SUCCESS",
-	  "chunk" => 13,
-	  "skip" => 45000,
-	  "length" => 10000
+	  "chunk": 13,
+	  "skip": 45000,
+	  "length": 10000
 	}
 	\end{verbatim}
 	or he can send one of the following answers which should be done then:
@@ -263,4 +263,23 @@
 	}
 	\end{verbatim}
 	
+	
+	\subsection*{Send Keyspace}
+	The client sends the calculated keyspace of a task.
+	\begin{verbatim}
+	{
+	  "action":"keyspace",
+	  "token":"GHhgdf(/&",
+	  "taskId":35,
+	  "keyspace":568000
+	}
+	\end{verbatim}
+	The server should reply following on success:
+	\begin{verbatim}
+	{
+	  "action":"keyspace",
+	  "response":"SUCCESS",
+	  "keyspace": "OK"
+	}
+	\end{verbatim}
 \end{document}
