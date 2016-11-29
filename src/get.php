@@ -1,8 +1,7 @@
 <?php
 require_once(dirname(__FILE__) . "/inc/load.php");
-ini_set("max_execution_time", 100000);
 
-$DB = $FACTORIES::getagentsFactory()->getDB();
+ini_set("max_execution_time", 100000);
 
 if (!isset($_GET['file'])) {
   die("ERR1 - no file set");
@@ -14,8 +13,7 @@ if (!$FILEID) {
   die("ERR2 - no file provided");
 }
 
-$res = $DB->query("SELECT * FROM files WHERE id=$FILEID");
-$line = $res->fetch();
+$line = $FACTORIES::getFileFactory()->get($FILEID);
 
 //no file found
 if (!$line) {
@@ -26,13 +24,13 @@ if (!$line) {
 //if the user is logged in, he need to have the rights to
 //if agent provides his voucher, check it.
 if (!$LOGIN->isLoggedin()) {
-  $token = $DB->quote(@$_GET['token']);
-  $res = $DB->query("SELECT * FROM agents WHERE token=$token");
-  $agent = $res->fetch();
+  $token = @$_GET['token'];
+  $qF = new QueryFilter("token", $token, "=");
+  $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
   if (!$agent) {
     die("No access!");
   }
-  if ($agent['trusted'] == '0' && $line['secret'] == '1') {
+  if ($agent->getTrusted() < $line->getSecret()) {
     die("No access!");
   }
 }
@@ -40,7 +38,7 @@ else if ($LOGIN->getLevel() < 20) {
   die("No access!");
 }
 
-$filename = dirname(__FILE__) . "/files/" . $line['filename'];
+$filename = dirname(__FILE__) . "/files/" . $line->getFilename();
 
 //file not found
 if (!file_exists($filename)) {
@@ -66,8 +64,8 @@ else {
   header("Content-Type: application/force-download");
 }
 
-header("Content-Description: {$line['filename']}");
-header("Content-Disposition: attachment; filename=\"{$line['filename']}\"");
+header("Content-Description: " . $line->getFilename());
+header("Content-Disposition: attachment; filename=\"" . $line->getFilename() . "\"");
 
 if (isset($_SERVER['HTTP_RANGE'])) {
   
@@ -100,7 +98,6 @@ if (isset($_SERVER['HTTP_RANGE'])) {
   if ($c_start > $c_end || $c_start > $size - 1 || $c_end >= $size) {
     header('HTTP/1.1 416 Requested Range Not Satisfiable');
     header("Content-Range: bytes $start-$end/$size");
-    file_put_contents("/stream/log.txt", "$range-$start-$end-$size\n", FILE_APPEND);
     exit;
   }
   $start = $c_start;
