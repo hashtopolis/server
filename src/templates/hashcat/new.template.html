@@ -1,0 +1,63 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Create new hashcat release</h2>
+{%TEMPLATE->struct/messages%}
+<form action='hashcat.php?new=true' method='post' enctype='multipart/form-data'>
+	<input type='hidden' name='action' value='newhashcatp'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<th>Property</th>
+			</tr>
+			<tr>
+				<td>Version:</td>
+				<td>
+					<input type="text" class='form-control' name="version">
+				</td>
+			</tr>
+			<tr>
+				<td>Archive URL:</td>
+				<td>
+					<input type="text" name="url" class='form-control'>[[new.getUrl()]]</input>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Archive root directory:
+				</td>
+				<td>
+					<input type="text" class='form-control' name="rootdir" size="32" value="[[new.getRootdir()]]">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					Files to extract (relative to root directory, omit executables and use forward slashes):
+				</td>
+			</tr>
+			<tr>
+				<td>Common:</td>
+				<td colspan="2">
+					<textarea name="common_files" class='form-control' cols="64">[[new.getVal('common_files')]]</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>32bit Binary:</td>
+				<td>
+					<input type="text" name="32bit" class='form-control'>[[new.getBinary32()]]</input>
+				</td>
+			</tr>
+			<tr>
+				<td>64bit Binary:</td>
+				<td>
+					<input type="text" name="64bit" class='form-control'>[[new.getBinary64()]]</input>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<input type="submit" class='btn btn-default' value="Create release">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+{%TEMPLATE->struct/foot%}
