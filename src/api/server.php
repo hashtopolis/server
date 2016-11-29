@@ -62,54 +62,10 @@ switch ($QUERY['action']) {
     API::setKeyspace($QUERY);
     break;
   case "bench":
-    // agent submits benchmark for task
-    $task = intval($_GET["task"]);
-    $bprog = floatval($_GET["progress"]);
-    $btotal = floatval($_GET["total"]);
-    $state = intval($_GET["state"]);
-    $res = $DB->query("SELECT tasks.keyspace,agents.id,tasks.chunktime FROM assignments JOIN tasks ON tasks.id=assignments.task JOIN agents ON agents.id=assignments.agent WHERE agents.token=$token AND tasks.id=$task");
-    if ($res->rowCount() == 1) {
-      $line = $res->fetch();
-      $agid = $line["id"];
-      $chunktime = $line["chunktime"];
-      if ($bprog <= 0) {
-        // could not benchmark - pause agents assignment until further resolved
-        $DB->query("UPDATE agents SET active=0 WHERE id=$agid");
-        echo "bench_nok" . $separator . "Benchmarking didn't measure anything.";
-      }
-      else {
-        // benchmark OK
-        $ks = floatval($line["keyspace"]);
-        if ($state == 4 || $state == 5) {
-          $bprog = $btotal;
-        }
-        
-        if ($state == 6) {
-          // the bench ended the right way (aborted)
-          // extrapolate from $benchtime to $chunktime
-          $bprog = $bprog / ($btotal / $ks);
-          $bprog = ($bprog / $CONFIG->getVal("benchtime")) * $chunktime;
-          $bprog = round($bprog);
-        }
-        else if ($bprog == $btotal) {
-          // the benchmark went through the whole keyspace (VERY small task - faster than actual benchmark)
-          $bprog = $ks;
-        }
-        else {
-          // benchmark ended in some problematic way
-          $bprog = 0;
-        }
-        if ($bprog > 0 && $DB->query("UPDATE assignments SET speed=0, benchmark=$bprog WHERE agent=$agid AND task=$task")) {
-          echo "bench_ok" . $separator . $bprog;
-        }
-        else {
-          echo "bench_nok" . $separator . "Could not update your benchmark for this task.";
-        }
-      }
+    if (API::checkToken($QUERY)) {
+      API::sendErrorResponse('bench', "Invalid token!");
     }
-    else {
-      echo "bench_nok" . $separator . "Task does not exist or you are not assigned to it.";
-    }
+    API::setBenchmark($QUERY);
     break;
   case "solve":
     // upload cracked hashes to server

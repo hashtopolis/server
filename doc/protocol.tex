@@ -282,4 +282,25 @@
 	  "keyspace": "OK"
 	}
 	\end{verbatim}
+	
+	\subsection*{Send Benchmark}
+	The client sends the tested benchmark of a task.
+	\begin{verbatim}
+	{
+	  "action":"bench",
+	  "token":"GHhgdf(/&",
+	  "taskId":35,
+	  "progress":568000,
+	  "total":6000000,
+	  "state":6
+	}
+	\end{verbatim}
+	The server should reply following on success:
+	\begin{verbatim}
+	{
+	  "action":"bench",
+	  "response":"SUCCESS",
+	  "benchmark": "OK"
+	}
+	\end{verbatim}
 \end{document}

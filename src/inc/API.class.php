@@ -19,6 +19,63 @@ class API {
     return true;
   }
   
+  public static function setBenchmark($QUERY){
+    global $FACTORIES, $CONFIG;
+    
+    // agent submits benchmark for task
+    $task = $FACTORIES::getTaskFactory()->get($_GET["taskId"]);
+    if($task == null){
+      API::sendErrorResponse("bench", "Invalid task ID!");
+    }
+    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
+    $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF2 = new QueryFilter("taskId", $task->getId(), "=");
+    $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
+    if($assignment == null){
+      API::sendErrorResponse("keyspace", "You are not assigned to this task!");
+    }
+    
+    $benchmarkProgress = floatval($_GET['progress']);
+    $benchmarkTotal = floatval($_GET['total']);
+    $state = intval($_GET['state']);
+    
+    if($benchmarkProgress <= 0){
+      $agent->setIsActive(0);
+      $FACTORIES::getAgentFactory()->update($agent);
+      API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
+    }
+    $keyspace = $task->getKeyspace();
+    if($state == 4 || $state == 5){
+      //the benchmark reached the end of the task
+      $benchmarkProgress = $benchmarkTotal;
+    }
+    
+    if($state == 6){
+      // the bench ended the right way (aborted)
+      // extrapolate from $benchtime to $chunktime
+      $benchmarkProgress = $benchmarkProgress / ($benchmarkTotal / $keyspace);
+      $benchmarkProgress = round(($benchmarkProgress / $CONFIG->getVal('benchtime')) * $task->getChunkTime());
+    }
+    else if($benchmarkProgress == $benchmarkTotal){
+      $benchmarkProgress = $keyspace;
+    }
+    else{
+      //problematic
+      $benchmarkProgress = 0;
+    }
+    
+    if($benchmarkProgress <= 0){
+      API::sendErrorResponse("bench", "Benchmark was not correctly!");
+    }
+    else{
+      $assignment->setSpeed(0);
+      $assignment->setBenchmark($benchmarkProgress);
+      $FACTORIES::getAssignmentFactory()->update($assignment);
+    }
+    API::sendResponse(array("action" => "bench", "respone" => "SUCCESS", "benchmark" => "OK"));
+  }
+  
   public static function setKeyspace($QUERY){
     global $FACTORIES;
   
