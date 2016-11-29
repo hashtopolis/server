@@ -1,5 +1,5 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Chunk activity</h2>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
@@ -20,61 +20,61 @@
 		{{FOREACH chunk;[[chunks]]}}
 			<tr>
 				<td>
-					[[chunk.getVal('id')]]
-					{{IF [[max([[chunk.getVal('solvetime')]], [[chunk.getVal('dispatchtime')]])]] > [[time()]] - [[config.getVal('chunktimeout')]] && [[chunk.getVal('progress')]] < [[chunk.getVal('length')]] && [[chunk.getVal('state')]] < 4}}
-						<img src="static/active.gif" alt="Active" title="[[Util::nicenum([[chunk.getVal('speed')]], 100000, 1000)]]H/s">
+					[[chunk.getId()]]
+					{{IF [[max([[chunk.getSolveTime()]], [[chunk.getDispatchTime()]])]] > [[time()]] - [[config.getVal('chunktimeout')]] && [[chunk.getProgress()]] < [[chunk.getLength()]] && [[chunk.getState()]] < 4}}
+						<img src="static/active.gif" alt="Active" title="[[Util::nicenum([[chunkSpeeds.getVal([[chunk.getId()]])]], 100000, 1000)]]H/s">
 					{{ENDIF}}
 				</td>
-				<td class="num">[[chunk.getVal('skip')]]</td>
-				<td class="num">[[chunk.getVal('length')]]</td>
+				<td class="num">[[chunk.getSkip()]]</td>
+				<td class="num">[[chunk.getLength()]]</td>
 				<td class="num">
-					[[chunk.getVal('progress')]]
-					{{IF [[chunk.getVal('progress')]] > 0 && [[chunk.getVal('progress')]] != [[chunk.getVal('length')]]}}
-						<br>([[Util::showperc([[chunk.getVal('progress')]], [[chunk.getVal('length')]])]]%)
+					[[chunk.getProgress()]]
+					{{IF [[chunk.getProgress()]] > 0 && [[chunk.getProgress()]] != [[chunk.getLength()]]}}
+						<br>([[Util::showperc([[chunk.getProgress()]], [[chunk.getLength()]])]]%)
 					{{ENDIF}}
 				</td>
-				<td class="num">[[Util::showperc([[chunk.getVal('rprogress')]], 10000)]]%</td>
+				<td class="num">[[Util::showperc([[chunk.getRprogress()]], 10000)]]%</td>
 				<td>
-					{{IF [[chunk.getVal('task')]] == ""}}
+					{{IF [[chunk.getTaskId()]] == null}}
 						N/A
 					{{ELSE}}
-						<a href="tasks.php?id=[[chunk.getVal('task')]]">[[chunk.getVal('tname')]]</a>
+						<a href="tasks.php?id=[[chunk.getTaskId()]]">[[taskNames.getVal([[task.getId()]])]]</a>
 					{{ENDIF}}
 				</td>
 				<td>
-					{{IF [[chunk.getVal('agent')]] == ""}}
+					{{IF [[chunk.getAgentId()]] == null}}
 						N/A
 					{{ENDIF}}
-					{{IF [[chunk.getVal('agent')]] != "" && [[login.getLevel()]] >= 20}}
-						<a href="agents.php?id=[[chunk.getVal('agent')]]">[[chunk.getVal('aname')]]</a>
+					{{IF [[chunk.getAgentId()]] != null && [[login.getLevel()]] >= 20}}
+						<a href="agents.php?id=[[chunk.getAgentId()]]">[[agentNames.getVal([[chunk.getAgentId()]])]]</a>
 					{{ENDIF}}
-					{{IF [[chunk.getVal('agent')]] != "" && [[login.getLevel()]] < 20}}
-						[[chunk.getVal('aname')]]
+					{{IF [[chunk.getAgentId()]] != null && [[login.getLevel()]] < 20}}
+						[[agentNames.getVal([[chunk.getAgentId()]])]]
 					{{ENDIF}}
 				</td>
 				<td>
-					[[date([[config.getVal('timefmt')]], [[chunk.getVal('dispatchtime')]])]]
+					[[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
 				</td>
 				<td>
-					{{IF [[chunk.getVal('solvetime')]] == 0}}
-						  (no activity)</td><td>
+					{{IF [[chunk.getSolveTime()]] == 0}}
+						(no activity)</td><td>
 					{{ELSE}}
-						  [[date([[config.getVal('timefmt')]], [[chunk.getVal('solvetime')]])]]
+							[[date([[config.getVal('timefmt')]], [[chunk.getSolveTime()]])]]
             </td>
             <td class="num">
-              [[Util::sectotime([[chunk.getVal('spent')]])]]
+              [[Util::sectotime([[spent.getVal([[chunk.getId()]])]])]]
           {{ENDIF}}
         </td>
         <td>
-          [[Util::getStaticArray([[chunk.getVal('state')]], 'states')]]
+          [[Util::getStaticArray([[chunk.getState()]], 'states')]]
         </td>
         <td class="num">
-          {{IF [[chunk.getVal('cracked')]] > 0}}
-            <a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
+          {{IF [[chunk.getCracked()]] > 0}}
+            <a href="hashes.php?chunk=[[chunk.getId()]]">[[chunk.getCracked]]</a>
           {{ENDIF}}
         </td>
 			</tr>
 		{{ENDFOREACH}}
 	</table>
 </div>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}
