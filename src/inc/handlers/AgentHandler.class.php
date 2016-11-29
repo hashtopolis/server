@@ -244,14 +244,16 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     if ($_POST['owner'] == 0) {
-      $this->agent->setUserId(0);
+      $this->agent->setUserId(null);
       $FACTORIES::getAgentFactory()->update($this->agent);
     }
-    $user = $FACTORIES::getUserFactory()->get(intval($_POST["owner"]));
-    if (!$user) {
-      UI::printError("ERROR", "Invalid user selected!");
+    else {
+      $user = $FACTORIES::getUserFactory()->get(intval($_POST["owner"]));
+      if (!$user) {
+        UI::printError("ERROR", "Invalid user selected!");
+      }
+      $this->agent->setUserId($user->getId());
     }
-    $this->agent->setUserId($user->getId());
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   

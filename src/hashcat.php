@@ -11,52 +11,22 @@ else if ($LOGIN->getLevel() < 20) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("hashcat");
+$TEMPLATE = new Template("hashcat/index");
 $MENU->setActive("hashcat_list");
-$message = "";
 
-//catch agents actions here...
+//catch actions here...
 if (isset($_POST['action'])) {
-  switch ($_POST['action']) {
-    case 'releasedelete':
-      if ($LOGIN->getLevel() < 30) {
-        break;
-      }
-      // delete hashcat release
-      $DB = $FACTORIES::getagentsFactory()->getDB();
-      $release = $DB->quote($_POST["release"]);
-      $DB->exec("START TRANSACTION");
-      $res = $DB->query("SELECT * FROM agents WHERE hcversion=$release");
-      if ($res->rowCount() > 0) {
-        $message = "<div class='alert alert-danger'>There are registered agents running this Hashcat version.</div>";
-      }
-      else {
-        $res = $DB->query("DELETE FROM hashcatreleases WHERE version=$release");
-        if ($res) {
-          $DB->exec("COMMIT");
-          header("Location: hashcat.php");
-          die();
-        }
-        else {
-          $DB->exec("ROLLBACK");
-          $message = "<div class='alert alert-danger'>Could not delete Hashcat release!</div>";
-        }
-      }
-      break;
-  }
+  $hashcatHandler = new HashcatHandler();
+  $hashcatHandler->handle($_POST['action']);
 }
 
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT * FROM hashcatreleases ORDER BY time DESC");
-$res = $res->fetchAll();
-$releases = array();
-foreach ($res as $release) {
-  $set = new DataSet();
-  $set->setValues($release);
-  $releases[] = $set;
+if(isset($_GET['new'])){
+  $TEMPLATE = new Template("hashcat/new");
 }
-
-$OBJECTS['releases'] = $releases;
-$OBJECTS['message'] = $message;
+else{
+  $oF = new OrderFilter("time", "DESC");
+  $OBJECTS['releases'] = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => $oF));
+}
 
 echo $TEMPLATE->render($OBJECTS);
 

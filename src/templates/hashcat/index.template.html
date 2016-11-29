@@ -1,0 +1,41 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Hashcat releases</h2>
+{%TEMPLATE->struct/messages%}
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>Version</th>
+			<th>Added</th>
+			<th>URL</th>
+			<th>Common files</th>
+			<th>Root directory</th>
+			<th>Action</th>
+		</tr>
+		{{FOREACH release;[[releases]]}}
+			<tr>
+				<td>[[release.getVersion()]]</td>
+				<td>
+					{{IF [[release.getTime()]] > 0}}
+						[[date([[config.getVal('timefmt')]], [[release.getTime()]])]]
+					{{ENDIF}}
+				</td>
+				<td>[[release.getUrl()]]</td>
+				<td>[[str_replace("\n", "<br>", [[release.getCommonFiles()]])]]</td>
+				<td>
+					[[release.getRootdir()]]<br>
+				</td>
+				<td>
+					{{IF [[login.getLevel()]] >= 30}}
+						<form action="hashcat.php" method="POST" onSubmit="if (!confirm('Really delete Hashcat release [[release.getVersion()]]?')) return false;">
+							<input type="hidden" name="action" value="releasedelete">
+							<input type="hidden" name="release" value="[[release.getId()]]">
+							<input type="submit" class='btn btn-danger' value="Delete">
+						</form>
+					{{ENDIF}}
+				</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+{%TEMPLATE->struct/foot%}

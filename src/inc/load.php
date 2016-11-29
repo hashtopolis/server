@@ -22,8 +22,8 @@ $OBJECTS['host'] = $HOST;
 
 //START CONFIG
 $CONN['user'] = 'root';
-$CONN['pass'] = '';
-$CONN['server'] = 'localhost';
+$CONN['pass'] = 'root';
+$CONN['server'] = '127.0.0.1';
 $CONN['db'] = 'hashtopussy';
 $CONN['installed'] = true; //set this to true if you config the mysql and setup manually
 //END CONFIG

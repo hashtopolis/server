@@ -533,17 +533,16 @@ class API
                     do {
                         $oF = new OrderFilter("hashId", "ASC LIMIT $limit,$size");
                         $qF1 = new QueryFilter("hashlistId", $list->getId(), "=");
-                        $qF2 = new QueryFilter("plaintext", "NULL", "=");
-                        $current = $FACTORIES::getHashFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
+                        $qF2 = new QueryFilter("plaintext", null, "=");                         $current = $FACTORIES::getHashFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
 
                         $output = "";
                         $count += sizeof($current);
                         foreach ($current as $entry) {
-                            $output += $entry->getHash();
+                            $output .= $entry->getHash();
                             if (strlen($entry->getSalt()) > 0) {
-                                $output += $list->getSaltSeparator() . $entry->getSalt();
+                                $output .= $list->getSaltSeparator() . $entry->getSalt();
                             }
-                            $output += $LINEDELIM;
+                            $output .= $LINEDELIM;
                         }
                         echo $output;
 
@@ -557,12 +556,12 @@ class API
                 header('Content-Type: application/octet-stream');
                 foreach ($hashlists as $list) {
                     $qF1 = new QueryFilter("hashlistId", $list->getId(), "=");
-                    $qF2 = new QueryFilter("plaintext", "NULL", "=");
+                    $qF2 = new QueryFilter("plaintext", "null", "=");
                     $current = $FACTORIES::getHashBinaryFactory()->filter(array('filter' => array($qF1, $qF2)));
                     $count += sizeof($current);
                     $output = "";
                     foreach ($current as $entry) {
-                        $output += $entry->getHash();
+                        $output .= $entry->getHash();
                     }
                     echo $output;
                 }
