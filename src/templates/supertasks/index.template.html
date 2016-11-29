@@ -1,6 +1,6 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Supertasks ([[numSupertasks]])</h2>
+<h2>Supertasks ([[sizeof([[supertasks]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
@@ -12,20 +12,20 @@
 		</tr>
 		{{FOREACH supertask;[[supertasks]]}}
 			<tr>
-				<td><!-- <a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]"> -->[[supertask.getVal('supertaskId')]]<!-- </a> --></td>
-				<td><!-- <a href="supertasks.php?id=[[supertask.getVal('supertaskId')]]"> -->[[supertask.getVal('name')]]<!-- </a> --></td>
+				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a></td>
+				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a></td>
 				<td>
-					{{FOREACH task;[[supertask.getVal('tasks')]]}}
-						<a href="tasks.php?id=[[task.getVal('id')]]">[[task.getVal('name')]]</a><br>
+					{{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
+						<a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
 					{{ENDFOREACH}}
 				</td>
 				<td>
-					<form style ='float: left; padding-right: 5px;' action="newsupertask.php?id=[[supertask.getVal('supertaskId')]]" method="post">
+					<form style ='float: left; padding-right: 5px;' action="supertask.php?new=true&id=[[supertask.getId()]]" method="post">
 						<input type="submit" class='btn btn-default' value="Copy">
 					</form>
-          <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getVal('supertaskId')]]?')) return false;">
+          <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
             <input type="hidden" name="action" value="taskdelete">
-            <input type="hidden" name="supertask" value="[[supertask.getVal('supertaskId')]]">
+            <input type="hidden" name="supertask" value="[[supertask.getId()]]">
             <input type="submit" class='btn btn-danger' value="X">
           </form>
 				</td>

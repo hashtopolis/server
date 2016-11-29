@@ -1,7 +1,5 @@
 <?php
 /*
- * This file is completely rewritten for Hashtopussy
- * Copyright 2016 by s3in!c
  * 
  * Draws graphic about chunk progress
  */
@@ -14,18 +12,17 @@ if (!$LOGIN->isLoggedin()) {
 }
 
 //get image dimenstions
-$size = array(min(1920, intval($_GET["x"])), min(1080, intval($_GET["y"])));
+$size = array(intval($_GET["x"]), intval($_GET["y"]));
 if ($size[0] == 0 || $size[0] == 0) {
-  die();
+  die("INV size!");
 }
 
 //check if task exists and get information
-$taskid = intval($_GET["task"]);
-$res = $DB->query("SELECT * FROM tasks WHERE id=$taskid");
-$task = $res->fetch();
-if (!$task) {
+$task = $FACTORIES::getTaskFactory()->get($_GET['task']);
+if ($task == null) {
   die("Not a valid task!");
 }
+
 
 //create image
 $image = imagecreatetruecolor($size[0], $size[1]);
@@ -41,18 +38,18 @@ $green = imagecolorallocate($image, 0, 255, 0);
 //prepare image
 imagefill($image, 0, 0, $transparency);
 
-$progress = $task['progress'];
-$keyspace = max($task['keyspace'], 1);
-$taskid = $task['id'];
+$progress = $task->getProgress();
+$keyspace = max($task->getKeyspace(), 1);
+$taskid = $task->getId();
 
 //load chunks
-$res = $DB->query("SELECT * FROM chunks WHERE task=$taskid ORDER BY state ASC");
-$res = $res->fetchAll();
-foreach ($res as $chunk) {
-  $start = floor(($size[0] - 1) * $chunk['skip'] / $keyspace);
-  $end = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length']) / $keyspace) - 1;
+$qF = new QueryFilter("taskId", $task->getId(), "=");
+$chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+foreach ($chunks as $chunk) {
+  $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);
+  $end = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength()) / $keyspace) - 1;
   //division by 10000 is required because rprogress is saved in percents with two decimals
-  $current = floor(($size[0] - 1) * ($chunk['skip'] + $chunk['length'] * $chunk['rprogress'] / 10000) / $keyspace) - 1;
+  $current = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength() * $chunk->getRprogress() / 10000) / $keyspace) - 1;
   
   if ($current > $end) {
     $current = $end;

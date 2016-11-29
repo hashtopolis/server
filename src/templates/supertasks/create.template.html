@@ -1,8 +1,8 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Create Supertask</h2>
-[[message]]
-<form class='form-inline' action="newsupertask.php" method="POST">
+{%TEMPLATE->struct/messages%}
+<form class='form-inline' action="supertasks.php" method="POST">
 	<input type='hidden' name='action' value='createsupertask'>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
@@ -19,11 +19,14 @@
 				<tr>
 					<td>&nbsp;</td>
 					<td>
-						<input type="checkbox" name="task[]" value="[[task.getVal('id')]]">
-						<a href="tasks.php?id=[[task.getVal('id')]]" title="[[task.getVal('attackcmd')]]">[[task.getVal('name')]]</a>
+						<input type="checkbox" name="task[]" value="[[task.getId()]]">
+						<a href="tasks.php?id=[[task.getId()]]" title="[[task.getAttackCmd()]]">[[task.getTaskName()]]</a>
 					</td>
 				</tr>
 			{{ENDFOREACH}}
+			{{IF [[sizeof([[preTasks]])]] == 0}}
+        <tr><td colspan="2">Currently there are no preconfigured tasks which can be used for creating supertasks!</td></tr>
+      {{ENDIF}}
 			<tr>
 				<td colspan="2">
 					<input type="submit" class='btn btn-default' value="Create Supertask">
@@ -32,4 +35,4 @@
 		</table>
 	</div>
 </form>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

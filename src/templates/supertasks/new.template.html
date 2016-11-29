@@ -1,8 +1,8 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Use Supertask</h2>
-[[message]]
-<form class='form-inline' action="newsupertask.php" method="POST">
+{%TEMPLATE->struct/messages%}
+<form class='form-inline' action="supertask.php" method="POST">
 	<input type='hidden' name='action' value='newsupertask'>
 	<input type='hidden' name='supertask' value='[[orig]]'>
 	<div class="panel panel-default">
@@ -16,7 +16,7 @@
 				<td>
 					<select class='form-control' name="hashlist">
 						{{FOREACH list;[[lists]]}}
-							<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[copy.getVal('hlist')]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+							<option value="[[list.getId()]]">[[list.getHashlistName()]]</option>
 						{{ENDFOREACH}}
 					</select> (hashlist needs to be created before task)
 				</td>
@@ -29,4 +29,4 @@
 		</table>
 	</div>
 </form>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}
