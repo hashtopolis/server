@@ -11,9 +11,8 @@ $MENU->setActive("tasks_list");
 
 //catch agents actions here...
 if (isset($_POST['action'])) {
-  switch ($_POST['action']) {
-    
-  }
+  $taskHandler = new TaskHandler();
+  $taskHandler->handle($_POST['action']);
 }
 
 //test if auto-reload is enabled
