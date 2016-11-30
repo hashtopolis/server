@@ -780,6 +780,9 @@ class AbstractModelFactory {
       
       
       $filterOptions = $options['filter'];
+      if(!is_array($filterOptions)){
+        $filterOptions = array($filterOptions);
+      }
       $vals = array();
       
       for ($i = 0; $i < count($filterOptions); $i++) {
@@ -796,8 +799,6 @@ class AbstractModelFactory {
     }
     
     $dbh = $this->getDB();
-    echo "$query\n";
-    print_r($vals);
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     return $stmt;

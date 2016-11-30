@@ -289,7 +289,7 @@ class TaskHandler implements Handler {
       UI::addMessage("danger", "No such task!");
       return;
     }
-    $auto = intval($_POST["auto"]);
+    $auto = intval(@$_POST["auto"]);
     $task->setAutoAdjust($auto);
     $FACTORIES::getTaskFactory()->update($task);
   }
@@ -359,10 +359,12 @@ class TaskHandler implements Handler {
     foreach($chunks as $chunk){
       $chunkIds[] = $chunk->getId();
     }
-    $qF2 = new ContainFilter("chunkId", $chunkIds);
-    $uS = new UpdateSet("chunkId", null);
-    $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
-    $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+    if(sizeof($chunkIds) > 0) {
+      $qF2 = new ContainFilter("chunkId", $chunkIds);
+      $uS = new UpdateSet("chunkId", null);
+      $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+      $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+    }
     $FACTORIES::getChunkFactory()->massDeletion(array('filter' => $qF));
     $task->setKeyspace(0);
     $task->setProgress(0);
