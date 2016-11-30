@@ -59,7 +59,7 @@ class HashcatHandler implements Handler {
   
     // delete hashcat release
     $release = $FACTORIES::getHashcatReleaseFactory()->get($_POST['release']);
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("hcVersion", $release->getVersion(), "=");
     $agents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF));
     if(sizeof($agents)){

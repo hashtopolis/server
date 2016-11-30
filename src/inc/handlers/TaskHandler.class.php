@@ -152,7 +152,7 @@ class TaskHandler implements Handler {
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, $autoadjust, 0, 0, 0, $color, 0, 0);
     $task = $FACTORIES::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
@@ -161,7 +161,7 @@ class TaskHandler implements Handler {
         $FACTORIES::getTaskFileFactory()->save($taskFile);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
     header("Location: $forward");
     die();
   }
@@ -209,9 +209,9 @@ class TaskHandler implements Handler {
       UI::addMessage("danger", "No such task!");
       return;
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     $this->deleteTask($task);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
   }
   
   private function deleteTask($task){
@@ -235,11 +235,11 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter("rprogress", 10000, "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
   
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     foreach($tasks as $task){
       $this->deleteTask($task);
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
   }
   
   private function rename(){
@@ -266,7 +266,7 @@ class TaskHandler implements Handler {
       return;
     }
     $chunktime = intval($_POST["chunktime"]);
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), "taskId", "taskId");
     $join = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF, 'join' => $jF));
@@ -277,7 +277,7 @@ class TaskHandler implements Handler {
     }
     $task->setChunkTime($chunktime);
     $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
   }
   
   private function toggleTaskAutoadjust(){
@@ -350,7 +350,7 @@ class TaskHandler implements Handler {
       UI::addMessage("danger", "No such task!");
       return;
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("taskId", $task->getId(), "=");
     $uS = new UpdateSet("benchmark", 0);
     $FACTORIES::getAssignmentFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
@@ -369,7 +369,7 @@ class TaskHandler implements Handler {
     $task->setKeyspace(0);
     $task->setProgress(0);
     $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
   }
   
   private function toggleAutoadjust(){

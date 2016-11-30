@@ -7,7 +7,7 @@
  */
 abstract
 class AbstractModelFactory {
-  private $dbh = null;
+  private static $dbh = null;
   
   /**
    * Return the Models name
@@ -95,7 +95,7 @@ class AbstractModelFactory {
     
     $query = $query . " VALUES " . $placeHolder;
     
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $result = $stmt->execute($vals);
     
@@ -148,7 +148,7 @@ class AbstractModelFactory {
       }
     }
     
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     return $stmt;
@@ -183,7 +183,7 @@ class AbstractModelFactory {
     $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
     array_push($vals, $model->getPrimaryKeyValue());
     
-    $stmt = $this->getDB()->prepare($query);
+    $stmt = self::getDB()->prepare($query);
     return $stmt->execute($vals);
   }
   
@@ -234,7 +234,7 @@ class AbstractModelFactory {
     
     $query = $query . " WHERE " . $this->getNullObject()->getPrimaryKey() . "=?";
     
-    $stmt = $this->getDB()->prepare($query);
+    $stmt = self::getDB()->prepare($query);
       $stmt->execute(array(
         $pk
       )
@@ -334,7 +334,7 @@ class AbstractModelFactory {
     $query .= $this->applyOrder($options['order']);
       
     
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
@@ -392,7 +392,7 @@ class AbstractModelFactory {
     }
     $query .= $this->applyOrder($options['order']);
     
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
@@ -509,7 +509,7 @@ class AbstractModelFactory {
         }
       }
       
-      $dbh = $this->getDB();
+      $dbh = self::getDB();
       $stmt = $dbh->prepare($query);
       $stmt->execute($vals);
       
@@ -559,7 +559,7 @@ class AbstractModelFactory {
       $query .= $this->applyOrder($options['order']);
     }
   
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
   
@@ -589,7 +589,7 @@ class AbstractModelFactory {
       $query .= $this->applyFilters($options['order']);
     }
   
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
   
@@ -669,7 +669,7 @@ class AbstractModelFactory {
       }
     }
     
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     echo $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
@@ -727,7 +727,7 @@ class AbstractModelFactory {
    * As an example, the column "name" in "user" becomes "name" => "user.name"
    */
   private function getPrefixedKeys($table) {
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     
     $query = "DESCRIBE `$table`"; // For whatever reason, prepared statements are not working on this one. Or i'm to stupid.
     
@@ -756,7 +756,7 @@ class AbstractModelFactory {
   public function delete($model) {
     if ($model != null) {
       $query = "DELETE FROM " . $this->getModelTable() . " WHERE " . $model->getPrimaryKey() . " = ?";
-      $stmt = $this->getDB()->prepare($query);
+      $stmt = self::getDB()->prepare($query);
       return $stmt->execute(array(
         $model->getPrimaryKeyValue()
       )
@@ -798,7 +798,7 @@ class AbstractModelFactory {
       }
     }
     
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     return $stmt;
@@ -842,7 +842,7 @@ class AbstractModelFactory {
       $query .= $this->applyFilters($vals, $options['filter']);
     }
     
-    $dbh = $this->getDB();
+    $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     return $stmt->execute($vals);
   }
@@ -850,21 +850,21 @@ class AbstractModelFactory {
   /**
    * Returns the DB connection if possible
    */
-  public function getDB($test = false) {
+  public static function getDB($test = false) {
     global $CONN;
     
     $dsn = 'mysql:dbname=' . $CONN['db'] . ";" . "host=" . $CONN['server'];
     $user = $CONN['user'];
     $password = $CONN['pass'];
     
-    if ($this->dbh !== null) {
-      return $this->dbh;
+    if (self::$dbh !== null) {
+      return self::$dbh;
     }
     
     try {
-      $this->dbh = new PDO($dsn, $user, $password);
-      $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-      return $this->dbh;
+      self::$dbh= new PDO($dsn, $user, $password);
+      self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      return self::$dbh;
     }
     catch (PDOException $e) {
       if ($test) {

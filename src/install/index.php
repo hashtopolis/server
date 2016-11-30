@@ -58,7 +58,7 @@ switch($STEP){
 	case 1: //clean installation was selected
 		if(isset($_GET['next'])){
 			$query = file_get_contents(dirname(__FILE__)."/hashtopussy.sql");
-			$FACTORIES::getUserFactory()->getDB()->query($query);
+			AbstractModelFactory::getDB()->query($query);
 			setcookie("step", "52", time() + 3600);
 			setcookie("prev", "2", time() + 3600);
 			header("Location: index.php");
@@ -175,7 +175,7 @@ switch($STEP){
 	case 101: //upgrade installation with sql upgrade
 		if(isset($_GET['next'])){
 			$query = file_get_contents(dirname(__FILE__)."/migrate.sql");
-			$FACTORIES::getUserFactory()->getDB()->query($query);
+			AbstractModelFactory::getDB()->query($query);
 			setcookie("step", "52", time() + 3600);
 			setcookie("prev", "102", time() + 3600);
 			header("Location: index.php");

@@ -30,7 +30,7 @@ if (isset($_POST['action'])) {
           unset($hlistar[$i]);
         }
       }
-      $DB = $FACTORIES::getagentsFactory()->getDB();
+      $DB = AbstractModelFactory::getDB();
       $allok = false;
       $message = "<div class='alert alert-neutral'>";
       if (count($hlistar) > 0) {
@@ -79,7 +79,7 @@ if (isset($_POST['action'])) {
   }
 }
 
-$res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT id,name,hashtype FROM hashlists WHERE format!=3 ORDER BY hashtype ASC, id ASC");
+$res = AbstractModelFactory::getDB()->query("SELECT id,name,hashtype FROM hashlists WHERE format!=3 ORDER BY hashtype ASC, id ASC");
 $res = $res->fetchAll();
 $lists = array();
 foreach ($res as $list) {

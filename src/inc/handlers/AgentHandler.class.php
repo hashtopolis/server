@@ -144,12 +144,12 @@ class AgentHandler implements Handler {
   private function delete() {
     global $FACTORIES;
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     if ($this->deleteDependencies()) {
-      $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+      AbstractModelFactory::getDB()->query("COMMIT");
     }
     else {
-      $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
+      AbstractModelFactory::getDB()->query("ROLLBACK");
       UI::printError("FATAL", "Error occured on deletion of agent!");
     }
   }
@@ -174,7 +174,7 @@ class AgentHandler implements Handler {
     
     //TODO: update agant deletion function
     
-    $DB = $FACTORIES::getagentsFactory()->getDB();
+    $DB = AbstractModelFactory::getDB();
     
     $vysledek1 = $DB->query("DELETE FROM assignments WHERE agent=" . $agent->getId());
     $vysledek2 = $vysledek1 && $DB->query("DELETE FROM errors WHERE agent=" . $agent->getId());

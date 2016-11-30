@@ -142,7 +142,7 @@ class API {
       API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => "benchmark"));
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     $timeoutChunk = null;
     $qF1 = new ComparisonFilter("progress", "length", "<");
     $qF2 = new QueryFilter("taskId", $task->getId(), "=");
@@ -796,7 +796,7 @@ class API {
       $splitLine = explode(":", $crackedHash);
       $podminka = "";   //What is podminka
       $plain = "";
-      $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+      AbstractModelFactory::getDB()->query("START TRANSACTION");
       switch ($format) {
         case 0:
           //TODO search for hash in DB
@@ -853,11 +853,11 @@ class API {
           $plain = $splitLine[1];
           break;
       }
-      $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+      AbstractModelFactory::getDB()->query("COMMIT");
     }
     
     //insert #Cracked hashes and update in hashlist how many hashes were cracked
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     $sumCracked = 0;
     foreach ($cracked as $listId => $cracks) {
       $list = $FACTORIES::getHashlistFactory()->get($listId);
@@ -868,7 +868,7 @@ class API {
     $chunk = $FACTORIES::getChunkFactory()->get($chunk->getId());
     $chunk->setCracked($chunk->getCracked() + $sumCracked);
     $FACTORIES::getChunkFactory()->update($chunk);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
     
     if ($chunk->getState() == 10) { //TODO Don't compare with 10
       // the chunk was manually interrupted

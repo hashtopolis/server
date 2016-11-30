@@ -213,7 +213,7 @@ if (isset($_GET['id'])) {
   
   // show task details
   /*$taskSet = new DataSet();
-  $DB = $FACTORIES::getagentsFactory()->getDB();
+  $DB = AbstractModelFactory::getDB();
   $task = intval($_GET["id"]);
   $filter = intval(isset($_GET["all"]) ? $_GET["all"] : "");
   

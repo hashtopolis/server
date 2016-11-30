@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . "/../inc/load.php");
 die("OUTDATED");
 
 
-$DB = $FACTORIES::getagentsFactory()->getDB();
+$DB = AbstractModelFactory::getDB();
 
 $pik = imagecreatefromgif(dirname(__FILE__)."/../static/stats.gif");
 

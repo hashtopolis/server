@@ -48,7 +48,7 @@ else if (isset($_GET['task'])) {
 
 $valid = false;
 if ($chunk > 0) {
-  $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,hashlists.format FROM chunks JOIN tasks ON chunks.task=tasks.id JOIN hashlists ON hashlists.id=tasks.hashlist WHERE chunks.id=$chunk");
+  $res = AbstractModelFactory::getDB()->query("SELECT hashlists.id,hashlists.format FROM chunks JOIN tasks ON chunks.task=tasks.id JOIN hashlists ON hashlists.id=tasks.hashlist WHERE chunks.id=$chunk");
   $chunkRes = $res->fetch();
   if (!$chunkRes) {
     $message = "<div class='alert alert-danger'>Invalid Chunk!</div>";
@@ -60,7 +60,7 @@ if ($chunk > 0) {
   }
 }
 else if ($task > 0) {
-  $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT hashlists.id,tasks.name,hashlists.format FROM tasks JOIN hashlists ON hashlists.id=tasks.hashlist WHERE tasks.id=$task");
+  $res = AbstractModelFactory::getDB()->query("SELECT hashlists.id,tasks.name,hashlists.format FROM tasks JOIN hashlists ON hashlists.id=tasks.hashlist WHERE tasks.id=$task");
   $taskRes = $res->fetch();
   if (!$taskRes) {
     $message = "<div class='alert alert-danger'>Invalid task!</div>";
@@ -72,7 +72,7 @@ else if ($task > 0) {
   }
 }
 else if ($hlist > 0) {
-  $res = $FACTORIES::getagentsFactory()->getDB()->query("SELECT name,format FROM hashlists WHERE id=$hlist");
+  $res = AbstractModelFactory::getDB()->query("SELECT name,format FROM hashlists WHERE id=$hlist");
   $hlistRes = $res->fetch();
   if (!$hlistRes) {
     $message = "<div class='alert alert-danger'>Invalid hashlist!</div>";
@@ -153,7 +153,7 @@ if ($valid) {
   }
   $kve .= " FROM " . Util::getStaticArray($format, 'formattables') . " " . $viewfilter . $filter[$filt];
   
-  $res = $FACTORIES::getagentsFactory()->getDB()->query($kve);
+  $res = AbstractModelFactory::getDB()->query($kve);
   $res = $res->fetchAll();
   $output = "";
   foreach ($res as $entry) {

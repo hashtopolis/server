@@ -159,7 +159,7 @@ class HashlistHandler implements Handler {
           $saltSeparator = "";
         }
         rewind($file);
-        $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+        AbstractModelFactory::getDB()->query("START TRANSACTION");
         $values = array();
         $bufferCount = 0;
         while (!feof($file)) {
@@ -318,7 +318,7 @@ class HashlistHandler implements Handler {
       UI::printError("ERROR", "Invalid hashlist!");
     }
   
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
   
     $qF = new QueryFilter("hashlistId", $this->hashlist->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
@@ -349,8 +349,8 @@ class HashlistHandler implements Handler {
       $FACTORIES::getTaskFactory()->delete($task);
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    AbstractModelFactory::getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
     switch($this->hashlist->getFormat()){
       case 0:
         $count = $FACTORIES::getHashlistFactory()->countFilter(array());
@@ -361,12 +361,12 @@ class HashlistHandler implements Handler {
           while ($deleted > 0) {
             $result = $FACTORIES::getHashFactory()->massDeletion(array('filter' => array($qF), 'order' => array($oF)));
             $deleted = $result->rowCount();
-            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+            AbstractModelFactory::getDB()->query("COMMIT");
+            AbstractModelFactory::getDB()->query("START TRANSACTION");
           }
         }
         else{
-          $FACTORIES::getAgentFactory()->getDB()->query("TRUNCAT TABLE Hash");
+          AbstractModelFactory::getDB()->query("TRUNCAT TABLE Hash");
         }
         break;
       case 1:
@@ -380,7 +380,7 @@ class HashlistHandler implements Handler {
         break;
     }
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
     switch($this->hashlist->getFormat()){
       case 0:
       case 1:
@@ -456,7 +456,7 @@ class HashlistHandler implements Handler {
       $hashFactory = $FACTORIES::getHashBinaryFactory();
     }
     //start inserting
-    $FACTORIES::getAgentFactory()->getDB()->exec("START TRANSACTION");
+    AbstractModelFactory::getDB()->exec("START TRANSACTION");
     $totalLines = 0;
     $newCracked = 0;
     $crackedIn = array();
@@ -533,8 +533,8 @@ class HashlistHandler implements Handler {
           $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
           $FACTORIES::getHashlistFactory()->update($ll);
         }
-        $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-        $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+        AbstractModelFactory::getDB()->query("COMMIT");
+        AbstractModelFactory::getDB()->query("START TRANSACTION");
         $bufferCount = 0;
       }
     }
@@ -550,7 +550,7 @@ class HashlistHandler implements Handler {
       $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
       $FACTORIES::getHashlistFactory()->update($ll);
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    AbstractModelFactory::getDB()->query("COMMIT");
     UI::addMessage("success", "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (".($endTime-$startTime)."s)!");
   }
   
