@@ -1,5 +1,10 @@
 <?php
 require_once(dirname(__FILE__) . "/../inc/load.php");
+
+//TODO: needs to be updated
+die("OUTDATED");
+
+
 $DB = $FACTORIES::getagentsFactory()->getDB();
 
 $pik = imagecreatefromgif(dirname(__FILE__)."/../static/stats.gif");

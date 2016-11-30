@@ -819,6 +819,9 @@ class AbstractModelFactory {
     
     
       $updateOptions = $options['update'];
+      if(!is_array($updateOptions)){
+        $updateOptions = array($updateOptions);
+      }
       $vals = array();
     
       for ($i = 0; $i < count($updateOptions); $i++) {
@@ -835,23 +838,7 @@ class AbstractModelFactory {
     }
     
     if (array_key_exists("filter", $options)) {
-      $query = $query . " WHERE ";
-      
-      
-      $filterOptions = $options['filter'];
-      $vals = array();
-      
-      for ($i = 0; $i < count($filterOptions); $i++) {
-        $option = $filterOptions[$i];
-        array_push($vals, $option->getValue());
-        
-        if ($i != count($filterOptions) - 1) {
-          $query = $query . $option->getQueryString() . " AND ";
-        }
-        else {
-          $query = $query . $option->getQueryString();
-        }
-      }
+      $query .= $this->applyFilters($vals, $options['filter']);
     }
     
     $dbh = $this->getDB();

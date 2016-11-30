@@ -163,31 +163,6 @@ class Util {
     return ($x - $y);
   }
   
-  public static function delete_task($task) {
-    global $FACTORIES;
-    
-    $qF = new QueryFilter("taskId", $task, "=");
-    $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
-    $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => array($qF)));
-    $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => array($qF)));
-    
-    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF)));
-    if ($chunks) {
-      foreach ($chunks as $chunk) {
-        $qF = new QueryFilter("", $value, $operator);
-      }
-    } //TODO: will not work until refactored
-    
-    $ans4 = $ans3 && $DB->query("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
-    $ans5 = $ans4 && $DB->query("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.task=$task SET chunk=NULL");
-    $ans6 = $ans5 && $DB->query("DELETE FROM zapqueue WHERE chunk IN (SELECT id FROM chunks WHERE task=$task)");
-    $ans7 = $ans6 && $DB->query("DELETE FROM chunks WHERE task=$task");
-    
-    $ans8 = $ans7 && $DB->query("DELETE FROM tasks WHERE id=$task");
-    
-    return ($ans8);
-  }
-  
   public static function bintohex($dato) {
     $ndato = "";
     for ($i = 0; $i < strlen($dato); $i++) {

@@ -19,7 +19,7 @@ class ConfigHandler implements Handler {
       default:
         UI::addMessage("danger", "Invalid action!");
         break;
-      //TODO: implement the handler for the global actions
+      //TODO: implement the handler for the global actions -> see issue #18
     }
   }
   
