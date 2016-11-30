@@ -1,7 +1,7 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>New task</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <form class='form-inline' action="newtask.php" method="POST" enctype="multipart/form-data">
 	<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
 		<input type='hidden' name='action' value='newtaskp'>
@@ -14,7 +14,7 @@
 				<tr>
 					<td>Name:</td>
 					<td>
-						<input type="text" class='form-control' name="name" value="[[copy.getVal('name')]]">
+						<input type="text" class='form-control' name="name" value="[[copy.getTaskName()]]">
 					</td>
 				</tr>
 				<tr>
@@ -22,7 +22,7 @@
 					<td>
 						<select class='form-control' name="hashlist">
 							{{FOREACH list;[[lists]]}}
-								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[copy.getVal('hlist')]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[copy.getHashlistId()]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
 							{{ENDFOREACH}}
 						</select> (hashlist needs to be created before task)
 					</td>
@@ -30,7 +30,7 @@
 				<tr>
 					<td>Command line:</td>
 					<td>
-						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine">[[copy.getVal('cmd')]]</textarea>
+						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine">[[copy.getAttackCmd()]]</textarea>
 						<br>
       					Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
       					If you have Linux agents, please mind the filename case sensitivity!<br>
@@ -42,28 +42,28 @@
       			<tr>
       				<td>Chunk size:</td>
       				<td>
-      					<input type="text" class='form-control' name="chunk" value="[[copy.getVal('chunksize')]]"> 
+      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]">
       					seconds
       				</td>
       			</tr>
       			<tr>
       				<td>Status timer:</td>
       				<td>
-      					<input type="text" class='form-control' name="status" value="[[copy.getVal('status')]]"> 
+      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]">
       					seconds
       				</td>
       			</tr>
       			<tr>
       				<td>Benchmark:</td>
       				<td>
-      					<input type="checkbox" name="autoadjust" value='1'{{IF [[copy.getVal('adjust')]] == 1}} checked{{ENDIF}}>
+      					<input type="checkbox" name="autoadjust" value='1'{{IF [[copy.getAutoadjust()]] == 1}} checked{{ENDIF}}>
       					Auto adjust<br>(Not recommended for AMD and/or in combination with small chunks sizes)
       				</td>
       			</tr>
       			<tr>
       				<td>Color:</td>
       				<td>
-      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getVal('color')]]">
+      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]">
       				</td>
       			</tr>
       			<tr>
@@ -109,14 +109,14 @@
 				{{FOREACH file;[[files]]}}
 					<tr>
 						<td>
-							<input type="checkbox" name="adfile[]" value="[[file.getVal('id')]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('filename')]]');"{{IF [[file.getVal('che')]] == 1}} checked{{ENDIF}}>
-							[[file.getVal('filename')]]
-							{{IF !!file.getVal('secret')!! == 1}}
+							<input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+							[[file.getVal('file').getFilename()]]
+							{{IF [[file.getVal('file').getSecret()]] == 1}}
 								<img src="static/lock.gif" alt="Secret">
 							{{ENDIF}}
 						</td>
 						<td>
-							[[Util::nicenum([[file.getVal('size')]])]]B
+							[[Util::nicenum([[file.getVal('file').getSize()]])]]B
 						</td>
 					</tr>
 				{{ENDFOREACH}}
@@ -124,4 +124,4 @@
 		</div>
 	</div>
 </form>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

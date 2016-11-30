@@ -225,6 +225,105 @@ if (isset($_POST['action'])) {
         }
       }
       break;
+    case 'newtaskp':
+      // new task creator
+      $DB = $FACTORIES::getagentsFactory()->getDB();
+      $name = $DB->quote(htmlentities($_POST["name"], false, "UTF-8"));
+      $cmdline = $DB->quote($_POST["cmdline"]);
+      $autoadj = intval(@$_POST["autoadjust"]);
+      $chunk = intval($_POST["chunk"]);
+      $status = intval($_POST["status"]);
+      $color = $_POST["color"];
+      $message = "<div class='alert alert-neutral'>";
+      $forward = "";
+      if (preg_match("/[0-9A-Za-z]{6}/", $color) == 1) {
+        $color = "'$color'";
+      }
+      else {
+        $color = "NULL";
+      }
+      if (strpos($cmdline, $CONFIG->getVal('hashlistAlias')) === false) {
+        $message .= "Command line must contain hashlist (" . $CONFIG->getVal('hashlistAlias') . ").";
+      }
+      else {
+        if ($_POST["hashlist"] == "preconf") {
+          // it will be a preconfigured task
+          $hashlist = "NULL";
+          if ($name == "''") {
+            $name = "PC_" . date("Ymd_Hi");
+          }
+          $forward = "pretasks.php";
+        }
+        else {
+          $thashlist = intval($_POST["hashlist"]);
+          if ($thashlist > 0) {
+            $hashlist = $thashlist;
+          }
+          if ($name == "''") {
+            $name = "HL" . $hashlist . "_" . date("Ymd_Hi");
+          }
+          $forward = "tasks.php";
+        }
+        if ($hashlist != "") {
+          if ($status > 0 && $chunk > 0 && $chunk > $status) {
+            if ($hashlist != "NULL") {
+              $res = $DB->query("SELECT * FROM hashlists WHERE id=" . $hashlist);
+              $hl = $res->fetch();
+              if ($hl['hexsalt'] == 1 && strpos($cmdline, "--hex-salt") === false) {
+                $cmdline = "'--hex-salt " . substr($cmdline, 1, -1) . "'";
+              }
+            }
+            $DB->exec("SET autocommit = 0");
+            $DB->exec("START TRANSACTION");
+            $message .= "Creating task in the DB...";
+            $res = $DB->exec("INSERT INTO tasks (name, attackcmd, hashlist, chunktime, statustimer, autoadjust, color) VALUES ($name, $cmdline, $hashlist, $chunk, $status, $autoadj, $color)");
+            if ($res) {
+              // insert succeeded
+              $id = $DB->lastInsertId();
+              $message .= "OK (id: $id)<br>";
+              // attach files
+              $attachok = true;
+              if (isset($_POST["adfile"])) {
+                foreach ($_POST["adfile"] as $fid) {
+                  if ($fid > 0) {
+                    $message .= "Attaching file $fid...";
+                    if ($DB->exec("INSERT INTO taskfiles (task,file) VALUES ($id, $fid)")) {
+                      $message .= "OK";
+                    }
+                    else {
+                      $message .= "ERROR!";
+                      $attachok = false;
+                    }
+                    $message .= "<br>";
+                  }
+                }
+              }
+              if ($attachok == true) {
+                $DB->exec("COMMIT");
+                $message .= "Task created successfuly!";
+                if ($forward) {
+                  header("Location: $forward");
+                  die();
+                }
+              }
+              else {
+                $DB->exec("ROLLBACK");
+              }
+            }
+            else {
+              $message .= "ERROR: " . $DB->errorInfo()[2];
+            }
+          }
+          else {
+            $message .= "Chunk time must be higher than status timer.";
+          }
+        }
+        else {
+          $message .= "Every task requires a hashlist, even if it should contain only one hash.";
+        }
+      }
+      $message .= "</div>";
+      break;
   }
 }
 
@@ -371,7 +470,54 @@ else if (isset($_GET['new'])) {
     $TEMPLATE = new Template("restricted");
     die($TEMPLATE->render($OBJECTS));
   }
-  //TODO: create new task
+  $TEMPLATE = new Template("tasks/new");
+  $MENU->setActive("tasks_new");
+  $orig = 0;
+  $copy = new Task(0, "", "", null, $CONFIG->getVal("chunktime"), $CONFIG->getVal("statustimer"), 0, 0, 0, 0, "", 0, 0);
+  if (isset($_GET["copy"])) {
+    //copied from a task
+    $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
+    if($copy != null){
+      $orig = $copy->getId();
+      $copy->setId(0);
+      $copy->setTaskName($copy->getTaskName() . " (copy)");
+    }
+  }
+  $OBJECTS['orig'] = $orig;
+  $OBJECTS['copy'] = $copy;
+  
+  $lists = array();
+  $set = new DataSet();
+  $set->addValue('id', null);
+  $set->addValue("name", "(pre-configured task)");
+  $lists[] = $set;
+  $res = $FACTORIES::getHashlistFactory()->filter(array());
+  foreach ($res as $list) {
+    $set = new DataSet();
+    $set->addValue('id', $list->getId());
+    $set->addValue('name', $list->getHashlistName());
+    $lists[] = $set;
+  }
+  $OBJECTS['lists'] = $lists;
+  
+  $origFiles = array();
+  if($orig > 0){
+    $qF = new QueryFilter("taskId", $orig, "=");
+    $ff = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
+    foreach($ff as $f) {
+      $origFiles[] = $f->getId();
+    }
+  }
+  $oF = new OrderFilter("filename", "ASC");
+  $allFiles = $FACTORIES::getFileFactory()->filter(array('order' => $oF));
+  $files = array();
+  foreach($allFiles as $singleFile){
+    $set = new DataSet();
+    $set->addValue('checked', (in_array($singleFile->getId(), $origFiles))?"1":"0");
+    $set->addValue('file', $singleFile);
+    $files[] = $set;
+  }
+  $OBJECTS['files'] = $files;
 }
 else {
   $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
