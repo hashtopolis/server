@@ -668,7 +668,7 @@ class API {
     $cid = intval($QUERY["chunk"]);
     $keyspaceProgress = floatval($QUERY["curku"]);            //TODO Rename this in API
     $normalizedProgress = floatval($QUERY["progress"]);      //Normalized between 1-10k
-    $normalizedTotal = floatval($QUERY["total"]); //TODO Not sure what this variable does
+    $normalizedTotal = floatval($QUERY["total"]);           //TODO Not sure what this variable does
     $speed = floatval($QUERY["speed"]);
     $state = intval($QUERY["state"]);     //Util::getStaticArray($states, $state)
     $action = $QUERY["action"];
@@ -687,7 +687,7 @@ class API {
     if ($agent == null) {
       API::sendErrorResponse($action, "Invalid agent token" . $token);
     }
-    if ($chunk->getAgentId() != $agent->getID()) {
+    if ($chunk->getAgentId() != $agent->getId()) {
       API::sendErrorResponse($action, "You are not assigned to this chunk");
     }
     
@@ -704,8 +704,8 @@ class API {
       API::sendErrorResponse($action, "The given task does not have a corresponding hashList");
     }
     
-    $taskFilter = new QueryFilter("taskId", $task->getID(), "=");
-    $agentFilter = new QueryFilter("agentId", $agent->getID(), "=");
+    $taskFilter = new QueryFilter("taskId", $task->getId(), "=");
+    $agentFilter = new QueryFilter("agentId", $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array("filter" => array($taskFilter, $agentFilter)), true);
     if ($assignment == null) {
       API::sendErrorResponse($action, "No assignment exists for your chunk");
@@ -714,9 +714,9 @@ class API {
     // it can be already assigned to other task, but is still computing this chunk until it realizes it
     $skip = $chunk->getSkip();
     $length = $chunk->getLength();
-    $agentID = $agent->getID();
-    $taskID = $task->getID();
-    $hashListID = $hashList->getID();
+    $agentID = $agent->getId();
+    $taskID = $task->getId();
+    $hashListID = $hashList->getId();
     $format = $hashList->getFormat();
     
     /** Progressparsing + checks */
@@ -774,140 +774,92 @@ class API {
       $chunk->setSolveTime(time());
       $chunk->setState($state);
       $FACTORIES::getChunkFactory()->update($chunk);
-      //TODO Not sure what this does
-      file_put_contents("server_solve.txt", var_export($_GET, true) . var_export($_POST, true) . "\n----------------------------------------\n", FILE_APPEND);
-    }
-    // handle superhashlist
-    if ($format == 3) {     //TODO Fixme don't compare with 3
-      $superhash = true;
-    }
-    else {
-      $superhash = false;
-    }
+      }
     
     /**
      * TODO No clue what the section below does FIXME
      */
-    $hlistar = array();
-    $hlistarzap = array();
-    if ($superhash) {
-      $res = $DB->query("SELECT hashlists.id,hashlists.format,hashlists.secret FROM superhashlists JOIN hashlists ON superhashlists.hashList=hashlists.id WHERE superhashlists.id=$hashListID");
-      while ($line = $res->fetch()) {
-        $format = $line["format"];
-        $hlistar[] = $line["id"];
-        if ($line["secret"] <= $agent->getTrusted()) {
-          $hlistarzap[] = $line["id"];
-        }
-      }
-    }
-    else {
-      $hlistar[] = $hashListID;
-      $hlistarzap[] = $hashListID;
-    }
-    
-    // create two lists:
-    // list of all hashlists in this superhashlist
-    $hlisty = implode(",", $hlistar);
-    // list of those hashlists in superhashlist this agent is allowed to read
-    $hlistyzap = implode(",", $hlistarzap);
-    
-    
+    $hlistar = Util::checkSuperHashlist($hashList);
+    $format = $FACTORIES::getHashlistFactory()->get($hlistar[0])->getFormat();
+
     // reset values
     $cracked = 0;
     $skipped = 0;
     $errors = 0;
     
     // process solved hashes, should there be any
-    $rawdata = file_get_contents("php://input");
+    //TODO Save cracked hashes & add to zap-list
+    $rawdata = file_get_contents("php://input");    //TODO Reformat with new API
     if (strlen($rawdata) > 0) {
       // there is some uploaded text (cracked hashes)
       $data = explode($newline, $rawdata);
       if (count($data) > 1) {
-        // there is more then one line
-        // (even for one hash, there is $newline at the end so that makes it two lines)
-        $tbls = array(
-          "hashes",
-          "hashes_binary",
-          "hashes_binary"
-        );
-        $tbl = $tbls[$format];
-        
-        // create temporary table to cache cracking stats
-        $DB->query("CREATE TEMPORARY TABLE tmphlcracks (hashList INT NOT NULL, cracked INT NOT NULL DEFAULT 0, zaps BIT(1) DEFAULT 0, PRIMARY KEY (hashList))");
-        $DB->query("INSERT INTO tmphlcracks (hashList) SELECT id FROM hashlists WHERE id IN ($hlisty)");
-        
-        $crack_cas = time();
-        foreach ($data as $dato) {
+        $start_switch_time = time();
+        foreach ($data as $dataElement) {
           // for non empty lines update solved hashes
-          if ($dato == "") {
+          if ($dataElement == "") {
             continue;
           }
-          $elementy = explode($separator, $dato);
-          $podminka = "";
+          $splitLine = explode($separator, $dataElement);
+          $podminka = "";   //What is podminka
           $plain = "";
           switch ($format) {
             case 0:
+              //TODO search for hash in DB
+              //get salt
+              //replace hash + salt from the line -> plaintext remains
               // save regular password
-              $hash = substr($DB->quote($elementy[0]), 1, -1);
-              switch (count($elementy)) {
-                case 2:
-                  // unsalted hashes
-                  $salt = "";
-                  $plain = substr($DB->quote($elementy[1]), 1, -1);
-                  break;
-                case 3:
-                  // salted hashes
-                  $salt = substr($DB->quote($elementy[1]), 1, -1);
-                  $plain = substr($DB->quote($elementy[2]), 1, -1);
-                  file_put_contents("salt_log.txt", "$dato\n$hash###$salt###$plain\n", FILE_APPEND);
-                  break;
+              $hashFilter = new QueryFilter("hash", $splitLine[0], "=" );
+              $hashListFilter = new ContainFilter("hashlistId",$hlistar);
+              $isCrackedFilter = new QueryFilter("isCracked", 0 ,"=" );
+              $hashes = $FACTORIES::getHashFactory()->filter(array("filter"=>array($isCrackedFilter,$hashFilter,$hashListFilter)));
+              $salt=$hashes[0]->getSalt();
+              if(strlen($salt)==0) {
+                // unsalted hashes
+                $plain = str_replace($hashes[0]->getHash() . ':', "", $dataElement);
               }
-              $podminka = "$tbl.hash='$hash' AND $tbl.salt='$salt'";
+               else{
+                  // salted hashes
+                  $plain = str_replace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':',"" ,$dataElement );
+              }
+              foreach($hashes as $hash){  //TODO Mass-update
+                $hash->setPlaintext($plain);
+                $hash->setIsCracked(1);
+                $FACTORIES::getHashFactory()->update($hash);
+              }
               break;
             case 1:
               // save cracked wpa password
-              $network = substr($DB->quote($elementy[0]), 1, -1);
-              $plain = substr($DB->quote($elementy[1]), 1, -1);
+              $network = $splitLine[0];
+              $plain = $splitLine[1];
               // QUICK-FIX WPA/WPA2 strip mac address
               if (preg_match("/.+:[0-9a-f]{12}:[0-9a-f]{12}$/", $network) === 1) {
                 // TODO: extend DB model by MACs and implement detection
                 $network = substr($network, 0, strlen($network) - 26);
               }
-              $podminka = "$tbl.essid='$network'";
+              $essIDFilter = new QueryFilter("essid", $network,"=");
+              $hashes = $FACTORIES::getHashBinaryFactory()->filter(array("filter"=>$essIDFilter));
+              foreach($hashes as $hash){
+                $hash->setIsCracked(1);
+                $hash->setPlaintext($plain);
+                $FACTORIES::getHashFactory()->update($hash);
+              }
               break;
             case 2:
               // save binary password
-              $plain = substr($DB->quote($elementy[1]), 1, -1);
+              // TODO Fix issue with superhashlists
+              $plain = $splitLine[1];
               break;
           }
-          
-          // make the query
-          $qu = "UPDATE $tbl JOIN tmphlcracks ON tmphlcracks.hashList=$tbl.hashList SET $tbl.plaintext='$plain',$tbl.time=$crack_cas,$tbl.chunk=$cid,tmphlcracks.cracked=tmphlcracks.cracked+1 WHERE $tbl.hashList IN ($hlisty) AND $tbl.plaintext IS NULL" . ($podminka != "" ? " AND " . $podminka : "");
-          $res = $DB->query($qu);
-          
-          // check if the update went right
-          if ($res) {
-            $affec = $res->rowCount();
-            if ($affec > 0) {
-              $cracked++;
-            }
-            else {
-              $skipped++;
-            }
-          }
-          else {
-            $errors++;
-          }
+          //TODO #Cracked hashes and update in hashlist how many hashes were cracked
           
           // everytime we pass statustimer
-          if (time() >= $crack_cas + $task->getStatusTimer()) {
+          if (time() >= $start_switch_time + $task->getStatusTimer()) {
             // update the cache
             Util::writecache();
           }
         }
         Util::writecache();
-        // drop the temporary cache
-        $DB->query("DROP TABLE tmphlcracks");
       }
     }
     
@@ -924,13 +876,13 @@ class API {
       API::sendErrorResponse($action, "Chunk was manually interrupted.");
     }
     // just inform the agent about the results
-    echo "solve_ok" . $separator . $cracked . $separator . $skipped;      //TODO does the api have a 'success' command?
-    
+    //TODO Include repsonse below in final respose
+    //API::sendResponse(array("action"=>$action, "response"=>"SUCCESS", "cracked"=>$cracked, "skipped"=>$skipped));
     /** Check if the task is done */
     $taskdone = false;
     if ($normalizedProgress == $normalizedTotal && $task->getProgress() == $task->getKeyspace()) {
       // chunk is done and the task has been fully dispatched
-      $incompleteFilter = new QueryFilter("rprogress", 10000, "<");    //TODO Is there a way to get name of rows?
+      $incompleteFilter = new QueryFilter("rprogress", 10000, "<");
       $taskFilter = new QueryFilter("taskId", $taskID, "=");
       $count = $FACTORIES::getChunkFactory()->countFilter(array("filter" => array($incompleteFilter, $taskFilter)));
       if ($count == 0) {
@@ -961,10 +913,11 @@ class API {
           // update the benchmark
           $assignment->setSpeed(0);
           $assignment->setBenchmark($newbench);
-          $FACTORIES::getAssignmentFactory()->update($assignment); //TODO Does this check for both fk?
+          $FACTORIES::getAssignmentFactory()->update($assignment);
         }
         break;
       case 5:
+        //TODO Fix with new hashlist
         // the chunk has finished (cracked whole hashList)
         // deprioritize all tasks and unassign all agents
         if ($superhash && $hlistyzap == $hlisty) {
@@ -973,7 +926,6 @@ class API {
           }
           $hlistyzap .= $hashListID;
         }
-        //TODO is there an IN_Filter?
         $DB->query("UPDATE tasks SET priority=0 WHERE hashList IN ($hlistyzap)");
         
         // email hashList done
@@ -988,6 +940,8 @@ class API {
         break;
       default:
         // the chunk isn't finished yet, we will send zaps
+        //TODO New zap-logic
+        
         //TODO FIXME with exists() or count-query
         $res = $DB->query("SELECT 1 FROM hashlists WHERE id IN ($hlistyzap) AND cracked<hashcount");
         echo $separator;
@@ -1044,5 +998,6 @@ class API {
         }
         break;
     }
+    //TODO API send response
   }
 }
