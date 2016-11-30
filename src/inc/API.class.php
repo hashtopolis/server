@@ -653,7 +653,7 @@ class API {
         'attackcmd' => $assignedTask->getAttackCmd(),
         'cmdpars' => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
         'hashlist' => $assignedTask->getHashlistId(),
-        'bench' => 'new', //TODO: here we should tell him new or continue depending if he was already worked on this hashlist or not
+        'bench' => 'new', //TODO: here we should tell him new or continue depending if he was already working on this hashlist or not
         'statustimer' => $assignedTask->getStatusTimer(),
         'files' => array($files)
       )
@@ -663,12 +663,11 @@ class API {
   //TODO Work in Progress
   //TODO Handle the case where an agent needs reassignment
   public static function solve($QUERY) {
-    global $FACTORIES;
-    global $CONFIG;
+    global $FACTORIES, $CONFIG;
     
     // upload cracked hashes to server
     $cid = intval($QUERY["chunk"]);
-    $keyspaceProgress = floatval($QUERY["curku"]);            //TODO Rename this in API
+    $keyspaceProgress = floatval($QUERY["keyspaceProgress"]);
     $normalizedProgress = floatval($QUERY["progress"]);      //Normalized between 1-10k
     $normalizedTotal = floatval($QUERY["total"]);           //TODO Not sure what this variable does
     $speed = floatval($QUERY["speed"]);
