@@ -353,11 +353,178 @@ if (isset($_GET['id'])) {
     $TEMPLATE = new Template("restricted");
     die($TEMPLATE->render($OBJECTS));
   }
-  //TODO: update single task view
+  
   $TEMPLATE = new Template("tasks/detail");
+  $task = $FACTORIES::getTaskFactory()->get($_GET['id']);
+  if($task == null){
+    UI::printError("ERROR", "Invalid task ID!");
+  }
+  $OBJECTS['task'] = $task;
+  
+  if($task->getHashlistId() != null) {
+    $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
+    $OBJECTS['hashlist'] = $hashlist;
+    $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
+    $OBJECTS['hashtype'] = $hashtype;
+  }
+  
+  $isActive = 0;
+  $activeChunks = array();
+  $activeChunksIds = new DataSet();
+  $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getChunkFactory());
+  $jF = new JoinFilter($FACTORIES::getAssignmentFactory(), "taskId", "taskId");
+  $joinedChunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF, 'join' => $jF));
+  $activeAgents = new DataSet();
+  $agentsBench = new DataSet();
+  $agentsSpeed = new DataSet();
+  for($i=0;$i<sizeof($joinedChunks['Chunk']);$i++){
+    $chunk = $joinedChunks['Chunk'][$i];
+    $activeAgents->addValue($chunk->getAgentId(), "0");
+    $agentsBench->addValue($chunk->getAgentId(), $joinedChunks['Assignment'][$i]->getBenchmark());
+    $agentsSpeed->addValue($chunk->getAgentId(), $joinedChunks['Assignment'][$i]->getSpeed());
+    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < time() - $CONFIG->getVal('chunktimeout')){
+      $isActive = 1;
+      $activeChunks[] = $chunk;
+      $activeChunksIds->addValue($chunk->getId(), "1");
+      $activeAgents->addValue($chunk->getAgentId(), "1");
+    }
+    else{
+      $activeChunksIds->addValue($chunk->getId(), "0");
+    }
+  }
+  $OBJECTS['isActive'] = $isActive;
+  
+  $cProgress = 0;
+  $chunkIntervals = array();
+  $agentsProgress = new DataSet();
+  $agentsSpent = new DataSet();
+  $agentsCracked = new DataSet();
+  $qF = new QueryFilter("taskId", $task->getId(), "=");
+  $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+  foreach($chunks as $chunk){
+    $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => getSolveTime());
+    $cProgress += $chunk->getProgress();
+    if(!$agentsProgress->getVal($chunk->getAgentId())){
+      $agentsProgress->addValue($chunk->getAgentId(), $chunk->getProgress());
+      $agentsCracked->addValue($chunk->getAgentId(), $chunk->getCracked());
+      $agentsSpent->addValue($chunk->getAgentId(), min($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
+    }
+    else{
+      $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getProgress());
+      $agentsCracked->addValue($chunk->getAgentId(), $agentsCracked->getVal($chunk->getAgentId()) + $chunk->getCracked());
+      $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + min($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
+    }
+  }
+  $OBJECTS['agentsProgress'] = $agentsProgress;
+  $OBJECTS['agentsSpent'] = $agentsSpent;
+  $OBJECTS['agentsCracked'] = $agentsCracked;
+  $OBJECTS['cProgress'] = $cProgress;
+  
+  $currentSpeed = 0;
+  for($i=0;$i<sizeof($joinedChunks['Chunk']);$i++){
+    $chunk = $joinedChunks['Chunk'][$i];
+    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < time() - $CONFIG->getVal('chunktimeout')){
+      $currentSpeed += $joinedChunks['Assignment'][$i]->getSpeed();
+    }
+  }
+  $OBJECTS['currentSpeed'] = $currentSpeed;
+  
+  $timeSpent = 0;
+  for($i=1;$i<=sizeof($chunkIntervals);$i++){
+    if (isset($chunkIntervals[$i]) && $chunkIntervals[$i]["start"] <= $chunkIntervals[$i - 1]["stop"]) {
+      $chunkIntervals[$i]["start"] = $chunkIntervals[$i - 1]["start"];
+      if ($chunkIntervals[$i]["stop"] < $chunkIntervals[$i - 1]["stop"]) {
+        $chunkIntervals[$i]["stop"] = $chunkIntervals[$i - 1]["stop"];
+      }
+    }
+    else {
+      $timeSpent += ($chunkIntervals[$i - 1]["stop"] - $chunkIntervals[$i - 1]["start"]);
+    }
+  }
+  $OBJECTS['timeSpent'] = $timeSpent;
+  if($task->getKeyspace() != 0 && ($cProgress/$task->getKeyspace()) != 0) {
+    $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()));
+  }
+  else{
+    $OBJECTS['timeLeft'] = -1;
+  }
+  
+  $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());
+  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), "fileId", "fileId");
+  $joinedFiles = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'join' => $jF));
+  $OBJECTS['attachedFiles'] = $joinedFiles['File'];
+  
+  $jF = new JoinFilter($FACTORIES::getAssignmentFactory(), "agentId", "agentId");
+  $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getAssignmentFactory());
+  $joinedAgents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF, 'join' => $jF));
+  $assignedAgents = array();
+  foreach($joinedAgents['Agent'] as $agent){
+    $assignedAgents[] = $agent->getId();
+  }
+  $OBJECTS['agents'] = $joinedAgents['Agent'];
+  $OBJECTS['activeAgents'] = $activeAgents;
+  $OBJECTS['agentsBench'] = $agentsBench;
+  $OBJECTS['agentsSpeed'] = $agentsSpeed;
+  
+  $assignAgents = array();
+  $allAgents = $FACTORIES::getAgentFactory()->filter(array());
+  foreach($allAgents as $agent){
+    if(!in_array($agent->getId(), $assignedAgents)){
+      $assignAgents[] = $agent;
+    }
+  }
+  $OBJECTS['assignAgents'] = $assignAgents;
+  
+  if(isset($_GET['allagents'])){
+    $OBJECTS['showAllAgents'] = true;
+    $allAgentsSpent = new DataSet();
+    $allAgents = new DataSet();
+    $agentObjects = array();
+    $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getChunkFactory());
+    $jF = new JoinFilter($FACTORIES::getChunkFactory(), "agentId", "agentId");
+    $joinedAgents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF, 'join' => $jF));
+    for($i=0;$i<sizeof($joinedAgents['Agent']);$i++){
+      $chunk = $joinedAgents['Chunk'][$i];
+      $agent = $joinedAgents['Agent'][$i];
+      if($allAgents->getVal($agent->getId()) == null){
+        $allAgents->addValue($agent->getId(), $agent);
+        $agentObjects[] = $agent;
+      }
+      if($chunk->getSolveTime() > $chunk->getDispatchTime()){
+        if($allAgentsSpent->getVal($agent->getId()) == null){
+          $allAgentsSpent->addValue($agent->getId(), $chunk->getSolveTime() - $chunk->getDispatchTime());
+        }
+        else{
+          $allAgentsSpent->addValue($agent->getId(), $allAgentsSpent->getVal($agent->getId()) + $chunk->getSolveTime() - $chunk->getDispatchTime());
+        }
+      }
+    }
+    $OBJECTS['agentObjects'] = $agentObjects;
+    $OBJECTS['allAgentsSpent'] = $allAgentsSpent;
+  }
+  
+  if(isset($_GET['all'])){
+    $OBJECTS['chunkFilter'] = 1;
+    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $oF = new OrderFilter("solveTime", "DESC LIMIT 100");
+    $OBJECTS['chunks'] = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF, 'order' => $oF));
+    $OBJECTS['activeChunks'] = $activeChunksIds;
+  }
+  else{
+    $OBJECTS['chunkFilter'] = 0;
+    $OBJECTS['chunks'] = $activeChunks;
+    $OBJECTS['activeChunks'] = $activeChunksIds;
+  }
+  
+  $agents = $FACTORIES::getAgentFactory()->filter(array());
+  $fullAgents = new DataSet();
+  foreach($agents as $agent){
+    $fullAgents->addValue($agent->getId(), $agents);
+  }
+  $OBJECTS['fullAgents'] = $fullAgents;
   
   // show task details
-  $taskSet = new DataSet();
+  /*$taskSet = new DataSet();
   $DB = $FACTORIES::getagentsFactory()->getDB();
   $task = intval($_GET["id"]);
   $filter = intval(isset($_GET["all"]) ? $_GET["all"] : "");
@@ -370,7 +537,7 @@ if (isset($_GET['id'])) {
   $res = $DB->query("SELECT task,SUM(progress) AS cprogress,MAX(GREATEST(dispatchtime,solvetime)) AS lastact FROM chunks WHERE task=".$taskEntry['id']." GROUP BY task");
   $taskEntry = array_merge($taskEntry, $res->fetch());
   $res = $DB->query("SELECT * FROM assignments LEFT JOIN (SELECT DISTINCT agent, 1 AS working FROM chunks WHERE task=".$taskEntry['id']." AND GREATEST(dispatchtime,solvetime)>".(time()-$CONFIG->getVal('chunktimeout')).") achunks ON achunks.agent=assignments.agent WHERE assignments.task=".$taskEntry['id']." GROUP BY assignments.agent");
-  $taskEntry = array_merge($taskEntry, $res->fetch());*/
+  $taskEntry = array_merge($taskEntry, $res->fetch());
   
   $taskEntry = $res->fetch();
   if ($taskEntry) {
@@ -463,7 +630,7 @@ if (isset($_GET['id'])) {
     }
     $OBJECTS['chunks'] = $chunks;
     $OBJECTS['task'] = $taskSet;
-  }
+  }*/
 }
 else if (isset($_GET['new'])) {
   if($LOGIN->getLevel() < 5){

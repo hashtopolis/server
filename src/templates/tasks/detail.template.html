@@ -3,6 +3,7 @@
 <h2>Task details</h2>
 {%TEMPLATE->struct/messages%}
 {%TEMPLATE->tasks/autorefresh%}
+<br>
 <div class="panel panel-default">
   <table class="table table-bordered table-nonfluid">
     <tr>
@@ -11,52 +12,52 @@
     </tr>
     <tr>
       <td>ID:</td>
-      <td><code>[[task.getVal('id')]]</code></td>
+      <td><code>[[task.getId()]]</code></td>
     </tr>
     <tr>
       <td>Name:</td>
       <td>
         {{IF [[login.getLevel()]] >= 20}}
-          <form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+          <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="taskrename">
-            <input type="hidden" name="task" value="[[task.getVal('id')]]">
-            <input type="text" class='form-control' name="name" size="25" value="[[task.getVal('name')]]">
+            <input type="hidden" name="task" value="[[task.getId()]]">
+            <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]">
             <input type="submit" class='btn btn-default' value="Change">
           </form>
         {{ELSE}}
-          [[task.getVal('name')]]
+          [[task.getTaskName()]]
         {{ENDIF}}
       </td>
     </tr>
     <tr>
       <td>Attack command:</td>
       <td>
-        <pre>[[htmlentities([[task.getVal('attackcmd')]], false, "UTF-8")]]</pre>
+        <pre>[[htmlentities([[task.getAttackCmd()]], false, "UTF-8")]]</pre>
       </td>
     </tr>
     <tr>
       <td>Chunk size:</td>
       <td>
         {{IF [[login.getLevel()]] >= 20}}
-          <form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+          <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="taskchunk">
-            <input type="hidden" name="task" value="[[task.getVal('id')]]">
-            <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getVal('chunktime')]]">
+            <input type="hidden" name="task" value="[[task.getId()]]">
+            <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getChunkTime()]]">
             seconds
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
-          [[task.getVal('chunktime')]] seconds
+          [[task.getChunkTime()]] seconds
         {{ENDIF}}
       </td>
     </tr>
     <tr>
       <td>Benchmark:</td>
       <td>
-        <form id="taskauto" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+        <form id="taskauto" action="tasks.php?id=[[task.getId()]]" method="POST">
           <input type="hidden" name="action" value="taskauto">
-          <input type="hidden" name="task" value="[[task.getVal('id')]]">
-          <input type="checkbox" name="auto" value="1" {{IF [[task.getVal('autoadjust')]] == 1}} checked{{ENDIF}}
+          <input type="hidden" name="task" value="[[task.getId()]]">
+          <input type="checkbox" name="auto" value="1" {{IF [[task.getAutoadjust()]] == 1}} checked{{ENDIF}}
             onChange="javascript:document.getElementById('taskauto').submit();"> Autoadjust by default
         </form>
       </td>
@@ -64,10 +65,10 @@
     <tr>
       <td>Color:</td>
       <td>
-        <form class='form-inline' id="taskcolor" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+        <form class='form-inline' id="taskcolor" action="tasks.php?id=[[task.getId()]]" method="POST">
           <input type="hidden" name="action" value="taskcolor">
-          <input type="hidden" name="task" value="[[task.getVal('id')]]">
-          #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getVal('color')]]">
+          <input type="hidden" name="task" value="[[task.getId()]]">
+          #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]">
           {{IF [[login.getLevel()]] >= 20}}
             <input type="submit" class='btn btn-default' value="Set">
           {{ENDIF}}
@@ -76,29 +77,29 @@
     </tr>
     <tr>
       <td>Status timer:</td>
-      <td>[[task.getVal('statustimer')]] seconds</td>
+      <td>[[task.getStatusTimer()]] seconds</td>
     </tr>
     <tr>
       <td>Priority:</td>
       <td>
         {{IF [[login.getLevel()]] >= 20}}
-          <form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+          <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="taskprio">
-            <input type="hidden" name="task" value="[[task.getVal('id')]]">
-            <input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('priority')]]">
+            <input type="hidden" name="task" value="[[task.getId()]]">
+            <input type="text" class='form-control' name="priority" size="4" value="[[task.getPriority()]]">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
-          [[task.getVal('priority')]]
+          [[task.getPriority()]]
         {{ENDIF}}
       </td>
     </tr>
-    {{IF [[task.getVal('hashlist')]] != ""}}
+    {{IF [[task.getHashlistId()]] != null}}
       <tr>
         <td>Keyspace size:</td>
         <td>
-          {{IF [[task.getVal('keyspace')]] > 0}}
-            [[task.getVal('keyspace')]]
+          {{IF [[task.getKeyspace()]] > 0}}
+            [[task.getKeyspace()]]
           {{ELSE}}
             N/A
           {{ENDIF}}
@@ -107,11 +108,11 @@
       <tr>
         <td>Keyspace dispatched:</td>
         <td>
-          [[task.getVal('progress')]] ([[Util::showperc([[task.getVal('progress')]], [[task.getVal('keyspace')]])]]%)
-          {{IF [[task.getVal('active')]] == 0 && [[login.getLevel()]] >= 20}}
-            <form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getVal('id')]]?')) return false;">
+          [[task.getProgress()]] ([[Util::showperc([[task.getProgress()]], [[task.getKeyspace()]])]]%)
+          {{IF [[isActive]] == 0 && [[login.getLevel()]] >= 20}}
+            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
               <input type="hidden" name="action" value="taskpurge">
-              <input type="hidden" name="task" value="[[task.getVal('id')]]">
+              <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="submit" class='btn btn-danger' value="Purge">
             </form>
           {{ENDIF}}
@@ -120,8 +121,8 @@
       <tr>
         <td>Keyspace searched:</td>
         <td>
-          {{IF [[task.getVal('keyspace')]] > 0}}
-            [[task.getVal('cprogress')]] ([[Util::showperc([[task.getVal('cprogress')]], [[task.getVal('keyspace')]])]]%)
+          {{IF [[task.getKeyspace()]] > 0}}
+            [[cProgress]] ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%)
           {{ELSE}}
             N/A
           {{ENDIF}}
@@ -130,43 +131,38 @@
       <tr>
         <td>Time spent:</td>
         <td>
-          [[Util::sectotime([[task.getVal('soucet')]])]]
+          [[Util::sectotime([[timeSpent]])]]
         </td>
       </tr>
       <tr>
         <td>Estimated time:</td>
-        <td>[[Util::sectotime([[task.getVal('eta')]])]]</td>
+        <td>
+          {{IF [[timeLeft]] > 0}}
+            [[Util::sectotime([[timeLeft]])]]
+          {{ELSE}}
+            ---
+          {{ENDIF}}
+        </td>
       </tr>
       <tr>
         <td>Speed:</td>
-        <td>[[Util::nicenum([[task.getVal('taskspeed')]], 100000, 1000)]]H/s</td>
+        <td>[[Util::nicenum([[currentSpeed]], 100000, 1000)]]H/s</td>
       </tr>
       <tr>
         <td>
-          {{IF [[task.getVal('format')]] == 3}}
+          {{IF [[hashlist.getFormat()]] == 3}}
             Superhashlist
           {{ELSE}}
             Hashlist
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[task.getVal('format')]] == 3}}
-            <a href="superhashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('hname')]]</a>
-            ({{IF [[task.getVal('htypename')]] == ""}}
-              [[task.getVal('htype')]]
-            {{ENDIF}}
-            {{IF [[task.getVal('htypename')]] !=""}}
-              [[task.getVal('htypename')]]
-            {{ENDIF}})
-          {{ENDIF}}
-          {{IF [[task.getVal('format')]] != 3}}
-            <a href="hashlists.php?id=[[task.getVal('hashlist')]]">[[task.getVal('hname')]]</a>
-            ({{IF [[task.getVal('htypename')]] == ""}}
-              [[task.getVal('htype')]]
-            {{ENDIF}}
-            {{IF [[task.getVal('htypename')]] != ""}}
-              [[task.getVal('htypename')]]
-            {{ENDIF}})
+          {{IF [[hashlist.getFormat()]] == 3}}
+            <a href="superhashlists.php?id=[[hashlist.getId()]]">[[hashlist.getHashlistName()]]</a>
+            ([[hashtype.getDescription()]])
+          {{ELSE}}
+            <a href="hashlists.php?id=[[hashlist.getId()]]">[[hashlist.getHashlistName()]]</a>
+            ([[hashtype.getDescription()]])
           {{ENDIF}}
         </td>
       </tr>
@@ -179,13 +175,13 @@
       </tr>
       <tr>
         <td>
-          <img class='img-responsive' style="height: 32px" src="taskimg.php?task=[[task.getVal('id')]]&x=1500&y=32">
+          <img class='img-responsive' style="height: 32px" src="api/taskimg.php?task=[[task.getId()]]&x=1500&y=32">
         </td>
       </tr>
     {{ENDIF}}
   </table>
 </div>
-{{IF [[sizeof(%%attachFiles%%)]] > 0}}
+{{IF [[sizeof([[attachedFiles]])]] > 0}}
   {{IF [[login.getLevel()]] >= 5}}
     <h3>Attached files</h3>
     <div class="panel panel-default">
@@ -195,21 +191,21 @@
           <th>Filename</th>
           <th>Size</th>
         </tr>
-        {{FOREACH attach;[[attachFiles]]}}
+        {{FOREACH file;[[attachedFiles]]}}
           <tr>
-            <td>[[attach.getVal('id')]]</td>
+            <td>[[file.getId()]]</td>
             <td>
               {{IF [[login.getLevel()]] >= 20}}
-                <a href="files.php#[[attach.getVal('id')]]">[[attach.getVal('filename')]]</a>
+                <a href="files.php#[[file.getId()]]">[[file.getFilename()]]</a>
               {{ELSE}}
-                [[attach.getVal('filename')]]
+                [[file.getFilename()]]
               {{ENDIF}}
-              {{IF [[attach.getVal('secret')]] == 1}}
+              {{IF [[file.getSecret()]] == 1}}
                 <img src="static/lock.gif" alt="Secret">
               {{ENDIF}}
             </td>
             <td class='num'>
-              [[Util::nicenum([[attach.getVal('size')]])]]B
+              [[Util::nicenum([[file.getSize()]])]]B
             </td>
           </tr>
         {{ENDFOREACH}}
@@ -217,63 +213,61 @@
     </div>
   {{ENDIF}}
 {{ENDIF}}
-{{IF [[task.getVal('hashlist')]] != ""}}
-  <h3>Assigned agents</h3>
-  <div class="panel panel-default">
-    <table class="table table-bordered table-nonfluid">
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Benchmark</th>
-        <th>Speed</th>
-        <th>Keyspace searched</th>
-        <th>Time spent</th>
-        <th>Cracked</th>
-        <th>Last activity</th>
-        <th>Action</th>
-      </tr>
-      {{FOREACH agent,!!agents!!}}
+<h3>Assigned agents</h3>
+<div class="panel panel-default">
+  <table class="table table-bordered table-nonfluid">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Benchmark</th>
+      <th>Speed</th>
+      <th>Keyspace searched</th>
+      <th>Time spent</th>
+      <th>Cracked</th>
+      <th>Last activity</th>
+      <th>Action</th>
+    </tr>
+    {{FOREACH agent;[[agents]]}}
       <tr>
         <td>
           {{IF [[login.getLevel()]] >= 20}}
-            <a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
+            <a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a>
           {{ELSE}}
-            [[agent.getVal('id')]]
+            [[agent.getId()]]
           {{ENDIF}}
         </td>
         <td>
           {{IF [[login.getLevel()]] >= 20}}
-            <a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
+            <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
           {{ELSE}}
-            [[agent.getVal('name')]]
+            [[agent.getAgentName()]]
           {{ENDIF}}
-          {{IF [[agent.getVal('trusted')]] == 1}}
+          {{IF [[agent.getIsTrusted()]] == 1}}
             <img src="static/lock.gif" alt="Trusted">
           {{ENDIF}}
-          {{IF [[agent.getVal('working')]] == 1}}
+          {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
             <img src="static/active.gif" alt="Active">
-          {{ENDIF}}
-          {{IF [[agent.getVal('active')]] == 0}}
+          {{ELSE}}
             <img src="static/pause.gif" alt="Paused">
           {{ENDIF}}
         </td>
         <td>
           {{IF [[login.getLevel()]] >= 20}}
-            <form class='form-inline' action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="agentbench">
-              <input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-              <input type="text" class='form-control' name="bench" value="[[agent.getVal('benchmark')]]" size="8">
+              <input type="hidden" name="agent" value="[[agent.getId()]]">
+              <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8">
               <input type="submit" class='btn btn-default' value="Set">
             </form>
           {{ELSE}}
-            [[agent.getVal('benchmark')]]
+            [[agentsBench.getVal([[agent.getId()]])]]
           {{ENDIF}}
-          <form id="auto[[agent.getVal('id')]]" action="tasks.php?id=[[task.getVal('id')]]" method="POST">
+          <form id="auto[[agent.getId()]]" action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="agentauto">
-            <input type="hidden" name="agent" value="[[agent.getVal('id')]]">
-            <input type="checkbox" name="auto" value="1" {{IF !!agent.getVal('autoadjust')!! == 1}} checked{{ENDIF}}
+            <input type="hidden" name="agent" value="[[agent.getId()]]">
+            <input type="checkbox" name="auto" value="1" {{IF [[task.getAutoadjust()]] == 1}} checked{{ENDIF}}
             {{IF [[login.getLevel()]] >= 20}}
-              onChange="javascript:document.getElementById('auto[[agent.getVal('id')]]').submit();"
+              onChange="javascript:document.getElementById('auto[[agent.getId()]]').submit();"
             {{ELSE}}
               disabled
             {{ENDIF}}
@@ -281,203 +275,128 @@
           </form>
         </td>
         <td class="num">
-          {{IF [[agent.getVal('working')]] == 1}}
-            [[Util::nicenum([[agent.getVal('speed')]], 100000, 1000)]]H/s
+          {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
+            [[Util::nicenum([[agentsSpeed.getVal([[agent.getId()]])]], 100000, 1000)]]H/s
+          {{ELSE}}
+            ---
           {{ENDIF}}
         </td>
         <td class="num">
-          {{IF [[task.getVal('keyspace')]] > 0}}
-            [[agent.getVal('searched')]]
-            ([[Util::showperc([[agent.getVal('searched')]], [[task.getVal('keyspace')]])]]%)
+          {{IF [[task.getKeyspace()]] > 0}}
+            [[agentsProgress.getVal([[agent.getId()]])]]
+            ([[Util::showperc([[agentsProgress.getVal([[agent.getId()]])]], [[task.getKeyspace()]])]]%)
+          {{ELSE}}
+            ---
           {{ENDIF}}
         </td>
-        <td class="num">[[Util::sectotime([[agent.getVal('spent')]])]]</td>
-        <td class="num">[[agent.getVal('cracked')]]</td>
+        <td class="num">[[Util::sectotime([[agentsSpent.getVal([[agent.getId()]])]])]]</td>
+        <td class="num">
+          {{IF [[agentsCracked.getVal([[agent.getId()]])]] > 0}}
+            [[agentsCracked.getVal([[agent.getId()]])]]
+          {{ELSE}}
+            0
+          {{ENDIF}}
+        </td>
         <td>
-          {{IF [[agent.getVal('time')]] > 0}}
-            [[date([[config.getVal('timefmt')]], [[agent.getVal('time')]])]]
+          {{IF [[agent.getLastAct()]] > 0}}
+            [[date([[config.getVal('timefmt')]], [[agent.getLastAct()]])]]
+          {{ELSE}}
+            ---
           {{ENDIF}}
         </td>
         <td>
           {{IF [[login.getLevel()]] >= 20}}
-            <form style='float: left; padding-right: 5px;' action="agents.php?task=[[task.getVal('id')]]" method="POST">
+            <form style='float: left; padding-right: 5px;' action="agents.php?task=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="agentassign">
-              <input type="hidden" name="agent" value="[[agent.getVal('id')]]">
+              <input type="hidden" name="agent" value="[[agent.getId()]]">
               <input type="hidden" name="task" value="">
               <input type="submit" class='btn btn-default' value="Unassign">
             </form>
           {{ENDIF}}
         </td>
       </tr>
-      {{ENDFOREACH}}
+    {{ENDFOREACH}}
 
-      {{IF [[login.getLevel()]] >= 20}}
-        <tr>
-          <td colspan="2">
-            <form action="agents.php?task=[[task.getVal('id')]]" method="POST">
+    {{IF [[login.getLevel()]] >= 20}}
+      <tr>
+        <td colspan="4">
+          <form action="agents.php?task=[[task.getId()]]" method="POST">
+            <div class="col-md-8">
               <input type="hidden" name="action" value="agentassign">
-              <input type="hidden" name="task" value="[[task.getVal('id')]]">
+              <input type="hidden" name="task" value="[[task.getId()]]">
               <select class='form-control' name="agent">
                 {{FOREACH agent;[[assignAgents]]}}
-                  <option value='[[agent.getVal(' id
-                  ')]]'>[[agent.getVal('id')]]
-                  {{IF [[agent.getVal('name')]] != ""}}
-                    ([[agent.getVal('name')]])
+                  <option value='[[agent.getId()]]'>[[agent.getId()]]
+                  {{IF [[agent.getAgentName()]] != ""}}
+                    ([[agent.getAgentName()]])
                   {{ENDIF}}
+                  </option>
                 {{ENDFOREACH}}
               </select>
-          </td>
-          <td colspan="8">
-            <input type="submit" class='btn btn-default' value="Assign">&nbsp;&nbsp;&nbsp;
-            {{IF [[showAllAgents]]}}
-              <a href="tasks.php?id=[[task.getVal('id')]]" class='btn btn-warning'>Hide all Assignments</a>
-            {{ELSE}}
-              <a href="tasks.php?id=[[task.getVal('id')]]&allagents=true" class='btn btn-success'>Show all Assignments</a>
-            {{ENDIF}}
-            </form>
-          </td>
-        </tr>
-      {{ENDIF}}
-    </table>
-  </div>
-  {{IF [[showAllAgents]]}}
-    <h3>All assigned Agents (over all task time)</h3>
-    <div class="panel panel-default">
-      <table class="table table-bordered table-nonfluid">
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Keyspace searched</th>
-          <th>Time spent</th>
-          <th>Cracked</th>
-          <th>Last activity</th>
-        </tr>
-        {{FOREACH agent;[[allAgents]]}}
-          <tr>
-            <td>
-              {{IF [[login.getLevel()]] >= 20}}
-                <a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('id')]]</a>
-              {{ELSE}}
-                [[agent.getVal('id')]]
-              {{ENDIF}}
-            </td>
-            <td>
-              {{IF [[login.getLevel()]] >= 20}}
-                <a href="agents.php?id=[[agent.getVal('id')]]">[[agent.getVal('name')]]</a>
-              {{ELSE}}
-                [[agent.getVal('name')]]
-              {{ENDIF}}
-              {{IF [[agent.getVal('trusted')]] == 1}}
-                <img src="static/lock.gif" alt="Trusted">
-              {{ENDIF}}
-              {{IF [[agent.getVal('working')]] == 1}}
-                <img src="static/active.gif" alt="Active">
-              {{ENDIF}}
-              {{IF [[agent.getVal('active')]] == 0}}
-                <img src="static/pause.gif" alt="Paused">
-              {{ENDIF}}
-            </td>
-            <td class="num">
-              {{IF [[task.getVal('keyspace')]] > 0}}
-                [[agent.getVal('searched')]]
-                ([[Util::showperc([[agent.getVal('searched')]], [[task.getVal('keyspace')]])]]%)
-              {{ENDIF}}
-            </td>
-            <td class="num">[[Util::sectotime([[agent.getVal('spent')]])]]</td>
-            <td class="num">[[agent.getVal('cracked')]]</td>
-            <td>
-              {{IF [[agent.getVal('time')]] > 0}}
-                [[date([[config.getVal('timefmt')]], [[agent.getVal('time')]])]]
-              {{ENDIF}}
-            </td>
-          </tr>
-        {{ENDFOREACH}}
-      </table>
-    </div>
-  {{ENDIF}}
-  <h3>Dispatched chunks {{IF [[task.getVal('filter')]] != 1}}(showing active only -
-  <a href="tasks.php?id=[[task.getVal('id')]]&all=1">show latest 100</a>){{ENDIF}}{{IF [[task.getVal('filter')]] == 1}}(show latest 100){{ENDIF}}</h3>
+            </div>
+            <div class="col-md-4">
+              <input type="submit" class='btn btn-default' value="Assign">
+            </div>
+          </form>
+        </td>
+        <td colspan="6">
+          {{IF [[showAllAgents]]}}
+            <a href="tasks.php?id=[[task.getId()]]" class='btn btn-warning'>Hide all Assignments</a>
+          {{ELSE}}
+            <a href="tasks.php?id=[[task.getId()]]&allagents=true" class='btn btn-success'>Show all Assignments</a>
+          {{ENDIF}}
+        </td>
+      </tr>
+    {{ENDIF}}
+  </table>
+</div>
+{{IF [[showAllAgents]]}}
+  <h3>All assigned Agents (over all task time)</h3>
   <div class="panel panel-default">
     <table class="table table-bordered table-nonfluid">
       <tr>
         <th>ID</th>
-        <th>Start</th>
-        <th>Length</th>
-        <th>Checkpoint</th>
-        <th>Progress</th>
-        <th>Agent</th>
-        <th>Dispatch time</th>
-        <th>Last activity</th>
+        <th>Name</th>
+        <th>Keyspace searched</th>
         <th>Time spent</th>
-        <th>State</th>
         <th>Cracked</th>
-        <th>Action</th>
+        <th>Last activity</th>
       </tr>
-      {{FOREACH chunk;[[chunks]]}}
+      {{FOREACH agent;[[agentObjects]]}}
         <tr>
           <td>
-            [[chunk.getVal('id')]]
-            {{IF [[chunk.getVal('active')]]}}
+            {{IF [[login.getLevel()]] >= 20}}
+              <a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a>
+            {{ELSE}}
+              [[agent.getId()]]
+            {{ENDIF}}
+          </td>
+          <td>
+            {{IF [[login.getLevel()]] >= 20}}
+              <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
+            {{ELSE}}
+              [[agent.getAgentName()]]
+            {{ENDIF}}
+            {{IF [[agent.getIsTrusted()]] == 1}}
+              <img src="static/lock.gif" alt="Trusted">
+            {{ENDIF}}
+            {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
               <img src="static/active.gif" alt="Active">
-            {{ENDIF}}
-          </td>
-          <td class="num">[[chunk.getVal('skip')]]</td>
-          <td class="num">[[chunk.getVal('length')]]</td>
-          <td class="num">
-            [[chunk.getVal('progress')]]
-            {{IF [[chunk.getVal('progress')]] > 0 && [[chunk.getVal('progress')]] != [[chunk.getVal('length')]]}}
-              ([[Util::showperc([[chunk.getVal('progress')]], [[chunk.getVal('length')]])]]%)
+            {{ELSE}}
+              <img src="static/pause.gif" alt="Paused">
             {{ENDIF}}
           </td>
           <td class="num">
-            [[Util::showperc([[chunk.getVal('rprogress')]], 10000)]]%
-          </td>
-          <td>
-            {{IF [[chunk.getVal('agent')]] == ""}}
-              N/A
-            {{ELSE}}
-              <a href="agents.php?id=[[chunk.getVal('agent')]]">[[chunk.getVal('name')]]</a>
+            {{IF [[task.getKeyspace()]] > 0}}
+              [[agentsProgress.getVal([[agent.getVal()]])]]
+              ([[Util::showperc([[agentsProgress.getVal([[agent.getVal()]])]], [[task.getKeyspace()]])]]%)
             {{ENDIF}}
           </td>
+          <td class="num">[[Util::sectotime([[agentsSpent.getVal([[agent.getId()]])]])]]</td>
+          <td class="num">[[agentsCracked([[agent.getId()]])]]</td>
           <td>
-            [[date([[config.getVal('timefmt')]], [[chunk.getVal('dispatchtime')]])]]
-          </td>
-          <td>
-            {{IF [[chunk.getVal('solvetime')]] == 0}}
-              (no activity)
-            </td>
-            <td>
-            {{ELSE}}
-              [[date([[config.getVal('timefmt')]], [[chunk.getVal('solvetime')]])]]
-            </td>
-            <td class='num'>
-              [[Util::sectotime([[chunk.getVal('spent')]])]]
-            {{ENDIF}}
-          </td>
-          <td>
-            [[Util::getStaticArray([[chunk.getVal('state')]], 'states')]]
-          </td>
-          <td class="num">
-            {{IF [[chunk.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5}}
-              <a href="hashes.php?chunk=[[chunk.getVal('id')]]">[[chunk.getVal('cracked')]]</a>
-            {{ELSE}}
-              [[chunk.getVal('cracked')]]
-            {{ENDIF}}
-          </td>
-          <td>
-            {{IF [[chunk.getVal('active')]] == false && [[login.getLevel()]] >= 20}}
-              <form action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really reset chunk [[chunk.getVal('id')]]?')) return false;">
-                <input type="hidden" name="action" value="chunkreset">
-                <input type="hidden" name="chunk" value="[[chunk.getVal('id')]]">
-                <input type="submit" class='btn btn-default' value="Reset">
-              </form>
-            {{ENDIF}}
-            {{IF [[chunk.getVal('active')]] && [[login.getLevel()]] >= 20}}
-              <form action="tasks.php?id=[[task.getVal('id')]]" method="POST" onSubmit="if (!confirm('Really abort cracking chunk [[chunk.getVal('id')]]?')) return false;">
-                <input type="hidden" name="action" value="chunkabort">
-                <input type="hidden" name="chunk" value="[[chunk.getVal('id')]]">
-                <input type="submit" class='btn btn-danger' value="Abort">
-              </form>
+            {{IF [[agent.getLastAct()]] > 0}}
+              [[date([[config.getVal('timefmt')]], [[agent.getLastAct()]])]]
             {{ENDIF}}
           </td>
         </tr>
@@ -485,4 +404,93 @@
     </table>
   </div>
 {{ENDIF}}
+<h3>Dispatched chunks {{IF [[chunkFilter]] != 1}}(showing active only -
+<a href="tasks.php?id=[[task.getId()]]&all=1">show latest 100</a>){{ENDIF}}{{IF [[chunkFilter]] == 1}}(show latest 100){{ENDIF}}</h3>
+<div class="panel panel-default">
+  <table class="table table-bordered table-nonfluid">
+    <tr>
+      <th>ID</th>
+      <th>Start</th>
+      <th>Length</th>
+      <th>Checkpoint</th>
+      <th>Progress</th>
+      <th>Agent</th>
+      <th>Dispatch time</th>
+      <th>Last activity</th>
+      <th>Time spent</th>
+      <th>State</th>
+      <th>Cracked</th>
+      <th>Action</th>
+    </tr>
+    {{FOREACH chunk;[[chunks]]}}
+      <tr>
+        <td>
+          [[chunk.getId()]]
+          {{IF [[activeChunks.getVal([[chunk.getId()]])]]}}
+            <img src="static/active.gif" alt="Active">
+          {{ENDIF}}
+        </td>
+        <td class="num">[[chunk.getSkip()]]</td>
+        <td class="num">[[chunk.getLength()]]</td>
+        <td class="num">
+          [[chunk.getProgress()]]
+          {{IF [[chunk.getProgress()]] > 0 && [[chunk.getProgress()]] != [[chunk.getLength()]]}}
+            ([[Util::showperc([[chunk.getProgress()]], [[chunk.getLength()]])]]%)
+          {{ENDIF}}
+        </td>
+        <td class="num">
+          [[Util::showperc([[chunk.getRprogress()]], 10000)]]%
+        </td>
+        <td>
+          {{IF [[chunk.getAgentId()]]}}
+            N/A
+          {{ELSE}}
+            <a href="agents.php?id=[[chunk.getAgentId()]]">[[fullAgents.getVal([[chunk.getAgentId()]]).getAgentName()]]</a>
+          {{ENDIF}}
+        </td>
+        <td>
+          [[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+        </td>
+        <td>
+          {{IF [[chunk.getSolveTime()]] == 0}}
+            (no activity)
+          </td>
+          <td>
+          {{ELSE}}
+            [[date([[config.getVal('timefmt')]], [[chunk.getSolveTime()]])]]
+          </td>
+          <td class='num'>
+            [[Util::sectotime([[chunk.getSolveTime()]] - [[chunk.getDispatchTime()]])]]
+          {{ENDIF}}
+        </td>
+        <td>
+          [[Util::getStaticArray([[chunk.getState()]], 'states')]]
+        </td>
+        <td class="num">
+          {{IF [[chunk.getCracked()]] > 0 && [[login.getLevel()]] >= 5}}
+            <a href="hashes.php?chunk=[[chunk.getId()]]">[[chunk.getCracked()]]</a>
+          {{ELSE}}
+            [[chunk.getCracked()]]
+          {{ENDIF}}
+        </td>
+        <td>
+          {{IF [[activeChunks.getVal([[chunk.getId()]])]] == false && [[login.getLevel()]] >= 20}}
+            <form action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really reset chunk [[chunk.getId()]]?')) return false;">
+              <input type="hidden" name="action" value="chunkreset">
+              <input type="hidden" name="chunk" value="[[chunk.getVal('id')]]">
+              <input type="submit" class='btn btn-default' value="Reset">
+            </form>
+          {{ENDIF}}
+          {{IF [[activeChunks.getVal([[chunk.getId()]])]] && [[login.getLevel()]] >= 20}}
+            <form action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really abort cracking chunk [[chunk.getId()]]?')) return false;">
+              <input type="hidden" name="action" value="chunkabort">
+              <input type="hidden" name="chunk" value="[[chunk.getId()]]">
+              <input type="submit" class='btn btn-danger' value="Abort">
+            </form>
+          {{ENDIF}}
+        </td>
+      </tr>
+    {{ENDFOREACH}}
+  </table>
+</div>
 {%TEMPLATE->struct/foot%}
