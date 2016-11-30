@@ -517,15 +517,15 @@ class API {
     $count = 0;
     switch ($format) {
       case 0:
-        //header_remove("Content-Type");
-        //header('Content-Type: text/plain');
+        header_remove("Content-Type");
+        header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
           $limit = 0;
           $size = 50000;
           do {
             $oF = new OrderFilter("hashId", "ASC LIMIT $limit,$size");
-            $qF1 = new QueryFilter("hashlistId", $list->getId(), "=");
-            $qF2 = new QueryFilter("plaintext", null, "=");
+            $qF1 = new QueryFilter("hashlistId", $list, "=");
+            $qF2 = new QueryFilter("isCracked", "0", "=");
             $current = $FACTORIES::getHashFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
             
             $output = "";
@@ -533,7 +533,7 @@ class API {
             foreach ($current as $entry) {
               $output .= $entry->getHash();
               if (strlen($entry->getSalt()) > 0) {
-                $output .= $list->getSaltSeparator() . $entry->getSalt();
+                $output .= $hashlist->getSaltSeparator() . $entry->getSalt();
               }
               $output .= $LINEDELIM;
             }
@@ -564,10 +564,10 @@ class API {
     //update that the agent has downloaded the hashlist
     foreach ($hashlists as $list) {
       $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
-      $qF2 = new QueryFilter("hashlistId", $list->getId(), "=");
+      $qF2 = new QueryFilter("hashlistId", $list, "=");
       $check = $FACTORIES::getHashlistAgentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
       if ($check == null) {
-        $downloaded = new HashlistAgent(0, $list->getId(), $agent->getId());
+        $downloaded = new HashlistAgent(0, $list, $agent->getId());
         $FACTORIES::getHashlistAgentFactory()->save($downloaded);
       }
     }
@@ -643,13 +643,15 @@ class API {
       $files[] = $joinedFiles['File'][$x]->getId();
     }
     
+    $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
+    
     API::sendResponse(array(
         'action' => 'task',
         'response' => 'SUCCESS',
         'task' => $assignedTask->getId(),
         'wait' => $agent->getWait(),
         'attackcmd' => $assignedTask->getAttackCmd(),
-        'cmdpars' => $agent->getCmdPars() . " --hash-type=" . $assignedTask->getHashTypeId(),
+        'cmdpars' => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
         'hashlist' => $assignedTask->getHashlistId(),
         'bench' => 'new', //TODO: here we should tell him new or continue depending if he was already worked on this hashlist or not
         'statustimer' => $assignedTask->getStatusTimer(),

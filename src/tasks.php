@@ -249,7 +249,11 @@ if ($autorefresh > 0) { //renew cookie
 }
 $OBJECTS['autorefresh'] = $autorefresh;
 
-if (isset($_GET['id']) && $LOGIN->getLevel() >= 5) {
+if (isset($_GET['id'])) {
+  if($LOGIN->getLevel() < 5){
+    $TEMPLATE = new Template("restricted");
+    die($TEMPLATE->render($OBJECTS));
+  }
   //TODO: update single task view
   $TEMPLATE = new Template("tasks.detail");
   
@@ -362,18 +366,25 @@ if (isset($_GET['id']) && $LOGIN->getLevel() >= 5) {
     $OBJECTS['task'] = $taskSet;
   }
 }
+else if (isset($_GET['new'])) {
+  if($LOGIN->getLevel() < 5){
+    $TEMPLATE = new Template("restricted");
+    die($TEMPLATE->render($OBJECTS));
+  }
+  //TODO: create new task
+}
 else {
   $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
   $oF1 = new OrderFilter("priority", "DESC");
   $oF2 = new OrderFilter("taskId", "ASC");
   $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('join' => $jF, 'order' => array($oF1, $oF2)));
   $tasks = array();
-  for($x=0;$x<sizeof($joinedTasks['Task']);$x++){
+  for($z=0;$z<sizeof($joinedTasks['Task']);$z++){
     $set = new DataSet();
-    $set->addValue('Task', $joinedTasks['Task'][$x]);
-    $set->addValue('Hashlist', $joinedTasks['Hashlist'][$x]);
+    $set->addValue('Task', $joinedTasks['Task'][$z]);
+    $set->addValue('Hashlist', $joinedTasks['Hashlist'][$z]);
     
-    $task = $joinedTasks['Task'][$x];
+    $task = $joinedTasks['Task'][$z];
     $qF = new QueryFilter("taskId", $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter'=> $qF));
     $progress = 0;

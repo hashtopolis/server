@@ -27,5 +27,9 @@ class QueryFilter {
   function getValue() {
     return $this->value;
   }
+  
+  function getHasValue(){
+    return true;
+  }
 }
 

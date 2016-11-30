@@ -23,6 +23,10 @@ class ContainFilter {
   function getValue() {
     return $this->values;
   }
+  
+  function getHasValue(){
+    return true;
+  }
 }
 
 ?>

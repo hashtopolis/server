@@ -255,6 +255,9 @@ class AbstractModelFactory {
     }
   
     foreach($filters as $filter) {
+      if(!$filter->getHasValue()){
+        continue;
+      }
       $v = $filter->getValue();
       if(is_array($v)){
         foreach($v as $val){

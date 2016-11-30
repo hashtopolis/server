@@ -93,19 +93,24 @@ class AgentHandler implements Handler {
       $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
       return;
     }
+  
+    $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
+    if ($this->agent == null) {
+      UI::printError("FATAL", "Agent with ID ".$_POST['agentId']." not found!");
+    }
     
     $task = $FACTORIES::getTaskFactory()->get(intval($_POST['task']));
     if (!$task) {
       UI::printError("ERROR", "Invalid task!");
     }
-    $qF = new QueryFilter("agentId", $this->agent->getId(), "=");
+    $qF = new QueryFilter("agentId", $_POST['agentId'], "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
     
     //determine benchmark number
     $benchmark = 0;
     $qF1 = new ComparisonFilter("solveTime", "dispatchTime", ">");
     $qF2 = new ComparisonFilter("progress", "length", "=");
-    $qF3 = new ContainFilter("state", array("4, 5"));
+    $qF3 = new ContainFilter("state", array("4", "5"));
     $qF4 = new QueryFilter("agentId", $this->agent->getId(), "=");
     $qF5 = new QueryFilter("taskId", $task->getId(), "=");
     $oF = new OrderFilter("solveTime", "DESC");

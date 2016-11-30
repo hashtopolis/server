@@ -72,13 +72,13 @@ else {
     if (sizeof($assignments) > 0) {
       $assignment = $assignments[0];
       $qF = new QueryFilter("taskId", $assignment->getTaskId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter();
+      $chunks = $FACTORIES::getChunkFactory()->filter(array());
       foreach ($chunks as $chunk) {
         if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal('chunktimeout')) {
           $isWorking = 1;
-          $taskId = $assignment->getTaskId();
         }
       }
+      $taskId = $assignment->getTaskId();
     }
     $set->addValue("isWorking", $isWorking);
     $set->addValue("taskId", $taskId);

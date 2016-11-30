@@ -26,4 +26,8 @@ class ComparisonFilter {
   function getValue() {
     return null;
   }
+  
+  function getHasValue(){
+    return false;
+  }
 }
