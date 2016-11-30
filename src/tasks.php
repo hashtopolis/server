@@ -354,7 +354,7 @@ if (isset($_GET['id'])) {
     die($TEMPLATE->render($OBJECTS));
   }
   //TODO: update single task view
-  $TEMPLATE = new Template("tasks.detail");
+  $TEMPLATE = new Template("tasks/detail");
   
   // show task details
   $taskSet = new DataSet();
