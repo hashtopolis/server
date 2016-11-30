@@ -159,21 +159,6 @@ class Util {
     return $user->getUsername();
   }
   
-  public static function writecache() {
-    // flush temporary cache to the actual tables
-    global $tbl, $crack_cas, $cid, $agid, $superhash, $hlist, $DB;
-    $DB->query("UPDATE tmphlcracks SET zaps=1 WHERE cracked>0");
-    if ($superhash) {
-      $DB->query("UPDATE hashlists SET cracked=cracked+(SELECT IFNULL(SUM(cracked),0) FROM tmphlcracks) WHERE id=$hlist");
-    }
-    $DB->query("UPDATE hashlists JOIN tmphlcracks ON hashlists.id=tmphlcracks.hashlist SET hashlists.cracked=hashlists.cracked+tmphlcracks.cracked");
-    $DB->query("INSERT IGNORE INTO zapqueue (hashlist,agent,time,chunk) SELECT hashlistusers.hashlist,hashlistusers.agent,$crack_cas,$cid FROM hashlistusers JOIN tmphlcracks ON hashlistusers.hashlist=tmphlcracks.hashlist AND tmphlcracks.zaps=1 WHERE hashlistusers.agent!=$agid");
-    // increase the timer so the chunks won't timeout during the result writing
-    $crack_cas = time();
-    $DB->query("UPDATE chunks SET cracked=cracked+(SELECT IFNULL(SUM(cracked),0) FROM tmphlcracks),solvetime=$crack_cas WHERE id=$cid");
-    $DB->query("UPDATE tmphlcracks SET cracked=0,zaps=0");
-  }
-  
   public static function subtract($x, $y) {
     return ($x - $y);
   }
