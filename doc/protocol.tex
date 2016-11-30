@@ -303,4 +303,46 @@
 	  "benchmark": "OK"
 	}
 	\end{verbatim}
+	
+	
+	\subsection*{Send Solve}
+	In the given interval of the task, the client is working on, it should report the progress in following way:
+	\begin{verbatim}
+	{
+	  "action":"solve",
+	  "token":"GHhgdf(/&",
+	  "chunk":35,
+	  "keyspaceProgress":568000,
+	  "progress":500,
+	  "total":600,
+	  "speed":570000,
+	  "state": 3,
+	  "cracks": [
+	    "7fde65673fd28736423f23423786f:thisisplain",
+	    "7fde65673f28987f7423f2342378f:otherplain",
+	  ]
+	}
+	\end{verbatim}
+	The server will reply with following:
+	\begin{verbatim}
+	{
+	  "action":"solve",
+	  "response":"SUCCESS",
+	  "cracked": 2,
+	  "skipped": 0
+	}
+	\end{verbatim}
+	If there were cracks on the same hashlist from some other clients or view the web-interface, the server will send the hashes which should be zapped from the hashlist
+	\begin{verbatim}
+	{
+	  "action":"solve",
+	  "response":"SUCCESS",
+	  "cracked": 2,
+	  "skipped": 0,
+	  "zap": [
+	    "87634876fe7f7df5e76f56a757",
+	    "7863487563874ffefe67575745"
+	  ]
+	}
+	\end{verbatim}
 \end{document}
