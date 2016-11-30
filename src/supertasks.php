@@ -16,11 +16,8 @@ $MENU->setActive("tasks_super");
 
 //catch actions here...
 if (isset($_POST['action'])) {
-  switch ($_POST['action']) {
-    
-    
-    
-  }
+  $supertaskHandler = new SupertaskHandler();
+  $supertaskHandler->handle($_POST['action']);
 }
 
 if(isset($_GET['create'])){

@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/load.php");
 $DB = $FACTORIES::getagentsFactory()->getDB();
 
 $pik = imagecreatefromgif(dirname(__FILE__)."/../static/stats.gif");

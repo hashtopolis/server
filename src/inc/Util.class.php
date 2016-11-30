@@ -48,8 +48,11 @@ class Util {
     $jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
     $jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
     $oF = new OrderFilter("priority", "DESC LIMIT 1");
-    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1, $jF2, $jF3), 'order' => array($oF)), true);
-    return $nextTask;
+    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1, $jF2, $jF3), 'order' => array($oF)));
+    if(sizeof($nextTask['Task']) > 0){
+      return $nextTask['Task'][0];
+    }
+    return null;
   }
   
   public static function zapCleaning(){

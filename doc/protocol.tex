@@ -219,8 +219,8 @@
 	The client requests the current task he should work on.
 	\begin{verbatim}
 	{
-	  "action":"chunk",
-   	  "token":"GHhgdf(/&",
+	  "action":"chunk", 
+	  "token":"GHhgdf(/&",
 	  "taskId": 5
 	}
 	\end{verbatim}
@@ -248,18 +248,18 @@
 	In case the current task is already fully dispatched and the agent should request for a new task.
 	\begin{verbatim}
 	{
-	"action":"chunk",
-	"response":"SUCCESS",
-	"chunk":"fully_dispatched"
+	  "action":"chunk",
+	  "response":"SUCCESS",
+	  "chunk":"fully_dispatched"
 	}
 	\end{verbatim}
 	
 	In case there is no benchmark for this task on the current agent. So it should start benchmarking then.
 	\begin{verbatim}
 	{
-	"action":"chunk",
-	"response":"SUCCESS",
-	"chunk":"benchmark"
+	  "action":"chunk",
+	  "response":"SUCCESS",
+	  "chunk":"benchmark"
 	}
 	\end{verbatim}
 	

@@ -3,7 +3,7 @@
  * 
  * Draws graphic about chunk progress
  */
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/load.php");
 
 //check if there is a session
 if (!$LOGIN->isLoggedin()) {

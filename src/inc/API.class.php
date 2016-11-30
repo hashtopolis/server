@@ -5,7 +5,7 @@ class API {
     global $FACTORIES;
     
     $agent->setLastIp(Util::getIP());
-    $agent->setLastAction($QUERY['action']);
+    $agent->setLastAct($QUERY['action']);
     $agent->setLastTime(time());
     $FACTORIES->getAgentFactory()->update($agent);
   }
@@ -238,9 +238,9 @@ class API {
     $qF = new QueryFilter("token", $QUERY['token'], "=");
     $token = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($token != null) {
-      return true;
+      return false;
     }
-    return false;
+    return true;
   }
   
   private static function sendResponse($RESPONSE) {
@@ -280,7 +280,7 @@ class API {
     //create access token & save agent details
     $token = Util::randomString(10);
     $gpu = htmlentities(implode("\n", $gpu), false, "UTF-8");
-    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, "register", time(), Util::getIP(), 0, $cpuOnly);
+    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, "register", time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
       API::sendResponse(array("action" => "register", "response" => "SUCCESS", "token" => $token));
@@ -339,16 +339,13 @@ class API {
     switch ($QUERY['type']) {
       case "7zr":
         // downloading 7zip
-        $filename = "7zr" . ($agent->getOs() == 1) ? ".exe" : "";
+        $filename = "7zr" . (($agent->getOs() == 1) ? ".exe" : "");
         header_remove("Content-Type");
         header('Content-Type: application/octet-stream');
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-        echo file_get_contents("static/" . $filename);
+        echo file_get_contents(dirname(__FILE__)."/../static/" . $filename);
         die();
       case "hashcat":
-        if (API::checkValues($QUERY, array('version'))) {
-          API::sendErrorResponse("download", "Invalid download (hashcat) query!");
-        }
         $oF = new OrderFilter("time", "DESC LIMIT 1");
         $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => array($oF)), true);
         if ($hashcat == null) {
@@ -356,9 +353,9 @@ class API {
         }
         
         $postfix = array("bin", "exe");
-        $executable = "hashcat64" . $postfix[$agent->getOs()];
+        $executable = "hashcat64." . $postfix[$agent->getOs()];
         
-        if ($QUERY['version'] == $hashcat->getVersion() && (!isset($QUERY['force']) || $QUERY['force'] != '1')) {
+        if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY['force']) || $QUERY['force'] != '1')) {
           API::sendResponse(array("action" => 'download', 'response' => 'SUCCESS', 'version' => 'OK', 'executable' => $executable));
         }
         
@@ -416,7 +413,7 @@ class API {
     global $FACTORIES;
     
     //check required values
-    if (!API::checkValues($QUERY, array('token', 'task', 'filename'))) {
+    if (!API::checkValues($QUERY, array('token', 'task', 'file'))) {
       API::sendErrorResponse("file", "Invalid file query!");
     }
     
@@ -426,9 +423,8 @@ class API {
       API::sendErrorResponse('file', "Invalid task!");
     }
     
-    $filename = $QUERY['filename'];
-    $qF = new QueryFilter("filename", $filename, "=");
-    $file = $FACTORIES::getFileFactory()->filter(array('filter' => array($qF)), true);
+    $file = $QUERY['file'];
+    $file = $FACTORIES::getFileFactory()->get($file);
     if ($file == null) {
       API::sendErrorResponse('file', "Invalid file!");
     }
@@ -521,8 +517,8 @@ class API {
     $count = 0;
     switch ($format) {
       case 0:
-        header_remove("Content-Type");
-        header('Content-Type: text/plain');
+        //header_remove("Content-Type");
+        //header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
           $limit = 0;
           $size = 50000;
@@ -599,6 +595,9 @@ class API {
     if ($assignment == null) {
       //search which task we should assign to the agent
       $nextTask = Util::getNextTask($agent);
+      if($nextTask == null){
+        API::sendResponse(array('action' => 'task', 'response' => 'SUCCESS', 'task' => 'NONE'));
+      }
       $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0, $nextTask->getAutoadjust(), 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
       $assignedTask = $nextTask;

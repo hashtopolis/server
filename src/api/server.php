@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__) . "/inc/load.php");
+require_once(dirname(__FILE__) . "/../inc/load.php");
 set_time_limit(0);
 
 $QUERY = json_decode(@$_POST['query'], true);
@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 
 //debug logging
 //TODO: remove later
-file_put_contents("query.log", Util::getIP() . "=" . $_POST['query'] . "\n", FILE_APPEND);
+file_put_contents("../query.log", Util::getIP() . "=" . $_POST['query'] . "\n", FILE_APPEND);
 
 switch ($QUERY['action']) {
     case "register":
