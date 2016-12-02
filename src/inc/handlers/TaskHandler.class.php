@@ -212,6 +212,10 @@ class TaskHandler implements Handler {
     AbstractModelFactory::getDB()->query("START TRANSACTION");
     $this->deleteTask($task);
     AbstractModelFactory::getDB()->query("COMMIT");
+    if($task->getHashlistId() == null){
+      header("pretasks.php");
+      die();
+    }
   }
   
   private function deleteTask($task){
