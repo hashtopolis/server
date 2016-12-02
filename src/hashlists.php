@@ -80,7 +80,7 @@ else if (isset($_GET['id'])) {
 else {
   //load all hashlists
   $jF = new JoinFilter($FACTORIES::getHashTypeFactory(), "hashtypeId", "hashtypeId");
-  $qF = new QueryFilter("hashlistId", "3", "<>", $FACTORIES::getHashlistFactory());
+  $qF = new QueryFilter("format", "3", "<>", $FACTORIES::getHashlistFactory());
   $joinedHashlists = $FACTORIES::getHashlistFactory()->filter(array('join' => $jF, 'filter' => $qF));
   $hashlists = array();
   for($x=0;$x<sizeof($joinedHashlists['Hashlist']);$x++){
