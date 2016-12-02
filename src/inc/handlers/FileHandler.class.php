@@ -144,6 +144,9 @@ class FileHandler implements Handler {
     global $FACTORIES;
   
     $file = $FACTORIES::getFileFactory()->get($_POST['file']);
+    if($file == null){
+      UI::printError("ERROR", "File does not exist!");
+    }
     $qF = new QueryFilter("fileId", $file->getId(), "=");
     $tasks = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
     if(sizeof($tasks) > 0){
