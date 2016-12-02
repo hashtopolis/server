@@ -244,8 +244,9 @@ class TaskHandler implements Handler {
     global $FACTORIES;
   
     // delete finished tasks
-    $qF = new QueryFilter("rprogress", 10000, "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
+    $qF1 = new QueryFilter("progress", 0, ">");
+    $qF2 = new ComparisonFilter("keyspace", "progress", "=");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2)));
   
     AbstractModelFactory::getDB()->query("START TRANSACTION");
     foreach($tasks as $task){
