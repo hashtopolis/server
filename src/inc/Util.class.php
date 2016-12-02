@@ -95,7 +95,7 @@ class Util {
     //detect superhashlists and create array of all lists
     
     if ($list->getFormat() == 3) {
-      $jF = new JoinFilter("Hashlist", "hashlistId", "hashlistId");
+      $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
       $qF = new QueryFilter("superHashlistId", $list->getId(), "=");
       $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('join' => array($jF), 'filter' => array($qF)));
       $lists = $joined['Hashlist'];

@@ -698,7 +698,6 @@ class HashlistHandler implements Handler {
       }
     }
     fclose($wordlistFile);
-    usleep(1000000);
     
     //add file to files list
     $file = new File(0, $wordlistName, Util::filesize(dirname(__FILE__)."/../../$wordlistName"), $this->hashlist->getSecret(), 0);
