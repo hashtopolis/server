@@ -21,6 +21,7 @@ $taskList = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'order' 
 $tasks = array();
 for($z=0;$z<sizeof($taskList);$z++){
   $set = new DataSet();
+  $task = $taskList[$z];
   $set->addValue('Task', $taskList[$z]);
   
   $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());

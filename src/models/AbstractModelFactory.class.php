@@ -255,6 +255,7 @@ class AbstractModelFactory {
     }
   
     foreach($filters as $filter) {
+      $parts[] = $filter->getQueryString();
       if(!$filter->getHasValue()){
         continue;
       }
@@ -267,8 +268,6 @@ class AbstractModelFactory {
       else {
         array_push($vals, $v);
       }
-      
-      $parts[] = $filter->getQueryString();
     }
     return " WHERE ".implode(" AND ", $parts);
   }

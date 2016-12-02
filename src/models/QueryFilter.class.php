@@ -21,14 +21,23 @@ class QueryFilter {
       $table = $this->factory->getModelTable(). ".";
     }
     
+    if($this->value == null){
+      return $table . $this->key . " IS NULL ";
+    }
     return $table . $this->key . $this->operator . "?";
   }
   
   function getValue() {
+    if($this->value == null){
+      return null;
+    }
     return $this->value;
   }
   
   function getHasValue(){
+    if($this->value == null){
+      return false;
+    }
     return true;
   }
 }
