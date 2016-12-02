@@ -605,6 +605,12 @@ class HashlistHandler implements Handler {
       $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
       $FACTORIES::getHashlistFactory()->update($ll);
     }
+    if($this->hashlist->getFormat() == 3){
+      $total = array_sum($crackedIn);
+      $this->hashlist = $FACTORIES::getHashlistFactory()->get($this->hashlist->getId());
+      $this->hashlist->setCracked($this->hashlist->getCracked() + $total);
+      $FACTORIES::getHashlistFactory()->update($this->hashlist);
+    }
     AbstractModelFactory::getDB()->query("COMMIT");
     UI::addMessage("success", "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (".($endTime-$startTime)."s)!");
   }
