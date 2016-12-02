@@ -9,10 +9,6 @@ Please visit the [wiki](https://bitbucket.org/seinlc/hashtopussy/wiki/Home) to g
 
 Some screenshots of Hashtopussy (by winxp5421): [Imgur](http://imgur.com/gallery/Fj0s0)
 
-```diff
-- IMPORTANT: This branch currently is not working as there is a complete change in DB structure!!!!
-```
-
 ## Thanks
 
 * winxp for testing, writing help texts and a lot of input ideas
