@@ -14,7 +14,7 @@ else if ($LOGIN->getLevel() < 5) {
 $TEMPLATE = new Template("hashlists/index");
 $MENU->setActive("lists_norm");
 
-//catch agents actions here...
+//catch actions here...
 if (isset($_POST['action'])) {
   $hashlistHandler = new HashlistHandler();
   $hashlistHandler->handle($_POST['action']);
@@ -72,7 +72,7 @@ else if (isset($_GET['id'])) {
   $OBJECTS['tasks'] = $hashlistTasks;
   
   //load list of available preconfigured tasks
-  $qF = new QueryFilter("hashlistId", "0", "=");
+  $qF = new QueryFilter("hashlistId", null, "=");
   $preTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF)));
   $OBJECTS['preTasks'] = $preTasks;
   $TEMPLATE = new Template("hashlists/detail");
