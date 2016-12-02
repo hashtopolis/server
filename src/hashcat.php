@@ -23,6 +23,16 @@ if (isset($_POST['action'])) {
 if(isset($_GET['new'])){
   $TEMPLATE = new Template("hashcat/new");
   $MENU->setActive("hashcat_new");
+  $oF = new OrderFilter("time", "DESC LIMIT 1");
+  $releases = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => $oF));
+  $rootDir = "";
+  $common = "";
+  if(sizeof($releases) > 0){
+    $rootDir = $releases[0]->getRootdir();
+    $common = $releases[0]->getCommonFiles();
+  }
+  $OBJECTS['rootDir'] = $rootDir;
+  $OBJECTS['common'] = $common;
 }
 else{
   $oF = new OrderFilter("time", "DESC");
