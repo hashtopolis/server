@@ -432,8 +432,8 @@ else {
     $set->addValue('numChunks', sizeof($chunks));
     
     $tasks[] = $set;
-    $OBJECTS['tasks'] = $tasks;
   }
+  $OBJECTS['tasks'] = $tasks;
 }
 
 echo $TEMPLATE->render($OBJECTS);
