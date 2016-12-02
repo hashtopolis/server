@@ -331,10 +331,6 @@ CREATE TABLE `Session` (
   `sessionKey` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-CREATE TABLE `SuperHashlist` (
-  `superHashlistId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
 CREATE TABLE `SuperHashlistHashlist` (
   `superHashlistHashlistId` int(11) NOT NULL,
   `superHashlistId` int(11) NOT NULL,
@@ -591,10 +587,8 @@ ALTER TABLE `Session`
   ADD CONSTRAINT `Session_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
 ALTER TABLE `SuperHashlistHashlist`
-  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_1` FOREIGN KEY (`superHashlistId`) REFERENCES `SuperHashlist` (`superHashlistId`),
-  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_3` FOREIGN KEY (`superHashlistId`) REFERENCES `SuperHashlist` (`superHashlistId`),
-  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_4` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
+  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_1` FOREIGN KEY (`superHashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `SuperHashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
 
 ALTER TABLE `SupertaskTask`
   ADD CONSTRAINT `SupertaskTask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`),

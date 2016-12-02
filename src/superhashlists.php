@@ -11,22 +11,31 @@ else if ($LOGIN->getLevel() < 5) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("superhashlists");
+$TEMPLATE = new Template("superhashlists/index");
 $MENU->setActive("lists_super");
-$message = "";
 
-$res = AbstractModelFactory::getDB()->query("SELECT hashlists.id,hashlists.name,hashlists.secret,hashlists.hashtype,hashlists.format,hashlists.hashcount,hashlists.cracked,GROUP_CONCAT(hashlists2.name ORDER BY hashlists2.id SEPARATOR '<br>') AS lists,hashtypes.description FROM hashlists LEFT JOIN hashtypes ON hashtypes.id=hashlists.hashtype JOIN superhashlists ON superhashlists.id=hashlists.id JOIN hashlists hashlists2 ON hashlists2.id=superhashlists.hashlist WHERE hashlists.format=3 GROUP BY superhashlists.id ORDER BY id ASC");
-$res = $res->fetchAll();
-$lists = array();
-foreach ($res as $list) {
-  $set = new DataSet();
-  $set->setValues($list);
-  $lists[] = $set;
+if(isset($_GET['new'])){
+  //TODO: create new superhashlist
 }
-
-$OBJECTS['numSuperhashlists'] = sizeof($lists);
-$OBJECTS['lists'] = $lists;
-$OBJECTS['message'] = $message;
+else{
+  $qF = new QueryFilter("format", "3", "=");
+  $hashtypes = new DataSet();
+  $types = $FACTORIES::getHashTypeFactory()->filter(array());
+  foreach($types as $type){
+    $hashtypes->addValue($type->getId(), $type->getDescription());
+  }
+  $OBJECTS['hashtypes'] = $hashtypes;
+  $lists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
+  $OBJECTS['lists'] = $lists;
+  $subLists = new DataSet();
+  foreach($lists as $list){
+    $qF = new QueryFilter("superHashlistId", $list->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
+    $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), "hashlistId", "hashlistId");
+    $ll = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF, 'join' => $jF));
+    $subLists->addValue($list->getId(), $ll['Hashlist']);
+  }
+  $OBJECTS['subLists'] = $subLists;
+}
 
 echo $TEMPLATE->render($OBJECTS);
 
