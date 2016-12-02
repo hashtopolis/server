@@ -20,7 +20,7 @@
 					{{ENDFOREACH}}
 				</td>
 				<td>
-					<form style ='float: left; padding-right: 5px;' action="supertask.php?new=true&id=[[supertask.getId()]]" method="post">
+					<form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
 						<input type="submit" class='btn btn-default' value="Copy">
 					</form>
           <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
