@@ -586,7 +586,7 @@ class AbstractModelFactory {
       $options['order'] = $orderOptions;
     }
     if (count($options['order']) != 0) {
-      $query .= $this->applyFilters($options['order']);
+      $query .= $this->applyFilters($vals, $options['order']);
     }
   
     $dbh = self::getDB();
