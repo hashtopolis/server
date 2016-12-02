@@ -678,8 +678,8 @@ class HashlistHandler implements Handler {
       }
       //get number of hashes we need to export
       $qF1 = new QueryFilter("hashlistId", $list->getId(), "=");
-      $qF2 = new QueryFilter("plaintext", "", "<>");
-      $size = $hashFactory->filter(array('filter' => array($qF1, $qF2)));
+      $qF2 = new QueryFilter("isCracked", "1", "=");
+      $size = $hashFactory->countFilter(array('filter' => array($qF1, $qF2)));
       for($x=0;$x*$pagingSize<$size;$x++){
         $buffer = "";
         $oF = new OrderFilter("hashId", "ASC LIMIT ".($x*$pagingSize).", $pagingSize");
