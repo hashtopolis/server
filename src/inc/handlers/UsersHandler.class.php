@@ -28,11 +28,50 @@ class UsersHandler implements Handler {
       case 'setpass':
         $this->setPassword();
         break;
-      //TODO: add handles for creating new user
+      case 'create':
+        $this->create();
+        break;
       default:
         UI::addMessage("danger", "Invalid action!");
         break;
     }
+  }
+  
+  private function create(){
+    global $FACTORIES;
+  
+    $username = htmlentities($_POST['username'], false, "UTF-8");
+    $email = $_POST['email'];
+    $group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) == 0) {
+      UI::addMessage("danger", "Invalid email address!");
+      return;
+    }
+    else if (strlen($username) < 2) {
+      UI::addMessage("danger", "Username is too short!");
+      return;
+    }
+    else if ($group == null) {
+      UI::addMessage("danger", "Invalid group!");
+      return;
+    }
+    $qF = new QueryFilter("username", $username, "=");
+    $res = $FACTORIES::getUserFactory()->filter(array('filter' => array($qF)));
+    if ($res != null && sizeof($res) > 0) {
+      UI::addMessage("danger", "Username is already used!");
+      return;
+    }
+    $newPass = Util::randomString(10);
+    $newSalt = Util::randomString(20);
+    $newHash = Encryption::passwordHash($username, $newPass, $newSalt);
+    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
+    $FACTORIES::getUserFactory()->save($user);
+    //$tmpl = new Template("email.creation");
+    //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
+    //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
+    //TODO: send proper email for created user
+    header("Location: users.php");
+    die();
   }
   
   private function setPassword(){

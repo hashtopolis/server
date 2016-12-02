@@ -13,7 +13,6 @@ else if ($LOGIN->getLevel() < 50) {
 
 $TEMPLATE = new Template("users/index");
 $MENU->setActive("users_list");
-$message = "";
 
 //catch actions here...
 if (isset($_POST['action'])) {
@@ -22,8 +21,9 @@ if (isset($_POST['action'])) {
 }
 
 if(isset($_GET['new'])){
-  //TODO: create new user
   $TEMPLATE = new Template("users/new");
+  $MENU->setActive("users_new");
+  $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
 }
 else if (isset($_GET['id'])) {
   $user = $FACTORIES::getUserFactory()->get($_GET['id']);
