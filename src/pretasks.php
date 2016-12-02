@@ -14,40 +14,14 @@ else if ($LOGIN->getLevel() < 5) {
 $TEMPLATE = new Template("pretasks");
 $MENU->setActive("tasks_pre");
 
-$jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
 $oF1 = new OrderFilter("priority", "DESC");
+$qF = new QueryFilter("hashlistId", null, "=");
 $oF2 = new OrderFilter("taskId", "ASC");
-$joinedTasks = $FACTORIES::getTaskFactory()->filter(array('join' => $jF, 'order' => array($oF1, $oF2)));
+$tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'order' => array($oF1, $oF2)));
 $tasks = array();
-for($z=0;$z<sizeof($joinedTasks['Task']);$z++){
+for($z=0;$z<sizeof($tasks);$z++){
   $set = new DataSet();
-  $set->addValue('Task', $joinedTasks['Task'][$z]);
-  $set->addValue('Hashlist', $joinedTasks['Hashlist'][$z]);
-  
-  $task = $joinedTasks['Task'][$z];
-  $qF = new QueryFilter("taskId", $task->getId(), "=");
-  $chunks = $FACTORIES::getChunkFactory()->filter(array('filter'=> $qF));
-  $progress = 0;
-  $cracked = 0;
-  $maxTime = 0;
-  foreach($chunks as $chunk){
-    $progress += $chunk->getProgress();
-    $cracked += $chunk->getCracked();
-    if($chunk->getDispatchTime() > $maxTime){
-      $maxTime = $chunk->getDispatchTime();
-    }
-    if($chunk->getSolveTime() > $maxTime){
-      $maxTime = $chunk->getSolveTime();
-    }
-  }
-  
-  $isActive = false;
-  if(time() - $maxTime < $CONFIG->getVal('chunktimeout')){
-    $isActive = true;
-  }
-  
-  $qF = new QueryFilter("taskId", $task->getId(), "=");
-  $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
+  $set->addValue('Task', $tasks[$z]);
   
   $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());
   $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), "fileId", "fileId");
@@ -64,11 +38,6 @@ for($z=0;$z<sizeof($joinedTasks['Task']);$z++){
   $set->addValue('numFiles', sizeof($joinedFiles['File']));
   $set->addValue('filesSize', $sizes);
   $set->addValue('fileSecret', $secret);
-  $set->addValue('numAssignments', sizeof($assignments));
-  $set->addValue('isActive', $isActive);
-  $set->addValue('sumprog', $progress);
-  $set->addValue('cracked', $cracked);
-  $set->addValue('numChunks', sizeof($chunks));
   
   $tasks[] = $set;
 }
