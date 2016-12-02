@@ -15,16 +15,13 @@ $TEMPLATE = new Template("superhashlists/index");
 $MENU->setActive("lists_super");
 
 if(isset($_GET['new'])){
-  //TODO: create new superhashlist
+  $TEMPLATE = new Template("superhashlists/new");
+  $MENU->setActive("lists_snew");
+  $qF = new QueryFilter("format", 3, "<>");
+  $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
 }
 else{
   $qF = new QueryFilter("format", "3", "=");
-  $hashtypes = new DataSet();
-  $types = $FACTORIES::getHashTypeFactory()->filter(array());
-  foreach($types as $type){
-    $hashtypes->addValue($type->getId(), $type->getDescription());
-  }
-  $OBJECTS['hashtypes'] = $hashtypes;
   $lists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
   $OBJECTS['lists'] = $lists;
   $subLists = new DataSet();
@@ -36,6 +33,13 @@ else{
   }
   $OBJECTS['subLists'] = $subLists;
 }
+
+$hashtypes = new DataSet();
+$types = $FACTORIES::getHashTypeFactory()->filter(array());
+foreach($types as $type){
+  $hashtypes->addValue($type->getId(), $type->getDescription());
+}
+$OBJECTS['hashtypes'] = $hashtypes;
 
 echo $TEMPLATE->render($OBJECTS);
 

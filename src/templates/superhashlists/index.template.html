@@ -54,9 +54,8 @@
 				</td>
 				<td>
 					{{IF [[login.getLevel()]] >= 30}}
-						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete superhashlist [[list.getId()]]?\\n(Included hashes will stay intact in their hashlists)')) return false;">
+						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete superhashlist [[list.getId()]]?\n(Included hashes will stay intact in their hashlists)')) return false;">
 							<input type="hidden" name="action" value="hashlistdelete">
-              <input type="hidden" name="refer" value="superhashlists">
 							<input type="hidden" name="hashlist" value="[[list.getId()]]">
 							<input type="submit" class='btn btn-danger' value="Delete">
 						</form>

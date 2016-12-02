@@ -1,8 +1,8 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>New superhashlist</h2>
-[[message]]
-<form id="newsuper" action="newsuperhashlist.php" method="POST">
+{%TEMPLATE->struct/messages%}
+<form id="newsuper" action="hashlists.php" method="POST">
 	<input type='hidden' name='action' value='newsuperhashlistp'>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
@@ -14,10 +14,10 @@
 			{{FOREACH list;[[lists]]}}
 				<tr>
 					<td>
-						<input type="checkbox" name="hlist[]" value="[[list.getVal('id')]]"> [[list.getVal('id')]]
+						<input type="checkbox" name="hlist[]" value="[[list.getId()]]"> [[list.getId()]]
 					</td>
-					<td>[[list.getVal('name')]]</td>
-					<td>[[list.getVal('hashtype')]]</td>
+					<td>[[list.getHashlistName()]]</td>
+					<td>[[hashtypes.getVal([[list.getHashtypeId()]])]]</td>
 				</tr>
 			{{ENDFOREACH}}
 			<tr>
@@ -35,4 +35,4 @@
 		</table>
 	</div>
 </form>
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}

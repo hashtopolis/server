@@ -78,10 +78,53 @@ class HashlistHandler implements Handler {
       case 'newhashlistp':
         $this->create();
         break;
+      case 'newsuperhashlistp':
+        if ($LOGIN->getLevel() < 30) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->createSuperhashlist();
+        break;
       default:
         UI::addMessage("danger", "Invalid action!");
         break;
     }
+  }
+  
+  private function createSuperhashlist(){
+    global $FACTORIES;
+  
+    $hashlists = $_POST["hlist"];
+    for ($i = 0; $i < sizeof($hashlists); $i++) {
+      if (intval($hashlists[$i]) <= 0) {
+        unset($hashlists[$i]);
+      }
+    }
+    if(sizeof($hashlists) == 0){
+      UI::printError("ERROR", "No hashlists selected!");
+    }
+    $name = htmlentities($_POST["name"], false, "UTF-8");
+    $qF = new ContainFilter("hashlistId", $hashlists);
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $lists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
+    if(strlen($name) == 0){
+      $name = "SHL_".$lists[0]->getHashtypeId();
+    }
+    $hashcount = 0;
+    $cracked = 0;
+    foreach($lists as $list){
+      $hashcount += $list->getHashCount();
+      $cracked += $list->getCracked();
+    }
+    $superhashlist = new Hashlist(0, $name, 3, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted());
+    $superhashlist = $FACTORIES::getHashlistFactory()->save($superhashlist);
+    $relations = array();
+    foreach($lists as $list){
+      $relations[] = new SuperHashlistHashlist(0, $superhashlist->getId(), $list->getId());
+    }
+    $FACTORIES::getSuperHashlistHashlistFactory()->massSave($relations);
+    AbstractModelFactory::getDB()->query("COMMIT");
+    header("Location: superhashlists.php");
+    die();
   }
   
   private function create(){
