@@ -220,11 +220,12 @@ class TaskHandler implements Handler {
   
   private function deleteTask($task){
     global $FACTORIES;
-  
+    
     $qF = new QueryFilter("taskId", $task->getId(), "=");
-    $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
-    $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => array($qF)));
-    $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => array($qF)));
+    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $qF));
     $uS = new UpdateSet("chunkId", null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $chunkIds = array();

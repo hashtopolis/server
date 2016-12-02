@@ -44,7 +44,7 @@
 				    </form> 
 
 					{{IF [[login.getLevel()]] >= 30}}
-						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task $id?')) return false;">
+						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?')) return false;">
 							<input type="hidden" name="action" value="taskdelete">
 							<input type='hidden' name='refer' value='pretask'>
 							<input type="hidden" name="task" value="[[task.getVal('Task').getId()]]">
