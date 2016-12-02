@@ -310,10 +310,10 @@ class HashlistHandler implements Handler {
       UI::printError("ERROR", "Invalid hashlist!");
     }
     $hashlists = Util::checkSuperHashlist($this->hashlist);
-    $tmpfile = dirname(__FILE__)."/../../file/Pre-cracked_" . $this->hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
+    $tmpfile = dirname(__FILE__)."/../../files/Pre-cracked_" . $this->hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
     $factory = $FACTORIES::getHashFactory();
-    $format = $FACTORIES::getHashlistFactory()->get($hashlists[0]);
-    if($format != 0){
+    $format = $FACTORIES::getHashlistFactory()->get($hashlists[0]->getId());
+    if($format->getFormat() != 0){
       $factory = $FACTORIES::getHashBinaryFactory();
     }
     $file = fopen($tmpfile, "wb");
@@ -321,7 +321,11 @@ class HashlistHandler implements Handler {
       UI::printError("ERROR", "Failed to write file!");
     }
     
-    $qF1 = new ContainFilter("hashlistId", $hashlists);
+    $hashlistIds = array();
+    foreach($hashlists as $hashlist){
+      $hashlistIds[] = $hashlist->getId();
+    }
+    $qF1 = new ContainFilter("hashlistId", $hashlistIds);
     $qF2 = new QueryFilter("isCracked", "1", "=");
     $count = $factory->countFilter(array('filter' => array($qF1, $qF2)));
     $pagingSize = 5000;
@@ -354,6 +358,8 @@ class HashlistHandler implements Handler {
       fputs($file, $buffer);
     }
     fclose($file);
+    $file = new File(0, "Pre-cracked_" . $this->hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt", Util::filesize($tmpfile), $this->hashlist->getSecret(), 0);
+    $FACTORIES::getFileFactory()->save($file);
     UI::addMessage("success", "Cracked hashes from hashlist exported successfully!");
   }
   
