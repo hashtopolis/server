@@ -505,13 +505,18 @@ class HashlistHandler implements Handler {
       }
     }
     rewind($file);
+    AbstractModelFactory::getDB()->exec("START TRANSACTION");
     $hashlists = Util::checkSuperHashlist($this->hashlist);
+    $inSuperHashlists = array();
+    if(sizeof($hashlists) == 1 && $hashlists[0]->getId() == $this->hashlist->getId()){
+      $qF = new QueryFilter("hashlistId", $this->hashlist->getId(), "=");
+      $inSuperHashlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('filter' => $qF));
+    }
     $hashFactory = $FACTORIES::getHashFactory();
     if($hashlists[0]->getFormat() != 0) {
       $hashFactory = $FACTORIES::getHashBinaryFactory();
     }
     //start inserting
-    AbstractModelFactory::getDB()->exec("START TRANSACTION");
     $totalLines = 0;
     $newCracked = 0;
     $crackedIn = array();
@@ -610,6 +615,14 @@ class HashlistHandler implements Handler {
       $this->hashlist = $FACTORIES::getHashlistFactory()->get($this->hashlist->getId());
       $this->hashlist->setCracked($this->hashlist->getCracked() + $total);
       $FACTORIES::getHashlistFactory()->update($this->hashlist);
+    }
+    if(sizeof($inSuperHashlists) > 0){
+      $total = array_sum($crackedIn);
+      foreach($inSuperHashlists as $super){
+        $superHashlist = $FACTORIES::getHashlistFactory()->get($super->getSuperHashlistId());
+        $superHashlist->setCracked($superHashlist->getCracked() + $total);
+        $FACTORIES::getHashlistFactory()->update($superHashlist);
+      }
     }
     AbstractModelFactory::getDB()->query("COMMIT");
     UI::addMessage("success", "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (".($endTime-$startTime)."s)!");
