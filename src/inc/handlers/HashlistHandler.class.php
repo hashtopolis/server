@@ -693,7 +693,7 @@ class HashlistHandler implements Handler {
           $qF = new QueryFilter("taskId", $oldTaskId, "=");
           $files = $FACTORIES::getTaskFileFactory()->filter(array('filter' => array($qF)));
           foreach($files as $file){
-            $file->setTask($task->getId());
+            $file->setTaskId($task->getId());
             $file->setId(0);
             $FACTORIES::getTaskFileFactory()->save($file);
             $fileCount++;
