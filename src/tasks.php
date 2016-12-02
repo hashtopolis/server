@@ -256,7 +256,8 @@ else if (isset($_GET['new'])) {
   }
   $oF = new OrderFilter("filename", "ASC");
   $allFiles = $FACTORIES::getFileFactory()->filter(array('order' => $oF));
-  $files = array();
+  $rules = array();
+  $wordlists = array();
   foreach($allFiles as $singleFile){
     $set = new DataSet();
     $checked = "0";
@@ -265,9 +266,15 @@ else if (isset($_GET['new'])) {
     }
     $set->addValue('checked', $checked);
     $set->addValue('file', $singleFile);
-    $files[] = $set;
+    if($singleFile->getFileType() == 1){
+      $rules[] = $set;
+    }
+    else{
+      $wordlists[] = $set;
+    }
   }
-  $OBJECTS['files'] = $files;
+  $OBJECTS['wordlists'] = $wordlists;
+  $OBJECTS['rules'] = $rules;
 }
 else {
   $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");

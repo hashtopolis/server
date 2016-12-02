@@ -75,53 +75,112 @@
 		</div>
 	</div>
 	<div class='col-md-4' style='padding: 0px;'>
-		<script type='text/javascript'>
-			function assignFile(cmdLine,addObject,fileName) { 
-				if (fileName.indexOf('.7z') != -1) {
-					fileName=fileName.substring(0,fileName.length-2)+'???';
-				} 
-				var cmdObject = document.getElementById(cmdLine); 
-				if (addObject == true) { 
-					if (cmdObject.value.indexOf(fileName) == -1) { 
-						if (cmdObject.value.length>0 && cmdObject.value.slice(-1)!=' ') {
-							cmdObject.value += ' '; 
-						}
-						cmdObject.value += fileName; 
-					} 
-				} 
-				else { 
-					cmdObject.value = cmdObject.value.replace(fileName,''); 
-					while (cmdObject.value.slice(-1)==' ') {
-						cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1); 
-					}
-					while (cmdObject.value.substring(0,1)==' ') {
-						cmdObject.value=cmdObject.value.substring(1); 
-					}
-				} 
-			}
-		</script>
-		<div class="panel panel-default">
-			<table class="table table-bordered table-nonfluid">
-				<tr>
-					<th>Filename</th>
-					<th>Size</th>
-				</tr>
-				{{FOREACH file;[[files]]}}
-					<tr>
-						<td>
-							<input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
-							[[file.getVal('file').getFilename()]]
-							{{IF [[file.getVal('file').getSecret()]] == 1}}
-								<img src="static/lock.gif" alt="Secret">
-							{{ENDIF}}
-						</td>
-						<td>
-							[[Util::nicenum([[file.getVal('file').getSize()]])]]B
-						</td>
-					</tr>
-				{{ENDFOREACH}}
-			</table>
-		</div>
+    <div class='btn-group'>
+      <button id="ruleButton" class='btn btn-default' onclick="return toggleFiles()">Rules</button>
+      <button id="wordlistButton" class='btn btn-default active' onclick="return toggleFiles()">Wordlists</button>
+    </div>
+    <br>
+    <br>
+    <div id="rules">
+      <div class="panel panel-default">
+        <table class="table table-bordered table-nonfluid">
+          <tr>
+            <th>Filename</th>
+            <th>Size</th>
+            {{FOREACH file;[[rules]]}}
+              <tr>
+                <td>
+                  <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                  [[file.getVal('file').getFilename()]]
+                  {{IF [[file.getVal('file').getSecret()]] == 1}}
+                  <img src="static/lock.gif" alt="Secret">
+                  {{ENDIF}}
+                </td>
+                <td>
+                  [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                </td>
+              </tr>
+          {{ENDFOREACH}}
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div id="wordlists">
+      <div class="panel panel-default">
+        <table class="table table-bordered table-nonfluid">
+          <tr>
+            <th>Filename</th>
+            <th>Size</th>
+          </tr>
+          {{FOREACH file;[[wordlists]]}}
+            <tr>
+              <td>
+                <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                [[file.getVal('file').getFilename()]]
+                {{IF [[file.getVal('file').getSecret()]] == 1}}
+                  <img src="static/lock.gif" alt="Secret">
+                {{ENDIF}}
+              </td>
+              <td>
+                [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+              </td>
+            </tr>
+          {{ENDFOREACH}}
+        </table>
+      </div>
+    </div>
+    <script type='text/javascript'>
+      var show = "rules";
+      toggleFiles();
+
+      function toggleFiles(){
+        var wordlist = document.getElementById('wordlists');
+        var rule = document.getElementById('rules');
+        if(show == 'wordlists'){
+          wordlist.style.visibility = "hidden"; // or
+          wordlist.style.display = "none";
+          rule.style.visibility = "visible"; // or
+          rule.style.display = "inline";
+          document.getElementById("ruleButton").className = "btn btn-default active";
+          document.getElementById("wordlistButton").className = "btn btn-default";
+          show = "rules";
+        }
+        else{
+          wordlist.style.visibility = "visible"; // or
+          wordlist.style.display = "inline";
+          rule.style.visibility = "hidden"; // or
+          rule.style.display = "none";
+          document.getElementById("ruleButton").className = "btn btn-default";
+          document.getElementById("wordlistButton").className = "btn btn-default active";
+          show = "wordlists";
+        }
+        return false;
+      }
+
+      function assignFile(cmdLine,addObject,fileName) {
+        if (fileName.indexOf('.7z') != -1) {
+          fileName=fileName.substring(0,fileName.length-2)+'???';
+        }
+        var cmdObject = document.getElementById(cmdLine);
+        if (addObject == true) {
+          if (cmdObject.value.indexOf(fileName) == -1) {
+            if (cmdObject.value.length>0 && cmdObject.value.slice(-1)!=' ') {
+              cmdObject.value += ' ';
+            }
+            cmdObject.value += fileName;
+          }
+        }
+        else {
+          cmdObject.value = cmdObject.value.replace(fileName,'');
+          while (cmdObject.value.slice(-1)==' ') {
+            cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1);
+          }
+          while (cmdObject.value.substring(0,1)==' ') {
+            cmdObject.value=cmdObject.value.substring(1);
+          }
+        }
+      }
+    </script>
 	</div>
 </form>
 {%TEMPLATE->struct/foot%}
