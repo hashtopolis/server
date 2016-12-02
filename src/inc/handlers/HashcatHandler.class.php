@@ -67,6 +67,7 @@ class HashcatHandler implements Handler {
       return;
     }
     $FACTORIES::getHashcatReleaseFactory()->delete($release);
+    AbstractModelFactory::getDB()->query("COMMIT");
     Util::refresh();
   }
 }
