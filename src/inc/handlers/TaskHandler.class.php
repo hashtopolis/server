@@ -125,7 +125,7 @@ class TaskHandler implements Handler {
       UI::addMessage("danger", "Command line must contain hashlist (" . $CONFIG->getVal('hashlistAlias') . ")!");
       return;
     }
-    if ($_POST["hashlist"] == "preconf") {
+    if ($_POST["hashlist"] == null) {
       // it will be a preconfigured task
       $hashlistId = null;
       if (strlen($name) == 0) {
@@ -135,7 +135,7 @@ class TaskHandler implements Handler {
     }
     else {
       $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
-      if ($hashlist < 0) {
+      if ($hashlist <= 0) {
         UI::addMessage("danger", "Invalid hashlist!");
         return;
       }
