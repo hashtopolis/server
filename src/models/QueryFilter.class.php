@@ -22,6 +22,9 @@ class QueryFilter {
     }
     
     if($this->value === null){
+      if($this->operator == '<>'){
+        return $table . $this->key . " IS NOT NULL ";
+      }
       return $table . $this->key . " IS NULL ";
     }
     return $table . $this->key . $this->operator . "?";

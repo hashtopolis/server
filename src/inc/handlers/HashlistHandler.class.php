@@ -665,9 +665,9 @@ class HashlistHandler implements Handler {
     $addCount = 0;
     $fileCount = 0;
     if(isset($_POST['task'])){
-      $qF = new QueryFilter("hashlistId", "0", "<>");
+      $qF = new QueryFilter("hashlistId", null, "<>");
       $oF = new OrderFilter("priority", "DESC LIMIT 1");
-      $highest = $FACTORIES::getHashlistFactory()->filter(array('filter' => array($qF), 'order' => array($oF)), true);
+      $highest = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF), 'order' => array($oF)), true);
       $priorityBase = 1;
       if($highest != null){
         $priorityBase = $highest->getPriority() + 1;
