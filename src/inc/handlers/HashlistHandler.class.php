@@ -184,6 +184,8 @@ class HashlistHandler implements Handler {
           if ($bufferCount >= 10000) {
             $result = $FACTORIES::getHashFactory()->massSave($values);
             $added += $result->rowCount();
+            AbstractModelFactory::getDB()->query("COMMIT");
+            AbstractModelFactory::getDB()->query("START TRANSACTION");
             $values = array();
             $bufferCount = 0;
           }
@@ -196,8 +198,10 @@ class HashlistHandler implements Handler {
         unlink($tmpfile);
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
+        AbstractModelFactory::getDB()->query("COMMIT");
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
+        break;
       case 1:
         $added = 0;
         while (!feof($file)) {
