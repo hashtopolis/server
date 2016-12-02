@@ -222,8 +222,14 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => array($qF)));
     $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => array($qF)));
     $uS = new UpdateSet("chunkId", null);
-    $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
-    $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
+    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+    $chunkIds = array();
+    foreach($chunks as $chunk){
+      $chunkIds[] = $chunk->getId();
+    }
+    $qF2 = new ContainFilter("chunkId", $chunkIds);
+    $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+    $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
     $FACTORIES::getChunkFactory()->massDeletion(array('filter' => $qF));
     $FACTORIES::getTaskFactory()->delete($task);
   }
