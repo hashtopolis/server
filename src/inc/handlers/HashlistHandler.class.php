@@ -396,9 +396,9 @@ class HashlistHandler implements Handler {
   
     if (sizeof($taskList) > 0) {
       $qF = new ContainFilter("taskId", $taskList);
-      $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => array($qF)));
-      $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
-      $FACTORIES::getChunkFactory()->massDeletion(array('filter' => array($qF)));
+      $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $qF));
+      $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
+      $FACTORIES::getChunkFactory()->massDeletion(array('filter' => $qF));
     }
     foreach($tasks as $task){
       $FACTORIES::getTaskFactory()->delete($task);

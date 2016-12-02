@@ -775,26 +775,7 @@ class AbstractModelFactory {
     $vals = array();
     
     if (array_key_exists("filter", $options)) {
-      $query = $query . " WHERE ";
-      
-      
-      $filterOptions = $options['filter'];
-      if(!is_array($filterOptions)){
-        $filterOptions = array($filterOptions);
-      }
-      $vals = array();
-      
-      for ($i = 0; $i < count($filterOptions); $i++) {
-        $option = $filterOptions[$i];
-        array_push($vals, $option->getValue());
-        
-        if ($i != count($filterOptions) - 1) {
-          $query = $query . $option->getQueryString() . " AND ";
-        }
-        else {
-          $query = $query . $option->getQueryString();
-        }
-      }
+      $query .= $this->applyFilters($vals, $options['filter']);
     }
     
     $dbh = self::getDB();
