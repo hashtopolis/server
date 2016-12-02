@@ -22,6 +22,10 @@ class Util {
     return array();
   }
   
+  public static function calculate($in){
+    return $in;
+  }
+  
   public static function insertFile($path, $name, $type) {
     global $FACTORIES;
     
