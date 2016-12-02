@@ -41,7 +41,7 @@ class HashcatHandler implements Handler {
       return;
     }
     
-    $hashcat = new HashcatRelease(0, $version, time(), $url, $common_files, "", "", $rootdir, 0);
+    $hashcat = new HashcatRelease(0, $version, time(), $url, $common_files, $rootdir, 0);
     $hashcat = $FACTORIES::getHashcatReleaseFactory()->save($hashcat);
     if($hashcat == null){
       UI::addMessage("danger", "Could not create new hashcat release!");

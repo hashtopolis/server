@@ -68,8 +68,6 @@ $CONF['HashcatRelease'] = array(
   'time',
   'url',
   'commonFiles',
-  'binary32',
-  'binary64',
   'rootdir',
   'minver'
 );

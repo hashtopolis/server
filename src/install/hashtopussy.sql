@@ -119,8 +119,6 @@ CREATE TABLE `HashcatRelease` (
   `time` int(11) NOT NULL,
   `url` varchar(200) COLLATE utf8_bin NOT NULL,
   `commonFiles` varchar(200) COLLATE utf8_bin NOT NULL,
-  `binary32` varchar(200) COLLATE utf8_bin NOT NULL,
-  `binary64` varchar(200) COLLATE utf8_bin NOT NULL,
   `rootdir` varchar(200) COLLATE utf8_bin NOT NULL,
   `minver` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
@@ -444,9 +442,6 @@ ALTER TABLE `Session`
   ADD PRIMARY KEY (`sessionId`),
   ADD KEY `userId` (`userId`);
 
-ALTER TABLE `SuperHashlist`
-  ADD PRIMARY KEY (`superHashlistId`);
-
 ALTER TABLE `SuperHashlistHashlist`
   ADD PRIMARY KEY (`superHashlistHashlistId`),
   ADD KEY `superHashlistId` (`superHashlistId`),
@@ -518,9 +513,6 @@ ALTER TABLE `RightGroup`
 
 ALTER TABLE `Session`
   MODIFY `sessionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=685;
-
-ALTER TABLE `SuperHashlist`
-  MODIFY `superHashlistId` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `SuperHashlistHashlist`
   MODIFY `superHashlistHashlistId` int(11) NOT NULL AUTO_INCREMENT;
