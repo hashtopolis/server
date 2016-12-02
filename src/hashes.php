@@ -178,14 +178,21 @@ foreach($hashes as $hash){
   if($displaying == ""){
     $output .= $hash->getHash();
     if($filter == "cracked" || $filter == ""){
-      $output .= ":" . htmlentities($hash->getPlaintext(), false, "UTF-8");
+      if($hash->getIsCracked() == 1) {
+        $output .= ":" . htmlentities($hash->getPlaintext(), false, "UTF-8");
+      }
     }
   }
   else if($displaying == "hash"){
     $output .= $hash->getHash();
   }
   else if($displaying == "plain"){
-    $output .= htmlentities($hash->getPlaintext(), false, "UTF-8");
+    if($hash->getIsCracked() == 1) {
+      $output .= htmlentities($hash->getPlaintext(), false, "UTF-8");
+    }
+    else{
+      continue;
+    }
   }
   $output .= "\n";
 }
