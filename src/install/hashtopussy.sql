@@ -363,7 +363,7 @@ CREATE TABLE `Task` (
   `keyspace` bigint(20) NOT NULL,
   `progress` bigint(20) NOT NULL,
   `priority` int(11) NOT NULL,
-  `color` varchar(10) COLLATE utf8_bin NOT NULL,
+  `color` varchar(10) COLLATE utf8_bin NULL,
   `isSmall` int(11) NOT NULL,
   `isCpuTask` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
