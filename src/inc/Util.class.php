@@ -8,9 +8,9 @@
  */
 class Util {
   
-  public static function scanImportDirectory(){
-    if (file_exists(dirname(__FILE__)."/import") && is_dir(dirname(__FILE__)."/import")) {
-      $impdir = opendir(dirname(__FILE__)."/import");
+  public static function scanImportDirectory() {
+    if (file_exists(dirname(__FILE__) . "/import") && is_dir(dirname(__FILE__) . "/import")) {
+      $impdir = opendir(dirname(__FILE__) . "/import");
       $impfiles = array();
       while ($f = readdir($impdir)) {
         if ($f[0] != '.' && $f != "." && $f != ".." && !is_dir($f)) {
@@ -22,57 +22,58 @@ class Util {
     return array();
   }
   
-  public static function insertFile($path, $name, $type){
+  public static function insertFile($path, $name, $type) {
     global $FACTORIES;
     
     $fileType = 0;
-    if($type == 'rule'){
+    if ($type == 'rule') {
       $fileType = 1;
     }
     $file = new File(0, $name, Util::filesize($path), 1, $fileType);
     $file = $FACTORIES::getFileFactory()->save($file);
-    if($file == null){
+    if ($file == null) {
       return false;
     }
     return true;
   }
   
-  public static function getNextTask($agent){
+  public static function getNextTask($agent) {
     global $FACTORIES;
-  
+    
+    //TODO: handle the case, if a task is a single assignment task
     $qF1 = new QueryFilter("priority", 0, ">");
     $qF2 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
-    $qF3 = new QueryFilter("isCpuTask", $agent->getCpuOnly() , "="); //assign non-cpu tasks only to non-cpu agents and vice versa
+    $qF3 = new QueryFilter("isCpuTask", $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
     $qF4 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
     $jF1 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
     $jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
     $jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
     $oF = new OrderFilter("priority", "DESC LIMIT 1");
     $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1, $jF2, $jF3), 'order' => array($oF)));
-    if(sizeof($nextTask['Task']) > 0){
+    if (sizeof($nextTask['Task']) > 0) {
       return $nextTask['Task'][0];
     }
     return null;
   }
   
-  public static function zapCleaning(){
+  public static function zapCleaning() {
     global $FACTORIES;
     
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
-    if($entry == null){
+    if ($entry == null) {
       $entry = new StoredValue("lastZapCleaning", 0);
       $entry = $FACTORIES::getStoredValueFactory()->save($entry);
     }
-    if(time() - $entry->getVal() > 600){
+    if (time() - $entry->getVal() > 600) {
       //TODO: zap cleaning
       $entry->setVal(time());
       $FACTORIES::getStoredValueFactory()->update($entry);
     }
   }
   
-  public static function filesize($file){
+  public static function filesize($file) {
     //TODO: put code for 64-bit file size determination here
-    if(!file_exists($file)){
+    if (!file_exists($file)) {
       return 0;
     }
     return filesize($file);
@@ -82,8 +83,8 @@ class Util {
     global $_SERVER;
     
     $url = $_SERVER['PHP_SELF'];
-    if(strlen($_SERVER['QUERY_STRING'])>0){
-      $url .= "?".$_SERVER['QUERY_STRING'];
+    if (strlen($_SERVER['QUERY_STRING']) > 0) {
+      $url .= "?" . $_SERVER['QUERY_STRING'];
     }
     header("Location: $url");
     die();
@@ -451,9 +452,7 @@ class Util {
     if (!mail($address, $subject, $text, $header)) {
       return false;
     }
-    else {
-      return true;
-    }
+    return true;
   }
   
   /**
@@ -467,7 +466,7 @@ class Util {
     $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     $result = "";
     for ($x = 0; $x < $length; $x++) {
-      $result .= $charset[rand(0, strlen($charset) - 1)];
+      $result .= $charset[mt_rand(0, strlen($charset) - 1)];
     }
     return $result;
   }
@@ -475,7 +474,7 @@ class Util {
   public static function createPrefixedString($table, $dict) {
     $arr = array();
     foreach ($dict as $key => $val) {
-      $arr[] = "`" . $table . "`" . "." . "`" . $key . "`" . " AS `" . $table.".".$key."`";
+      $arr[] = "`" . $table . "`" . "." . "`" . $key . "`" . " AS `" . $table . "." . $key . "`";
     }
     return implode(", ", $arr);
   }
@@ -484,9 +483,7 @@ class Util {
     if (strpos($search, $pattern) === 0) {
       return true;
     }
-    else {
-      return false;
-    }
+    return false;
   }
   
   public static function endsWith($haystack, $needle) {

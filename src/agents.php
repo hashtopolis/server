@@ -56,6 +56,12 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeSpent'] = $timeSpent;
   }
 }
+else if(isset($_GET['new'])){
+  $MENU->setActive("agents_new");
+  $TEMPLATE = new Template("agents/new");
+  $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
+  $OBJECTS['vouchers'] = $vouchers;
+}
 else {
   $oF = new OrderFilter("agentId", "ASC");
   $agents = $FACTORIES::getAgentFactory()->filter(array('order' => array($oF)));

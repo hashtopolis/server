@@ -17,7 +17,7 @@
 					<li class="dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
-							<li[[menu.isActive('agents_new')]]><a href="newagent.php">New Agent</a></li>
+							<li[[menu.isActive('agents_new')]]><a href="agents.php?new=true">New Agent</a></li>
 						</ul>
 					</li>
 				{{ENDIF}}
@@ -97,9 +97,6 @@
 							<li[[menu.isActive('users_new')]]><a href="newuser.php">New User</a></li>
 						</ul>
 					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]]}}
-					<li[[menu.isActive('fix')]]><a href="fix.php" style='color: #ffa500;'>FIX ME</a></li>
 				{{ENDIF}}
 			</ul>
 			<ul class="nav navbar-nav navbar-right">

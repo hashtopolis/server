@@ -22,6 +22,7 @@ if (isset($_POST['action'])) {
 
 if(isset($_GET['new'])){
   $TEMPLATE = new Template("hashcat/new");
+  $MENU->setActive("hashcat_new");
 }
 else{
   $oF = new OrderFilter("time", "DESC");
