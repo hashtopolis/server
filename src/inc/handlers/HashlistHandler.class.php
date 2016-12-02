@@ -179,7 +179,7 @@ class HashlistHandler implements Handler {
           if (strlen($hash) == 0) {
             continue;
           }
-          $values[] = new Hash(0, $this->hashlist->getId(), $hash, $salt, "", 0, 0, 0);
+          $values[] = new Hash(0, $this->hashlist->getId(), $hash, $salt, "", 0, null, 0);
           $bufferCount++;
           if ($bufferCount >= 10000) {
             $result = $FACTORIES::getHashFactory()->massSave($values);
