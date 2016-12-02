@@ -676,27 +676,27 @@ class HashlistHandler implements Handler {
         $task = $FACTORIES::getTaskFactory()->get($pretask);
         if($task != null){
           if ($this->hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
-            $task->setAttackCmd("--hex-salt ".$task->getAttackCmd());
-            $taskPriority = 0;
-            $oldTaskId = $task->getId();
-            if($task->getPriority() > 0){
-              $taskPriority = $priorityBase + $task->getPriority();
-            }
-            $task->setPriority($taskPriority);
-            $task->setId(0);
-            $task->setHashlistId($this->hashlist->getId());
-            $task = $FACTORIES::getTaskFactory()->save($task);
-            $addCount++;
-            
-            //copy all file associations of the preconf task to the new task
-            $qF = new QueryFilter("taskId", $oldTaskId, "=");
-            $files = $FACTORIES::getTaskFileFactory()->filter(array('filter' => array($qF)));
-            foreach($files as $file){
-              $file->setTask($task->getId());
-              $file->setId(0);
-              $FACTORIES::getTaskFileFactory()->save($file);
-              $fileCount++;
-            }
+            $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
+          }
+          $taskPriority = 0;
+          $oldTaskId = $task->getId();
+          if($task->getPriority() > 0){
+            $taskPriority = $priorityBase + $task->getPriority();
+          }
+          $task->setPriority($taskPriority);
+          $task->setId(0);
+          $task->setHashlistId($this->hashlist->getId());
+          $task = $FACTORIES::getTaskFactory()->save($task);
+          $addCount++;
+          
+          //copy all file associations of the preconf task to the new task
+          $qF = new QueryFilter("taskId", $oldTaskId, "=");
+          $files = $FACTORIES::getTaskFileFactory()->filter(array('filter' => array($qF)));
+          foreach($files as $file){
+            $file->setTask($task->getId());
+            $file->setId(0);
+            $FACTORIES::getTaskFileFactory()->save($file);
+            $fileCount++;
           }
         }
       }
