@@ -324,7 +324,7 @@ class HashlistHandler implements Handler {
   
     AbstractModelFactory::getDB()->query("START TRANSACTION");
   
-    $qF = new QueryFilter("hashlistId", $this->hashlist->getId(), "=");
+    $qF = new QueryFilter("hashlistId", $this->hashlist->getId(), "=", $FACTORIES::getHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
     $superlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('filter' => array($qF), 'join' => array($jF)));
     for ($x = 0; $x < sizeof($superlists['Hashlist']); $x++) {
