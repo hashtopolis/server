@@ -140,10 +140,10 @@ foreach ($filters as $id => $text) {
 $OBJECTS['filters'] = $filtersSet;
 
 if($filter == "cracked"){
-  $filters[] = new QueryFilter("isCracked", "1", "=");
+  $queryFilters[] = new QueryFilter("isCracked", "1", "=");
 }
 else if($filter == "uncracked"){
-  $filters[] = new QueryFilter("isCracked", "0", "=");
+  $queryFilters[] = new QueryFilter("isCracked", "0", "=");
 }
 
 $count = $hashFactory->countFilter(array('filter' => $queryFilters));
