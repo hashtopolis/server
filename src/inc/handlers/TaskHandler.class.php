@@ -213,7 +213,7 @@ class TaskHandler implements Handler {
     $this->deleteTask($task);
     AbstractModelFactory::getDB()->query("COMMIT");
     if($task->getHashlistId() == null){
-      header("pretasks.php");
+      header("Location: pretasks.php");
       die();
     }
   }
