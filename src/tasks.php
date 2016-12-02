@@ -251,7 +251,7 @@ else if (isset($_GET['new'])) {
     $qF = new QueryFilter("taskId", $orig, "=");
     $ff = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
     foreach($ff as $f) {
-      $origFiles[] = $f->getId();
+      $origFiles[] = $f->getFileId();
     }
   }
   $oF = new OrderFilter("filename", "ASC");
@@ -259,7 +259,11 @@ else if (isset($_GET['new'])) {
   $files = array();
   foreach($allFiles as $singleFile){
     $set = new DataSet();
-    $set->addValue('checked', (in_array($singleFile->getId(), $origFiles))?"1":"0");
+    $checked = "0";
+    if(in_array($singleFile->getId(), $origFiles)){
+       $checked = "1";
+    }
+    $set->addValue('checked', $checked);
     $set->addValue('file', $singleFile);
     $files[] = $set;
   }
