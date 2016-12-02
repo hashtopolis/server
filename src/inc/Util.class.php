@@ -74,7 +74,7 @@ class Util {
   public static function filesize($file) {
     //TODO: put code for 64-bit file size determination here
     if (!file_exists($file)) {
-      return 0;
+      return -1;
     }
     return filesize($file);
   }
