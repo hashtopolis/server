@@ -35,15 +35,13 @@ class HashcatHandler implements Handler {
     $url = $_POST["url"];
     $common_files = $_POST["common_files"];
     $common_files = str_replace("\r\n", "\n", $common_files);
-    $binary32 = $_POST["32bit"];
-    $binary64 = $_POST["64bit"];
     $rootdir = $_POST["rootdir"];
     if (strlen($version ) == 0) {
       UI::addMessage("danger", "You must specify a version!");
       return;
     }
     
-    $hashcat = new HashcatRelease(0, $version, time(), $url, $common_files, $binary32, $binary64, $rootdir, 0);
+    $hashcat = new HashcatRelease(0, $version, time(), $url, $common_files, "", "", $rootdir, 0);
     $hashcat = $FACTORIES::getHashcatReleaseFactory()->save($hashcat);
     if($hashcat == null){
       UI::addMessage("danger", "Could not create new hashcat release!");
