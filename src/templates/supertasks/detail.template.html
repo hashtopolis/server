@@ -9,16 +9,32 @@
 		<table class="table table-bordered table-nonfluid">
 			<tr>
 				<th>ID</th>
-        <td></td>
+        <td>[[supertask.getId()]]</td>
       </tr>
       <tr>
 				<th>Name</th>
+        <td>[[supertask.getSupertaskName()]]</td>
       </tr>
       <tr>
 				<th>Tasks</th>
+        <td>
+          {{FOREACH task;[[tasks]]}}
+            <a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
+          {{ENDFOREACH}}
+        </td>
       </tr>
       <tr>
 				<th>Actions</th>
+        <td>
+          <form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
+            <input type="submit" class='btn btn-default' value="Apply to Hashlist">
+          </form>
+          <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
+            <input type="hidden" name="action" value="taskdelete">
+            <input type="hidden" name="supertask" value="[[supertask.getId()]]">
+            <input type="submit" class='btn btn-danger' value="X">
+          </form>
+        </td>
 			</tr>
 		</table>
 	</div>
