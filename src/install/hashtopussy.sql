@@ -356,7 +356,7 @@ CREATE TABLE `Task` (
   `taskId` int(11) NOT NULL,
   `taskName` varchar(200) COLLATE utf8_bin NOT NULL,
   `attackCmd` varchar(512) COLLATE utf8_bin NOT NULL,
-  `hashlistId` int(11) NOT NULL,
+  `hashlistId` int(11) NULL,
   `chunkTime` int(11) NOT NULL,
   `statusTimer` int(11) NOT NULL,
   `autoAdjust` int(11) NOT NULL,
