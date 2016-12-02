@@ -17,11 +17,11 @@ $MENU->setActive("tasks_pre");
 $oF1 = new OrderFilter("priority", "DESC");
 $qF = new QueryFilter("hashlistId", null, "=");
 $oF2 = new OrderFilter("taskId", "ASC");
-$tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'order' => array($oF1, $oF2)));
+$taskList = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'order' => array($oF1, $oF2)));
 $tasks = array();
-for($z=0;$z<sizeof($tasks);$z++){
+for($z=0;$z<sizeof($taskList);$z++){
   $set = new DataSet();
-  $set->addValue('Task', $tasks[$z]);
+  $set->addValue('Task', $taskList[$z]);
   
   $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());
   $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), "fileId", "fileId");
