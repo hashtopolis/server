@@ -227,9 +227,11 @@ class TaskHandler implements Handler {
     foreach($chunks as $chunk){
       $chunkIds[] = $chunk->getId();
     }
-    $qF2 = new ContainFilter("chunkId", $chunkIds);
-    $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
-    $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+    if(sizeof($chunkIds) > 0) {
+      $qF2 = new ContainFilter("chunkId", $chunkIds);
+      $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+      $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+    }
     $FACTORIES::getChunkFactory()->massDeletion(array('filter' => $qF));
     $FACTORIES::getTaskFactory()->delete($task);
   }
