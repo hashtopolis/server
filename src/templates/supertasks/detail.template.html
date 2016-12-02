@@ -1,7 +1,7 @@
-{%TEMPLATE->head%}
-{%TEMPLATE->menu%}
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
 <h2>Supertask Details</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 {{IF ! [[supertask]]}}
 	<div class='alert alert-danger'>Invalid supertask!</div>
 {{ELSE}}
@@ -9,11 +9,18 @@
 		<table class="table table-bordered table-nonfluid">
 			<tr>
 				<th>ID</th>
+        <td></td>
+      </tr>
+      <tr>
 				<th>Name</th>
+      </tr>
+      <tr>
 				<th>Tasks</th>
+      </tr>
+      <tr>
 				<th>Actions</th>
 			</tr>
 		</table>
 	</div>
 {{ENDIF}}
-{%TEMPLATE->foot%}
+{%TEMPLATE->struct/foot%}
