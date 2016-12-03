@@ -13,13 +13,11 @@ else if ($LOGIN->getLevel() < 40) {
 
 $TEMPLATE = new Template("config");
 $MENU->setActive("config_server");
-$message = "";
 
 //catch actions here...
 if (isset($_POST['action'])) {
   $configHandler = new ConfigHandler();
   $configHandler->handle($_POST['action']);
-  Util::refresh();
 }
 
 $configuration = array();
@@ -32,7 +30,6 @@ foreach ($all as $key => $value) {
 }
 
 $OBJECTS['configuration'] = $configuration;
-$OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
 

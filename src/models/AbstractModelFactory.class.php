@@ -57,7 +57,7 @@ class AbstractModelFactory {
    *
    * This function is used to get objects from a certain type from db resourcebundle_get_error_message
    *
-   * @return s An object of the factories type
+   * @return Object s An object of the factories type
    */
   abstract function createObjectFromDict($pk, $dict);
   
