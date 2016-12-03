@@ -19,10 +19,42 @@ class ConfigHandler implements Handler {
       case 'rebuildcache':
         $this->rebuildCache();
         break;
+      case 'rescanfiles':
+        $this->scanFiles();
+        break;
       default:
         UI::addMessage("danger", "Invalid action!");
         break;
       //TODO: implement the handler for the global actions -> see issue #18
+    }
+  }
+  
+  private function scanFiles(){
+    global $FACTORIES;
+    
+    $allOk = true;
+    $files = $FACTORIES::getFileFactory()->filter(array());
+    foreach($files as $file){
+      $absolutePath = dirname(__FILE__)."/../../files/".$file->getFilename();
+      if(!file_exists($absolutePath)){
+        UI::addMessage("danger", "File ".$file->getName()." does not exist!");
+        $allOk = false;
+        continue;
+      }
+      $size = Util::filesize($absolutePath);
+      if($size == -1){
+        $allOk = false;
+        UI::addMessage("danger", "Failed to determine file size of ".$file->getName());
+      }
+      else if($size != $file->getSize()){
+        $allOk = false;
+        UI::addMessage("warning", "File size mismatch of ".$file->getFilename().", will be corrected.");
+        $file->setSize($size);
+        $FACTORIES::getFileFactory()->save($file);
+      }
+    }
+    if($allOk){
+      UI::addMessage("success", "File scan was successfull, no actions required!");
     }
   }
   
