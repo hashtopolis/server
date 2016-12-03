@@ -22,7 +22,8 @@ if (isset($_POST['action'])) {
   Util::refresh();
 }
 
-$allTasks = $FACTORIES::getTaskFactory()->filter(array());
+$qF = new QueryFilter("hashlistId", null, "<>");
+$allTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
 
 if (isset($_GET['id'])) {
   //show agent detail

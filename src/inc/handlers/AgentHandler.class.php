@@ -194,6 +194,13 @@ class AgentHandler implements Handler {
   private function toggleActive() {
     global $FACTORIES;
     
+    if($this->agent == null){
+      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+      if($this->agent == null){
+        UI::printError("ERROR", "Invalid agent!");
+      }
+    }
+    
     if ($this->agent->getIsActive() == 1) {
       $this->agent->setIsActive(0);
     }
