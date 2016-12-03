@@ -189,11 +189,13 @@ class AgentHandler implements Handler {
     foreach($chunks as $chunk){
       $chunkIds[] = $chunk->getId();
     }
-    $containFilter = new ContainFilter("chunkId", $chunkIds);
-    $FACTORIES::getHashFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
-    $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
-    $uS = new UpdateSet("agentId", null);
-    $FACTORIES::getChunkFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
+    if(sizeof($chunks) > 0) {
+      $containFilter = new ContainFilter("chunkId", $chunkIds);
+      $FACTORIES::getHashFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
+      $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
+      $uS = new UpdateSet("agentId", null);
+      $FACTORIES::getChunkFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
+    }
     $FACTORIES::getAgentFactory()->delete($agent);
   }
   
