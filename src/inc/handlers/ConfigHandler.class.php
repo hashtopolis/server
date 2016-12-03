@@ -22,6 +22,9 @@ class ConfigHandler implements Handler {
       case 'rescanfiles':
         $this->scanFiles();
         break;
+      case 'clearall':
+        $this->clearAll();
+        break;
       default:
         UI::addMessage("danger", "Invalid action!");
         break;
