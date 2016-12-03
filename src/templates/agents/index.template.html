@@ -60,7 +60,7 @@
           <form id="assign[[set.getVal('agent').getId()]]" action="agents.php" method="post">
             <input type='hidden' name='action' value='agentassign'>
             <input type='hidden' name='agentId' value='[[set.getVal('agent').getId()]]'>
-            <select class="form-control" name='task' size='1' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
+            <select class="form-control" name='task' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
               <option value="">(unassigned)</option>
               {{FOREACH task;[[allTasks]]}}
                 <option value='[[task.getId()]]' {{IF [[task.getId()]]== [[set.getVal('taskId')]]}} selected{{ENDIF}}>[[task.getTaskName()]]</option>

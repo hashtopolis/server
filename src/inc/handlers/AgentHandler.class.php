@@ -145,7 +145,7 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     AbstractModelFactory::getDB()->query("START TRANSACTION");
-    if ($this->deleteDependencies()) {
+    if ($this->deleteDependencies($this->agent)) {
       AbstractModelFactory::getDB()->query("COMMIT");
     }
     else {
@@ -169,26 +169,32 @@ class AgentHandler implements Handler {
     $FACTORIES::getRegVoucherFactory()->save($voucher);
   }
   
-  private function deleteDependencies() {
+  private function deleteDependencies($agent) {
     global $FACTORIES;
     
-    //TODO: update agant deletion function
+    if($agent == null){
+      $agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+      if($agent == null){
+        UI::printError("ERROR", "Invalid agent!");
+      }
+    }
     
-    $DB = AbstractModelFactory::getDB();
-    
-    $vysledek1 = $DB->query("DELETE FROM assignments WHERE agent=" . $agent->getId());
-    $vysledek2 = $vysledek1 && $DB->query("DELETE FROM errors WHERE agent=" . $agent->getId());
-    $vysledek3 = $vysledek2 && $DB->query("DELETE FROM hashlistusers WHERE agent=" . $agent->getId());
-    $vysledek4 = $vysledek3 && $DB->query("DELETE FROM zapqueue WHERE agent=" . $agent->getId());
-    
-    // orphan the chunks
-    $vysledek5 = $vysledek4 && $DB->query("UPDATE hashes JOIN chunks ON hashes.chunk=chunks.id AND chunks.agent=" . $agent->getId() . " SET chunk=NULL");
-    $vysledek6 = $vysledek5 && $DB->query("UPDATE hashes_binary JOIN chunks ON hashes_binary.chunk=chunks.id AND chunks.agent=" . $agent->getId() . " SET chunk=NULL");
-    $vysledek7 = $vysledek6 && $DB->query("UPDATE chunks SET agent=NULL WHERE agent=" . $agent->getId());
-    
-    $vysledek8 = $vysledek7 && $DB->query("DELETE FROM agents WHERE id=" . $agent->getId());
-    
-    return ($vysledek8);
+    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => $qF));
+    //TODO: delete from Zap
+    $uS = new UpdateSet("chunkId", null);
+    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+    $chunkIds = array();
+    foreach($chunks as $chunk){
+      $chunkIds[] = $chunk->getId();
+    }
+    $containFilter = new ContainFilter("chunkId", $chunkIds);
+    $FACTORIES::getHashFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
+    $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
+    $uS = new UpdateSet("agentId", null);
+    $FACTORIES::getChunkFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
+    $FACTORIES::getAgentFactory()->delete($agent);
   }
   
   private function toggleActive() {
