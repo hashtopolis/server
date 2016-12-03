@@ -52,9 +52,9 @@
 		</tr>
 		<tr>
 			<td>
-				<form action='config.php' method='post'>
+				<form action='config.php' method='post' onSubmit='if(prompt("Do you really want to delete everything? Enter OK to confirm.") != "OK")return false'>
 					<input type='hidden' name='action' value='clearall'>
-					<input type='submit' class='btn btn-danger' onSubmit='if(prompt("Do you really want to delete everything? Enter OK to confirm.") != "OK")return false' value='Clear all'>
+					<input type='submit' class='btn btn-danger' value='Clear all'>
 				</form>
 			</td>
 			<td>Erases all hashlists, tasks (not pre-configured) and chunks of those tasks.</td>
