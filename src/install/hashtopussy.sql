@@ -136,6 +136,13 @@ CREATE TABLE `Hashlist` (
   `isSalted` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
+CREATE TABLE `AgentBinary` (
+  `agentBinaryId` int(11) NOT NULL,
+  `language` varchar(30) NOT NULL,
+  `operatingSystems` varchar(30) NOT NULL,
+  `filename` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
 CREATE TABLE `HashlistAgent` (
   `hashlistAgentId` int(11) NOT NULL,
   `hashlistId` int(11) NOT NULL,
@@ -386,6 +393,9 @@ ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`);
 
+ALTER TABLE `AgentBinary`
+  ADD PRIMARY KEY (`agentBinaryId`);
+
 ALTER TABLE `Assignment`
   ADD PRIMARY KEY (`assignmentId`),
   ADD KEY `taskId` (`taskId`),
@@ -471,6 +481,9 @@ ALTER TABLE `User`
 
 ALTER TABLE `Agent`
   MODIFY `agentId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `AgentBinary`
+  MODIFY `agentBinaryId` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `Assignment`
   MODIFY `assignmentId` int(11) NOT NULL AUTO_INCREMENT;

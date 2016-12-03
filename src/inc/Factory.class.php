@@ -4,6 +4,7 @@
  */
 class Factory{
 	private static $agentFactory = null;
+	private static $agentBinaryFactory = null;
 	private static $assignmentFactory = null;
 	private static $chunkFactory = null;
 	private static $configFactory = null;
@@ -35,6 +36,17 @@ class Factory{
 		}
 		else{
 			return self::$agentFactory;
+		}
+	}
+
+	public static function getAgentBinaryFactory(){
+		if(self::$agentBinaryFactory == null){
+			$f = new AgentBinaryFactory();
+			self::$agentBinaryFactory = $f;
+			return $f;
+		}
+		else{
+			return self::$agentBinaryFactory;
 		}
 	}
 

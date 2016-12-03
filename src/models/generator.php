@@ -22,6 +22,12 @@ $CONF['Agent'] = array(
   'userId',
   'cpuOnly'
 );
+$CONF['AgentBinary'] = array(
+  'agentBinaryId',
+  'language',
+  'operatingSystems',
+  'filename'
+);
 $CONF['Assignment'] = array(
   'assignmentId',
   'taskId',
