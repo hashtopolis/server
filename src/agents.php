@@ -62,6 +62,8 @@ else if(isset($_GET['new'])){
   $TEMPLATE = new Template("agents/new");
   $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
   $OBJECTS['vouchers'] = $vouchers;
+  $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
+  $OBJECTS['agentBinaries'] = $binaries;
 }
 else {
   $oF = new OrderFilter("agentId", "ASC");

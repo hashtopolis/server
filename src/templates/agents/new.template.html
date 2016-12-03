@@ -3,9 +3,26 @@
 <h2>Add new agent</h2>
 {%TEMPLATE->struct/messages%}
 <div class='alert alert-info'>
-	To add new agents provide them with a valid voucher and the following link to download the client:<br>
-	<a href='server.php?a=update'>Download Agent</a><br><br>
+	To add new agents provide them with a valid voucher and download a client.<br><br>
 	Used vouchers are automaticaly deleted to prevent double spending.
+</div>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		{{FOREACH binary;[[agentBinaries]]}}
+      <tr>
+        <td>[[binary.getId()]]</td>
+        <td>[[binary.getLanguage()]]</td>
+        <td>[[binary.getOperatingSystems()]]</td>
+        <td>
+          <form action="agents.php?new=true" method="POST">
+            <input type="hidden" name="action" value="downloadagent">
+            <input type="hidden" name="binary" value="[[binary.getId()]]">
+            <input type="submit" class='btn btn-primary' value="Download">
+          </form>
+        </td>
+      </tr>
+    {{ENDFOREACH}}
+	</table>
 </div>
 {{IF [[sizeof([[vouchers]])]] > 0}}
 	<div class="panel panel-default">
@@ -15,7 +32,7 @@
 					<td><code>[[voucher.getVoucher()]]</code></td>
           			<td>[[date([[config.getVal('timefmt')]], [[voucher.getTime()]])]]</td>
           			<td>
-          				<form action="newagent.php" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
+          				<form action="agents.php?new=true" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
           					<input type="hidden" name="action" value="voucherdelete">
           					<input type="hidden" name="voucher" value="[[voucher.getId()]]">
           					<input type="submit" class='btn btn-danger' value="Delete">
