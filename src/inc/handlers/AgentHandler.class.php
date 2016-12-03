@@ -197,6 +197,7 @@ class AgentHandler implements Handler {
       $FACTORIES::getChunkFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
     }
     $FACTORIES::getAgentFactory()->delete($agent);
+    return true;
   }
   
   private function toggleActive() {
