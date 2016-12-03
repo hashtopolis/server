@@ -9,11 +9,19 @@
 <h3>Clients</h3>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
+    <tr>
+      <th>ID</th>
+      <th>Programming Language</th>
+      <th>Operating Systems</th>
+      <th>Filename</th>
+      <th>&nbsp;</th>
+    </tr>
 		{{FOREACH binary;[[agentBinaries]]}}
       <tr>
         <td>[[binary.getId()]]</td>
         <td>[[binary.getLanguage()]]</td>
         <td>[[binary.getOperatingSystems()]]</td>
+        <td>[[binary.getFilename()]]</td>
         <td>
           <form action="agents.php?new=true" method="POST">
             <input type="hidden" name="action" value="downloadagent">
