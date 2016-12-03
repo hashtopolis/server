@@ -40,8 +40,8 @@
 	<br>
 	The application has two parts:
 	<ul>
-		<li><b>Agent</b> Multiple clients (C#, Python, PHP) easily customizable to suite any need.
-		<br></li>
+		<li><b>Agent</b> Multiple clients (C#, Python, PHP) easily customizable to suite any need.</li>
+		<br>
 		<li><b>Server</b> several PHP/CSS files operating on two endpoints: Admin
 			Gui and Agent Connection Point</li>
 	</ul>
@@ -87,8 +87,10 @@
 		<li>MySQL 5.x with r/w access for the web directory</li>
 		<li>MySQL user with all privileges for used database and global FILE privilege</li>
 		<li>Make sure apparmor is allowing MySQL FILE permissions</li>
-	</ul><br>
-	<b>Agent</b><br>
+	</ul>
+	<br>
+	<b>Agent</b>
+	<br>
 	<ul>
 		<li><b>This section will need an entire change when agents are coded and working</b></li>
 		<li><b>.NET 2.0 compatible environment (MS .NET 2.0 or Mono 2.0)</b> On
@@ -136,11 +138,11 @@
 <div class='alert alert-neutral'>
 	<li>One of the largest differences between hashtopus and hashtopussy is user accounts. These accounts allow you to set user privileges to specific users.</li>
 	<ul>
-		<li>View user (1): This user can only see their own account information and Tasks this includes task progress and number of cracks. They cannot see plain text password cracks or any other information.</li>
-		<li>Read only user (5): Has the same permissions as lower users (1) plus they can see Hashlists, Superhashlists, Tasks, Chunk Activity and Llain text password cracks</li>
-		<li>Normal User (20): Has the same permissions as lower users (1,5) plus access to Agent Data, Files, Hashcat Releases. User can Create Tasks, Preconf Tasks, Supertasks, Hashlists, and Superhashlists.  User cannot create Agents, Hashcat Releases, Modify agents they do not own, or Create other users</li>
-		<li>Superuser (30): Has read/write on everything except creating other users or modifying user accounts</li>
-		<li>Admin (50): All hail our dark lord and master!</li>
+		<li><b>View user (1):</b> This user can only see their own account information and Tasks this includes task progress and number of cracks. They cannot see plain text password cracks or any other information.</li>
+		<li><b>Read only user (5):</b> Has the same permissions as lower users (1) plus they can see Hashlists, Superhashlists, Tasks, Chunk Activity and Llain text password cracks</li>
+		<li><b>Normal User (20):</b> Has the same permissions as lower users (1,5) plus access to Agent Data, Files, Hashcat Releases. User can Create Tasks, Preconf Tasks, Supertasks, Hashlists, and Superhashlists.  User cannot create Agents, Hashcat Releases, Modify agents they do not own, or Create other users</li>
+		<li><b>Superuser (30):</b> Has read/write on everything except creating other users or modifying user accounts</li>
+		<li><b>Admin (50):</b> All hail our dark lord and master!</li>
 	</ul>
 </div>
 <h3>Pre-configured tasks</h3>
@@ -153,8 +155,7 @@
 </div>
 <hr>
 <h1>Features documentation</h1>
-<div class='alert alert-neutral'>
-</div>
+<br>
 <h3>Server configuration</h3>
 <div class='alert alert-neutral'>
 Allows you to set configuration values for your server.
@@ -185,7 +186,7 @@ Allows you to set configuration values for your server.
 	</ul>
 	Because these files will be delivered to every agent who needs them for their current task, you can compress them using 7Zip to save bandwidth.
 	<br>
-	However, you need to keep some basic rules: the file can't be in any subdirectory inside the archive and the algorithm needs to be LZMA (to be specific, it must be unpack-able by 7zr). 
+	The file can't be in any subdirectory inside the archive and the algorithm needs to be LZMA (to be specific, it must be unpack-able by 7zr). 
 	<br>
 	Every time an agent will download a file ending with .7z, it will first extract it prior to starting the task.
 	<br>
@@ -280,6 +281,7 @@ Allows you to set configuration values for your server.
 		<li><b>Last activity</b> Tells you what, when and from what IP has the agent done last.</li>
 		<li><b>Assignment</b> Shows you and lets you change agent's current assignment.</li>
 	</ul>
+	<br>
 	Important thing is that agent ID and Name are click-able, which will get you to agent detail page.
 	<br>
 	On this page, you can see all of the information from before plus some more.
@@ -373,6 +375,7 @@ Allows you to set configuration values for your server.
 	Let's assume you have created a hashlist and either assigned a bunch of pre-conf tasks to it or simply created new tasks from scratch, just for this hashlist.
 	You can see them in this very list. The information shown to you are:
 	<ul>
+		<br>
 		<li><b>Name</b> Name of the task that you specified or that was generated (hover mouse to get task command line pop-up).</li>
 		<li><b>Hashlist</b> Name of the (super)hashlist the task is cracking.</li>
 		<li><b>Chunks</b> Number of dispatched chunks and how long are they configured to take.</li>
@@ -393,6 +396,7 @@ Allows you to set configuration values for your server.
 		</ul>
 		<li><b>Action</b> As in every page, an option to delete the task.</li>
 	</ul>
+	<br>
 	Clicking on task name will take you to task detail, which is one of the	most important screens in the system.
 	<br>
 	You can see all the information about the task from the task list plus estimated and spent time, and current cracking speed.
@@ -409,6 +413,7 @@ Allows you to set configuration values for your server.
 	<br>
 	The table under it shows information about agents assigned to this task:
 	<ul>
+		<br>
 		<li><b>Name</b> Name of agent that will link you to agent detail.</li>
 		<li><b>Benchmark</b> How big chunk will be dispatched to this agent with the ability to set auto-adjusting of this size.
 		<br>If you have auto-adjusting disabled, feel free to modify this value as high performance systems require larger chunks to fully utilize all the GPU power.</li>
@@ -433,7 +438,6 @@ Allows you to set configuration values for your server.
                 <li><b>Dispatch time</b> When was the task given to the agent.</li>
 		<br>
 	</ul>
-		A good place to monitor overall cracking activity.
 </div>
 <hr>
 <h1>Command line</h1>
