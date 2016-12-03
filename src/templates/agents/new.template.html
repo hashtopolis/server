@@ -8,6 +8,7 @@
 </div>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
+    <h3>Clients</h3>
 		{{FOREACH binary;[[agentBinaries]]}}
       <tr>
         <td>[[binary.getId()]]</td>
@@ -25,6 +26,7 @@
 	</table>
 </div>
 {{IF [[sizeof([[vouchers]])]] > 0}}
+  <h3>Vouchers</h3>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			{{FOREACH voucher;[[vouchers]]}}
