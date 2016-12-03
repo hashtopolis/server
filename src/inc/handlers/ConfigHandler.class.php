@@ -33,8 +33,25 @@ class ConfigHandler implements Handler {
   
   private function clearAll(){
     global $FACTORIES;
-    
-    //TODO:
+  
+    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getHashFactory()->massDeletion(array());
+    $FACTORIES::getHashBinaryFactory()->massDeletion(array());
+    $FACTORIES::getAssignmentFactory()->massDeletion(array());
+    $FACTORIES::getAgentErrorFactory()->massDeletion(array());
+    $FACTORIES::getChunkFactory()->massDeletion(array());
+    $FACTORIES::getZapFactory()->massDeletion(array());
+    $qF = new QueryFilter("hashlistId", null, "<>");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
+    $taskIds = array();
+    foreach($tasks as $task){
+      $taskIds[] = $task->getId();
+    }
+    $containFilter = new ContainFilter("taskId", $taskIds);
+    $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $containFilter));
+    $FACTORIES::getTaskFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getHashlistFactory()->massDeletion(array());
+    AbstractModelFactory::getDB()->query("COMMIT");
   }
   
   private function scanFiles(){
