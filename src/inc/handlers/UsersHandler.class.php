@@ -167,7 +167,7 @@ class UsersHandler implements Handler {
     }
     
     $qF = new QueryFilter("userId", $user->getId(), "=");
-    $uS = new UpdateSet("userId", "0");
+    $uS = new UpdateSet("userId", null);
     $FACTORIES::getAgentFactory()->massUpdate(array('filter' => array($qF), 'update' => array($uS)));
     $FACTORIES::getUserFactory()->delete($user);
     UI::addMessage("success", "User was deleted successfully!");
