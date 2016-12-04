@@ -361,7 +361,7 @@ class HashlistHandler implements Handler {
     fclose($file);
     usleep(1000000);
     
-    $file = new File(0, "Pre-cracked_" . $tmpname, Util::filesize($tmpfile), $this->hashlist->getSecret(), 0);
+    $file = new File(0, $tmpname, Util::filesize($tmpfile), $this->hashlist->getSecret(), 0);
     $FACTORIES::getFileFactory()->save($file);
     UI::addMessage("success", "Cracked hashes from hashlist exported successfully!");
   }
