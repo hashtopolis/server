@@ -75,7 +75,7 @@ class ConfigHandler implements Handler {
         $allOk = false;
         UI::addMessage("warning", "File size mismatch of ".$file->getFilename().", will be corrected.");
         $file->setSize($size);
-        $FACTORIES::getFileFactory()->save($file);
+        $FACTORIES::getFileFactory()->update($file);
       }
     }
     if($allOk){
