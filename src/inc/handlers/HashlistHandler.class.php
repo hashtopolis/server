@@ -340,7 +340,7 @@ class HashlistHandler implements Handler {
       foreach($entries as $entry){
         switch($format->getFormat()){
           case 0:
-            if($this->hashlist->isSalted()){
+            if($this->hashlist->getIsSalted()){
               $buffer .= $entry->getHash().$separator.$entry->getSalt().$separator.$entry->getPlaintext()."\n";
             }
             else{
