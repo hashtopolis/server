@@ -310,7 +310,8 @@ class HashlistHandler implements Handler {
       UI::printError("ERROR", "Invalid hashlist!");
     }
     $hashlists = Util::checkSuperHashlist($this->hashlist);
-    $tmpfile = dirname(__FILE__)."/../../files/Pre-cracked_" . $this->hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
+    $tmpname = "Pre-cracked_" . $this->hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
+    $tmpfile = dirname(__FILE__)."/../../files/$tmpname";
     $factory = $FACTORIES::getHashFactory();
     $format = $FACTORIES::getHashlistFactory()->get($hashlists[0]->getId());
     if($format->getFormat() != 0){
@@ -360,7 +361,7 @@ class HashlistHandler implements Handler {
     fclose($file);
     usleep(1000000);
     
-    $file = new File(0, "Pre-cracked_" . $this->hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt", Util::filesize($tmpfile), $this->hashlist->getSecret(), 0);
+    $file = new File(0, "Pre-cracked_" . $tmpname, Util::filesize($tmpfile), $this->hashlist->getSecret(), 0);
     $FACTORIES::getFileFactory()->save($file);
     UI::addMessage("success", "Cracked hashes from hashlist exported successfully!");
   }
@@ -683,7 +684,8 @@ class HashlistHandler implements Handler {
     }
     
     $wordlistName = "Wordlist_" . $this->hashlist->getId() . "_" . date("d.m.Y_H.i.s") . ".txt";
-    $wordlistFile = fopen(dirname(__FILE__)."/../../files/" . $wordlistName, "wb");
+    $wordlistFilename = dirname(__FILE__)."/../../files/" . $wordlistName;
+    $wordlistFile = fopen($wordlistFilename, "wb");
     if($wordlistFile === false){
       UI::printError("ERROR", "Failed to write wordlist file!");
     }
@@ -719,7 +721,7 @@ class HashlistHandler implements Handler {
     fclose($wordlistFile);
     
     //add file to files list
-    $file = new File(0, $wordlistName, Util::filesize(dirname(__FILE__)."/../../$wordlistName"), $this->hashlist->getSecret(), 0);
+    $file = new File(0, $wordlistName, Util::filesize($wordlistFilename), $this->hashlist->getSecret(), 0);
     $FACTORIES::getFileFactory()->save($file);
     UI::addMessage("success", "Exported $wordCount found plains to $wordlistName successfully!");
   }
