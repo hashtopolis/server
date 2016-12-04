@@ -338,7 +338,7 @@ class HashlistHandler implements Handler {
       $entries = $factory->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
       $buffer = "";
       foreach($entries as $entry){
-        switch($format){
+        switch($format->getFormat()){
           case 0:
             if($this->hashlist->isSalted()){
               $buffer .= $entry->getHash().$separator.$entry->getSalt().$separator.$entry->getPlaintext()."\n";
