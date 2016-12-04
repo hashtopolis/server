@@ -62,7 +62,7 @@ class ConfigHandler implements Handler {
     foreach($files as $file){
       $absolutePath = dirname(__FILE__)."/../../files/".$file->getFilename();
       if(!file_exists($absolutePath)){
-        UI::addMessage("danger", "File ".$file->getName()." does not exist!");
+        UI::addMessage("danger", "File ".$file->getFilename()." does not exist!");
         $allOk = false;
         continue;
       }
