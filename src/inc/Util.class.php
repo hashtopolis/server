@@ -14,7 +14,7 @@ class Util {
       $impfiles = array();
       while ($f = readdir($impdir)) {
         if ($f[0] != '.' && $f != "." && $f != ".." && !is_dir($f)) {
-          $impfiles[] = $f;
+          $impfiles[] = array($f, Util::filesize($impdir."/".$f));
         }
       }
       return $impfiles;
