@@ -9,12 +9,13 @@
 class Util {
   
   public static function scanImportDirectory() {
-    if (file_exists(dirname(__FILE__) . "/../import") && is_dir(dirname(__FILE__) . "/../import")) {
-      $impdir = opendir(dirname(__FILE__) . "/../import");
+    $directory = dirname(__FILE__) . "/../import";
+    if (file_exists($directory) && is_dir($directory)) {
+      $impdir = opendir($directory);
       $impfiles = array();
       while ($f = readdir($impdir)) {
         if ($f[0] != '.' && $f != "." && $f != ".." && !is_dir($f)) {
-          $impfiles[] = new DataSet(array("file" => $f, "size" => Util::filesize($impdir."/".$f)));
+          $impfiles[] = new DataSet(array("file" => $f, "size" => Util::filesize($directory."/".$f)));
         }
       }
       return $impfiles;
