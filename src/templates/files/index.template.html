@@ -100,8 +100,8 @@
 				{{FOREACH impfile;[[impfiles]]}}
 					<tr>
 						<td>
-							<input type="checkbox" name="imfile[]" value="[[impfile[0] ]]">
-							[[impfile[0] ]] ([[Util::nicenum([[impfile[1] ]])]]B)
+							<input type="checkbox" name="imfile[]" value="[[impfile.getVal('file')]]">
+							[[impfile.getVal('file')]] ([[Util::nicenum([[impfile.getVal('size')]])]]B)
 						</td>
 					</tr>
 				{{ENDFOREACH}}
