@@ -185,7 +185,7 @@ class API {
       // we need to create a new chunk
       $remaining = $task->getKeyspace() - $task->getProgress();
       if ($remaining > 0) {
-        $length = min($remaining, $agent->getBenchmark());
+        $length = min($remaining, $assignment->getBenchmark());
         if ($remaining / $length <= $disptolerance) {
           $length = $remaining;
         }
