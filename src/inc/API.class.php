@@ -199,6 +199,7 @@ class API {
         $workChunk = $chunk;
       }
     }
+    AbstractModelFactory::getDB()->query("COMMIT");
     
     //send answer
     API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $workChunk->getId(), "skip" => $workChunk->getSkip(), "length" => $workChunk->getLength()));
