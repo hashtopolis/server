@@ -55,7 +55,7 @@ class API {
       $assignment->setBenchmark($speed);
       $FACTORIES::getAssignmentFactory()->update($assignment);
     }
-    API::sendResponse(array("action" => "bench", "respone" => "SUCCESS", "benchmark" => "OK"));
+    API::sendResponse(array("action" => "bench", "response" => "SUCCESS", "benchmark" => "OK"));
   }
   
   public static function setKeyspace($QUERY) {
