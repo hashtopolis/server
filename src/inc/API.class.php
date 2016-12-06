@@ -23,7 +23,7 @@ class API {
     global $FACTORIES, $CONFIG;
     
     // agent submits benchmark for task
-    $task = $FACTORIES::getTaskFactory()->get($_GET["taskId"]);
+    $task = $FACTORIES::getTaskFactory()->get($QUERY["taskId"]);
     if ($task == null) {
       API::sendErrorResponse("bench", "Invalid task ID!");
     }
@@ -36,41 +36,23 @@ class API {
       API::sendErrorResponse("keyspace", "You are not assigned to this task!");
     }
     
-    $benchmarkProgress = floatval($_GET['progress']);
-    $benchmarkTotal = floatval($_GET['total']);
-    $state = intval($_GET['state']);
+    $speed = intval($QUERY['speed']);
     
-    if ($benchmarkProgress <= 0) {
+    if ($speed <= 0) {
       $agent->setIsActive(0);
       $FACTORIES::getAgentFactory()->update($agent);
       API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
     }
     $keyspace = $task->getKeyspace();
-    if ($state == 4 || $state == 5) {
-      //the benchmark reached the end of the task
-      $benchmarkProgress = $benchmarkTotal;
+    if($speed > $keyspace){
+      $speed = $keyspace;
     }
-    
-    if ($state == 6) {
-      // the bench ended the right way (aborted)
-      // extrapolate from $benchtime to $chunktime
-      $benchmarkProgress = $benchmarkProgress / ($benchmarkTotal / $keyspace);
-      $benchmarkProgress = round(($benchmarkProgress / $CONFIG->getVal('benchtime')) * $task->getChunkTime());
-    }
-    else if ($benchmarkProgress == $benchmarkTotal) {
-      $benchmarkProgress = $keyspace;
-    }
-    else {
-      //problematic
-      $benchmarkProgress = 0;
-    }
-    
-    if ($benchmarkProgress <= 0) {
+    if ($speed <= 0) {
       API::sendErrorResponse("bench", "Benchmark was not correctly!");
     }
     else {
       $assignment->setSpeed(0);
-      $assignment->setBenchmark($benchmarkProgress);
+      $assignment->setBenchmark($speed);
       $FACTORIES::getAssignmentFactory()->update($assignment);
     }
     API::sendResponse(array("action" => "bench", "respone" => "SUCCESS", "benchmark" => "OK"));
