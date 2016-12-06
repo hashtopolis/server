@@ -190,7 +190,7 @@ class API {
           $length = $remaining;
         }
         
-        $start = $task->getProgess();
+        $start = $task->getProgress();
         $newProgress = $task->getProgress() + $length;
         $task->setProgress($newProgress);
         $FACTORIES::getTaskFactory()->update($task);
