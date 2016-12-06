@@ -588,10 +588,16 @@ class API {
     else {
       //check if the agent is assigned to the correct task, if not assign him the right one
       $task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+      $qF = new QueryFilter("taskId", $task->getId(), "=");
+      $chunks = $FACTORIES::getChunkFactory()->filter(array($qF));
+      $sumProgress = 0;
+      foreach($chunks as $chunk){
+        $sumProgress += $chunk->getProgress();
+      }
       $finished = false;
       
       //check if the task is finished
-      if ($task->getKeyspace() == $task->getProgress() && $task->getKeyspace() != 0) {
+      if ($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) {
         //task is finished
         $task->setPriority(0);
         $FACTORIES::getTaskFactory()->update($task);
