@@ -56,10 +56,10 @@ foreach ($chunks as $chunk) {
   }
   
   if ($end - $start < 3) {
-    if ($chunk['state'] >= 6) {
+    if ($chunk->getState() >= 6) {
       imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);
     }
-    else if ($chunk['cracked'] > 0) {
+    else if ($chunk->getCracked() > 0) {
       imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $green);
     }
     else {
@@ -67,13 +67,13 @@ foreach ($chunks as $chunk) {
     }
   }
   else {
-    if ($chunk['state'] >= 6) {
+    if ($chunk->getState() >= 6) {
       imagerectangle($image, $start, 0, $end, ($size[1] - 1), $red);
     }
     else {
       imagerectangle($image, $start, 0, $end, ($size[1] - 1), $grey);
     }
-    if ($chunk['cracked'] > 0) {
+    if ($chunk->getCracked() > 0) {
       imagefilledrectangle($image, $start + 1, 1, $current - 1, $size[1] - 2, $green);
     }
     else {
