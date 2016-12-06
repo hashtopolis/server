@@ -675,7 +675,7 @@ class API {
     }
     
     $qF = new QueryFilter("token", $token, "=");
-    $agent = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF), true);
+    $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
     if ($agent == null) {
       API::sendErrorResponse($action, "Invalid agent token" . $token);
     }
