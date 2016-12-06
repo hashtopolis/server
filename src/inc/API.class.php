@@ -80,7 +80,7 @@ class API {
     global $FACTORIES;
     
     // agent submits keyspace size for this task
-    $keyspace = floatval($_GET["keyspace"]);
+    $keyspace = intval($QUERY["keyspace"]);
     $task = $FACTORIES::getTaskFactory()->get($QUERY['taskId']);
     if ($task == null) {
       API::sendErrorResponse("keyspace", "Invalid task ID!");
