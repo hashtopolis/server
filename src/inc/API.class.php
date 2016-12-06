@@ -768,6 +768,10 @@ class API {
     }
     
     $hlistar = Util::checkSuperHashlist($hashList);
+    $hlistarIds = array();
+    foreach($hlistar as $hl){
+      $hlistarIds[] = $hl->getId();
+    }
     $format = $FACTORIES::getHashlistFactory()->get($hlistar[0])->getFormat();
     
     // reset values
@@ -796,7 +800,7 @@ class API {
           //replace hash + salt from the line -> plaintext remains
           // save regular password
           $hashFilter = new QueryFilter("hash", $splitLine[0], "=");
-          $hashListFilter = new ContainFilter("hashlistId", $hlistar);
+          $hashListFilter = new ContainFilter("hashlistId", $hlistarIds);
           $isCrackedFilter = new QueryFilter("isCracked", 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array("filter" => array($isCrackedFilter, $hashFilter, $hashListFilter)));
           $salt = $hashes[0]->getSalt();
@@ -892,7 +896,7 @@ class API {
     $hashlists = Util::checkSuperHashlist($hashList);
     $hashlistIds = array();
     foreach($hashlists as $hl){
-      $hashlistIds[] = $hl;
+      $hashlistIds[] = $hl->getId();
     }
     $toZap = array();
     switch ($state) {
