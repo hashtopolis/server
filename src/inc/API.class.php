@@ -779,7 +779,7 @@ class API {
     $errors = 0;
     $cracked = array();
     foreach ($hlistar as $l) {
-      $cracked[$l] = 0;
+      $cracked[$l->getId()] = 0;
     }
     
     // process solved hashes, should there be any
@@ -803,6 +803,9 @@ class API {
           $hashListFilter = new ContainFilter("hashlistId", $hlistarIds);
           $isCrackedFilter = new QueryFilter("isCracked", 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array("filter" => array($isCrackedFilter, $hashFilter, $hashListFilter)));
+          if(sizeof($hashes) == 0){
+            continue;
+          }
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
             // unsalted hashes
