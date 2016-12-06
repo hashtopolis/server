@@ -109,6 +109,9 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $dispatched = 0;
     foreach ($chunks as $chunk) {
+      if($chunk->getAgentId() == $agent->getId() && $chunk->getLength() != $chunk->getProgress()){
+        API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $chunk->getId(), "skip" => $chunk->getSkip(), "length" => $chunk->getLength()));
+      }
       $dispatched += $chunk->getLength();
     }
     if ($assignment == null) {
