@@ -772,7 +772,7 @@ class API {
     foreach($hlistar as $hl){
       $hlistarIds[] = $hl->getId();
     }
-    $format = $FACTORIES::getHashlistFactory()->get($hlistar[0])->getFormat();
+    $format = $FACTORIES::getHashlistFactory()->get($hlistar[0]->getId())->getFormat();
     
     // reset values
     $skipped = 0;
