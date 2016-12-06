@@ -80,6 +80,9 @@ class FileHandler implements Handler {
       case "import":
         // from import dir
         $imports = $_POST["imfile"];
+        if(!$imports){
+          break;
+        }
         foreach ($imports as $import) {
           if ($import[0] == '.') {
             continue;
