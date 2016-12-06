@@ -802,11 +802,11 @@ class API {
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
             // unsalted hashes
-            $plain = str_replace($hashes[0]->getHash() . ':', "", $dataElement);
+            $plain = str_replace($hashes[0]->getHash() . ':', "", $crackedHash);
           }
           else {
             // salted hashes
-            $plain = str_replace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $dataElement);
+            $plain = str_replace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $crackedHash);
           }
           if (sizeof($hashes) == 0) {
             $skipped++;
@@ -890,6 +890,10 @@ class API {
     }
     
     $hashlists = Util::checkSuperHashlist($hashList);
+    $hashlistIds = array();
+    foreach($hashlists as $hl){
+      $hashlistIds[] = $hl;
+    }
     $toZap = array();
     switch ($state) {
       case 4:
@@ -907,7 +911,7 @@ class API {
       case 5:
         // the chunk has finished (cracked whole hashList)
         // deprioritize all tasks and unassign all agents
-        $qF = new ContainFilter("hashlistId", $hashlists);
+        $qF = new ContainFilter("hashlistId", $hashlistIds);
         $uS = new UpdateSet("priority", "0");
         $FACTORIES::getTaskFactory()->massUpdate(array('update' => $uS, 'filter' => $qF));
         
@@ -921,7 +925,7 @@ class API {
       default:
         // the chunk isn't finished yet, we will send zaps
         $qF1 = new ComparisonFilter("cracked", "hashCount", "<");
-        $qF2 = new ContainFilter("hashlistId", $hashlists);
+        $qF2 = new ContainFilter("hashlistId", $hashlistIds);
         $count = $FACTORIES::getHashlistFactory()->countFilter(array('filter' => array($qF1, $qF2)));
         if ($count == 0) {
           //stop agent
@@ -930,7 +934,7 @@ class API {
         $assignment->setSpeed($speed);
         $FACTORIES::getAssignmentFactory()->update($assignment);
         
-        $qF1 = new ContainFilter("hashlistId", $hashlists);
+        $qF1 = new ContainFilter("hashlistId", $hashlistIds);
         $qF2 = new QueryFilter("solveTime", $agent->getLastAct(), ">=");
         $zaps = $FACTORIES::getZapFactory()->filter(array('filter' => array($qF1, $qF2)));
         foreach ($zaps as $zap) {
