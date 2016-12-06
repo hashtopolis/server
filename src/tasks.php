@@ -90,7 +90,7 @@ if (isset($_GET['id'])) {
   $qF = new QueryFilter("taskId", $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
   foreach($chunks as $chunk){
-    $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => getSolveTime());
+    $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime());
     $cProgress += $chunk->getProgress();
     if(!$agentsProgress->getVal($chunk->getAgentId())){
       $agentsProgress->addValue($chunk->getAgentId(), $chunk->getProgress());
