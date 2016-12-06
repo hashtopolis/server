@@ -99,7 +99,7 @@ class API {
       $task->setKeyspace($keyspace);
       $FACTORIES::getTaskFactory()->update($task);
     }
-    API::sendResponse(array("action" => "keyspace", "respone" => "SUCCESS", "keyspace" => "OK"));
+    API::sendResponse(array("action" => "keyspace", "response" => "SUCCESS", "keyspace" => "OK"));
   }
   
   public static function getChunk($QUERY) {
