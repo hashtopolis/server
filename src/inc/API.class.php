@@ -630,11 +630,13 @@ class API {
           $assignedTask = $task;
         }
         else{
-          $assignedTask = Util::getNextTask($agent);
           $qF = new QueryFilter("agentId", $agent->getId(), "=");
           $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
-          $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0, $task->getAutoadjust(), 0);
-          $FACTORIES::getAssignmentFactory()->save($assignment);
+          $assignedTask = Util::getNextTask($agent);
+          if($assignedTask != null) {
+            $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0, $task->getAutoadjust(), 0);
+            $FACTORIES::getAssignmentFactory()->save($assignment);
+          }
         }
       }
     }
