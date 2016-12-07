@@ -89,6 +89,7 @@ else {
         }
       }
       $taskId = $assignment->getTaskId();
+      $set->addValue("speed", $assignment->getSpeed());
     }
     $set->addValue("isWorking", $isWorking);
     $set->addValue("taskId", $taskId);

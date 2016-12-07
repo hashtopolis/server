@@ -31,7 +31,7 @@
             <img src="static/lock.gif" alt="Trusted">
           {{ENDIF}}
           {{IF [[set.getVal('isWorking')]] == 1}}
-            <img src="static/active.gif" alt="Active" title="[[Util::nicenum([[set.getVal('agent').getSpeed()]], 100000, 1000)]]H/s">
+            <img src="static/active.gif" alt="Active" title="[[Util::nicenum([[set.getVal('speed')]], 100000, 1000)]]H/s">
           {{ENDIF}}
           {{IF [[set.getVal('agent').getIsActive()]] == 0}}
             <img src="static/pause.gif" alt="Paused">
