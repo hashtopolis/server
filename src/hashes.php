@@ -83,8 +83,9 @@ else if (isset($_GET['task'])) {
   }
   $task = $joined['Task'];
   $list = $joined['Hashlist'];
-  if($list->getFormat() == 3){
-    $lists = Util::checkSuperHashlist($list);
+  $hashlist = $list[0];
+  if($hashlist->getFormat() == 3){
+    $lists = Util::checkSuperHashlist($hashlist);
     $hashlist = $lists[0];
   }
   if($hashlist->getFormat() == 0){
