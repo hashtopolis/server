@@ -593,7 +593,7 @@ class API {
       $task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
       $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
       $qF = new QueryFilter("taskId", $task->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($qF));
+      $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
       $sumProgress = 0;
       $chunkIds = array();
       foreach($chunks as $chunk){
