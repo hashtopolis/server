@@ -595,8 +595,10 @@ class API {
       $qF = new QueryFilter("taskId", $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($qF));
       $sumProgress = 0;
+      $chunkIds = array();
       foreach($chunks as $chunk){
         $sumProgress += $chunk->getProgress();
+        $chunkIds[] = $chunk->getId();
       }
       $finished = false;
       
@@ -604,6 +606,12 @@ class API {
       if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
         //task is finished
         $task->setPriority(0);
+        //TODO: make massUpdate
+        foreach($chunks as $chunk){
+          $chunk->setProgress($chunk->getLength());
+          $chunk->setRprogress(10000);
+          $FACTORIES::getChunkFactory()->update($chunk);
+        }
         $task->setProgress($task->getKeyspace());
         $FACTORIES::getTaskFactory()->update($task);
         $finished = true;
