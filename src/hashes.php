@@ -81,9 +81,8 @@ else if (isset($_GET['task'])) {
   if(sizeof($joined['Task']) == null){
     UI::printError("ERROR", "Invalid task!");
   }
-  $task = $joined['Task'];
-  $list = $joined['Hashlist'];
-  $hashlist = $list[0];
+  $task = $joined['Task'][0];
+  $hashlist = $joined['Hashlist'][0];
   if($hashlist->getFormat() == 3){
     $lists = Util::checkSuperHashlist($hashlist);
     $hashlist = $lists[0];
