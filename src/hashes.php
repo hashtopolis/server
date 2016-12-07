@@ -77,7 +77,7 @@ else if (isset($_GET['chunk'])) {
 else if (isset($_GET['task'])) {
   $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
   $qF = new QueryFilter("taskId", $_GET['task'], "=");
-  $joined = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF, 'join' => array($jF)));
+  $joined = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => array($jF)));
   if(sizeof($joined['Task']) == null){
     UI::printError("ERROR", "Invalid task!");
   }

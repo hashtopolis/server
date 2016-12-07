@@ -67,7 +67,7 @@ class Util {
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
     if ($entry == null) {
       $entry = new StoredValue("lastZapCleaning", 0);
-      $entry = $FACTORIES::getStoredValueFactory()->save($entry);
+      $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
       //TODO: zap cleaning

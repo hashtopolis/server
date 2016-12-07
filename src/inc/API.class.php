@@ -821,6 +821,7 @@ class API {
           foreach ($hashes as $hash) {  //TODO Mass-update
             $cracked[$hash->getHashlistId()]++;
             $hash->setPlaintext($plain);
+            $hash->setChunk($chunk->getId());
             $hash->setIsCracked(1);
             $FACTORIES::getHashFactory()->update($hash);
           }
@@ -842,6 +843,7 @@ class API {
           foreach ($hashes as $hash) {
             $cracked[$hash->getHashlistId()]++;
             $hash->setIsCracked(1);
+            $hash->setChunk($chunk->getId());
             $hash->setPlaintext($plain);
             $FACTORIES::getHashFactory()->update($hash);
           }
