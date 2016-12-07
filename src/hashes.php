@@ -58,8 +58,8 @@ else if (isset($_GET['chunk'])) {
   if(sizeof($joined['Chunk']) == null){
     UI::printError("ERROR", "Invalid chunk!");
   }
-  $chunk = $joined['Chunk'];
-  $list = $joined['Hashlist'];
+  $chunk = $joined['Chunk'][0];
+  $list = $joined['Hashlist'][0];
   if($list->getFormat() == 3){
     $lists = Util::checkSuperHashlist($list);
     $hashlist = $lists[0];
