@@ -49,12 +49,13 @@ class Util {
     $qF1 = new QueryFilter("priority", $priority, ">");
     $qF2 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
     $qF3 = new QueryFilter("isCpuTask", $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
+    $qF4 = new ComparisonFilter("cracked", "hashCount", "<");
     //$qF4 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
     $jF1 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
     //$jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
     //$jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
     $oF = new OrderFilter("priority", "DESC LIMIT 1");
-    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3), 'join' => array($jF1), 'order' => array($oF)));
+    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1), 'order' => array($oF)));
     if (sizeof($nextTask['Task']) > 0) {
       return $nextTask['Task'][0];
     }
