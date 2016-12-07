@@ -60,6 +60,7 @@ else if (isset($_GET['chunk'])) {
   }
   $chunk = $joined['Chunk'][0];
   $list = $joined['Hashlist'][0];
+  $hashlist = $list;
   if($list->getFormat() == 3){
     $lists = Util::checkSuperHashlist($list);
     $hashlist = $lists[0];
