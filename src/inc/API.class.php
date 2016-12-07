@@ -258,7 +258,7 @@ class API {
     $cpuOnly = 1;
     foreach ($gpu as $card) {
       $card = strtolower($card);
-      if ((strpos($card, "amd") !== false) || (strpos($card, "ati ") !== false) || (strpos($card, "radeon") !== false) || strpos($card, "nvidia") !== false) {
+      if ((strpos($card, "amd") !== false) || (strpos($card, "ati ") !== false) || (strpos($card, "radeon") !== false) || strpos($card, "nvidia") !== false || strpos($card, "gtx") !== false || strpos($card, "ti") !== false) {
         $cpuOnly = 0;
       }
     }
