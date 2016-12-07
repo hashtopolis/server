@@ -591,6 +591,7 @@ class API {
     else {
       //check if the agent is assigned to the correct task, if not assign him the right one
       $task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+      $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
       $qF = new QueryFilter("taskId", $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($qF));
       $sumProgress = 0;
@@ -600,14 +601,15 @@ class API {
       $finished = false;
       
       //check if the task is finished
-      if ($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) {
+      if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
         //task is finished
         $task->setPriority(0);
+        $task->setProgress($task->getKeyspace());
         $FACTORIES::getTaskFactory()->update($task);
         $finished = true;
       }
       
-      $highPriorityTask = Util::getNextTask($agent);
+      $highPriorityTask = Util::getNextTask($agent, $task->getPriority());
       if ($highPriorityTask != null) {
         //there is a more important task
         $FACTORIES::getAssignmentFactory()->delete($assignment);

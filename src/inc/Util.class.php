@@ -42,11 +42,11 @@ class Util {
     return true;
   }
   
-  public static function getNextTask($agent) {
+  public static function getNextTask($agent, $priority = 0) {
     global $FACTORIES;
     
     //TODO: handle the case, if a task is a single assignment task
-    $qF1 = new QueryFilter("priority", 0, ">");
+    $qF1 = new QueryFilter("priority", $priority, ">");
     $qF2 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
     $qF3 = new QueryFilter("isCpuTask", $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
     //$qF4 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
