@@ -52,7 +52,7 @@ if (isset($_GET['id'])) {
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $timeSpent = 0;
     foreach($chunks as $chunk){
-      $timeSpent += max($chunk->getSoleTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
+      $timeSpent += max($chunk->getSolveTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
     }
     $OBJECTS['chunks'] = $chunks;
     $OBJECTS['timeSpent'] = $timeSpent;
