@@ -8,6 +8,7 @@
 abstract
 class AbstractModelFactory {
   private static $dbh = null;
+  private static $query = null;
   
   /**
    * Return the Models name
@@ -51,6 +52,10 @@ class AbstractModelFactory {
    * is given
    */
   abstract function getNullObject();
+  
+  public static function getLastQuery(){
+    return self::$query;
+  }
   
   /**
    * This function inits, an objects values from a dict and returns it;
@@ -96,6 +101,7 @@ class AbstractModelFactory {
     $query = $query . " VALUES " . $placeHolder;
     
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     $result = $stmt->execute($vals);
     
@@ -149,6 +155,7 @@ class AbstractModelFactory {
     }
     
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     return $stmt;
@@ -182,7 +189,8 @@ class AbstractModelFactory {
     
     $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
     array_push($vals, $model->getPrimaryKeyValue());
-    
+  
+    self::$query = $query;
     $stmt = self::getDB()->prepare($query);
     return $stmt->execute($vals);
   }
@@ -233,7 +241,8 @@ class AbstractModelFactory {
     $query = $query . " FROM " . $this->getModelTable();
     
     $query = $query . " WHERE " . $this->getNullObject()->getPrimaryKey() . "=?";
-    
+  
+    self::$query = $query;
     $stmt = self::getDB()->prepare($query);
       $stmt->execute(array(
         $pk
@@ -334,6 +343,7 @@ class AbstractModelFactory {
       
     
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
@@ -392,6 +402,7 @@ class AbstractModelFactory {
     $query .= $this->applyOrder($options['order']);
     
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
@@ -509,6 +520,7 @@ class AbstractModelFactory {
       }
       
       $dbh = self::getDB();
+      self::$query = $query;
       $stmt = $dbh->prepare($query);
       $stmt->execute($vals);
       
@@ -559,6 +571,7 @@ class AbstractModelFactory {
     }
   
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
   
@@ -589,6 +602,7 @@ class AbstractModelFactory {
     }
   
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
   
@@ -755,6 +769,7 @@ class AbstractModelFactory {
   public function delete($model) {
     if ($model != null) {
       $query = "DELETE FROM " . $this->getModelTable() . " WHERE " . $model->getPrimaryKey() . " = ?";
+      self::$query = $query;
       $stmt = self::getDB()->prepare($query);
       return $stmt->execute(array(
         $model->getPrimaryKeyValue()
@@ -779,6 +794,7 @@ class AbstractModelFactory {
     }
     
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     return $stmt;
@@ -823,6 +839,7 @@ class AbstractModelFactory {
     }
     
     $dbh = self::getDB();
+    self::$query = $query;
     $stmt = $dbh->prepare($query);
     return $stmt->execute($vals);
   }

@@ -621,6 +621,9 @@ class API {
         if (!$finished) {
           $assignedTask = $task;
         }
+        else{
+          $assignedTask = Util::getNextTask($agent);
+        }
       }
     }
     
