@@ -155,7 +155,7 @@ class API {
       $skip += $progress;
       $length -= $progress;
       
-      if ($length > $agent->getBenchmark() * $disptolerance && $timeoutChunk->getAgentId() != $agent->getId()) {
+      if ($length > $assignment->getBenchmark() * $disptolerance && $timeoutChunk->getAgentId() != $agent->getId()) {
         $newSkip = $skip + $agent->getBenchmark();
         $newLength = $length - $agent->getBenchmark();
         $chunk = new Chunk(0, $task->getId(), $newSkip, $newLength, $timeoutChunk->getAgentId(), $timeoutChunk->getDispatchTime(), 0, 0, 9, 0, 0);
