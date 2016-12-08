@@ -151,7 +151,7 @@ class API {
       // we work on an already existing chunk
       $skip = $timeoutChunk->getSkip();
       $length = $timeoutChunk->getLength();
-      $progress = $timeoutChunk->getProgess();
+      $progress = $timeoutChunk->getProgress();
       $skip += $progress;
       $length -= $progress;
       

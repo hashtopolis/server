@@ -111,7 +111,7 @@ if (isset($_GET['id'])) {
   $currentSpeed = 0;
   for($i=0;$i<sizeof($joinedChunks['Chunk']);$i++){
     $chunk = $joinedChunks['Chunk'][$i];
-    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < time() - $CONFIG->getVal('chunktimeout')){
+    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < time() - $CONFIG->getVal('chunktimeout') && $chunk->getRprogress() < 10000){
       $currentSpeed += $joinedChunks['Assignment'][$i]->getSpeed();
     }
   }
