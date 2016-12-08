@@ -155,12 +155,12 @@ class API {
       $skip += $progress;
       $length -= $progress;
       
-      if ($length > $assignment->getBenchmark() * $disptolerance && $timeoutChunk->getAgentId() != $agent->getId()) {
-        $newSkip = $skip + $agent->getBenchmark();
-        $newLength = $length - $agent->getBenchmark();
+      if ($length > $assignment->getBenchmark()*$task->getKeyspace() * $disptolerance && $timeoutChunk->getAgentId() != $agent->getId()) {
+        $newSkip = $skip + $assignment->getBenchmark()*$task->getKeyspace();
+        $newLength = $length - $assignment->getBenchmark()*$task->getKeyspace();
         $chunk = new Chunk(0, $task->getId(), $newSkip, $newLength, $timeoutChunk->getAgentId(), $timeoutChunk->getDispatchTime(), 0, 0, 9, 0, 0);
         $FACTORIES::getChunkFactory()->save($chunk);
-        $length = $agent->getBenchmark();
+        $length = $agent->getBenchmark()*$task->getKeyspace();
       }
       
       if ($timeoutChunk->getProgress() == 0) {
