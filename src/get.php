@@ -30,7 +30,7 @@ if (!$LOGIN->isLoggedin()) {
   if (!$agent) {
     die("No access!");
   }
-  if ($agent->getTrusted() < $line->getSecret()) {
+  if ($agent->getIsTrusted() < $line->getSecret()) {
     die("No access!");
   }
 }
