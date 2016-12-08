@@ -36,7 +36,7 @@ class API {
       API::sendErrorResponse("keyspace", "You are not assigned to this task!");
     }
     
-    $speed = intval($QUERY['speed']);
+    $speed = floatval($QUERY['speed']);
     
     if ($speed <= 0) {
       $agent->setIsActive(0);
