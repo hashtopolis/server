@@ -44,9 +44,9 @@ class API {
       API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
     }
     $keyspace = $task->getKeyspace();
-    if($speed > $keyspace){
+    /*if($speed > $keyspace){
       $speed = $keyspace;
-    }
+    }*/
     if ($speed <= 0) {
       API::sendErrorResponse("bench", "Benchmark was not correctly!");
     }
