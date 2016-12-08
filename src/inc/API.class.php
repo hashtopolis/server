@@ -160,7 +160,7 @@ class API {
         $newLength = $length - $assignment->getBenchmark()*$task->getKeyspace();
         $chunk = new Chunk(0, $task->getId(), $newSkip, $newLength, $timeoutChunk->getAgentId(), $timeoutChunk->getDispatchTime(), 0, 0, 9, 0, 0);
         $FACTORIES::getChunkFactory()->save($chunk);
-        $length = $agent->getBenchmark()*$task->getKeyspace();
+        $length = $assignment->getBenchmark()*$task->getKeyspace();
       }
       
       if ($timeoutChunk->getProgress() == 0) {
