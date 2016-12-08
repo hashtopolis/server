@@ -435,8 +435,10 @@ class API {
     if ($agent->getIsTrusted() < $file->getSecret()) {
       API::sendErrorResponse('file', "You have no access to get this file!");
     }
+    $filename = $file->getFilename();
+    $extension = explode(".", $filename)[sizeof(explode(".", $filename)) - 1];
     //TODO: make correct url here
-    API::sendResponse(array('action' => 'file', 'response' => 'SUCCESS', 'url' => "https://".$_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()));
+    API::sendResponse(array('action' => 'file', 'extension' => $extension, 'response' => 'SUCCESS', 'url' => "https://".$_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()));
   }
   
   public static function getHashes($QUERY) {
