@@ -669,7 +669,7 @@ class API {
         'hashlist' => $assignedTask->getHashlistId(),
         'bench' => 'new', //TODO: here we should tell him new or continue depending if he was already working on this hashlist or not
         'statustimer' => $assignedTask->getStatusTimer(),
-        'files' => array($files)
+        'files' => $files
       )
     );
   }
