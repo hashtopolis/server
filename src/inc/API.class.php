@@ -436,7 +436,7 @@ class API {
       API::sendErrorResponse('file', "You have no access to get this file!");
     }
     //TODO: make correct url here
-    API::sendResponse(array('action' => 'file', 'response' => 'SUCCESS', 'url' => $_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()));
+    API::sendResponse(array('action' => 'file', 'response' => 'SUCCESS', 'url' => "https://".$_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()));
   }
   
   public static function getHashes($QUERY) {
