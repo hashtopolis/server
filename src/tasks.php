@@ -95,12 +95,12 @@ if (isset($_GET['id'])) {
     if(!$agentsProgress->getVal($chunk->getAgentId())){
       $agentsProgress->addValue($chunk->getAgentId(), $chunk->getProgress());
       $agentsCracked->addValue($chunk->getAgentId(), $chunk->getCracked());
-      $agentsSpent->addValue($chunk->getAgentId(), min($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
+      $agentsSpent->addValue($chunk->getAgentId(), max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
     }
     else{
       $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getProgress());
       $agentsCracked->addValue($chunk->getAgentId(), $agentsCracked->getVal($chunk->getAgentId()) + $chunk->getCracked());
-      $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + min($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
+      $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
     }
   }
   $OBJECTS['agentsProgress'] = $agentsProgress;

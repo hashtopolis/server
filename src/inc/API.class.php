@@ -740,14 +740,6 @@ class API {
       API::sendErrorResponse($action, "You submitted bad progress details.");
     }
     
-    /** newline checks */
-    if ($agent->getOs() == 1) {
-      $newline = "\n";
-    }
-    else {
-      $newline = "\r\n";
-    }
-    
     // workaround for hashcat not sending correct final curku(keyspaceprogress) =skip+len when done with chunk
     if ($normalizedProgress == $normalizedTotal) {
       $keyspaceProgress = $length;
