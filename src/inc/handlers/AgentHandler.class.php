@@ -95,6 +95,10 @@ class AgentHandler implements Handler {
       //unassign
       $qF = new QueryFilter("agentId", $this->agent->getId(), "=");
       $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
+      if (isset($_GET['task'])) {
+        header("Location: tasks.php?id=" . intval($_GET['task']));
+        die();
+      }
       return;
     }
   
