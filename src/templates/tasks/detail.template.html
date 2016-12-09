@@ -449,7 +449,11 @@
           {{ENDIF}}
         </td>
         <td>
-          [[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+          {{IF [[chunk.getDispatchTime()]] == 0}}
+            (no activity)
+          {{ELSE}}
+            [[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+          {{ENDIF}}
         </td>
         <td>
           {{IF [[chunk.getSolveTime()]] == 0}}
