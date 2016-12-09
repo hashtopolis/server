@@ -670,8 +670,8 @@ class API {
     // upload cracked hashes to server
     $cid = intval($QUERY["chunk"]);
     $keyspaceProgress = floatval($QUERY["keyspaceProgress"]);
-    $normalizedProgress = floatval($QUERY["progress"]);      //Normalized between 1-10k
-    $normalizedTotal = floatval($QUERY["total"]);           //TODO Not sure what this variable does
+    $combinationProgress = floatval($QUERY["progress"]);      //Normalized between 1-10k
+    $combinationTotal = floatval($QUERY["total"]);           //TODO Not sure what this variable does
     $speed = floatval($QUERY["speed"]);
     $state = intval($QUERY["state"]);     //Util::getStaticArray($states, $state)
     $action = $QUERY["action"];
@@ -707,68 +707,46 @@ class API {
       API::sendErrorResponse($action, "The given task does not have a corresponding hashList");
     }
     
-    $taskFilter = new QueryFilter("taskId", $task->getId(), "=");
-    $agentFilter = new QueryFilter("agentId", $agent->getId(), "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array("filter" => array($taskFilter, $agentFilter)), true);
-    if ($assignment == null) {
-      //API::sendErrorResponse($action, "No assignment exists for your chunk");
-    }
     // agent is assigned to this chunk (not necessarily task!)
     // it can be already assigned to other task, but is still computing this chunk until it realizes it
     $skip = $chunk->getSkip();
     $length = $chunk->getLength();
-    $agentID = $agent->getId();
     $taskID = $task->getId();
-    $hashListID = $hashList->getId();
     
-    /** Progressparsing + checks */
-    // strip the offset to get the real progress
-    $subtr = ($skip * $normalizedTotal) / ($skip + $length);
-    $normalizedProgress -= $subtr;
-    $normalizedTotal -= $subtr;
-    if ($keyspaceProgress > 0) {
-      $keyspaceProgress -= $skip;
+    /*
+     * Calculate the relative progress inside of the chunk
+     */
+    $chunkCombinationStart = $combinationTotal/$task->getKeyspace()*$skip;
+    $chunkCombinationEnd = $combinationTotal/$task->getKeyspace()*($skip + $length);
+    $currentRelativeProgress = rount(($combinationProgress - $chunkCombinationStart)/($chunkCombinationEnd - $chunkCombinationStart)*10000);
+    
+    //if by accident the number of the combinationProgress overshoots the limit
+    if($currentRelativeProgress > 10000){
+      $currentRelativeProgress = 10000;
     }
     
-    // workaround for hashcat overshooting its curku (keyspaceprogress) boundaries sometimes
-    if ($state == 4) {
-      $normalizedProgress = $normalizedTotal;
+    //avoid rounding errors
+    if ($combinationProgress < $combinationTotal && $currentRelativeProgress == 10000) {
+      $currentRelativeProgress--;
     }
-    
-    if ($normalizedProgress > $normalizedTotal) {
-      API::sendErrorResponse($action, "You submitted bad progress details.");
+    else if ($combinationProgress > 0 && $currentRelativeProgress == 0) {
+      $currentRelativeProgress++;
     }
     
     // workaround for hashcat not sending correct final curku(keyspaceprogress) =skip+len when done with chunk
-    if ($normalizedProgress == $normalizedTotal) {
+    if ($combinationProgress == $combinationTotal) {
       $keyspaceProgress = $length;
     }
     
-    /**
-     * Update progress inside chunk. relativeChunkProgress is between 1 and 10k
+    /*
+     * Save chunk updates
      */
-    if ($keyspaceProgress >= 0 && $keyspaceProgress <= $length) {
-      if ($normalizedProgress == $normalizedTotal) {
-        $relativeChunkProgress = 10000;
-      }
-      else {
-        $relativeChunkProgress = round(($normalizedProgress / $normalizedTotal) * 10000);
-        // protection against rounding errors
-        if ($normalizedProgress < $normalizedTotal && $relativeChunkProgress == 10000) {
-          $relativeChunkProgress--;
-        }
-        if ($normalizedProgress > 0 && $relativeChunkProgress == 0) {
-          $relativeChunkProgress++;
-        }
-      }
-      // update progress inside a chunk and chunk cache
-      $chunk = $FACTORIES::getChunkFactory()->get($cid);
-      $chunk->setRprogress($relativeChunkProgress);
-      $chunk->setProgress($keyspaceProgress);
-      $chunk->setSolveTime(time());
-      $chunk->setState($state);
-      $FACTORIES::getChunkFactory()->update($chunk);
-    }
+    $chunk->setRprogress($currentRelativeProgress);
+    $chunk->setProgress($keyspaceProgress);
+    $chunk->setSolveTime(time());
+    $chunk->setState($state);
+    $FACTORIES::getChunkFactory()->update($chunk);
+    
     
     $hlistar = Util::checkSuperHashlist($hashList);
     $hlistarIds = array();
@@ -779,7 +757,6 @@ class API {
     
     // reset values
     $skipped = 0;
-    $errors = 0;
     $cracked = array();
     foreach ($hlistar as $l) {
       $cracked[$l->getId()] = 0;
@@ -793,8 +770,6 @@ class API {
       }
       //TODO: get separator from config
       $splitLine = explode(":", $crackedHash);
-      $podminka = "";   //What is podminka
-      $plain = "";
       AbstractModelFactory::getDB()->query("START TRANSACTION");
       switch ($format) {
         case 0:
@@ -882,7 +857,7 @@ class API {
     }
     /** Check if the task is done */
     $taskdone = false;
-    if ($normalizedProgress == $normalizedTotal && $task->getProgress() == $task->getKeyspace()) {
+    if ($combinationProgress == $combinationTotal && $task->getProgress() == $task->getKeyspace()) {
       // chunk is done and the task has been fully dispatched
       $incompleteFilter = new QueryFilter("rprogress", 10000, "<");
       $taskFilter = new QueryFilter("taskId", $taskID, "=");
@@ -910,6 +885,8 @@ class API {
     switch ($state) {
       case 4:
         // the chunk has finished (exhausted)
+        $chunk->setSpeed(0);
+        $FACTORIES::getChunkFactory()->update($chunk);
         break;
       case 5:
         // the chunk has finished (cracked whole hashList)
