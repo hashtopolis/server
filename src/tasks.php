@@ -34,7 +34,9 @@ if (isset($_POST['toggleautorefresh'])) {
 if ($autorefresh > 0) { //renew cookie
   setcookie("autorefresh", "1", time() + 3600 * 24);
 }
-$OBJECTS['autorefresh'] = $autorefresh;
+if(isset($_GET['id']) || !isset($_GET['new'])) {
+  $OBJECTS['autorefresh'] = $autorefresh;
+}
 
 if (isset($_GET['id'])) {
   if($LOGIN->getLevel() < 5){
