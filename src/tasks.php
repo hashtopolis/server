@@ -86,7 +86,7 @@ if (isset($_GET['id'])) {
   $qF = new QueryFilter("taskId", $task->getId(), "=");
   $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
   foreach($assignments as $assignment) {
-    $agentsBench->addValue($chunk->getAgentId(), $assignment->getBenchmark());
+    $agentsBench->addValue($assignment->getAgentId(), $assignment->getBenchmark());
   }
   
   $cProgress = 0;
