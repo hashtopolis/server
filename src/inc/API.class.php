@@ -712,7 +712,7 @@ class API {
     $agentFilter = new QueryFilter("agentId", $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array("filter" => array($taskFilter, $agentFilter)), true);
     if ($assignment == null) {
-      API::sendErrorResponse($action, "No assignment exists for your chunk");
+      //API::sendErrorResponse($action, "No assignment exists for your chunk");
     }
     // agent is assigned to this chunk (not necessarily task!)
     // it can be already assigned to other task, but is still computing this chunk until it realizes it
@@ -932,8 +932,10 @@ class API {
         break;
       case 6:
         // the chunk was aborted
-        $assignment->setSpeed(0);
-        $FACTORIES::getAssignmentFactory()->update($assignment);
+        if($assignment != null) {
+          $assignment->setSpeed(0);
+          $FACTORIES::getAssignmentFactory()->update($assignment);
+        }
         break;
       default:
         // the chunk isn't finished yet, we will send zaps
@@ -944,8 +946,10 @@ class API {
           //stop agent
           API::sendResponse(array("action" => $action, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "agent" => "stop"));
         }
-        $assignment->setSpeed($speed);
-        $FACTORIES::getAssignmentFactory()->update($assignment);
+        if($assignment != null) {
+          $assignment->setSpeed($speed);
+          $FACTORIES::getAssignmentFactory()->update($assignment);
+        }
         
         $qF1 = new ContainFilter("hashlistId", $hashlistIds);
         $qF2 = new QueryFilter("solveTime", $agent->getLastAct(), ">=");
