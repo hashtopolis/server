@@ -442,7 +442,7 @@
           [[Util::showperc([[chunk.getRprogress()]], 10000)]]%
         </td>
         <td>
-          {{IF [[chunk.getAgentId()]]}}
+          {{IF ![[chunk.getAgentId()]]}}
             N/A
           {{ELSE}}
             <a href="agents.php?id=[[chunk.getAgentId()]]">[[fullAgents.getVal([[chunk.getAgentId()]]).getAgentName()]]</a>
