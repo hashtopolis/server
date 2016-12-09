@@ -62,6 +62,7 @@ if (isset($_GET['id'])) {
   $qF = new QueryFilter("taskId", $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
   $activeAgents = new DataSet();
+  $agentsSpeed = new DataSet();
   foreach($chunks as $chunk){
     $activeAgents->addValue($chunk->getAgentId(), false);
     if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal('chunktimeout')){
@@ -69,6 +70,7 @@ if (isset($_GET['id'])) {
       $activeChunks[] = $chunk;
       $activeChunksIds->addValue($chunk->getId(), true);
       $activeAgents->addValue($chunk->getAgentId(), true);
+      $agentsSpeed->addValue($chunk->getAgentId(), $chunk->getSpeed());
     }
     else{
       $activeChunksIds->addValue($chunk->getId(), false);
@@ -77,12 +79,10 @@ if (isset($_GET['id'])) {
   $OBJECTS['isActive'] = $isActive;
   
   $agentsBench = new DataSet();
-  $agentsSpeed = new DataSet();
   $qF = new QueryFilter("taskId", $task->getId(), "=");
   $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
   foreach($assignments as $assignment) {
     $agentsBench->addValue($chunk->getAgentId(), $assignment->getBenchmark());
-    $agentsSpeed->addValue($chunk->getAgentId(), $assignment->getSpeed());
   }
   
   $cProgress = 0;
