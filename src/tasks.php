@@ -207,7 +207,7 @@ if (isset($_GET['id'])) {
   $agents = $FACTORIES::getAgentFactory()->filter(array());
   $fullAgents = new DataSet();
   foreach($agents as $agent){
-    $fullAgents->addValue($agent->getId(), $agents);
+    $fullAgents->addValue($agent->getId(), $agent);
   }
   $OBJECTS['fullAgents'] = $fullAgents;
 }
