@@ -718,7 +718,7 @@ class API {
      */
     $chunkCombinationStart = $combinationTotal/$task->getKeyspace()*$skip;
     $chunkCombinationEnd = $combinationTotal/$task->getKeyspace()*($skip + $length);
-    $currentRelativeProgress = rount(($combinationProgress - $chunkCombinationStart)/($chunkCombinationEnd - $chunkCombinationStart)*10000);
+    $currentRelativeProgress = round(($combinationProgress - $chunkCombinationStart)/($chunkCombinationEnd - $chunkCombinationStart)*10000);
     
     //if by accident the number of the combinationProgress overshoots the limit
     if($currentRelativeProgress > 10000){
