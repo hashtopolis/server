@@ -59,7 +59,7 @@ if (isset($_GET['id'])) {
   $isActive = 0;
   $activeChunks = array();
   $activeChunksIds = new DataSet();
-  $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getChunkFactory());
+  $qF = new QueryFilter("taskId", $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
   $activeAgents = new DataSet();
   foreach($chunks as $chunk){
@@ -81,8 +81,8 @@ if (isset($_GET['id'])) {
   $qF = new QueryFilter("taskId", $task->getId(), "=");
   $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
   foreach($assignments as $assignment) {
-    $agentsBench->addValue($chunk->getAgentId(), $joinedChunks['Assignment'][$i]->getBenchmark());
-    $agentsSpeed->addValue($chunk->getAgentId(), $joinedChunks['Assignment'][$i]->getSpeed());
+    $agentsBench->addValue($chunk->getAgentId(), $assignment->getBenchmark());
+    $agentsSpeed->addValue($chunk->getAgentId(), $assignment->getSpeed());
   }
   
   $cProgress = 0;
