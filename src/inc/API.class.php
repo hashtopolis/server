@@ -92,6 +92,7 @@ class API {
       $chunk->setDispatchTime(time());
       $chunk->setSolveTime(0);
       $chunk->setState(0);
+      $chunk->setAgentId($agent->getId());
       $FACTORIES::getChunkFactory()->update($chunk);
       API::sendChunk($chunk);
     }
