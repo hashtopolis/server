@@ -52,7 +52,6 @@ CREATE TABLE `Assignment` (
   `taskId`       INT(11)    NOT NULL,
   `agentId`      INT(11)    NOT NULL,
   `benchmark`    BIGINT(20) NOT NULL,
-  `autoAdjust`   INT(11)    NOT NULL,
   `speed`        BIGINT(20) NOT NULL
 )
   ENGINE = InnoDB

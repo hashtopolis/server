@@ -577,7 +577,7 @@ class API {
       if ($nextTask == null) {
         API::sendResponse(array('action' => 'task', 'response' => 'SUCCESS', 'task' => 'NONE'));
       }
-      $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0, $nextTask->getAutoadjust(), 0);
+      $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0, 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
       $assignedTask = $nextTask;
     }
@@ -614,7 +614,7 @@ class API {
       if ($highPriorityTask != null) {
         //there is a more important task
         $FACTORIES::getAssignmentFactory()->delete($assignment);
-        $assignment = new Assignment(0, $highPriorityTask->getId(), $agent->getId(), 0, $highPriorityTask->getAutoadjust(), 0);
+        $assignment = new Assignment(0, $highPriorityTask->getId(), $agent->getId(), 0, 0);
         $FACTORIES::getAssignmentFactory()->save($assignment);
         $assignedTask = $highPriorityTask;
       }
@@ -627,7 +627,7 @@ class API {
           $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
           $assignedTask = Util::getNextTask($agent);
           if($assignedTask != null) {
-            $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0, $task->getAutoadjust(), 0);
+            $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0, 0);
             $FACTORIES::getAssignmentFactory()->save($assignment);
           }
         }

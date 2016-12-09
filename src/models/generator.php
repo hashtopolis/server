@@ -33,7 +33,6 @@ $CONF['Assignment'] = array(
   'taskId',
   'agentId',
   'benchmark',
-  'autoAdjust',
   'speed'
 );
 $CONF['Chunk'] = array(
