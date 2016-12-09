@@ -2,7 +2,6 @@
 /.project
 /.settings/
 /files/test.php
-.ht*
 query.log
 .idea/
 *.iml

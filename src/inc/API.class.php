@@ -20,7 +20,7 @@ class API {
   }
   
   public static function setBenchmark($QUERY) {
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     // agent submits benchmark for task
     $task = $FACTORIES::getTaskFactory()->get($QUERY["taskId"]);
@@ -36,25 +36,16 @@ class API {
       API::sendErrorResponse("keyspace", "You are not assigned to this task!");
     }
     
-    $speed = floatval($QUERY['speed']);
+    $benchmark = floatval($QUERY['benchmark']);
     
-    if ($speed <= 0) {
+    if ($benchmark <= 0) {
       $agent->setIsActive(0);
       $FACTORIES::getAgentFactory()->update($agent);
       API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
     }
-    $keyspace = $task->getKeyspace();
-    /*if($speed > $keyspace){
-      $speed = $keyspace;
-    }*/
-    if ($speed <= 0) {
-      API::sendErrorResponse("bench", "Benchmark was not correctly!");
-    }
-    else {
-      $assignment->setSpeed(0);
-      $assignment->setBenchmark($speed);
-      $FACTORIES::getAssignmentFactory()->update($assignment);
-    }
+    $assignment->setSpeed(0);
+    $assignment->setBenchmark($benchmark);
+    $FACTORIES::getAssignmentFactory()->update($assignment);
     API::sendResponse(array("action" => "bench", "response" => "SUCCESS", "benchmark" => "OK"));
   }
   
@@ -84,15 +75,74 @@ class API {
     API::sendResponse(array("action" => "keyspace", "response" => "SUCCESS", "keyspace" => "OK"));
   }
   
-  public static function getChunk($QUERY) {
+  private static function sendChunk($chunk) {
+    AbstractModelFactory::getDB()->query("COMMIT");
+    API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $chunk->getId(), "skip" => $chunk->getSkip(), "length" => $chunk->getLength()));
+  }
+  
+  private static function handleExistingChunk($chunk, $agent, $task, $assignment){
+    global $CONFIG, $FACTORIES;
+    
+    $disptolerance = 1.2; //TODO: add this to config
+    
+    $agentChunkSize = $assignment->getBenchmark()*$CONFIG->getVal('chunktime');
+    $agentChunkSizeMax = $agentChunkSize * $disptolerance;
+    if($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()){
+      //chunk has not started yet
+      $chunk->setRprogress(0);
+      $chunk->setDispatchTime(time());
+      $chunk->setSolveTime(0);
+      $chunk->setState(0);
+      $FACTORIES::getChunkFactory()->update($chunk);
+      API::sendChunk($chunk);
+    }
+    else if($chunk->getProgress() == 0){
+      //split chunk into two parts
+      $firstPart = $chunk;
+      $firstPart->setLength($agentChunkSize);
+      $firstPart->setAgentId($agent->getId());
+      $firstPart->setDispatchTime(time());
+      $firstPart->setSolveTime(0);
+      $firstPart->setState(0);
+      $firstPart->setRprogress(0);
+      $FACTORIES::getChunkFactory()->update($firstPart);
+      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), 0, 0, 0, 0, 0, 0, 0);
+      $FACTORIES::getChunkFactory()->save($secondPart);
+      API::sendChunk($firstPart);
+    }
+    else{
+      $chunk->setLength($chunk->getProgress());
+      $chunk->setRprogress(10000);
+      $chunk->setState(9);
+      $FACTORIES::getChunkFactory()->update($chunk);
+      API::createNewChunk($agent, $task, $assignment);
+    }
+  }
+  
+  private static function createNewChunk($agent, $task, $assignment){
     global $FACTORIES, $CONFIG;
     
-    // assign a correctly sized chunk to agent
+    $disptolerance = 1.2; //TODO: add to config
     
-    // default: 1.2 (120%) this says that if desired chunk size is X and remaining keyspace is 1.2 * X then
-    // it will be assigned as a whole instead of first assigning X and then 0.2 * X (which would be very small
-    // and therefore very slow due to lack of GPU utilization)
-    $disptolerance = 1.2;
+    $remaining = $task->getKeyspace() - $task->getProgress();
+    $agentChunkSize = $assignment->getBenchmark()*$CONFIG->getVal('chunktime');
+    $agentChunkSizeMax = $agentChunkSize * $disptolerance;
+    $start = $task->getProgress();
+    $length = $agentChunkSize;
+    if($remaining/$length <= $disptolerance){
+      $length = $remaining;
+    }
+    $newProgress = $task->getProgress() + $length;
+    $task->setProgress($newProgress);
+    $FACTORIES::getTaskFactory()->update($task);
+    $chunk = new Chunk(0, $task->getId(), $start, $length, $agent->getId(), time(), 0, 0, 0, 0, 0);
+    $FACTORIES::getChunkFactory()->save($chunk);
+    API::sendChunk($chunk);
+  }
+
+  
+  public static function getChunk($QUERY) {
+    global $FACTORIES, $CONFIG;
     
     $task = $FACTORIES::getTaskFactory()->get($QUERY['taskId']);
     if ($task == null) {
@@ -105,109 +155,48 @@ class API {
     $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
     $qF2 = new QueryFilter("taskId", $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
-    $qF = new QueryFilter("taskId", $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
-    $dispatched = 0;
-    foreach ($chunks as $chunk) {
-      if($chunk->getAgentId() == $agent->getId() && $chunk->getLength() != $chunk->getProgress()){
-        API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $chunk->getId(), "skip" => $chunk->getSkip() + $chunk->getProgress(), "length" => $chunk->getLength() - $chunk->getProgress()));
-      }
-      $dispatched += $chunk->getLength();
-    }
     if ($assignment == null) {
       API::sendErrorResponse("chunk", "You are not assigned to this task!");
     }
     else if ($task->getKeyspace() == 0) {
       API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => "keyspace_required"));
     }
-    else if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
-      API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => "fully_dispatched"));
-    }
     else if ($assignment->getBenchmark() == 0) {
       API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => "benchmark"));
     }
-    
+  
     AbstractModelFactory::getDB()->query("START TRANSACTION");
-    $timeoutChunk = null;
+    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+    $dispatched = 0;
+    foreach ($chunks as $chunk) {
+      if($chunk->getAgentId() == $agent->getId() && $chunk->getLength() != $chunk->getProgress()){
+        //this is the case when the agent got interrupted in some way, so he can just continue with his chunk he was working on
+        $chunk->setSkip($chunk->getSkip() + $chunk->getProgress());
+        $chunk->setLength($chunk->getLength() - $chunk->getProgress());
+        API::sendChunk($chunk);
+      }
+      $dispatched += $chunk->getLength();
+    }
+    if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
+      API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => "fully_dispatched"));
+    }
+  
     $qF1 = new ComparisonFilter("progress", "length", "<");
     $qF2 = new QueryFilter("taskId", $task->getId(), "=");
     $oF = new OrderFilter("skip", "ASC");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => $oF));
-    foreach ($chunks as $chunk) {
-      if (max($chunk->getDispatchTime(), $chunk->getSolvetime()) < time() - $CONFIG->getVal('chunktimeout') && $chunk->getAgentId() != $agent->getId()) {
-        $timeoutChunk = $chunk;
-        break;
+    foreach($chunks as $chunk){
+      if($chunk->getAgent == $agent->getId()){
+        API::sendChunk($chunk);
       }
-      else if ($chunk->getAgent == $agent->getId() || $chunk->getState() == 6 || $chunk->getState() == 10) {
-        $timeoutChunk = $chunk;
-        break;
-      }
-    }
-    
-    $workChunk = null;
-    $createnew = false;
-    
-    if ($timeoutChunk != null) {
-      // we work on an already existing chunk
-      $skip = $timeoutChunk->getSkip();
-      $length = $timeoutChunk->getLength();
-      $progress = $timeoutChunk->getProgress();
-      $skip += $progress;
-      $length -= $progress;
-      
-      if ($length > $assignment->getBenchmark()*$task->getKeyspace() * $disptolerance && $timeoutChunk->getAgentId() != $agent->getId()) {
-        $newSkip = $skip + $assignment->getBenchmark()*$task->getKeyspace();
-        $newLength = $length - $assignment->getBenchmark()*$task->getKeyspace();
-        $chunk = new Chunk(0, $task->getId(), $newSkip, $newLength, $timeoutChunk->getAgentId(), $timeoutChunk->getDispatchTime(), 0, 0, 9, 0, 0);
-        $FACTORIES::getChunkFactory()->save($chunk);
-        $length = $assignment->getBenchmark()*$task->getKeyspace();
-      }
-      
-      if ($timeoutChunk->getProgress() == 0) {
-        //whole chunk was not started yet
-        $timeoutChunk->setAgentId($agent->getId());
-        $timeoutChunk->setLength($length);
-        $timeoutChunk->setRprogress(0);
-        $timeoutChunk->setDispatchTime(time());
-        $timeoutChunk->setSolveTime(0);
-        $timeoutChunk->setState(0);
-        $FACTORIES::getChunkFactory()->update($timeoutChunk);
-        $workChunk = $timeoutChunk;
-      }
-      else {
-        //finish the cut part
-        // some of the chunk was complete, cut the complete part to standalone finished chunk
-        $timeoutChunk->setLength($timeoutChunk->getProgress());
-        $timeoutChunk->setRprogress(10000);
-        $timeoutChunk->setState(9);
-        $FACTORIES::getChunkFactory()->update($timeoutChunk);
-        $createnew = true;
+      $timeoutTime = time() - $CONFIG->getVal('chunktimeout');
+      if($chunk->getState() == 6 || $chunk->getState() == 10 || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime){
+        API::handleExistingChunk($chunk, $agent, $task);
       }
     }
-    if ($timeoutChunk == null || $createnew) {
-      // we need to create a new chunk
-      $remaining = $task->getKeyspace() - $task->getProgress();
-      if ($remaining > 0) {
-        $possible = floor($assignment->getBenchmark()/$CONFIG->getVal('benchtime')*$task->getChunkTime()*$task->getKeyspace());
-        
-        $length = min($remaining, $possible);
-        if ($remaining / $length <= $disptolerance) {
-          $length = $remaining;
-        }
-        
-        $start = $task->getProgress();
-        $newProgress = $task->getProgress() + $length;
-        $task->setProgress($newProgress);
-        $FACTORIES::getTaskFactory()->update($task);
-        $chunk = new Chunk(0, $task->getId(), $start, $length, $agent->getId(), time(), 0, 0, 0, 0, 0);
-        $FACTORIES::getChunkFactory()->save($chunk);
-        $workChunk = $chunk;
-      }
-    }
-    AbstractModelFactory::getDB()->query("COMMIT");
-    
-    //send answer
-    API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $workChunk->getId(), "skip" => $workChunk->getSkip(), "length" => $workChunk->getLength()));
+    $chunk = API::createNewChunk($agent, $task, $assignment);
+    API::sendChunk($chunk);
   }
   
   public static function sendErrorResponse($action, $msg) {
