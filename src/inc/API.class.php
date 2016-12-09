@@ -746,6 +746,10 @@ class API {
     $chunk->setRprogress($currentRelativeProgress);
     $chunk->setProgress($keyspaceProgress);
     $chunk->setSolveTime(time());
+    $aborting = false;
+    if($chunk->getState() == 6){
+      $aborting = true;
+    }
     $chunk->setState($state);
     $FACTORIES::getChunkFactory()->update($chunk);
     
@@ -885,7 +889,7 @@ class API {
     }
     $toZap = array();
     
-    if($chunk->getState() == 6){
+    if($aborting){
       $chunk->setSpeed(0);
       $FACTORIES::getChunkFactory()->update($chunk);
       API::sendErrorResponse($action, "Chunk was aborted!");
