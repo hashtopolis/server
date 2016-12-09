@@ -67,10 +67,10 @@ if (isset($_GET['id'])) {
   $agentsSpeed = new DataSet();
   for($i=0;$i<sizeof($joinedChunks['Chunk']);$i++){
     $chunk = $joinedChunks['Chunk'][$i];
-    $activeAgents->addValue($chunk->getAgentId(), "0");
+    $activeAgents->addValue($chunk->getAgentId(), false);
     $agentsBench->addValue($chunk->getAgentId(), $joinedChunks['Assignment'][$i]->getBenchmark());
     $agentsSpeed->addValue($chunk->getAgentId(), $joinedChunks['Assignment'][$i]->getSpeed());
-    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < time() - $CONFIG->getVal('chunktimeout')){
+    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal('chunktimeout')){
       $isActive = 1;
       $activeChunks[] = $chunk;
       $activeChunksIds->addValue($chunk->getId(), true);
