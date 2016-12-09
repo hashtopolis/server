@@ -720,6 +720,7 @@ class API {
      */
     $chunkCombinationStart = $combinationTotal/$task->getKeyspace()*$skip;
     $currentRelativeProgress = round(($combinationProgress - $chunkCombinationStart)/($combinationTotal - $chunkCombinationStart)*10000);
+    $keyspaceProgress -= $skip;
     
     //if by accident the number of the combinationProgress overshoots the limit
     if($currentRelativeProgress > 10000){
@@ -905,6 +906,7 @@ class API {
         // the chunk was aborted
         $chunk->setSpeed(0);
         $FACTORIES::getChunkFactory()->update($chunk);
+        API::sendErrorResponse($action, "Chunk was aborted!");
         break;
       default:
         // the chunk isn't finished yet, we will send zaps
