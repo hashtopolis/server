@@ -230,11 +230,17 @@
           <a href='tasks.php?id=[[chunk.getTaskId()]]'>[[chunk.getTaskId()]]</a> <!-- TODO: put here task name -->
         </td>
         <td>
-          [[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+          {{IF [[chunk.getDispatchTime()]] == 0}}
+            (no activity)
+          {{ELSE}}
+            [[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+          {{ENDIF}}
         </td>
         <td>
           {{IF [[chunk.getSolveTime()]] == 0}}
             (no activity)
+            </td>
+            <td>
           {{ELSE}}
               [[date([[config.getVal('timefmt')]], [[chunk.getSolveTime()]])]]
             </td>
