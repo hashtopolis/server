@@ -73,11 +73,11 @@ if (isset($_GET['id'])) {
     if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < time() - $CONFIG->getVal('chunktimeout')){
       $isActive = 1;
       $activeChunks[] = $chunk;
-      $activeChunksIds->addValue($chunk->getId(), "1");
-      $activeAgents->addValue($chunk->getAgentId(), "1");
+      $activeChunksIds->addValue($chunk->getId(), true);
+      $activeAgents->addValue($chunk->getAgentId(), true);
     }
     else{
-      $activeChunksIds->addValue($chunk->getId(), "0");
+      $activeChunksIds->addValue($chunk->getId(), false);
     }
   }
   $OBJECTS['isActive'] = $isActive;
