@@ -65,7 +65,6 @@ if (isset($_GET['id'])) {
   $agentsSpeed = new DataSet();
   $currentSpeed = 0;
   foreach($chunks as $chunk){
-    $activeAgents->addValue($chunk->getAgentId(), false);
     if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal('chunktimeout') && $chunk->getRprogress() < 10000){
       $isActive = 1;
       $activeChunks[] = $chunk;
