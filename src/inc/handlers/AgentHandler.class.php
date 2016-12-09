@@ -87,6 +87,10 @@ class AgentHandler implements Handler {
   private function assign() {
     global $FACTORIES;
     
+    if($this->agent == null){
+      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+    }
+    
     if (intval($_POST['task']) == 0) {
       //unassign
       $qF = new QueryFilter("agentId", $this->agent->getId(), "=");
