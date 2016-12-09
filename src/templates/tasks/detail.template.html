@@ -477,7 +477,7 @@
           {{IF [[activeChunks.getVal([[chunk.getId()]])]] == false && [[login.getLevel()]] >= 20}}
             <form action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really reset chunk [[chunk.getId()]]?')) return false;">
               <input type="hidden" name="action" value="chunkreset">
-              <input type="hidden" name="chunk" value="[[chunk.getVal('id')]]">
+              <input type="hidden" name="chunk" value="[[chunk.getId()]]">
               <input type="submit" class='btn btn-default' value="Reset">
             </form>
           {{ENDIF}}
