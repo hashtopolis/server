@@ -910,15 +910,6 @@ class API {
     switch ($state) {
       case 4:
         // the chunk has finished (exhausted)
-        if ($length == $assignment->getBenchmark() && $assignment->getAutoAdjust() == 1 && $taskdone == false) {
-          // the chunk was originaly meant for this agent, the autoadjust is on, the agent is still at this task and the task is not done
-          $delka = time() - $chunk->getDispatchTime();
-          $newbench = ($assignment->getBenchmark() / $delka) * $chunk->getTime();
-          // update the benchmark
-          $assignment->setSpeed(0);
-          $assignment->setBenchmark($newbench);
-          $FACTORIES::getAssignmentFactory()->update($assignment);
-        }
         break;
       case 5:
         // the chunk has finished (cracked whole hashList)
@@ -926,6 +917,9 @@ class API {
         $qF = new ContainFilter("hashlistId", $hashlistIds);
         $uS = new UpdateSet("priority", "0");
         $FACTORIES::getTaskFactory()->massUpdate(array('update' => $uS, 'filter' => $qF));
+        
+        $chunk->setSpeed(0);
+        $FACTORIES::getChunkFactory()->update($chunk);
         
         //TODO: notificate hashList done
         break;
@@ -943,10 +937,8 @@ class API {
           //stop agent
           API::sendResponse(array("action" => $action, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "agent" => "stop"));
         }
-        if($assignment != null) {
-          $assignment->setSpeed($speed);
-          $FACTORIES::getAssignmentFactory()->update($assignment);
-        }
+        $chunk->setSpeed($speed);
+        $FACTORIES::getChunkFactory()->update($chunk);
         
         $qF1 = new ContainFilter("hashlistId", $hashlistIds);
         $qF2 = new QueryFilter("solveTime", $agent->getLastAct(), ">=");
