@@ -718,7 +718,7 @@ class API {
     /*
      * Calculate the relative progress inside of the chunk
      */
-    $chunkCombinationStart = $combinationTotal/$task->getKeyspace()*$skip;
+    $chunkCombinationStart = $combinationTotal/($skip+$length)*$skip;
     $currentRelativeProgress = round(($combinationProgress - $chunkCombinationStart)/($combinationTotal - $chunkCombinationStart)*10000);
     $keyspaceProgress -= $skip;
     
