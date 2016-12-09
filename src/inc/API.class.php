@@ -170,6 +170,9 @@ class API {
     foreach ($chunks as $chunk) {
       if($chunk->getAgentId() == $agent->getId() && $chunk->getLength() != $chunk->getProgress()){
         //this is the case when the agent got interrupted in some way, so he can just continue with his chunk he was working on
+        $chunk->setDispatchTime(time()); //reset time count to make sure the spent time gets calculated correctly
+        $chunk->setSolveTime(0);
+        $FACTORIES::getChunkFactory()->update($chunk);
         API::sendChunk($chunk);
       }
       $dispatched += $chunk->getLength();
