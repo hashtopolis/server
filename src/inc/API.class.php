@@ -43,7 +43,6 @@ class API {
       $FACTORIES::getAgentFactory()->update($agent);
       API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
     }
-    $assignment->setSpeed(0);
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
     API::sendResponse(array("action" => "bench", "response" => "SUCCESS", "benchmark" => "OK"));
@@ -106,7 +105,7 @@ class API {
       $firstPart->setState(0);
       $firstPart->setRprogress(0);
       $FACTORIES::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), 0, 0, 0, 0, 0, 0, 0);
+      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), 0, 0, 0, 0, 0, 0, 0, 0);
       $FACTORIES::getChunkFactory()->save($secondPart);
       API::sendChunk($firstPart);
     }
@@ -134,7 +133,7 @@ class API {
     $newProgress = $task->getProgress() + $length;
     $task->setProgress($newProgress);
     $FACTORIES::getTaskFactory()->update($task);
-    $chunk = new Chunk(0, $task->getId(), $start, $length, $agent->getId(), time(), 0, 0, 0, 0, 0);
+    $chunk = new Chunk(0, $task->getId(), $start, $length, $agent->getId(), time(), 0, 0, 0, 0, 0, 0);
     $FACTORIES::getChunkFactory()->save($chunk);
     API::sendChunk($chunk);
   }
@@ -577,7 +576,7 @@ class API {
       if ($nextTask == null) {
         API::sendResponse(array('action' => 'task', 'response' => 'SUCCESS', 'task' => 'NONE'));
       }
-      $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0, 0);
+      $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
       $assignedTask = $nextTask;
     }
@@ -614,7 +613,7 @@ class API {
       if ($highPriorityTask != null) {
         //there is a more important task
         $FACTORIES::getAssignmentFactory()->delete($assignment);
-        $assignment = new Assignment(0, $highPriorityTask->getId(), $agent->getId(), 0, 0);
+        $assignment = new Assignment(0, $highPriorityTask->getId(), $agent->getId(), 0);
         $FACTORIES::getAssignmentFactory()->save($assignment);
         $assignedTask = $highPriorityTask;
       }
@@ -627,7 +626,7 @@ class API {
           $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
           $assignedTask = Util::getNextTask($agent);
           if($assignedTask != null) {
-            $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0, 0);
+            $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0);
             $FACTORIES::getAssignmentFactory()->save($assignment);
           }
         }
@@ -932,10 +931,8 @@ class API {
         break;
       case 6:
         // the chunk was aborted
-        if($assignment != null) {
-          $assignment->setSpeed(0);
-          $FACTORIES::getAssignmentFactory()->update($assignment);
-        }
+        $chunk->setSpeed(0);
+        $FACTORIES::getChunkFactory()->update($chunk);
         break;
       default:
         // the chunk isn't finished yet, we will send zaps

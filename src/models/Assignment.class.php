@@ -8,15 +8,13 @@ class Assignment extends AbstractModel {
 	private $taskId;
 	private $agentId;
 	private $benchmark;
-	private $speed;
 	
 	
-	function __construct($assignmentId, $taskId, $agentId, $benchmark, $speed) {
+	function __construct($assignmentId, $taskId, $agentId, $benchmark) {
 		$this->assignmentId = $assignmentId;
 		$this->taskId = $taskId;
 		$this->agentId = $agentId;
 		$this->benchmark = $benchmark;
-		$this->speed = $speed;
 
 	}
 	
@@ -26,7 +24,6 @@ class Assignment extends AbstractModel {
 		$dict['taskId'] = $this->taskId;
 		$dict['agentId'] = $this->agentId;
 		$dict['benchmark'] = $this->benchmark;
-		$dict['speed'] = $this->speed;
 		
 		return $dict;
 	}
@@ -69,13 +66,5 @@ class Assignment extends AbstractModel {
 
 	function setBenchmark($benchmark){
 		$this->benchmark = $benchmark;
-	}
-
-	function getSpeed(){
-		return $this->speed;
-	}
-
-	function setSpeed($speed){
-		$this->speed = $speed;
 	}
 }

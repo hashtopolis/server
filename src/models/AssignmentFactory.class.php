@@ -18,12 +18,12 @@ class AssignmentFactory extends AbstractModelFactory {
 	}
 	
 	function getNullObject() {
-		$o = new Assignment(-1, null, null, null, null);
+		$o = new Assignment(-1, null, null, null);
 		return $o;
 	}
 	
 	function createObjectFromDict($pk, $dict) {
-		$o = new Assignment($pk, $dict['taskId'], $dict['agentId'], $dict['benchmark'], $dict['speed']);
+		$o = new Assignment($pk, $dict['taskId'], $dict['agentId'], $dict['benchmark']);
 		return $o;
 	}
 }

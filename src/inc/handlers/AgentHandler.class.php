@@ -136,11 +136,10 @@ class AgentHandler implements Handler {
       $assignment->setTaskId($task->getId());
       $assignment->setBenchmark($benchmark);
       $assignment->setautoAdjust($task->getAutoAdjust());
-      $assignment->setSpeed(0);
       $FACTORIES::getAssignmentFactory()->update($assignment);
     }
     else {
-      $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), $benchmark, 0);
+      $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), $benchmark);
       $FACTORIES::getAssignmentFactory()->save($assignment);
     }
     if (isset($_GET['task'])) {

@@ -33,7 +33,6 @@ $CONF['Assignment'] = array(
   'taskId',
   'agentId',
   'benchmark',
-  'speed'
 );
 $CONF['Chunk'] = array(
   'chunkId',
@@ -46,7 +45,8 @@ $CONF['Chunk'] = array(
   'rprogress',
   'state',
   'cracked',
-  'solveTime'
+  'solveTime',
+  'speed'
 );
 $CONF['Config'] = array(
   'configId',
