@@ -1,7 +1,8 @@
 /.buildpath
 /.project
 /.settings/
-/files/test.php
 query.log
 .idea/
 *.iml
+files/*
+!files/.htaccess
