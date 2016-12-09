@@ -192,7 +192,7 @@ class API {
       }
       $timeoutTime = time() - $CONFIG->getVal('chunktimeout');
       if($chunk->getState() == 6 || $chunk->getState() == 10 || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime){
-        API::handleExistingChunk($chunk, $agent, $task);
+        API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
     }
     $chunk = API::createNewChunk($agent, $task, $assignment);
