@@ -85,8 +85,8 @@ class API {
     
     $disptolerance = 1.2; //TODO: add this to config
     
-    $agentChunkSize = $assignment->getBenchmark()*$CONFIG->getVal('chunktime');
-    $agentChunkSizeMax = $agentChunkSize * $disptolerance;
+    $agentChunkSize = floor($assignment->getBenchmark()*$CONFIG->getVal('chunktime'));
+    $agentChunkSizeMax = floor($agentChunkSize * $disptolerance);
     if($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()){
       //chunk has not started yet
       $chunk->setRprogress(0);
@@ -125,8 +125,7 @@ class API {
     $disptolerance = 1.2; //TODO: add to config
     
     $remaining = $task->getKeyspace() - $task->getProgress();
-    $agentChunkSize = $assignment->getBenchmark()*$CONFIG->getVal('chunktime');
-    $agentChunkSizeMax = $agentChunkSize * $disptolerance;
+    $agentChunkSize = floor($assignment->getBenchmark()*$CONFIG->getVal('chunktime'));
     $start = $task->getProgress();
     $length = $agentChunkSize;
     if($remaining/$length <= $disptolerance){
