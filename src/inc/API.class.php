@@ -667,7 +667,7 @@ class API {
   
   //TODO Handle the case where an agent needs reassignment
   public static function solve($QUERY) {
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     // upload cracked hashes to server
     $cid = intval($QUERY["chunk"]);
@@ -884,6 +884,13 @@ class API {
       $hashlistIds[] = $hl->getId();
     }
     $toZap = array();
+    
+    if($chunk->getState() == 6){
+      $chunk->setSpeed(0);
+      $FACTORIES::getChunkFactory()->update($chunk);
+      API::sendErrorResponse($action, "Chunk was aborted!");
+    }
+    
     switch ($state) {
       case 4:
         // the chunk has finished (exhausted)
