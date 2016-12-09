@@ -4,5 +4,5 @@
 query.log
 .idea/
 *.iml
-files/*
-!files/.htaccess
+src/files/*
+!src/files/.htaccess
