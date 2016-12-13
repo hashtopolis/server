@@ -111,12 +111,12 @@ class API {
   }
   
   private static function handleExistingChunk($chunk, $agent, $task, $assignment){
-    global $CONFIG, $FACTORIES;
+    global $FACTORIES;
     
     $disptolerance = 1.2; //TODO: add this to config
     
-    $agentChunkSize = API::calculateChunkSize($agent->getBenchmark(), 1);
-    $agentChunkSizeMax = API::calculateChunkSize($agent->getBenchmark(), $disptolerance);
+    $agentChunkSize = API::calculateChunkSize($assignment->getBenchmark(), 1);
+    $agentChunkSizeMax = API::calculateChunkSize($assignment->getBenchmark(), $disptolerance);
     if($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()){
       //chunk has not started yet
       $chunk->setRprogress(0);
@@ -151,12 +151,12 @@ class API {
   }
   
   private static function createNewChunk($agent, $task, $assignment){
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     $disptolerance = 1.2; //TODO: add to config
     
     $remaining = $task->getKeyspace() - $task->getProgress();
-    $agentChunkSize = API::calculateChunkSize($agent->getBenchmark(), 1);
+    $agentChunkSize = API::calculateChunkSize($assignment->getBenchmark(), 1);
     $start = $task->getProgress();
     $length = $agentChunkSize;
     if($remaining/$length <= $disptolerance){
