@@ -36,7 +36,7 @@ class API {
       API::sendErrorResponse("keyspace", "You are not assigned to this task!");
     }
     
-    $benchmark = $QUERY['benchmark'];
+    $benchmark = $QUERY['speed'];
     $split = explode(":", $benchmark);
     if(sizeof($split) != 2){
       API::sendErrorResponse("bench", "Invalid benchmark results!");
