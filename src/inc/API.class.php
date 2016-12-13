@@ -83,13 +83,40 @@ class API {
     API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $chunk->getId(), "skip" => $chunk->getSkip(), "length" => $chunk->getLength()));
   }
   
+  private static function calculateChunkSize($benchmark, $tolerance){
+    global $CONFIG;
+    
+    $benchmark = explode(":", $benchmark);
+    if(sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0){
+      return 0;
+    }
+    
+    $chunkTime = $CONFIG->getVal('chunktime');
+    $factor = $chunkTime*1000/$benchmark[1];
+    if($factor < 0.25){
+      $benchmark[1] /= 4;
+    }
+    else if($factor < 0.5){
+      $benchmark[1] /= 2;
+    }
+    else{
+      $factor = floor($factor);
+    }
+    if($factor == 0){
+      $factor = 1;
+    }
+    $size = $benchmark[0]*$factor;
+    //TODO: apply here calculation to adjust to match size
+    return $size*$tolerance;
+  }
+  
   private static function handleExistingChunk($chunk, $agent, $task, $assignment){
     global $CONFIG, $FACTORIES;
     
     $disptolerance = 1.2; //TODO: add this to config
     
-    $agentChunkSize = floor($assignment->getBenchmark()*$CONFIG->getVal('chunktime'));
-    $agentChunkSizeMax = floor($agentChunkSize * $disptolerance);
+    $agentChunkSize = API::calculateChunkSize($agent->getBenchmark(), 1);
+    $agentChunkSizeMax = API::calculateChunkSize($agent->getBenchmark(), $disptolerance);
     if($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()){
       //chunk has not started yet
       $chunk->setRprogress(0);
@@ -129,7 +156,7 @@ class API {
     $disptolerance = 1.2; //TODO: add to config
     
     $remaining = $task->getKeyspace() - $task->getProgress();
-    $agentChunkSize = floor($assignment->getBenchmark()*$CONFIG->getVal('chunktime'));
+    $agentChunkSize = API::calculateChunkSize($agent->getBenchmark(), 1);
     $start = $task->getProgress();
     $length = $agentChunkSize;
     if($remaining/$length <= $disptolerance){
