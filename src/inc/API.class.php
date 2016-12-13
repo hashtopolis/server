@@ -36,9 +36,13 @@ class API {
       API::sendErrorResponse("keyspace", "You are not assigned to this task!");
     }
     
-    $benchmark = floatval($QUERY['benchmark']);
+    $benchmark = $QUERY['benchmark'];
+    $split = explode(":", $benchmark);
+    if(sizeof($split) != 2){
+      API::sendErrorResponse("bench", "Invalid benchmark results!");
+    }
     
-    if ($benchmark <= 0) {
+    if ($split[0] <= 0 || $split[1] <= 0) {
       $agent->setIsActive(0);
       $FACTORIES::getAgentFactory()->update($agent);
       API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
