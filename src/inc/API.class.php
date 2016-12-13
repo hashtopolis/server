@@ -83,7 +83,7 @@ class API {
     API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $chunk->getId(), "skip" => $chunk->getSkip(), "length" => $chunk->getLength()));
   }
   
-  private static function calculateChunkSize($benchmark, $tolerance){
+  private static function calculateChunkSize($benchmark, $tolerance = 1){
     global $CONFIG;
     
     $benchmark = explode(":", $benchmark);
@@ -92,12 +92,16 @@ class API {
     }
     
     $chunkTime = $CONFIG->getVal('chunktime');
+    
+    //TODO: check if time adjustments are needed
+    $benchmark[1] *= 2/3;
+    
     $factor = $chunkTime*1000/$benchmark[1];
-    if($factor < 0.25){
-      $benchmark[1] /= 4;
+    if($factor <= 0.25){
+      $benchmark[0] /= 4;
     }
-    else if($factor < 0.5){
-      $benchmark[1] /= 2;
+    else if($factor <= 0.5){
+      $benchmark[0] /= 2;
     }
     else{
       $factor = floor($factor);
@@ -107,6 +111,7 @@ class API {
     }
     $size = $benchmark[0]*$factor;
     //TODO: apply here calculation to adjust to match size
+    
     return $size*$tolerance;
   }
   
