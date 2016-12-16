@@ -7,26 +7,37 @@
  *         Bunch of useful static functions.
  */
 class Util {
-  
+
+    /**
+     * Scans the import-directory for files.
+     * @return array of all files in the top-level directory /../import
+     */
   public static function scanImportDirectory() {
     $directory = dirname(__FILE__) . "/../import";
     if (file_exists($directory) && is_dir($directory)) {
-      $impdir = opendir($directory);
-      $impfiles = array();
-      while ($f = readdir($impdir)) {
-        if ($f[0] != '.' && $f != "." && $f != ".." && !is_dir($f)) {
-          $impfiles[] = new DataSet(array("file" => $f, "size" => Util::filesize($directory."/".$f)));
+      $importDirectory = opendir($directory);
+      $importFiles = array();
+      while ($file = readdir($importDirectory)) {
+        if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file)) {
+          $importFiles[] = new DataSet(array("file" => $file, "size" => Util::filesize($directory."/".$file)));
         }
       }
-      return $impfiles;
+      return $importFiles;
     }
     return array();
   }
-  
-  public static function calculate($in){
-    return $in;
-  }
-  
+
+    /**
+     * Calculates variable. Used in Templates
+     */
+    public static function calculate($in){
+        return $in;
+    }
+
+    /**
+     * Saves a file into the DB using the FileFactory
+     * @return boolean result of the save()-function.
+     */
   public static function insertFile($path, $name, $type) {
     global $FACTORIES;
     
@@ -41,28 +52,37 @@ class Util {
     }
     return true;
   }
-  
+
+    /**
+     * Get the next task for an agent
+     * @param $agent should be the object
+     * @return null or the next task
+     */
   public static function getNextTask($agent, $priority = 0) {
     global $FACTORIES;
     
     //TODO: handle the case, if a task is a single assignment task
-    $qF1 = new QueryFilter("priority", $priority, ">");
-    $qF2 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
-    $qF3 = new QueryFilter("isCpuTask", $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
-    $qF4 = new ComparisonFilter("cracked", "hashCount", "<");
-    //$qF4 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
-    $jF1 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
+    $priorityFilter = new QueryFilter("priority", $priority, ">");
+    $trustedFilter = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
+    $cpuFilter = new QueryFilter("isCpuTask", $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
+    $crackedFilter = new ComparisonFilter("cracked", "hashCount", "<");
+    //$qF5 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
+    $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
     //$jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
     //$jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
-    $oF = new OrderFilter("priority", "DESC LIMIT 1");
-    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1), 'order' => array($oF)));
+    $descOrder = new OrderFilter("priority", "DESC LIMIT 1");
+    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), 'join' => array($hashlistIDJoin), 'order' => array($descOrder)));
     if (sizeof($nextTask['Task']) > 0) {
       return $nextTask['Task'][0];
     }
     return null;
   }
-  
+
+    /**
+     * Used by the solver. Cleans the zap-queue
+     */
   public static function zapCleaning() {
+      //TODO NOT YET IMPLEMENTED
     global $FACTORIES;
     
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
@@ -76,7 +96,11 @@ class Util {
       $FACTORIES::getStoredValueFactory()->update($entry);
     }
   }
-  
+
+    /**
+     * @param $file File you want to get the size from
+     * @return int -1 if the file doesn't exist. Else filesize()
+     */
   public static function filesize($file) {
     //TODO: put code for 64-bit file size determination here
     if (!file_exists($file)) {
@@ -84,7 +108,10 @@ class Util {
     }
     return filesize($file);
   }
-  
+
+    /**
+     * Refreshes the page
+     */
   public static function refresh() {
     global $_SERVER;
     
@@ -95,23 +122,28 @@ class Util {
     header("Location: $url");
     die();
   }
-  
+
+    /**
+     * @param $list hashlist-object
+     * @return array of all superhashlists belonging to the $list
+     */
   public static function checkSuperHashlist($list) {
     global $FACTORIES;
-    //detect superhashlists and create array of all lists
-    
+
     if ($list->getFormat() == 3) {
-      $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
-      $qF = new QueryFilter("superHashlistId", $list->getId(), "=");
-      $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('join' => array($jF), 'filter' => array($qF)));
+      $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
+      $superHashListFilter = new QueryFilter("superHashlistId", $list->getId(), "=");
+      $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('join' => array($hashlistJoinFilter), 'filter' => array($superHashListFilter)));
       $lists = $joined['Hashlist'];
       return $lists;
     }
     return array($list);
   }
-  
-  //OLD PART
-  
+
+    //OLD PART
+    /**
+     * @return string 0.0.0.0 or the client IP
+     */
   public static function getIP() {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
       $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -127,19 +159,11 @@ class Util {
     }
     return $ip;
   }
-  
-  /**
-   * Checks if a given email is of valid syntax
-   *
-   * @param string $email
-   *          email address to check
-   * @return true if valid email, false if not
-   */
-  public static function isValidEmail($email) {
-    return filter_var($email, FILTER_VALIDATE_EMAIL);
-  }
-  
-  public static function checkWriteFiles($arr) {
+
+    /**
+     * Checks if a file is writable
+     */
+    public static function checkWriteFiles($arr) {
     foreach ($arr as $path) {
       if (!is_writable($path)) {
         return false;
@@ -147,55 +171,82 @@ class Util {
     }
     return true;
   }
-  
-  public static function tickdone($prog, $total) {
-    // show tick of progress is done
-    if ($total > 0 && $prog == $total) {
-      return " <img src='static/check.png' alt='Finished'>";
-    }
-    return "";
-  }
-  
-  public static function getUsernameById($id) {
-    global $FACTORIES;
-    
-    $user = $FACTORIES::getUserFactory()->get($id);
-    if ($user === null) {
-      return "Unknown-$id";
-    }
-    return $user->getUsername();
-  }
-  
-  public static function subtract($x, $y) {
-    return ($x - $y);
-  }
-  
-  public static function bintohex($dato) {
-    $ndato = "";
-    for ($i = 0; $i < strlen($dato); $i++) {
-      $zn = dechex(ord($dato[$i]));
-      while (strlen($zn) < 2) {
-        $zn = "0" . $zn;
+    /**
+     * Iterates through all chars, converts them to 0x__ and concats the hexes
+     * @param $binString String you want to convert
+     * @return string Hex-String
+     */
+  public static function bintohex($binString) {
+    $return = "";
+    for ($i = 0; $i < strlen($binString); $i++) {
+      $hex = dechex(ord($binString[$i]));
+      while (strlen($hex) < 2) {
+        $hex = "0" . $hex;
       }
-      $ndato .= $zn;
+      $return .= $hex;
     }
-    return $ndato;
+    return $return;
   }
-  
-  public static function sectotime($soucet) {
-    // convert seconds to human readable format
-    $vysledek = "";
-    if ($soucet > 86400) {
-      $dnu = floor($soucet / 86400);
-      if ($dnu > 0) {
-        $vysledek .= $dnu . "d ";
+
+    /**
+     * @param $prog progress so far
+     * @param $total total to be done
+     * @return string either the check.png with Finished or an empty string
+     */
+    public static function tickdone($prog, $total) {
+        // show tick of progress is done
+        if ($total > 0 && $prog == $total) {
+            return " <img src='static/check.png' alt='Finished'>";
+        }
+        return "";
+    }
+
+    /**
+     * Used in Template
+     * @param $id ID for the user
+     * @return string username or unknown-id
+     */
+    public static function getUsernameById($id) {
+        global $FACTORIES;
+
+        $user = $FACTORIES::getUserFactory()->get($id);
+        if ($user === null) {
+            return "Unknown-$id";
+        }
+        return $user->getUsername();
+    }
+
+    /**
+     * Used in Template. Subtracts two variables
+     */
+    public static function subtract($x, $y) {
+        return ($x - $y);
+    }
+
+    /**
+     * Used in Template. Converts seconds to human readable format
+     * @param $seconds
+     * @return string
+     */
+  public static function sectotime($seconds) {
+    $return = "";
+    if ($seconds > 86400) {
+      $days = floor($seconds / 86400);
+      if ($days > 0) {
+        $return .= $days . "d ";
       }
-      $soucet = $soucet % 86400;
+      $seconds = $seconds % 86400;
     }
-    $vysledek .= gmdate("H:i:s", $soucet);
-    return $vysledek;
+    $return .= gmdate("H:i:s", $seconds);
+    return $return;
   }
-  
+
+    /**
+     * Used in Template
+     * @param $val string of the array
+     * @param $id int index of the array
+     * @return string the element or empty string
+     */
   public static function getStaticArray($val, $id) {
     $platforms = array(
       "unknown",
@@ -253,11 +304,16 @@ class Util {
     }
     return "";
   }
-  
-  public static function nicenum($num, $treshold = 1024, $divider = 1024) {
-    // display nicely formated number divided into correct units
+
+    /**
+     * @param $num int integer you want formatted
+     * @param int $threshold default 1024
+     * @param int $divider default 1024
+     * @return string Formatted Integer
+     */
+  public static function nicenum($num, $threshold = 1024, $divider = 1024) {
     $r = 0;
-    while ($num > $treshold) {
+    while ($num > $threshold) {
       $num /= $divider;
       $r++;
     }
@@ -267,10 +323,11 @@ class Util {
       "M",
       "G"
     );
-    $vysnew = Util::niceround($num, 2);
-    return $vysnew . " " . $rs[$r];
+    $return = Util::niceround($num, 2);
+    return $return . " " . $rs[$r];
   }
-  
+
+  //TODO Start Fixing here
   public static function showperc($part, $total, $decs = 2) {
     // show nicely formated percentage
     if ($total > 0) {
