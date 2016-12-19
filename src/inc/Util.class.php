@@ -327,38 +327,48 @@ class Util {
     return $return . " " . $rs[$r];
   }
 
-  //TODO Start Fixing here
+    /**
+     * Formats percentage nicely
+     * @param $part progress
+     * @param $total total value
+     * @param int $decs decimals you want rounded
+     * @return string formatted percentage
+     */
   public static function showperc($part, $total, $decs = 2) {
-    // show nicely formated percentage
     if ($total > 0) {
-      $vys = round(($part / $total) * 100, $decs);
-      if ($vys == 100 && $part < $total) {
-        $vys -= 1 / (10 ^ $decs);
+      $percentage = round(($part / $total) * 100, $decs);
+      if ($percentage == 100 && $part < $total) {
+        $percentage -= 1 / (10 ^ $decs);
       }
-      if ($vys == 0 && $part > 0) {
-        $vys += 1 / (10 ^ $decs);
+      if ($percentage == 0 && $part > 0) {
+        $percentage += 1 / (10 ^ $decs);
       }
     }
     else {
-      $vys = 0;
+      $percentage = 0;
     }
-    $vysnew = Util::niceround($vys, $decs);
-    return $vysnew;
+    $return = Util::niceround($percentage, $decs);
+    return $return;
   }
-  
-  public static function uploadFile($tmpfile, $source, $sourcedata) {
-    // upload file from multiple sources
-    global $uperrs;
+
+    /**
+     * @param $target File you want to write to
+     * @param $type paste, upload, import or url
+     * @param $sourcedata
+     * @return array (boolean, string) success, msg detailing what happened
+     */
+  public static function uploadFile($target, $type, $sourcedata) {
+    //global $uperrs;
     
-    $povedlo = false;
-    $msg = "<b>Adding file $tmpfile:</b><br>";
-    if (!file_exists($tmpfile)) {
-      switch ($source) {
+    $success = false;
+    $msg = "<b>Adding file $target:</b><br>";
+    if (!file_exists($target)) {
+      switch ($type) {
         case "paste":
           $msg .= "Creating file from text field...";
-          if (file_put_contents($tmpfile, $sourcedata)) {
+          if (file_put_contents($target, $sourcedata)) {
             $msg .= "OK";
-            $povedlo = true;
+            $success = true;
           }
           else {
             $msg .= "ERROR!";
@@ -367,36 +377,35 @@ class Util {
         
         case "upload":
           $hashfile = $sourcedata;
-          $hashchyba = $hashfile["error"];
-          if ($hashchyba == 0) {
+          if ($hashfile["error"] == 0) {
             $msg .= "Moving uploaded file...";
-            if (move_uploaded_file($hashfile["tmp_name"], $tmpfile) && file_exists($tmpfile)) {
+            if (move_uploaded_file($hashfile["tmp_name"], $target) && file_exists($target)) {
               $msg .= "OK";
-              $povedlo = true;
+              $success = true;
             }
             else {
               $msg .= "ERROR";
             }
           }
           else {
-            $msg .= "Upload file error: " . $uperrs[$hashchyba];
+            $msg .= "Upload file error: "; //. $uperrs[$hashfile["error"]];
           }
           break;
         
         case "import":
           $msg .= "Loading imported file...";
           if (file_exists("import/" . $sourcedata)) {
-            rename("import/" . $sourcedata, $tmpfile);
-            if (file_exists($tmpfile)) {
+            rename("import/" . $sourcedata, $target);
+            if (file_exists($target)) {
               $msg .= "OK";
-              $povedlo = true;
+              $success = true;
             }
             else {
-              $msg .= "DST ERROR";
+              $msg .= "Could not move source to target";
             }
           }
           else {
-            $msg .= "SRC ERROR";
+            $msg .= "Source file does not exist";
           }
           break;
         
@@ -406,39 +415,39 @@ class Util {
           
           $furl = fopen($sourcedata, "rb");
           if (!$furl) {
-            $msg .= "SRC ERROR";
+            $msg .= "Could not open url at source data";
           }
           else {
-            $floc = fopen($tmpfile, "w");
-            if (!$floc) {
-              $msg .= "DST ERROR";
+            $fileLocation = fopen($target, "w");
+            if (!$fileLocation) {
+              $msg .= "Could not open target";
             }
             else {
               $downed = 0;
-              $bufsize = 131072;
-              $cas_pinfo = time();
+              $buffersize = 131072;
+              $last_logged = time();
               while (!feof($furl)) {
-                if (!$data = fread($furl, $bufsize)) {
+                if (!$data = fread($furl, $buffersize)) {
                   $msg .= "READ ERROR";
                   break;
                 }
-                fwrite($floc, $data);
+                fwrite($fileLocation, $data);
                 $downed += strlen($data);
-                if ($cas_pinfo < time() - 10) {
+                if ($last_logged < time() - 10) {
                   $msg .= Util::nicenum($downed, 1024) . "B...\n";
-                  $cas_pinfo = time();
+                  $last_logged = time();
                 }
               }
-              fclose($floc);
+              fclose($fileLocation);
               $msg .= "OK (" . Util::nicenum($downed, 1024) . "B)";
-              $povedlo = true;
+              $success = true;
             }
             fclose($furl);
           }
           break;
         
         default:
-          $msg .= "Wrong file source.";
+          $msg .= "Unknown import type.";
           break;
       }
     }
@@ -446,45 +455,59 @@ class Util {
       $msg .= "File already exists.";
     }
     $msg .= "<br>";
-    return array($povedlo, $msg);
+    return array($success, $msg);
   }
-  
+
+    /**
+     * Round to a specific amount of decimal points
+     * @param $num Number
+     * @param $dec Number of decimals
+     * @return string Rounded value
+     */
   public static function niceround($num, $dec) {
-    // round to specific amount of decimal places
-    $stri = strval(round($num, $dec));
+    $return = strval(round($num, $dec));
     if ($dec > 0) {
-      $pozice = strpos($stri, ".");
-      if ($pozice === false) {
-        $stri .= ".00";
+      $pointPosition = strpos($return, ".");
+      if ($pointPosition === false) {
+        $return .= ".00";
       }
       else {
-        while (strlen($stri) - $pozice <= $dec) {
-          $stri .= "0";
+        while (strlen($return) - $pointPosition <= $dec) {
+          $return .= "0";
         }
       }
     }
-    return $stri;
+    return $return;
   }
-  
-  public static function shortenstring($co, $kolik) {
+
+    /**
+     * Cut a string to a certain number of letters. If the string is too long, instead replaces the last three letters with ...
+     * @param $string String you want to short
+     * @param $length Number of Elements you want the string to have
+     * @return string Formatted string
+     */
+  public static function shortenstring($string, $length) {
     // shorten string that would be too long
-    $ret = "<span title='$co'>";
-    if (strlen($co) > $kolik) {
-      $ret .= substr($co, 0, $kolik - 3) . "...";
+    $return = "<span title='$string'>";
+    if (strlen($string) > $length) {
+      $return .= substr($string, 0, $length - 3) . "...";
     }
     else {
-      $ret .= $co;
+      $return .= $string;
     }
-    $ret .= "</span>";
-    return $ret;
+    $return .= "</span>";
+    return $return;
   }
-  
-  public static function prefixNum($num, $size) {
-    $string = "" . $num;
-    while (strlen($string) < $size) {
-      $string = "0" . $string;
+
+    /**
+     * Adds 0s to the beginning of a number until it reaches size.
+     */
+  public static function prefixNum($number, $size) {
+    $formatted = "" . $number;
+    while (strlen($formatted) < $size) {
+      $formatted = "0" . $formatted;
     }
-    return $string;
+    return $formatted;
   }
   
   /**
@@ -533,7 +556,10 @@ class Util {
     }
     return $result;
   }
-  
+
+    /**
+     * TODO Document me
+     */
   public static function createPrefixedString($table, $dict) {
     $arr = array();
     foreach ($dict as $key => $val) {
@@ -541,31 +567,28 @@ class Util {
     }
     return implode(", ", $arr);
   }
-  
+
+    /**
+     * Checks if $search starts with $pattern. Shortcut for strpos==0
+     */
   public static function startsWith($search, $pattern) {
     if (strpos($search, $pattern) === 0) {
       return true;
     }
     return false;
   }
-  
-  public static function endsWith($haystack, $needle) {
+
+    /**
+     * if pattern is empty or if pattern is at the end of search
+     */
+  public static function endsWith($search, $pattern) {
     // search forward starting from end minus needle length characters
-    return $needle === "" || (($temp = strlen($haystack) - strlen($needle)) >= 0 && strpos($haystack, $needle, $temp) !== FALSE);
+    return $pattern === "" || (($temp = strlen($search) - strlen($pattern)) >= 0 && strpos($search, $pattern, $temp) !== FALSE);
   }
-  
-  public static function deleteDuplicatesFromJoinResult($dict) {
-    $pkStack = array();
-    $nonDuplicates = array();
-    foreach ($dict as $elem) {
-      if (!in_array($elem->getId(), $pkStack)) {
-        array_push($pkStack, $elem->getId());
-        array_push($nonDuplicates, $elem);
-      }
-    }
-    return $nonDuplicates;
-  }
-  
+
+    /**
+     * Converts a hex to binary
+     */
   public static function hextobin($data) {
     $res = "";
     for ($i = 0; $i < strlen($data) - 1; $i += 2) {
@@ -573,7 +596,10 @@ class Util {
     }
     return $res;
   }
-  
+
+    /**
+     * Get an alert div with type and msg
+     */
   public static function getMessage($type, $msg) {
     return "<div class='alert alert-$type'>$msg</div>";
   }
