@@ -440,7 +440,8 @@ class API {
     }
     
     $file = $QUERY['file'];
-    $file = $FACTORIES::getFileFactory()->get($file);
+    $qF = new QueryFilter("filename", $file, "=");
+    $file = $FACTORIES::getFileFactory()->filter(array('filter' => $qF), true);
     if ($file == null) {
       API::sendErrorResponse('file', "Invalid file!");
     }
