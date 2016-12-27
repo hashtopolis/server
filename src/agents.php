@@ -86,10 +86,10 @@ else {
       foreach ($chunks as $chunk) {
         if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal('chunktimeout') && $chunk->getAgentId() == $agent->getId()) {
           $isWorking = 1;
+          $set->addValue("speed", $chunk->getSpeed());
         }
       }
       $taskId = $assignment->getTaskId();
-      $set->addValue("speed", $assignment->getSpeed());
     }
     $set->addValue("isWorking", $isWorking);
     $set->addValue("taskId", $taskId);
