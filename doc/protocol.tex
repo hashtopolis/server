@@ -202,8 +202,8 @@
 	  "bench": "new",
 	  "statustimer": 5,
 	  "files": [
-	    5,
-	    6
+	    "rockyou.txt",
+	    "wordlist.txt"
 	  ]
 	}
 	\end{verbatim}
@@ -285,15 +285,14 @@
 	\end{verbatim}
 	
 	\subsection*{Send Benchmark}
-	The client sends the tested benchmark of a task.
+	The client sends the tested benchmark of a task. Benchmark type can be 'old' or 'new'.
 	\begin{verbatim}
 	{
 	  "action":"bench",
 	  "token":"GHhgdf(/&",
 	  "taskId":35,
-	  "progress":568000,
-	  "total":6000000,
-	  "state":6
+	  "type": "old",
+	  "result": "674.43"
 	}
 	\end{verbatim}
 	The server should reply following on success:

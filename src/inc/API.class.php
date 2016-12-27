@@ -36,8 +36,11 @@ class API {
       API::sendErrorResponse("keyspace", "You are not assigned to this task!");
     }
     
-    $benchmark = $QUERY['speed'];
-    $split = explode(":", $benchmark);
+    $type = $QUERY['type'];
+    $benchmark = $QUERY['result'];
+    
+    //TODO: validate benchmark depending on the benchmarking type
+    /*$split = explode(":", $benchmark);
     if(sizeof($split) != 2){
       API::sendErrorResponse("bench", "Invalid benchmark results!");
     }
@@ -46,7 +49,7 @@ class API {
       $agent->setIsActive(0);
       $FACTORIES::getAgentFactory()->update($agent);
       API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
-    }
+    }*/
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
     API::sendResponse(array("action" => "bench", "response" => "SUCCESS", "benchmark" => "OK"));
@@ -681,7 +684,7 @@ class API {
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array('join' => $jF, 'filter' => $qF));
     $files = array();
     for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
-      $files[] = $joinedFiles['File'][$x]->getId();
+      $files[] = $joinedFiles['File'][$x]->getFilename();
     }
     
     $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
