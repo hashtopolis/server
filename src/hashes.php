@@ -178,6 +178,9 @@ $output = "";
 foreach($hashes as $hash){
   if($displaying == ""){
     $output .= $hash->getHash();
+    if(strlen($hash->getSalt()) > 0){
+      $output .= ":".$hash->getSalt();
+    }
     if($filter == "cracked" || $filter == ""){
       if($hash->getIsCracked() == 1) {
         $output .= ":" . htmlentities($hash->getPlaintext(), false, "UTF-8");
@@ -186,6 +189,9 @@ foreach($hashes as $hash){
   }
   else if($displaying == "hash"){
     $output .= $hash->getHash();
+    if(strlen($hash->getSalt()) > 0){
+      $output .= ":".$hash->getSalt();
+    }
   }
   else if($displaying == "plain"){
     if($hash->getIsCracked() == 1) {
