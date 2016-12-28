@@ -15,20 +15,11 @@ $TEMPLATE = new Template("chunks");
 $MENU->setActive("chunks");
 
 $chunks = $FACTORIES::getChunkFactory()->filter(array());
-$chunkSpeeds = new DataSet();
 $spent = new DataSet();
 foreach($chunks as $chunk){
-  $qF = new QueryFilter("taskId", $chunk->getTaskId(), "=");
-  $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
-  $speed = 0;
-  foreach($assignments as $assignment){
-    $speed += $assignment->getSpeed();
-  }
-  $chunkSpeeds->addValue($chunk->getId(), $speed);
   $spent->addValue($chunk->getId(), max($chunk->getDispatchTime(), $chunk->getSolveTime()) - $chunk->getDispatchTime());
 }
 $OBJECTS['chunks'] = $chunks;
-$OBJECTS['chunkSpeeds'] = $chunkSpeeds;
 $OBJECTS['spent'] = $spent;
 
 $tasks = $FACTORIES::getTaskFactory()->filter(array());
