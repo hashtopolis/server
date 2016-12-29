@@ -145,7 +145,7 @@ class API {
       $firstPart->setState(0);
       $firstPart->setRprogress(0);
       $FACTORIES::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), 0, 0, 0, 0, 0, 0, 0, 0);
+      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), null, 0, 0, 0, 0, 0, 0, 0);
       $FACTORIES::getChunkFactory()->save($secondPart);
       API::sendChunk($firstPart);
     }
