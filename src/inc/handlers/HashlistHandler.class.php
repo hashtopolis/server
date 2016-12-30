@@ -249,6 +249,9 @@ class HashlistHandler implements Handler {
         $added = 0;
         while (!feof($file)) {
           $data = fread($file, 392);
+          if(strlen($data) == 0){
+            break;
+          }
           if (strlen($data) != 392) {
             UI::printError("ERROR", "Data file only contains " . strlen($data) . " bytes!");
           }
