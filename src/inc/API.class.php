@@ -574,7 +574,7 @@ class API {
           $count += sizeof($current);
           $output = "";
           foreach ($current as $entry) {
-            $output .= $entry->getHash();
+            $output .= Util::hextobin($entry->getHash());
           }
           echo $output;
         }
