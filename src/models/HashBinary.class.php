@@ -5,7 +5,7 @@ class HashBinary extends AbstractModel {
 	
 	// Modelvariables
 	private $hashBinaryId;
-	private $hahslistId;
+	private $hashlistId;
 	private $essid;
 	private $hash;
 	private $plaintext;
@@ -14,9 +14,9 @@ class HashBinary extends AbstractModel {
 	private $isCracked;
 	
 	
-	function __construct($hashBinaryId, $hahslistId, $essid, $hash, $plaintext, $time, $chunkId, $isCracked) {
+	function __construct($hashBinaryId, $hashlistId, $essid, $hash, $plaintext, $time, $chunkId, $isCracked) {
 		$this->hashBinaryId = $hashBinaryId;
-		$this->hahslistId = $hahslistId;
+		$this->hashlistId = $hashlistId;
 		$this->essid = $essid;
 		$this->hash = $hash;
 		$this->plaintext = $plaintext;
@@ -29,7 +29,7 @@ class HashBinary extends AbstractModel {
 	function getKeyValueDict() {
 		$dict = array ();
 		$dict['hashBinaryId'] = $this->hashBinaryId;
-		$dict['hahslistId'] = $this->hahslistId;
+		$dict['hashlistId'] = $this->hashlistId;
 		$dict['essid'] = $this->essid;
 		$dict['hash'] = $this->hash;
 		$dict['plaintext'] = $this->plaintext;
@@ -56,12 +56,12 @@ class HashBinary extends AbstractModel {
 		$this->hashBinaryId = $id;
 	}
 
-	function getHahslistId(){
-		return $this->hahslistId;
+	function getHashlistId(){
+		return $this->hashlistId;
 	}
 
-	function setHahslistId($hahslistId){
-		$this->hahslistId = $hahslistId;
+	function setHashlistId($hashlistId){
+		$this->hashlistId = $hashlistId;
 	}
 
 	function getEssid(){

@@ -88,7 +88,7 @@ $CONF['Hash'] = array(
 );
 $CONF['HashBinary'] = array(
   'hashBinaryId',
-  'hahslistId',
+  'hashlistId',
   'essid',
   'hash',
   'plaintext',
