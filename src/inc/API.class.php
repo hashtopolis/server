@@ -569,7 +569,7 @@ class API {
         header('Content-Type: application/octet-stream');
         foreach ($hashlists as $list) {
           $qF1 = new QueryFilter("hashlistId", $list, "=");
-          $qF2 = new QueryFilter("plaintext", "null", "=");
+          $qF2 = new QueryFilter("isCracked", "0", "=");
           $current = $FACTORIES::getHashBinaryFactory()->filter(array('filter' => array($qF1, $qF2)));
           $count += sizeof($current);
           $output = "";

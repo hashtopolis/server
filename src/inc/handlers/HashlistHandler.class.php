@@ -265,7 +265,7 @@ class HashlistHandler implements Handler {
               break;
             }
           }
-          $hash = new HashBinary(0, $this->hashlist->getId(), $network, Util::bintohex($data), "", 0, null, 0);
+          $hash = new HashBinary(0, $this->hashlist->getId(), $network, Util::bintohex($data), null, 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }
