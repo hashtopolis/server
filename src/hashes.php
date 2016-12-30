@@ -20,6 +20,7 @@ $chunk = 0;
 $task = 0;
 $src = "";
 $srcId = 0;
+$binaryFormat = false;
 $hashFactory = null;
 $queryFilters = array();
 if (isset($_GET['hashlist'])) {
@@ -46,6 +47,7 @@ if (isset($_GET['hashlist'])) {
   }
   else{
     $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $binaryFormat = true;
   }
   $src = "hashlist";
   $srcId = $list->getId();
@@ -70,6 +72,7 @@ else if (isset($_GET['chunk'])) {
   }
   else{
     $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $binaryFormat = true;
   }
   $queryFilters[] = new QueryFilter("chunkId", $chunk->getId(), "=");
   $src = "chunk";
@@ -93,6 +96,7 @@ else if (isset($_GET['task'])) {
   }
   else{
     $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $binaryFormat = true;
   }
   $qF = new QueryFilter("taskId", $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
@@ -178,7 +182,7 @@ $output = "";
 foreach($hashes as $hash){
   if($displaying == ""){
     $output .= $hash->getHash();
-    if(strlen($hash->getSalt()) > 0){
+    if(!$binaryFormat && strlen($hash->getSalt()) > 0){
       $output .= ":".htmlentities($hash->getSalt(), false, "UTF-8");
     }
     if($filter == "cracked" || $filter == ""){
@@ -189,7 +193,7 @@ foreach($hashes as $hash){
   }
   else if($displaying == "hash"){
     $output .= $hash->getHash();
-    if(strlen($hash->getSalt()) > 0){
+    if(!$binaryFormat && strlen($hash->getSalt()) > 0){
       $output .= ":".htmlentities($hash->getSalt(), false, "UTF-8");
     }
   }

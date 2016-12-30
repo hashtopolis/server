@@ -77,4 +77,3 @@ switch ($QUERY['action']) {
         API::sendErrorResponse("INV", "Invalid query!");
 }
 
-?>
