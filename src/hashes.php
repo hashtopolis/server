@@ -171,7 +171,7 @@ $OBJECTS['nextPage'] = $nextPage;
 $OBJECTS['previousPage'] = $previousPage;
 $OBJECTS['currentPage'] = $currentPage;
 
-$oF = new OrderFilter("hashId", "ASC LIMIT ".(1000*$currentPage).", 1000");
+$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT ".(1000*$currentPage).", 1000");
 $hashes = $hashFactory->filter(array('filter' => $queryFilters, 'order' => $oF));
 
 $output = "";

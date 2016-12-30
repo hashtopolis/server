@@ -568,7 +568,7 @@ class API {
         header_remove("Content-Type");
         header('Content-Type: application/octet-stream');
         foreach ($hashlists as $list) {
-          $qF1 = new QueryFilter("hashlistId", $list->getId(), "=");
+          $qF1 = new QueryFilter("hashlistId", $list, "=");
           $qF2 = new QueryFilter("plaintext", "null", "=");
           $current = $FACTORIES::getHashBinaryFactory()->filter(array('filter' => array($qF1, $qF2)));
           $count += sizeof($current);
