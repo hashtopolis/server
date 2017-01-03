@@ -7,11 +7,21 @@
  *         Bunch of useful static functions.
  */
 class Util {
-
-    /**
-     * Scans the import-directory for files.
-     * @return array of all files in the top-level directory /../import
-     */
+  public static function cast($obj, $to_class) {
+    if (class_exists($to_class)) {
+      $obj_in = serialize($obj);
+      $obj_out = 'O:' . strlen($to_class) . ':"' . $to_class . '":' . substr($obj_in, $obj_in[2] + 7);
+      return unserialize($obj_out);
+    }
+    else {
+      return false;
+    }
+  }
+  
+  /**
+   * Scans the import-directory for files.
+   * @return array of all files in the top-level directory /../import
+   */
   public static function scanImportDirectory() {
     $directory = dirname(__FILE__) . "/../import";
     if (file_exists($directory) && is_dir($directory)) {
@@ -19,25 +29,30 @@ class Util {
       $importFiles = array();
       while ($file = readdir($importDirectory)) {
         if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file)) {
-          $importFiles[] = new DataSet(array("file" => $file, "size" => Util::filesize($directory."/".$file)));
+          $importFiles[] = new DataSet(array("file" => $file, "size" => Util::filesize($directory . "/" . $file)));
         }
       }
       return $importFiles;
     }
     return array();
   }
-
-    /**
-     * Calculates variable. Used in Templates
-     */
-    public static function calculate($in){
-        return $in;
-    }
-
-    /**
-     * Saves a file into the DB using the FileFactory
-     * @return boolean result of the save()-function.
-     */
+  
+  /**
+   * Calculates variable. Used in Templates
+   * @param $in mixed calculation to be done
+   * @return mixed
+   */
+  public static function calculate($in) {
+    return $in;
+  }
+  
+  /**
+   * Saves a file into the DB using the FileFactory
+   * @param $path string
+   * @param $name string
+   * @param $type string
+   * @return bool result of the save()-function.
+   */
   public static function insertFile($path, $name, $type) {
     global $FACTORIES;
     
@@ -52,12 +67,13 @@ class Util {
     }
     return true;
   }
-
-    /**
-     * Get the next task for an agent
-     * @param $agent should be the object
-     * @return null or the next task
-     */
+  
+  /**
+   * Get the next task for an agent
+   * @param $agent should be the object
+   * @param $priority int
+   * @return null or the next task
+   */
   public static function getNextTask($agent, $priority = 0) {
     global $FACTORIES;
     
@@ -77,12 +93,12 @@ class Util {
     }
     return null;
   }
-
-    /**
-     * Used by the solver. Cleans the zap-queue
-     */
+  
+  /**
+   * Used by the solver. Cleans the zap-queue
+   */
   public static function zapCleaning() {
-      //TODO NOT YET IMPLEMENTED
+    //TODO NOT YET IMPLEMENTED
     global $FACTORIES;
     
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
@@ -96,11 +112,11 @@ class Util {
       $FACTORIES::getStoredValueFactory()->update($entry);
     }
   }
-
-    /**
-     * @param $file File you want to get the size from
-     * @return int -1 if the file doesn't exist. Else filesize()
-     */
+  
+  /**
+   * @param $file string Filepath you want to get the size from
+   * @return int -1 if the file doesn't exist. Else filesize()
+   */
   public static function filesize($file) {
     //TODO: put code for 64-bit file size determination here
     if (!file_exists($file)) {
@@ -108,10 +124,10 @@ class Util {
     }
     return filesize($file);
   }
-
-    /**
-     * Refreshes the page
-     */
+  
+  /**
+   * Refreshes the page
+   */
   public static function refresh() {
     global $_SERVER;
     
@@ -122,14 +138,14 @@ class Util {
     header("Location: $url");
     die();
   }
-
-    /**
-     * @param $list hashlist-object
-     * @return array of all superhashlists belonging to the $list
-     */
+  
+  /**
+   * @param $list hashlist-object
+   * @return array of all superhashlists belonging to the $list
+   */
   public static function checkSuperHashlist($list) {
     global $FACTORIES;
-
+    
     if ($list->getFormat() == 3) {
       $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
       $superHashListFilter = new QueryFilter("superHashlistId", $list->getId(), "=");
@@ -139,11 +155,11 @@ class Util {
     }
     return array($list);
   }
-
-    //OLD PART
-    /**
-     * @return string 0.0.0.0 or the client IP
-     */
+  
+  //OLD PART
+  /**
+   * @return string 0.0.0.0 or the client IP
+   */
   public static function getIP() {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
       $ip = $_SERVER['HTTP_CLIENT_IP'];
@@ -159,11 +175,11 @@ class Util {
     }
     return $ip;
   }
-
-    /**
-     * Checks if a file is writable
-     */
-    public static function checkWriteFiles($arr) {
+  
+  /**
+   * Checks if a file is writable
+   */
+  public static function checkWriteFiles($arr) {
     foreach ($arr as $path) {
       if (!is_writable($path)) {
         return false;
@@ -171,11 +187,12 @@ class Util {
     }
     return true;
   }
-    /**
-     * Iterates through all chars, converts them to 0x__ and concats the hexes
-     * @param $binString String you want to convert
-     * @return string Hex-String
-     */
+  
+  /**
+   * Iterates through all chars, converts them to 0x__ and concats the hexes
+   * @param $binString String you want to convert
+   * @return string Hex-String
+   */
   public static function bintohex($binString) {
     $return = "";
     for ($i = 0; $i < strlen($binString); $i++) {
@@ -187,47 +204,47 @@ class Util {
     }
     return $return;
   }
-
-    /**
-     * @param $prog progress so far
-     * @param $total total to be done
-     * @return string either the check.png with Finished or an empty string
-     */
-    public static function tickdone($prog, $total) {
-        // show tick of progress is done
-        if ($total > 0 && $prog == $total) {
-            return " <img src='static/check.png' alt='Finished'>";
-        }
-        return "";
+  
+  /**
+   * @param $prog progress so far
+   * @param $total total to be done
+   * @return string either the check.png with Finished or an empty string
+   */
+  public static function tickdone($prog, $total) {
+    // show tick of progress is done
+    if ($total > 0 && $prog == $total) {
+      return " <img src='static/check.png' alt='Finished'>";
     }
-
-    /**
-     * Used in Template
-     * @param $id ID for the user
-     * @return string username or unknown-id
-     */
-    public static function getUsernameById($id) {
-        global $FACTORIES;
-
-        $user = $FACTORIES::getUserFactory()->get($id);
-        if ($user === null) {
-            return "Unknown-$id";
-        }
-        return $user->getUsername();
+    return "";
+  }
+  
+  /**
+   * Used in Template
+   * @param $id ID for the user
+   * @return string username or unknown-id
+   */
+  public static function getUsernameById($id) {
+    global $FACTORIES;
+    
+    $user = $FACTORIES::getUserFactory()->get($id);
+    if ($user === null) {
+      return "Unknown-$id";
     }
-
-    /**
-     * Used in Template. Subtracts two variables
-     */
-    public static function subtract($x, $y) {
-        return ($x - $y);
-    }
-
-    /**
-     * Used in Template. Converts seconds to human readable format
-     * @param $seconds
-     * @return string
-     */
+    return $user->getUsername();
+  }
+  
+  /**
+   * Used in Template. Subtracts two variables
+   */
+  public static function subtract($x, $y) {
+    return ($x - $y);
+  }
+  
+  /**
+   * Used in Template. Converts seconds to human readable format
+   * @param $seconds
+   * @return string
+   */
   public static function sectotime($seconds) {
     $return = "";
     if ($seconds > 86400) {
@@ -240,13 +257,13 @@ class Util {
     $return .= gmdate("H:i:s", $seconds);
     return $return;
   }
-
-    /**
-     * Used in Template
-     * @param $val string of the array
-     * @param $id int index of the array
-     * @return string the element or empty string
-     */
+  
+  /**
+   * Used in Template
+   * @param $val string of the array
+   * @param $id int index of the array
+   * @return string the element or empty string
+   */
   public static function getStaticArray($val, $id) {
     $platforms = array(
       "unknown",
@@ -304,13 +321,13 @@ class Util {
     }
     return "";
   }
-
-    /**
-     * @param $num int integer you want formatted
-     * @param int $threshold default 1024
-     * @param int $divider default 1024
-     * @return string Formatted Integer
-     */
+  
+  /**
+   * @param $num int integer you want formatted
+   * @param int $threshold default 1024
+   * @param int $divider default 1024
+   * @return string Formatted Integer
+   */
   public static function nicenum($num, $threshold = 1024, $divider = 1024) {
     $r = 0;
     while ($num > $threshold) {
@@ -326,14 +343,14 @@ class Util {
     $return = Util::niceround($num, 2);
     return $return . " " . $rs[$r];
   }
-
-    /**
-     * Formats percentage nicely
-     * @param $part progress
-     * @param $total total value
-     * @param int $decs decimals you want rounded
-     * @return string formatted percentage
-     */
+  
+  /**
+   * Formats percentage nicely
+   * @param $part progress
+   * @param $total total value
+   * @param int $decs decimals you want rounded
+   * @return string formatted percentage
+   */
   public static function showperc($part, $total, $decs = 2) {
     if ($total > 0) {
       $percentage = round(($part / $total) * 100, $decs);
@@ -350,13 +367,13 @@ class Util {
     $return = Util::niceround($percentage, $decs);
     return $return;
   }
-
-    /**
-     * @param $target File you want to write to
-     * @param $type paste, upload, import or url
-     * @param $sourcedata
-     * @return array (boolean, string) success, msg detailing what happened
-     */
+  
+  /**
+   * @param $target File you want to write to
+   * @param $type paste, upload, import or url
+   * @param $sourcedata
+   * @return array (boolean, string) success, msg detailing what happened
+   */
   public static function uploadFile($target, $type, $sourcedata) {
     //global $uperrs;
     
@@ -457,13 +474,13 @@ class Util {
     $msg .= "<br>";
     return array($success, $msg);
   }
-
-    /**
-     * Round to a specific amount of decimal points
-     * @param $num Number
-     * @param $dec Number of decimals
-     * @return string Rounded value
-     */
+  
+  /**
+   * Round to a specific amount of decimal points
+   * @param $num Number
+   * @param $dec Number of decimals
+   * @return string Rounded value
+   */
   public static function niceround($num, $dec) {
     $return = strval(round($num, $dec));
     if ($dec > 0) {
@@ -479,13 +496,13 @@ class Util {
     }
     return $return;
   }
-
-    /**
-     * Cut a string to a certain number of letters. If the string is too long, instead replaces the last three letters with ...
-     * @param $string String you want to short
-     * @param $length Number of Elements you want the string to have
-     * @return string Formatted string
-     */
+  
+  /**
+   * Cut a string to a certain number of letters. If the string is too long, instead replaces the last three letters with ...
+   * @param $string String you want to short
+   * @param $length Number of Elements you want the string to have
+   * @return string Formatted string
+   */
   public static function shortenstring($string, $length) {
     // shorten string that would be too long
     $return = "<span title='$string'>";
@@ -498,10 +515,10 @@ class Util {
     $return .= "</span>";
     return $return;
   }
-
-    /**
-     * Adds 0s to the beginning of a number until it reaches size.
-     */
+  
+  /**
+   * Adds 0s to the beginning of a number until it reaches size.
+   */
   public static function prefixNum($number, $size) {
     $formatted = "" . $number;
     while (strlen($formatted) < $size) {
@@ -556,10 +573,10 @@ class Util {
     }
     return $result;
   }
-
-    /**
-     * TODO Document me
-     */
+  
+  /**
+   * TODO Document me
+   */
   public static function createPrefixedString($table, $dict) {
     $arr = array();
     foreach ($dict as $key => $val) {
@@ -567,28 +584,28 @@ class Util {
     }
     return implode(", ", $arr);
   }
-
-    /**
-     * Checks if $search starts with $pattern. Shortcut for strpos==0
-     */
+  
+  /**
+   * Checks if $search starts with $pattern. Shortcut for strpos==0
+   */
   public static function startsWith($search, $pattern) {
     if (strpos($search, $pattern) === 0) {
       return true;
     }
     return false;
   }
-
-    /**
-     * if pattern is empty or if pattern is at the end of search
-     */
+  
+  /**
+   * if pattern is empty or if pattern is at the end of search
+   */
   public static function endsWith($search, $pattern) {
     // search forward starting from end minus needle length characters
     return $pattern === "" || (($temp = strlen($search) - strlen($pattern)) >= 0 && strpos($search, $pattern, $temp) !== FALSE);
   }
-
-    /**
-     * Converts a hex to binary
-     */
+  
+  /**
+   * Converts a hex to binary
+   */
   public static function hextobin($data) {
     $res = "";
     for ($i = 0; $i < strlen($data) - 1; $i += 2) {
@@ -596,10 +613,10 @@ class Util {
     }
     return $res;
   }
-
-    /**
-     * Get an alert div with type and msg
-     */
+  
+  /**
+   * Get an alert div with type and msg
+   */
   public static function getMessage($type, $msg) {
     return "<div class='alert alert-$type'>$msg</div>";
   }

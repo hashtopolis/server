@@ -89,6 +89,8 @@ class API {
   private static function calculateChunkSize($benchmark, $tolerance = 1){
     global $CONFIG;
     
+    //TODO: differ from various benchmark types
+    
     $benchmark = explode(":", $benchmark);
     if(sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0){
       return 0;
