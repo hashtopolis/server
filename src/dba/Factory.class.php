@@ -125,9 +125,6 @@ class Factory {
     }
   }
   
-  /**
-   * @return HashBinaryFactory
-   */
   public static function getHashBinaryFactory() {
     if (self::$hashBinaryFactory == null) {
       $f = new HashBinaryFactory();
