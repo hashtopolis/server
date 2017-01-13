@@ -1,6 +1,22 @@
 <?php
 
+use DBA\AbstractModelFactory;
+use DBA\Agent;
+use DBA\AgentError;
+use DBA\Assignment;
+use DBA\Chunk;
+use DBA\ComparisonFilter;
+use DBA\ContainFilter;
+use DBA\HashlistAgent;
+use DBA\JoinFilter;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
+
 class API {
+  /**
+   * @param $QUERY
+   * @param $agent \DBA\Agent
+   */
   private static function updateAgent($QUERY, $agent) {
     global $FACTORIES;
     
@@ -81,12 +97,22 @@ class API {
     API::sendResponse(array("action" => "keyspace", "response" => "SUCCESS", "keyspace" => "OK"));
   }
   
+  /**
+   * @param $chunk \DBA\Chunk
+   */
   private static function sendChunk($chunk) {
-    AbstractModelFactory::getDB()->query("COMMIT");
+    global $FACTORIES;
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => $chunk->getId(), "skip" => $chunk->getSkip(), "length" => $chunk->getLength()));
   }
   
+  /**
+   * @param $benchmark
+   * @param int $tolerance
+   * @return int
+   */
   private static function calculateChunkSize($benchmark, $tolerance = 1){
+    /** @var DataSet $CONFIG */
     global $CONFIG;
     
     //TODO: differ from various benchmark types
@@ -120,6 +146,12 @@ class API {
     return $size*$tolerance;
   }
   
+  /**
+   * @param $chunk \DBA\Chunk
+   * @param $agent \DBA\Agent
+   * @param $task \DBA\Task
+   * @param $assignment \DBA\Assignment
+   */
   private static function handleExistingChunk($chunk, $agent, $task, $assignment){
     global $FACTORIES;
     
@@ -160,6 +192,11 @@ class API {
     }
   }
   
+  /**
+   * @param $agent \DBA\Agent
+   * @param $task \DBA\Task
+   * @param $assignment \DBA\Assignment
+   */
   private static function createNewChunk($agent, $task, $assignment){
     global $FACTORIES;
     
@@ -182,6 +219,7 @@ class API {
 
   
   public static function getChunk($QUERY) {
+    /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
     
     $task = $FACTORIES::getTaskFactory()->get($QUERY['taskId']);
@@ -205,7 +243,7 @@ class API {
       API::sendResponse(array("action" => "task", "response" => "SUCCESS", "chunk" => "benchmark"));
     }
   
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("taskId", $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $dispatched = 0;
@@ -228,7 +266,7 @@ class API {
     $oF = new OrderFilter("skip", "ASC");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => $oF));
     foreach($chunks as $chunk){
-      if($chunk->getAgent == $agent->getId()){
+      if($chunk->getAgentId() == $agent->getId()){
         API::sendChunk($chunk);
       }
       $timeoutTime = time() - $CONFIG->getVal('chunktimeout');
@@ -236,8 +274,7 @@ class API {
         API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
     }
-    $chunk = API::createNewChunk($agent, $task, $assignment);
-    API::sendChunk($chunk);
+    API::createNewChunk($agent, $task, $assignment);
   }
   
   public static function sendErrorResponse($action, $msg) {
@@ -268,6 +305,7 @@ class API {
   }
   
   public static function registerAgent($QUERY) {
+    /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
     
     //check required values
@@ -309,6 +347,7 @@ class API {
   }
   
   public static function loginAgent($QUERY) {
+    /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
     
     if (!API::checkValues($QUERY, array('token'))) {
@@ -687,7 +726,7 @@ class API {
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array('join' => $jF, 'filter' => $qF));
     $files = array();
     for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
-      $files[] = $joinedFiles['File'][$x]->getFilename();
+      $files[] = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class)->getFilename();
     }
     
     $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
@@ -818,7 +857,7 @@ class API {
       }
       //TODO: get separator from config
       $splitLine = explode(":", $crackedHash);
-      AbstractModelFactory::getDB()->query("START TRANSACTION");
+      $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
       switch ($format) {
         case 0:
           //TODO search for hash in DB
@@ -869,7 +908,7 @@ class API {
           foreach ($hashes as $hash) {
             $cracked[$hash->getHashlistId()]++;
             $hash->setIsCracked(1);
-            $hash->setChunk($chunk->getId());
+            $hash->setChunkId($chunk->getId());
             $hash->setPlaintext($plain);
             $FACTORIES::getHashFactory()->update($hash);
           }
@@ -880,11 +919,11 @@ class API {
           $plain = $splitLine[1];
           break;
       }
-      AbstractModelFactory::getDB()->query("COMMIT");
+      $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     }
     
     //insert #Cracked hashes and update in hashlist how many hashes were cracked
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $sumCracked = 0;
     foreach ($cracked as $listId => $cracks) {
       $list = $FACTORIES::getHashlistFactory()->get($listId);
@@ -895,7 +934,7 @@ class API {
     $chunk = $FACTORIES::getChunkFactory()->get($chunk->getId());
     $chunk->setCracked($chunk->getCracked() + $sumCracked);
     $FACTORIES::getChunkFactory()->update($chunk);
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     if ($chunk->getState() == 10) { //TODO Don't compare with 10
       // the chunk was manually interrupted

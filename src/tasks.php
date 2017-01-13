@@ -1,5 +1,14 @@
 <?php
+use DBA\JoinFilter;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
+use DBA\Task;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
+
+/** @var Login $LOGIN */
+/** @var array $OBJECTS */
+/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
@@ -170,8 +179,8 @@ if (isset($_GET['id'])) {
     $jF = new JoinFilter($FACTORIES::getChunkFactory(), "agentId", "agentId");
     $joinedAgents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF, 'join' => $jF));
     for($i=0;$i<sizeof($joinedAgents['Agent']);$i++){
-      $chunk = $joinedAgents['Chunk'][$i];
-      $agent = $joinedAgents['Agent'][$i];
+      $chunk = \DBA\Util::cast($joinedAgents['Chunk'][$i], \DBA\Chunk::class);
+      $agent = \DBA\Util::cast($joinedAgents['Agent'][$i], \DBA\Agent::class);
       if($allAgents->getVal($agent->getId()) == null){
         $allAgents->addValue($agent->getId(), $agent);
         $agentObjects[] = $agent;
@@ -285,7 +294,7 @@ else {
     $set->addValue('Task', $joinedTasks['Task'][$z]);
     $set->addValue('Hashlist', $joinedTasks['Hashlist'][$z]);
     
-    $task = $joinedTasks['Task'][$z];
+    $task = \DBA\Util::cast($joinedTasks['Task'][$z], Task::class);
     $qF = new QueryFilter("taskId", $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter'=> $qF));
     $progress = 0;
@@ -316,8 +325,9 @@ else {
     $sizes = 0;
     $secret = false;
     for($x=0;$x<sizeof($joinedFiles['File']);$x++){
-      $sizes += $joinedFiles['File'][$x]->getSize();
-      if($joinedFiles['File'][$x]->getSecret() == '1'){
+      $file = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class);
+      $sizes += $file->getSize();
+      if($file->getSecret() == '1'){
         $secret = true;
       }
     }

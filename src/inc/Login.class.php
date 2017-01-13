@@ -1,4 +1,6 @@
 <?php
+use DBA\QueryFilter;
+use DBA\Session;
 
 /**
  * Handles the login sessions

@@ -1,17 +1,19 @@
 <?php
+use DBA\QueryFilter;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sein
  * Date: 18.11.16
  * Time: 20:21
  */
-
 class FileHandler implements Handler {
   public function __construct($fileId = null) {
     //we need nothing to load
   }
   
   public function handle($action) {
+    /** @var Login $LOGIN */
     global $LOGIN;
     
     switch ($action) {
@@ -36,11 +38,11 @@ class FileHandler implements Handler {
     }
   }
   
-  private function add(){
+  private function add() {
     $fileCount = 0;
     $source = $_POST["source"];
-    if (!file_exists(dirname(__FILE__)."/../../files")) {
-      mkdir(dirname(__FILE__)."/../../files");
+    if (!file_exists(dirname(__FILE__) . "/../../files")) {
+      mkdir(dirname(__FILE__) . "/../../files");
     }
     
     $allok = true;
@@ -55,12 +57,12 @@ class FileHandler implements Handler {
           if ($realname == "") {
             continue;
           }
-        
+          
           $toMove = array();
           foreach ($uploaded as $key => $upload) {
             $toMove[$key] = $upload[$i];
           }
-          $tmpfile = dirname(__FILE__)."/../../files/" . $realname;
+          $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $toMove);
           if ($resp[0]) {
             $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
@@ -76,11 +78,11 @@ class FileHandler implements Handler {
           }
         }
         break;
-    
+      
       case "import":
         // from import dir
         $imports = $_POST["imfile"];
-        if(!$imports){
+        if (!$imports) {
           break;
         }
         foreach ($imports as $import) {
@@ -89,7 +91,7 @@ class FileHandler implements Handler {
           }
           // copy all uploaded attached files to proper directory
           $realname = htmlentities(basename($import), false, "UTF-8");
-          $tmpfile = dirname(__FILE__)."/../../files/" . $realname;
+          $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $realname);
           if ($resp[0]) {
             $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
@@ -105,11 +107,11 @@ class FileHandler implements Handler {
           }
         }
         break;
-    
+      
       case "url":
         // from url
         $realname = htmlentities(basename($_POST["url"]), false, "UTF-8");
-        $tmpfile = dirname(__FILE__)."/../../files/" . $realname;
+        $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
         $resp = Util::uploadFile($tmpfile, $source, $_POST["url"]);
         if ($resp[0]) {
           $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
@@ -128,14 +130,14 @@ class FileHandler implements Handler {
     if ($allok) {
       UI::addMessage("success", "Successfully added $fileCount files!");
     }
-    else{
+    else {
       UI::addMessage("danger", "Something went wrong when adding files!");
     }
   }
   
-  private function switchSecret(){
+  private function switchSecret() {
     global $FACTORIES;
-  
+    
     // switch global file secret state
     $file = $FACTORIES::getFileFactory()->get($_POST['file']);
     $secret = intval($_POST["secret"]);
@@ -143,21 +145,21 @@ class FileHandler implements Handler {
     $FACTORIES::getFileFactory()->update($file);
   }
   
-  private function delete(){
+  private function delete() {
     global $FACTORIES;
-  
+    
     $file = $FACTORIES::getFileFactory()->get($_POST['file']);
-    if($file == null){
+    if ($file == null) {
       UI::printError("ERROR", "File does not exist!");
     }
     $qF = new QueryFilter("fileId", $file->getId(), "=");
     $tasks = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
-    if(sizeof($tasks) > 0){
+    if (sizeof($tasks) > 0) {
       UI::addMessage("danger", "This file is currently used in a task!");
     }
-    else{
+    else {
       $FACTORIES::getFileFactory()->delete($file);
-      unlink(dirname(__FILE__)."/../../files/".$file->getFilename());
+      unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
       UI::addMessage("success", "Successfully deleted file!");
     }
   }

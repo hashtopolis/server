@@ -1,4 +1,6 @@
 <?php
+use DBA\HashcatRelease;
+use DBA\QueryFilter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,8 +14,6 @@ class HashcatHandler implements Handler {
   }
   
   public function handle($action) {
-    global $LOGIN;
-    
     switch ($action) {
       case 'releasedelete':
         $this->delete();
@@ -27,45 +27,45 @@ class HashcatHandler implements Handler {
     }
   }
   
-  private static function newHashcat(){
+  private static function newHashcat() {
     global $FACTORIES;
-  
+    
     // new hashcat release
     $version = $_POST["version"];
     $url = $_POST["url"];
     $common_files = $_POST["common_files"];
     $common_files = str_replace("\r\n", "\n", $common_files);
     $rootdir = $_POST["rootdir"];
-    if (strlen($version ) == 0) {
+    if (strlen($version) == 0) {
       UI::addMessage("danger", "You must specify a version!");
       return;
     }
     
     $hashcat = new HashcatRelease(0, $version, time(), $url, $common_files, $rootdir, 0);
     $hashcat = $FACTORIES::getHashcatReleaseFactory()->save($hashcat);
-    if($hashcat == null){
+    if ($hashcat == null) {
       UI::addMessage("danger", "Could not create new hashcat release!");
     }
-    else{
+    else {
       header("Location: hashcat.php");
       die();
     }
   }
   
-  private static function delete(){
+  private static function delete() {
     global $FACTORIES;
-  
+    
     // delete hashcat release
     $release = $FACTORIES::getHashcatReleaseFactory()->get($_POST['release']);
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("hcVersion", $release->getVersion(), "=");
     $agents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF));
-    if(sizeof($agents)){
+    if (sizeof($agents)) {
       UI::addMessage("danger", "There are registered agents running this Hashcat version!");
       return;
     }
     $FACTORIES::getHashcatReleaseFactory()->delete($release);
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     Util::refresh();
   }
 }

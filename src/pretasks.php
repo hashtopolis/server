@@ -1,6 +1,13 @@
 <?php
 
+use DBA\JoinFilter;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
+
+/** @var Login $LOGIN */
+/** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
@@ -30,8 +37,9 @@ for($z=0;$z<sizeof($taskList);$z++){
   $sizes = 0;
   $secret = false;
   for($x=0;$x<sizeof($joinedFiles['File']);$x++){
-    $sizes += $joinedFiles['File'][$x]->getSize();
-    if($joinedFiles['File'][$x]->getSecret() == '1'){
+    $file = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class);
+    $sizes += $file->getSize();
+    if($file->getSecret() == '1'){
       $secret = true;
     }
   }

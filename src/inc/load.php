@@ -1,6 +1,8 @@
 <?php
 
 //set to 1 for debugging
+use DBA\Factory;
+
 ini_set("display_errors", "1");
 
 //is required for running well with php7
@@ -52,13 +54,14 @@ foreach ($dir as $entry) {
   }
 }
 
-//include all model files in models dir
+/*//include all model files in models dir
 $dir = scandir(dirname(__FILE__) . "/../models");
 foreach ($dir as $entry) {
   if (strpos($entry, ".class.php") !== false) {
     require_once(dirname(__FILE__) . "/../models/" . $entry);
   }
-}
+}*/
+require_once(dirname(__FILE__)."/../dba/init.php");
 
 $FACTORIES = new Factory();
 

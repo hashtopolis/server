@@ -1,11 +1,19 @@
 <?php
+use DBA\Chunk;
+use DBA\Config;
+use DBA\ContainFilter;
+use DBA\File;
+use DBA\Hashlist;
+use DBA\JoinFilter;
+use DBA\QueryFilter;
+use DBA\Task;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sein
  * Date: 18.11.16
  * Time: 20:21
  */
-
 class ConfigHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load
@@ -31,10 +39,10 @@ class ConfigHandler implements Handler {
     }
   }
   
-  private function clearAll(){
+  private function clearAll() {
     global $FACTORIES;
-  
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $FACTORIES::getHashFactory()->massDeletion(array());
     $FACTORIES::getHashBinaryFactory()->massDeletion(array());
     $FACTORIES::getAssignmentFactory()->massDeletion(array());
@@ -44,118 +52,124 @@ class ConfigHandler implements Handler {
     $qF = new QueryFilter("hashlistId", null, "<>");
     $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
     $taskIds = array();
-    foreach($tasks as $task){
+    foreach ($tasks as $task) {
+      $task = Util::cast($task, Task::class);
       $taskIds[] = $task->getId();
     }
     $containFilter = new ContainFilter("taskId", $taskIds);
     $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $containFilter));
     $FACTORIES::getTaskFactory()->massDeletion(array('filter' => $qF));
     $FACTORIES::getHashlistFactory()->massDeletion(array());
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
-  private function scanFiles(){
+  private function scanFiles() {
     global $FACTORIES;
     
     $allOk = true;
     $files = $FACTORIES::getFileFactory()->filter(array());
-    foreach($files as $file){
-      $absolutePath = dirname(__FILE__)."/../../files/".$file->getFilename();
-      if(!file_exists($absolutePath)){
-        UI::addMessage("danger", "File ".$file->getFilename()." does not exist!");
+    foreach ($files as $file) {
+      $file = Util::cast($file, File::class);
+      $absolutePath = dirname(__FILE__) . "/../../files/" . $file->getFilename();
+      if (!file_exists($absolutePath)) {
+        UI::addMessage("danger", "File " . $file->getFilename() . " does not exist!");
         $allOk = false;
         continue;
       }
       $size = Util::filesize($absolutePath);
-      if($size == -1){
+      if ($size == -1) {
         $allOk = false;
-        UI::addMessage("danger", "Failed to determine file size of ".$file->getName());
+        UI::addMessage("danger", "Failed to determine file size of " . $file->getName());
       }
-      else if($size != $file->getSize()){
+      else if ($size != $file->getSize()) {
         $allOk = false;
-        UI::addMessage("warning", "File size mismatch of ".$file->getFilename().", will be corrected.");
+        UI::addMessage("warning", "File size mismatch of " . $file->getFilename() . ", will be corrected.");
         $file->setSize($size);
         $FACTORIES::getFileFactory()->update($file);
       }
     }
-    if($allOk){
+    if ($allOk) {
       UI::addMessage("success", "File scan was successfull, no actions required!");
     }
   }
   
-  private function rebuildCache(){
+  private function rebuildCache() {
     global $FACTORIES;
-  
+    
     $correctedChunks = 0;
     $correctedHashlists = 0;
     
     //check chunks
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), "taskId", "taskId", $FACTORIES::getChunkFactory());
     $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId", $FACTORIES::getTaskFactory());
     $joined = $FACTORIES::getChunkFactory()->filter(array('join' => array($jF1, $jF2)));
-    for($i=0;$i<sizeof($joined['Chunk']);$i++){
-      $chunk = $joined['Chunk'][$i];
+    for ($i = 0; $i < sizeof($joined['Chunk']); $i++) {
+      $chunk = Util::cast($joined['Chunk'][$i], Chunk::class);
+      $hashlist = Util::cast($joined['Hashlist'][$i], Hashlist::class);
       $hashFactory = $FACTORIES::getHashFactory();
-      if($joined['Hashlist'][$i]->getFormat() == 3){
-        $hashlists = Util::checkSuperHashlist($joined['Hashlist'][$i]);
-        if($hashlists[0]->getFormat() != 0){
+      if ($hashlist->getFormat() == 3) {
+        $hashlists = Util::checkSuperHashlist($hashlist);
+        if (Util::cast($hashlists[0], Hashlist::class)->getFormat() != 0) {
           $hashFactory = $FACTORIES::getHashBinaryFactory();
         }
       }
       $qF1 = new QueryFilter("chunkId", $chunk->getId(), "=");
       $qF2 = new QueryFilter("isCracked", "1", "=");
       $count = $hashFactory->countFilter(array('filter' => array($qF1, $qF2)));
-      if($count != $chunk->getCracked()){
+      if ($count != $chunk->getCracked()) {
         $correctedChunks++;
         $chunk->setCracked($count);
         $FACTORIES::getChunkFactory()->update($chunk);
       }
     }
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     //check hashlists
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("format", "3", "<>");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
-    foreach($hashlists as $hashlist){
+    foreach ($hashlists as $hashlist) {
+      $hashlist = Util::cast($hashlist, Hashlist::class);
       $qF1 = new QueryFilter("hashlistId", $hashlist->getId(), "=");
       $qF2 = new QueryFilter("isCracked", "1", "=");
       $hashFactory = $FACTORIES::getHashFactory();
-      if($hashlist->getFormat() != 0){
+      if ($hashlist->getFormat() != 0) {
         $hashFactory = $FACTORIES::getHashBinaryFactory();
       }
       $count = $hashFactory->countFilter(array('filter' => array($qF1, $qF2)));
-      if($count != $hashlist->getCracked()){
+      if ($count != $hashlist->getCracked()) {
         $correctedHashlists++;
         $hashlist->setCracked($count);
         $FACTORIES::getHashlistFactory()->update($hashlist);
       }
     }
-    AbstractModelFactory::getDB()->query("COMMIT");
-  
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
     //check superhashlists
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("format", "3", "=");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
-    foreach($hashlists as $hashlist){
+    foreach ($hashlists as $hashlist) {
+      $hashlist = Util::cast($hashlist, Hashlist::class);
       $children = Util::checkSuperHashlist($hashlist);
       $cracked = 0;
-      foreach($children as $child){
+      foreach ($children as $child) {
+        $child = Util::cast($child, Hashlist::class);
         $cracked += $child->getCracked();
       }
-      if($cracked != $hashlist->getCracked()){
+      if ($cracked != $hashlist->getCracked()) {
         $correctedHashlists++;
         $hashlist->setCracked($cracked);
         $FACTORIES::getHashlistFactory()->update($hashlist);
       }
     }
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     UI::addMessage("success", "Updated all chunks and hashlists. Corrected $correctedChunks chunks and $correctedHashlists hashlists.");
   }
   
-  private function updateConfig(){
+  private function updateConfig() {
     global $OBJECTS, $FACTORIES;
     
     $CONFIG = new DataSet();
@@ -165,11 +179,11 @@ class ConfigHandler implements Handler {
         $CONFIG->addValue($name, $val);
         $qF = new QueryFilter("item", $name, "=");
         $config = $FACTORIES::getConfigFactory()->filter(array('filter' => array($qF)), true);
-        if($config == null){
+        if ($config == null) {
           $config = new Config(0, $name, $val);
           $FACTORIES::getConfigFactory()->save($config);
         }
-        else{
+        else {
           $config->setValue($val);
           $FACTORIES::getConfigFactory()->update($config);
         }

@@ -1,4 +1,11 @@
 <?php
+use DBA\ComparisonFilter;
+use DBA\File;
+use DBA\Hashlist;
+use DBA\JoinFilter;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
+use DBA\StoredValue;
 
 /**
  *
@@ -70,9 +77,9 @@ class Util {
   
   /**
    * Get the next task for an agent
-   * @param $agent should be the object
+   * @param $agent \DBA\Agent should be the object
    * @param $priority int
-   * @return null or the next task
+   * @return \DBA\Task
    */
   public static function getNextTask($agent, $priority = 0) {
     global $FACTORIES;
@@ -141,7 +148,7 @@ class Util {
   
   /**
    * @param $list hashlist-object
-   * @return array of all superhashlists belonging to the $list
+   * @return Hashlist[] of all superhashlists belonging to the $list
    */
   public static function checkSuperHashlist($list) {
     global $FACTORIES;
@@ -369,9 +376,9 @@ class Util {
   }
   
   /**
-   * @param $target File you want to write to
-   * @param $type paste, upload, import or url
-   * @param $sourcedata
+   * @param $target string File you want to write to
+   * @param $type string paste, upload, import or url
+   * @param $sourcedata string
    * @return array (boolean, string) success, msg detailing what happened
    */
   public static function uploadFile($target, $type, $sourcedata) {

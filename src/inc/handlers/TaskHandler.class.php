@@ -1,11 +1,18 @@
 <?php
+use DBA\Chunk;
+use DBA\ComparisonFilter;
+use DBA\ContainFilter;
+use DBA\JoinFilter;
+use DBA\QueryFilter;
+use DBA\Task;
+use DBA\TaskFile;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sein
  * Date: 18.11.16
  * Time: 20:21
  */
-
 class TaskHandler implements Handler {
   private $task;
   
@@ -16,7 +23,7 @@ class TaskHandler implements Handler {
       $this->task = null;
       return;
     }
-  
+    
     $this->task = $FACTORIES::getAgentFactory()->get($taskId);
     if ($this->task == null) {
       UI::printError("FATAL", "Task with ID $taskId not found!");
@@ -24,6 +31,7 @@ class TaskHandler implements Handler {
   }
   
   public function handle($action) {
+    /** @var Login $LOGIN */
     global $LOGIN;
     
     switch ($action) {
@@ -108,9 +116,10 @@ class TaskHandler implements Handler {
     }
   }
   
-  private function create(){
+  private function create() {
+    /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-  
+    
     // new task creator
     $name = htmlentities($_POST["name"], false, "UTF-8");
     $cmdline = $_POST["cmdline"];
@@ -125,6 +134,7 @@ class TaskHandler implements Handler {
       UI::addMessage("danger", "Command line must contain hashlist (" . $CONFIG->getVal('hashlistAlias') . ")!");
       return;
     }
+    $hashlist = null;
     if ($_POST["hashlist"] == null) {
       // it will be a preconfigured task
       $hashlistId = null;
@@ -145,33 +155,33 @@ class TaskHandler implements Handler {
       }
       $forward = "tasks.php";
     }
-    if($chunk < 0 || $status < 0 || $chunk < $status){
+    if ($chunk < 0 || $status < 0 || $chunk < $status) {
       UI::addMessage("danger", "Chunk time must be higher than status timer!");
       return;
     }
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, $autoadjust, 0, 0, 0, $color, 0, 0);
-    $task = $FACTORIES::getTaskFactory()->save($task);
+    $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
         $taskFile = new TaskFile(0, $task->getId(), $fileId);
         $FACTORIES::getTaskFileFactory()->save($taskFile);
       }
     }
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     header("Location: $forward");
     die();
   }
   
-  private function updatePriority(){
+  private function updatePriority() {
     global $FACTORIES;
-  
+    
     // change task priority
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if($task == null){
+    if ($task == null) {
       UI::addMessage("danger", "No such task!");
       return;
     }
@@ -185,40 +195,43 @@ class TaskHandler implements Handler {
     $qF3 = new QueryFilter("taskId", $task->getId(), "<>");
     $qF4 = new QueryFilter("hashlistId", null, "<>");
     $check = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4)), true);
-    if($check != null){
+    if ($check != null) {
       UI::addMessage("danger", "Priorities must be unique!");
       return;
     }
     $task->setPriority($priority);
     $FACTORIES::getTaskFactory()->update($task);
-    if($pretask){
+    if ($pretask) {
       header("Location: pretasks.php");
     }
-    else{
+    else {
       header("Location: " . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']);
     }
     die();
   }
   
-  private function delete(){
+  private function delete() {
     global $FACTORIES;
-  
+    
     // delete a task
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if($task == null){
+    if ($task == null) {
       UI::addMessage("danger", "No such task!");
       return;
     }
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $this->deleteTask($task);
-    AbstractModelFactory::getDB()->query("COMMIT");
-    if($task->getHashlistId() == null){
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    if ($task->getHashlistId() == null) {
       header("Location: pretasks.php");
       die();
     }
   }
   
-  private function deleteTask($task){
+  /**
+   * @param $task Task
+   */
+  private function deleteTask($task) {
     global $FACTORIES;
     
     $qF = new QueryFilter("taskId", $task->getId(), "=");
@@ -229,10 +242,11 @@ class TaskHandler implements Handler {
     $uS = new UpdateSet("chunkId", null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $chunkIds = array();
-    foreach($chunks as $chunk){
+    foreach ($chunks as $chunk) {
+      $chunk = Util::cast($chunk, Chunk::class);
       $chunkIds[] = $chunk->getId();
     }
-    if(sizeof($chunkIds) > 0) {
+    if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter("chunkId", $chunkIds);
       $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
       $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
@@ -241,27 +255,27 @@ class TaskHandler implements Handler {
     $FACTORIES::getTaskFactory()->delete($task);
   }
   
-  private function deleteFinished(){
+  private function deleteFinished() {
     global $FACTORIES;
-  
+    
     // delete finished tasks
     $qF1 = new QueryFilter("progress", 0, ">");
     $qF2 = new ComparisonFilter("keyspace", "progress", "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2)));
-  
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
-    foreach($tasks as $task){
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    foreach ($tasks as $task) {
       $this->deleteTask($task);
     }
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
-  private function rename(){
+  private function rename() {
     global $FACTORIES;
-  
+    
     // change task name
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if($task == null){
+    if ($task == null) {
       UI::addMessage("danger", "No such task!");
       return;
     }
@@ -270,36 +284,36 @@ class TaskHandler implements Handler {
     $FACTORIES::getTaskFactory()->update($task);
   }
   
-  private function changeChunkTime(){
+  private function changeChunkTime() {
     global $FACTORIES;
-  
+    
     // update task chunk time
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if($task == null){
+    if ($task == null) {
       UI::addMessage("danger", "No such task!");
       return;
     }
     $chunktime = intval($_POST["chunktime"]);
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), "taskId", "taskId");
     $join = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF, 'join' => $jF));
-    for($i=0;$i<sizeof($join['Task']);$i++){
-      $assignment = $join['Assignment'][$i];
-      $assignment->setBenchmark($assignment->getBenchmark()/$task->getChunkTime()*$chunktime);
+    for ($i = 0; $i < sizeof($join['Task']); $i++) {
+      $assignment = \DBA\Util::cast($join['Assignment'][$i], \DBA\Assignment::class);
+      $assignment->setBenchmark($assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
       $FACTORIES::getAssignmentFactory()->update($assignment);
     }
     $task->setChunkTime($chunktime);
     $FACTORIES::getTaskFactory()->update($task);
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
-  private function toggleTaskAutoadjust(){
+  private function toggleTaskAutoadjust() {
     global $FACTORIES;
-  
+    
     // enable agent benchmark autoadjust for all subsequent agents added to this task
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if($task == null){
+    if ($task == null) {
       UI::addMessage("danger", "No such task!");
       return;
     }
@@ -308,12 +322,12 @@ class TaskHandler implements Handler {
     $FACTORIES::getTaskFactory()->update($task);
   }
   
-  private function updateColor(){
+  private function updateColor() {
     global $FACTORIES;
-  
+    
     // change task color
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if($task == null){
+    if ($task == null) {
       UI::addMessage("danger", "No such task!");
       return;
     }
@@ -325,12 +339,12 @@ class TaskHandler implements Handler {
     $FACTORIES::getTaskFactory()->update($task);
   }
   
-  private function abortChunk(){
+  private function abortChunk() {
     global $FACTORIES;
-  
+    
     // reset chunk state and progress to zero
     $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
-    if($chunk == null){
+    if ($chunk == null) {
       UI::addMessage("danger", "No such chunk!");
       return;
     }
@@ -338,12 +352,12 @@ class TaskHandler implements Handler {
     $FACTORIES::getChunkFactory()->update($chunk);
   }
   
-  private function resetChunk(){
+  private function resetChunk() {
     global $FACTORIES;
-  
+    
     // reset chunk state and progress to zero
     $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
-    if($chunk == null){
+    if ($chunk == null) {
       UI::addMessage("danger", "No such chunk!");
       return;
     }
@@ -355,25 +369,25 @@ class TaskHandler implements Handler {
     $FACTORIES::getChunkFactory()->update($chunk);
   }
   
-  private function purgeTask(){
+  private function purgeTask() {
     global $FACTORIES;
     
     // delete all task chunks, forget its keyspace value and reset progress to zero
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if($task == null){
+    if ($task == null) {
       UI::addMessage("danger", "No such task!");
       return;
     }
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("taskId", $task->getId(), "=");
     $uS = new UpdateSet("benchmark", 0);
     $FACTORIES::getAssignmentFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $chunkIds = array();
-    foreach($chunks as $chunk){
+    foreach ($chunks as $chunk) {
       $chunkIds[] = $chunk->getId();
     }
-    if(sizeof($chunkIds) > 0) {
+    if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter("chunkId", $chunkIds);
       $uS = new UpdateSet("chunkId", null);
       $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
@@ -383,31 +397,31 @@ class TaskHandler implements Handler {
     $task->setKeyspace(0);
     $task->setProgress(0);
     $FACTORIES::getTaskFactory()->update($task);
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
-  private function toggleAutoadjust(){
+  private function toggleAutoadjust() {
     global $FACTORIES;
-  
+    
+    //TODO: remove this
+    
     // enable agent benchmark autoadjust for its current assignment
     $qF = new QueryFilter("agentId", $_POST['agent'], "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF), true);
-    if($assignment == null){
+    if ($assignment == null) {
       UI::addMessage("danger", "No assignment for this agent!");
       return;
     }
-    $auto = intval($_POST["auto"]);
-    $assignment->setAutoAdjust($auto);
     $FACTORIES::getAssignmentFactory()->update($assignment);
   }
   
-  private function adjustBenchmark(){
+  private function adjustBenchmark() {
     global $FACTORIES;
-  
+    
     // adjust agent benchmark
     $qF = new QueryFilter("agentId", $_POST['agent'], "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF), true);
-    if($assignment == null){
+    if ($assignment == null) {
       UI::addMessage("danger", "No assignment for this agent!");
       return;
     }

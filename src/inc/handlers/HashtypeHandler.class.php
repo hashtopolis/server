@@ -1,11 +1,13 @@
 <?php
+use DBA\HashType;
+use DBA\QueryFilter;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sein
  * Date: 18.11.16
  * Time: 20:21
  */
-
 class HashtypeHandler implements Handler {
   public function __construct($hashtypeId = null) {
     //we need nothing to load
@@ -25,40 +27,40 @@ class HashtypeHandler implements Handler {
     }
   }
   
-  private function add(){
+  private function add() {
     global $FACTORIES;
-  
+    
     $hashtype = $FACTORIES::getHashTypeFactory()->get($_POST['id']);
-    if($hashtype != null){
+    if ($hashtype != null) {
       UI::addMessage("danger", "This hash number is already used!");
       return;
     }
     $desc = htmlentities($_POST['description']);
-    if(strlen($desc) == 0 || $_POST['id'] < 0){
+    if (strlen($desc) == 0 || $_POST['id'] < 0) {
       UI::addMessage("danger", "Invalid inputs!");
       return;
     }
     
     $hashtype = new HashType($_POST['id'], $desc);
-    if(!$FACTORIES::getHashTypeFactory()->save($hashtype)){
+    if (!$FACTORIES::getHashTypeFactory()->save($hashtype)) {
       UI::addMessage("danger", "Failed to add new hash type!");
       return;
     }
     UI::addMessage("success", "New hashtype created successfully!");
   }
   
-  private function delete(){
+  private function delete() {
     global $FACTORIES;
     
     $hashtype = $FACTORIES::getHashTypeFactory()->get($_POST['type']);
-    if($hashtype == null){
+    if ($hashtype == null) {
       UI::addMessage("danger", "Invalid hashtype!");
       return;
     }
     
     $qF = new QueryFilter("hashtypeId", $hashtype->getId(), "=");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => array($qF)));
-    if(sizeof($hashlists) > 0){
+    if (sizeof($hashlists) > 0) {
       UI::addMessage("danger", "You cannot delete this hashtype! There are hashlists present which are of this type!");
       return;
     }

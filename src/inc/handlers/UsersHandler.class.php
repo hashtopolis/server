@@ -1,4 +1,7 @@
 <?php
+use DBA\QueryFilter;
+use DBA\User;
+
 /**
  * Created by IntelliJ IDEA.
  * User: sein
@@ -75,6 +78,7 @@ class UsersHandler implements Handler {
   }
   
   private function setPassword(){
+    /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
   
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
@@ -97,6 +101,7 @@ class UsersHandler implements Handler {
   }
   
   private function setRights(){
+    /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
   
     $group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
@@ -119,6 +124,7 @@ class UsersHandler implements Handler {
   }
   
   private function disable(){
+    /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
     
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
@@ -154,6 +160,7 @@ class UsersHandler implements Handler {
   }
   
   private function delete(){
+    /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
   
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);

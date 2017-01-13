@@ -1,6 +1,13 @@
 <?php
 
+use DBA\OrderFilter;
+use DBA\QueryFilter;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
+
+/** @var Login $LOGIN */
+/** @var array $OBJECTS */
+/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
@@ -52,7 +59,6 @@ if (isset($_GET['id'])) {
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $timeSpent = 0;
     foreach($chunks as $chunk){
-      $chunk = Util::cast($chunk, Chunk::class);
       $timeSpent += max($chunk->getSolveTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
     }
     $OBJECTS['chunks'] = $chunks;

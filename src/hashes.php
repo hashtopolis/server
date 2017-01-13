@@ -1,6 +1,14 @@
 <?php
 
+use DBA\ContainFilter;
+use DBA\JoinFilter;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
+
+/** @var Login $LOGIN */
+/** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
@@ -60,8 +68,8 @@ else if (isset($_GET['chunk'])) {
   if(sizeof($joined['Chunk']) == null){
     UI::printError("ERROR", "Invalid chunk!");
   }
-  $chunk = $joined['Chunk'][0];
-  $list = $joined['Hashlist'][0];
+  $chunk = \DBA\Util::cast($joined['Chunk'][0], \DBA\Chunk::class);
+  $list = \DBA\Util::cast($joined['Hashlist'][0], \DBA\Hashlist::class);
   $hashlist = $list;
   if($list->getFormat() == 3){
     $lists = Util::checkSuperHashlist($list);
@@ -85,8 +93,8 @@ else if (isset($_GET['task'])) {
   if(sizeof($joined['Task']) == null){
     UI::printError("ERROR", "Invalid task!");
   }
-  $task = $joined['Task'][0];
-  $hashlist = $joined['Hashlist'][0];
+  $task = Util::cast($joined['Task'][0], \DBA\Task::class);
+  $hashlist = Util::cast($joined['Hashlist'][0], \DBA\Hashlist::class);
   if($hashlist->getFormat() == 3){
     $lists = Util::checkSuperHashlist($hashlist);
     $hashlist = $lists[0];

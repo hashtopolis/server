@@ -46,6 +46,7 @@ $taskid = $task->getId();
 $qF = new QueryFilter("taskId", $task->getId(), "=");
 $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
 foreach ($chunks as $chunk) {
+  $chunk = Util::cast($chunk, Chunk::class);
   $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);
   $end = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength()) / $keyspace) - 1;
   //division by 10000 is required because rprogress is saved in percents with two decimals

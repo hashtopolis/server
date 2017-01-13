@@ -1,5 +1,10 @@
 <?php
+use DBA\QueryFilter;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
+
+/** @var Login $LOGIN */
+/** @var array $OBJECTS */
 
 ini_set("max_execution_time", 100000);
 

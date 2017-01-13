@@ -6,6 +6,8 @@
  * Date: 10.11.16
  * Time: 14:38
  */
+
+
 class AccountHandler implements Handler {
   private $user;
   
@@ -24,6 +26,7 @@ class AccountHandler implements Handler {
   }
   
   public function handle($action) {
+    /** @var Login $LOGIN */
     global $LOGIN, $OBJECTS;
     
     switch ($action) {
@@ -45,7 +48,7 @@ class AccountHandler implements Handler {
     $OBJECTS['user'] = $this->user;
   }
   
-  private function changePassword(){
+  private function changePassword() {
     global $FACTORIES;
     
     $oldPassword = $_POST['oldpass'];
@@ -73,7 +76,7 @@ class AccountHandler implements Handler {
     UI::addMessage("success", "Password was updated successfully!");
   }
   
-  private function updateLifetime(){
+  private function updateLifetime() {
     global $FACTORIES;
     
     $lifetime = intval($_POST['lifetime']);
@@ -87,7 +90,7 @@ class AccountHandler implements Handler {
     UI::addMessage("success", "Updated session lifetime successfully!");
   }
   
-  private function setEmail(){
+  private function setEmail() {
     global $FACTORIES;
     
     $email = $_POST['email'];

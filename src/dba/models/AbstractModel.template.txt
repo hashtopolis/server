@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: sein
+ * Date: 02.01.17
+ * Time: 23:57
+ */
+
+namespace DBA;
+
+class __MODEL_NAME__ extends AbstractModel {
+  __MODEL_VARS__
+  
+  function __construct(__MODEL_PARAMS__) {
+    __MODEL_PARAMS_INIT__
+  }
+  
+  function getKeyValueDict() {
+    $dict = array();
+    __MODEL_KEY_VAL__
+    
+    return $dict;
+  }
+  
+  function getPrimaryKey() {
+    return "__MODEL_PK__";
+  }
+  
+  function getPrimaryKeyValue() {
+    return $this->__MODEL_PK__;
+  }
+  
+  function getId() {
+    return $this->__MODEL_PK__;
+  }
+  
+  function setId($id) {
+    $this->__MODEL_PK__ = $id;
+  }
+  
+  __MODEL_GETTER_SETTER__
+}

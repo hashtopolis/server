@@ -1,4 +1,10 @@
 <?php
+use DBA\JoinFilter;
+use DBA\QueryFilter;
+use DBA\Supertask;
+use DBA\SupertaskTask;
+use DBA\Task;
+use DBA\TaskFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,25 +34,27 @@ class SupertaskHandler implements Handler {
     }
   }
   
-  private function createTasks(){
+  private function createTasks() {
+    /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-  
+    
     $supertask = $FACTORIES::getSupertaskFactory()->get($_POST['supertask']);
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST['hashlist']);
-    if($supertask == null){
+    if ($supertask == null) {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
-    else if($hashlist == null){
+    else if ($hashlist == null) {
       UI::printError("ERROR", "Invalid hashlist ID!");
     }
-  
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("supertaskId", $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), "taskId", "taskId");
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => $jF));
     $tasks = $joinedTasks['Task'];
-    foreach($tasks as $task){
-      if(strpos($task->getAttackCmd(), $CONFIG->getVal('hashlistAlias')) === false){
+    foreach ($tasks as $task) {
+      $task = Util::cast($task, Task::class);
+      if (strpos($task->getAttackCmd(), $CONFIG->getVal('hashlistAlias')) === false) {
         UI::addMessage("warning", "Task must contain the hashlist alias for cracking!");
         continue;
       }
@@ -57,52 +65,53 @@ class SupertaskHandler implements Handler {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
       }
       $task->setHashlistId($hashlist->getId());
-      $task = $FACTORIES::getTaskFactory()->save($task);
-      foreach($taskFiles as $taskFile){
+      $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
+      foreach ($taskFiles as $taskFile) {
+        $taskFile = Util::cast($taskFile, TaskFile::class);
         $taskFile->setId(0);
         $taskFile->setTaskId($task->getId());
         $FACTORIES::getTaskFileFactory()->save($taskFile);
       }
     }
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage("success", "New tasks created successfully!");
   }
   
-  private function create(){
+  private function create() {
     global $FACTORIES;
     
     $name = htmlentities($_POST['name'], false, "UTF-8");
     $tasks = $_POST['task'];
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $supertask = new Supertask(0, $name);
-    $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
-    foreach($tasks as $t){
+    $supertask = Util::cast($FACTORIES::getSupertaskFactory()->save($supertask), Supertask::class);
+    foreach ($tasks as $t) {
       $task = $FACTORIES::getTaskFactory()->get($t);
-      if($task == null){
+      if ($task == null) {
         continue;
       }
-      else if($task->getHashlistId() != null){
+      else if ($task->getHashlistId() != null) {
         continue;
       }
       $supertaskTask = new SupertaskTask(0, $task->getId(), $supertask->getId());
       $FACTORIES::getSupertaskTaskFactory()->save($supertaskTask);
     }
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage("success", "New supertask created successfully!");
   }
   
-  private function delete(){
+  private function delete() {
     global $FACTORIES;
-  
+    
     $supertask = $FACTORIES::getSupertaskFactory()->get($_POST['supertask']);
     if ($supertask == null) {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter("supertaskId", $supertask->getId(), "=");
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array('filter' => $qF));
     $FACTORIES::getSupertaskFactory()->delete($supertask);
-    AbstractModelFactory::getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage("success", "Supertask deleted successfully!");
   }
 }

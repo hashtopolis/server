@@ -1,6 +1,11 @@
 <?php
 
+use DBA\QueryFilter;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
+
+/** @var Login $LOGIN */
+/** @var array $OBJECTS */
 
 $TEMPLATE = new Template("forgot");
 $message = "";

@@ -1,4 +1,11 @@
 <?php
+use DBA\Assignment;
+use DBA\Chunk;
+use DBA\ComparisonFilter;
+use DBA\ContainFilter;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
+use DBA\RegVoucher;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +31,7 @@ class AgentHandler implements Handler {
   }
   
   public function handle($action) {
+    /** @var Login $LOGIN */
     global $LOGIN;
     
     switch ($action) {
@@ -87,7 +95,7 @@ class AgentHandler implements Handler {
   private function assign() {
     global $FACTORIES;
     
-    if($this->agent == null){
+    if ($this->agent == null) {
       $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
     }
     
@@ -101,10 +109,10 @@ class AgentHandler implements Handler {
       }
       return;
     }
-  
+    
     $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
     if ($this->agent == null) {
-      UI::printError("FATAL", "Agent with ID ".$_POST['agentId']." not found!");
+      UI::printError("FATAL", "Agent with ID " . $_POST['agentId'] . " not found!");
     }
     
     $task = $FACTORIES::getTaskFactory()->get(intval($_POST['task']));
@@ -124,7 +132,7 @@ class AgentHandler implements Handler {
     $oF = new OrderFilter("solveTime", "DESC");
     $entries = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4, $qF5), 'order' => array($oF)));
     if (sizeof($entries) > 0) {
-      $benchmark = $entries[0]->getLength();
+      $benchmark = Util::cast($entries[0], Chunk::class)->getLength();
     }
     unset($entries);
     
@@ -132,7 +140,7 @@ class AgentHandler implements Handler {
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
         $FACTORIES::getAssignmentFactory()->delete($assignments[$i]);
       }
-      $assignment = $assignments[0];
+      $assignment = Util::cast($assignments[0], Assignment::class);
       $assignment->setTaskId($task->getId());
       $assignment->setBenchmark($benchmark);
       $assignment->setautoAdjust($task->getAutoAdjust());
@@ -151,12 +159,12 @@ class AgentHandler implements Handler {
   private function delete() {
     global $FACTORIES;
     
-    AbstractModelFactory::getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     if ($this->deleteDependencies($this->agent)) {
-      AbstractModelFactory::getDB()->query("COMMIT");
+      $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     }
     else {
-      AbstractModelFactory::getDB()->query("ROLLBACK");
+      $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
       UI::printError("FATAL", "Error occured on deletion of agent!");
     }
   }
@@ -179,9 +187,9 @@ class AgentHandler implements Handler {
   private function deleteDependencies($agent) {
     global $FACTORIES;
     
-    if($agent == null){
+    if ($agent == null) {
       $agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
-      if($agent == null){
+      if ($agent == null) {
         UI::printError("ERROR", "Invalid agent!");
       }
     }
@@ -193,10 +201,11 @@ class AgentHandler implements Handler {
     $uS = new UpdateSet("chunkId", null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $chunkIds = array();
-    foreach($chunks as $chunk){
+    foreach ($chunks as $chunk) {
+      $chunk = Util::cast($chunk, Chunk::class);
       $chunkIds[] = $chunk->getId();
     }
-    if(sizeof($chunks) > 0) {
+    if (sizeof($chunks) > 0) {
       $containFilter = new ContainFilter("chunkId", $chunkIds);
       $FACTORIES::getHashFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
       $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
@@ -210,9 +219,9 @@ class AgentHandler implements Handler {
   private function toggleActive() {
     global $FACTORIES;
     
-    if($this->agent == null){
+    if ($this->agent == null) {
       $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
-      if($this->agent == null){
+      if ($this->agent == null) {
         UI::printError("ERROR", "Invalid agent!");
       }
     }
