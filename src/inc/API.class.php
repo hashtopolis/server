@@ -1,6 +1,5 @@
 <?php
 
-use DBA\AbstractModelFactory;
 use DBA\Agent;
 use DBA\AgentError;
 use DBA\Assignment;
@@ -52,7 +51,7 @@ class API {
       API::sendErrorResponse("keyspace", "You are not assigned to this task!");
     }
     
-    $type = $QUERY['type'];
+    //$type = $QUERY['type'];
     $benchmark = $QUERY['result'];
     
     //TODO: validate benchmark depending on the benchmarking type
@@ -916,7 +915,7 @@ class API {
         case 2:
           // save binary password
           // TODO Fix issue with superhashlists
-          $plain = $splitLine[1];
+          //$plain = $splitLine[1];
           break;
       }
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");

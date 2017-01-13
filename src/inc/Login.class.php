@@ -114,7 +114,7 @@ class Login {
     if ($user->getIsValid() != 1) {
       return false;
     }
-    else if (!Encryption::passwordVerify($user->getUsername(), $password, $user->getPasswordSalt(), $user->getPasswordHash())) {
+    else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
       return false;
     }
     $this->user = $user;

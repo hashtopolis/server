@@ -11,6 +11,9 @@
 // -> when installation is finished, tell to secure the install directory
 // -> ask user for salts in the crypt class to provide and insert them
 
+use DBA\QueryFilter;
+use DBA\User;
+
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
 $write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
@@ -18,6 +21,10 @@ $write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../
 if($INSTALL == 'DONE'){
 	die("Installation is already done!");
 }
+
+//TODO: this script needs to be rewritten to apply to the new dba structure
+
+/** @var array $CONN */
 
 $STEP = 0;
 if(isset($_COOKIE['step'])){
@@ -58,7 +65,7 @@ switch($STEP){
 	case 1: //clean installation was selected
 		if(isset($_GET['next'])){
 			$query = file_get_contents(dirname(__FILE__)."/hashtopussy.sql");
-			AbstractModelFactory::getDB()->query($query);
+			$FACTORIES::getAgentFactory()->getDB()->query($query);
 			setcookie("step", "52", time() + 3600);
 			setcookie("prev", "2", time() + 3600);
 			header("Location: index.php");
@@ -153,7 +160,7 @@ switch($STEP){
 				$group = $FACTORIES::getRightGroupFactory()->filter(array('filter' => array($qF)));
 				$group = $group[0];
 				$newSalt = Util::randomString(20);
-				$newHash = Encryption::passwordHash($username, $password, $newSalt);
+				$newHash = Encryption::passwordHash($password, $newSalt);
 				$user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
 				$FACTORIES::getUserFactory()->save($user);
 				setcookie("step", "$PREV", time() + 3600);
@@ -175,7 +182,7 @@ switch($STEP){
 	case 101: //upgrade installation with sql upgrade
 		if(isset($_GET['next'])){
 			$query = file_get_contents(dirname(__FILE__)."/migrate.sql");
-			AbstractModelFactory::getDB()->query($query);
+			$FACTORIES::getAgentFactory()->getDB()->query($query);
 			setcookie("step", "52", time() + 3600);
 			setcookie("prev", "102", time() + 3600);
 			header("Location: index.php");

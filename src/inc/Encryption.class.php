@@ -62,22 +62,20 @@ class Encryption {
   /**
    * Generates a password hash out of the given parameters.
    *
-   * @param string $username username of the user
    * @param string $password plain password
    * @param string $salt salt which belongs to the password
    * @return string hash
    */
-  public static function passwordHash($username, $password, $salt) {
+  public static function passwordHash($password, $salt) {
     $PEPPER = "__PEPPER2__";
     
-    $cycles = Encryption::getCount($salt, 2, 5);
     $CIPHER = $PEPPER . $password . $salt;
     $options = array('cost' => 12);
     $CIPHER = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
     return $CIPHER;
   }
   
-  public static function passwordVerify($username, $password, $salt, $hash) {
+  public static function passwordVerify($password, $salt, $hash) {
     $PEPPER = "__PEPPER2__";
     
     $CIPHER = $PEPPER . $password . $salt;
@@ -91,9 +89,9 @@ class Encryption {
    * Get the number of cycles for a given string
    *
    * @param string $string
-   * @param number $mincycles
-   * @param number $maxcycles
-   * @return number num cycles
+   * @param int $mincycles
+   * @param int $maxcycles
+   * @return int num cycles
    */
   private static function getCount($string, $mincycles = 3000, $maxcycles = 5000) {
     $count = 0;

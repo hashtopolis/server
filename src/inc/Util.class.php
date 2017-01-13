@@ -213,8 +213,8 @@ class Util {
   }
   
   /**
-   * @param $prog progress so far
-   * @param $total total to be done
+   * @param $prog int progress so far
+   * @param $total int total to be done
    * @return string either the check.png with Finished or an empty string
    */
   public static function tickdone($prog, $total) {
@@ -227,7 +227,7 @@ class Util {
   
   /**
    * Used in Template
-   * @param $id ID for the user
+   * @param $id int ID for the user
    * @return string username or unknown-id
    */
   public static function getUsernameById($id) {
@@ -353,8 +353,8 @@ class Util {
   
   /**
    * Formats percentage nicely
-   * @param $part progress
-   * @param $total total value
+   * @param $part int progress
+   * @param $total int total value
    * @param int $decs decimals you want rounded
    * @return string formatted percentage
    */

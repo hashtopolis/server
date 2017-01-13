@@ -30,6 +30,7 @@ $src = "";
 $srcId = 0;
 $binaryFormat = false;
 $hashFactory = null;
+$hashClass = null;
 $queryFilters = array();
 if (isset($_GET['hashlist'])) {
   $list = $FACTORIES::getHashlistFactory()->get($_GET["hashlist"]);
@@ -52,10 +53,12 @@ if (isset($_GET['hashlist'])) {
   }
   if($hashlist->getFormat() == 0){
     $hashFactory = $FACTORIES::getHashFactory();
+    $hashClass = \DBA\Hash::class;
   }
   else{
     $hashFactory = $FACTORIES::getHashBinaryFactory();
     $binaryFormat = true;
+    $hashClass = \DBA\HashBinary::class;
   }
   $src = "hashlist";
   $srcId = $list->getId();
@@ -188,6 +191,7 @@ $hashes = $hashFactory->filter(array('filter' => $queryFilters, 'order' => $oF))
 
 $output = "";
 foreach($hashes as $hash){
+  $hash = \DBA\Util::cast($hash, $hashClass);
   if($displaying == ""){
     $output .= $hash->getHash();
     if(!$binaryFormat && strlen($hash->getSalt()) > 0){

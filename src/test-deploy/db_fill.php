@@ -9,7 +9,7 @@
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
 $sql = file_get_contents(dirname(__FILE__)."/db.sql");
-AbstractModelFactory::getDB()->query($sql);
-AbstractModelFactory::getDB();
+$FACTORIES::getAgentFactory()->getDB()->query($sql);
+$FACTORIES::getAgentFactory()->getDB();
 
 echo "Filled!\n";

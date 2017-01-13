@@ -1,4 +1,7 @@
 <?php
+use DBA\JoinFilter;
+use DBA\QueryFilter;
+
 ini_set("display_errors", "1");
 
 /*
@@ -52,5 +55,5 @@ $qF4 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFi
 $jF1 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
 $jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
 $jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
-$result = $FACTORIES::getTaskFactory()->filter2(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1, $jF2, $jF3)));
+$result = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4), 'join' => array($jF1, $jF2, $jF3)));
 print_r($result);

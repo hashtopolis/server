@@ -28,7 +28,7 @@ if (isset($_POST['action'])) {
       }
       $newSalt = Util::randomString(20);
       $newPass = Util::randomString(10);
-      $newHash = Encryption::passwordHash($user->getUsername(), $newPass, $newSalt);
+      $newHash = Encryption::passwordHash($newPass, $newSalt);
       $user->setPasswordHash($newHash);
       $user->setPasswordSalt($newSalt);
       $user->setIsComputedPassword(1);

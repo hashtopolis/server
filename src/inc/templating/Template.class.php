@@ -32,6 +32,7 @@ class Template {
     $this->resolveDependencies();
     $parsed = $this->parse($this->content);
     $this->statements = $parsed[0];
+    return true;
   }
   
   public function getContent(){
@@ -41,6 +42,7 @@ class Template {
   public function render($objects){
     $output = "";
     foreach($this->statements as $statement){
+      /** @var Statement $statement */
       $output .= $statement->render($objects);
     }
     return $output;
@@ -327,5 +329,6 @@ class Template {
           break;
       }
     }
+    return true;
   }
 }

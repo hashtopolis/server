@@ -276,7 +276,7 @@ abstract class AbstractModelFactory {
       $options['order'] = $orderOptions;
     }
     if (count($options['order']) != 0) {
-      $query .= $this->applyOrder($options['order']);
+      $query .= $this->applyOrder($this->getOrders($options));
     }
     
     $dbh = self::getDB();
@@ -394,7 +394,6 @@ abstract class AbstractModelFactory {
    * $options['join'] is an array of JoinFilter options
    *
    * @param $options array containing option settings
-   * @param $single bool result should be one single row
    * @return AbstractModel[]|AbstractModel Returns a list of matching objects or Null
    */
   private function filterWithJoin($options) {
@@ -564,35 +563,6 @@ abstract class AbstractModelFactory {
       $orderQueries[] = $order->getQueryString($this->getModelTable());
     }
     return " ORDER BY " . implode(", ", $orderQueries);
-  }
-  
-  /**
-   * This function gives back a dict with all colums in the table
-   * and their prefixed equivalent.
-   *
-   * As an example, the column "name" in "user" becomes "name" => "user.name"
-   * @param $table string table name
-   * @return array
-   */
-  private function getPrefixedKeys($table) {
-    $dbh = $this->getDB();
-    
-    $query = "DESCRIBE `$table`"; // For whatever reason, prepared statements are not working on this one. Or i'm to stupid.
-    
-    $stmt = $dbh->prepare($query);
-    $stmt->execute(array(
-        $table
-      )
-    );
-    
-    $dict = array();
-    $fields = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    
-    foreach ($fields as $f) {
-      $dict[$f] = "`" . $table . "." . $f . "`";
-    }
-    
-    return $dict;
   }
   
   /**

@@ -8,6 +8,9 @@
 
 class Statement {
   private $statementType; //if, for, foreach, content
+  /**
+   * @var Statement[]
+   */
   private $content; //array of statements or string
   private $setting; //settings for statement
   
