@@ -3,6 +3,9 @@
  * 
  * Draws graphic about chunk progress
  */
+use DBA\Chunk;
+use DBA\QueryFilter;
+
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
 //check if there is a session
