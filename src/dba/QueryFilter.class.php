@@ -48,4 +48,11 @@ class QueryFilter extends Filter {
     }
     return $this->value;
   }
+  
+  function getHasValue() {
+    if ($this->value === null) {
+      return false;
+    }
+    return true;
+  }
 }

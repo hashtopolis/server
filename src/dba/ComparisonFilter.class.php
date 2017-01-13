@@ -40,5 +40,9 @@ class ComparisonFilter extends Filter {
   function getValue() {
     return null;
   }
+  
+  function getHasValue() {
+    return false;
+  }
 }
 

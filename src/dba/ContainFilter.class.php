@@ -28,4 +28,8 @@ class ContainFilter extends Filter {
   function getValue() {
     return implode(",", $this->values);
   }
+  
+  function getHasValue() {
+    return false;
+  }
 }
