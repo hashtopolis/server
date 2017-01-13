@@ -154,6 +154,7 @@ if (isset($_GET['id'])) {
   $joinedAgents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF, 'join' => $jF));
   $assignedAgents = array();
   foreach($joinedAgents['Agent'] as $agent){
+    $agent = \DBA\Util::cast($agent, \DBA\Agent::class);
     $assignedAgents[] = $agent->getId();
   }
   $OBJECTS['agents'] = $joinedAgents['Agent'];
