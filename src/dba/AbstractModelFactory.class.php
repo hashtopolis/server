@@ -217,7 +217,8 @@ abstract class AbstractModelFactory {
     }
     $dict = $models[0]->getKeyValueDict();
     
-    $query = "INSERT INTO " . $this->getModelTable() . "(";
+    $query = "INSERT INTO " . $this->getModelTable();
+    $query .= "( ";
     $keys = array_keys($dict);
     
     $placeHolder = "(";
@@ -397,7 +398,7 @@ abstract class AbstractModelFactory {
    * @return AbstractModel[]|AbstractModel Returns a list of matching objects or Null
    */
   private function filterWithJoin($options) {
-    $joins = $this->getJoins($options['join']);
+    $joins = $this->getJoins($options);
     if(!is_array($joins)){
       $joins = array($joins);
     }
