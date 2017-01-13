@@ -61,14 +61,12 @@ class ZapFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), Zap::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, Zap::class);
-      }
+      $models[] = Util::cast($object, Zap::class);
     }
     return $models;
   }

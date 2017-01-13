@@ -61,14 +61,12 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), __MODEL_NAME__::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, __MODEL_NAME__::class);
-      }
+      $models[] = Util::cast($object, __MODEL_NAME__::class);
     }
     return $models;
   }

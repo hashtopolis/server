@@ -61,14 +61,12 @@ class RegVoucherFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), RegVoucher::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, RegVoucher::class);
-      }
+      $models[] = Util::cast($object, RegVoucher::class);
     }
     return $models;
   }

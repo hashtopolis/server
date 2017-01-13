@@ -61,14 +61,12 @@ class SessionFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), Session::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, Session::class);
-      }
+      $models[] = Util::cast($object, Session::class);
     }
     return $models;
   }

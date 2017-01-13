@@ -61,14 +61,12 @@ class StoredValueFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), StoredValue::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, StoredValue::class);
-      }
+      $models[] = Util::cast($object, StoredValue::class);
     }
     return $models;
   }

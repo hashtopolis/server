@@ -61,14 +61,12 @@ class RightGroupFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), RightGroup::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, RightGroup::class);
-      }
+      $models[] = Util::cast($object, RightGroup::class);
     }
     return $models;
   }

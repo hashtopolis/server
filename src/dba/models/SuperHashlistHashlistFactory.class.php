@@ -61,14 +61,12 @@ class SuperHashlistHashlistFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), SuperHashlistHashlist::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, SuperHashlistHashlist::class);
-      }
+      $models[] = Util::cast($object, SuperHashlistHashlist::class);
     }
     return $models;
   }

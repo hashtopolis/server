@@ -61,14 +61,12 @@ class HashTypeFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), HashType::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, HashType::class);
-      }
+      $models[] = Util::cast($object, HashType::class);
     }
     return $models;
   }

@@ -61,14 +61,12 @@ class HashlistAgentFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), HashlistAgent::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, HashlistAgent::class);
-      }
+      $models[] = Util::cast($object, HashlistAgent::class);
     }
     return $models;
   }

@@ -61,14 +61,12 @@ class HashBinaryFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), HashBinary::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, HashBinary::class);
-      }
+      $models[] = Util::cast($object, HashBinary::class);
     }
     return $models;
   }

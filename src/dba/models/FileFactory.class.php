@@ -61,14 +61,12 @@ class FileFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), File::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, File::class);
-      }
+      $models[] = Util::cast($object, File::class);
     }
     return $models;
   }

@@ -61,14 +61,12 @@ class SupertaskTaskFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), SupertaskTask::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, SupertaskTask::class);
-      }
+      $models[] = Util::cast($object, SupertaskTask::class);
     }
     return $models;
   }

@@ -61,14 +61,12 @@ class AgentErrorFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), AgentError::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, AgentError::class);
-      }
+      $models[] = Util::cast($object, AgentError::class);
     }
     return $models;
   }

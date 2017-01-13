@@ -61,14 +61,12 @@ class ConfigFactory extends AbstractModelFactory {
       return Util::cast(parent::filter($options, $single), Config::class);
     }
     $objects = parent::filter($options, $single);
+    if($join){
+      return $objects;
+    }
     $models = array();
     foreach($objects as $object){
-      if($join){
-        $models[] = $object;
-      }
-      else{
-        $models[] = Util::cast($object, Config::class);
-      }
+      $models[] = Util::cast($object, Config::class);
     }
     return $models;
   }
