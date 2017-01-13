@@ -212,7 +212,7 @@ abstract class AbstractModelFactory {
    * @return bool|PDOStatement
    */
   public function massSave($models) {
-    if(sizeof($models) == 0){
+    if (sizeof($models) == 0) {
       return false;
     }
     $dict = $models[0]->getKeyValueDict();
@@ -237,16 +237,16 @@ abstract class AbstractModelFactory {
     
     $query = $query . " VALUES ";
     $vals = array();
-    for($x=0;$x<sizeof($models);$x++){
+    for ($x = 0; $x < sizeof($models); $x++) {
       $query .= $placeHolder;
-      if($x < sizeof($models) - 1){
+      if ($x < sizeof($models) - 1) {
         $query .= ", ";
       }
-      if($models[$x]->getId() == 0){
+      if ($models[$x]->getId() == 0) {
         $models[$x]->setId(null);
       }
       $dict = $models[$x]->getKeyValueDict();
-      foreach(array_values($dict) as $val){
+      foreach (array_values($dict) as $val) {
         $vals[] = $val;
       }
     }
@@ -399,33 +399,33 @@ abstract class AbstractModelFactory {
    */
   private function filterWithJoin($options) {
     $joins = $this->getJoins($options);
-    if(!is_array($joins)){
+    if (!is_array($joins)) {
       $joins = array($joins);
     }
     $keys = array_keys($this->getNullObject()->getKeyValueDict());
     $prefixedKeys = array();
     $factories = array($this);
-    foreach($keys as $key){
-      $prefixedKeys[] = $this->getModelTable().".".$key;
+    foreach ($keys as $key) {
+      $prefixedKeys[] = $this->getModelTable() . "." . $key;
       $tables[] = $this->getModelTable();
     }
-    $query = "SELECT ".Util::createPrefixedString($this->getModelTable(), $this->getNullObject()->getKeyValueDict());
-    foreach($joins as $join){
+    $query = "SELECT " . Util::createPrefixedString($this->getModelTable(), $this->getNullObject()->getKeyValueDict());
+    foreach ($joins as $join) {
       $joinFactory = $join->getOtherFactory();
       $factories[] = $joinFactory;
-      $query .= ", ".Util::createPrefixedString($joinFactory->getModelTable(), $joinFactory->getNullObject()->getKeyValueDict());
+      $query .= ", " . Util::createPrefixedString($joinFactory->getModelTable(), $joinFactory->getNullObject()->getKeyValueDict());
     }
     $query .= " FROM " . $this->getModelTable();
     
-    foreach($joins as $join){
+    foreach ($joins as $join) {
       $joinFactory = $join->getOtherFactory();
       $localFactory = $this;
-      if($join->getOverrideOwnFactory() != null){
+      if ($join->getOverrideOwnFactory() != null) {
         $localFactory = $join->getOverrideOwnFactory();
       }
       $match1 = $join->getMatch1();
       $match2 = $join->getMatch2();
-      $query .= " INNER JOIN ".$joinFactory->getModelTable()." ON ".$localFactory->getModelTable().".".$match1."=".$joinFactory->getModelTable().".".$match2." ";
+      $query .= " INNER JOIN " . $joinFactory->getModelTable() . " ON " . $localFactory->getModelTable() . "." . $match1 . "=" . $joinFactory->getModelTable() . "." . $match2 . " ";
     }
     
     // Apply all normal filter to this query
@@ -453,27 +453,27 @@ abstract class AbstractModelFactory {
     $res = array();
     $primaryKey = array();
     $values = array();
-    foreach($factories as $factory){
+    foreach ($factories as $factory) {
       $res[$factory->getModelTable()] = array();
       $values[$factory->getModelTable()] = array();
     }
     
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
       foreach ($row as $k => $v) {
-        foreach($factories as $factory){
-          if(Util::startsWith($k, $factory->getModelTable())){
-            $column = str_replace($factory->getModelTable().".", "", $k);
-            if($column != $factory->getNullObject()->getPrimaryKey()){
+        foreach ($factories as $factory) {
+          if (Util::startsWith($k, $factory->getModelTable())) {
+            $column = str_replace($factory->getModelTable() . ".", "", $k);
+            if ($column != $factory->getNullObject()->getPrimaryKey()) {
               $values[$factory->getModelTable()][$column] = $v;
             }
-            else{
+            else {
               $primaryKey[$factory->getModelTable()] = $v;
             }
           }
         }
       }
       
-      foreach($factories as $factory){
+      foreach ($factories as $factory) {
         $model = $factory->createObjectFromDict($primaryKey[$factory->getModelTable()], $values[$factory->getModelTable()]);
         array_push($res[$factory->getModelTable()], $model);
       }
@@ -489,7 +489,7 @@ abstract class AbstractModelFactory {
     }
     
     $keys = array_keys($this->getNullObject()->getKeyValueDict());
-    $query = "SELECT ".implode(", ", $keys)." FROM " . $this->getModelTable();
+    $query = "SELECT " . implode(", ", $keys) . " FROM " . $this->getModelTable();
     $vals = array();
     
     if (array_key_exists("filter", $options)) {
@@ -660,7 +660,7 @@ abstract class AbstractModelFactory {
       
       
       $updateOptions = $options['update'];
-      if(!is_array($updateOptions)){
+      if (!is_array($updateOptions)) {
         $updateOptions = array($updateOptions);
       }
       $vals = array();
