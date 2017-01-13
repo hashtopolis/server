@@ -9,7 +9,7 @@
 
 namespace DBA;
 
-class QueryFilter {
+class QueryFilter extends Filter {
   private $key;
   private $value;
   private $operator;

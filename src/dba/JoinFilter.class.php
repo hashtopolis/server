@@ -51,6 +51,9 @@ class JoinFilter extends Join  {
     $this->overrideOwnFactory = $overrideOwnFactory;
   }
   
+  /**
+   * @return AbstractModelFactory
+   */
   function getOtherFactory() {
     return $this->otherFactory;
   }
@@ -66,7 +69,10 @@ class JoinFilter extends Join  {
   function getOtherTableName() {
     return $this->otherTableName;
   }
-
+  
+  /**
+   * @return AbstractModelFactory
+   */
   function getOverrideOwnFactory(){
       return $this->overrideOwnFactory;
   }
