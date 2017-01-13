@@ -24,7 +24,7 @@ class QueryFilter extends Filter {
     if ($table != "") {
       $table = $table . ".";
     }
-    if ($this->value == 'NULL') {
+    if ($this->value == null) {
       return $table . $this->key . " IS NULL";
     }
     
