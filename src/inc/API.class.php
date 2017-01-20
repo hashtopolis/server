@@ -35,7 +35,8 @@ class API {
   }
   
   public static function setBenchmark($QUERY) {
-    global $FACTORIES;
+    /** @var DataSet $CONFIG */
+    global $FACTORIES, $CONFIG;
     
     // agent submits benchmark for task
     $task = $FACTORIES::getTaskFactory()->get($QUERY["taskId"]);
@@ -48,23 +49,35 @@ class API {
     $qF2 = new QueryFilter("taskId", $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
     if ($assignment == null) {
-      API::sendErrorResponse("keyspace", "You are not assigned to this task!");
+      API::sendErrorResponse("bench", "You are not assigned to this task!");
     }
     
-    //$type = $QUERY['type'];
+    $type = $QUERY['type'];
     $benchmark = $QUERY['result'];
     
-    //TODO: validate benchmark depending on the benchmarking type
-    /*$split = explode(":", $benchmark);
-    if(sizeof($split) != 2){
-      API::sendErrorResponse("bench", "Invalid benchmark results!");
+    switch($type){
+      case "speed":
+        $split = explode(":", $benchmark);
+        if(sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <=0 || $split[1] <= 0){
+          $agent->setIsActive(0);
+          $FACTORIES::getAgentFactory()->update($agent);
+          API::sendErrorResponse("bench", "Invalid benchmark result!");
+        }
+        break;
+      case "run":
+        if(!is_numeric($benchmark) || $benchmark <= 0){
+          $agent->setIsActive(0);
+          $FACTORIES::getAgentFactory()->update($agent);
+          API::sendErrorResponse("bench", "Invalid benchmark result!");
+        }
+        $benchmark = floor($benchmark/$CONFIG->getVal('benchtime')*100);
+        break;
+      default:
+        $agent->setIsActive(0);
+        $FACTORIES::getAgentFactory()->update($agent);
+        API::sendErrorResponse("bench", "Invalid benchmark type!");
     }
     
-    if ($split[0] <= 0 || $split[1] <= 0) {
-      $agent->setIsActive(0);
-      $FACTORIES::getAgentFactory()->update($agent);
-      API::sendErrorResponse("bench", "Benchmark didn't measure anything!");
-    }*/
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
     API::sendResponse(array("action" => "bench", "response" => "SUCCESS", "benchmark" => "OK"));
@@ -114,33 +127,36 @@ class API {
     /** @var DataSet $CONFIG */
     global $CONFIG;
     
-    //TODO: differ from various benchmark types
-    
-    $benchmark = explode(":", $benchmark);
-    if(sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0){
-      return 0;
-    }
-    
     $chunkTime = $CONFIG->getVal('chunktime');
-    
-    //TODO: check if time adjustments are needed
-    $benchmark[1] *= 2/3;
-    
-    $factor = $chunkTime*1000/$benchmark[1];
-    if($factor <= 0.25){
-      $benchmark[0] /= 4;
+    if(strpos($benchmark, ":") === false){
+      // old benchmarking method
+      $size = floor($benchmark*$chunkTime/100);
     }
-    else if($factor <= 0.5){
-      $benchmark[0] /= 2;
+    else {
+      // new benchmarking method
+      $benchmark = explode(":", $benchmark);
+      if(sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0){
+        return 0;
+      }
+  
+      //TODO: check if time adjustments are needed
+      $benchmark[1] *= 2/3;
+  
+      $factor = $chunkTime*1000/$benchmark[1];
+      if($factor <= 0.25){
+        $benchmark[0] /= 4;
+      }
+      else if($factor <= 0.5){
+        $benchmark[0] /= 2;
+      }
+      else{
+        $factor = floor($factor);
+      }
+      if($factor == 0){
+        $factor = 1;
+      }
+      $size = $benchmark[0]*$factor;
     }
-    else{
-      $factor = floor($factor);
-    }
-    if($factor == 0){
-      $factor = 1;
-    }
-    $size = $benchmark[0]*$factor;
-    //TODO: apply here calculation to adjust to match size
     
     return $size*$tolerance;
   }
@@ -548,9 +564,9 @@ class API {
     else if ($agent->getIsTrusted() < $hashlist->getSecret()) {
       API::sendErrorResponse('hashes', "You have not access to this hashlist!");
     }
-    $LINEDELIM = "\n";
+    $LINEDELIMITER = "\n";
     if ($agent->getOs() == 1) {
-      $LINEDELIM = "\r\n";
+      $LINEDELIMITER = "\r\n";
     }
     
     $hashlists = array();
@@ -595,7 +611,7 @@ class API {
               if (strlen($entry->getSalt()) > 0) {
                 $output .= $hashlist->getSaltSeparator() . $entry->getSalt();
               }
-              $output .= $LINEDELIM;
+              $output .= $LINEDELIMITER;
             }
             echo $output;
             
