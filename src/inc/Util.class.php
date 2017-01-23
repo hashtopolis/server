@@ -79,7 +79,7 @@ class Util {
    * Get the next task for an agent
    * @param $agent \DBA\Agent should be the object
    * @param $priority int
-   * @return \DBA\Task
+   * @return \DBA\Task null if there is no next task
    */
   public static function getNextTask($agent, $priority = 0) {
     global $FACTORIES;
@@ -122,14 +122,34 @@ class Util {
   
   /**
    * @param $file string Filepath you want to get the size from
-   * @return int -1 if the file doesn't exist. Else filesize()
+   * @return int -1 if the file doesn't exist, else filesize
    */
   public static function filesize($file) {
-    //TODO: put code for 64-bit file size determination here
     if (!file_exists($file)) {
       return -1;
     }
-    return filesize($file);
+    $fp = fopen($file, "rb");
+    $pos = 0;
+    $size = 1073741824;
+    fseek($fp, 0, SEEK_SET);
+    while ($size > 1) {
+      fseek($fp, $size, SEEK_CUR);
+      
+      if (fgetc($fp) === false) {
+        fseek($fp, -$size, SEEK_CUR);
+        $size = (int)($size / 2);
+      }
+      else {
+        fseek($fp, -1, SEEK_CUR);
+        $pos += $size;
+      }
+    }
+    
+    while (fgetc($fp) !== false) {
+      $pos++;
+    }
+    
+    return $pos;
   }
   
   /**
