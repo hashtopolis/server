@@ -12,7 +12,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
   die();
 }
-else if ($LOGIN->getLevel() < 5) {
+else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
   die($TEMPLATE->render($OBJECTS));
 }
@@ -23,11 +23,11 @@ $MENU->setActive("lists_super");
 if(isset($_GET['new'])){
   $TEMPLATE = new Template("superhashlists/new");
   $MENU->setActive("lists_snew");
-  $qF = new QueryFilter("format", 3, "<>");
+  $qF = new QueryFilter("format", DHashlistFormat::SUPERHASHLIST, "<>");
   $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
 }
 else{
-  $qF = new QueryFilter("format", "3", "=");
+  $qF = new QueryFilter("format", DHashlistFormat::SUPERHASHLIST, "=");
   $lists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
   $OBJECTS['lists'] = $lists;
   $subLists = new DataSet();

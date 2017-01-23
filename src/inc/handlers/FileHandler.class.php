@@ -18,13 +18,13 @@ class FileHandler implements Handler {
     
     switch ($action) {
       case 'filedelete':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->delete();
         break;
       case 'filesecret':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->switchSecret();

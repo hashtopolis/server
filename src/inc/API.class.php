@@ -179,7 +179,7 @@ class API {
       $chunk->setRprogress(0);
       $chunk->setDispatchTime(time());
       $chunk->setSolveTime(0);
-      $chunk->setState(0);
+      $chunk->setState(DHashcatStatus::INIT);
       $chunk->setAgentId($agent->getId());
       $FACTORIES::getChunkFactory()->update($chunk);
       API::sendChunk($chunk);
@@ -191,17 +191,17 @@ class API {
       $firstPart->setAgentId($agent->getId());
       $firstPart->setDispatchTime(time());
       $firstPart->setSolveTime(0);
-      $firstPart->setState(0);
+      $firstPart->setState(DHashcatStatus::INIT);
       $firstPart->setRprogress(0);
       $FACTORIES::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), null, 0, 0, 0, 0, 0, 0, 0);
+      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), null, 0, 0, 0, 0, DHashcatStatus::INIT, 0, 0);
       $FACTORIES::getChunkFactory()->save($secondPart);
       API::sendChunk($firstPart);
     }
     else{
       $chunk->setLength($chunk->getProgress());
       $chunk->setRprogress(10000);
-      $chunk->setState(9);
+      $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
       $FACTORIES::getChunkFactory()->update($chunk);
       API::createNewChunk($agent, $task, $assignment);
     }
@@ -227,7 +227,7 @@ class API {
     $newProgress = $task->getProgress() + $length;
     $task->setProgress($newProgress);
     $FACTORIES::getTaskFactory()->update($task);
-    $chunk = new Chunk(0, $task->getId(), $start, $length, $agent->getId(), time(), 0, 0, 0, 0, 0, 0);
+    $chunk = new Chunk(0, $task->getId(), $start, $length, $agent->getId(), time(), 0, 0, DHashcatStatus::INIT, 0, 0, 0);
     $FACTORIES::getChunkFactory()->save($chunk);
     API::sendChunk($chunk);
   }
@@ -285,7 +285,7 @@ class API {
         API::sendChunk($chunk);
       }
       $timeoutTime = time() - $CONFIG->getVal('chunktimeout');
-      if($chunk->getState() == 6 || $chunk->getState() == 10 || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime){
+      if($chunk->getState() == DHashcatStatus::ABORTED || $chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime){
         API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
     }
@@ -411,7 +411,7 @@ class API {
     switch ($QUERY['type']) {
       case "7zr":
         // downloading 7zip
-        $filename = "7zr" . (($agent->getOs() == 1) ? ".exe" : "");
+        $filename = "7zr" . (($agent->getOs() == DOperatingSystem::WINDOWS) ? ".exe" : "");
         header_remove("Content-Type");
         header('Content-Type: application/octet-stream');
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
@@ -571,7 +571,7 @@ class API {
     
     $hashlists = array();
     $format = $hashlist->getFormat();
-    if ($hashlist->getFormat() == 3) {
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       //we have a superhashlist
       $qF = new QueryFilter("superHashlistId", $hashlist->getId(), "=");
       $lists = $FACTORIES->getSuperHashlistHashlistFactory()->filter(array('filter' => array($qF)));
@@ -592,7 +592,7 @@ class API {
     }
     $count = 0;
     switch ($format) {
-      case 0:
+      case DHashlistFormat::PLAIN:
         header_remove("Content-Type");
         header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
@@ -619,8 +619,8 @@ class API {
           } while (sizeof($current) > 0);
         }
         break;
-      case 1:
-      case 2:
+      case DHashlistFormat::BINARY:
+      case DHashlistFormat::WPA:
         header_remove("Content-Type");
         header('Content-Type: application/octet-stream');
         foreach ($hashlists as $list) {
@@ -843,7 +843,7 @@ class API {
     $chunk->setProgress($keyspaceProgress);
     $chunk->setSolveTime(time());
     $aborting = false;
-    if($chunk->getState() == 6){
+    if($chunk->getState() == DHashcatStatus::ABORTED){
       $aborting = true;
     }
     $chunk->setState($state);
@@ -874,7 +874,7 @@ class API {
       $splitLine = explode(":", $crackedHash);
       $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
       switch ($format) {
-        case 0:
+        case DHashlistFormat::PLAIN:
           //TODO search for hash in DB
           //get salt
           //replace hash + salt from the line -> plaintext remains
@@ -906,7 +906,7 @@ class API {
             $FACTORIES::getHashFactory()->update($hash);
           }
           break;
-        case 1:
+        case DHashlistFormat::WPA:
           // save cracked wpa password
           $network = $splitLine[0];
           $plain = $splitLine[1];
@@ -928,7 +928,7 @@ class API {
             $FACTORIES::getHashFactory()->update($hash);
           }
           break;
-        case 2:
+        case DHashlistFormat::BINARY:
           // save binary password
           // TODO Fix issue with superhashlists
           //$plain = $splitLine[1];
@@ -951,9 +951,9 @@ class API {
     $FACTORIES::getChunkFactory()->update($chunk);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
-    if ($chunk->getState() == 10) { //TODO Don't compare with 10
+    if ($chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME) {
       // the chunk was manually interrupted
-      $chunk->setState(6); //TODO Don't use 6
+      $chunk->setState(DHashcatStatus::ABORTED);
       $FACTORIES::getChunkFactory()->update($chunk);
       API::sendErrorResponse($action, "Chunk was manually interrupted.");
     }
@@ -992,12 +992,12 @@ class API {
     }
     
     switch ($state) {
-      case 4:
+      case DHashcatStatus::EXHAUSTED:
         // the chunk has finished (exhausted)
         $chunk->setSpeed(0);
         $FACTORIES::getChunkFactory()->update($chunk);
         break;
-      case 5:
+      case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
         // deprioritize all tasks and unassign all agents
         $qF = new ContainFilter("hashlistId", $hashlistIds);
@@ -1009,12 +1009,14 @@ class API {
         
         //TODO: notificate hashList done
         break;
-      case 6:
-        // the chunk was aborted
+      case DHashcatStatus::ABORTED:
+      case DHashcatStatus::QUIT:
+        // the chunk was aborted or quit
         $chunk->setSpeed(0);
         $FACTORIES::getChunkFactory()->update($chunk);
         API::sendErrorResponse($action, "Chunk was aborted!");
         break;
+      case DHashcatStatus::RUNNING:
       default:
         // the chunk isn't finished yet, we will send zaps
         $qF1 = new ComparisonFilter("cracked", "hashCount", "<");

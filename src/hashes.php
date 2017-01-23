@@ -14,7 +14,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
   die();
 }
-else if ($LOGIN->getLevel() < 5) {
+else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
   die($TEMPLATE->render($OBJECTS));
 }
@@ -38,7 +38,7 @@ if (isset($_GET['hashlist'])) {
     UI::printError("ERROR", "Invalid hashlist!");
   }
   $OBJECTS['list'] = $list;
-  if($list->getFormat() == 3){
+  if($list->getFormat() == DHashlistFormat::SUPERHASHLIST){
     $lists = Util::checkSuperHashlist($list);
     $listIds = array();
     foreach($lists as $l){
@@ -51,7 +51,7 @@ if (isset($_GET['hashlist'])) {
     $hashlist = $list;
     $queryFilters[] = new QueryFilter("hashlistId", $list->getId(), "=");
   }
-  if($hashlist->getFormat() == 0){
+  if($hashlist->getFormat() == DHashlistFormat::PLAIN){
     $hashFactory = $FACTORIES::getHashFactory();
     $hashClass = \DBA\Hash::class;
   }
@@ -74,11 +74,11 @@ else if (isset($_GET['chunk'])) {
   $chunk = \DBA\Util::cast($joined['Chunk'][0], \DBA\Chunk::class);
   $list = \DBA\Util::cast($joined['Hashlist'][0], \DBA\Hashlist::class);
   $hashlist = $list;
-  if($list->getFormat() == 3){
+  if($list->getFormat() == DHashlistFormat::SUPERHASHLIST){
     $lists = Util::checkSuperHashlist($list);
     $hashlist = $lists[0];
   }
-  if($hashlist->getFormat() == 0){
+  if($hashlist->getFormat() == DHashlistFormat::PLAIN){
     $hashFactory = $FACTORIES::getHashFactory();
   }
   else{
@@ -98,11 +98,11 @@ else if (isset($_GET['task'])) {
   }
   $task = Util::cast($joined['Task'][0], \DBA\Task::class);
   $hashlist = Util::cast($joined['Hashlist'][0], \DBA\Hashlist::class);
-  if($hashlist->getFormat() == 3){
+  if($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST){
     $lists = Util::checkSuperHashlist($hashlist);
     $hashlist = $lists[0];
   }
-  if($hashlist->getFormat() == 0){
+  if($hashlist->getFormat() == DHashlistFormat::PLAIN){
     $hashFactory = $FACTORIES::getHashFactory();
   }
   else{

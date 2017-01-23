@@ -36,25 +36,25 @@ class AgentHandler implements Handler {
     
     switch ($action) {
       case 'clearerrors':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->clearErrors();
         break;
       case 'agentrename':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->rename();
         break;
       case 'agentowner':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->changeOwner();
         break;
       case 'agenttrusted':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->changeTrusted();
@@ -72,7 +72,7 @@ class AgentHandler implements Handler {
         $this->toggleActive();
         break;
       case 'agentdelete':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->delete();

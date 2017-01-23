@@ -13,7 +13,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
   die();
 }
-else if ($LOGIN->getLevel() < 5) {
+else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
   die($TEMPLATE->render($OBJECTS));
 }
@@ -87,7 +87,7 @@ else if (isset($_GET['id'])) {
 else {
   //load all hashlists
   $jF = new JoinFilter($FACTORIES::getHashTypeFactory(), "hashTypeId", "hashTypeId");
-  $qF = new QueryFilter("format", "3", "<>", $FACTORIES::getHashlistFactory());
+  $qF = new QueryFilter("format", "" . DHashlistFormat::SUPERHASHLIST, "<>", $FACTORIES::getHashlistFactory());
   $joinedHashlists = $FACTORIES::getHashlistFactory()->filter(array('join' => $jF, 'filter' => $qF));
   $hashlists = array();
   for($x=0;$x<sizeof($joinedHashlists['Hashlist']);$x++){

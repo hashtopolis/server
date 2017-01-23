@@ -10,6 +10,8 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 $TEMPLATE = new Template("forgot");
 $message = "";
 
+// TODO: add forgot handler
+
 if (isset($_POST['action'])) {
   switch ($_POST['action']) {
     case 'resetpassword':

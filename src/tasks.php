@@ -48,7 +48,7 @@ if(isset($_GET['id']) || !isset($_GET['new'])) {
 }
 
 if (isset($_GET['id'])) {
-  if($LOGIN->getLevel() < 5){
+  if($LOGIN->getLevel() < DAccessLevel::READ_ONLY){
     $TEMPLATE = new Template("restricted");
     die($TEMPLATE->render($OBJECTS));
   }
@@ -220,7 +220,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['fullAgents'] = $fullAgents;
 }
 else if (isset($_GET['new'])) {
-  if($LOGIN->getLevel() < 5){
+  if($LOGIN->getLevel() < DAccessLevel::READ_ONLY){
     $TEMPLATE = new Template("restricted");
     die($TEMPLATE->render($OBJECTS));
   }

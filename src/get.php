@@ -39,7 +39,7 @@ if (!$LOGIN->isLoggedin()) {
     die("No access!");
   }
 }
-else if ($LOGIN->getLevel() < 20) {
+else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   die("No access!");
 }
 

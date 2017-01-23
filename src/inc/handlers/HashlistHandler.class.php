@@ -42,49 +42,49 @@ class HashlistHandler implements Handler {
     
     switch ($action) {
       case 'preconf':
-        if ($LOGIN->getLevel() < 20) {
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->preconf();
         break;
       case 'wordlist':
-        if ($LOGIN->getLevel() < 20) {
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->createWordlists();
         break;
       case 'hashlistsecret':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->toggleSecret();
         break;
       case 'hashlistrename':
-        if ($LOGIN->getLevel() < 20) {
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->rename();
         break;
       case 'hashlistzapp':
-        if ($LOGIN->getLevel() < 20) {
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->processZap();
         break;
       case 'export':
-        if ($LOGIN->getLevel() < 20) {
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->export();
         break;
       case 'hashlistzap':
-        if ($LOGIN->getLevel() < 20) {
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->zap();
         break;
       case 'hashlistdelete':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->delete();
@@ -93,7 +93,7 @@ class HashlistHandler implements Handler {
         $this->create();
         break;
       case 'newsuperhashlistp':
-        if ($LOGIN->getLevel() < 30) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->createSuperhashlist();

@@ -13,7 +13,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
   die();
 }
-else if ($LOGIN->getLevel() < 5) {
+else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
   die($TEMPLATE->render($OBJECTS));
 }
