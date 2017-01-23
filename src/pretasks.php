@@ -1,8 +1,11 @@
 <?php
 
+use DBA\File;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Task;
+use DBA\TaskFile;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -21,9 +24,9 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
 $TEMPLATE = new Template("pretasks");
 $MENU->setActive("tasks_pre");
 
-$oF1 = new OrderFilter("priority", "DESC");
-$qF = new QueryFilter("hashlistId", null, "=");
-$oF2 = new OrderFilter("taskId", "ASC");
+$oF1 = new OrderFilter(Task::PRIORITY, "DESC");
+$qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
+$oF2 = new OrderFilter(Task::TASK_ID, "ASC");
 $taskList = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'order' => array($oF1, $oF2)));
 $tasks = array();
 for($z=0;$z<sizeof($taskList);$z++){
@@ -31,8 +34,8 @@ for($z=0;$z<sizeof($taskList);$z++){
   $task = $taskList[$z];
   $set->addValue('Task', $taskList[$z]);
   
-  $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), "fileId", "fileId");
+  $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
+  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'join' => $jF));
   $sizes = 0;
   $secret = false;

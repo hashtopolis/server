@@ -2,6 +2,8 @@
 
 use DBA\JoinFilter;
 use DBA\QueryFilter;
+use DBA\SupertaskTask;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -29,7 +31,7 @@ if (isset($_POST['action'])) {
 if(isset($_GET['create'])){
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
-  $qF = new QueryFilter("hashlistId", null, "=");
+  $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
   $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
 }
 else if (isset($_GET['id']) && isset($_GET['new'])) {
@@ -44,8 +46,8 @@ else if (isset($_GET['id'])){
   if($supertask == null){
     UI::printError("ERROR", "Invalid supertask ID!");
   }
-  $qF = new QueryFilter("supertaskId", $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-  $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), "taskId", "taskId");
+  $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
+  $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
   $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => $jF));
   $OBJECTS['tasks'] = $tasks['Task'];
   $OBJECTS['supertask'] = $supertask;
@@ -54,8 +56,8 @@ else {
   $supertasks = $FACTORIES::getSupertaskFactory()->filter(array());
   $supertaskTasks = new DataSet();
   foreach($supertasks as $supertask){
-    $qF = new QueryFilter("supertaskId", $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), "taskId", "taskId");
+    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => $jF));
     $tasks = $joinedTasks['Task'];
     $supertaskTasks->addValue($supertask->getId(), $tasks);

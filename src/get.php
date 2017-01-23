@@ -1,4 +1,5 @@
 <?php
+use DBA\Agent;
 use DBA\QueryFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
@@ -30,7 +31,7 @@ if (!$line) {
 //if agent provides his voucher, check it.
 if (!$LOGIN->isLoggedin()) {
   $token = @$_GET['token'];
-  $qF = new QueryFilter("token", $token, "=");
+  $qF = new QueryFilter(Agent::TOKEN, $token, "=");
   $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
   if (!$agent) {
     die("No access!");

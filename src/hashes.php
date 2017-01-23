@@ -1,9 +1,13 @@
 <?php
 
+use DBA\Chunk;
 use DBA\ContainFilter;
+use DBA\Hash;
+use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -44,12 +48,12 @@ if (isset($_GET['hashlist'])) {
     foreach($lists as $l){
       $listIds[] = $l->getId();
     }
-    $queryFilters[] = new ContainFilter("hashlistId", $listIds);
+    $queryFilters[] = new ContainFilter(Hash::HASHLIST_ID, $listIds);
     $hashlist = $lists[0];
   }
   else{
     $hashlist = $list;
-    $queryFilters[] = new QueryFilter("hashlistId", $list->getId(), "=");
+    $queryFilters[] = new QueryFilter(Hash::HASHLIST_ID, $list->getId(), "=");
   }
   if($hashlist->getFormat() == DHashlistFormat::PLAIN){
     $hashFactory = $FACTORIES::getHashFactory();
@@ -64,9 +68,9 @@ if (isset($_GET['hashlist'])) {
   $srcId = $list->getId();
 }
 else if (isset($_GET['chunk'])) {
-  $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), "taskId", "taskId", $FACTORIES::getChunkFactory());
-  $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId", $FACTORIES::getTaskFactory());
-  $qF = new QueryFilter("chunkId", $_GET['chunk'], "=", $FACTORIES::getChunkFactory());
+  $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
+  $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
+  $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", $FACTORIES::getChunkFactory());
   $joined = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF, 'join' => array($jF1, $jF2)));
   if(sizeof($joined['Chunk']) == null){
     UI::printError("ERROR", "Invalid chunk!");
@@ -85,13 +89,13 @@ else if (isset($_GET['chunk'])) {
     $hashFactory = $FACTORIES::getHashBinaryFactory();
     $binaryFormat = true;
   }
-  $queryFilters[] = new QueryFilter("chunkId", $chunk->getId(), "=");
+  $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
   $src = "chunk";
   $srcId = $chunk->getId();
 }
 else if (isset($_GET['task'])) {
-  $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
-  $qF = new QueryFilter("taskId", $_GET['task'], "=");
+  $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
+  $qF = new QueryFilter(Task::TASK_ID, $_GET['task'], "=");
   $joined = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => array($jF)));
   if(sizeof($joined['Task']) == null){
     UI::printError("ERROR", "Invalid task!");
@@ -109,13 +113,13 @@ else if (isset($_GET['task'])) {
     $hashFactory = $FACTORIES::getHashBinaryFactory();
     $binaryFormat = true;
   }
-  $qF = new QueryFilter("taskId", $task->getId(), "=");
+  $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
   $chunkIds = array();
   foreach($chunks as $chunk){
     $chunkIds[] = $chunk->getId();
   }
-  $queryFilters[] = new ContainFilter("chunkId", $chunkIds);
+  $queryFilters[] = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
   $src = "task";
   $srcId = $task->getId();
 }
@@ -156,10 +160,10 @@ foreach ($filters as $id => $text) {
 $OBJECTS['filters'] = $filtersSet;
 
 if($filter == "cracked"){
-  $queryFilters[] = new QueryFilter("isCracked", "1", "=");
+  $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, "1", "=");
 }
 else if($filter == "uncracked"){
-  $queryFilters[] = new QueryFilter("isCracked", "0", "=");
+  $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, "0", "=");
 }
 
 $count = $hashFactory->countFilter(array('filter' => $queryFilters));

@@ -12,6 +12,7 @@
 // -> ask user for salts in the crypt class to provide and insert them
 
 use DBA\QueryFilter;
+use DBA\RightGroup;
 use DBA\User;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
@@ -156,7 +157,7 @@ switch($STEP){
 				$message = Util::getMessage('danger', "Your entered passwords do not match!");
 			}
 			else{
-				$qF = new QueryFilter("groupName", "Administrator", "=");
+				$qF = new QueryFilter(RightGroup::GROUP_NAME, "Administrator", "=");
 				$group = $FACTORIES::getRightGroupFactory()->filter(array('filter' => array($qF)));
 				$group = $group[0];
 				$newSalt = Util::randomString(20);

@@ -1,5 +1,6 @@
 <?php
 
+use DBA\File;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 
@@ -33,8 +34,8 @@ if(isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))){
 }
 
 
-$qF = new QueryFilter("fileType", array_search($view, array('dict', 'rule')), "=");
-$oF = new OrderFilter("filename", "ASC");
+$qF = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule')), "=");
+$oF = new OrderFilter(File::FILENAME, "ASC");
 $OBJECTS['fileType'] = ($view == "dict")?"Wordlists":"Rules";
 $OBJECTS['view'] = $view;
 $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'order' => $oF));;

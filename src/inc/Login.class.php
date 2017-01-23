@@ -1,6 +1,7 @@
 <?php
 use DBA\QueryFilter;
 use DBA\Session;
+use DBA\User;
 
 /**
  * Handles the login sessions
@@ -38,9 +39,9 @@ class Login {
     $this->valid = false;
     if (isset($_COOKIE['session'])) {
       $session = $_COOKIE['session'];
-      $filter1 = new QueryFilter("sessionKey", $session, "=");
-      $filter2 = new QueryFilter("isOpen", "1", "=");
-      $filter3 = new QueryFilter("lastActionDate", time() - 10000, ">");
+      $filter1 = new QueryFilter(Session::SESSION_KEY, $session, "=");
+      $filter2 = new QueryFilter(Session::IS_OPEN, "1", "=");
+      $filter3 = new QueryFilter(Session::LAST_ACTION_DATE, time() - 10000, ">");
       $check = $FACTORIES::getSessionFactory()->filter(array('filter' => array($filter1, $filter2, $filter3)));
       if ($check === null || sizeof($check) == 0) {
         setcookie("session", "", time() - 600); //delete invalid or old cookie
@@ -105,7 +106,7 @@ class Login {
     if ($this->valid == true) {
       return false;
     }
-    $filter = new QueryFilter("username", $username, "=");
+    $filter = new QueryFilter(User::USERNAME, $username, "=");
     $check = $FACTORIES::getUserFactory()->filter(array('filter' => array($filter)));
     if ($check === null || sizeof($check) == 0) {
       return false;

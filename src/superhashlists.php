@@ -1,7 +1,9 @@
 <?php
 
+use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
+use DBA\SuperHashlistHashlist;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -23,17 +25,17 @@ $MENU->setActive("lists_super");
 if(isset($_GET['new'])){
   $TEMPLATE = new Template("superhashlists/new");
   $MENU->setActive("lists_snew");
-  $qF = new QueryFilter("format", DHashlistFormat::SUPERHASHLIST, "<>");
+  $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
   $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
 }
 else{
-  $qF = new QueryFilter("format", DHashlistFormat::SUPERHASHLIST, "=");
+  $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
   $lists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
   $OBJECTS['lists'] = $lists;
   $subLists = new DataSet();
   foreach($lists as $list){
-    $qF = new QueryFilter("superHashlistId", $list->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
-    $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), "hashlistId", "hashlistId");
+    $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
+    $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), SuperHashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
     $ll = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF, 'join' => $jF));
     $subLists->addValue($list->getId(), $ll['Hashlist']);
   }

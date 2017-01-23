@@ -1,8 +1,14 @@
 <?php
+use DBA\Agent;
+use DBA\Assignment;
+use DBA\Chunk;
+use DBA\File;
+use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\TaskFile;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -70,7 +76,7 @@ if (isset($_GET['id'])) {
   $isActive = 0;
   $activeChunks = array();
   $activeChunksIds = new DataSet();
-  $qF = new QueryFilter("taskId", $task->getId(), "=");
+  $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
   $activeAgents = new DataSet();
   $agentsSpeed = new DataSet();
@@ -92,7 +98,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['currentSpeed'] = $currentSpeed;
   
   $agentsBench = new DataSet();
-  $qF = new QueryFilter("taskId", $task->getId(), "=");
+  $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
   $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
   foreach($assignments as $assignment) {
     $agentsBench->addValue($assignment->getAgentId(), $assignment->getBenchmark());
@@ -103,7 +109,7 @@ if (isset($_GET['id'])) {
   $agentsProgress = new DataSet();
   $agentsSpent = new DataSet();
   $agentsCracked = new DataSet();
-  $qF = new QueryFilter("taskId", $task->getId(), "=");
+  $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
   foreach($chunks as $chunk){
     $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime());
@@ -144,13 +150,13 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeLeft'] = -1;
   }
   
-  $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), "fileId", "fileId");
+  $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
+  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'join' => $jF));
   $OBJECTS['attachedFiles'] = $joinedFiles['File'];
   
-  $jF = new JoinFilter($FACTORIES::getAssignmentFactory(), "agentId", "agentId");
-  $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getAssignmentFactory());
+  $jF = new JoinFilter($FACTORIES::getAssignmentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
+  $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getAssignmentFactory());
   $joinedAgents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF, 'join' => $jF));
   $assignedAgents = array();
   foreach($joinedAgents['Agent'] as $agent){
@@ -176,8 +182,8 @@ if (isset($_GET['id'])) {
     $allAgentsSpent = new DataSet();
     $allAgents = new DataSet();
     $agentObjects = array();
-    $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getChunkFactory());
-    $jF = new JoinFilter($FACTORIES::getChunkFactory(), "agentId", "agentId");
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=", $FACTORIES::getChunkFactory());
+    $jF = new JoinFilter($FACTORIES::getChunkFactory(), Chunk::AGENT_ID, Agent::AGENT_ID);
     $joinedAgents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF, 'join' => $jF));
     for($i=0;$i<sizeof($joinedAgents['Agent']);$i++){
       $chunk = \DBA\Util::cast($joinedAgents['Chunk'][$i], \DBA\Chunk::class);
@@ -201,8 +207,8 @@ if (isset($_GET['id'])) {
   
   if(isset($_GET['all'])){
     $OBJECTS['chunkFilter'] = 1;
-    $qF = new QueryFilter("taskId", $task->getId(), "=");
-    $oF = new OrderFilter("solveTime", "DESC LIMIT 100");
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT 100");
     $OBJECTS['chunks'] = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF, 'order' => $oF));
     $OBJECTS['activeChunks'] = $activeChunksIds;
   }
@@ -256,13 +262,13 @@ else if (isset($_GET['new'])) {
   
   $origFiles = array();
   if($orig > 0){
-    $qF = new QueryFilter("taskId", $orig, "=");
+    $qF = new QueryFilter(TaskFile::TASK_ID, $orig, "=");
     $ff = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
     foreach($ff as $f) {
       $origFiles[] = $f->getFileId();
     }
   }
-  $oF = new OrderFilter("filename", "ASC");
+  $oF = new OrderFilter(File::FILENAME, "ASC");
   $allFiles = $FACTORIES::getFileFactory()->filter(array('order' => $oF));
   $rules = array();
   $wordlists = array();
@@ -285,9 +291,9 @@ else if (isset($_GET['new'])) {
   $OBJECTS['rules'] = $rules;
 }
 else {
-  $jF = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
-  $oF1 = new OrderFilter("priority", "DESC");
-  $oF2 = new OrderFilter("taskId", "ASC");
+  $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
+  $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
+  $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
   $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('join' => $jF, 'order' => array($oF1, $oF2)));
   $tasks = array();
   for($z=0;$z<sizeof($joinedTasks['Task']);$z++){
@@ -296,7 +302,7 @@ else {
     $set->addValue('Hashlist', $joinedTasks['Hashlist'][$z]);
     
     $task = \DBA\Util::cast($joinedTasks['Task'][$z], Task::class);
-    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter'=> $qF));
     $progress = 0;
     $cracked = 0;
@@ -317,10 +323,10 @@ else {
       $isActive = true;
     }
     
-    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF));
     
-    $qF = new QueryFilter("taskId", $task->getId(), "=", $FACTORIES::getTaskFileFactory());
+    $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), "fileId", "fileId");
     $joinedFiles = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'join' => $jF));
     $sizes = 0;

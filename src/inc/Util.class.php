@@ -6,6 +6,8 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\StoredValue;
+use DBA\SuperHashlistHashlist;
+use DBA\Task;
 
 /**
  *
@@ -85,15 +87,15 @@ class Util {
     global $FACTORIES;
     
     //TODO: handle the case, if a task is a single assignment task
-    $priorityFilter = new QueryFilter("priority", $priority, ">");
-    $trustedFilter = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
-    $cpuFilter = new QueryFilter("isCpuTask", $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
-    $crackedFilter = new ComparisonFilter("cracked", "hashCount", "<");
+    $priorityFilter = new QueryFilter(Task::PRIORITY, $priority, ">");
+    $trustedFilter = new QueryFilter(Hashlist::SECRET, $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
+    $cpuFilter = new QueryFilter(Task::IS_CPU_TASK, $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
+    $crackedFilter = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<", $FACTORIES::getHashlistFactory());
     //$qF5 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
-    $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
+    $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
     //$jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
     //$jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
-    $descOrder = new OrderFilter("priority", "DESC LIMIT 1");
+    $descOrder = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
     $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), 'join' => array($hashlistIDJoin), 'order' => array($descOrder)));
     if (sizeof($nextTask['Task']) > 0) {
       return $nextTask['Task'][0];
@@ -174,8 +176,8 @@ class Util {
     global $FACTORIES;
     
     if ($list->getFormat() == 3) {
-      $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId");
-      $superHashListFilter = new QueryFilter("superHashlistId", $list->getId(), "=");
+      $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
+      $superHashListFilter = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=");
       $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('join' => array($hashlistJoinFilter), 'filter' => array($superHashListFilter)));
       $lists = $joined['Hashlist'];
       return $lists;
@@ -291,7 +293,7 @@ class Util {
    * @param $id int index of the array
    * @return string the element or empty string
    */
-  public static function getStaticArray($val, $id) {
+  public static function getStaticArray($val, $id) { // TODO: this function should get obsolete later
     $platforms = array(
       "unknown",
       "NVidia",

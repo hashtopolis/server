@@ -1,7 +1,12 @@
 <?php
 
+use DBA\Agent;
+use DBA\AgentError;
+use DBA\Assignment;
+use DBA\Chunk;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -29,7 +34,7 @@ if (isset($_POST['action'])) {
   Util::refresh();
 }
 
-$qF = new QueryFilter("hashlistId", null, "<>");
+$qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
 $allTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
 
 if (isset($_GET['id'])) {
@@ -44,7 +49,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array());
     $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array());
     
-    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF), true);
     $currentTask = 0;
     if($assignment != null){
@@ -52,10 +57,10 @@ if (isset($_GET['id'])) {
     }
     $OBJECTS['currentTask'] = $currentTask;
     
-    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $OBJECTS['errors'] = $FACTORIES::getAgentErrorFactory()->filter(array('filter' => $qF));
     
-    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $timeSpent = 0;
     foreach($chunks as $chunk){
@@ -74,7 +79,7 @@ else if(isset($_GET['new'])){
   $OBJECTS['agentBinaries'] = $binaries;
 }
 else {
-  $oF = new OrderFilter("agentId", "ASC");
+  $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
   $agents = $FACTORIES::getAgentFactory()->filter(array('order' => array($oF)));
   $allAgents = array();
   foreach ($agents as $agent) {
@@ -82,13 +87,13 @@ else {
     $agent->setGpus(explode("\n", $agent->getGpus()));
     $set->addValue("agent", $agent);
     
-    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
     $isWorking = 0;
     $taskId = 0;
     if (sizeof($assignments) > 0) {
       $assignment = $assignments[0];
-      $qF = new QueryFilter("taskId", $assignment->getTaskId(), "=");
+      $qF = new QueryFilter(Chunk::TASK_ID, $assignment->getTaskId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array());
       foreach ($chunks as $chunk) {
         if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getAgentId() == $agent->getId()) {

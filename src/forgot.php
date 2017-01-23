@@ -1,6 +1,7 @@
 <?php
 
 use DBA\QueryFilter;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -17,7 +18,7 @@ if (isset($_POST['action'])) {
     case 'resetpassword':
       $username = htmlentities(@$_POST['username'], false, "UTF-8");
       $email = @$_POST['email'];
-      $qF = new QueryFilter("username", $username, "=");
+      $qF = new QueryFilter(User::USERNAME, $username, "=");
       $res = $FACTORIES::getUserFactory()->filter(array('filter' => array($qF)));
       if ($res == null || sizeof($res) == 0) {
         $message = "<div class='alert alert-danger'>No such user!</div>";

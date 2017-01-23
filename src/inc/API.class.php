@@ -6,10 +6,19 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\ContainFilter;
+use DBA\File;
+use DBA\Hash;
+use DBA\HashBinary;
+use DBA\HashcatRelease;
+use DBA\Hashlist;
 use DBA\HashlistAgent;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\SuperHashlistHashlist;
+use DBA\Task;
+use DBA\TaskFile;
+use DBA\Zap;
 
 class API {
   /**
@@ -38,10 +47,10 @@ class API {
     if ($task == null) {
       API::sendErrorResponse(PActions::BENCHMARK, "Invalid task ID!");
     }
-    $qF = new QueryFilter("token", $QUERY[PQueryBenchmark::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryBenchmark::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
-    $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
-    $qF2 = new QueryFilter("taskId", $task->getId(), "=");
+    $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
     if ($assignment == null) {
       API::sendErrorResponse(PActions::BENCHMARK, "You are not assigned to this task!");
@@ -96,10 +105,10 @@ class API {
     if ($task == null) {
       API::sendErrorResponse(PActions::KEYSPACE, "Invalid task ID!");
     }
-    $qF = new QueryFilter("token", $QUERY[PQueryKeyspace::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryKeyspace::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
-    $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
-    $qF2 = new QueryFilter("taskId", $task->getId(), "=");
+    $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
     if ($assignment == null) {
       API::sendErrorResponse(PActions::KEYSPACE, "You are not assigned to this task!");
@@ -261,10 +270,10 @@ class API {
     }
     
     //check if agent is assigned
-    $qF = new QueryFilter("token", $QUERY[PQueryChunk::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryChunk::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
-    $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
-    $qF2 = new QueryFilter("taskId", $task->getId(), "=");
+    $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
     if ($assignment == null) {
       API::sendErrorResponse(PActions::CHUNK, "You are not assigned to this task!");
@@ -285,7 +294,7 @@ class API {
     }
   
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter("taskId", $task->getId(), "=");
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $dispatched = 0;
     foreach ($chunks as $chunk) {
@@ -306,9 +315,9 @@ class API {
       ));
     }
   
-    $qF1 = new ComparisonFilter("progress", "length", "<");
-    $qF2 = new QueryFilter("taskId", $task->getId(), "=");
-    $oF = new OrderFilter("skip", "ASC");
+    $qF1 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "<");
+    $qF2 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $oF = new OrderFilter(Chunk::SKIP, "ASC");
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => $oF));
     foreach($chunks as $chunk){
       if($chunk->getAgentId() == $agent->getId()){
@@ -339,7 +348,7 @@ class API {
   public static function checkToken($action, $QUERY) {
     global $FACTORIES;
     
-    $qF = new QueryFilter("token", $QUERY[PQuery::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQuery::TOKEN], "=");
     $token = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($token != null) {
       API::sendErrorResponse($action, "Invalid token!");
@@ -361,7 +370,7 @@ class API {
       API::sendErrorResponse(PActions::REGISTER, "Invalid registering query!");
     }
     
-    $qF = new QueryFilter("voucher", $QUERY[PQueryRegister::VOUCHER], "=");
+    $qF = new QueryFilter(\DBA\RegVoucher::VOUCHER, $QUERY[PQueryRegister::VOUCHER], "=");
     $voucher = $FACTORIES::getRegVoucherFactory()->filter(array('filter' => array($qF)), true);
     if ($voucher == null) {
       API::sendErrorResponse(PActions::REGISTER, "Provided voucher does not exist.");
@@ -407,7 +416,7 @@ class API {
     }
     
     // login to master server with previously provided token
-    $qF = new QueryFilter("token", $QUERY[PQueryLogin::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryLogin::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($agent == null) {
       // token was not found
@@ -456,7 +465,7 @@ class API {
     if (!PQueryDownload::isValid($QUERY)) {
       API::sendErrorResponse(PActions::DOWNLOAD, "Invalid download query!");
     }
-    $qF = new QueryFilter("token", $QUERY[PQueryDownload::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryDownload::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     
     // provide agent with requested download
@@ -470,7 +479,7 @@ class API {
         echo file_get_contents(dirname(__FILE__) . "/../static/" . $filename);
         die();
       case PValuesDownloadBinaryType::HASHCAT:
-        $oF = new OrderFilter("time", "DESC LIMIT 1");
+        $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
         $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => array($oF)), true);
         if ($hashcat == null) {
           API::sendErrorResponse(PQueryDownload::ACTION, "No Hashcat release available!");
@@ -519,7 +528,7 @@ class API {
     }
     
     //check agent and task
-    $qF = new QueryFilter("token", $QUERY[PQueryError::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryError::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryError::TASK_ID]);
     if ($task == null) {
@@ -527,8 +536,8 @@ class API {
     }
     
     //check assignment
-    $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
-    $qF2 = new QueryFilter("taskId", $task->getId(), "=");
+    $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
     if ($assignment == null) {
       API::sendErrorResponse(PActions::ERROR, "You are not assigned to this task!");
@@ -564,24 +573,24 @@ class API {
     }
     
     $file = $QUERY[PQueryFile::FILENAME];
-    $qF = new QueryFilter("filename", $file, "=");
+    $qF = new QueryFilter(File::FILENAME, $file, "=");
     $file = $FACTORIES::getFileFactory()->filter(array('filter' => $qF), true);
     if ($file == null) {
       API::sendErrorResponse(PActions::FILE, "Invalid file!");
     }
     
-    $qF = new QueryFilter("token", $QUERY[PQueryFile::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryFile::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     
-    $qF1 = new QueryFilter("taskId", $task->getId(), "=");
-    $qF2 = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
     if ($assignment == null) {
       API::sendErrorResponse(PActions::FILE, "Client is not assigned to this task!");
     }
     
-    $qF1 = new QueryFilter("taskId", $task->getId(), "=");
-    $qF2 = new QueryFilter("fileId", $file->getId(), "=");
+    $qF1 = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=");
     $taskFile = $FACTORIES::getTaskFileFactory()->filter(array('filter' => array($qF1, $qF2)), true);
     if ($taskFile == null) {
       API::sendErrorResponse(PActions::FILE, "This files is not used for the specified task!");
@@ -616,13 +625,13 @@ class API {
       API::sendErrorResponse(PActions::HASHES, "Invalid hashlist!");
     }
     
-    $qF = new QueryFilter("token", $QUERY[PQueryHashes::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryHashes::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($agent == null) {
       API::sendErrorResponse(PActions::HASHES, "Invalid agent!");
     }
     
-    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)), true);
     if ($assignment == null) {
       API::sendErrorResponse(PActions::HASHES, "Agent is not assigned to a task!");
@@ -648,7 +657,7 @@ class API {
     $format = $hashlist->getFormat();
     if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       //we have a superhashlist
-      $qF = new QueryFilter("superHashlistId", $hashlist->getId(), "=");
+      $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $hashlist->getId(), "=");
       $lists = $FACTORIES->getSuperHashlistHashlistFactory()->filter(array('filter' => array($qF)));
       foreach ($lists as $list) {
         $hl = $FACTORIES::getHashlistFactory()->get($list->getHashlistId());
@@ -674,9 +683,9 @@ class API {
           $limit = 0;
           $size = 50000;
           do {
-            $oF = new OrderFilter("hashId", "ASC LIMIT $limit,$size");
-            $qF1 = new QueryFilter("hashlistId", $list, "=");
-            $qF2 = new QueryFilter("isCracked", "0", "=");
+            $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
+            $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list, "=");
+            $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
             $current = $FACTORIES::getHashFactory()->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
             
             $output = "";
@@ -699,8 +708,8 @@ class API {
         header_remove("Content-Type");
         header('Content-Type: application/octet-stream');
         foreach ($hashlists as $list) {
-          $qF1 = new QueryFilter("hashlistId", $list, "=");
-          $qF2 = new QueryFilter("isCracked", "0", "=");
+          $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $list, "=");
+          $qF2 = new QueryFilter(HashBinary::IS_CRACKED, "0", "=");
           $current = $FACTORIES::getHashBinaryFactory()->filter(array('filter' => array($qF1, $qF2)));
           $count += sizeof($current);
           $output = "";
@@ -714,8 +723,8 @@ class API {
     
     //update that the agent has downloaded the hashlist
     foreach ($hashlists as $list) {
-      $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
-      $qF2 = new QueryFilter("hashlistId", $list, "=");
+      $qF1 = new QueryFilter(HashlistAgent::AGENT_ID, $agent->getId(), "=");
+      $qF2 = new QueryFilter(HashlistAgent::HASHLIST_ID, $list, "=");
       $check = $FACTORIES::getHashlistAgentFactory()->filter(array('filter' => array($qF1, $qF2)), true);
       if ($check == null) {
         $downloaded = new HashlistAgent(0, $list, $agent->getId());
@@ -735,7 +744,7 @@ class API {
       API::sendErrorResponse(PActions::TASK, "Invalid task query!");
     }
     
-    $qF = new QueryFilter("token", $QUERY[PQueryTask::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryTask::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($agent == null) {
       API::sendErrorResponse(PActions::TASK, "Invalid token!");
@@ -748,7 +757,7 @@ class API {
       ));
     }
     
-    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)), true);
     $assignedTask = null;
     if ($assignment == null) {
@@ -769,7 +778,7 @@ class API {
       //check if the agent is assigned to the correct task, if not assign him the right one
       $task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
       $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-      $qF = new QueryFilter("taskId", $task->getId(), "=");
+      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
       $sumProgress = 0;
       $chunkIds = array();
@@ -807,7 +816,7 @@ class API {
           $assignedTask = $task;
         }
         else{
-          $qF = new QueryFilter("agentId", $agent->getId(), "=");
+          $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
           $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
           $assignedTask = Util::getNextTask($agent);
           if($assignedTask != null) {
@@ -823,8 +832,8 @@ class API {
       API::sendResponse(array(PQueryTask::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
     }
     
-    $qF = new QueryFilter("taskId", $assignedTask->getId(), "=");
-    $jF = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId");
+    $qF = new QueryFilter(TaskFile::TASK_ID, $assignedTask->getId(), "=");
+    $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array('join' => $jF, 'filter' => $qF));
     $files = array();
     for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
@@ -871,7 +880,7 @@ class API {
       API::sendErrorResponse(PActions::SOLVE, "Invalid chunk id " . intval($QUERY[PQuerySolve::CHUNK_ID]));
     }
     
-    $qF = new QueryFilter("token", $QUERY[PQuerySolve::TOKEN], "=");
+    $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQuerySolve::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
     if ($agent == null) {
       API::sendErrorResponse(PActions::SOLVE, "Invalid agent token" . $QUERY[PQuerySolve::TOKEN]);
@@ -967,9 +976,9 @@ class API {
           //get salt
           //replace hash + salt from the line -> plaintext remains
           // save regular password
-          $hashFilter = new QueryFilter("hash", $splitLine[0], "=");
-          $hashListFilter = new ContainFilter("hashlistId", $hlistarIds);
-          $isCrackedFilter = new QueryFilter("isCracked", 0, "=");
+          $hashFilter = new QueryFilter(Hash::HASH, $splitLine[0], "=");
+          $hashListFilter = new ContainFilter(Hash::HASHLIST_ID, $hlistarIds);
+          $isCrackedFilter = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array("filter" => array($isCrackedFilter, $hashFilter, $hashListFilter)));
           if(sizeof($hashes) == 0){
             continue;
@@ -1003,7 +1012,7 @@ class API {
             // TODO: extend DB model by MACs and implement detection
             $network = substr($network, 0, strlen($network) - 26);
           }
-          $essIDFilter = new QueryFilter("essid", $network, "=");
+          $essIDFilter = new QueryFilter(HashBinary::ESSID, $network, "=");
           $hashes = $FACTORIES::getHashBinaryFactory()->filter(array("filter" => $essIDFilter));
           if (sizeof($hashes) == 0) {
             $skipped++;
@@ -1049,8 +1058,8 @@ class API {
     $taskdone = false;
     if ($combinationProgress == $combinationTotal && $task->getProgress() == $task->getKeyspace()) {
       // chunk is done and the task has been fully dispatched
-      $incompleteFilter = new QueryFilter("rprogress", 10000, "<");
-      $taskFilter = new QueryFilter("taskId", $taskID, "=");
+      $incompleteFilter = new QueryFilter(Chunk::RPROGRESS, 10000, "<");
+      $taskFilter = new QueryFilter(Chunk::TASK_ID, $taskID, "=");
       $count = $FACTORIES::getChunkFactory()->countFilter(array("filter" => array($incompleteFilter, $taskFilter)));
       if ($count == 0) {
         // this was the last incomplete chunk!
@@ -1088,8 +1097,8 @@ class API {
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
         // deprioritize all tasks and unassign all agents
-        $qF = new ContainFilter("hashlistId", $hashlistIds);
-        $uS = new UpdateSet("priority", "0");
+        $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
+        $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array('update' => $uS, 'filter' => $qF));
         
         $chunk->setSpeed(0);
@@ -1107,8 +1116,8 @@ class API {
       case DHashcatStatus::RUNNING:
       default:
         // the chunk isn't finished yet, we will send zaps
-        $qF1 = new ComparisonFilter("cracked", "hashCount", "<");
-        $qF2 = new ContainFilter("hashlistId", $hashlistIds);
+        $qF1 = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<");
+        $qF2 = new ContainFilter(Hashlist::HASHLIST_ID, $hashlistIds);
         $count = $FACTORIES::getHashlistFactory()->countFilter(array('filter' => array($qF1, $qF2)));
         if ($count == 0) {
           //stop agent
@@ -1123,8 +1132,8 @@ class API {
         $chunk->setSpeed($speed);
         $FACTORIES::getChunkFactory()->update($chunk);
         
-        $qF1 = new ContainFilter("hashlistId", $hashlistIds);
-        $qF2 = new QueryFilter("solveTime", $agent->getLastAct(), ">=");
+        $qF1 = new ContainFilter(Zap::HASHLIST_ID, $hashlistIds);
+        $qF2 = new QueryFilter(Zap::SOLVE_TIME, $agent->getLastAct(), ">=");
         $zaps = $FACTORIES::getZapFactory()->filter(array('filter' => array($qF1, $qF2)));
         foreach ($zaps as $zap) {
           $toZap[] = $zap->getHash();
