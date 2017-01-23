@@ -47,7 +47,7 @@ class DAccessLevel { // if you change any of them here, you need to check if thi
 }
 
 // protocol defines (these are started with 'P')
-class PQueryValues { // include only generalized query values
+class PQuery { // include only generalized query values
   public const QUERY = "query";
   public const ACTION = "action";
 }
