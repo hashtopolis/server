@@ -71,4 +71,9 @@ class Zap extends AbstractModel {
   function setHashlistId($hashlistId){
     $this->hashlistId = $hashlistId;
   }
+
+  public const ZAP_ID = "zapId";
+  public const HASH = "hash";
+  public const SOLVE_TIME = "solveTime";
+  public const HASHLIST_ID = "hashlistId";
 }

@@ -214,4 +214,22 @@ class Agent extends AbstractModel {
   function setCpuOnly($cpuOnly){
     $this->cpuOnly = $cpuOnly;
   }
+
+  public const AGENT_ID = "agentId";
+  public const AGENT_NAME = "agentName";
+  public const UID = "uid";
+  public const OS = "os";
+  public const GPUS = "gpus";
+  public const HC_VERSION = "hcVersion";
+  public const CMD_PARS = "cmdPars";
+  public const WAIT = "wait";
+  public const IGNORE_ERRORS = "ignoreErrors";
+  public const IS_ACTIVE = "isActive";
+  public const IS_TRUSTED = "isTrusted";
+  public const TOKEN = "token";
+  public const LAST_ACT = "lastAct";
+  public const LAST_TIME = "lastTime";
+  public const LAST_IP = "lastIp";
+  public const USER_ID = "userId";
+  public const CPU_ONLY = "cpuOnly";
 }

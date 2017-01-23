@@ -60,4 +60,8 @@ class TaskFile extends AbstractModel {
   function setFileId($fileId){
     $this->fileId = $fileId;
   }
+
+  public const TASK_FILE_ID = "taskFileId";
+  public const TASK_ID = "taskId";
+  public const FILE_ID = "fileId";
 }

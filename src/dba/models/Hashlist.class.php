@@ -137,4 +137,15 @@ class Hashlist extends AbstractModel {
   function setIsSalted($isSalted){
     $this->isSalted = $isSalted;
   }
+
+  public const HASHLIST_ID = "hashlistId";
+  public const HASHLIST_NAME = "hashlistName";
+  public const FORMAT = "format";
+  public const HASH_TYPE_ID = "hashTypeId";
+  public const HASH_COUNT = "hashCount";
+  public const SALT_SEPARATOR = "saltSeparator";
+  public const CRACKED = "cracked";
+  public const SECRET = "secret";
+  public const HEX_SALT = "hexSalt";
+  public const IS_SALTED = "isSalted";
 }

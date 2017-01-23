@@ -60,4 +60,8 @@ class Config extends AbstractModel {
   function setValue($value){
     $this->value = $value;
   }
+
+  public const CONFIG_ID = "configId";
+  public const ITEM = "item";
+  public const VALUE = "value";
 }

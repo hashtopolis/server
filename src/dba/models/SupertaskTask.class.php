@@ -60,4 +60,8 @@ class SupertaskTask extends AbstractModel {
   function setSupertaskId($supertaskId){
     $this->supertaskId = $supertaskId;
   }
+
+  public const SUPERTASK_TASK_ID = "supertaskTaskId";
+  public const TASK_ID = "taskId";
+  public const SUPERTASK_ID = "supertaskId";
 }

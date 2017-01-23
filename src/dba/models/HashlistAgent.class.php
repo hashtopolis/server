@@ -60,4 +60,8 @@ class HashlistAgent extends AbstractModel {
   function setAgentId($agentId){
     $this->agentId = $agentId;
   }
+
+  public const HASHLIST_AGENT_ID = "hashlistAgentId";
+  public const HASHLIST_ID = "hashlistId";
+  public const AGENT_ID = "agentId";
 }

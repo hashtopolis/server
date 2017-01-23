@@ -49,4 +49,7 @@ class StoredValue extends AbstractModel {
   function setVal($val){
     $this->val = $val;
   }
+
+  public const STORED_VALUE_ID = "storedValueId";
+  public const VAL = "val";
 }

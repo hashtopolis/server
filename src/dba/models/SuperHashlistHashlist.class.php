@@ -60,4 +60,8 @@ class SuperHashlistHashlist extends AbstractModel {
   function setHashlistId($hashlistId){
     $this->hashlistId = $hashlistId;
   }
+
+  public const SUPER_HASHLIST_HASHLIST_ID = "superHashlistHashlistId";
+  public const SUPER_HASHLIST_ID = "superHashlistId";
+  public const HASHLIST_ID = "hashlistId";
 }

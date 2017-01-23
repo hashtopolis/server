@@ -60,4 +60,8 @@ class RightGroup extends AbstractModel {
   function setLevel($level){
     $this->level = $level;
   }
+
+  public const RIGHT_GROUP_ID = "rightGroupId";
+  public const GROUP_NAME = "groupName";
+  public const LEVEL = "level";
 }

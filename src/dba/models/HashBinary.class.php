@@ -115,4 +115,13 @@ class HashBinary extends AbstractModel {
   function setIsCracked($isCracked){
     $this->isCracked = $isCracked;
   }
+
+  public const HASH_BINARY_ID = "hashBinaryId";
+  public const HASHLIST_ID = "hashlistId";
+  public const ESSID = "essid";
+  public const HASH = "hash";
+  public const PLAINTEXT = "plaintext";
+  public const TIME = "time";
+  public const CHUNK_ID = "chunkId";
+  public const IS_CRACKED = "isCracked";
 }

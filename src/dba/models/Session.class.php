@@ -104,4 +104,12 @@ class Session extends AbstractModel {
   function setSessionKey($sessionKey){
     $this->sessionKey = $sessionKey;
   }
+
+  public const SESSION_ID = "sessionId";
+  public const USER_ID = "userId";
+  public const SESSION_START_DATE = "sessionStartDate";
+  public const LAST_ACTION_DATE = "lastActionDate";
+  public const IS_OPEN = "isOpen";
+  public const SESSION_LIFETIME = "sessionLifetime";
+  public const SESSION_KEY = "sessionKey";
 }

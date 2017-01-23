@@ -71,4 +71,9 @@ class Assignment extends AbstractModel {
   function setBenchmark($benchmark){
     $this->benchmark = $benchmark;
   }
+
+  public const ASSIGNMENT_ID = "assignmentId";
+  public const TASK_ID = "taskId";
+  public const AGENT_ID = "agentId";
+  public const BENCHMARK = "benchmark";
 }

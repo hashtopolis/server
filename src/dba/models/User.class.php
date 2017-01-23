@@ -148,4 +148,16 @@ class User extends AbstractModel {
   function setRightGroupId($rightGroupId){
     $this->rightGroupId = $rightGroupId;
   }
+
+  public const USER_ID = "userId";
+  public const USERNAME = "username";
+  public const EMAIL = "email";
+  public const PASSWORD_HASH = "passwordHash";
+  public const PASSWORD_SALT = "passwordSalt";
+  public const IS_VALID = "isValid";
+  public const IS_COMPUTED_PASSWORD = "isComputedPassword";
+  public const LAST_LOGIN_DATE = "lastLoginDate";
+  public const REGISTERED_SINCE = "registeredSince";
+  public const SESSION_LIFETIME = "sessionLifetime";
+  public const RIGHT_GROUP_ID = "rightGroupId";
 }

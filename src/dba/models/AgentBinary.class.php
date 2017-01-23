@@ -71,4 +71,9 @@ class AgentBinary extends AbstractModel {
   function setFilename($filename){
     $this->filename = $filename;
   }
+
+  public const AGENT_BINARY_ID = "agentBinaryId";
+  public const LANGUAGE = "language";
+  public const OPERATING_SYSTEMS = "operatingSystems";
+  public const FILENAME = "filename";
 }

@@ -115,4 +115,13 @@ class Hash extends AbstractModel {
   function setIsCracked($isCracked){
     $this->isCracked = $isCracked;
   }
+
+  public const HASH_ID = "hashId";
+  public const HASHLIST_ID = "hashlistId";
+  public const HASH = "hash";
+  public const SALT = "salt";
+  public const PLAINTEXT = "plaintext";
+  public const TIME = "time";
+  public const CHUNK_ID = "chunkId";
+  public const IS_CRACKED = "isCracked";
 }

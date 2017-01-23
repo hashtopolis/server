@@ -170,4 +170,18 @@ class Task extends AbstractModel {
   function setIsCpuTask($isCpuTask){
     $this->isCpuTask = $isCpuTask;
   }
+
+  public const TASK_ID = "taskId";
+  public const TASK_NAME = "taskName";
+  public const ATTACK_CMD = "attackCmd";
+  public const HASHLIST_ID = "hashlistId";
+  public const CHUNK_TIME = "chunkTime";
+  public const STATUS_TIMER = "statusTimer";
+  public const AUTO_ADJUST = "autoAdjust";
+  public const KEYSPACE = "keyspace";
+  public const PROGRESS = "progress";
+  public const PRIORITY = "priority";
+  public const COLOR = "color";
+  public const IS_SMALL = "isSmall";
+  public const IS_CPU_TASK = "isCpuTask";
 }
