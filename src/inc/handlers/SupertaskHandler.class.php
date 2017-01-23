@@ -54,7 +54,7 @@ class SupertaskHandler implements Handler {
     $tasks = $joinedTasks['Task'];
     foreach ($tasks as $task) {
       $task = Util::cast($task, Task::class);
-      if (strpos($task->getAttackCmd(), $CONFIG->getVal('hashlistAlias')) === false) {
+      if (strpos($task->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
         UI::addMessage("warning", "Task must contain the hashlist alias for cracking!");
         continue;
       }

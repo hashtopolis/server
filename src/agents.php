@@ -91,7 +91,7 @@ else {
       $qF = new QueryFilter("taskId", $assignment->getTaskId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array());
       foreach ($chunks as $chunk) {
-        if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal('chunktimeout') && $chunk->getAgentId() == $agent->getId()) {
+        if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getAgentId() == $agent->getId()) {
           $isWorking = 1;
           $set->addValue("speed", $chunk->getSpeed());
         }

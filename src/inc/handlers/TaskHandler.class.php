@@ -130,8 +130,8 @@ class TaskHandler implements Handler {
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
       $color = null;
     }
-    if (strpos($cmdline, $CONFIG->getVal('hashlistAlias')) === false) {
-      UI::addMessage("danger", "Command line must contain hashlist (" . $CONFIG->getVal('hashlistAlias') . ")!");
+    if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+      UI::addMessage("danger", "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }
     $hashlist = null;

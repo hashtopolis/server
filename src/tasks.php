@@ -76,7 +76,7 @@ if (isset($_GET['id'])) {
   $agentsSpeed = new DataSet();
   $currentSpeed = 0;
   foreach($chunks as $chunk){
-    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal('chunktimeout') && $chunk->getRprogress() < 10000){
+    if(time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getRprogress() < 10000){
       $isActive = 1;
       $activeChunks[] = $chunk;
       $activeChunksIds->addValue($chunk->getId(), true);
@@ -227,7 +227,7 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
-  $copy = new Task(0, "", "", null, $CONFIG->getVal("chunktime"), $CONFIG->getVal("statustimer"), 0, 0, 0, 0, "", 0, 0);
+  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0);
   if (isset($_POST["copy"])) {
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_POST['copy']);
@@ -313,7 +313,7 @@ else {
     }
     
     $isActive = false;
-    if(time() - $maxTime < $CONFIG->getVal('chunktimeout')){
+    if(time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)){
       $isActive = true;
     }
     

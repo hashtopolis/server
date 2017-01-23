@@ -69,7 +69,7 @@ else if (isset($_GET['id'])) {
     foreach($chunks as $chunk){
       $sum['searched'] += $chunk->getProgress();
       $sum['cracked'] += $chunk->getCracked();
-      if(time() - $CONFIG->getVal('chunktimeout') < max($chunk->getDispatchTime(), $chunk->getSolveTime())){
+      if(time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) < max($chunk->getDispatchTime(), $chunk->getSolveTime())){
         $isActive = true;
       }
     }

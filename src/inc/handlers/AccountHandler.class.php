@@ -54,7 +54,7 @@ class AccountHandler implements Handler {
     $oldPassword = $_POST['oldpass'];
     $newPassword = $_POST['newpass'];
     $repeatedPassword = $_POST['reppass'];
-    if (!Encryption::passwordVerify($this->user->getUsername(), $oldPassword, $this->user->getPasswordSalt(), $this->user->getPasswordHash())) {
+    if (!Encryption::passwordVerify($oldPassword, $this->user->getPasswordSalt(), $this->user->getPasswordHash())) {
       UI::addMessage("danger", "Your old password is wrong!");
       return;
     }
@@ -68,7 +68,7 @@ class AccountHandler implements Handler {
     }
     
     $newSalt = Util::randomString(20);
-    $newHash = Encryption::passwordHash($this->user->getUsername(), $newPassword, $newSalt);
+    $newHash = Encryption::passwordHash($newPassword, $newSalt);
     $this->user->setPasswordHash($newHash);
     $this->user->setPasswordSalt($newSalt);
     $this->user->setIsComputedPassword(0);

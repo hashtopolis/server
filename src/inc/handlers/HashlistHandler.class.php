@@ -353,10 +353,10 @@ class HashlistHandler implements Handler {
     $qF2 = new QueryFilter("isCracked", "1", "=");
     $count = $factory->countFilter(array('filter' => array($qF1, $qF2)));
     $pagingSize = 5000;
-    if ($CONFIG->getVal('pagingSize') !== false) {
-      $pagingSize = $CONFIG->getVal('pagingSize');
+    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
     }
-    $separator = $CONFIG->getVal("fieldseparator");
+    $separator = $CONFIG->getVal(DConfig::FIELD_SEPARATOR);
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter("hashId", "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
       $entries = $factory->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
@@ -725,8 +725,8 @@ class HashlistHandler implements Handler {
     }
     $wordCount = 0;
     $pagingSize = 5000;
-    if ($CONFIG->getVal('pagingSize') !== false) {
-      $pagingSize = $CONFIG->getVal('pagingSize');
+    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     foreach ($lists as $list) {
       $hashFactory = $FACTORIES::getHashFactory();

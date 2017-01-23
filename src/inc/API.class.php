@@ -66,7 +66,7 @@ class API {
           API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
-        $benchmark = floor($benchmark/$CONFIG->getVal('benchtime')*100);
+        $benchmark = floor($benchmark/$CONFIG->getVal(DConfig::BENCHMARK_TIME)*100);
         break;
       default:
         $agent->setIsActive(0);
@@ -141,7 +141,7 @@ class API {
     /** @var DataSet $CONFIG */
     global $CONFIG;
     
-    $chunkTime = $CONFIG->getVal('chunktime');
+    $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     if(strpos($benchmark, ":") === false){
       // old benchmarking method
       $size = floor($benchmark*$chunkTime/100);
@@ -314,7 +314,7 @@ class API {
       if($chunk->getAgentId() == $agent->getId()){
         API::sendChunk($chunk);
       }
-      $timeoutTime = time() - $CONFIG->getVal('chunktimeout');
+      $timeoutTime = time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT);
       if($chunk->getState() == DHashcatStatus::ABORTED || $chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime){
         API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
@@ -384,7 +384,7 @@ class API {
     //create access token & save agent details
     $token = Util::randomString(10);
     $gpu = htmlentities(implode("\n", $gpu), false, "UTF-8");
-    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
+    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal(DConfig::AGENT_TIMEOUT), "", 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
       API::sendResponse(array(
@@ -417,7 +417,7 @@ class API {
     API::sendResponse(array(
       PResponseLogin::ACTION => PActions::LOGIN,
       PResponseLogin::RESPONSE => PValues::SUCCESS,
-      PResponseLogin::TIMEOUT => $CONFIG->getVal("agenttimeout")
+      PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
     ));
   }
   

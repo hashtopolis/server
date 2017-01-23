@@ -25,12 +25,14 @@ class DHashcatStatus{
   public const STATUS_ABORTED_RUNTIME = 10;
 }
 
+// operating systems
 class DOperatingSystem {
   public const LINUX = 0;
   public const WINDOWS = 1;
   public const OSX = 2;
 }
 
+// hashlist formats
 class DHashlistFormat {
   public const PLAIN = 0;
   public const WPA = 1;
@@ -38,12 +40,25 @@ class DHashlistFormat {
   public const SUPERHASHLIST = 3;
 }
 
+// access levels for user groups
 class DAccessLevel { // if you change any of them here, you need to check if this is consistent with the database
   public const VIEW_ONLY = 1;
   public const READ_ONLY = 5;
   public const USER = 20;
   public const SUPERUSER = 30;
   public const ADMINISTRATOR = 50;
+}
+
+// used config values
+class DConfig {
+  public const BENCHMARK_TIME = "benchtime";
+  public const CHUNK_DURATION = "chunktime";
+  public const CHUNK_TIMEOUT = "chunktimeout";
+  public const AGENT_TIMEOUT = "agenttimeout";
+  public const HASHES_PAGE_SIZE = "pagingSize";
+  public const FIELD_SEPARATOR = "fieldseparator";
+  public const HASHLIST_ALIAS = "hashlistAlias";
+  public const STATUS_TIMER = "statustimer";
 }
 
 
