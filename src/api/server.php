@@ -20,57 +20,39 @@ switch ($QUERY[PQuery::ACTION]) {
     API::checkClientUpdate($QUERY);
     break;
   case PActions::DOWNLOAD:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::DOWNLOAD, "Invalid token!");
-    }
+    API::checkToken(PActions::DOWNLOAD, $QUERY);
     API::downloadApp($QUERY);
     break;
   case PActions::ERROR:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::ERROR, "Invalid token!");
-    }
+    API::checkToken(PActions::ERROR, $QUERY);
     API::agentError($QUERY);
     break;
   case PActions::FILE:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::FILE, "Invalid token!");
-    }
+    API::checkToken(PActions::FILE, $QUERY);
     API::getFile($QUERY);
     break;
   case PActions::HASHES:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::HASHES, "Invalid token!");
-    }
+    API::checkToken(PActions::HASHES, $QUERY);
     API::getHashes($QUERY);
     break;
   case PActions::TASK:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::TASK, "Invalid token!");
-    }
+    API::checkToken(PActions::TASK, $QUERY);
     API::getTask($QUERY);
     break;
   case PActions::CHUNK:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::CHUNK, "Invalid token!");
-    }
+    API::checkToken(PActions::CHUNK, $QUERY);
     API::getChunk($QUERY);
     break;
   case PActions::KEYSPACE:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::KEYSPACE, "Invalid token!");
-    }
+    API::checkToken(PActions::KEYSPACE, $QUERY);
     API::setKeyspace($QUERY);
     break;
   case PActions::BENCHMARK:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::BENCHMARK, "Invalid token!");
-    }
+    API::checkToken(PActions::BENCHMARK, $QUERY);
     API::setBenchmark($QUERY);
     break;
   case PActions::SOLVE:
-    if (API::checkToken($QUERY)) {
-      API::sendErrorResponse(PActions::SOLVE, "Invalid token!");
-    }
+    API::checkToken(PActions::SOLVE, $QUERY);
     API::solve($QUERY);
     break;
   default:

@@ -25,25 +25,20 @@ class API {
     $FACTORIES->getAgentFactory()->update($agent);
   }
   
-  private static function checkValues($QUERY, $values) {
-    foreach ($values as $value) {
-      if (!isset($QUERY[$value])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  
   public static function setBenchmark($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
+  
+    if (!PQueryBenchmark::isValid($QUERY)) {
+      API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark query!");
+    }
     
     // agent submits benchmark for task
-    $task = $FACTORIES::getTaskFactory()->get($QUERY["taskId"]);
+    $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryBenchmark::TASK_ID]);
     if ($task == null) {
       API::sendErrorResponse(PActions::BENCHMARK, "Invalid task ID!");
     }
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryBenchmark::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
     $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
     $qF2 = new QueryFilter("taskId", $task->getId(), "=");
@@ -52,11 +47,11 @@ class API {
       API::sendErrorResponse(PActions::BENCHMARK, "You are not assigned to this task!");
     }
     
-    $type = $QUERY['type'];
-    $benchmark = $QUERY['result'];
+    $type = $QUERY[PQueryBenchmark::TYPE];
+    $benchmark = $QUERY[PQueryBenchmark::RESULT];
     
     switch($type){
-      case "speed":
+      case PValuesBenchmarkType::SPEED_TEST:
         $split = explode(":", $benchmark);
         if(sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <=0 || $split[1] <= 0){
           $agent->setIsActive(0);
@@ -64,12 +59,13 @@ class API {
           API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark result!");
         }
         break;
-      case "run":
+      case PValuesBenchmarkType::RUN_TIME:
         if(!is_numeric($benchmark) || $benchmark <= 0){
           $agent->setIsActive(0);
           $FACTORIES::getAgentFactory()->update($agent);
           API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark result!");
         }
+        // normalize time of the benchmark to 100 seconds
         $benchmark = floor($benchmark/$CONFIG->getVal('benchtime')*100);
         break;
       default:
@@ -80,19 +76,23 @@ class API {
     
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
-    API::sendResponse(array(PQuery::ACTION => PActions::BENCHMARK, "response" => "SUCCESS", "benchmark" => "OK"));
+    API::sendResponse(array(PQueryBenchmark::ACTION => PActions::BENCHMARK, "response" => "SUCCESS", "benchmark" => "OK"));
   }
   
   public static function setKeyspace($QUERY) {
     global $FACTORIES;
+  
+    if (!PQueryKeyspace::isValid($QUERY)) {
+      API::sendErrorResponse(PActions::KEYSPACE, "Invalid keyspace query!");
+    }
     
     // agent submits keyspace size for this task
-    $keyspace = intval($QUERY["keyspace"]);
-    $task = $FACTORIES::getTaskFactory()->get($QUERY['taskId']);
+    $keyspace = intval($QUERY[PQueryKeyspace::KEYSPACE]);
+    $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryKeyspace::TASK_ID]);
     if ($task == null) {
       API::sendErrorResponse(PActions::KEYSPACE, "Invalid task ID!");
     }
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryKeyspace::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
     $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
     $qF2 = new QueryFilter("taskId", $task->getId(), "=");
@@ -106,7 +106,7 @@ class API {
       $task->setKeyspace($keyspace);
       $FACTORIES::getTaskFactory()->update($task);
     }
-    API::sendResponse(array(PQuery::ACTION => PActions::KEYSPACE, "response" => "SUCCESS", "keyspace" => "OK"));
+    API::sendResponse(array(PQueryKeyspace::ACTION => PActions::KEYSPACE, "response" => "SUCCESS", "keyspace" => "OK"));
   }
   
   /**
@@ -236,14 +236,18 @@ class API {
   public static function getChunk($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
+  
+    if (!PQueryChunk::isValid($QUERY)) {
+      API::sendErrorResponse(PActions::CHUNK, "Invalid chunk query!");
+    }
     
-    $task = $FACTORIES::getTaskFactory()->get($QUERY['taskId']);
+    $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryChunk::TASK_ID]);
     if ($task == null) {
       API::sendErrorResponse(PActions::CHUNK, "Invalid task ID!");
     }
     
     //check if agent is assigned
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryChunk::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
     $qF1 = new QueryFilter("agentId", $agent->getId(), "=");
     $qF2 = new QueryFilter("taskId", $task->getId(), "=");
@@ -302,15 +306,18 @@ class API {
     die();
   }
   
-  public static function checkToken($QUERY) {
+  /**
+   * @param $action string
+   * @param $QUERY array
+   */
+  public static function checkToken($action, $QUERY) {
     global $FACTORIES;
     
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQuery::TOKEN], "=");
     $token = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($token != null) {
-      return false;
+      API::sendErrorResponse($action, "Invalid token!");
     }
-    return true;
   }
   
   private static function sendResponse($RESPONSE) {
@@ -324,20 +331,20 @@ class API {
     global $FACTORIES, $CONFIG;
     
     //check required values
-    if (!API::checkValues($QUERY, array('voucher', 'gpus', 'uid', 'name', 'os'))) {
+    if (!PQueryRegister::isValid($QUERY)) {
       API::sendErrorResponse(PActions::REGISTER, "Invalid registering query!");
     }
     
-    $qF = new QueryFilter("voucher", $QUERY['voucher'], "=");
+    $qF = new QueryFilter("voucher", $QUERY[PQueryRegister::VOUCHER], "=");
     $voucher = $FACTORIES::getRegVoucherFactory()->filter(array('filter' => array($qF)), true);
     if ($voucher == null) {
       API::sendErrorResponse(PActions::REGISTER, "Provided voucher does not exist.");
     }
     
-    $gpu = $QUERY["gpus"];
-    $uid = htmlentities($QUERY["uid"], false, "UTF-8");
-    $name = htmlentities($QUERY["name"], false, "UTF-8");
-    $os = intval($QUERY["os"]);
+    $gpu = $QUERY[PQueryRegister::GPUS];
+    $uid = htmlentities($QUERY[PQueryRegister::USERID], false, "UTF-8");
+    $name = htmlentities($QUERY[PQueryRegister::AGENT_NAME], false, "UTF-8");
+    $os = intval($QUERY[PQueryRegister::OPERATING_SYSTEM]);
     
     //determine if the client has cpu only
     $cpuOnly = 1;
@@ -351,10 +358,10 @@ class API {
     //create access token & save agent details
     $token = Util::randomString(10);
     $gpu = htmlentities(implode("\n", $gpu), false, "UTF-8");
-    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, "register", time(), Util::getIP(), null, $cpuOnly);
+    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
-      API::sendResponse(array(PQuery::ACTION => PActions::REGISTER, "response" => "SUCCESS", "token" => $token));
+      API::sendResponse(array(PQueryRegister::ACTION => PActions::REGISTER, "response" => "SUCCESS", PQueryRegister::TOKEN => $token));
     }
     else {
       API::sendErrorResponse(PActions::REGISTER, "Could not register you to server.");
@@ -365,12 +372,12 @@ class API {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
     
-    if (!API::checkValues($QUERY, array('token'))) {
+    if (!PQueryLogin::isValid($QUERY)) {
       API::sendErrorResponse(PActions::LOGIN, "Invalid login query!");
     }
     
     // login to master server with previously provided token
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryLogin::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($agent == null) {
       // token was not found
@@ -383,33 +390,35 @@ class API {
   public static function checkClientUpdate($QUERY) {
     global $SCRIPTVERSION, $SCRIPTNAME;
     
+    // TODO: updating needs to be done for new management of agent binaries/scripts
+    
     // check if provided hash is the same as script and send file contents if not
-    if (!API::checkValues($QUERY, array('version'))) {
+    if (!PQueryUpdate::isValid($QUERY)) {
       API::sendErrorResponse(PActions::UPDATE, 'Version value missing!');
     }
     
-    $version = $QUERY['version'];
+    $version = $QUERY[PQueryUpdate::VERSION];
     
     if ($version != $SCRIPTVERSION) {
-      API::sendResponse(array(PQuery::ACTION => PActions::UPDATE, 'response' => 'SUCCESS', 'version' => 'NEW', 'data' => file_get_contents(dirname(__FILE__) . "/../static/$SCRIPTNAME")));
+      API::sendResponse(array(PQueryUpdate::ACTION => PActions::UPDATE, 'response' => 'SUCCESS', 'version' => 'NEW', 'data' => file_get_contents(dirname(__FILE__) . "/../static/$SCRIPTNAME")));
     }
     else {
-      API::sendResponse(array(PQuery::ACTION => PActions::UPDATE, 'response' => 'SUCCESS', 'version' => 'OK'));
+      API::sendResponse(array(PQueryUpdate::ACTION => PActions::UPDATE, 'response' => 'SUCCESS', 'version' => 'OK'));
     }
   }
   
   public static function downloadApp($QUERY) {
     global $FACTORIES;
     
-    if (!API::checkValues($QUERY, array('token', 'type'))) {
+    if (!PQueryDownload::isValid($QUERY)) {
       API::sendErrorResponse(PActions::DOWNLOAD, "Invalid download query!");
     }
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryDownload::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     
     // provide agent with requested download
-    switch ($QUERY['type']) {
-      case "7zr":
+    switch ($QUERY[PQueryDownload::BINARY_TYPE]) {
+      case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
         $filename = "7zr" . (($agent->getOs() == DOperatingSystem::WINDOWS) ? ".exe" : "");
         header_remove("Content-Type");
@@ -417,18 +426,18 @@ class API {
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
         echo file_get_contents(dirname(__FILE__) . "/../static/" . $filename);
         die();
-      case "hashcat":
+      case PValuesDownloadBinaryType::HASHCAT:
         $oF = new OrderFilter("time", "DESC LIMIT 1");
         $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => array($oF)), true);
         if ($hashcat == null) {
-          API::sendErrorResponse("download", "No Hashcat release available!");
+          API::sendErrorResponse(PQueryDownload::ACTION, "No Hashcat release available!");
         }
         
         $postfix = array("bin", "exe");
         $executable = "hashcat64." . $postfix[$agent->getOs()];
         
-        if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY['force']) || $QUERY['force'] != '1')) {
-          API::sendResponse(array(PQuery::ACTION => PActions::DOWNLOAD, 'response' => 'SUCCESS', 'version' => 'OK', 'executable' => $executable));
+        if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY[PQueryDownload::FORCE_UPDATE]) || $QUERY[PQueryDownload::FORCE_UPDATE] != '1')) {
+          API::sendResponse(array(PQueryDownload::ACTION => PActions::DOWNLOAD, 'response' => 'SUCCESS', 'version' => 'OK', 'executable' => $executable));
         }
         
         $url = $hashcat->getUrl();
@@ -438,7 +447,7 @@ class API {
         
         $agent->setHcVersion($hashcat->getVersion());
         $FACTORIES::getAgentFactory()->update($agent);
-        API::sendResponse(array(PQuery::ACTION => PActions::DOWNLOAD, 'response' => 'SUCCESS', 'version' => 'NEW', 'url' => $url, 'files' => $files, 'rootdir' => $rootdir, 'executable' => $executable));
+        API::sendResponse(array(PQueryDownload::ACTION => PActions::DOWNLOAD, 'response' => 'SUCCESS', 'version' => 'NEW', 'url' => $url, 'files' => $files, 'rootdir' => $rootdir, 'executable' => $executable));
         break;
       default:
         API::sendErrorResponse(PActions::DOWNLOAD, "Unknown download type!");
@@ -449,14 +458,14 @@ class API {
     global $FACTORIES;
     
     //check required values
-    if (!API::checkValues($QUERY, array('token', 'task', 'message'))) {
+    if (!PQueryError::isValid($QUERY)) {
       API::sendErrorResponse(PActions::ERROR, "Invalid error query!");
     }
     
     //check agent and task
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryError::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
-    $task = $FACTORIES::getTaskFactory()->get($QUERY['task']);
+    $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryError::TASK_ID]);
     if ($task == null) {
       API::sendErrorResponse(PActions::ERROR, "Invalid task!");
     }
@@ -470,7 +479,7 @@ class API {
     }
     
     //save error message
-    $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY['message']);
+    $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY[PQueryError::MESSAGE]);
     $FACTORIES::getAgentErrorFactory()->save($error);
     
     if ($agent->getIgnoreErrors() == 0) {
@@ -478,31 +487,31 @@ class API {
       $agent->setIsActive(0);
       $FACTORIES::getAgentFactory()->update($agent);
     }
-    API::sendResponse(array(PQuery::ACTION => PActions::ERROR, 'response' => 'SUCCESS'));
+    API::sendResponse(array(PQueryError::ACTION => PActions::ERROR, 'response' => 'SUCCESS'));
   }
   
   public static function getFile($QUERY) {
     global $FACTORIES;
     
     //check required values
-    if (!API::checkValues($QUERY, array('token', 'task', 'file'))) {
+    if (!PQueryFile::isValid($QUERY)) {
       API::sendErrorResponse(PActions::FILE, "Invalid file query!");
     }
     
     // let agent download adjacent files
-    $task = $FACTORIES::getTaskFactory()->get($QUERY['task']);
+    $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryFile::TASK_ID]);
     if ($task == null) {
       API::sendErrorResponse(PActions::FILE, "Invalid task!");
     }
     
-    $file = $QUERY['file'];
+    $file = $QUERY[PQueryFile::FILENAME];
     $qF = new QueryFilter("filename", $file, "=");
     $file = $FACTORIES::getFileFactory()->filter(array('filter' => $qF), true);
     if ($file == null) {
       API::sendErrorResponse(PActions::FILE, "Invalid file!");
     }
     
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryFile::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     
     $qF1 = new QueryFilter("taskId", $task->getId(), "=");
@@ -525,23 +534,23 @@ class API {
     $filename = $file->getFilename();
     $extension = explode(".", $filename)[sizeof(explode(".", $filename)) - 1];
     //TODO: make correct url here
-    API::sendResponse(array(PQuery::ACTION => PActions::FILE, 'filename' => $filename, 'extension' => $extension, 'response' => 'SUCCESS', 'url' => "https://". $_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()));
+    API::sendResponse(array(PQueryFile::ACTION => PActions::FILE, 'filename' => $filename, 'extension' => $extension, 'response' => 'SUCCESS', 'url' => "https://". $_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()));
   }
   
   public static function getHashes($QUERY) {
     global $FACTORIES;
     
     //check required values
-    if (!API::checkValues($QUERY, array('token', 'hashlist'))) {
+    if (!PQueryHashes::isValid($QUERY)) {
       API::sendErrorResponse(PActions::HASHES, "Invalid hashes query!");
     }
     
-    $hashlist = $FACTORIES::getHashlistFactory()->get($QUERY['hashlist']);
+    $hashlist = $FACTORIES::getHashlistFactory()->get($QUERY[PQueryHashes::HASHLIST_ID]);
     if ($hashlist == null) {
       API::sendErrorResponse(PActions::HASHES, "Invalid hashlist!");
     }
     
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryHashes::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($agent == null) {
       API::sendErrorResponse(PActions::HASHES, "Invalid agent!");
@@ -564,9 +573,9 @@ class API {
     else if ($agent->getIsTrusted() < $hashlist->getSecret()) {
       API::sendErrorResponse(PActions::HASHES, "You have not access to this hashlist!");
     }
-    $LINEDELIMITER = "\n";
-    if ($agent->getOs() == 1) {
-      $LINEDELIMITER = "\r\n";
+    $lineDelimiter = "\n";
+    if ($agent->getOs() == DOperatingSystem::WINDOWS) {
+      $lineDelimiter = "\r\n";
     }
     
     $hashlists = array();
@@ -611,7 +620,7 @@ class API {
               if (strlen($entry->getSalt()) > 0) {
                 $output .= $hashlist->getSaltSeparator() . $entry->getSalt();
               }
-              $output .= $LINEDELIMITER;
+              $output .= $lineDelimiter;
             }
             echo $output;
             
@@ -655,14 +664,18 @@ class API {
   
   public static function getTask($QUERY) {
     global $FACTORIES;
+  
+    if (!PQueryTask::isValid($QUERY)) {
+      API::sendErrorResponse(PActions::TASK, "Invalid task query!");
+    }
     
-    $qF = new QueryFilter("token", $QUERY['token'], "=");
+    $qF = new QueryFilter("token", $QUERY[PQueryTask::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => array($qF)), true);
     if ($agent == null) {
       API::sendErrorResponse(PActions::TASK, "Invalid token!");
     }
     else if ($agent->getIsActive() == 0) {
-      API::sendResponse(array(PQuery::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
+      API::sendResponse(array(PQueryTask::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
     }
     
     $qF = new QueryFilter("agentId", $agent->getId(), "=");
@@ -672,7 +685,7 @@ class API {
       //search which task we should assign to the agent
       $nextTask = Util::getNextTask($agent);
       if ($nextTask == null) {
-        API::sendResponse(array(PQuery::ACTION => PActions::SOLVE, 'response' => 'SUCCESS', 'task' => 'NONE'));
+        API::sendResponse(array(PQueryTask::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
       }
       $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
@@ -733,7 +746,7 @@ class API {
     
     if ($assignedTask == null) {
       //no task available
-      API::sendResponse(array(PQuery::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
+      API::sendResponse(array(PQueryTask::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
     }
     
     $qF = new QueryFilter("taskId", $assignedTask->getId(), "=");
@@ -747,7 +760,7 @@ class API {
     $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
     
     API::sendResponse(array(
-        PQuery::ACTION => PActions::TASK,
+        PQueryTask::ACTION => PActions::TASK,
         'response' => 'SUCCESS',
         'task' => $assignedTask->getId(),
         'wait' => $agent->getWait(),
@@ -764,28 +777,31 @@ class API {
   //TODO Handle the case where an agent needs reassignment
   public static function solve($QUERY) {
     global $FACTORIES;
+  
+    if (!PQuerySolve::isValid($QUERY)) {
+      API::sendErrorResponse(PActions::SOLVE, "Invalid hashes query!");
+    }
     
     // upload cracked hashes to server
-    $cid = intval($QUERY["chunk"]);
-    $keyspaceProgress = floatval($QUERY["keyspaceProgress"]);
-    $combinationProgress = floatval($QUERY["progress"]);      //Normalized between 1-10k
-    $combinationTotal = floatval($QUERY["total"]);           //TODO Not sure what this variable does
-    $speed = floatval($QUERY["speed"]);
-    $state = intval($QUERY["state"]);     //Util::getStaticArray($states, $state)
-    $token = $QUERY["token"];
+    $keyspaceProgress = $QUERY[PQuerySolve::KEYSPACE_PROGRESS];
+    
+    $combinationProgress = floatval($QUERY[PQuerySolve::COMBINATION_PROGRESS]);      //Normalized between 1-10k
+    $combinationTotal = floatval($QUERY[PQuerySolve::COMBINATION_TOTAL]);           //TODO Not sure what this variable does
+    $speed = floatval($QUERY[PQuerySolve::SPEED]);
+    $state = intval($QUERY[PQuerySolve::HASHCAT_STATE]);     //Util::getStaticArray($states, $state)
     
     /**
      * This part sends a lot of DB-Requests. It may need to be optimized in the future.
      */
-    $chunk = $FACTORIES::getChunkFactory()->get($cid);
+    $chunk = $FACTORIES::getChunkFactory()->get(intval($QUERY[PQuerySolve::CHUNK_ID]));
     if ($chunk == null) {
-      API::sendErrorResponse(PActions::SOLVE, "Invalid chunk id " . $cid);
+      API::sendErrorResponse(PActions::SOLVE, "Invalid chunk id " . intval($QUERY[PQuerySolve::CHUNK_ID]));
     }
     
-    $qF = new QueryFilter("token", $token, "=");
+    $qF = new QueryFilter("token", $QUERY[PQuerySolve::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
     if ($agent == null) {
-      API::sendErrorResponse(PActions::SOLVE, "Invalid agent token" . $token);
+      API::sendErrorResponse(PActions::SOLVE, "Invalid agent token" . $QUERY[PQuerySolve::TOKEN]);
     }
     if ($chunk->getAgentId() != $agent->getId()) {
       API::sendErrorResponse(PActions::SOLVE, "You are not assigned to this chunk");
@@ -864,7 +880,7 @@ class API {
     }
     
     // process solved hashes, should there be any
-    $crackedHashes = $QUERY['cracks'];
+    $crackedHashes = $QUERY[PQuerySolve::CRACKED_HASHES];
     foreach ($crackedHashes as $crackedHash) {
       if ($crackedHash == "") {
         continue;
@@ -1023,7 +1039,7 @@ class API {
         $count = $FACTORIES::getHashlistFactory()->countFilter(array('filter' => array($qF1, $qF2)));
         if ($count == 0) {
           //stop agent
-          API::sendResponse(array(PQuery::ACTION => PActions::SOLVE, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "agent" => "stop"));
+          API::sendResponse(array(PQuerySolve::ACTION => PActions::SOLVE, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "agent" => "stop"));
         }
         $chunk->setSpeed($speed);
         $FACTORIES::getChunkFactory()->update($chunk);
@@ -1041,6 +1057,6 @@ class API {
         break;
     }
     Util::zapCleaning();
-    API::sendResponse(array(PQuery::ACTION => PActions::SOLVE, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "zaps" => $toZap));
+    API::sendResponse(array(PQuerySolve::ACTION => PActions::SOLVE, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "zaps" => $toZap));
   }
 }

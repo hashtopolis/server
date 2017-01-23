@@ -46,24 +46,4 @@ class DAccessLevel { // if you change any of them here, you need to check if thi
   public const ADMINISTRATOR = 50;
 }
 
-// protocol defines (these are started with 'P')
-class PQuery { // include only generalized query values
-  public const QUERY = "query";
-  public const ACTION = "action";
-}
-
-class PActions {
-  public const REGISTER = "register";
-  public const LOGIN = "login";
-  public const UPDATE = "update";
-  public const DOWNLOAD = "download";
-  public const ERROR = "error";
-  public const FILE = "file";
-  public const HASHES = "hashes";
-  public const TASK = "task";
-  public const CHUNK = "chunk";
-  public const KEYSPACE = "keyspace";
-  public const BENCHMARK = "bench";
-  public const SOLVE = "solve";
-}
 
