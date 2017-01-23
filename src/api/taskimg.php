@@ -5,6 +5,7 @@
  */
 use DBA\Chunk;
 use DBA\QueryFilter;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
@@ -48,7 +49,7 @@ $keyspace = max($task->getKeyspace(), 1);
 $taskid = $task->getId();
 
 //load chunks
-$qF = new QueryFilter("taskId", $task->getId(), "=");
+$qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
 $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
 foreach ($chunks as $chunk) {
   $chunk = Util::cast($chunk, Chunk::class);

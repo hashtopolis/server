@@ -1,4 +1,5 @@
 <?php
+use DBA\Hashlist;
 use DBA\HashType;
 use DBA\QueryFilter;
 
@@ -58,7 +59,7 @@ class HashtypeHandler implements Handler {
       return;
     }
     
-    $qF = new QueryFilter("hashtypeId", $hashtype->getId(), "=");
+    $qF = new QueryFilter(Hashlist::HASH_TYPE_ID, $hashtype->getId(), "=");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => array($qF)));
     if (sizeof($hashlists) > 0) {
       UI::addMessage("danger", "You cannot delete this hashtype! There are hashlists present which are of this type!");

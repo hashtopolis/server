@@ -1,8 +1,12 @@
 <?php
+use DBA\Agent;
+use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\ContainFilter;
+use DBA\Hash;
+use DBA\HashBinary;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
@@ -101,7 +105,7 @@ class AgentHandler implements Handler {
     
     if (intval($_POST['task']) == 0) {
       //unassign
-      $qF = new QueryFilter("agentId", $this->agent->getId(), "=");
+      $qF = new QueryFilter(Agent::AGENT_ID, $this->agent->getId(), "=");
       $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => array($qF)));
       if (isset($_GET['task'])) {
         header("Location: tasks.php?id=" . intval($_GET['task']));
@@ -119,17 +123,17 @@ class AgentHandler implements Handler {
     if (!$task) {
       UI::printError("ERROR", "Invalid task!");
     }
-    $qF = new QueryFilter("agentId", $_POST['agentId'], "=");
+    $qF = new QueryFilter(Agent::AGENT_ID, $_POST['agentId'], "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
     
     //determine benchmark number
     $benchmark = 0;
-    $qF1 = new ComparisonFilter("solveTime", "dispatchTime", ">");
-    $qF2 = new ComparisonFilter("progress", "length", "=");
-    $qF3 = new ContainFilter("state", array("4", "5"));
-    $qF4 = new QueryFilter("agentId", $this->agent->getId(), "=");
-    $qF5 = new QueryFilter("taskId", $task->getId(), "=");
-    $oF = new OrderFilter("solveTime", "DESC");
+    $qF1 = new ComparisonFilter(Chunk::SOLVE_TIME, Chunk::DISPATCH_TIME, ">");
+    $qF2 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "=");
+    $qF3 = new ContainFilter(Chunk::STATE, array("4", "5"));
+    $qF4 = new QueryFilter(Chunk::AGENT_ID, $this->agent->getId(), "=");
+    $qF5 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
     $entries = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4, $qF5), 'order' => array($oF)));
     if (sizeof($entries) > 0) {
       $benchmark = Util::cast($entries[0], Chunk::class)->getLength();
@@ -194,11 +198,12 @@ class AgentHandler implements Handler {
       }
     }
     
-    $qF = new QueryFilter("agentId", $agent->getId(), "=");
+    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
+    $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => $qF));
     //TODO: delete from Zap
-    $uS = new UpdateSet("chunkId", null);
+    $uS = new UpdateSet(Chunk::CHUNK_ID, null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
@@ -206,10 +211,11 @@ class AgentHandler implements Handler {
       $chunkIds[] = $chunk->getId();
     }
     if (sizeof($chunks) > 0) {
-      $containFilter = new ContainFilter("chunkId", $chunkIds);
+      $containFilter = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
       $FACTORIES::getHashFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
+      $containFilter = new ContainFilter(HashBinary::CHUNK_ID, $chunkIds);
       $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $containFilter, 'update' => $uS));
-      $uS = new UpdateSet("agentId", null);
+      $uS = new UpdateSet(Chunk::AGENT_ID, null);
       $FACTORIES::getChunkFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
     }
     $FACTORIES::getAgentFactory()->delete($agent);
@@ -297,7 +303,7 @@ class AgentHandler implements Handler {
   private function clearErrors() {
     global $FACTORIES;
     
-    $qF = new QueryFilter("agentId", $this->agent->getId(), "=");
+    $qF = new QueryFilter(AgentError::AGENT_ID, $this->agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => array($qF)));
   }
   

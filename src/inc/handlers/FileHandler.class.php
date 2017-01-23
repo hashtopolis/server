@@ -1,5 +1,6 @@
 <?php
 use DBA\QueryFilter;
+use DBA\TaskFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -152,7 +153,7 @@ class FileHandler implements Handler {
     if ($file == null) {
       UI::printError("ERROR", "File does not exist!");
     }
-    $qF = new QueryFilter("fileId", $file->getId(), "=");
+    $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=");
     $tasks = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
     if (sizeof($tasks) > 0) {
       UI::addMessage("danger", "This file is currently used in a task!");

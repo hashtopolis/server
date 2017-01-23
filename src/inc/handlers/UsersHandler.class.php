@@ -1,5 +1,7 @@
 <?php
+use DBA\Agent;
 use DBA\QueryFilter;
+use DBA\Session;
 use DBA\User;
 
 /**
@@ -92,7 +94,7 @@ class UsersHandler implements Handler {
     }
     
     $newSalt = Util::randomString(20);
-    $newHash = Encryption::passwordHash($user->getUsername(), $_POST['pass'], $newSalt);
+    $newHash = Encryption::passwordHash($_POST['pass'], $newSalt);
     $user->setPasswordHash($newHash);
     $user->setPasswordSalt($newSalt);
     $user->setIsComputedPassword(0);
@@ -137,8 +139,8 @@ class UsersHandler implements Handler {
       return;
     }
     
-    $qF = new QueryFilter("userId", $user->getId(), "=");
-    $uS = new UpdateSet("isOpen", "0");
+    $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
+    $uS = new UpdateSet(Session::IS_OPEN, "0");
     $FACTORIES::getSessionFactory()->massUpdate(array('filter' => array($qF), 'update' => array($uS)));
     $user->setIsValid(0);
     $FACTORIES::getUserFactory()->update($user);
@@ -173,8 +175,8 @@ class UsersHandler implements Handler {
       return;
     }
     
-    $qF = new QueryFilter("userId", $user->getId(), "=");
-    $uS = new UpdateSet("userId", null);
+    $qF = new QueryFilter(Agent::USER_ID, $user->getId(), "=");
+    $uS = new UpdateSet(Agent::USER_ID, null);
     $FACTORIES::getAgentFactory()->massUpdate(array('filter' => array($qF), 'update' => array($uS)));
     $FACTORIES::getUserFactory()->delete($user);
     header("Location: users.php");

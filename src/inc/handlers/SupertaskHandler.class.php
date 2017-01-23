@@ -48,8 +48,8 @@ class SupertaskHandler implements Handler {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter("supertaskId", $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), "taskId", "taskId");
+    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => $jF));
     $tasks = $joinedTasks['Task'];
     foreach ($tasks as $task) {
@@ -58,7 +58,7 @@ class SupertaskHandler implements Handler {
         UI::addMessage("warning", "Task must contain the hashlist alias for cracking!");
         continue;
       }
-      $qF = new QueryFilter("taskId", $task->getId(), "=");
+      $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
       $taskFiles = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
       $task->setId(0);
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
@@ -108,7 +108,7 @@ class SupertaskHandler implements Handler {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter("supertaskId", $supertask->getId(), "=");
+    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=");
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array('filter' => $qF));
     $FACTORIES::getSupertaskFactory()->delete($supertask);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");

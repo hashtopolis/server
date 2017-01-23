@@ -1,12 +1,15 @@
 <?php
+use DBA\Agent;
 use DBA\Chunk;
 use DBA\Config;
 use DBA\ContainFilter;
 use DBA\File;
+use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\TaskFile;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,14 +52,14 @@ class ConfigHandler implements Handler {
     $FACTORIES::getAgentErrorFactory()->massDeletion(array());
     $FACTORIES::getChunkFactory()->massDeletion(array());
     $FACTORIES::getZapFactory()->massDeletion(array());
-    $qF = new QueryFilter("hashlistId", null, "<>");
+    $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
     $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
     $taskIds = array();
     foreach ($tasks as $task) {
       $task = Util::cast($task, Task::class);
       $taskIds[] = $task->getId();
     }
-    $containFilter = new ContainFilter("taskId", $taskIds);
+    $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
     $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $containFilter));
     $FACTORIES::getTaskFactory()->massDeletion(array('filter' => $qF));
     $FACTORIES::getHashlistFactory()->massDeletion(array());
@@ -101,8 +104,8 @@ class ConfigHandler implements Handler {
     
     //check chunks
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), "taskId", "taskId", $FACTORIES::getChunkFactory());
-    $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), "hashlistId", "hashlistId", $FACTORIES::getTaskFactory());
+    $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
+    $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
     $joined = $FACTORIES::getChunkFactory()->filter(array('join' => array($jF1, $jF2)));
     for ($i = 0; $i < sizeof($joined['Chunk']); $i++) {
       $chunk = Util::cast($joined['Chunk'][$i], Chunk::class);
@@ -114,8 +117,8 @@ class ConfigHandler implements Handler {
           $hashFactory = $FACTORIES::getHashBinaryFactory();
         }
       }
-      $qF1 = new QueryFilter("chunkId", $chunk->getId(), "=");
-      $qF2 = new QueryFilter("isCracked", "1", "=");
+      $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
+      $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
       $count = $hashFactory->countFilter(array('filter' => array($qF1, $qF2)));
       if ($count != $chunk->getCracked()) {
         $correctedChunks++;
@@ -127,12 +130,12 @@ class ConfigHandler implements Handler {
     
     //check hashlists
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter("format", "3", "<>");
+    $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
     foreach ($hashlists as $hashlist) {
       $hashlist = Util::cast($hashlist, Hashlist::class);
-      $qF1 = new QueryFilter("hashlistId", $hashlist->getId(), "=");
-      $qF2 = new QueryFilter("isCracked", "1", "=");
+      $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
+      $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
       $hashFactory = $FACTORIES::getHashFactory();
       if ($hashlist->getFormat() != 0) {
         $hashFactory = $FACTORIES::getHashBinaryFactory();
@@ -148,7 +151,7 @@ class ConfigHandler implements Handler {
     
     //check superhashlists
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter("format", "3", "=");
+    $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
     foreach ($hashlists as $hashlist) {
       $hashlist = Util::cast($hashlist, Hashlist::class);
@@ -177,7 +180,7 @@ class ConfigHandler implements Handler {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
         $CONFIG->addValue($name, $val);
-        $qF = new QueryFilter("item", $name, "=");
+        $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = $FACTORIES::getConfigFactory()->filter(array('filter' => array($qF)), true);
         if ($config == null) {
           $config = new Config(0, $name, $val);

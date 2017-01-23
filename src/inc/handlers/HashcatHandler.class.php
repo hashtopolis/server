@@ -1,4 +1,5 @@
 <?php
+use DBA\Agent;
 use DBA\HashcatRelease;
 use DBA\QueryFilter;
 
@@ -58,7 +59,7 @@ class HashcatHandler implements Handler {
     // delete hashcat release
     $release = $FACTORIES::getHashcatReleaseFactory()->get($_POST['release']);
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter("hcVersion", $release->getVersion(), "=");
+    $qF = new QueryFilter(Agent::HC_VERSION, $release->getVersion(), "=");
     $agents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF));
     if (sizeof($agents)) {
       UI::addMessage("danger", "There are registered agents running this Hashcat version!");
