@@ -15,9 +15,9 @@
 #####################
 
 abstract class PQuery { // include only generalized query values
-  public const QUERY = "query";
-  public const ACTION = "action";
-  public const TOKEN = "token";
+  const QUERY = "query";
+  const ACTION = "action";
+  const TOKEN = "token";
   
   /**
    * This function checks if all required values are given in the query
@@ -45,13 +45,13 @@ class PQuerySolve extends PQuery {
     return true;
   }
   
-  public const CHUNK_ID = "chunk";
-  public const KEYSPACE_PROGRESS = "keyspaceProgress"; // aka curku
-  public const COMBINATION_PROGRESS = "progress";
-  public const COMBINATION_TOTAL = "total";
-  public const SPEED = "speed";
-  public const HASHCAT_STATE = "state";
-  public const CRACKED_HASHES = "cracks";
+  const CHUNK_ID = "chunk";
+  const KEYSPACE_PROGRESS = "keyspaceProgress"; // aka curku
+  const COMBINATION_PROGRESS = "progress";
+  const COMBINATION_TOTAL = "total";
+  const SPEED = "speed";
+  const HASHCAT_STATE = "state";
+  const CRACKED_HASHES = "cracks";
 }
 
 class PQueryBenchmark extends PQuery {
@@ -62,9 +62,9 @@ class PQueryBenchmark extends PQuery {
     return true;
   }
   
-  public const TASK_ID = "taskId";
-  public const TYPE = "type";
-  public const RESULT = "result";
+  const TASK_ID = "taskId";
+  const TYPE = "type";
+  const RESULT = "result";
 }
 
 class PQueryKeyspace extends PQuery {
@@ -75,8 +75,8 @@ class PQueryKeyspace extends PQuery {
     return true;
   }
   
-  public const KEYSPACE = "keyspace";
-  public const TASK_ID = "taskId";
+  const KEYSPACE = "keyspace";
+  const TASK_ID = "taskId";
 }
 
 class PQueryChunk extends PQuery {
@@ -87,7 +87,7 @@ class PQueryChunk extends PQuery {
     return true;
   }
   
-  public const TASK_ID = "taskId";
+  const TASK_ID = "taskId";
 }
 
 class PQueryTask extends PQuery {
@@ -107,7 +107,7 @@ class PQueryHashes extends PQuery {
     return true;
   }
   
-  public const HASHLIST_ID = "hashlist";
+  const HASHLIST_ID = "hashlist";
 }
 
 class PQueryFile extends PQuery {
@@ -118,8 +118,8 @@ class PQueryFile extends PQuery {
     return true;
   }
 
-  public const TASK_ID = "task";
-  public const FILENAME = "file";
+  const TASK_ID = "task";
+  const FILENAME = "file";
 }
 
 class PQueryError extends PQuery {
@@ -130,8 +130,8 @@ class PQueryError extends PQuery {
     return true;
   }
 
-  public const TASK_ID = "task";
-  public const MESSAGE = "message";
+  const TASK_ID = "task";
+  const MESSAGE = "message";
 }
 
 class PQueryDownload extends PQuery {
@@ -142,8 +142,8 @@ class PQueryDownload extends PQuery {
     return true;
   }
   
-  public const BINARY_TYPE = "type";
-  public const FORCE_UPDATE = "force"; // optional
+  const BINARY_TYPE = "type";
+  const FORCE_UPDATE = "force"; // optional
 }
 
 class PQueryUpdate extends PQuery {
@@ -154,7 +154,7 @@ class PQueryUpdate extends PQuery {
     return true;
   }
   
-  public const VERSION = "version";
+  const VERSION = "version";
 }
 
 class PQueryRegister extends PQuery {
@@ -165,11 +165,11 @@ class PQueryRegister extends PQuery {
     return true;
   }
   
-  public const VOUCHER = "voucher";
-  public const GPUS = "gpus";
-  public const USERID = "uid";
-  public const AGENT_NAME = "name";
-  public const OPERATING_SYSTEM = "os";
+  const VOUCHER = "voucher";
+  const GPUS = "gpus";
+  const USERID = "uid";
+  const AGENT_NAME = "name";
+  const OPERATING_SYSTEM = "os";
 }
 
 ######################
@@ -177,36 +177,36 @@ class PQueryRegister extends PQuery {
 ######################
 
 abstract class PValues {
-  public const SUCCESS = "SUCCESS";
-  public const OK = "OK";
-  public const NONE = "NONE";
-  public const ERROR = "ERROR";
+  const SUCCESS = "SUCCESS";
+  const OK = "OK";
+  const NONE = "NONE";
+  const ERROR = "ERROR";
 }
 
 class PValuesDownloadBinaryType extends PValues {
-  public const EXTRACTOR = "7zr";
-  public const HASHCAT = "hashcat";
+  const EXTRACTOR = "7zr";
+  const HASHCAT = "hashcat";
 }
 
 class PValuesBenchmarkType extends PValues {
-  public const SPEED_TEST = "speed";
-  public const RUN_TIME = "run";
+  const SPEED_TEST = "speed";
+  const RUN_TIME = "run";
 }
 
 class PValuesUpdateVersion extends PValues {
-  public const UP_TO_DATE = "OK";
-  public const NEW_VERSION = "NEW";
+  const UP_TO_DATE = "OK";
+  const NEW_VERSION = "NEW";
 }
 
 class PValuesDownloadVersion extends PValues {
-  public const UP_TO_DATE = "OK";
-  public const NEW_VERSION = "NEW";
+  const UP_TO_DATE = "OK";
+  const NEW_VERSION = "NEW";
 }
 
 class PValuesChunkType extends PValues {
-  public const KEYSPACE_REQUIRED = "keyspace_required";
-  public const BENCHMARK_REQUIRED = "benchmark";
-  public const FULLY_DISPATCHED = "fully_dispatched";
+  const KEYSPACE_REQUIRED = "keyspace_required";
+  const BENCHMARK_REQUIRED = "benchmark";
+  const FULLY_DISPATCHED = "fully_dispatched";
 }
 
 ########################
@@ -214,33 +214,33 @@ class PValuesChunkType extends PValues {
 ########################
 
 abstract class PResponse {
-  public const ACTION = "action";
-  public const RESPONSE = "response";
+  const ACTION = "action";
+  const RESPONSE = "response";
 }
 
 class PResponseErrorMessage extends PResponse {
-  public const MESSAGE = "message";
+  const MESSAGE = "message";
 }
 
 class PResponseRegister extends PResponse {
-  public const TOKEN = "token";
+  const TOKEN = "token";
 }
 
 class PResponseLogin extends PResponse {
-  public const TIMEOUT = "timeout";
+  const TIMEOUT = "timeout";
 }
 
 class PResponseUpdate extends PResponse {
-  public const VERSION = "version";
-  public const URL = "url";
+  const VERSION = "version";
+  const URL = "url";
 }
 
 class PResponseDownload extends PResponse {
-  public const VERSION = "version";
-  public const EXECUTABLE = "executable";
-  public const URL = "url";
-  public const FILES = "files";
-  public const ROOT_DIR = "rootdir";
+  const VERSION = "version";
+  const EXECUTABLE = "executable";
+  const URL = "url";
+  const FILES = "files";
+  const ROOT_DIR = "rootdir";
 }
 
 class PResponseError extends PResponse {
@@ -248,41 +248,41 @@ class PResponseError extends PResponse {
 }
 
 class PResponseFile extends PResponse {
-  public const FILENAME = "filename";
-  public const EXTENSION = "extension";
-  public const URL = "url";
+  const FILENAME = "filename";
+  const EXTENSION = "extension";
+  const URL = "url";
 }
 
 class PResponseTask extends PResponse {
-  public const TASK_ID = "task";
-  public const AGENT_WAIT = "wait";
-  public const ATTACK_COMMAND = "attackcmd";
-  public const CMD_PARAMETERS = "cmdpars";
-  public const HASHLIST_ID = "hashlist";
-  public const BENCHMARK = "bench";
-  public const STATUS_TIMER = "statustimer";
-  public const FILES = "files";
+  const TASK_ID = "task";
+  const AGENT_WAIT = "wait";
+  const ATTACK_COMMAND = "attackcmd";
+  const CMD_PARAMETERS = "cmdpars";
+  const HASHLIST_ID = "hashlist";
+  const BENCHMARK = "bench";
+  const STATUS_TIMER = "statustimer";
+  const FILES = "files";
 }
 
 class PResponseChunk extends PResponse {
-  public const CHUNK_ID = "chunk";
-  public const KEYSPACE_SKIP = "skip";
-  public const KEYSPACE_LENGTH = "length";
+  const CHUNK_ID = "chunk";
+  const KEYSPACE_SKIP = "skip";
+  const KEYSPACE_LENGTH = "length";
 }
 
 class PResponseKeyspace extends PResponse {
-  public const KEYSPACE = "keyspace";
+  const KEYSPACE = "keyspace";
 }
 
 class PResponseBenchmark extends PResponse {
-  public const BENCHMARK = "benchmark";
+  const BENCHMARK = "benchmark";
 }
 
 class PResponseSolve extends PResponse {
-  public const NUM_CRACKED = "cracked";
-  public const NUM_SKIPPED = "skipped";
-  public const AGENT_COMMAND = "agent";
-  public const HASH_ZAPS = "zaps";
+  const NUM_CRACKED = "cracked";
+  const NUM_SKIPPED = "skipped";
+  const AGENT_COMMAND = "agent";
+  const HASH_ZAPS = "zaps";
 }
 
 ######################
@@ -290,16 +290,16 @@ class PResponseSolve extends PResponse {
 ######################
 
 class PActions {
-  public const REGISTER = "register";
-  public const LOGIN = "login";
-  public const UPDATE = "update";
-  public const DOWNLOAD = "download";
-  public const ERROR = "error";
-  public const FILE = "file";
-  public const HASHES = "hashes";
-  public const TASK = "task";
-  public const CHUNK = "chunk";
-  public const KEYSPACE = "keyspace";
-  public const BENCHMARK = "bench";
-  public const SOLVE = "solve";
+  const REGISTER = "register";
+  const LOGIN = "login";
+  const UPDATE = "update";
+  const DOWNLOAD = "download";
+  const ERROR = "error";
+  const FILE = "file";
+  const HASHES = "hashes";
+  const TASK = "task";
+  const CHUNK = "chunk";
+  const KEYSPACE = "keyspace";
+  const BENCHMARK = "bench";
+  const SOLVE = "solve";
 }

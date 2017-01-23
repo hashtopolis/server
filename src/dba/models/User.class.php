@@ -149,15 +149,15 @@ class User extends AbstractModel {
     $this->rightGroupId = $rightGroupId;
   }
 
-  public const USER_ID = "userId";
-  public const USERNAME = "username";
-  public const EMAIL = "email";
-  public const PASSWORD_HASH = "passwordHash";
-  public const PASSWORD_SALT = "passwordSalt";
-  public const IS_VALID = "isValid";
-  public const IS_COMPUTED_PASSWORD = "isComputedPassword";
-  public const LAST_LOGIN_DATE = "lastLoginDate";
-  public const REGISTERED_SINCE = "registeredSince";
-  public const SESSION_LIFETIME = "sessionLifetime";
-  public const RIGHT_GROUP_ID = "rightGroupId";
+  const USER_ID = "userId";
+  const USERNAME = "username";
+  const EMAIL = "email";
+  const PASSWORD_HASH = "passwordHash";
+  const PASSWORD_SALT = "passwordSalt";
+  const IS_VALID = "isValid";
+  const IS_COMPUTED_PASSWORD = "isComputedPassword";
+  const LAST_LOGIN_DATE = "lastLoginDate";
+  const REGISTERED_SINCE = "registeredSince";
+  const SESSION_LIFETIME = "sessionLifetime";
+  const RIGHT_GROUP_ID = "rightGroupId";
 }

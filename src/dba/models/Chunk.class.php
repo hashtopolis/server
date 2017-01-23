@@ -160,16 +160,16 @@ class Chunk extends AbstractModel {
     $this->speed = $speed;
   }
 
-  public const CHUNK_ID = "chunkId";
-  public const TASK_ID = "taskId";
-  public const SKIP = "skip";
-  public const LENGTH = "length";
-  public const AGENT_ID = "agentId";
-  public const DISPATCH_TIME = "dispatchTime";
-  public const PROGRESS = "progress";
-  public const RPROGRESS = "rprogress";
-  public const STATE = "state";
-  public const CRACKED = "cracked";
-  public const SOLVE_TIME = "solveTime";
-  public const SPEED = "speed";
+  const CHUNK_ID = "chunkId";
+  const TASK_ID = "taskId";
+  const SKIP = "skip";
+  const LENGTH = "length";
+  const AGENT_ID = "agentId";
+  const DISPATCH_TIME = "dispatchTime";
+  const PROGRESS = "progress";
+  const RPROGRESS = "rprogress";
+  const STATE = "state";
+  const CRACKED = "cracked";
+  const SOLVE_TIME = "solveTime";
+  const SPEED = "speed";
 }

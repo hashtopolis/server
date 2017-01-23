@@ -50,6 +50,6 @@ class StoredValue extends AbstractModel {
     $this->val = $val;
   }
 
-  public const STORED_VALUE_ID = "storedValueId";
-  public const VAL = "val";
+  const STORED_VALUE_ID = "storedValueId";
+  const VAL = "val";
 }

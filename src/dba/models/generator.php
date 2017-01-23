@@ -224,7 +224,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
     $vars[] = "private \$$col;";
     $init[] = "\$this->$col = \$$col;";
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
-    $variables[] = "public const " . makeConstant($col) . " = \"$col\";";
+    $variables[] = "const " . makeConstant($col) . " = \"$col\";";
     
   }
   $class = str_replace("__MODEL_PARAMS__", implode(", ", $params), $class);

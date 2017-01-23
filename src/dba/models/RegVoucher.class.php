@@ -61,7 +61,7 @@ class RegVoucher extends AbstractModel {
     $this->time = $time;
   }
 
-  public const REG_VOUCHER_ID = "regVoucherId";
-  public const VOUCHER = "voucher";
-  public const TIME = "time";
+  const REG_VOUCHER_ID = "regVoucherId";
+  const VOUCHER = "voucher";
+  const TIME = "time";
 }

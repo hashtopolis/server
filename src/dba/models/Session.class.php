@@ -105,11 +105,11 @@ class Session extends AbstractModel {
     $this->sessionKey = $sessionKey;
   }
 
-  public const SESSION_ID = "sessionId";
-  public const USER_ID = "userId";
-  public const SESSION_START_DATE = "sessionStartDate";
-  public const LAST_ACTION_DATE = "lastActionDate";
-  public const IS_OPEN = "isOpen";
-  public const SESSION_LIFETIME = "sessionLifetime";
-  public const SESSION_KEY = "sessionKey";
+  const SESSION_ID = "sessionId";
+  const USER_ID = "userId";
+  const SESSION_START_DATE = "sessionStartDate";
+  const LAST_ACTION_DATE = "lastActionDate";
+  const IS_OPEN = "isOpen";
+  const SESSION_LIFETIME = "sessionLifetime";
+  const SESSION_KEY = "sessionKey";
 }

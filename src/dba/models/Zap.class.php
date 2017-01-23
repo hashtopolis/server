@@ -72,8 +72,8 @@ class Zap extends AbstractModel {
     $this->hashlistId = $hashlistId;
   }
 
-  public const ZAP_ID = "zapId";
-  public const HASH = "hash";
-  public const SOLVE_TIME = "solveTime";
-  public const HASHLIST_ID = "hashlistId";
+  const ZAP_ID = "zapId";
+  const HASH = "hash";
+  const SOLVE_TIME = "solveTime";
+  const HASHLIST_ID = "hashlistId";
 }

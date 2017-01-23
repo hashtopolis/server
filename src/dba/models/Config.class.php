@@ -61,7 +61,7 @@ class Config extends AbstractModel {
     $this->value = $value;
   }
 
-  public const CONFIG_ID = "configId";
-  public const ITEM = "item";
-  public const VALUE = "value";
+  const CONFIG_ID = "configId";
+  const ITEM = "item";
+  const VALUE = "value";
 }

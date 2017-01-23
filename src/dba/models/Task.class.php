@@ -171,17 +171,17 @@ class Task extends AbstractModel {
     $this->isCpuTask = $isCpuTask;
   }
 
-  public const TASK_ID = "taskId";
-  public const TASK_NAME = "taskName";
-  public const ATTACK_CMD = "attackCmd";
-  public const HASHLIST_ID = "hashlistId";
-  public const CHUNK_TIME = "chunkTime";
-  public const STATUS_TIMER = "statusTimer";
-  public const AUTO_ADJUST = "autoAdjust";
-  public const KEYSPACE = "keyspace";
-  public const PROGRESS = "progress";
-  public const PRIORITY = "priority";
-  public const COLOR = "color";
-  public const IS_SMALL = "isSmall";
-  public const IS_CPU_TASK = "isCpuTask";
+  const TASK_ID = "taskId";
+  const TASK_NAME = "taskName";
+  const ATTACK_CMD = "attackCmd";
+  const HASHLIST_ID = "hashlistId";
+  const CHUNK_TIME = "chunkTime";
+  const STATUS_TIMER = "statusTimer";
+  const AUTO_ADJUST = "autoAdjust";
+  const KEYSPACE = "keyspace";
+  const PROGRESS = "progress";
+  const PRIORITY = "priority";
+  const COLOR = "color";
+  const IS_SMALL = "isSmall";
+  const IS_CPU_TASK = "isCpuTask";
 }

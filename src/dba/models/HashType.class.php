@@ -50,6 +50,6 @@ class HashType extends AbstractModel {
     $this->description = $description;
   }
 
-  public const HASH_TYPE_ID = "hashTypeId";
-  public const DESCRIPTION = "description";
+  const HASH_TYPE_ID = "hashTypeId";
+  const DESCRIPTION = "description";
 }

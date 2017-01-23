@@ -83,9 +83,9 @@ class AgentError extends AbstractModel {
     $this->error = $error;
   }
 
-  public const AGENT_ERROR_ID = "agentErrorId";
-  public const AGENT_ID = "agentId";
-  public const TASK_ID = "taskId";
-  public const TIME = "time";
-  public const ERROR = "error";
+  const AGENT_ERROR_ID = "agentErrorId";
+  const AGENT_ID = "agentId";
+  const TASK_ID = "taskId";
+  const TIME = "time";
+  const ERROR = "error";
 }

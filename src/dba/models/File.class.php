@@ -83,9 +83,9 @@ class File extends AbstractModel {
     $this->fileType = $fileType;
   }
 
-  public const FILE_ID = "fileId";
-  public const FILENAME = "filename";
-  public const SIZE = "size";
-  public const SECRET = "secret";
-  public const FILE_TYPE = "fileType";
+  const FILE_ID = "fileId";
+  const FILENAME = "filename";
+  const SIZE = "size";
+  const SECRET = "secret";
+  const FILE_TYPE = "fileType";
 }

@@ -105,11 +105,11 @@ class HashcatRelease extends AbstractModel {
     $this->minver = $minver;
   }
 
-  public const HASHCAT_RELEASE_ID = "hashcatReleaseId";
-  public const VERSION = "version";
-  public const TIME = "time";
-  public const URL = "url";
-  public const COMMON_FILES = "commonFiles";
-  public const ROOTDIR = "rootdir";
-  public const MINVER = "minver";
+  const HASHCAT_RELEASE_ID = "hashcatReleaseId";
+  const VERSION = "version";
+  const TIME = "time";
+  const URL = "url";
+  const COMMON_FILES = "commonFiles";
+  const ROOTDIR = "rootdir";
+  const MINVER = "minver";
 }
