@@ -76,7 +76,11 @@ class API {
     
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
-    API::sendResponse(array(PQueryBenchmark::ACTION => PActions::BENCHMARK, "response" => "SUCCESS", "benchmark" => "OK"));
+    API::sendResponse(array(
+      PResponseBenchmark::ACTION => PActions::BENCHMARK,
+      PResponseBenchmark::RESPONSE => PValues::SUCCESS,
+      PResponseBenchmark::BENCHMARK => PValues::OK
+    ));
   }
   
   public static function setKeyspace($QUERY) {
@@ -106,7 +110,11 @@ class API {
       $task->setKeyspace($keyspace);
       $FACTORIES::getTaskFactory()->update($task);
     }
-    API::sendResponse(array(PQueryKeyspace::ACTION => PActions::KEYSPACE, "response" => "SUCCESS", "keyspace" => "OK"));
+    API::sendResponse(array(
+      PResponseKeyspace::ACTION => PActions::KEYSPACE,
+      PResponseKeyspace::RESPONSE => PValues::SUCCESS,
+      PResponseKeyspace::KEYSPACE => PValues::OK
+    ));
   }
   
   /**
@@ -115,7 +123,13 @@ class API {
   private static function sendChunk($chunk) {
     global $FACTORIES;
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    API::sendResponse(array(PQuery::ACTION => PActions::TASK, "response" => "SUCCESS", "chunk" => $chunk->getId(), "skip" => $chunk->getSkip(), "length" => $chunk->getLength()));
+    API::sendResponse(array(
+      PResponseChunk::ACTION => PActions::TASK,
+      PResponseChunk::RESPONSE => PValues::SUCCESS,
+      PResponseChunk::CHUNK_ID => $chunk->getId(),
+      PResponseChunk::KEYSPACE_SKIP => $chunk->getSkip(),
+      PResponseChunk::KEYSPACE_LENGTH => $chunk->getLength()
+    ));
   }
   
   /**
@@ -256,10 +270,18 @@ class API {
       API::sendErrorResponse(PActions::CHUNK, "You are not assigned to this task!");
     }
     else if ($task->getKeyspace() == 0) {
-      API::sendResponse(array(PQuery::ACTION => PActions::TASK, "response" => "SUCCESS", "chunk" => "keyspace_required"));
+      API::sendResponse(array(
+        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::RESPONSE => PValues::SUCCESS,
+        PResponseChunk::CHUNK_ID => PValuesChunkType::KEYSPACE_REQUIRED
+      ));
     }
     else if ($assignment->getBenchmark() == 0) {
-      API::sendResponse(array(PQuery::ACTION => PActions::TASK, "response" => "SUCCESS", "chunk" => "benchmark"));
+      API::sendResponse(array(
+        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::RESPONSE => PValues::SUCCESS,
+        PResponseChunk::CHUNK_ID => PValuesChunkType::BENCHMARK_REQUIRED
+      ));
     }
   
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
@@ -277,7 +299,11 @@ class API {
       $dispatched += $chunk->getLength();
     }
     if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
-      API::sendResponse(array(PQuery::ACTION => PActions::TASK, "response" => "SUCCESS", "chunk" => "fully_dispatched"));
+      API::sendResponse(array(
+        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::RESPONSE => PValues::SUCCESS,
+        PResponseChunk::CHUNK_ID => PValuesChunkType::FULLY_DISPATCHED
+      ));
     }
   
     $qF1 = new ComparisonFilter("progress", "length", "<");
@@ -298,9 +324,9 @@ class API {
   
   public static function sendErrorResponse($action, $msg) {
     $ANS = array();
-    $ANS[PQuery::ACTION] = $action;
-    $ANS['response'] = "ERROR";
-    $ANS['message'] = $msg;
+    $ANS[PResponseErrorMessage::ACTION] = $action;
+    $ANS[PResponseErrorMessage::RESPONSE] = PValues::ERROR;
+    $ANS[PResponseErrorMessage::MESSAGE] = $msg;
     header("Content-Type: application/json");
     echo json_encode($ANS, true);
     die();
@@ -361,7 +387,11 @@ class API {
     $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal('agenttimeout'), "", 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
-      API::sendResponse(array(PQueryRegister::ACTION => PActions::REGISTER, "response" => "SUCCESS", PQueryRegister::TOKEN => $token));
+      API::sendResponse(array(
+        PQueryRegister::ACTION => PActions::REGISTER,
+        PResponseRegister::RESPONSE => PValues::SUCCESS,
+        PResponseRegister::TOKEN => $token
+      ));
     }
     else {
       API::sendErrorResponse(PActions::REGISTER, "Could not register you to server.");
@@ -384,7 +414,11 @@ class API {
       API::sendErrorResponse(PActions::LOGIN, "Unknown token, register again!");
     }
     API::updateAgent($QUERY, $agent);
-    API::sendResponse(array(PQuery::ACTION => PActions::LOGIN, "response" => "SUCCESS", "timeout" => $CONFIG->getVal("agenttimeout")));
+    API::sendResponse(array(
+      PResponseLogin::ACTION => PActions::LOGIN,
+      PResponseLogin::RESPONSE => PValues::SUCCESS,
+      PResponseLogin::TIMEOUT => $CONFIG->getVal("agenttimeout")
+    ));
   }
   
   public static function checkClientUpdate($QUERY) {
@@ -400,10 +434,19 @@ class API {
     $version = $QUERY[PQueryUpdate::VERSION];
     
     if ($version != $SCRIPTVERSION) {
-      API::sendResponse(array(PQueryUpdate::ACTION => PActions::UPDATE, 'response' => 'SUCCESS', 'version' => 'NEW', 'data' => file_get_contents(dirname(__FILE__) . "/../static/$SCRIPTNAME")));
+      API::sendResponse(array(
+        PResponseUpdate::ACTION => PActions::UPDATE,
+        PResponseUpdate::RESPONSE => PValues::SUCCESS,
+        PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
+        PResponseUpdate::URL=> file_get_contents(dirname(__FILE__) . "/../static/$SCRIPTNAME")
+      ));
     }
     else {
-      API::sendResponse(array(PQueryUpdate::ACTION => PActions::UPDATE, 'response' => 'SUCCESS', 'version' => 'OK'));
+      API::sendResponse(array(
+        PResponseUpdate::ACTION => PActions::UPDATE,
+        PResponseUpdate::RESPONSE => PValues::SUCCESS,
+        PResponseUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
+      ));
     }
   }
   
@@ -437,7 +480,12 @@ class API {
         $executable = "hashcat64." . $postfix[$agent->getOs()];
         
         if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY[PQueryDownload::FORCE_UPDATE]) || $QUERY[PQueryDownload::FORCE_UPDATE] != '1')) {
-          API::sendResponse(array(PQueryDownload::ACTION => PActions::DOWNLOAD, 'response' => 'SUCCESS', 'version' => 'OK', 'executable' => $executable));
+          API::sendResponse(array(
+            PResponseDownload::ACTION => PActions::DOWNLOAD,
+            PResponseDownload::RESPONSE => PValues::SUCCESS,
+            PResponseDownload::VERSION => PValuesDownloadVersion::UP_TO_DATE,
+            PResponseDownload::EXECUTABLE => $executable
+          ));
         }
         
         $url = $hashcat->getUrl();
@@ -447,7 +495,15 @@ class API {
         
         $agent->setHcVersion($hashcat->getVersion());
         $FACTORIES::getAgentFactory()->update($agent);
-        API::sendResponse(array(PQueryDownload::ACTION => PActions::DOWNLOAD, 'response' => 'SUCCESS', 'version' => 'NEW', 'url' => $url, 'files' => $files, 'rootdir' => $rootdir, 'executable' => $executable));
+        API::sendResponse(array(
+          PResponseDownload::ACTION => PActions::DOWNLOAD,
+          PResponseDownload::RESPONSE => PValues::SUCCESS,
+          PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
+          PResponseDownload::URL => $url,
+          PResponseDownload::FILES => $files,
+          PResponseDownload::ROOT_DIR => $rootdir,
+          PResponseDownload::EXECUTABLE => $executable
+        ));
         break;
       default:
         API::sendErrorResponse(PActions::DOWNLOAD, "Unknown download type!");
@@ -487,7 +543,10 @@ class API {
       $agent->setIsActive(0);
       $FACTORIES::getAgentFactory()->update($agent);
     }
-    API::sendResponse(array(PQueryError::ACTION => PActions::ERROR, 'response' => 'SUCCESS'));
+    API::sendResponse(array(
+      PQueryError::ACTION => PActions::ERROR,
+      PResponseError::RESPONSE => PValues::SUCCESS
+    ));
   }
   
   public static function getFile($QUERY) {
@@ -533,8 +592,15 @@ class API {
     }
     $filename = $file->getFilename();
     $extension = explode(".", $filename)[sizeof(explode(".", $filename)) - 1];
-    //TODO: make correct url here
-    API::sendResponse(array(PQueryFile::ACTION => PActions::FILE, 'filename' => $filename, 'extension' => $extension, 'response' => 'SUCCESS', 'url' => "https://". $_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()));
+    
+    API::sendResponse(array(
+      PQueryFile::ACTION => PActions::FILE,
+      PResponseFile::FILENAME => $filename,
+      PResponseFile::EXTENSION => $extension,
+      PResponseFile::RESPONSE => PValues::SUCCESS,
+      //TODO: make correct url here
+      PResponseFile::URL => "https://". $_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()
+    ));
   }
   
   public static function getHashes($QUERY) {
@@ -675,7 +741,11 @@ class API {
       API::sendErrorResponse(PActions::TASK, "Invalid token!");
     }
     else if ($agent->getIsActive() == 0) {
-      API::sendResponse(array(PQueryTask::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
+      API::sendResponse(array(
+        PResponseTask::ACTION => PActions::TASK,
+        PResponseTask::RESPONSE => PValues::SUCCESS,
+        PResponseTask::TASK_ID => PValues::NONE
+      ));
     }
     
     $qF = new QueryFilter("agentId", $agent->getId(), "=");
@@ -685,7 +755,11 @@ class API {
       //search which task we should assign to the agent
       $nextTask = Util::getNextTask($agent);
       if ($nextTask == null) {
-        API::sendResponse(array(PQueryTask::ACTION => PActions::TASK, 'response' => 'SUCCESS', 'task' => 'NONE'));
+        API::sendResponse(array(
+          PResponseTask::ACTION => PActions::TASK,
+          PResponseTask::RESPONSE => PValues::SUCCESS,
+          PResponseTask::TASK_ID => PValues::NONE
+        ));
       }
       $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
@@ -760,18 +834,17 @@ class API {
     $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
     
     API::sendResponse(array(
-        PQueryTask::ACTION => PActions::TASK,
-        'response' => 'SUCCESS',
-        'task' => $assignedTask->getId(),
-        'wait' => $agent->getWait(),
-        'attackcmd' => $assignedTask->getAttackCmd(),
-        'cmdpars' => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
-        'hashlist' => $assignedTask->getHashlistId(),
-        'bench' => 'new', //TODO: here we should tell him new or continue depending if he was already working on this hashlist or not
-        'statustimer' => $assignedTask->getStatusTimer(),
-        'files' => $files
-      )
-    );
+      PResponseTask::ACTION => PActions::TASK,
+      PResponseTask::RESPONSE => PValues::SUCCESS,
+      PResponseTask::TASK_ID => $assignedTask->getId(),
+      PResponseTask::AGENT_WAIT => $agent->getWait(),
+      PResponseTask::ATTACK_COMMAND => $assignedTask->getAttackCmd(),
+      PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
+      PResponseTask::HASHLIST_ID => $assignedTask->getHashlistId(),
+      PResponseTask::BENCHMARK => 'new', //TODO: here we should tell him new or continue depending if he was already working on this hashlist or not
+      PResponseTask::STATUS_TIMER => $assignedTask->getStatusTimer(),
+      PResponseTask::FILES => $files
+    ));
   }
   
   //TODO Handle the case where an agent needs reassignment
@@ -1039,7 +1112,13 @@ class API {
         $count = $FACTORIES::getHashlistFactory()->countFilter(array('filter' => array($qF1, $qF2)));
         if ($count == 0) {
           //stop agent
-          API::sendResponse(array(PQuerySolve::ACTION => PActions::SOLVE, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "agent" => "stop"));
+          API::sendResponse(array(
+            PResponseSolve::ACTION => PActions::SOLVE,
+            PResponseSolve::RESPONSE => PValues::SUCCESS,
+            PResponseSolve::NUM_CRACKED => $sumCracked,
+            PResponseSolve::NUM_SKIPPED => $skipped,
+            PResponseSolve::AGENT_COMMAND => "stop"
+          ));
         }
         $chunk->setSpeed($speed);
         $FACTORIES::getChunkFactory()->update($chunk);
@@ -1057,6 +1136,12 @@ class API {
         break;
     }
     Util::zapCleaning();
-    API::sendResponse(array(PQuerySolve::ACTION => PActions::SOLVE, "response" => "SUCCESS", "cracked" => $sumCracked, "skipped" => $skipped, "zaps" => $toZap));
+    API::sendResponse(array(
+      PResponseSolve::ACTION => PActions::SOLVE,
+      PResponseSolve::RESPONSE => PValues::SUCCESS,
+      PResponseSolve::NUM_CRACKED => $sumCracked,
+      PResponseSolve::NUM_SKIPPED => $skipped,
+      PResponseSolve::HASH_ZAPS => $toZap
+    ));
   }
 }

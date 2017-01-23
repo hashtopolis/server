@@ -7,6 +7,13 @@
  */
 
 // protocol defines (these are started with 'P')
+
+
+
+#####################
+# Query definitions #
+#####################
+
 abstract class PQuery { // include only generalized query values
   public const QUERY = "query";
   public const ACTION = "action";
@@ -165,8 +172,15 @@ class PQueryRegister extends PQuery {
   public const OPERATING_SYSTEM = "os";
 }
 
+######################
+# Values definitions #
+######################
+
 abstract class PValues {
-  //TODO:
+  public const SUCCESS = "SUCCESS";
+  public const OK = "OK";
+  public const NONE = "NONE";
+  public const ERROR = "ERROR";
 }
 
 class PValuesDownloadBinaryType extends PValues {
@@ -178,6 +192,102 @@ class PValuesBenchmarkType extends PValues {
   public const SPEED_TEST = "speed";
   public const RUN_TIME = "run";
 }
+
+class PValuesUpdateVersion extends PValues {
+  public const UP_TO_DATE = "OK";
+  public const NEW_VERSION = "NEW";
+}
+
+class PValuesDownloadVersion extends PValues {
+  public const UP_TO_DATE = "OK";
+  public const NEW_VERSION = "NEW";
+}
+
+class PValuesChunkType extends PValues {
+  public const KEYSPACE_REQUIRED = "keyspace_required";
+  public const BENCHMARK_REQUIRED = "benchmark";
+  public const FULLY_DISPATCHED = "fully_dispatched";
+}
+
+########################
+# Response definitions #
+########################
+
+abstract class PResponse {
+  public const ACTION = "action";
+  public const RESPONSE = "response";
+}
+
+class PResponseErrorMessage extends PResponse {
+  public const MESSAGE = "message";
+}
+
+class PResponseRegister extends PResponse {
+  public const TOKEN = "token";
+}
+
+class PResponseLogin extends PResponse {
+  public const TIMEOUT = "timeout";
+}
+
+class PResponseUpdate extends PResponse {
+  public const VERSION = "version";
+  public const URL = "url";
+}
+
+class PResponseDownload extends PResponse {
+  public const VERSION = "version";
+  public const EXECUTABLE = "executable";
+  public const URL = "url";
+  public const FILES = "files";
+  public const ROOT_DIR = "rootdir";
+}
+
+class PResponseError extends PResponse {
+  // not additional values required
+}
+
+class PResponseFile extends PResponse {
+  public const FILENAME = "filename";
+  public const EXTENSION = "extension";
+  public const URL = "url";
+}
+
+class PResponseTask extends PResponse {
+  public const TASK_ID = "task";
+  public const AGENT_WAIT = "wait";
+  public const ATTACK_COMMAND = "attackcmd";
+  public const CMD_PARAMETERS = "cmdpars";
+  public const HASHLIST_ID = "hashlist";
+  public const BENCHMARK = "bench";
+  public const STATUS_TIMER = "statustimer";
+  public const FILES = "files";
+}
+
+class PResponseChunk extends PResponse {
+  public const CHUNK_ID = "chunk";
+  public const KEYSPACE_SKIP = "skip";
+  public const KEYSPACE_LENGTH = "length";
+}
+
+class PResponseKeyspace extends PResponse {
+  public const KEYSPACE = "keyspace";
+}
+
+class PResponseBenchmark extends PResponse {
+  public const BENCHMARK = "benchmark";
+}
+
+class PResponseSolve extends PResponse {
+  public const NUM_CRACKED = "cracked";
+  public const NUM_SKIPPED = "skipped";
+  public const AGENT_COMMAND = "agent";
+  public const HASH_ZAPS = "zaps";
+}
+
+######################
+# Action definitions #
+######################
 
 class PActions {
   public const REGISTER = "register";
