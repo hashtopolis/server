@@ -285,14 +285,25 @@
 	\end{verbatim}
 	
 	\subsection*{Send Benchmark}
-	The client sends the tested benchmark of a task. Benchmark type can be 'old' or 'new'.
+	The client sends the tested benchmark of a task. Benchmark type can be 'speed' or 'run'. If the 'speed' benchmark type is used, there are two values to be sent separated by ':'. \\
+	The 'speed' benchmark type is using the --progress-only switch of hashcat. \\
+	The 'run' benchmark type uses the old method of hashtopussy to benchmark a task in running the given task for some time.
 	\begin{verbatim}
 	{
 	  "action":"bench",
 	  "token":"GHhgdf(/&",
 	  "taskId":35,
-	  "type": "old",
-	  "result": "674.43"
+	  "type": "run",
+	  "result": "674"
+	}
+	\end{verbatim}
+	\begin{verbatim}
+	{
+	  "action":"bench",
+	  "token":"GHhgdf(/&",
+	  "taskId":35,
+	  "type": "speed",
+	  "result": "674:674.74"
 	}
 	\end{verbatim}
 	The server should reply following on success:
