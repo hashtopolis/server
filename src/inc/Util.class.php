@@ -210,6 +210,8 @@ class Util {
   
   /**
    * Checks if a file is writable
+   * @param $arr array of files to check
+   * @return bool
    */
   public static function checkWriteFiles($arr) {
     foreach ($arr as $path) {
@@ -267,6 +269,9 @@ class Util {
   
   /**
    * Used in Template. Subtracts two variables
+   * @param $x int value 1
+   * @param $y int value 2
+   * @return mixed
    */
   public static function subtract($x, $y) {
     return ($x - $y);
@@ -550,6 +555,9 @@ class Util {
   
   /**
    * Adds 0s to the beginning of a number until it reaches size.
+   * @param $number
+   * @param $size
+   * @return string
    */
   public static function prefixNum($number, $size) {
     $formatted = "" . $number;
@@ -608,6 +616,9 @@ class Util {
   
   /**
    * TODO Document me
+   * @param $table
+   * @param $dict
+   * @return string
    */
   public static function createPrefixedString($table, $dict) {
     $arr = array();
@@ -619,6 +630,9 @@ class Util {
   
   /**
    * Checks if $search starts with $pattern. Shortcut for strpos==0
+   * @param $search
+   * @param $pattern
+   * @return bool
    */
   public static function startsWith($search, $pattern) {
     if (strpos($search, $pattern) === 0) {
@@ -629,6 +643,9 @@ class Util {
   
   /**
    * if pattern is empty or if pattern is at the end of search
+   * @param $search
+   * @param $pattern
+   * @return bool
    */
   public static function endsWith($search, $pattern) {
     // search forward starting from end minus needle length characters
@@ -637,6 +654,8 @@ class Util {
   
   /**
    * Converts a hex to binary
+   * @param $data
+   * @return string
    */
   public static function hextobin($data) {
     $res = "";
@@ -648,6 +667,9 @@ class Util {
   
   /**
    * Get an alert div with type and msg
+   * @param $type
+   * @param $msg
+   * @return string
    */
   public static function getMessage($type, $msg) {
     return "<div class='alert alert-$type'>$msg</div>";

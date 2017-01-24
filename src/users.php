@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {

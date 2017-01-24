@@ -96,7 +96,7 @@ class Login {
   /**
    * Executes a login with given username and password (plain)
    *
-   * @param string $user username of the user to be logged in
+   * @param string $username username of the user to be logged in
    * @param string $password password which was entered on login form
    * @return true on success and false on failure
    */

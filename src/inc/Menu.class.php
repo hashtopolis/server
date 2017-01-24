@@ -31,6 +31,7 @@ class Menu {
    * Request for a identifier if it is active or no.
    *
    * @param string $name identifier to check
+   * @param string $classonly when it's used in a dropdown provide the name of the dropdown object here
    * @return string with " class='active'" if is active or "" if not
    */
   public function isActive($name, $classonly = "") {
