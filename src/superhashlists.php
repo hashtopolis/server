@@ -26,17 +26,17 @@ if(isset($_GET['new'])){
   $TEMPLATE = new Template("superhashlists/new");
   $MENU->setActive("lists_snew");
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
-  $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
+  $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
 }
 else{
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
-  $lists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
+  $lists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
   $OBJECTS['lists'] = $lists;
   $subLists = new DataSet();
   foreach($lists as $list){
     $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), SuperHashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
-    $ll = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF, 'join' => $jF));
+    $ll = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $subLists->addValue($list->getId(), $ll['Hashlist']);
   }
   $OBJECTS['subLists'] = $subLists;

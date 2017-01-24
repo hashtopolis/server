@@ -35,7 +35,7 @@ if (isset($_POST['action'])) {
 }
 
 $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-$allTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
+$allTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
 
 if (isset($_GET['id'])) {
   //show agent detail
@@ -50,7 +50,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array());
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF), true);
+    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     $currentTask = 0;
     if($assignment != null){
       $currentTask = $assignment->getTaskId();
@@ -58,10 +58,10 @@ if (isset($_GET['id'])) {
     $OBJECTS['currentTask'] = $currentTask;
     
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
-    $OBJECTS['errors'] = $FACTORIES::getAgentErrorFactory()->filter(array('filter' => $qF));
+    $OBJECTS['errors'] = $FACTORIES::getAgentErrorFactory()->filter(array($FACTORIES::FILTER => $qF));
     
     $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $timeSpent = 0;
     foreach($chunks as $chunk){
       $timeSpent += max($chunk->getSolveTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
@@ -80,7 +80,7 @@ else if(isset($_GET['new'])){
 }
 else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
-  $agents = $FACTORIES::getAgentFactory()->filter(array('order' => array($oF)));
+  $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::ORDER => array($oF)));
   $allAgents = array();
   foreach ($agents as $agent) {
     $set = new DataSet();
@@ -88,7 +88,7 @@ else {
     $set->addValue("agent", $agent);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-    $assignments = $FACTORIES::getAssignmentFactory()->filter(array('filter' => array($qF)));
+    $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     $isWorking = 0;
     $taskId = 0;
     if (sizeof($assignments) > 0) {

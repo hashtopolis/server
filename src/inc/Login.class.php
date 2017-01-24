@@ -42,7 +42,7 @@ class Login {
       $filter1 = new QueryFilter(Session::SESSION_KEY, $session, "=");
       $filter2 = new QueryFilter(Session::IS_OPEN, "1", "=");
       $filter3 = new QueryFilter(Session::LAST_ACTION_DATE, time() - 10000, ">");
-      $check = $FACTORIES::getSessionFactory()->filter(array('filter' => array($filter1, $filter2, $filter3)));
+      $check = $FACTORIES::getSessionFactory()->filter(array($FACTORIES::FILTER => array($filter1, $filter2, $filter3)));
       if ($check === null || sizeof($check) == 0) {
         setcookie("session", "", time() - 600); //delete invalid or old cookie
         return;
@@ -107,7 +107,7 @@ class Login {
       return false;
     }
     $filter = new QueryFilter(User::USERNAME, $username, "=");
-    $check = $FACTORIES::getUserFactory()->filter(array('filter' => array($filter)));
+    $check = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($filter)));
     if ($check === null || sizeof($check) == 0) {
       return false;
     }

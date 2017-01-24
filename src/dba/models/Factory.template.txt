@@ -13,4 +13,9 @@ class Factory {
   __MODEL_STATIC__
 
   __MODEL_FUNCTIONS__
+
+  const FILTER = "filter";
+  const JOIN = "join";
+  const ORDER = "order";
+  const UPDATE = "update";
 }

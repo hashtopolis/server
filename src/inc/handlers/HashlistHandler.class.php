@@ -122,7 +122,7 @@ class HashlistHandler implements Handler {
     $name = htmlentities($_POST["name"], false, "UTF-8");
     $qF = new ContainFilter(Hashlist::HASHLIST_ID, $hashlists);
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $lists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
+    $lists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     $lists[0] = Util::cast($lists[0], Hashlist::class);
     if (strlen($name) == 0) {
       $name = "SHL_" . $lists[0]->getHashtypeId();
@@ -354,7 +354,7 @@ class HashlistHandler implements Handler {
     }
     $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
-    $count = $factory->countFilter(array('filter' => array($qF1, $qF2)));
+    $count = $factory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     $pagingSize = 5000;
     if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
       $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
@@ -362,7 +362,7 @@ class HashlistHandler implements Handler {
     $separator = $CONFIG->getVal(DConfig::FIELD_SEPARATOR);
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = $factory->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
+      $entries = $factory->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
       $buffer = "";
       foreach ($entries as $entry) {
         $entry = Util::cast($entry, Hash::class);
@@ -405,7 +405,7 @@ class HashlistHandler implements Handler {
     
     $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
-    $superlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('filter' => array($qF), 'join' => array($jF)));
+    $superlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
     for ($x = 0; $x < sizeof($superlists['Hashlist']); $x++) {
       $superlist = Util::cast($superlists['Hashlist'][$x], Hashlist::class);
       $superlist->setHashCount($superlist->getHashCount() - $this->hashlist->getHashCount());
@@ -416,21 +416,21 @@ class HashlistHandler implements Handler {
     //TODO: delete from zapqueue
     
     $qF = new QueryFilter(Task::HASHLIST_ID, $this->hashlist->getId(), "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF)));
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     $taskList = array();
     foreach ($tasks as $task) {
       $task = Util::cast($task, Task::class);
       $taskList[] = $task->getId();
     }
-    $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array('filter' => array($qF)));
+    $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
     
     if (sizeof($taskList) > 0) {
       $qF = new ContainFilter(TaskFile::TASK_ID, $taskList);
-      $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $qF));
+      $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
       $qF = new ContainFilter(Assignment::TASK_ID, $taskList);
-      $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
+      $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
       $qF = new ContainFilter(Chunk::TASK_ID, $taskList);
-      $FACTORIES::getChunkFactory()->massDeletion(array('filter' => $qF));
+      $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     }
     foreach ($tasks as $task) {
       $FACTORIES::getTaskFactory()->delete($task);
@@ -446,7 +446,7 @@ class HashlistHandler implements Handler {
           $qF = new QueryFilter(Hash::HASHLIST_ID, $this->hashlist->getId(), "=");
           $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
           while ($deleted > 0) {
-            $result = Util::cast($FACTORIES::getHashFactory()->massDeletion(array('filter' => array($qF), 'order' => array($oF))), PDOStatement::class);
+            $result = Util::cast($FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF))), PDOStatement::class);
             $deleted = $result->rowCount();
             $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
             $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
@@ -459,11 +459,11 @@ class HashlistHandler implements Handler {
       case 1:
       case 2:
         $qF = new QueryFilter(HashBinary::HASHLIST_ID, $this->hashlist->getId(), "=");
-        $FACTORIES::getHashBinaryFactory()->massDeletion(array('filter' => array($qF)));
+        $FACTORIES::getHashBinaryFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
         break;
       case 3:
         $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $this->hashlist->getId(), "=");
-        $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array('filter' => array($qF)));
+        $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
         break;
     }
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
@@ -544,7 +544,7 @@ class HashlistHandler implements Handler {
     $hashlist = Util::cast($hashlists[0], Hashlist::class);
     if (sizeof($hashlists) == 1 && $hashlist->getId() == $this->hashlist->getId()) {
       $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=");
-      $inSuperHashlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('filter' => $qF));
+      $inSuperHashlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     }
     $hashFactory = $FACTORIES::getHashFactory();
     if ($hashlist->getFormat() != 0) {
@@ -582,7 +582,7 @@ class HashlistHandler implements Handler {
         $hash = $split[0];
         $qF1 = new QueryFilter(Hash::HASH, $hash, "=");
         $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-        $hashEntry = $hashFactory->filter(array('filter' => array($qF1, $qF2)), true);
+        $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
         if ($hashEntry == null) {
           $notFound++;
           continue;
@@ -606,7 +606,7 @@ class HashlistHandler implements Handler {
         $hash = $split[0];
         $qF1 = new QueryFilter(Hash::HASH, $hash, "=");
         $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-        $hashEntry = $hashFactory->filter(array('filter' => array($qF1, $qF2)), true);
+        $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
         if ($hashEntry == null) {
           $notFound++;
           continue;
@@ -742,11 +742,11 @@ class HashlistHandler implements Handler {
       //get number of hashes we need to export
       $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list->getId(), "=");
       $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
-      $size = $hashFactory->countFilter(array('filter' => array($qF1, $qF2)));
+      $size = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
       for ($x = 0; $x * $pagingSize < $size; $x++) {
         $buffer = "";
         $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ", $pagingSize");
-        $hashes = $hashFactory->filter(array('filter' => array($qF1, $qF2), 'order' => array($oF)));
+        $hashes = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
         foreach ($hashes as $hash) {
           $hash = Util::cast($hash, Hash::class);
           $plain = $hash->getPlaintext();
@@ -780,7 +780,7 @@ class HashlistHandler implements Handler {
     if (isset($_POST['task'])) {
       $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
       $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
-      $highest = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF), 'order' => array($oF)), true);
+      $highest = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)), true);
       $priorityBase = 1;
       if ($highest != null) {
         $priorityBase = $highest->getPriority() + 1;
@@ -804,7 +804,7 @@ class HashlistHandler implements Handler {
           
           //copy all file associations of the preconf task to the new task
           $qF = new QueryFilter(TaskFile::TASK_ID, $oldTaskId, "=");
-          $files = $FACTORIES::getTaskFileFactory()->filter(array('filter' => array($qF)));
+          $files = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => array($qF)));
           foreach ($files as $file) {
             $task = Util::cast($task, Task::class);
             $file = Util::cast($file, File::class);

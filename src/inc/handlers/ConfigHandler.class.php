@@ -1,9 +1,7 @@
 <?php
-use DBA\Agent;
 use DBA\Chunk;
 use DBA\Config;
 use DBA\ContainFilter;
-use DBA\File;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
@@ -53,15 +51,15 @@ class ConfigHandler implements Handler {
     $FACTORIES::getChunkFactory()->massDeletion(array());
     $FACTORIES::getZapFactory()->massDeletion(array());
     $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     $taskIds = array();
     foreach ($tasks as $task) {
       $task = Util::cast($task, Task::class);
       $taskIds[] = $task->getId();
     }
     $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
-    $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $containFilter));
-    $FACTORIES::getTaskFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $containFilter));
+    $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getHashlistFactory()->massDeletion(array());
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
@@ -72,7 +70,6 @@ class ConfigHandler implements Handler {
     $allOk = true;
     $files = $FACTORIES::getFileFactory()->filter(array());
     foreach ($files as $file) {
-      $file = Util::cast($file, File::class);
       $absolutePath = dirname(__FILE__) . "/../../files/" . $file->getFilename();
       if (!file_exists($absolutePath)) {
         UI::addMessage("danger", "File " . $file->getFilename() . " does not exist!");
@@ -82,7 +79,7 @@ class ConfigHandler implements Handler {
       $size = Util::filesize($absolutePath);
       if ($size == -1) {
         $allOk = false;
-        UI::addMessage("danger", "Failed to determine file size of " . $file->getName());
+        UI::addMessage("danger", "Failed to determine file size of " . $file->getFilename());
       }
       else if ($size != $file->getSize()) {
         $allOk = false;
@@ -106,7 +103,7 @@ class ConfigHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
     $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
-    $joined = $FACTORIES::getChunkFactory()->filter(array('join' => array($jF1, $jF2)));
+    $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => array($jF1, $jF2)));
     for ($i = 0; $i < sizeof($joined['Chunk']); $i++) {
       $chunk = Util::cast($joined['Chunk'][$i], Chunk::class);
       $hashlist = Util::cast($joined['Hashlist'][$i], Hashlist::class);
@@ -119,7 +116,7 @@ class ConfigHandler implements Handler {
       }
       $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
       $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
-      $count = $hashFactory->countFilter(array('filter' => array($qF1, $qF2)));
+      $count = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
       if ($count != $chunk->getCracked()) {
         $correctedChunks++;
         $chunk->setCracked($count);
@@ -131,7 +128,7 @@ class ConfigHandler implements Handler {
     //check hashlists
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
-    $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
+    $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($hashlists as $hashlist) {
       $hashlist = Util::cast($hashlist, Hashlist::class);
       $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
@@ -140,7 +137,7 @@ class ConfigHandler implements Handler {
       if ($hashlist->getFormat() != 0) {
         $hashFactory = $FACTORIES::getHashBinaryFactory();
       }
-      $count = $hashFactory->countFilter(array('filter' => array($qF1, $qF2)));
+      $count = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
       if ($count != $hashlist->getCracked()) {
         $correctedHashlists++;
         $hashlist->setCracked($count);
@@ -152,7 +149,7 @@ class ConfigHandler implements Handler {
     //check superhashlists
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
-    $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => $qF));
+    $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($hashlists as $hashlist) {
       $hashlist = Util::cast($hashlist, Hashlist::class);
       $children = Util::checkSuperHashlist($hashlist);
@@ -181,7 +178,7 @@ class ConfigHandler implements Handler {
         $name = substr($item, 7);
         $CONFIG->addValue($name, $val);
         $qF = new QueryFilter(Config::ITEM, $name, "=");
-        $config = $FACTORIES::getConfigFactory()->filter(array('filter' => array($qF)), true);
+        $config = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
         if ($config == null) {
           $config = new Config(0, $name, $val);
           $FACTORIES::getConfigFactory()->save($config);

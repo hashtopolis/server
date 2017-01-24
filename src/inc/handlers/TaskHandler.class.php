@@ -194,11 +194,11 @@ class TaskHandler implements Handler {
       $pretask = true;
     }
     $priority = intval($_POST["priority"]);
-    $qF1 = new QueryFilter(Task::PRIORITY, $priority, "=");
+    $qF1 = new QueryFilter(Task::PRIORITY, $priority, "="); //TODO: check this
     $qF2 = new QueryFilter(Task::PRIORITY, $priority, ">");
     $qF3 = new QueryFilter(Task::TASK_ID, $task->getId(), "<>");
     $qF4 = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-    $check = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2, $qF3, $qF4)), true);
+    $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4)), true);
     if ($check != null) {
       UI::addMessage("danger", "Priorities must be unique!");
       return;
@@ -239,16 +239,16 @@ class TaskHandler implements Handler {
     global $FACTORIES;
     
     $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getAssignmentFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getAgentErrorFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getTaskFileFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $uS = new UpdateSet(Hash::CHUNK_ID, null);
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
       $chunk = Util::cast($chunk, Chunk::class);
@@ -256,10 +256,10 @@ class TaskHandler implements Handler {
     }
     if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
-      $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
-      $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
+      $FACTORIES::getHashBinaryFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
     }
-    $FACTORIES::getChunkFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getTaskFactory()->delete($task);
   }
   
@@ -269,7 +269,7 @@ class TaskHandler implements Handler {
     // delete finished tasks
     $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
     $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF1, $qF2)));
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     foreach ($tasks as $task) {
@@ -305,7 +305,7 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
-    $join = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF, 'join' => $jF));
+    $join = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     for ($i = 0; $i < sizeof($join['Task']); $i++) {
       $assignment = \DBA\Util::cast($join['Assignment'][$i], \DBA\Assignment::class);
       $assignment->setBenchmark($assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
@@ -389,8 +389,8 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $uS = new UpdateSet(Assignment::BENCHMARK, 0);
-    $FACTORIES::getAssignmentFactory()->massUpdate(array('filter' => $qF, 'update' => $uS));
-    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+    $FACTORIES::getAssignmentFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
       $chunkIds[] = $chunk->getId();
@@ -398,10 +398,10 @@ class TaskHandler implements Handler {
     if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
       $uS = new UpdateSet(Hash::CHUNK_ID, null);
-      $FACTORIES::getHashFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
-      $FACTORIES::getHashBinaryFactory()->massUpdate(array('filter' => $qF2, 'update' => $uS));
+      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
+      $FACTORIES::getHashBinaryFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
     }
-    $FACTORIES::getChunkFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $task->setKeyspace(0);
     $task->setProgress(0);
     $FACTORIES::getTaskFactory()->update($task);
@@ -415,7 +415,7 @@ class TaskHandler implements Handler {
     
     // enable agent benchmark autoadjust for its current assignment
     $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agent'], "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF), true);
+    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($assignment == null) {
       UI::addMessage("danger", "No assignment for this agent!");
       return;
@@ -428,7 +428,7 @@ class TaskHandler implements Handler {
     
     // adjust agent benchmark
     $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agent'], "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array('filter' => $qF), true);
+    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($assignment == null) {
       UI::addMessage("danger", "No assignment for this agent!");
       return;

@@ -32,7 +32,7 @@ if(isset($_GET['create'])){
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
   $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
-  $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF));
+  $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
 }
 else if (isset($_GET['id']) && isset($_GET['new'])) {
   $TEMPLATE = new Template("supertasks/new");
@@ -48,7 +48,7 @@ else if (isset($_GET['id'])){
   }
   $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
   $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
-  $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => $jF));
+  $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $OBJECTS['tasks'] = $tasks['Task'];
   $OBJECTS['supertask'] = $supertask;
 }
@@ -58,7 +58,7 @@ else {
   foreach($supertasks as $supertask){
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => $jF));
+    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $tasks = $joinedTasks['Task'];
     $supertaskTasks->addValue($supertask->getId(), $tasks);
   }

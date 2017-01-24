@@ -50,7 +50,7 @@ $taskid = $task->getId();
 
 //load chunks
 $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
-$chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+$chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
 foreach ($chunks as $chunk) {
   $chunk = Util::cast($chunk, Chunk::class);
   $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);

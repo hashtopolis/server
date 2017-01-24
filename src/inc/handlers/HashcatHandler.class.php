@@ -60,7 +60,7 @@ class HashcatHandler implements Handler {
     $release = $FACTORIES::getHashcatReleaseFactory()->get($_POST['release']);
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Agent::HC_VERSION, $release->getVersion(), "=");
-    $agents = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF));
+    $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($agents)) {
       UI::addMessage("danger", "There are registered agents running this Hashcat version!");
       return;

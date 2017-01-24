@@ -61,14 +61,14 @@ class UsersHandler implements Handler {
       return;
     }
     $qF = new QueryFilter("username", $username, "=");
-    $res = $FACTORIES::getUserFactory()->filter(array('filter' => array($qF)));
+    $res = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     if ($res != null && sizeof($res) > 0) {
       UI::addMessage("danger", "Username is already used!");
       return;
     }
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
-    $newHash = Encryption::passwordHash($username, $newPass, $newSalt);
+    $newHash = Encryption::passwordHash($newPass, $newSalt);
     $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
     $FACTORIES::getUserFactory()->save($user);
     //$tmpl = new Template("email.creation");
@@ -141,7 +141,7 @@ class UsersHandler implements Handler {
     
     $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Session::IS_OPEN, "0");
-    $FACTORIES::getSessionFactory()->massUpdate(array('filter' => array($qF), 'update' => array($uS)));
+    $FACTORIES::getSessionFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
     $user->setIsValid(0);
     $FACTORIES::getUserFactory()->update($user);
     UI::addMessage("success", "User was disabled successfully!");
@@ -177,7 +177,7 @@ class UsersHandler implements Handler {
     
     $qF = new QueryFilter(Agent::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Agent::USER_ID, null);
-    $FACTORIES::getAgentFactory()->massUpdate(array('filter' => array($qF), 'update' => array($uS)));
+    $FACTORIES::getAgentFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
     $FACTORIES::getUserFactory()->delete($user);
     header("Location: users.php");
     die();

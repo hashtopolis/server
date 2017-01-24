@@ -274,4 +274,9 @@ class Factory {
       return self::$storedValueFactory;
     }
   }
+
+  const FILTER = "filter";
+  const JOIN = "join";
+  const ORDER = "order";
+  const UPDATE = "update";
 }

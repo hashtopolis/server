@@ -158,7 +158,7 @@ switch($STEP){
 			}
 			else{
 				$qF = new QueryFilter(RightGroup::GROUP_NAME, "Administrator", "=");
-				$group = $FACTORIES::getRightGroupFactory()->filter(array('filter' => array($qF)));
+				$group = $FACTORIES::getRightGroupFactory()->filter(array($FACTORIES::FILTER => array($qF)));
 				$group = $group[0];
 				$newSalt = Util::randomString(20);
 				$newHash = Encryption::passwordHash($password, $newSalt);

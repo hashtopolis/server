@@ -50,7 +50,7 @@ class SupertaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => $jF));
+    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $tasks = $joinedTasks['Task'];
     foreach ($tasks as $task) {
       $task = Util::cast($task, Task::class);
@@ -59,7 +59,7 @@ class SupertaskHandler implements Handler {
         continue;
       }
       $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
-      $taskFiles = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
+      $taskFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
       $task->setId(0);
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
@@ -109,7 +109,7 @@ class SupertaskHandler implements Handler {
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=");
-    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array('filter' => $qF));
+    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getSupertaskFactory()->delete($supertask);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage("success", "Supertask deleted successfully!");

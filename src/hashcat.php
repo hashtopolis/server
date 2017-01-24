@@ -30,7 +30,7 @@ if(isset($_GET['new'])){
   $TEMPLATE = new Template("hashcat/new");
   $MENU->setActive("hashcat_new");
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
-  $releases = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => $oF));
+  $releases = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => $oF));
   $rootDir = "";
   $common = "";
   if(sizeof($releases) > 0){
@@ -42,7 +42,7 @@ if(isset($_GET['new'])){
 }
 else{
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC");
-  $OBJECTS['releases'] = $FACTORIES::getHashcatReleaseFactory()->filter(array('order' => $oF));
+  $OBJECTS['releases'] = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => $oF));
 }
 
 echo $TEMPLATE->render($OBJECTS);

@@ -60,7 +60,7 @@ class HashtypeHandler implements Handler {
     }
     
     $qF = new QueryFilter(Hashlist::HASH_TYPE_ID, $hashtype->getId(), "=");
-    $hashlists = $FACTORIES::getHashlistFactory()->filter(array('filter' => array($qF)));
+    $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     if (sizeof($hashlists) > 0) {
       UI::addMessage("danger", "You cannot delete this hashtype! There are hashlists present which are of this type!");
       return;

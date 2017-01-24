@@ -16,6 +16,9 @@ use DBA\Task;
  *         Bunch of useful static functions.
  */
 class Util {
+  /**
+   * TODO: document me
+   */
   public static function cast($obj, $to_class) {
     if (class_exists($to_class)) {
       $obj_in = serialize($obj);
@@ -23,7 +26,7 @@ class Util {
       return unserialize($obj_out);
     }
     else {
-      return false;
+      return null;
     }
   }
   
@@ -96,7 +99,7 @@ class Util {
     //$jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
     //$jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
     $descOrder = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
-    $nextTask = $FACTORIES::getTaskFactory()->filter(array('filter' => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), 'join' => array($hashlistIDJoin), 'order' => array($descOrder)));
+    $nextTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
     if (sizeof($nextTask['Task']) > 0) {
       return $nextTask['Task'][0];
     }
@@ -178,7 +181,7 @@ class Util {
     if ($list->getFormat() == 3) {
       $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
       $superHashListFilter = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=");
-      $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array('join' => array($hashlistJoinFilter), 'filter' => array($superHashListFilter)));
+      $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::JOIN => $hashlistJoinFilter, $FACTORIES::FILTER => $superHashListFilter));
       $lists = $joined['Hashlist'];
       return $lists;
     }

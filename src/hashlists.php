@@ -43,7 +43,7 @@ else if (isset($_GET['id'])) {
   //show hashlist detail page
   $jF = new JoinFilter($FACTORIES::getHashTypeFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
   $qF = new QueryFilter(Hashlist::HASHLIST_ID, $_GET['id'], "=");
-  $joined = $FACTORIES::getHashlistFactory()->filter(array('join' => array($jF), 'filter' => array($qF)));
+  $joined = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::JOIN => array($jF), $FACTORIES::FILTER => array($qF)));
   if(sizeof($joined['Hashlist']) == 0){
     UI::printError("ERROR", "Hashlist not found!");
   }
@@ -54,7 +54,7 @@ else if (isset($_GET['id'])) {
   if ($list->getVal('hashlist')->getFormat() == 3) {
     $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), SuperHashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
     $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
-    $joined = $FACTORIES::getHashlistFactory()->filter(array('join' => array($jF), 'filter' => array($qF)));
+    $joined = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::JOIN => array($jF), $FACTORIES::FILTER => array($qF)));
     $sublists = array();
     for($x=0;$x<sizeof($joined['Hashlist']);$x++){
       $sublists[] = new DataSet(array('hashlist' => $joined['Hashlist'][$x], 'superhashlist' => $joined['SuperHashlist'][$x]));
@@ -64,12 +64,12 @@ else if (isset($_GET['id'])) {
   
   //load tasks assigned to hashlist
   $qF = new QueryFilter(Task::HASHLIST_ID, $list->getVal('hashlist')->getId(), "=");
-  $tasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF)));
+  $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
   $hashlistTasks = array();
   foreach($tasks as $task){
     $isActive = false;
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => array($qF)));
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     $sum = array('dispatched' => $task->getProgress(), 'searched' => 0, 'cracked' => 0);
     foreach($chunks as $chunk){
       $sum['searched'] += $chunk->getProgress();
@@ -85,7 +85,7 @@ else if (isset($_GET['id'])) {
   
   //load list of available preconfigured tasks
   $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
-  $preTasks = $FACTORIES::getTaskFactory()->filter(array('filter' => array($qF)));
+  $preTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
   $OBJECTS['preTasks'] = $preTasks;
   $TEMPLATE = new Template("hashlists/detail");
 }
@@ -93,7 +93,7 @@ else {
   //load all hashlists
   $jF = new JoinFilter($FACTORIES::getHashTypeFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
   $qF = new QueryFilter(Hashlist::FORMAT, "" . DHashlistFormat::SUPERHASHLIST, "<>", $FACTORIES::getHashlistFactory());
-  $joinedHashlists = $FACTORIES::getHashlistFactory()->filter(array('join' => $jF, 'filter' => $qF));
+  $joinedHashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
   $hashlists = array();
   for($x=0;$x<sizeof($joinedHashlists['Hashlist']);$x++){
     $hashlists[] = new DataSet(array('hashlist' => $joinedHashlists['Hashlist'][$x], 'hashtype' => $joinedHashlists['HashType'][$x]));

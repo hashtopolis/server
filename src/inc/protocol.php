@@ -8,8 +8,6 @@
 
 // protocol defines (these are started with 'P')
 
-
-
 #####################
 # Query definitions #
 #####################

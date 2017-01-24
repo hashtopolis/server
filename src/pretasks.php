@@ -27,7 +27,7 @@ $MENU->setActive("tasks_pre");
 $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
 $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
 $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
-$taskList = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'order' => array($oF1, $oF2)));
+$taskList = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
 $tasks = array();
 for($z=0;$z<sizeof($taskList);$z++){
   $set = new DataSet();
@@ -36,7 +36,7 @@ for($z=0;$z<sizeof($taskList);$z++){
   
   $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
   $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
-  $joinedFiles = $FACTORIES::getFileFactory()->filter(array('filter' => $qF, 'join' => $jF));
+  $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $sizes = 0;
   $secret = false;
   for($x=0;$x<sizeof($joinedFiles['File']);$x++){

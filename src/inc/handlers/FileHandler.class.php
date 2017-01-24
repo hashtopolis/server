@@ -154,7 +154,7 @@ class FileHandler implements Handler {
       UI::printError("ERROR", "File does not exist!");
     }
     $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=");
-    $tasks = $FACTORIES::getTaskFileFactory()->filter(array('filter' => $qF));
+    $tasks = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($tasks) > 0) {
       UI::addMessage("danger", "This file is currently used in a task!");
     }

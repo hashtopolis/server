@@ -19,7 +19,7 @@ if (isset($_POST['action'])) {
       $username = htmlentities(@$_POST['username'], false, "UTF-8");
       $email = @$_POST['email'];
       $qF = new QueryFilter(User::USERNAME, $username, "=");
-      $res = $FACTORIES::getUserFactory()->filter(array('filter' => array($qF)));
+      $res = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($qF)));
       if ($res == null || sizeof($res) == 0) {
         $message = "<div class='alert alert-danger'>No such user!</div>";
         break;

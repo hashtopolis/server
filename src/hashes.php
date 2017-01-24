@@ -71,7 +71,7 @@ else if (isset($_GET['chunk'])) {
   $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
   $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
   $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", $FACTORIES::getChunkFactory());
-  $joined = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF, 'join' => array($jF1, $jF2)));
+  $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => array($jF1, $jF2)));
   if(sizeof($joined['Chunk']) == null){
     UI::printError("ERROR", "Invalid chunk!");
   }
@@ -96,7 +96,7 @@ else if (isset($_GET['chunk'])) {
 else if (isset($_GET['task'])) {
   $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
   $qF = new QueryFilter(Task::TASK_ID, $_GET['task'], "=");
-  $joined = $FACTORIES::getTaskFactory()->filter(array('filter' => $qF, 'join' => array($jF)));
+  $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => array($jF)));
   if(sizeof($joined['Task']) == null){
     UI::printError("ERROR", "Invalid task!");
   }
@@ -114,7 +114,7 @@ else if (isset($_GET['task'])) {
     $binaryFormat = true;
   }
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  $chunks = $FACTORIES::getChunkFactory()->filter(array('filter' => $qF));
+  $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
   $chunkIds = array();
   foreach($chunks as $chunk){
     $chunkIds[] = $chunk->getId();
@@ -166,7 +166,7 @@ else if($filter == "uncracked"){
   $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, "0", "=");
 }
 
-$count = $hashFactory->countFilter(array('filter' => $queryFilters));
+$count = $hashFactory->countFilter(array($FACTORIES::FILTER => $queryFilters));
 $numPages = $count/1000;
 if($numPages*1000 != $count){
   $numPages++;
@@ -191,7 +191,7 @@ $OBJECTS['previousPage'] = $previousPage;
 $OBJECTS['currentPage'] = $currentPage;
 
 $oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT ".(1000*$currentPage).", 1000");
-$hashes = $hashFactory->filter(array('filter' => $queryFilters, 'order' => $oF));
+$hashes = $hashFactory->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => $oF));
 
 $output = "";
 foreach($hashes as $hash){

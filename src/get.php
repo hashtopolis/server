@@ -32,7 +32,7 @@ if (!$line) {
 if (!$LOGIN->isLoggedin()) {
   $token = @$_GET['token'];
   $qF = new QueryFilter(Agent::TOKEN, $token, "=");
-  $agent = $FACTORIES::getAgentFactory()->filter(array('filter' => $qF), true);
+  $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
   if (!$agent) {
     die("No access!");
   }
