@@ -37,7 +37,7 @@ class UsersHandler implements Handler {
         $this->create();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -49,21 +49,21 @@ class UsersHandler implements Handler {
     $email = $_POST['email'];
     $group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) == 0) {
-      UI::addMessage("danger", "Invalid email address!");
+      UI::addMessage(UI::ERROR, "Invalid email address!");
       return;
     }
     else if (strlen($username) < 2) {
-      UI::addMessage("danger", "Username is too short!");
+      UI::addMessage(UI::ERROR, "Username is too short!");
       return;
     }
     else if ($group == null) {
-      UI::addMessage("danger", "Invalid group!");
+      UI::addMessage(UI::ERROR, "Invalid group!");
       return;
     }
     $qF = new QueryFilter("username", $username, "=");
     $res = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     if ($res != null && sizeof($res) > 0) {
-      UI::addMessage("danger", "Username is already used!");
+      UI::addMessage(UI::ERROR, "Username is already used!");
       return;
     }
     $newPass = Util::randomString(10);
@@ -85,11 +85,11 @@ class UsersHandler implements Handler {
   
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
-      UI::addMessage("danger", "Invalid user!");
+      UI::addMessage(UI::ERROR, "Invalid user!");
       return;
     }
     else if ($user->getId() == $LOGIN->getUserID()) {
-      UI::addMessage("danger", "To change your own password go to your settings!");
+      UI::addMessage(UI::ERROR, "To change your own password go to your settings!");
       return;
     }
     
@@ -99,7 +99,7 @@ class UsersHandler implements Handler {
     $user->setPasswordSalt($newSalt);
     $user->setIsComputedPassword(0);
     $FACTORIES::getUserFactory()->update($user);
-    UI::addMessage("success", "User password was updated successfully!");
+    UI::addMessage(UI::SUCCESS, "User password was updated successfully!");
   }
   
   private function setRights(){
@@ -109,20 +109,20 @@ class UsersHandler implements Handler {
     $group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
-      UI::addMessage("danger", "Invalid user!");
+      UI::addMessage(UI::ERROR, "Invalid user!");
       return;
     }
     else if ($group == null) {
-      UI::addMessage("danger", "Invalid group!");
+      UI::addMessage(UI::ERROR, "Invalid group!");
       return;
     }
     else if ($user->getId() == $LOGIN->getUserID()) {
-      UI::addMessage("danger", "You cannot change your own rights!");
+      UI::addMessage(UI::ERROR, "You cannot change your own rights!");
       return;
     }
     $user->setRightGroupId($group->getId());
     $FACTORIES::getUserFactory()->update($user);
-    UI::addMessage("success", "Updated user rights successfully!");
+    UI::addMessage(UI::SUCCESS, "Updated user rights successfully!");
   }
   
   private function disable(){
@@ -131,11 +131,11 @@ class UsersHandler implements Handler {
     
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
-      UI::addMessage("danger", "Invalid user!");
+      UI::addMessage(UI::ERROR, "Invalid user!");
       return;
     }
     else if ($user->getId() == $LOGIN->getUserID()) {
-      UI::addMessage("danger", "You cannot disable yourself!");
+      UI::addMessage(UI::ERROR, "You cannot disable yourself!");
       return;
     }
     
@@ -144,7 +144,7 @@ class UsersHandler implements Handler {
     $FACTORIES::getSessionFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
     $user->setIsValid(0);
     $FACTORIES::getUserFactory()->update($user);
-    UI::addMessage("success", "User was disabled successfully!");
+    UI::addMessage(UI::SUCCESS, "User was disabled successfully!");
   }
   
   private function enable(){
@@ -152,13 +152,13 @@ class UsersHandler implements Handler {
   
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
-      UI::addMessage("danger", "Invalid user!");
+      UI::addMessage(UI::ERROR, "Invalid user!");
       return;
     }
     
     $user->setIsValid(1);
     $FACTORIES::getUserFactory()->update($user);
-    UI::addMessage("success", "User account enabled successfully!");
+    UI::addMessage(UI::SUCCESS, "User account enabled successfully!");
   }
   
   private function delete(){
@@ -167,11 +167,11 @@ class UsersHandler implements Handler {
   
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
-      UI::addMessage("danger", "Invalid user!");
+      UI::addMessage(UI::ERROR, "Invalid user!");
       return;
     }
     else if ($user->getId() == $LOGIN->getUserID()) {
-      UI::addMessage("danger", "You cannot delete yourself!");
+      UI::addMessage(UI::ERROR, "You cannot delete yourself!");
       return;
     }
     

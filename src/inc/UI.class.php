@@ -33,4 +33,8 @@ class UI {
     $OBJECTS['autorefresh'] = $delay;
     $OBJECTS['autorefreshUrl'] = $url;
   }
+  
+  const ERROR = "danger";
+  const SUCCESS = "success";
+  const WARN = "warning";
 }

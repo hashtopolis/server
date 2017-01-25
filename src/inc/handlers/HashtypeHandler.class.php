@@ -23,7 +23,7 @@ class HashtypeHandler implements Handler {
         $this->add();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -33,21 +33,21 @@ class HashtypeHandler implements Handler {
     
     $hashtype = $FACTORIES::getHashTypeFactory()->get($_POST['id']);
     if ($hashtype != null) {
-      UI::addMessage("danger", "This hash number is already used!");
+      UI::addMessage(UI::ERROR, "This hash number is already used!");
       return;
     }
     $desc = htmlentities($_POST['description']);
     if (strlen($desc) == 0 || $_POST['id'] < 0) {
-      UI::addMessage("danger", "Invalid inputs!");
+      UI::addMessage(UI::ERROR, "Invalid inputs!");
       return;
     }
     
     $hashtype = new HashType($_POST['id'], $desc);
     if (!$FACTORIES::getHashTypeFactory()->save($hashtype)) {
-      UI::addMessage("danger", "Failed to add new hash type!");
+      UI::addMessage(UI::ERROR, "Failed to add new hash type!");
       return;
     }
-    UI::addMessage("success", "New hashtype created successfully!");
+    UI::addMessage(UI::SUCCESS, "New hashtype created successfully!");
   }
   
   private function delete() {
@@ -55,18 +55,18 @@ class HashtypeHandler implements Handler {
     
     $hashtype = $FACTORIES::getHashTypeFactory()->get($_POST['type']);
     if ($hashtype == null) {
-      UI::addMessage("danger", "Invalid hashtype!");
+      UI::addMessage(UI::ERROR, "Invalid hashtype!");
       return;
     }
     
     $qF = new QueryFilter(Hashlist::HASH_TYPE_ID, $hashtype->getId(), "=");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     if (sizeof($hashlists) > 0) {
-      UI::addMessage("danger", "You cannot delete this hashtype! There are hashlists present which are of this type!");
+      UI::addMessage(UI::ERROR, "You cannot delete this hashtype! There are hashlists present which are of this type!");
       return;
     }
     
     $FACTORIES::getHashTypeFactory()->delete($hashtype);
-    UI::addMessage("success", "Hashtype was deleted successfully!");
+    UI::addMessage(UI::SUCCESS, "Hashtype was deleted successfully!");
   }
 }

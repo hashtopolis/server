@@ -34,7 +34,7 @@ class FileHandler implements Handler {
         $this->add();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -129,10 +129,10 @@ class FileHandler implements Handler {
         break;
     }
     if ($allok) {
-      UI::addMessage("success", "Successfully added $fileCount files!");
+      UI::addMessage(UI::SUCCESS, "Successfully added $fileCount files!");
     }
     else {
-      UI::addMessage("danger", "Something went wrong when adding files!");
+      UI::addMessage(UI::ERROR, "Something went wrong when adding files!");
     }
   }
   
@@ -156,12 +156,12 @@ class FileHandler implements Handler {
     $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=");
     $tasks = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($tasks) > 0) {
-      UI::addMessage("danger", "This file is currently used in a task!");
+      UI::addMessage(UI::ERROR, "This file is currently used in a task!");
     }
     else {
       $FACTORIES::getFileFactory()->delete($file);
       unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
-      UI::addMessage("success", "Successfully deleted file!");
+      UI::addMessage(UI::SUCCESS, "Successfully deleted file!");
     }
   }
 }

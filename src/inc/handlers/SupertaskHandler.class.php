@@ -29,7 +29,7 @@ class SupertaskHandler implements Handler {
         $this->createTasks();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -55,7 +55,7 @@ class SupertaskHandler implements Handler {
     foreach ($tasks as $task) {
       $task = Util::cast($task, Task::class);
       if (strpos($task->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-        UI::addMessage("warning", "Task must contain the hashlist alias for cracking!");
+        UI::addMessage(UI::WARN, "Task must contain the hashlist alias for cracking!");
         continue;
       }
       $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
@@ -74,7 +74,7 @@ class SupertaskHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    UI::addMessage("success", "New tasks created successfully!");
+    UI::addMessage(UI::SUCCESS, "New tasks created successfully!");
   }
   
   private function create() {
@@ -97,7 +97,7 @@ class SupertaskHandler implements Handler {
       $FACTORIES::getSupertaskTaskFactory()->save($supertaskTask);
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    UI::addMessage("success", "New supertask created successfully!");
+    UI::addMessage(UI::SUCCESS, "New supertask created successfully!");
   }
   
   private function delete() {
@@ -112,6 +112,6 @@ class SupertaskHandler implements Handler {
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getSupertaskFactory()->delete($supertask);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    UI::addMessage("success", "Supertask deleted successfully!");
+    UI::addMessage(UI::SUCCESS, "Supertask deleted successfully!");
   }
 }

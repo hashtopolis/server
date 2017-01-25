@@ -35,7 +35,7 @@ class ConfigHandler implements Handler {
         $this->clearAll();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -72,24 +72,24 @@ class ConfigHandler implements Handler {
     foreach ($files as $file) {
       $absolutePath = dirname(__FILE__) . "/../../files/" . $file->getFilename();
       if (!file_exists($absolutePath)) {
-        UI::addMessage("danger", "File " . $file->getFilename() . " does not exist!");
+        UI::addMessage(UI::ERROR, "File " . $file->getFilename() . " does not exist!");
         $allOk = false;
         continue;
       }
       $size = Util::filesize($absolutePath);
       if ($size == -1) {
         $allOk = false;
-        UI::addMessage("danger", "Failed to determine file size of " . $file->getFilename());
+        UI::addMessage(UI::ERROR, "Failed to determine file size of " . $file->getFilename());
       }
       else if ($size != $file->getSize()) {
         $allOk = false;
-        UI::addMessage("warning", "File size mismatch of " . $file->getFilename() . ", will be corrected.");
+        UI::addMessage(UI::WARN, "File size mismatch of " . $file->getFilename() . ", will be corrected.");
         $file->setSize($size);
         $FACTORIES::getFileFactory()->update($file);
       }
     }
     if ($allOk) {
-      UI::addMessage("success", "File scan was successfull, no actions required!");
+      UI::addMessage(UI::ERROR, "File scan was successfull, no actions required!");
     }
   }
   
@@ -166,7 +166,7 @@ class ConfigHandler implements Handler {
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
-    UI::addMessage("success", "Updated all chunks and hashlists. Corrected $correctedChunks chunks and $correctedHashlists hashlists.");
+    UI::addMessage(UI::SUCCESS, "Updated all chunks and hashlists. Corrected $correctedChunks chunks and $correctedHashlists hashlists.");
   }
   
   private function updateConfig() {

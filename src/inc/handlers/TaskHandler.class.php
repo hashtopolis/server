@@ -115,7 +115,7 @@ class TaskHandler implements Handler {
         $this->create();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -135,7 +135,7 @@ class TaskHandler implements Handler {
       $color = null;
     }
     if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-      UI::addMessage("danger", "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
+      UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }
     $hashlist = null;
@@ -150,7 +150,7 @@ class TaskHandler implements Handler {
     else {
       $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
       if ($hashlist <= 0) {
-        UI::addMessage("danger", "Invalid hashlist!");
+        UI::addMessage(UI::ERROR, "Invalid hashlist!");
         return;
       }
       $hashlistId = $hashlist->getId();
@@ -160,7 +160,7 @@ class TaskHandler implements Handler {
       $forward = "tasks.php";
     }
     if ($chunk < 0 || $status < 0 || $chunk < $status) {
-      UI::addMessage("danger", "Chunk time must be higher than status timer!");
+      UI::addMessage(UI::ERROR, "Chunk time must be higher than status timer!");
       return;
     }
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
@@ -186,7 +186,7 @@ class TaskHandler implements Handler {
     // change task priority
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
-      UI::addMessage("danger", "No such task!");
+      UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
     $pretask = false;
@@ -200,7 +200,7 @@ class TaskHandler implements Handler {
     $qF4 = new QueryFilter(Task::HASHLIST_ID, null, "<>");
     $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4)), true);
     if ($check != null) {
-      UI::addMessage("danger", "Priorities must be unique!");
+      UI::addMessage(UI::ERROR, "Priorities must be unique!");
       return;
     }
     $task->setPriority($priority);
@@ -220,7 +220,7 @@ class TaskHandler implements Handler {
     // delete a task
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
-      UI::addMessage("danger", "No such task!");
+      UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
@@ -284,7 +284,7 @@ class TaskHandler implements Handler {
     // change task name
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
-      UI::addMessage("danger", "No such task!");
+      UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
     $name = htmlentities($_POST["name"], false, "UTF-8");
@@ -298,7 +298,7 @@ class TaskHandler implements Handler {
     // update task chunk time
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
-      UI::addMessage("danger", "No such task!");
+      UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
     $chunktime = intval($_POST["chunktime"]);
@@ -322,7 +322,7 @@ class TaskHandler implements Handler {
     // enable agent benchmark autoadjust for all subsequent agents added to this task
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
-      UI::addMessage("danger", "No such task!");
+      UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
     $auto = intval(@$_POST["auto"]);
@@ -336,7 +336,7 @@ class TaskHandler implements Handler {
     // change task color
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
-      UI::addMessage("danger", "No such task!");
+      UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
     $color = $_POST["color"];
@@ -353,7 +353,7 @@ class TaskHandler implements Handler {
     // reset chunk state and progress to zero
     $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
     if ($chunk == null) {
-      UI::addMessage("danger", "No such chunk!");
+      UI::addMessage(UI::ERROR, "No such chunk!");
       return;
     }
     $chunk->setState(10);
@@ -366,7 +366,7 @@ class TaskHandler implements Handler {
     // reset chunk state and progress to zero
     $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
     if ($chunk == null) {
-      UI::addMessage("danger", "No such chunk!");
+      UI::addMessage(UI::ERROR, "No such chunk!");
       return;
     }
     $chunk->setState(0);
@@ -383,7 +383,7 @@ class TaskHandler implements Handler {
     // delete all task chunks, forget its keyspace value and reset progress to zero
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
-      UI::addMessage("danger", "No such task!");
+      UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
@@ -417,7 +417,7 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agent'], "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($assignment == null) {
-      UI::addMessage("danger", "No assignment for this agent!");
+      UI::addMessage(UI::ERROR, "No assignment for this agent!");
       return;
     }
     $FACTORIES::getAssignmentFactory()->update($assignment);
@@ -430,7 +430,7 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agent'], "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($assignment == null) {
-      UI::addMessage("danger", "No assignment for this agent!");
+      UI::addMessage(UI::ERROR, "No assignment for this agent!");
       return;
     }
     $bench = floatval($_POST["bench"]);

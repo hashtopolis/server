@@ -102,7 +102,7 @@ class HashlistHandler implements Handler {
         $this->createSuperhashlist();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -390,7 +390,7 @@ class HashlistHandler implements Handler {
     
     $file = new File(0, $tmpname, Util::filesize($tmpfile), $this->hashlist->getSecret(), 0);
     $FACTORIES::getFileFactory()->save($file);
-    UI::addMessage("success", "Cracked hashes from hashlist exported successfully!");
+    UI::addMessage(UI::SUCCESS, "Cracked hashes from hashlist exported successfully!");
   }
   
   private function delete() {
@@ -513,12 +513,12 @@ class HashlistHandler implements Handler {
     //put input into a temp file
     $tmpfile = dirname(__FILE__) . "/../../tmp/zaplist_" . $this->hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $sourcedata)) {
-      UI::addMessage("danger", "Failed to process file!");
+      UI::addMessage(UI::ERROR, "Failed to process file!");
       return;
     }
     $size = Util::filesize($tmpfile);
     if ($size == 0) {
-      UI::addMessage("danger", "File is empty!");
+      UI::addMessage(UI::ERROR, "File is empty!");
       return;
     }
     $file = fopen($tmpfile, "rb");
@@ -663,7 +663,7 @@ class HashlistHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    UI::addMessage("success", "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
+    UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
   }
   
   private function rename() {
@@ -764,7 +764,7 @@ class HashlistHandler implements Handler {
     //add file to files list
     $file = new File(0, $wordlistName, Util::filesize($wordlistFilename), $this->hashlist->getSecret(), 0);
     $FACTORIES::getFileFactory()->save($file);
-    UI::addMessage("success", "Exported $wordCount found plains to $wordlistName successfully!");
+    UI::addMessage(UI::SUCCESS, "Exported $wordCount found plains to $wordlistName successfully!");
   }
   
   private function preconf() {
@@ -816,11 +816,11 @@ class HashlistHandler implements Handler {
         }
       }
       if ($addCount > 0) {
-        UI::addMessage("success", "Successfully created $addCount new tasks with $fileCount files! You will be forward to the tasks page in 5 seconds.");
+        UI::addMessage(UI::SUCCESS, "Successfully created $addCount new tasks with $fileCount files! You will be forward to the tasks page in 5 seconds.");
         UI::setForward("tasks.php", 5);
       }
       else {
-        UI::addMessage("danger", "Didn't create any tasks!");
+        UI::addMessage(UI::ERROR, "Didn't create any tasks!");
       }
     }
   }

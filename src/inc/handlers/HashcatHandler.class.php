@@ -23,7 +23,7 @@ class HashcatHandler implements Handler {
         $this->newHashcat();
         break;
       default:
-        UI::addMessage("danger", "Invalid action!");
+        UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
   }
@@ -38,14 +38,14 @@ class HashcatHandler implements Handler {
     $common_files = str_replace("\r\n", "\n", $common_files);
     $rootdir = $_POST["rootdir"];
     if (strlen($version) == 0) {
-      UI::addMessage("danger", "You must specify a version!");
+      UI::addMessage(UI::ERROR, "You must specify a version!");
       return;
     }
     
     $hashcat = new HashcatRelease(0, $version, time(), $url, $common_files, $rootdir, 0);
     $hashcat = $FACTORIES::getHashcatReleaseFactory()->save($hashcat);
     if ($hashcat == null) {
-      UI::addMessage("danger", "Could not create new hashcat release!");
+      UI::addMessage(UI::ERROR, "Could not create new hashcat release!");
     }
     else {
       header("Location: hashcat.php");
@@ -62,7 +62,7 @@ class HashcatHandler implements Handler {
     $qF = new QueryFilter(Agent::HC_VERSION, $release->getVersion(), "=");
     $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($agents)) {
-      UI::addMessage("danger", "There are registered agents running this Hashcat version!");
+      UI::addMessage(UI::ERROR, "There are registered agents running this Hashcat version!");
       return;
     }
     $FACTORIES::getHashcatReleaseFactory()->delete($release);
