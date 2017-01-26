@@ -13,6 +13,7 @@ use DBA\HashcatRelease;
 use DBA\Hashlist;
 use DBA\HashlistAgent;
 use DBA\JoinFilter;
+use DBA\LogEntry;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\SuperHashlistHashlist;
@@ -148,7 +149,7 @@ class API {
    */
   private static function calculateChunkSize($benchmark, $tolerance = 1){
     /** @var DataSet $CONFIG */
-    global $CONFIG;
+    global $CONFIG, $QUERY, $FACTORIES;
     
     $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     if(strpos($benchmark, ":") === false){
@@ -183,7 +184,9 @@ class API {
     
     $chunkSize = $size*$tolerance;
     if($chunkSize <= 0){
-      $chunkSize = 1; //TODO: the question here is, if there should be an error logged somewhere or another number put here
+      $chunkSize = 1;
+      $entry = new LogEntry(0, "API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0!", time());
+      $FACTORIES::getLogEntryFactory()->save($entry);
     }
     
     return $chunkSize;
