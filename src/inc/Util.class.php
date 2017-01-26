@@ -3,6 +3,7 @@ use DBA\ComparisonFilter;
 use DBA\File;
 use DBA\Hashlist;
 use DBA\JoinFilter;
+use DBA\LogEntry;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\StoredValue;
@@ -28,6 +29,13 @@ class Util {
     else {
       return null;
     }
+  }
+  
+  public static function createLogEntry($issuer, $issuerId, $level, $message){
+    global $FACTORIES;
+    
+    $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
+    $FACTORIES::getLogEntryFactory()->save($entry);
   }
   
   /**
