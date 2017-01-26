@@ -23,11 +23,11 @@ $OBJECTS['version'] = $VERSION;
 $OBJECTS['host'] = $HOST;
 
 //START CONFIG
-$CONN['user'] = 'root';
-$CONN['pass'] = '';
-$CONN['server'] = '127.0.0.1';
-$CONN['db'] = 'hashtopussy';
-$CONN['installed'] = true; //set this to true if you config the mysql and setup manually
+$CONN['user'] = '__DBUSER__';
+$CONN['pass'] = '__DBPASS__';
+$CONN['server'] = '__DBSERVER__';
+$CONN['db'] = '__DBDB__';
+$CONN['installed'] = false; //set this to true if you config the mysql and setup manually
 //END CONFIG
 
 $INSTALL = "pending...";
