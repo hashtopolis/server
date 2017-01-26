@@ -148,7 +148,7 @@ class API {
    */
   private static function calculateChunkSize($benchmark, $tolerance = 1){
     /** @var DataSet $CONFIG */
-    global $CONFIG;
+    global $CONFIG, $QUERY;
     
     $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     if(strpos($benchmark, ":") === false){
@@ -181,7 +181,13 @@ class API {
       $size = $benchmark[0]*$factor;
     }
     
-    return $size*$tolerance;
+    $chunkSize = $size*$tolerance;
+    if($chunkSize <= 0){
+      $chunkSize = 1;
+      Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Caluclated chunk size was 0 on benchmark $benchmark!");
+    }
+    
+    return $chunkSize;
   }
   
   /**
@@ -209,6 +215,7 @@ class API {
     }
     else if($chunk->getProgress() == 0){
       //split chunk into two parts
+      $originalLength = $chunk->getLength();
       $firstPart = $chunk;
       $firstPart->setLength($agentChunkSize);
       $firstPart->setAgentId($agent->getId());
@@ -217,7 +224,7 @@ class API {
       $firstPart->setState(DHashcatStatus::INIT);
       $firstPart->setRprogress(0);
       $FACTORIES::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), null, 0, 0, 0, 0, DHashcatStatus::INIT, 0, 0);
+      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, 0, 0, DHashcatStatus::INIT, 0, 0);
       $FACTORIES::getChunkFactory()->save($secondPart);
       API::sendChunk($firstPart);
     }
