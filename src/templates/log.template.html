@@ -1,0 +1,25 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Log Entries</h2>
+{%TEMPLATE->struct/messages%}
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>Entry ID</th>
+			<th>Time</th>
+			<th>Level</th>
+			<th>Issuer</th>
+			<th>Message</th>
+		</tr>
+		{{FOREACH entry;[[entries]]}}
+			<tr>
+				<td>[[entry.getId()]]</td>
+				<td>[[date("d.m.Y - H:i:s", [[entry.getTime()]])]]</td>
+				<td>[[entry.getLevel()]]</td>
+				<td>[[entry.getIssuer()]]-ID[[entry.getIssuerId()]]</td>
+        <td>[[entry.getMessage()]]</td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+{%TEMPLATE->struct/foot%}

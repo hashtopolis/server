@@ -34,6 +34,7 @@ class Factory {
   private static $rightGroupFactory = null;
   private static $zapFactory = null;
   private static $storedValueFactory = null;
+  private static $logEntryFactory = null;
 
   public static function getAgentFactory() {
     if (self::$agentFactory == null) {
@@ -272,6 +273,16 @@ class Factory {
       return $f;
     } else {
       return self::$storedValueFactory;
+    }
+  }
+  
+  public static function getLogEntryFactory() {
+    if (self::$logEntryFactory == null) {
+      $f = new LogEntryFactory();
+      self::$logEntryFactory = $f;
+      return $f;
+    } else {
+      return self::$logEntryFactory;
     }
   }
 
