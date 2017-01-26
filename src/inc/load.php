@@ -56,6 +56,7 @@ foreach ($dir as $entry) {
 
 // DEFINES
 include(dirname(__FILE__)."/defines.php");
+include(dirname(__FILE__)."/protocol.php");
 
 // include DBA
 require_once(dirname(__FILE__)."/../dba/init.php");
