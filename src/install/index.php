@@ -172,7 +172,7 @@ switch($STEP){
 		$TEMPLATE = new Template("install/52");
 		echo $TEMPLATE->render(array('message' => $message));
 		break;
-	case 100: //here we start on the upgrade process
+	/*case 100: //here we start on the upgrade process
 		if(isset($_GET['next'])){
 			setcookie("step", "101", time() + 3600);
 			header("Location: index.php");
@@ -203,7 +203,7 @@ switch($STEP){
 		setcookie("prev", "", time() - 10);
 		$TEMPLATE = new Template("install/102");
 		echo $TEMPLATE->render(array());
-		break;
+		break;*/
 	default:
 		die("Some error with steps happened, please start again!");
 }
