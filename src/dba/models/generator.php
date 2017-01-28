@@ -201,6 +201,14 @@ $CONF['StoredValue'] = array(
   'storedValueId',
   'val'
 );
+$CONF['LogEntry'] = array(
+  'logEntryId',
+  'issuer',
+  'issuerId',
+  'level',
+  'message',
+  'time'
+);
 
 
 foreach ($CONF as $NAME => $COLUMNS) {

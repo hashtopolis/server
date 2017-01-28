@@ -135,6 +135,7 @@ class API {
     API::sendResponse(array(
       PResponseChunk::ACTION => PActions::TASK,
       PResponseChunk::RESPONSE => PValues::SUCCESS,
+      PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
       PResponseChunk::CHUNK_ID => $chunk->getId(),
       PResponseChunk::KEYSPACE_SKIP => $chunk->getSkip(),
       PResponseChunk::KEYSPACE_LENGTH => $chunk->getLength()
@@ -148,7 +149,7 @@ class API {
    */
   private static function calculateChunkSize($benchmark, $tolerance = 1){
     /** @var DataSet $CONFIG */
-    global $CONFIG;
+    global $CONFIG, $QUERY;
     
     $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     if(strpos($benchmark, ":") === false){
@@ -181,7 +182,13 @@ class API {
       $size = $benchmark[0]*$factor;
     }
     
-    return $size*$tolerance;
+    $chunkSize = $size*$tolerance;
+    if($chunkSize <= 0){
+      $chunkSize = 1;
+      Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Caluclated chunk size was 0 on benchmark $benchmark!");
+    }
+    
+    return $chunkSize;
   }
   
   /**
@@ -209,6 +216,7 @@ class API {
     }
     else if($chunk->getProgress() == 0){
       //split chunk into two parts
+      $originalLength = $chunk->getLength();
       $firstPart = $chunk;
       $firstPart->setLength($agentChunkSize);
       $firstPart->setAgentId($agent->getId());
@@ -217,7 +225,7 @@ class API {
       $firstPart->setState(DHashcatStatus::INIT);
       $firstPart->setRprogress(0);
       $FACTORIES::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $chunk->getLength() - $firstPart->getLength(), null, 0, 0, 0, 0, DHashcatStatus::INIT, 0, 0);
+      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, 0, 0, DHashcatStatus::INIT, 0, 0);
       $FACTORIES::getChunkFactory()->save($secondPart);
       API::sendChunk($firstPart);
     }
@@ -282,14 +290,14 @@ class API {
       API::sendResponse(array(
         PResponseChunk::ACTION => PActions::TASK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_ID => PValuesChunkType::KEYSPACE_REQUIRED
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
       ));
     }
     else if ($assignment->getBenchmark() == 0) {
       API::sendResponse(array(
         PResponseChunk::ACTION => PActions::TASK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_ID => PValuesChunkType::BENCHMARK_REQUIRED
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
       ));
     }
   
@@ -311,7 +319,7 @@ class API {
       API::sendResponse(array(
         PResponseChunk::ACTION => PActions::TASK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_ID => PValuesChunkType::FULLY_DISPATCHED
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
       ));
     }
   
@@ -350,7 +358,7 @@ class API {
     
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQuery::TOKEN], "=");
     $token = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-    if ($token != null) {
+    if ($token == null) {
       API::sendErrorResponse($action, "Invalid token!");
     }
   }
@@ -607,8 +615,7 @@ class API {
       PResponseFile::FILENAME => $filename,
       PResponseFile::EXTENSION => $extension,
       PResponseFile::RESPONSE => PValues::SUCCESS,
-      //TODO: make correct url here
-      PResponseFile::URL => "https://". $_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()
+      PResponseFile::URL => "get.php?file=" . $file->getId() . "&token=" . $agent->getToken()
     ));
   }
   
@@ -745,7 +752,7 @@ class API {
     }
     
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryTask::TOKEN], "=");
-    $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
+    $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($agent == null) {
       API::sendErrorResponse(PActions::TASK, "Invalid token!");
     }
