@@ -59,7 +59,7 @@ class Lang {
   
   public function render($text){
     $matches = array();
-    preg_match_all("/(___([a-zA-Z0-9\\-_]*?)___)/gmi", $text, $matches);
+    preg_match_all("/(___([a-zA-Z0-9\\-_]*?)___)/mis", $text, $matches);
     for($i=0;$i<sizeof($matches[0]);$i++){
       $toReplace = $matches[1][$i];
       $languageKey = $matches[2][$i];
