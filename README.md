@@ -1,5 +1,7 @@
 # Hashtopussy 
 
+<img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
+
 This is a wrapper for hashcat for distributed hashcracking, based on the source code of Hashtopus. 
 
 Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) to get more information on setup and upgrade.
