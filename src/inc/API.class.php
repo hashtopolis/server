@@ -357,7 +357,7 @@ class API {
     
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQuery::TOKEN], "=");
     $token = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-    if ($token != null) {
+    if ($token == null) {
       API::sendErrorResponse($action, "Invalid token!");
     }
   }
@@ -752,7 +752,7 @@ class API {
     }
     
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryTask::TOKEN], "=");
-    $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
+    $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($agent == null) {
       API::sendErrorResponse(PActions::TASK, "Invalid token!");
     }
