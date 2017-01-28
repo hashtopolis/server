@@ -135,6 +135,7 @@ class API {
     API::sendResponse(array(
       PResponseChunk::ACTION => PActions::TASK,
       PResponseChunk::RESPONSE => PValues::SUCCESS,
+      PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
       PResponseChunk::CHUNK_ID => $chunk->getId(),
       PResponseChunk::KEYSPACE_SKIP => $chunk->getSkip(),
       PResponseChunk::KEYSPACE_LENGTH => $chunk->getLength()
@@ -289,14 +290,14 @@ class API {
       API::sendResponse(array(
         PResponseChunk::ACTION => PActions::TASK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_ID => PValuesChunkType::KEYSPACE_REQUIRED
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
       ));
     }
     else if ($assignment->getBenchmark() == 0) {
       API::sendResponse(array(
         PResponseChunk::ACTION => PActions::TASK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_ID => PValuesChunkType::BENCHMARK_REQUIRED
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
       ));
     }
   
@@ -318,7 +319,7 @@ class API {
       API::sendResponse(array(
         PResponseChunk::ACTION => PActions::TASK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_ID => PValuesChunkType::FULLY_DISPATCHED
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
       ));
     }
   
