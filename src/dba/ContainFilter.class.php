@@ -22,11 +22,15 @@ class ContainFilter extends Filter {
     if ($table != "") {
       $table = $table . ".";
     }
-    return $table . $this->key . " IN ?";
+    $app = array();
+    for($x = 0;$x<sizeof($this->values);$x++){
+      $app[] = "?";
+    }
+    return $table . $this->key . " IN (".implode(",", $app).")";
   }
   
   function getValue() {
-    return implode(",", $this->values);
+    return $this->values;
   }
   
   function getHasValue() {
