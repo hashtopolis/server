@@ -269,7 +269,8 @@ class TaskHandler implements Handler {
     // delete finished tasks
     $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
     $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $qF3 = new QueryFilter(Task::PRIORITY, 0, "="); //TODO: technically we need to check if all chunks of this task got finished
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     foreach ($tasks as $task) {
