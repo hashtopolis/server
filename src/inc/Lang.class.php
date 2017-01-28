@@ -63,7 +63,7 @@ class Lang {
     for($i=0;$i<sizeof($matches[0]);$i++){
       $toReplace = $matches[1][$i];
       $languageKey = str_replace("___", "", $matches[1][$i]);
-      str_replace($toReplace, $this->getText($languageKey), $text);
+      $text = str_replace($toReplace, $this->getText($languageKey), $text);
     }
     return $text;
   }
