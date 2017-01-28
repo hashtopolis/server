@@ -29,7 +29,8 @@ class HashcatHandler implements Handler {
   }
   
   private static function newHashcat() {
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
     
     // new hashcat release
     $version = $_POST["version"];
@@ -48,6 +49,7 @@ class HashcatHandler implements Handler {
       UI::addMessage(UI::ERROR, "Could not create new hashcat release!");
     }
     else {
+      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New hashcat release was created: " . $version);
       header("Location: hashcat.php");
       die();
     }

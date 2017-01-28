@@ -234,6 +234,7 @@ class TaskHandler implements Handler {
   
   /**
    * @param $task Task
+   * @param bool $onlyFinished set to true if deletion only should be applied if the task is completely finished
    */
   private function deleteTask($task, $onlyFinished = false) {
     global $FACTORIES;

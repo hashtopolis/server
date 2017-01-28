@@ -43,7 +43,8 @@ class UsersHandler implements Handler {
   }
   
   private function create(){
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
   
     $username = htmlentities($_POST['username'], false, "UTF-8");
     $email = $_POST['email'];
@@ -75,6 +76,7 @@ class UsersHandler implements Handler {
     //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
     //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
     //TODO: send proper email for created user
+    Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New User created: " . $user->getUsername());
     header("Location: users.php");
     die();
   }
