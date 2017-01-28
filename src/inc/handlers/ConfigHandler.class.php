@@ -91,7 +91,7 @@ class ConfigHandler implements Handler {
       }
     }
     if ($allOk) {
-      UI::addMessage(UI::ERROR, "File scan was successfull, no actions required!");
+      UI::addMessage(UI::SUCCESS, "File scan was successfull, no actions required!");
     }
   }
   
@@ -110,9 +110,9 @@ class ConfigHandler implements Handler {
       $chunk = Util::cast($joined['Chunk'][$i], Chunk::class);
       $hashlist = Util::cast($joined['Hashlist'][$i], Hashlist::class);
       $hashFactory = $FACTORIES::getHashFactory();
-      if ($hashlist->getFormat() == 3) {
+      if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
         $hashlists = Util::checkSuperHashlist($hashlist);
-        if (Util::cast($hashlists[0], Hashlist::class)->getFormat() != 0) {
+        if (Util::cast($hashlists[0], Hashlist::class)->getFormat() != DHashlistFormat::PLAIN) {
           $hashFactory = $FACTORIES::getHashBinaryFactory();
         }
       }
@@ -136,7 +136,7 @@ class ConfigHandler implements Handler {
       $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
       $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
       $hashFactory = $FACTORIES::getHashFactory();
-      if ($hashlist->getFormat() != 0) {
+      if ($hashlist->getFormat() != DHashlistFormat::PLAIN) {
         $hashFactory = $FACTORIES::getHashBinaryFactory();
       }
       $count = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
