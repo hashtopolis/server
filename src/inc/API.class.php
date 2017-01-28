@@ -614,8 +614,7 @@ class API {
       PResponseFile::FILENAME => $filename,
       PResponseFile::EXTENSION => $extension,
       PResponseFile::RESPONSE => PValues::SUCCESS,
-      //TODO: make correct url here
-      PResponseFile::URL => "https://". $_SERVER['HTTP_HOST'].'/src/get.php?file=' . $file->getId() . "&token=" . $agent->getToken()
+      PResponseFile::URL => "get.php?file=" . $file->getId() . "&token=" . $agent->getToken()
     ));
   }
   
