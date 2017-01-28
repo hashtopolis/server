@@ -235,9 +235,20 @@ class TaskHandler implements Handler {
   /**
    * @param $task Task
    */
-  private function deleteTask($task) {
+  private function deleteTask($task, $onlyFinished = false) {
     global $FACTORIES;
     
+    
+    $uS = new UpdateSet(Hash::CHUNK_ID, null);
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $chunkIds = array();
+    foreach ($chunks as $chunk) {
+      if($chunk->getRprogress() != 10000 && $onlyFinished){
+        return; //if at least one chunk is not finished, we should not delete this task
+      }
+      $chunkIds[] = $chunk->getId();
+    }
     $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
@@ -246,14 +257,6 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
     $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $uS = new UpdateSet(Hash::CHUNK_ID, null);
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $chunkIds = array();
-    foreach ($chunks as $chunk) {
-      $chunk = Util::cast($chunk, Chunk::class);
-      $chunkIds[] = $chunk->getId();
-    }
     if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
@@ -269,12 +272,11 @@ class TaskHandler implements Handler {
     // delete finished tasks
     $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
     $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "=");
-    $qF3 = new QueryFilter(Task::PRIORITY, 0, "="); //TODO: technically we need to check if all chunks of this task got finished
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     foreach ($tasks as $task) {
-      $this->deleteTask($task);
+      $this->deleteTask($task, true);
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
