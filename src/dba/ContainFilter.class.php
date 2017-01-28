@@ -34,6 +34,6 @@ class ContainFilter extends Filter {
   }
   
   function getHasValue() {
-    return false;
+    return true;
   }
 }
