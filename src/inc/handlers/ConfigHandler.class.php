@@ -91,7 +91,7 @@ class ConfigHandler implements Handler {
       }
     }
     if ($allOk) {
-      UI::addMessage(UI::ERROR, "File scan was successfull, no actions required!");
+      UI::addMessage(UI::SUCCESS, "File scan was successfull, no actions required!");
     }
   }
   
