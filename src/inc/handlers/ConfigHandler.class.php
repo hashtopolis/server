@@ -41,7 +41,8 @@ class ConfigHandler implements Handler {
   }
   
   private function clearAll() {
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $FACTORIES::getHashFactory()->massDeletion(array());
@@ -62,6 +63,7 @@ class ConfigHandler implements Handler {
     $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getHashlistFactory()->massDeletion(array());
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    Util::createLogEntry("User", $LOGIN->getUserID(), "WARN", "Complete clear was executed!");
   }
   
   private function scanFiles() {

@@ -148,7 +148,8 @@ class HashlistHandler implements Handler {
   }
   
   private function create() {
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
     
     $name = htmlentities($_POST["name"], false, "UTF-8");
     $salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1) ? "1" : "0";
@@ -263,6 +264,7 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+        Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashlist created: " . $this->hashlist->getHashlistName());
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
         break;
@@ -294,6 +296,7 @@ class HashlistHandler implements Handler {
         unlink($tmpfile);
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
+        Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashlist created: " . $this->hashlist->getHashlistName());
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
       case 2:
@@ -306,6 +309,7 @@ class HashlistHandler implements Handler {
         unlink($tmpfile);
         $this->hashlist->setHashCount(1);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
+        Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashlist created: " . $this->hashlist->getHashlistName());
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
     }

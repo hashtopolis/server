@@ -130,7 +130,7 @@ class AgentHandler implements Handler {
     $benchmark = 0;
     $qF1 = new ComparisonFilter(Chunk::SOLVE_TIME, Chunk::DISPATCH_TIME, ">");
     $qF2 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "=");
-    $qF3 = new ContainFilter(Chunk::STATE, array("4", "5"));
+    $qF3 = new ContainFilter(Chunk::STATE, array(DHashcatStatus::EXHAUSTED, DHashcatStatus::CRACKED));
     $qF4 = new QueryFilter(Chunk::AGENT_ID, $this->agent->getId(), "=");
     $qF5 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
@@ -161,11 +161,13 @@ class AgentHandler implements Handler {
   }
   
   private function delete() {
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     if ($this->deleteDependencies($this->agent)) {
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "Agent " . $this->agent->getAgentName() . " got deleted.");
     }
     else {
       $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");

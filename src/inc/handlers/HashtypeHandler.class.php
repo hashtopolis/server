@@ -29,7 +29,8 @@ class HashtypeHandler implements Handler {
   }
   
   private function add() {
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
     
     $hashtype = $FACTORIES::getHashTypeFactory()->get($_POST['id']);
     if ($hashtype != null) {
@@ -47,6 +48,7 @@ class HashtypeHandler implements Handler {
       UI::addMessage(UI::ERROR, "Failed to add new hash type!");
       return;
     }
+    Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashtype added: " . $hashtype->getDescription());
     UI::addMessage(UI::SUCCESS, "New hashtype created successfully!");
   }
   
