@@ -45,16 +45,27 @@ class Lang {
       if (in_array($_GET['setlang'], $this->available)) {
         $this->language = $_GET['setlang'];
         $this->array = $this->langArr["" . $this->language];
-        setcookie("lang", $this->language, time() + 86400);
+        setcookie("htp_lang", $this->language, time() + 86400);
       }
     }
-    else if (isset($_COOKIE['bricky_lang'])) {
-      if (in_array($_COOKIE['bricky_lang'], $this->available)) {
-        $this->language = $_COOKIE['lang'];
+    else if (isset($_COOKIE['htp_lang'])) {
+      if (in_array($_COOKIE['htp_lang'], $this->available)) {
+        $this->language = $_COOKIE['htp_lang'];
         $this->array = $this->langArr[$this->language];
-        setcookie("bricky_lang", $this->language, time() + 86400);
+        setcookie("htp_lang", $this->language, time() + 86400);
       }
     }
+  }
+  
+  public function render($text){
+    $matches = array();
+    preg_match_all("/(___([a-zA-Z0-9\\-_]*?)___)/gmi", $text, $matches);
+    for($i=0;$i<sizeof($matches[0]);$i++){
+      $toReplace = $matches[1][$i];
+      $languageKey = $matches[2][$i];
+      str_replace($toReplace, $this->getText($languageKey), $text);
+    }
+    return $text;
   }
   
   /**
@@ -91,7 +102,7 @@ class Lang {
       if (isset($this->langArr[$this->defaultLanguage][$key])) {
         return $this->langArr[$this->defaultLanguage][$key];
       }
-      return "__" . $key . "__";
+      return "___" . $key . "___";
     }
   }
   
