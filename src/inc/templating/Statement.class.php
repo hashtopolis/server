@@ -21,6 +21,8 @@ class Statement {
   }
   
   public function render($objects){
+    global $LANG;
+    
     $output = "";
     switch($this->statementType){
       case 'IF': //setting -> array(condition, else position)
@@ -72,7 +74,7 @@ class Statement {
         }
         break;
       case 'CONTENT': //setting -> nothing
-        $output .= $this->renderContent($this->content, $objects);
+        $output .= $LANG->render($this->renderContent($this->content, $objects));
         break;
       default:
         UI::printFatalError("Unknown Statement '".$this->statementType."'!");
