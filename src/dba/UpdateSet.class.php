@@ -13,6 +13,9 @@ class UpdateSet {
   }
   
   function getValue() {
+    if($this->value === null){
+      return "NULL";
+    }
     return $this->value;
   }
 }
