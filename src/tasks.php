@@ -234,9 +234,9 @@ else if (isset($_GET['new'])) {
   $MENU->setActive("tasks_new");
   $orig = 0;
   $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0);
-  if (isset($_POST["copy"])) {
+  if (isset($_GET["copy"])) {
     //copied from a task
-    $copy = $FACTORIES::getTaskFactory()->get($_POST['copy']);
+    $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
     if($copy != null){
       $orig = $copy->getId();
       $copy->setId(0);
