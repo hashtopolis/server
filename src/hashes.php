@@ -84,9 +84,11 @@ else if (isset($_GET['chunk'])) {
   }
   if($hashlist->getFormat() == DHashlistFormat::PLAIN){
     $hashFactory = $FACTORIES::getHashFactory();
+    $hashClass = \DBA\Hash::class;
   }
   else{
     $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $hashClass = \DBA\HashBinary::class;
     $binaryFormat = true;
   }
   $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
@@ -108,10 +110,12 @@ else if (isset($_GET['task'])) {
   }
   if($hashlist->getFormat() == DHashlistFormat::PLAIN){
     $hashFactory = $FACTORIES::getHashFactory();
+    $hashClass = \DBA\Hash::class;
   }
   else{
     $hashFactory = $FACTORIES::getHashBinaryFactory();
     $binaryFormat = true;
+    $hashClass = \DBA\HashBinary::class;
   }
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
