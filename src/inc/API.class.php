@@ -75,7 +75,7 @@ class API {
           API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
-        $benchmark = floor($benchmark/$CONFIG->getVal(DConfig::BENCHMARK_TIME)*100);
+        $benchmark = $benchmark/$CONFIG->getVal(DConfig::BENCHMARK_TIME)*100;
         break;
       default:
         $agent->setIsActive(0);
