@@ -75,7 +75,7 @@ class API {
           API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
-        $benchmark = floor($benchmark/$CONFIG->getVal(DConfig::BENCHMARK_TIME)*100);
+        $benchmark = $benchmark/$CONFIG->getVal(DConfig::BENCHMARK_TIME)*100;
         break;
       default:
         $agent->setIsActive(0);
@@ -133,12 +133,12 @@ class API {
     global $FACTORIES;
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     API::sendResponse(array(
-      PResponseChunk::ACTION => PActions::TASK,
+      PResponseChunk::ACTION => PActions::CHUNK,
       PResponseChunk::RESPONSE => PValues::SUCCESS,
       PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
-      PResponseChunk::CHUNK_ID => $chunk->getId(),
-      PResponseChunk::KEYSPACE_SKIP => $chunk->getSkip(),
-      PResponseChunk::KEYSPACE_LENGTH => $chunk->getLength()
+      PResponseChunk::CHUNK_ID => (int)($chunk->getId()),
+      PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
+      PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
     ));
   }
   
