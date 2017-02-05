@@ -70,6 +70,11 @@ exec("cd '".dirname(__FILE__)."/../' && git rev-parse HEAD", $out);
 if (isset($out[0])) {
   $gitcommit = substr($out[0], 0, 7);
 }
+$out = array();
+exec("cd '".dirname(__FILE__)."/../' && git rev-parse --abbrev-ref HEAD", $out);
+if (isset($out[0])) {
+  $gitcommit .= $out[0];
+}
 $OBJECTS['gitcommit'] = $gitcommit;
 
 $LOGIN = null;
