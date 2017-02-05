@@ -137,8 +137,8 @@ class API {
       PResponseChunk::RESPONSE => PValues::SUCCESS,
       PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
       PResponseChunk::CHUNK_ID => $chunk->getId(),
-      PResponseChunk::KEYSPACE_SKIP => $chunk->getSkip(),
-      PResponseChunk::KEYSPACE_LENGTH => $chunk->getLength()
+      PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
+      PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
     ));
   }
   
