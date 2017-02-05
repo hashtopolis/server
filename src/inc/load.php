@@ -73,7 +73,7 @@ if (isset($out[0])) {
 $out = array();
 exec("cd '".dirname(__FILE__)."/../' && git rev-parse --abbrev-ref HEAD", $out);
 if (isset($out[0])) {
-  $gitcommit .= $out[0];
+  $gitcommit .= " branch " . $out[0];
 }
 $OBJECTS['gitcommit'] = $gitcommit;
 
