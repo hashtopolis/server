@@ -133,10 +133,10 @@ class API {
     global $FACTORIES;
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     API::sendResponse(array(
-      PResponseChunk::ACTION => PActions::TASK,
+      PResponseChunk::ACTION => PActions::CHUNK,
       PResponseChunk::RESPONSE => PValues::SUCCESS,
       PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
-      PResponseChunk::CHUNK_ID => $chunk->getId(),
+      PResponseChunk::CHUNK_ID => (int)($chunk->getId()),
       PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
       PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
     ));
