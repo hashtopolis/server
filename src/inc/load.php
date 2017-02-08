@@ -1,11 +1,12 @@
 <?php
 
-//set to 1 for debugging
 use DBA\Factory;
 
+//set to 1 for debugging
 ini_set("display_errors", "1");
 
 //is required for running well with php7
+//TODO: check if this is still a problem
 ini_set('pcre.jit', '0');
 
 $OBJECTS = array();
@@ -16,6 +17,7 @@ if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
 }
 
+//TODO: this script stuff needs to be removed!
 $SCRIPTVERSION = "0.1.0 ALPHA";
 $SCRIPTNAME = "hashtopussy.php";
 
@@ -30,9 +32,9 @@ $CONN['db'] = '__DBDB__';
 $CONN['installed'] = false; //set this to true if you config the mysql and setup manually
 //END CONFIG
 
-$INSTALL = "pending...";
+$INSTALL = false;
 if ($CONN['installed']) {
-  $INSTALL = "DONE";
+  $INSTALL = true;
 }
 
 // include all .class.php files in inc dir
@@ -81,7 +83,7 @@ $LOGIN = null;
 $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
 $OBJECTS['messages'] = array();
-if ($INSTALL == 'DONE') {
+if ($INSTALL) {
   $LOGIN = new Login();
   $OBJECTS['login'] = $LOGIN;
   if ($LOGIN->isLoggedin()) {

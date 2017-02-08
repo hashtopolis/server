@@ -19,7 +19,7 @@ require_once(dirname(__FILE__) . "/../inc/load.php");
 
 $write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
 
-if($INSTALL == 'DONE'){
+if($INSTALL){
 	die("Installation is already done!");
 }
 

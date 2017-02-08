@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
-if ($INSTALL != 'DONE') {
+if (!$INSTALL) {
   header("Location: install/");
   die("Forward to <a href='install'>Install</a>");
 }
