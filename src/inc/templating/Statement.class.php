@@ -188,7 +188,7 @@ class Statement {
       }
     }
     else {
-      return null;
+      return "false";
     }
   }
 }
