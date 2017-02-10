@@ -165,6 +165,10 @@ class AgentHandler implements Handler {
     global $FACTORIES, $LOGIN;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+    if ($this->agent == null) {
+      UI::printError("FATAL", "Agent with ID " . $_POST['agent'] . " not found!");
+    }
     $name = $this->agent->getAgentName();
     if ($this->deleteDependencies($this->agent)) {
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
