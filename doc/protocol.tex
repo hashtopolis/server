@@ -104,7 +104,14 @@
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
-	This will result in a non-JSON response. The server will simply provide the corresponding 7z binary for the agent as download.\\
+	The server then will send a base64 encoded binary (attribute 'executable') encapsulated in JSON:
+	\begin{verbatim}
+	{
+	  "action":"download",
+	  "response":"SUCCESS",
+	  "executable":"a2prbGhqa2doa.....2xrZTNnNDM0Zw=="
+	}
+	\end{verbatim}
 	To check if a new Hashcat binary is available, following command is used.
 	\begin{verbatim}
 	{

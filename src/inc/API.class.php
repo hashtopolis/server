@@ -481,11 +481,13 @@ class API {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
         $filename = "7zr" . (($agent->getOs() == DOperatingSystem::WINDOWS) ? ".exe" : "");
-        header_remove("Content-Type");
-        header('Content-Type: application/octet-stream');
-        header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-        echo file_get_contents(dirname(__FILE__) . "/../static/" . $filename);
-        die();
+        $content = file_get_contents(dirname(__FILE__) . "/../static/" . $filename);
+        API::sendResponse(array(
+          PResponseDownload::ACTION => PActions::DOWNLOAD,
+          PResponseDownload::RESPONSE => PValues::SUCCESS,
+          PResponseDownload::EXECUTABLE => base64_encode($content)
+        ));
+        break;
       case PValuesDownloadBinaryType::HASHCAT:
         $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
         $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
@@ -688,7 +690,7 @@ class API {
         header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
           $limit = 0;
-          $size = 50000;
+          $size = 50000; //TODO: make this configurable
           do {
             $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
             $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list, "=");
