@@ -7,6 +7,7 @@ use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\HashBinary;
+use DBA\HashlistAgent;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
@@ -209,6 +210,8 @@ class AgentHandler implements Handler {
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(HashlistAgent::AGENT_ID, $agent->getId(), "=");
+    $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     //TODO: delete from Zap
     $uS = new UpdateSet(Chunk::CHUNK_ID, null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
