@@ -7,6 +7,7 @@ use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\HashBinary;
+use DBA\HashlistAgent;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
@@ -165,9 +166,14 @@ class AgentHandler implements Handler {
     global $FACTORIES, $LOGIN;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+    if ($this->agent == null) {
+      UI::printError("FATAL", "Agent with ID " . $_POST['agent'] . " not found!");
+    }
+    $name = $this->agent->getAgentName();
     if ($this->deleteDependencies($this->agent)) {
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "Agent " . $this->agent->getAgentName() . " got deleted.");
+      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "Agent " . $name . " got deleted.");
     }
     else {
       $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
@@ -204,6 +210,8 @@ class AgentHandler implements Handler {
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(HashlistAgent::AGENT_ID, $agent->getId(), "=");
+    $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     //TODO: delete from Zap
     $uS = new UpdateSet(Chunk::CHUNK_ID, null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
