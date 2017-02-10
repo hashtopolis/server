@@ -165,9 +165,10 @@ class AgentHandler implements Handler {
     global $FACTORIES, $LOGIN;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $name = $this->agent->getAgentName();
     if ($this->deleteDependencies($this->agent)) {
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "Agent " . $this->agent->getAgentName() . " got deleted.");
+      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "Agent " . $name . " got deleted.");
     }
     else {
       $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
