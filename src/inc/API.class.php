@@ -985,10 +985,6 @@ class API {
       $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
       switch ($format) {
         case DHashlistFormat::PLAIN:
-          //TODO search for hash in DB
-          //get salt
-          //replace hash + salt from the line -> plaintext remains
-          // save regular password
           $hashFilter = new QueryFilter(Hash::HASH, $splitLine[0], "=");
           $hashListFilter = new ContainFilter(Hash::HASHLIST_ID, $hlistarIds);
           $isCrackedFilter = new QueryFilter(Hash::IS_CRACKED, 0, "=");
