@@ -595,7 +595,7 @@ abstract class AbstractModelFactory {
     $vals = array();
     
     if (array_key_exists("filter", $options)) {
-      $query = $this->applyFilters($vals, $this->getFilters($options));
+      $query .= $this->applyFilters($vals, $this->getFilters($options));
     }
     
     $dbh = $this->getDB();
