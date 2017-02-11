@@ -6,6 +6,7 @@ use DBA\File;
 use DBA\Hash;
 use DBA\HashBinary;
 use DBA\Hashlist;
+use DBA\HashlistAgent;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -439,6 +440,8 @@ class HashlistHandler implements Handler {
     foreach ($tasks as $task) {
       $FACTORIES::getTaskFactory()->delete($task);
     }
+    $qF = new ContainFilter(HashlistAgent::HASHLIST_ID, $this->hashlist->getId());
+    $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
