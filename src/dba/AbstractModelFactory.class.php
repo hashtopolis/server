@@ -595,23 +595,7 @@ abstract class AbstractModelFactory {
     $vals = array();
     
     if (array_key_exists("filter", $options)) {
-      $query = $query . " WHERE ";
-      
-      
-      $filterOptions = $this->getFilters($options);
-      $vals = array();
-      
-      for ($i = 0; $i < count($filterOptions); $i++) {
-        $option = $filterOptions[$i];
-        array_push($vals, $option->getValue());
-        
-        if ($i != count($filterOptions) - 1) {
-          $query = $query . $option->getQueryString() . " AND ";
-        }
-        else {
-          $query = $query . $option->getQueryString();
-        }
-      }
+      $query = $this->applyFilters($vals, $this->getFilters($options));
     }
     
     $dbh = $this->getDB();
