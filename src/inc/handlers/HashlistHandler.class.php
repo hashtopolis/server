@@ -450,7 +450,7 @@ class HashlistHandler implements Handler {
           $qF = new QueryFilter(Hash::HASHLIST_ID, $this->hashlist->getId(), "=");
           $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
           while ($deleted > 0) {
-            $result = Util::cast($FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF))), PDOStatement::class);
+            $result = $FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)));
             $deleted = $result->rowCount();
             $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
             $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
