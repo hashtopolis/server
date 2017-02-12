@@ -1093,6 +1093,7 @@ class API {
     
     if($aborting){
       $chunk->setSpeed(0);
+      $chunk->setState(DHashcatStatus::ABORTED);
       $FACTORIES::getChunkFactory()->update($chunk);
       API::sendErrorResponse(PActions::SOLVE, "Chunk was aborted!");
     }
