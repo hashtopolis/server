@@ -881,9 +881,9 @@ class API {
     $keyspaceProgress = $QUERY[PQuerySolve::KEYSPACE_PROGRESS];
     
     $combinationProgress = floatval($QUERY[PQuerySolve::COMBINATION_PROGRESS]);      //Normalized between 1-10k
-    $combinationTotal = floatval($QUERY[PQuerySolve::COMBINATION_TOTAL]);           //TODO Not sure what this variable does
+    $combinationTotal = floatval($QUERY[PQuerySolve::COMBINATION_TOTAL]);
     $speed = floatval($QUERY[PQuerySolve::SPEED]);
-    $state = intval($QUERY[PQuerySolve::HASHCAT_STATE]);     //Util::getStaticArray($states, $state)
+    $state = intval($QUERY[PQuerySolve::HASHCAT_STATE]);
     
     /**
      * This part sends a lot of DB-Requests. It may need to be optimized in the future.
@@ -1106,12 +1106,14 @@ class API {
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
         // deprioritize all tasks and unassign all agents
+        $chunk->setProgress($chunk->getLength());
+        $chunk->setRprogress(10000);
+        $chunk->setSpeed(0);
+        $FACTORIES::getChunkFactory()->update($chunk);
+        
         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
-        
-        $chunk->setSpeed(0);
-        $FACTORIES::getChunkFactory()->update($chunk);
         
         //TODO: notificate hashList done
         break;
