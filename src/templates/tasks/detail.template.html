@@ -393,10 +393,10 @@
             {{ENDIF}}
           </td>
           <td class="num">[[Util::sectotime([[agentsSpent.getVal([[agent.getId()]])]])]]</td>
-          <td class="num">[[agentsCracked([[agent.getId()]])]]</td>
+          <td class="num">[[agentsCracked.getVal([[agent.getId()]])]]</td>
           <td>
             {{IF [[agent.getLastAct()]] > 0}}
-              [[date([[config.getVal('timefmt')]], [[agent.getLastAct()]])]]
+              [[date([[config.getVal('timefmt')]], [[agent.getLastTime()]])]]
             {{ENDIF}}
           </td>
         </tr>
