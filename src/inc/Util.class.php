@@ -310,8 +310,8 @@ class Util {
       "CPU"
     );
     $oses = array(
-      "<img src='static/win.png' alt='Win' title='Windows'>",
-      "<img src='static/unix.png' alt='Unix' title='Linux'>"
+      "<img src='static/unix.png' alt='Unix' title='Linux'>",
+      "<img src='static/win.png' alt='Win' title='Windows'>"
     );
     $formats = array(
       "Text",
