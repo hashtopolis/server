@@ -148,7 +148,6 @@ class AgentHandler implements Handler {
       $assignment = Util::cast($assignments[0], Assignment::class);
       $assignment->setTaskId($task->getId());
       $assignment->setBenchmark($benchmark);
-      $assignment->setautoAdjust($task->getAutoAdjust());
       $FACTORIES::getAssignmentFactory()->update($assignment);
     }
     else {
