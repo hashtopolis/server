@@ -388,15 +388,15 @@
           </td>
           <td class="num">
             {{IF [[task.getKeyspace()]] > 0}}
-              [[agentsProgress.getVal([[agent.getVal()]])]]
-              ([[Util::showperc([[agentsProgress.getVal([[agent.getVal()]])]], [[task.getKeyspace()]])]]%)
+              [[agentsProgress.getVal([[agent.getId()]])]]
+              ([[Util::showperc([[agentsProgress.getVal([[agent.getId()]])]], [[task.getKeyspace()]])]]%)
             {{ENDIF}}
           </td>
           <td class="num">[[Util::sectotime([[agentsSpent.getVal([[agent.getId()]])]])]]</td>
-          <td class="num">[[agentsCracked([[agent.getId()]])]]</td>
+          <td class="num">[[agentsCracked.getVal([[agent.getId()]])]]</td>
           <td>
-            {{IF [[agent.getLastAct()]] > 0}}
-              [[date([[config.getVal('timefmt')]], [[agent.getLastAct()]])]]
+            {{IF [[agent.getLastTime()]] > 0}}
+              [[date([[config.getVal('timefmt')]], [[agent.getLastTime()]])]]
             {{ENDIF}}
           </td>
         </tr>
