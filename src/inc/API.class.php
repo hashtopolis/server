@@ -747,7 +747,8 @@ class API {
   }
   
   public static function getTask($QUERY) {
-    global $FACTORIES;
+    /** @var DataSet $CONFIG */
+    global $FACTORIES, $CONFIG;
   
     if (!PQueryTask::isValid($QUERY)) {
       API::sendErrorResponse(PActions::TASK, "Invalid task query!");
@@ -863,7 +864,7 @@ class API {
       PResponseTask::ATTACK_COMMAND => $assignedTask->getAttackCmd(),
       PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
       PResponseTask::HASHLIST_ID => $assignedTask->getHashlistId(),
-      PResponseTask::BENCHMARK => 'new', //TODO: here we should tell him new or continue depending if he was already working on this hashlist or not
+      PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
       PResponseTask::STATUS_TIMER => $assignedTask->getStatusTimer(),
       PResponseTask::FILES => $files
     ));
