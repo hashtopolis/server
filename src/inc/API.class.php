@@ -147,14 +147,14 @@ class API {
    * @param int $tolerance
    * @return int
    */
-  private static function calculateChunkSize($benchmark, $tolerance = 1){
+  private static function calculateChunkSize($keyspace, $benchmark, $tolerance = 1){
     /** @var DataSet $CONFIG */
     global $CONFIG, $QUERY;
     
     $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     if(strpos($benchmark, ":") === false){
       // old benchmarking method
-      $size = floor($benchmark*$chunkTime/100);
+      $size = floor($keyspace*$benchmark*$chunkTime/100);
     }
     else {
       // new benchmarking method
@@ -202,8 +202,8 @@ class API {
     
     $disptolerance = 1.2; //TODO: add this to config
     
-    $agentChunkSize = API::calculateChunkSize($assignment->getBenchmark(), 1);
-    $agentChunkSizeMax = API::calculateChunkSize($assignment->getBenchmark(), $disptolerance);
+    $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), 1);
+    $agentChunkSizeMax = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $disptolerance);
     if($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()){
       //chunk has not started yet
       $chunk->setRprogress(0);
@@ -249,7 +249,7 @@ class API {
     $disptolerance = 1.2; //TODO: add to config
     
     $remaining = $task->getKeyspace() - $task->getProgress();
-    $agentChunkSize = API::calculateChunkSize($assignment->getBenchmark(), 1);
+    $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), 1);
     $start = $task->getProgress();
     $length = $agentChunkSize;
     if($remaining/$length <= $disptolerance){
