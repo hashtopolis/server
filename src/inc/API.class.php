@@ -306,13 +306,6 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
     foreach ($chunks as $chunk) {
-      if($chunk->getAgentId() == $agent->getId() && $chunk->getLength() != $chunk->getProgress()){
-        //this is the case when the agent got interrupted in some way, so he can just continue with his chunk he was working on
-        $chunk->setDispatchTime(time()); //reset time count to make sure the spent time gets calculated correctly
-        $chunk->setSolveTime(0);
-        $FACTORIES::getChunkFactory()->update($chunk);
-        API::sendChunk($chunk);
-      }
       $dispatched += $chunk->getLength();
     }
     if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
@@ -329,7 +322,8 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
     foreach($chunks as $chunk){
       if($chunk->getAgentId() == $agent->getId()){
-        API::sendChunk($chunk);
+        //API::sendChunk($chunk);
+        API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
       $timeoutTime = time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT);
       if($chunk->getState() == DHashcatStatus::ABORTED || $chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime){
