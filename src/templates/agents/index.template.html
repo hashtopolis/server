@@ -8,7 +8,6 @@
       <th>Id</th>
       <th>Act</th>
       <th>Name / Owner</th>
-      <th>GPU Driver</th>
       <th>GPUs</th>
       <th>Hashcat</th>
       <th>Last activity</th>
@@ -44,7 +43,6 @@
             ---
           {{ENDIF}}
         </td>
-        <td><!--TODO: save agent as property of agent --></td>
         <td>
           {{FOREACH gpu;[[set.getVal('agent').getGpus()]]}}
             [[Util::shortenstring([[gpu]], 20)]]<br>
