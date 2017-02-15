@@ -12,7 +12,7 @@ if (!isset($_POST['username']) || !isset($_POST['password'])) {
 $username = $_POST['username'];
 $password = $_POST['password'];
 $fw = "";
-if(isset($_POST['fw'])) {
+if(isset($_POST['fw']) && strlen($_POST['fw']) > 0) {
   $fw = $_POST['fw'];
 }
 
