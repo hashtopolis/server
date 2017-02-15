@@ -42,7 +42,11 @@ else if (isset($_GET['logout'])) {
 }
 
 $OBJECTS['message'] = $message;
-$OBJECTS['fw'] = @$_GET['fw'];
+$fw = "";
+if(isset($_GET['fw'])){
+  $fw = $_GET['fw'];
+}
+$OBJECTS['fw'] = $fw;
 
 echo $TEMPLATE->render($OBJECTS);
 
