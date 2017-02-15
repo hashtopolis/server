@@ -2,8 +2,12 @@
 require_once(dirname(__FILE__) . "/../inc/load.php");
 set_time_limit(0);
 
-$QUERY = json_decode(@$_POST[PQuery::QUERY], true);
 header("Content-Type: application/json");
+if(!isset($_POST[PQuery::QUERY])){
+  API::sendErrorResponse("ERROR", "Query value is not set!");
+}
+$QUERY = json_decode(@$_POST[PQuery::QUERY], true);
+
 
 //debug logging
 //TODO: remove later
