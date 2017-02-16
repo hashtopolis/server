@@ -242,7 +242,16 @@ else if (isset($_GET['new'])) {
     if($copy != null){
       $orig = $copy->getId();
       $copy->setId(0);
-      $copy->setTaskName($copy->getTaskName() . " (copy)");
+      $match = array();
+      if(preg_match('/\(copy([0-9]+)\)/i', $copy->getTaskName(), $match)){
+        $match = $match[0];
+        $name = $copy->getTaskName();
+        $name = str_replace($match[0], "(copy".(++$match[1]).")", $name);
+        $copy->setTaskName($name);
+      }
+      else{
+        $copy->setTaskName($copy->getTaskName() . " (copy1)");
+      }
     }
   }
   $OBJECTS['orig'] = $orig;
