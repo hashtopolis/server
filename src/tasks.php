@@ -244,7 +244,6 @@ else if (isset($_GET['new'])) {
       $copy->setId(0);
       $match = array();
       if(preg_match('/\(copy([0-9]+)\)/i', $copy->getTaskName(), $match)){
-        $match = $match[0];
         $name = $copy->getTaskName();
         $name = str_replace($match[0], "(copy".(++$match[1]).")", $name);
         $copy->setTaskName($name);
