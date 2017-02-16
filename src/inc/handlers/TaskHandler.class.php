@@ -360,7 +360,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No such chunk!");
       return;
     }
-    $chunk->setState(10);
+    $chunk->setState(DHashcatStatus::ABORTED);
     $FACTORIES::getChunkFactory()->update($chunk);
   }
   
