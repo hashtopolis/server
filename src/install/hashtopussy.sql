@@ -81,7 +81,7 @@ CREATE TABLE `Chunk` (
   `state`        INT(11)    NOT NULL,
   `cracked`      INT(11)    NOT NULL,
   `solveTime`    INT(11)    NOT NULL,
-  `speed`        INT(11)    NOT NULL
+  `speed`        BIGINT(20)    NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
