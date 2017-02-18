@@ -117,6 +117,7 @@ class TaskHandler implements Handler {
     $cmdline = $_POST["cmdline"];
     $chunk = intval($_POST["chunk"]);
     $status = intval($_POST["status"]);
+    $useNewBench = intval($_POST['benchType']);
     $color = $_POST["color"];
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
       $color = null;
@@ -154,7 +155,7 @@ class TaskHandler implements Handler {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, 0, 0);
+    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, 0, 0, $useNewBench);
     $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {

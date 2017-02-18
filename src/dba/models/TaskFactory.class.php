@@ -30,7 +30,7 @@ class TaskFactory extends AbstractModelFactory {
    * @return Task
    */
   function getNullObject() {
-    $o = new Task(-1, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new Task(-1, null, null, null, null, null, null, null, null, null, null, null, null);
     return $o;
   }
 
@@ -40,7 +40,7 @@ class TaskFactory extends AbstractModelFactory {
    * @return Task
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Task($pk, $dict['taskName'], $dict['attackCmd'], $dict['hashlistId'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['progress'], $dict['priority'], $dict['color'], $dict['isSmall'], $dict['isCpuTask']);
+    $o = new Task($pk, $dict['taskName'], $dict['attackCmd'], $dict['hashlistId'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['progress'], $dict['priority'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench']);
     return $o;
   }
 

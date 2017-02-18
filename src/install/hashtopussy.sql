@@ -521,7 +521,8 @@ CREATE TABLE `Task` (
   `color`       VARCHAR(10)
                 COLLATE utf8_bin NULL,
   `isSmall`     INT(11)          NOT NULL,
-  `isCpuTask`   INT(11)          NOT NULL
+  `isCpuTask`   INT(11)          NOT NULL,
+  `useNewBench` INT(11)          NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
