@@ -11,9 +11,7 @@ The application has two parts:
 
 Aiming for high usability even on restricted networks, Hashtopussy communicates over HTTP(S) using own proprietary JSON protocol so its easy to understand and text-readable. 
 
-The server part runs on PHP using MySQL as database back end. It is vital that your MySQL server is configured as well as possible performance wise. 
-
-Some of the queries can be very expensive and proper configuration makes the difference between few milliseconds of waiting and	disaster multi-second lags. 
+The server part runs on PHP using MySQL as database back end. It is vital that your MySQL server is configured as well as possible performance wise. Some of the queries can be very expensive and proper configuration makes the difference between few milliseconds of waiting and	disaster multi-second lags. 
 
 The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so. 
 The web admin is therefore the single point of access once your agents were deployed on the cracking machines. 
@@ -45,7 +43,7 @@ Hashtopus is a great program but lacking in some areas major differences between
 - Drastically Improved Security
 - Multi User support
 - Improved look and layout
-- Super Tasks (hcmask support)
+- Super Tasks
 - --hex-salt support
 
 Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) to get more information on setup and upgrade.
@@ -55,7 +53,7 @@ Some screenshots of Hashtopussy (by winxp5421): [Imgur](http://imgur.com/gallery
 ## Thanks
 
 * winxp for testing, writing help texts and a lot of input ideas
-* blazer for modifying the agent to get it working with hashcat v3
+* blazer for working on the agent
 * CynoSure Prime for testing
 * atom for [Hashcat](https://github.com/hashcat/hashcat)
 * curlyboi for the original Hashtopus code
