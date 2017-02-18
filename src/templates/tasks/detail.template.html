@@ -65,6 +65,16 @@
       </td>
     </tr>
     <tr>
+      <td>Benchmark Type:</td>
+      <td>
+        {{IF [[task.getUseNewBench()]] == 0}}
+          Runtime Benchmark
+        {{ELSE}}
+          Speed Test
+        {{ENDIF}}
+      </td>
+    </tr>
+    <tr>
       <td>Status timer:</td>
       <td>[[task.getStatusTimer()]] seconds</td>
     </tr>
