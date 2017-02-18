@@ -1140,7 +1140,7 @@ class API {
             PResponseSolve::AGENT_COMMAND => "stop"
           ));
         }
-        $chunk->setSpeed($speed);
+        $chunk->setSpeed($speed*1000);
         $FACTORIES::getChunkFactory()->update($chunk);
         
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, $hashlistIds);
