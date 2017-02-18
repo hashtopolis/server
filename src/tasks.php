@@ -253,6 +253,11 @@ else if (isset($_GET['new'])) {
       }
     }
   }
+  
+  if(strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false){
+    $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS)." ".$copy->getAttackCmd());
+  }
+  
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
   
