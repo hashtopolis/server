@@ -98,9 +98,9 @@ class AgentHandler implements Handler {
   }
   
   private function downloadAgent(){
-    global $FACTORIES;
+    global $FACTORIES, $binaryId;
     
-    $binaryId = $_POST['binary'];
+    $binaryId = $binaryId;
     $agentBinary = $FACTORIES::getAgentBinaryFactory()->get($binaryId);
     if($agentBinary == null){
       UI::printError("ERROR", "Invalid Agent Binary!");

@@ -28,6 +28,7 @@ $MENU->setActive("agents_list");
 
 //catch actions here...
 if (isset($_POST['action'])) {
+  $binaryId = $_POST['binary'];
   $agentHandler = new AgentHandler($_POST['agentId']);
   $agentHandler->handle($_POST['action']);
   Util::refresh();
@@ -78,7 +79,7 @@ else if(isset($_GET['new'])){
   $OBJECTS['agentBinaries'] = $binaries;
 }
 else if(isset($_GET['download'])){
-  $_POST['binary'] = $_GET['download'];
+  $binaryId = $_GET['download'];
   $agentHandler = new AgentHandler();
   $agentHandler->handle('downloadagent');
 }

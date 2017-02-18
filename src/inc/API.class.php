@@ -455,6 +455,7 @@ class API {
     }
     $base = explode("/", $_SERVER['PHP_SELF']);
     unset($base[sizeof($base) - 1]);
+    unset($base[sizeof($base) - 1]);
     $base = implode("/", $base);
   
     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0))?"https://":"https://";
