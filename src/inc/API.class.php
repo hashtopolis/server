@@ -456,13 +456,17 @@ class API {
     $base = explode("/", $_SERVER['PHP_SELF']);
     unset($base[sizeof($base) - 1]);
     $base = implode("/", $base);
+  
+    $protocol = isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0);
+    $hostname = $_SERVER['SERVER_ADDR'];
+    $port = $_SERVER['SERVER_PORT'];
     
     if($result->getVersion() != $version){
       API::sendResponse(array(
         PResponseUpdate::ACTION => PActions::UPDATE,
         PResponseUpdate::RESPONSE => PValues::SUCCESS,
         PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-        PResponseUpdate::URL=> $base."/agents.php?download=".$result->getId()
+        PResponseUpdate::URL=> $protocol.$hostname.":".$port.$base."/agents.php?download=".$result->getId()
       ));
     }
     else {
