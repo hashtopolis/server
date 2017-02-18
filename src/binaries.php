@@ -21,9 +21,18 @@ $MENU->setActive("config_binaries");
 if (isset($_POST['action'])) {
   $binaryHandler = new AgentBinaryHandler();
   $binaryHandler->handle($_POST['action']);
-  Util::refresh();
 }
-
+if(isset($_GET['new'])){
+  $OBJECTS['newBinary'] = true;
+}
+else if(isset($_GET['edit'])){
+  $bin = $FACTORIES::getAgentBinaryFactory()->get($_GET['edit']);
+  if($bin == null){
+    UI::printError("ERROR", "Invalid agent binary ID!");
+  }
+  $OBJECTS['editBinary'] = true;
+  $OBJECTS['bin'] = $bin;
+}
 $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
 $OBJECTS['binaries'] = $binaries;
 
