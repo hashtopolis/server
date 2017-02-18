@@ -18,7 +18,6 @@ $CONF['Agent'] = array(
   'gpus',
   'hcVersion',
   'cmdPars',
-  'wait',
   'ignoreErrors',
   'isActive',
   'isTrusted',

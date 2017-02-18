@@ -11,8 +11,6 @@ CREATE TABLE `Agent` (
                  COLLATE utf8_bin      NOT NULL,
   `cmdPars`      VARCHAR(200)
                  COLLATE utf8_bin      NOT NULL,
-  `wait`         INT(11)               NOT NULL
-  COMMENT 'idle wait before cracking',
   `ignoreErrors` INT(11)               NOT NULL,
   `isActive`     INT(11)               NOT NULL,
   `isTrusted`    INT(11)               NOT NULL,

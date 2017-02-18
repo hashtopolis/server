@@ -77,21 +77,6 @@
       <td>[[agent.getHcVersion()]]</td>
     </tr>
     <tr>
-      <td>Idle wait:</td>
-      <td>
-        {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[login.getLevel()]] >= 30}}
-          <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="POST">
-            <input type="hidden" name="agentId" value="[[agent.getId()]]">
-            <input type="hidden" name="action" value="agentwait">
-            <input type="text" name="wait" class='form-control' value="[[agent.getWait()]]" size="4"> seconds
-            <input type="submit" class='btn btn-default' value="Set">
-          </form>
-        {{ELSE}}
-          <input type="text" name="wait" class='form-control' value="[[agent.getWait()]]" size="4" readonly> seconds
-        {{ENDIF}}
-      </td>
-    </tr>
-    <tr>
       <td>Extra parameters:</td>
       <td>
         <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="POST">
