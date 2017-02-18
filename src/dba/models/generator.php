@@ -151,7 +151,8 @@ $CONF['Task'] = array(
   'priority',
   'color',
   'isSmall',
-  'isCpuTask'
+  'isCpuTask',
+  'useNewBench'
 );
 $CONF['Supertask'] = array(
   'supertaskId',

@@ -261,6 +261,7 @@ class PResponseTask extends PResponse {
   const BENCHMARK = "bench";
   const STATUS_TIMER = "statustimer";
   const FILES = "files";
+  const BENCHTYPE = "benchType";
 }
 
 class PResponseChunk extends PResponse {
