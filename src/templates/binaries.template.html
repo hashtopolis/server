@@ -73,6 +73,7 @@
 			<th>Filename</th>
 			<th>Current Version</th>
 			<th>&nbsp;</th>
+      <th>&nbsp;</th>
 		</tr>
 		{{FOREACH binary;[[binaries]]}}
 			<tr>
@@ -87,7 +88,8 @@
             <input type="hidden" name="id" value="[[binary.getId()]]">
             <input type="submit" class='btn btn-primary' value="Edit">
           </form>
-          &nbsp;
+        </td>
+        <td>
           <form action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
             <input type='hidden' name='action' value='delete'>
             <input type="hidden" name="id" value="[[binary.getId()]]">
