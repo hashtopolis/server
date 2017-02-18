@@ -121,7 +121,8 @@ $CONF['HashlistAgent'] = array(
 );
 $CONF['HashType'] = array(
   'hashTypeId',
-  'description'
+  'description',
+  'isSalted'
 );
 $CONF['RegVoucher'] = array(
   'regVoucherId',

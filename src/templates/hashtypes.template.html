@@ -14,6 +14,7 @@
 			<tr>
 				<th>Hashtype (Hashcat -m)</th>
 				<th>Description</th>
+				<th>Salted (only if there is a separate salt value)</th>
 			</tr>
 			<tr>
 				<td>
@@ -21,6 +22,9 @@
 				</td>
 				<td>
 					<input type='text' name='description' class='form-control'>
+				</td>
+				<td>
+					<input type='checkbox' name='isSalted' class='form-control'>
 				</td>
 			</tr>
 			<tr>
@@ -36,6 +40,7 @@
 		<tr>
 			<th>Hashtype (Hashcat -m)</th>
 			<th>Description</th>
+      <th>Salted</th>
 			<th>&nbsp;</th>
 		</tr>
 		{{FOREACH type;[[hashtypes]]}}
@@ -49,6 +54,13 @@
 						<input type="submit" class='btn btn-danger' value="Delete">
 					</form>
 				</td>
+        <td>
+          {{IF [[type.getIsSalted()]] == 1}}
+            Yes
+          {{ELSE}}
+            No
+          {{ENDIF}}
+        </td>
 			</tr>
 		{{ENDFOREACH}}
 	</table>
