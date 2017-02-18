@@ -88,10 +88,32 @@ class AgentHandler implements Handler {
       case 'voucherdelete':
         $this->deleteVoucher();
         break;
+      case 'downloadagent':
+        $this->downloadAgent();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function downloadAgent(){
+    global $FACTORIES;
+    
+    $binaryId = $_POST['binary'];
+    $agentBinary = $FACTORIES::getAgentBinaryFactory()->get($binaryId);
+    if($agentBinary == null){
+      UI::printError("ERROR", "Invalid Agent Binary!");
+    }
+    $filename = $agentBinary->getFilename();
+    if(!file_exists(dirname(__FILE__)."/../../static/".$filename)) {
+      UI::printError("ERROR", "Agent Binary not present on server!");
+    }
+    header("Content-Type: application/force-download");
+    header("Content-Description: " . $filename);
+    header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
+    echo file_get_contents(dirname(__FILE__)."/../../static/".$filename);
+    die();
   }
   
   private function assign() {
