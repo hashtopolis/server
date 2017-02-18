@@ -42,7 +42,7 @@ class AgentBinaryHandler implements Handler {
       return;
     }
     $FACTORIES::getAgentBinaryFactory()->delete($agentBinary);
-    unlink(dirname(__FILE__)."/../../static/".$agentBinary->getFilename());
+    //unlink(dirname(__FILE__)."/../../static/".$agentBinary->getFilename()); //TODO: not sure if we should delete or not
     UI::addMessage(UI::SUCCESS, "Binary deleted successfully!");
   }
   

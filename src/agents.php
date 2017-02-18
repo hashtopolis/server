@@ -28,7 +28,7 @@ $MENU->setActive("agents_list");
 
 //catch actions here...
 if (isset($_POST['action'])) {
-  $binaryId = $_POST['binary'];
+  $binaryId = @$_POST['binary'];
   $agentHandler = new AgentHandler($_POST['agentId']);
   $agentHandler->handle($_POST['action']);
   Util::refresh();
