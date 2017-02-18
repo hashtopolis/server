@@ -35,15 +35,13 @@ class HashcatHandler implements Handler {
     // new hashcat release
     $version = $_POST["version"];
     $url = $_POST["url"];
-    $common_files = $_POST["common_files"];
-    $common_files = str_replace("\r\n", "\n", $common_files);
     $rootdir = $_POST["rootdir"];
     if (strlen($version) == 0) {
       UI::addMessage(UI::ERROR, "You must specify a version!");
       return;
     }
     
-    $hashcat = new HashcatRelease(0, $version, time(), $url, $common_files, $rootdir, 0);
+    $hashcat = new HashcatRelease(0, $version, time(), $url, $rootdir, 0);
     $hashcat = $FACTORIES::getHashcatReleaseFactory()->save($hashcat);
     if ($hashcat == null) {
       UI::addMessage(UI::ERROR, "Could not create new hashcat release!");
