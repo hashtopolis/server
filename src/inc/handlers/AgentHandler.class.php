@@ -70,9 +70,6 @@ class AgentHandler implements Handler {
       case 'setparam':
         $this->changeCmdParameters();
         break;
-      case 'agentwait':
-        $this->changeWaitTime();
-        break;
       case 'agentactive':
         $this->toggleActive();
         break;
@@ -247,17 +244,6 @@ class AgentHandler implements Handler {
     else {
       $this->agent->setIsActive(1);
     }
-    $FACTORIES::getAgentFactory()->update($this->agent);
-  }
-  
-  private function changeWaitTime() {
-    global $FACTORIES;
-    
-    $wait = intval($_POST["wait"]);
-    if ($wait < 0) {
-      UI::printError("ERROR", "Invalid wait time!");
-    }
-    $this->agent->setWait($wait);
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   

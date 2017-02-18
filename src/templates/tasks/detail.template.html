@@ -52,17 +52,6 @@
       </td>
     </tr>
     <tr>
-      <td>Benchmark:</td>
-      <td>
-        <form id="taskauto" action="tasks.php?id=[[task.getId()]]" method="POST">
-          <input type="hidden" name="action" value="taskauto">
-          <input type="hidden" name="task" value="[[task.getId()]]">
-          <input type="checkbox" name="auto" value="1" {{IF [[task.getAutoadjust()]] == 1}} checked{{ENDIF}}
-            onChange="javascript:document.getElementById('taskauto').submit();"> Autoadjust by default
-        </form>
-      </td>
-    </tr>
-    <tr>
       <td>Color:</td>
       <td>
         <form class='form-inline' id="taskcolor" action="tasks.php?id=[[task.getId()]]" method="POST">
@@ -247,7 +236,8 @@
           {{ENDIF}}
           {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
             <img src="static/active.gif" alt="Active">
-          {{ELSE}}
+          {{ENDIF}}
+          {{IF [[agent.getIsActive()]] == 0 && [[activeAgents.getVal([[agent.getId()]])]] == 0}}
             <img src="static/pause.gif" alt="Paused">
           {{ENDIF}}
         </td>
@@ -262,17 +252,6 @@
           {{ELSE}}
             [[agentsBench.getVal([[agent.getId()]])]]
           {{ENDIF}}
-          <form id="auto[[agent.getId()]]" action="tasks.php?id=[[task.getId()]]" method="POST">
-            <input type="hidden" name="action" value="agentauto">
-            <input type="hidden" name="agent" value="[[agent.getId()]]">
-            <input type="checkbox" name="auto" value="1" {{IF [[task.getAutoadjust()]] == 1}} checked{{ENDIF}}
-            {{IF [[login.getLevel()]] >= 20}}
-              onChange="javascript:document.getElementById('auto[[agent.getId()]]').submit();"
-            {{ELSE}}
-              disabled
-            {{ENDIF}}
-            > Auto
-          </form>
         </td>
         <td class="num">
           {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}

@@ -17,7 +17,6 @@ class Agent extends AbstractModel {
   private $gpus;
   private $hcVersion;
   private $cmdPars;
-  private $wait;
   private $ignoreErrors;
   private $isActive;
   private $isTrusted;
@@ -28,7 +27,7 @@ class Agent extends AbstractModel {
   private $userId;
   private $cpuOnly;
   
-  function __construct($agentId, $agentName, $uid, $os, $gpus, $hcVersion, $cmdPars, $wait, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly) {
+  function __construct($agentId, $agentName, $uid, $os, $gpus, $hcVersion, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly) {
     $this->agentId = $agentId;
     $this->agentName = $agentName;
     $this->uid = $uid;
@@ -36,7 +35,6 @@ class Agent extends AbstractModel {
     $this->gpus = $gpus;
     $this->hcVersion = $hcVersion;
     $this->cmdPars = $cmdPars;
-    $this->wait = $wait;
     $this->ignoreErrors = $ignoreErrors;
     $this->isActive = $isActive;
     $this->isTrusted = $isTrusted;
@@ -57,7 +55,6 @@ class Agent extends AbstractModel {
     $dict['gpus'] = $this->gpus;
     $dict['hcVersion'] = $this->hcVersion;
     $dict['cmdPars'] = $this->cmdPars;
-    $dict['wait'] = $this->wait;
     $dict['ignoreErrors'] = $this->ignoreErrors;
     $dict['isActive'] = $this->isActive;
     $dict['isTrusted'] = $this->isTrusted;
@@ -133,14 +130,6 @@ class Agent extends AbstractModel {
   
   function setCmdPars($cmdPars){
     $this->cmdPars = $cmdPars;
-  }
-  
-  function getWait(){
-    return $this->wait;
-  }
-  
-  function setWait($wait){
-    $this->wait = $wait;
   }
   
   function getIgnoreErrors(){
@@ -222,7 +211,6 @@ class Agent extends AbstractModel {
   const GPUS = "gpus";
   const HC_VERSION = "hcVersion";
   const CMD_PARS = "cmdPars";
-  const WAIT = "wait";
   const IGNORE_ERRORS = "ignoreErrors";
   const IS_ACTIVE = "isActive";
   const IS_TRUSTED = "isTrusted";

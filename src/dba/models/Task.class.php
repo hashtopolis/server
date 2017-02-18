@@ -16,7 +16,6 @@ class Task extends AbstractModel {
   private $hashlistId;
   private $chunkTime;
   private $statusTimer;
-  private $autoAdjust;
   private $keyspace;
   private $progress;
   private $priority;
@@ -24,14 +23,13 @@ class Task extends AbstractModel {
   private $isSmall;
   private $isCpuTask;
   
-  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $autoAdjust, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask) {
+  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
     $this->hashlistId = $hashlistId;
     $this->chunkTime = $chunkTime;
     $this->statusTimer = $statusTimer;
-    $this->autoAdjust = $autoAdjust;
     $this->keyspace = $keyspace;
     $this->progress = $progress;
     $this->priority = $priority;
@@ -48,7 +46,6 @@ class Task extends AbstractModel {
     $dict['hashlistId'] = $this->hashlistId;
     $dict['chunkTime'] = $this->chunkTime;
     $dict['statusTimer'] = $this->statusTimer;
-    $dict['autoAdjust'] = $this->autoAdjust;
     $dict['keyspace'] = $this->keyspace;
     $dict['progress'] = $this->progress;
     $dict['priority'] = $this->priority;
@@ -115,14 +112,6 @@ class Task extends AbstractModel {
     $this->statusTimer = $statusTimer;
   }
   
-  function getAutoAdjust(){
-    return $this->autoAdjust;
-  }
-  
-  function setAutoAdjust($autoAdjust){
-    $this->autoAdjust = $autoAdjust;
-  }
-  
   function getKeyspace(){
     return $this->keyspace;
   }
@@ -177,7 +166,6 @@ class Task extends AbstractModel {
   const HASHLIST_ID = "hashlistId";
   const CHUNK_TIME = "chunkTime";
   const STATUS_TIMER = "statusTimer";
-  const AUTO_ADJUST = "autoAdjust";
   const KEYSPACE = "keyspace";
   const PROGRESS = "progress";
   const PRIORITY = "priority";

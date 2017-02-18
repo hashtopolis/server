@@ -254,7 +254,6 @@ class PResponseFile extends PResponse {
 
 class PResponseTask extends PResponse {
   const TASK_ID = "task";
-  const AGENT_WAIT = "wait";
   const ATTACK_COMMAND = "attackcmd";
   const CMD_PARAMETERS = "cmdpars";
   const HASHLIST_ID = "hashlist";

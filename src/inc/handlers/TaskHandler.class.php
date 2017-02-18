@@ -45,12 +45,6 @@ class TaskHandler implements Handler {
         }
         $this->adjustBenchmark();
         break;
-      case 'agentauto':
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
-        $this->toggleAutoadjust();
-        break;
       case 'chunkabort':
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
@@ -74,12 +68,6 @@ class TaskHandler implements Handler {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->updateColor();
-        break;
-      case 'taskauto':
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
-        $this->toggleTaskAutoadjust();
         break;
       case 'taskchunk':
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
@@ -127,7 +115,6 @@ class TaskHandler implements Handler {
     // new task creator
     $name = htmlentities($_POST["name"], false, "UTF-8");
     $cmdline = $_POST["cmdline"];
-    $autoadjust = intval(@$_POST["autoadjust"]);
     $chunk = intval($_POST["chunk"]);
     $status = intval($_POST["status"]);
     $color = $_POST["color"];
@@ -167,7 +154,7 @@ class TaskHandler implements Handler {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, $autoadjust, 0, 0, 0, $color, 0, 0);
+    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, 0, 0);
     $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
@@ -320,20 +307,6 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
-  private function toggleTaskAutoadjust() {
-    global $FACTORIES;
-    
-    // enable agent benchmark autoadjust for all subsequent agents added to this task
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $auto = intval(@$_POST["auto"]);
-    $task->setAutoAdjust($auto);
-    $FACTORIES::getTaskFactory()->update($task);
-  }
-  
   private function updateColor() {
     global $FACTORIES;
     
@@ -410,21 +383,6 @@ class TaskHandler implements Handler {
     $task->setProgress(0);
     $FACTORIES::getTaskFactory()->update($task);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-  }
-  
-  private function toggleAutoadjust() {
-    global $FACTORIES;
-    
-    //TODO: remove this
-    
-    // enable agent benchmark autoadjust for its current assignment
-    $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agent'], "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-    if ($assignment == null) {
-      UI::addMessage(UI::ERROR, "No assignment for this agent!");
-      return;
-    }
-    $FACTORIES::getAssignmentFactory()->update($assignment);
   }
   
   private function adjustBenchmark() {

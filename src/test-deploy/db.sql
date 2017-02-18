@@ -27901,24 +27901,24 @@ INSERT INTO `SupertaskTask` (`supertaskTaskId`, `supertaskId`, `taskId`) VALUES
 -- Daten für Tabelle `Task`
 --
 
-INSERT INTO `Task` (`taskId`, `taskName`, `attackCmd`, `hashlistId`, `chunkTime`, `statusTimer`, `autoAdjust`, `keyspace`, `progress`, `priority`, `color`, `isSmall`, `isCpuTask`) VALUES
-  (20, 'Bruteforce ?a 1', '-a 3 #HL# ?a', NULL, 600, 5, 0, 0, 0, 10, NULL, 0, 0),
-  (21, 'Bruteforce ?a 2', '-a 3 #HL# ?a?a', NULL, 600, 5, 0, 0, 0, 9, NULL, 0, 0),
-  (22, 'Bruteforce ?a 3', '-a 3 #HL# ?a?a?a', NULL, 600, 5, 0, 0, 0, 8, NULL, 0, 0),
-  (23, 'Bruteforce ?a 4', '-a 3 #HL# ?a?a?a?a', NULL, 600, 5, 0, 0, 0, 7, NULL, 0, 0),
-  (24, 'Bruteforce ?a 5', '-a 3 #HL# ?a?a?a?a?a', NULL, 600, 5, 0, 0, 0, 6, NULL, 0, 0),
-  (25, 'Bruteforce ?a 6', '-a 3 #HL# ?a?a?a?a?a', NULL, 600, 5, 0, 0, 0, 5, NULL, 0, 0),
-  (26, 'Bruteforce ?l 1', '-a 3 #HL# ?l', NULL, 600, 5, 0, 0, 0, 20, NULL, 0, 0),
-  (27, 'Bruteforce ?l 2', '-a 3 #HL# ?l?l', NULL, 600, 5, 0, 0, 0, 19, NULL, 0, 0),
-  (28, 'Bruteforce ?l 3', '-a 3 #HL# ?l?l?l', NULL, 600, 5, 0, 0, 0, 18, NULL, 0, 0),
-  (29, 'Bruteforce ?l 4', '-a 3 #HL# ?l?l?l?l', NULL, 600, 5, 0, 0, 0, 17, NULL, 0, 0),
-  (30, 'Bruteforce ?l 5', '-a 3 #HL# ?l?l?l?l?l', NULL, 600, 5, 0, 0, 0, 16, NULL, 0, 0),
-  (37, 'Bruteforce ?a 1', '-a 3 #HL# ?a', 14, 600, 5, 0, 0, 0, 11, NULL, 0, 0),
-  (38, 'Bruteforce ?l 1', '-a 3 #HL# ?l', 14, 600, 5, 0, 0, 0, 21, NULL, 0, 0),
-  (39, 'Bruteforce ?a 1', '-a 3 #HL# ?a', 15, 600, 5, 0, 0, 0, 32, NULL, 0, 0),
-  (40, 'Bruteforce ?l 1', '-a 3 #HL# ?l', 15, 600, 5, 0, 0, 0, 42, NULL, 0, 0),
-  (41, 'Bruteforce ?a 2', '-a 3 #HL# ?a?a', 16, 600, 5, 0, 0, 0, 52, NULL, 0, 0),
-  (42, 'Bruteforce ?l 2', '-a 3 #HL# ?l?l', 16, 600, 5, 0, 0, 0, 62, NULL, 0, 0);
+INSERT INTO `Task` (`taskId`, `taskName`, `attackCmd`, `hashlistId`, `chunkTime`, `statusTimer`, `keyspace`, `progress`, `priority`, `color`, `isSmall`, `isCpuTask`) VALUES
+  (20, 'Bruteforce ?a 1', '-a 3 #HL# ?a', NULL, 600, 5, 0, 0, 10, NULL, 0, 0),
+  (21, 'Bruteforce ?a 2', '-a 3 #HL# ?a?a', NULL, 600, 5, 0, 0, 9, NULL, 0, 0),
+  (22, 'Bruteforce ?a 3', '-a 3 #HL# ?a?a?a', NULL, 600, 5, 0, 0, 8, NULL, 0, 0),
+  (23, 'Bruteforce ?a 4', '-a 3 #HL# ?a?a?a?a', NULL, 600, 5, 0, 0, 7, NULL, 0, 0),
+  (24, 'Bruteforce ?a 5', '-a 3 #HL# ?a?a?a?a?a', NULL, 600, 5, 0, 0, 6, NULL, 0, 0),
+  (25, 'Bruteforce ?a 6', '-a 3 #HL# ?a?a?a?a?a', NULL, 600, 5, 0, 0, 5, NULL, 0, 0),
+  (26, 'Bruteforce ?l 1', '-a 3 #HL# ?l', NULL, 600, 5, 0, 0, 20, NULL, 0, 0),
+  (27, 'Bruteforce ?l 2', '-a 3 #HL# ?l?l', NULL, 600, 5, 0, 0, 19, NULL, 0, 0),
+  (28, 'Bruteforce ?l 3', '-a 3 #HL# ?l?l?l', NULL, 600, 5, 0, 0, 18, NULL, 0, 0),
+  (29, 'Bruteforce ?l 4', '-a 3 #HL# ?l?l?l?l', NULL, 600, 5, 0, 0, 17, NULL, 0, 0),
+  (30, 'Bruteforce ?l 5', '-a 3 #HL# ?l?l?l?l?l', NULL, 600, 5, 0, 0, 16, NULL, 0, 0),
+  (37, 'Bruteforce ?a 1', '-a 3 #HL# ?a', 14, 600, 5, 0, 0, 11, NULL, 0, 0),
+  (38, 'Bruteforce ?l 1', '-a 3 #HL# ?l', 14, 600, 5, 0, 0, 21, NULL, 0, 0),
+  (39, 'Bruteforce ?a 1', '-a 3 #HL# ?a', 15, 600, 5, 0, 0, 32, NULL, 0, 0),
+  (40, 'Bruteforce ?l 1', '-a 3 #HL# ?l', 15, 600, 5, 0, 0, 42, NULL, 0, 0),
+  (41, 'Bruteforce ?a 2', '-a 3 #HL# ?a?a', 16, 600, 5, 0, 0, 52, NULL, 0, 0),
+  (42, 'Bruteforce ?l 2', '-a 3 #HL# ?l?l', 16, 600, 5, 0, 0, 62, NULL, 0, 0);
 
 --
 -- Daten für Tabelle `User`

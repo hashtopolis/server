@@ -858,7 +858,6 @@ class API {
       PResponseTask::ACTION => PActions::TASK,
       PResponseTask::RESPONSE => PValues::SUCCESS,
       PResponseTask::TASK_ID => $assignedTask->getId(),
-      PResponseTask::AGENT_WAIT => $agent->getWait(),
       PResponseTask::ATTACK_COMMAND => $assignedTask->getAttackCmd(),
       PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
       PResponseTask::HASHLIST_ID => $assignedTask->getHashlistId(),

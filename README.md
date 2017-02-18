@@ -34,7 +34,6 @@ New agent deployment requires one-time password generated in the new agent tab, 
 - Many options to import/export data
 - A lot of statistic info about tasks/hashes
 - Visual representation of chunk distribution
-- Waiting for idle (Windows only)
 - Event-driven cracking mode
 - Multi-User Support
 - User Permission levels
