@@ -19,30 +19,26 @@
 				</td>
 				<td>
 					<a href="tasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getTaskName()]]</a>
-        		</td>
-        		<td>[[task.getVal('Task').getAttackCmd()]]</td>
-        		<td>
-        			{{IF [[task.getVal('numFiles')]] > 0}}
-        				[[task.getVal('numFiles')]] ([[Util::nicenum([[task.getVal('filesSize')]])]]B)
-        			{{ENDIF}}
-        			{{IF [[task.getVal('fileSecret')]] == 1}}
-        				<img src="static/lock.gif" alt="Secret">
-        			{{ENDIF}}	
-        		</td>
-        		<td>
-        			<form class='form-inline' action="tasks.php?pre=true" method="POST">
-        				<input type="hidden" name="action" value="taskprio">
-        				<input type="hidden" name="task" value="[[task.getVal('Task').getId()]]">
-        				<input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('Task').getPriority()]]">
-        				<input type="submit" class='btn btn-default' value="Set">
-        			</form>
-        		</td>
-        		<td>
-        			<form style='float: left; padding-right: 5px;' action="tasks.php?new=true" method="POST">
-				        <input type="hidden" name="copy" value="[[task.getVal('Task').getId()]]">
-				        <input type="submit" class='btn btn-default' value="Copy">
-				    </form> 
-
+				</td>
+				<td>[[task.getVal('Task').getAttackCmd()]]</td>
+				<td>
+					{{IF [[task.getVal('numFiles')]] > 0}}
+						[[task.getVal('numFiles')]] ([[Util::nicenum([[task.getVal('filesSize')]])]]B)
+					{{ENDIF}}
+					{{IF [[task.getVal('fileSecret')]] == 1}}
+						<img src="static/lock.gif" alt="Secret">
+					{{ENDIF}}
+				</td>
+				<td>
+					<form class='form-inline' action="tasks.php?pre=true" method="POST">
+						<input type="hidden" name="action" value="taskprio">
+						<input type="hidden" name="task" value="[[task.getVal('Task').getId()]]">
+						<input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('Task').getPriority()]]">
+						<input type="submit" class='btn btn-default' value="Set">
+					</form>
+				</td>
+				<td>
+					<a href="tasks.php?new=true&copy=[[task.getVal('Task').getId()]]"><button class="btn btn-default">Copy</button></a>
 					{{IF [[login.getLevel()]] >= 30}}
 						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?')) return false;">
 							<input type="hidden" name="action" value="taskdelete">
