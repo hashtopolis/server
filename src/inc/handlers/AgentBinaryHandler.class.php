@@ -11,7 +11,7 @@ use DBA\QueryFilter;
 
 class AgentBinaryHandler implements Handler {
   
-  public function __construct($id) {
+  public function __construct($id = null) {
     //nothing
   }
   
