@@ -1,0 +1,28 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Agent Binaries</h2>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<th>ID</th>
+			<th>Type</th>
+			<th>OS</th>
+			<th>Filename</th>
+			<th>Current Version</th>
+			<th>&nbsp;</th>
+		</tr>
+		{{FOREACH binary;[[binaries]]}}
+			<tr>
+        <td>[[binary.getId()]]</td>
+        <td>[[binary.getType()]]</td>
+        <td>[[binary.getOperatingSystems()]]</td>
+        <td><code>[[binary.getFilename()]]</code></td>
+        <td>[[binary.getVersion()]]</td>
+        <td>
+          TODO: Actions
+        </td>
+			</tr>
+		{{ENDFOREACH}}
+	</table>
+</div>
+{%TEMPLATE->struct/foot%}

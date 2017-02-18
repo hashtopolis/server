@@ -27,7 +27,6 @@ $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
 
 //catch actions here...
-//TODO: add to handler that the client can be downloaded correctly then
 if (isset($_POST['action'])) {
   $agentHandler = new AgentHandler($_POST['agentId']);
   $agentHandler->handle($_POST['action']);
