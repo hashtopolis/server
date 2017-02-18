@@ -11,13 +11,15 @@ namespace DBA;
 
 class AgentBinary extends AbstractModel {
   private $agentBinaryId;
-  private $language;
+  private $type;
+  private $version;
   private $operatingSystems;
   private $filename;
   
-  function __construct($agentBinaryId, $language, $operatingSystems, $filename) {
+  function __construct($agentBinaryId, $type, $version, $operatingSystems, $filename) {
     $this->agentBinaryId = $agentBinaryId;
-    $this->language = $language;
+    $this->type = $type;
+    $this->version = $version;
     $this->operatingSystems = $operatingSystems;
     $this->filename = $filename;
   }
@@ -25,7 +27,8 @@ class AgentBinary extends AbstractModel {
   function getKeyValueDict() {
     $dict = array();
     $dict['agentBinaryId'] = $this->agentBinaryId;
-    $dict['language'] = $this->language;
+    $dict['type'] = $this->type;
+    $dict['version'] = $this->version;
     $dict['operatingSystems'] = $this->operatingSystems;
     $dict['filename'] = $this->filename;
     
@@ -48,12 +51,20 @@ class AgentBinary extends AbstractModel {
     $this->agentBinaryId = $id;
   }
   
-  function getLanguage(){
-    return $this->language;
+  function getType(){
+    return $this->type;
   }
   
-  function setLanguage($language){
-    $this->language = $language;
+  function setType($type){
+    $this->type = $type;
+  }
+  
+  function getVersion(){
+    return $this->version;
+  }
+  
+  function setVersion($version){
+    $this->version = $version;
   }
   
   function getOperatingSystems(){
@@ -73,7 +84,8 @@ class AgentBinary extends AbstractModel {
   }
 
   const AGENT_BINARY_ID = "agentBinaryId";
-  const LANGUAGE = "language";
+  const TYPE = "type";
+  const VERSION = "version";
   const OPERATING_SYSTEMS = "operatingSystems";
   const FILENAME = "filename";
 }

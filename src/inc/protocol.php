@@ -146,13 +146,14 @@ class PQueryDownload extends PQuery {
 
 class PQueryUpdate extends PQuery {
   static function isValid($QUERY) {
-    if(!isset($QUERY[self::VERSION])){
+    if(!isset($QUERY[self::VERSION]) || !isset($QUERY[self::TYPE])){
       return false;
     }
     return true;
   }
   
   const VERSION = "version";
+  const TYPE = "type";
 }
 
 class PQueryRegister extends PQuery {

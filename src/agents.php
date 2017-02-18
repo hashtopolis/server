@@ -78,6 +78,11 @@ else if(isset($_GET['new'])){
   $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
   $OBJECTS['agentBinaries'] = $binaries;
 }
+else if(isset($_GET['download'])){
+  $_POST['binary'] = $_GET['download'];
+  $agentHandler = new AgentHandler();
+  $agentHandler->handle('downloadagent');
+}
 else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
   $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::ORDER => array($oF)));

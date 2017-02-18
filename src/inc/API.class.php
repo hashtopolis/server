@@ -1,6 +1,7 @@
 <?php
 
 use DBA\Agent;
+use DBA\AgentBinary;
 use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
@@ -437,23 +438,31 @@ class API {
   }
   
   public static function checkClientUpdate($QUERY) {
-    global $SCRIPTVERSION, $SCRIPTNAME;
-    
-    // TODO: updating needs to be done for new management of agent binaries/scripts
+    global $FACTORIES;
     
     // check if provided hash is the same as script and send file contents if not
     if (!PQueryUpdate::isValid($QUERY)) {
-      API::sendErrorResponse(PActions::UPDATE, 'Version value missing!');
+      API::sendErrorResponse(PActions::UPDATE, 'Invalid update query!');
     }
     
     $version = $QUERY[PQueryUpdate::VERSION];
+    $type = $QUERY[PQueryUpdate::TYPE];
     
-    if ($version != $SCRIPTVERSION) {
+    $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $result = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    if($result == null){
+      API::sendErrorResponse(PActions::UPDATE, "Type not found!");
+    }
+    $base = explode("/", $_SERVER['PHP_SELF']);
+    unset($base[sizeof($base) - 1]);
+    $base = implode("/", $base);
+    
+    if($result->getVersion() != $version){
       API::sendResponse(array(
         PResponseUpdate::ACTION => PActions::UPDATE,
         PResponseUpdate::RESPONSE => PValues::SUCCESS,
         PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-        PResponseUpdate::URL=> file_get_contents(dirname(__FILE__) . "/../static/$SCRIPTNAME")
+        PResponseUpdate::URL=> $base."/agents.php?download=".$result->getId()
       ));
     }
     else {
