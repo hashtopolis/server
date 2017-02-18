@@ -247,7 +247,8 @@
           {{ENDIF}}
           {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
             <img src="static/active.gif" alt="Active">
-          {{ELSE}}
+          {{ENDIF}}
+          {{IF [[agent.getIsActive()]] == 0 && [[activeAgents.getVal([[agent.getId()]])]] == 0}}
             <img src="static/pause.gif" alt="Paused">
           {{ENDIF}}
         </td>
