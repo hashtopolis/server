@@ -12,16 +12,19 @@ namespace DBA;
 class HashType extends AbstractModel {
   private $hashTypeId;
   private $description;
+  private $isSalted;
   
-  function __construct($hashTypeId, $description) {
+  function __construct($hashTypeId, $description, $isSalted) {
     $this->hashTypeId = $hashTypeId;
     $this->description = $description;
+    $this->isSalted = $isSalted;
   }
   
   function getKeyValueDict() {
     $dict = array();
     $dict['hashTypeId'] = $this->hashTypeId;
     $dict['description'] = $this->description;
+    $dict['isSalted'] = $this->isSalted;
     
     return $dict;
   }
@@ -49,7 +52,16 @@ class HashType extends AbstractModel {
   function setDescription($description){
     $this->description = $description;
   }
+  
+  function getIsSalted(){
+    return $this->isSalted;
+  }
+  
+  function setIsSalted($isSalted){
+    $this->isSalted = $isSalted;
+  }
 
   const HASH_TYPE_ID = "hashTypeId";
   const DESCRIPTION = "description";
+  const IS_SALTED = "isSalted";
 }

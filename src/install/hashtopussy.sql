@@ -223,7 +223,8 @@ CREATE TABLE `HashlistAgent` (
 CREATE TABLE `HashType` (
   `hashTypeId`  INT(11)          NOT NULL,
   `description` VARCHAR(200)
-                COLLATE utf8_bin NOT NULL
+                COLLATE utf8_bin NOT NULL,
+  `isSalted`    TINYINT NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
