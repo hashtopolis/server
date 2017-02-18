@@ -146,7 +146,6 @@ $CONF['Task'] = array(
   'hashlistId',
   'chunkTime',
   'statusTimer',
-  'autoAdjust',
   'keyspace',
   'progress',
   'priority',

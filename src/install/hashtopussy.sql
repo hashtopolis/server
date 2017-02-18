@@ -463,7 +463,6 @@ CREATE TABLE `Task` (
   `hashlistId`  INT(11)          NULL,
   `chunkTime`   INT(11)          NOT NULL,
   `statusTimer` INT(11)          NOT NULL,
-  `autoAdjust`  INT(11)          NOT NULL,
   `keyspace`    BIGINT(20)       NOT NULL,
   `progress`    BIGINT(20)       NOT NULL,
   `priority`    INT(11)          NOT NULL,
