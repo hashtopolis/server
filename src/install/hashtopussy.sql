@@ -204,7 +204,8 @@ CREATE TABLE `Hashlist` (
 
 CREATE TABLE `AgentBinary` (
   `agentBinaryId`    INT(11)      NOT NULL,
-  `language`         VARCHAR(30)  NOT NULL,
+  `type`         VARCHAR(30)  NOT NULL,
+  `version`          VARCHAR(20) NOT NULL,
   `operatingSystems` VARCHAR(30)  NOT NULL,
   `filename`         VARCHAR(200) NOT NULL
 )
@@ -410,8 +411,8 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
   (4, 'Superuser', 30),
   (5, 'Administrator', 50);
 
-INSERT INTO `AgentBinary` (`agentBinaryId`, `language`, `operatingSystems`, `filename`)
-VALUES (NULL, 'C#', 'Windows', 'hashtopus.exe');
+INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`)
+VALUES (NULL, 'csharp', 'Windows', 'hashtopus.exe');
 
 CREATE TABLE `Session` (
   `sessionId`        INT(11)      NOT NULL,

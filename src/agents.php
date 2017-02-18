@@ -27,8 +27,8 @@ $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
 
 //catch actions here...
-//TODO: add to handler that the client can be downloaded correctly then
 if (isset($_POST['action'])) {
+  $binaryId = @$_POST['binary'];
   $agentHandler = new AgentHandler($_POST['agentId']);
   $agentHandler->handle($_POST['action']);
   Util::refresh();
@@ -77,6 +77,11 @@ else if(isset($_GET['new'])){
   $OBJECTS['vouchers'] = $vouchers;
   $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
   $OBJECTS['agentBinaries'] = $binaries;
+}
+else if(isset($_GET['download'])){
+  $binaryId = $_GET['download'];
+  $agentHandler = new AgentHandler();
+  $agentHandler->handle('downloadagent');
 }
 else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC");

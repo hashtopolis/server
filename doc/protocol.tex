@@ -69,11 +69,12 @@
 	\end{verbatim}
 	
 	\subsection*{Update}
-	This is used by the client to check if there is an update available for the client script.
+	This is used by the client to check if there is an update available for the client script. Type specifies the type of the client, currently only 'csharp'.
 	\begin{verbatim}
 	{
 	  "action":"update",
-	  "version":"0.1.0 ALPHA"
+	  "version":"0.1.0 ALPHA",
+	  "type":"csharp"
 	}
 	\end{verbatim}
 	The server responds either with
@@ -90,7 +91,7 @@
 	  "action":"update",
 	  "response":"SUCCESS",
 	  "version":"NEW",
-	  "data":"........"
+	  "url":"https://example.com/getclient.php"
 	}
 	\end{verbatim}
 	with 'data' containing the new version of the script.

@@ -30,7 +30,8 @@ $CONF['Agent'] = array(
 );
 $CONF['AgentBinary'] = array(
   'agentBinaryId',
-  'language',
+  'type',
+  'version',
   'operatingSystems',
   'filename'
 );
