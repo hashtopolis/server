@@ -14,6 +14,12 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 /** @var DataSet $CONFIG */
 
+if(isset($_GET['download'])){
+  $binaryId = $_GET['download'];
+  $agentHandler = new AgentHandler();
+  $agentHandler->handle('downloadagent');
+}
+
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
   die();
@@ -77,11 +83,6 @@ else if(isset($_GET['new'])){
   $OBJECTS['vouchers'] = $vouchers;
   $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
   $OBJECTS['agentBinaries'] = $binaries;
-}
-else if(isset($_GET['download'])){
-  $binaryId = $_GET['download'];
-  $agentHandler = new AgentHandler();
-  $agentHandler->handle('downloadagent');
 }
 else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
