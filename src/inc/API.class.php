@@ -232,7 +232,7 @@ class API {
       API::sendChunk($firstPart);
     }
     else{
-      $newChunk = new Chunk(0, $task->getId(), $chunk->getSkip() + $chunk->getProgress(), $chunk->getSkip() + $chunk->getLength() - $chunk->getProgress(), $agent->getId(), time(), 0, 0, DHashcatStatus::INIT, 0, 0, 0);
+      $newChunk = new Chunk(0, $task->getId(), $chunk->getSkip() + $chunk->getProgress(), $chunk->getLength() - $chunk->getProgress(), $agent->getId(), time(), 0, 0, DHashcatStatus::INIT, 0, 0, 0);
       $chunk->setLength($chunk->getProgress());
       $chunk->setRprogress(10000);
       $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
@@ -923,7 +923,7 @@ class API {
     /*
      * Calculate the relative progress inside of the chunk
      */
-    $chunkCombinationStart = $combinationTotal/($skip+$length)*$skip;
+    $chunkCombinationStart = floor($combinationTotal/($skip+$length)*$skip);
     $currentRelativeProgress = round(($combinationProgress - $chunkCombinationStart)/($combinationTotal - $chunkCombinationStart)*10000);
     $keyspaceProgress -= $skip;
     
