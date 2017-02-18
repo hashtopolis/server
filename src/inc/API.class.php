@@ -457,16 +457,22 @@ class API {
     unset($base[sizeof($base) - 1]);
     $base = implode("/", $base);
   
-    $protocol = isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0);
-    $hostname = $_SERVER['SERVER_ADDR'];
+    $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0))?"https://":"https://";
+    $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
+    if($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80){
+      $port = "";
+    }
+    else{
+      $port = ":$port";
+    }
     
     if($result->getVersion() != $version){
       API::sendResponse(array(
         PResponseUpdate::ACTION => PActions::UPDATE,
         PResponseUpdate::RESPONSE => PValues::SUCCESS,
         PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-        PResponseUpdate::URL=> $protocol.$hostname.":".$port.$base."/agents.php?download=".$result->getId()
+        PResponseUpdate::URL=> $protocol.$hostname.$port.$base."/agents.php?download=".$result->getId()
       ));
     }
     else {
