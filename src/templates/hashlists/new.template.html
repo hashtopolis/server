@@ -14,6 +14,18 @@
       }
     });
 	}
+
+  var hashtypes = [[allHashtypes]];
+
+	function hashtypeChange(){
+    var id = $( "#hashtype" ).val();
+    if(hashtypes[id] == 1){
+        $("#salted").prop("checked", true);
+    }
+    else{
+        $("#salted").prop("checked", false);
+    }
+  }
 </script>
 <form class='form-inline' action="hashlists.php" method="POST" enctype="multipart/form-data">
 	<input type='hidden' name='action' value='newhashlistp'>
@@ -32,7 +44,7 @@
 			<tr>
 				<td>Hashtype:</td>
 				<td>
-					<select name="hashtype" class='form-control'>
+					<select name="hashtype" class='form-control' id="hashtype" onchange="hashtypeChange()">
 						<option value=''>&nbsp;</option>
 						{{FOREACH type;[[hashtypes]]}}
 							<option value="[[type.getId()]]"> [[type.getId()]] - [[htmlentities([[type.getDescription()]])]]</option>
@@ -50,7 +62,7 @@
 					</select>
 					<span class="textopt">
 						<br>
-						<input type="checkbox" name="salted" value="1"> Salted hashes, separator
+						<input type="checkbox" name="salted" id="salted" value="1"> Salted hashes, separator
 						<input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1">
 					</span>
 					<span class="textopt">

@@ -36,7 +36,14 @@ if(isset($_GET['new'])){
   //new hashlist
   $MENU->setActive("lists_new");
   $OBJECTS['impfiles'] = Util::scanImportDirectory();
-  $OBJECTS['hashtypes'] = $FACTORIES::getHashTypeFactory()->filter(array());
+  $hashtypes = $FACTORIES::getHashTypeFactory()->filter(array());
+  $list = array();
+  foreach($hashtypes as $hashtype){
+    $list[] = $hashtype->getId().": ".$hashtype->getIsSalted();
+  }
+  $allHashtypes = "{".implode(",", $list)."}";
+  $OBJECTS['allHashtypes'] = $allHashtypes;
+  $OBJECTS['hashtypes'] = $hashtypes;
   $TEMPLATE = new Template("hashlists/new");
 }
 else if (isset($_GET['id'])) {
