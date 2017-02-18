@@ -35,10 +35,8 @@ if(isset($_GET['new'])){
   $common = "";
   if(sizeof($releases) > 0){
     $rootDir = $releases[0]->getRootdir();
-    $common = $releases[0]->getCommonFiles();
   }
   $OBJECTS['rootDir'] = $rootDir;
-  $OBJECTS['common'] = $common;
 }
 else{
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC");
