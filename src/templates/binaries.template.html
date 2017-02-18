@@ -88,11 +88,7 @@
         <td><code>[[binary.getFilename()]]</code></td>
         <td>[[binary.getVersion()]]</td>
         <td>
-          <form action="binaries.php" method="POST">
-            <input type='hidden' name='action' value='edit'>
-            <input type="hidden" name="id" value="[[binary.getId()]]">
-            <input type="submit" class='btn btn-primary' value="Edit">
-          </form>
+          <a href="binaries.php?edit=[[binary.getId()]]"><button class="btn btn-primary">Edit</button></a>
         </td>
         <td>
           <form action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
