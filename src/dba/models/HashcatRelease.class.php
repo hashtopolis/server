@@ -14,16 +14,14 @@ class HashcatRelease extends AbstractModel {
   private $version;
   private $time;
   private $url;
-  private $commonFiles;
   private $rootdir;
   private $minver;
   
-  function __construct($hashcatReleaseId, $version, $time, $url, $commonFiles, $rootdir, $minver) {
+  function __construct($hashcatReleaseId, $version, $time, $url, $rootdir, $minver) {
     $this->hashcatReleaseId = $hashcatReleaseId;
     $this->version = $version;
     $this->time = $time;
     $this->url = $url;
-    $this->commonFiles = $commonFiles;
     $this->rootdir = $rootdir;
     $this->minver = $minver;
   }
@@ -34,7 +32,6 @@ class HashcatRelease extends AbstractModel {
     $dict['version'] = $this->version;
     $dict['time'] = $this->time;
     $dict['url'] = $this->url;
-    $dict['commonFiles'] = $this->commonFiles;
     $dict['rootdir'] = $this->rootdir;
     $dict['minver'] = $this->minver;
     
@@ -81,14 +78,6 @@ class HashcatRelease extends AbstractModel {
     $this->url = $url;
   }
   
-  function getCommonFiles(){
-    return $this->commonFiles;
-  }
-  
-  function setCommonFiles($commonFiles){
-    $this->commonFiles = $commonFiles;
-  }
-  
   function getRootdir(){
     return $this->rootdir;
   }
@@ -109,7 +98,6 @@ class HashcatRelease extends AbstractModel {
   const VERSION = "version";
   const TIME = "time";
   const URL = "url";
-  const COMMON_FILES = "commonFiles";
   const ROOTDIR = "rootdir";
   const MINVER = "minver";
 }

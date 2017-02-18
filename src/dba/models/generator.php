@@ -79,7 +79,6 @@ $CONF['HashcatRelease'] = array(
   'version',
   'time',
   'url',
-  'commonFiles',
   'rootdir',
   'minver'
 );

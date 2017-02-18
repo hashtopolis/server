@@ -174,8 +174,6 @@ CREATE TABLE `HashcatRelease` (
   `time`             INT(11)          NOT NULL,
   `url`              VARCHAR(200)
                      COLLATE utf8_bin NOT NULL,
-  `commonFiles`      VARCHAR(200)
-                     COLLATE utf8_bin NOT NULL,
   `rootdir`          VARCHAR(200)
                      COLLATE utf8_bin NOT NULL,
   `minver`           INT(11)          NOT NULL

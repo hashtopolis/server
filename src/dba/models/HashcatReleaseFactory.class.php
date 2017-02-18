@@ -30,7 +30,7 @@ class HashcatReleaseFactory extends AbstractModelFactory {
    * @return HashcatRelease
    */
   function getNullObject() {
-    $o = new HashcatRelease(-1, null, null, null, null, null, null);
+    $o = new HashcatRelease(-1, null, null, null, null, null);
     return $o;
   }
 
@@ -40,7 +40,7 @@ class HashcatReleaseFactory extends AbstractModelFactory {
    * @return HashcatRelease
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HashcatRelease($pk, $dict['version'], $dict['time'], $dict['url'], $dict['commonFiles'], $dict['rootdir'], $dict['minver']);
+    $o = new HashcatRelease($pk, $dict['version'], $dict['time'], $dict['url'], $dict['rootdir'], $dict['minver']);
     return $o;
   }
 
