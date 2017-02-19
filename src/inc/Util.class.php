@@ -315,7 +315,7 @@ class Util {
     );
     $formats = array(
       "Text",
-      "HCCAP",
+      "HCCAPX",
       "Binary",
       "Superhashlist"
     );

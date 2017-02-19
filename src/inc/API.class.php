@@ -896,7 +896,8 @@ class API {
   
   //TODO Handle the case where an agent needs reassignment
   public static function solve($QUERY) {
-    global $FACTORIES;
+    /** @var DataSet $CONFIG */
+    global $FACTORIES, $CONFIG;
   
     if (!PQuerySolve::isValid($QUERY)) {
       API::sendErrorResponse(PActions::SOLVE, "Invalid hashes query!");
@@ -1006,7 +1007,7 @@ class API {
         continue;
       }
       //TODO: get separator from config
-      $splitLine = explode(":", $crackedHash);
+      $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
       $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
       switch ($format) {
         case DHashlistFormat::PLAIN:
@@ -1039,15 +1040,16 @@ class API {
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
-          $network = $splitLine[0];
-          $plain = $splitLine[1];
-          // QUICK-FIX WPA/WPA2 strip mac address
-          if (preg_match("/.+:[0-9a-f]{12}:[0-9a-f]{12}$/", $network) === 1) {
-            // TODO: extend DB model by MACs and implement detection
-            $network = substr($network, 0, strlen($network) - 26);
+          $hash = $splitLine[0];
+          $mac_ap = $splitLine[1];
+          $mac_cli = $splitLine[2];
+          for($i=0;$i<3;$i++){
+            unset($splitLine[0]); // delete everything except the plain
           }
-          $essIDFilter = new QueryFilter(HashBinary::ESSID, $network, "=");
-          $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => $essIDFilter));
+          $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
+          //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
+          $qF = new QueryFilter(HashBinary::ESSID, $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli, "=");
+          $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
           if (sizeof($hashes) == 0) {
             $skipped++;
           }
