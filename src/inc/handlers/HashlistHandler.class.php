@@ -150,7 +150,8 @@ class HashlistHandler implements Handler {
   
   private function create() {
     /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $LOGIN, $CONFIG;
     
     $name = htmlentities($_POST["name"], false, "UTF-8");
     $salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1) ? "1" : "0";
@@ -272,15 +273,16 @@ class HashlistHandler implements Handler {
       case 1:
         $added = 0;
         while (!feof($file)) {
-          $data = fread($file, 392);
+          $data = fread($file, 393);
           if (strlen($data) == 0) {
             break;
           }
-          if (strlen($data) != 392) {
+          if (strlen($data) != 393) {
             UI::printError("ERROR", "Data file only contains " . strlen($data) . " bytes!");
           }
+          // get the SSID
           $network = "";
-          for ($i = 0; $i < 36; $i++) {
+          for ($i = 10; $i < 42; $i++) {
             $byte = $data[$i];
             if ($byte != "\x00") {
               $network .= $byte;
@@ -289,7 +291,19 @@ class HashlistHandler implements Handler {
               break;
             }
           }
-          $hash = new HashBinary(0, $this->hashlist->getId(), $network, Util::bintohex($data), null, 0, null, 0);
+          // get the AP MAC
+          $mac_ap = "";
+          for($i = 59;$i<65;$i++){
+            $mac_ap .= $data[$i];
+          }
+          $mac_ap = Util::bintohex($mac_ap);
+          // get the Client MAC
+          $mac_cli = "";
+          for($i = 97;$i<103;$i++){
+            $mac_cli .= $data[$i];
+          }
+          $mac_cli = Util::bintohex($mac_cli);
+          $hash = new HashBinary(0, $this->hashlist->getId(), $network.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli, Util::bintohex($data), null, 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }
