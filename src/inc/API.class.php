@@ -880,6 +880,7 @@ class API {
     }
     
     $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
+    $benchType = ($assignedTask->getUseNewBench())?"speed":"run";
     
     API::sendResponse(array(
       PResponseTask::ACTION => PActions::TASK,
@@ -890,7 +891,8 @@ class API {
       PResponseTask::HASHLIST_ID => $assignedTask->getHashlistId(),
       PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
       PResponseTask::STATUS_TIMER => $assignedTask->getStatusTimer(),
-      PResponseTask::FILES => $files
+      PResponseTask::FILES => $files,
+      PResponseTask::BENCHTYPE => $benchType
     ));
   }
   
