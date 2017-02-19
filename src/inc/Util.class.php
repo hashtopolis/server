@@ -296,6 +296,26 @@ class Util {
     return $return;
   }
   
+  public static function escapeSpecial($string){
+    $string = htmlentities($string, false, "UTF-8");
+    $string = str_replace('"', '&#34;', $string);
+    $string = str_replace("'", "&#39;", $string);
+    $string = str_replace('`', '&#96;', $string);
+    return $string;
+  }
+  
+  public static function containsBlacklistedChars($string){
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+    
+    for($i=0;$i<strlen($CONFIG->getVal(DConfig::BLACKLIST_CHARS));$i++){
+      if(strpos($string, $CONFIG->getVal(DConfig::BLACKLIST_CHARS)[$i]) !== false){
+        return true;
+      }
+    }
+    return false;
+  }
+  
   /**
    * Used in Template
    * @param $val string of the array

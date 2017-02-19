@@ -272,7 +272,11 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     $pars = htmlentities($_POST["cmdpars"], false, "UTF-8");
-    //PROPOSAL: Check here that only normal command line parameters are given and not any maliscious code
+
+    if(Util::containsBlacklistedChars($pars)){
+      UI::addMessage(UI::ERROR, "Parameters must contain no blacklisted characters!");
+      return;
+    }
     $this->agent->setCmdPars($pars);
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
