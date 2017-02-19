@@ -191,6 +191,7 @@ class ConfigHandler implements Handler {
         }
       }
     }
+    UI::addMessage(UI::SUCCESS, "Config was updated!");
     $OBJECTS['config'] = $CONFIG;
   }
 }
