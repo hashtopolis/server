@@ -298,8 +298,9 @@ class Util {
   
   public static function escapeSpecial($string){
     $string = htmlentities($string, false, "UTF-8");
-    $string = str_replace('"', '\"', $string);
-    $string = str_replace("'", "\\'", $string);
+    $string = str_replace('"', '&#34;', $string);
+    $string = str_replace("'", "&#39;", $string);
+    $string = str_replace('`', '&#96;', $string);
     return $string;
   }
   
