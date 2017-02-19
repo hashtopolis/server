@@ -296,6 +296,13 @@ class Util {
     return $return;
   }
   
+  public static function escapeSpecial($string){
+    $string = htmlentities($string, false, "UTF-8");
+    $string = str_replace('"', '\"', $string);
+    $string = str_replace("'", "\\'", $string);
+    return $string;
+  }
+  
   public static function containsBlacklistedChars($string){
     /** @var $CONFIG DataSet */
     global $CONFIG;

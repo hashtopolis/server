@@ -15,7 +15,7 @@
 					<tr>
 						<td>[[conf.getVal('item')]]</td>
 						<td>
-							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[htmlentities([[conf.getVal('value')]], false, 'UTF-8')]]">
+							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
 						</td>
 					</tr>
 				{{ENDIF}}
