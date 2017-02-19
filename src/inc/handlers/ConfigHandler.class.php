@@ -174,7 +174,7 @@ class ConfigHandler implements Handler {
   private function updateConfig() {
     global $OBJECTS, $FACTORIES;
     
-    $CONFIG = new DataSet();
+    $CONFIG = $OBJECTS['config'];
     foreach ($_POST as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
