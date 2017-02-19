@@ -150,7 +150,8 @@ class HashlistHandler implements Handler {
   
   private function create() {
     /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $LOGIN, $CONFIG;
     
     $name = htmlentities($_POST["name"], false, "UTF-8");
     $salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1) ? "1" : "0";
@@ -302,7 +303,7 @@ class HashlistHandler implements Handler {
             $mac_cli .= $data[$i];
           }
           $mac_cli = Util::bintohex($mac_cli);
-          $hash = new HashBinary(0, $this->hashlist->getId(), $network, Util::bintohex($data), null, 0, null, 0);
+          $hash = new HashBinary(0, $this->hashlist->getId(), $network.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli, Util::bintohex($data), null, 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }
