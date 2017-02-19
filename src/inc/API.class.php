@@ -35,6 +35,13 @@ class API {
     $FACTORIES->getAgentFactory()->update($agent);
   }
   
+  public static function test(){
+    API::sendResponse(array(
+      PResponse::ACTION => PActions::TEST,
+      PResponse::RESPONSE => PValues::SUCCESS
+    ));
+  }
+  
   public static function setBenchmark($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;

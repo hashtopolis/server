@@ -14,6 +14,9 @@ $QUERY = json_decode(@$_POST[PQuery::QUERY], true);
 file_put_contents("../query.log", Util::getIP() . "=" . $_POST[PQuery::QUERY] . "\n", FILE_APPEND);
 
 switch ($QUERY[PQuery::ACTION]) {
+  case PActions::TEST:
+    API::test();
+    break;
   case PActions::REGISTER:
     API::registerAgent($QUERY);
     break;

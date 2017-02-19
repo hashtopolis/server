@@ -22,6 +22,21 @@
 	\end{verbatim}
 	\pagebreak
 	\section*{Commands}
+	
+	\subsection*{Connection Check}
+	To test the connection to the server or to test if an url is valid, you can issue a test action where the server just should respons with success.
+	\begin{verbatim}
+	{
+	  "action":"test"
+	}
+	\end{verbatim}
+	Response:
+	\begin{verbatim}
+	{
+	  "action":"test",
+	  "response":"SUCCESS"
+	} 
+	\end{verbatim}
 
 	\subsection*{Register}
 	When registering a new client to the server, following query should be used:

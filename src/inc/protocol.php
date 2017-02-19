@@ -302,4 +302,5 @@ class PActions {
   const KEYSPACE = "keyspace";
   const BENCHMARK = "bench";
   const SOLVE = "solve";
+  const TEST = "test";
 }
