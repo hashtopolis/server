@@ -59,6 +59,7 @@ class DConfig {
   const FIELD_SEPARATOR = "fieldseparator";
   const HASHLIST_ALIAS = "hashlistAlias";
   const STATUS_TIMER = "statustimer";
+  const BLACKLIST_CHARS = "blacklistChars";
 }
 
 // log entry types

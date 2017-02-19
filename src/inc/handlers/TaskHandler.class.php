@@ -125,6 +125,10 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }
+    else if(Util::containsBlacklistedChars($cmdline)){
+      UI::addMessage(UI::ERROR, "The command must contain no blacklisted characters!");
+      return;
+    }
     $hashlist = null;
     if ($_POST["hashlist"] == null) {
       // it will be a preconfigured task

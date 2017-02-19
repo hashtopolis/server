@@ -296,6 +296,18 @@ class Util {
     return $return;
   }
   
+  public static function containsBlacklistedChars($string){
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+    
+    for($i=0;$i<strlen($CONFIG->getVal(DConfig::BLACKLIST_CHARS));$i++){
+      if(strpos($string, $CONFIG->getVal(DConfig::BLACKLIST_CHARS)[$i]) !== false){
+        return true;
+      }
+    }
+    return false;
+  }
+  
   /**
    * Used in Template
    * @param $val string of the array
