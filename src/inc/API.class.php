@@ -871,9 +871,9 @@ class API {
       PResponseTask::TASK_ID => $setToTask->getId(),
       PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
       PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
-      PResponseTask::HASHLIST_ID => $setToTask->getHashlistId(),
+      PResponseTask::HASHLIST_ID => (int)$setToTask->getHashlistId(),
       PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
-      PResponseTask::STATUS_TIMER => $setToTask->getStatusTimer(),
+      PResponseTask::STATUS_TIMER => (int)$setToTask->getStatusTimer(),
       PResponseTask::FILES => $files,
       PResponseTask::BENCHTYPE => $benchType
     ));
