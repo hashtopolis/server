@@ -804,8 +804,75 @@ class API {
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-    $assignedTask = null;
-    if ($assignment == null) {
+   
+    // test if the current task is obsolete anyway, this makes it easier to select a new one
+    $currentTask = null;
+    if($assignment != null) {
+      $currentTask = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+    }
+    if($currentTask != null && !Util::taskCanBeUsed($currentTask, $agent)){
+      $FACTORIES::getAssignmentFactory()->delete($assignment);
+      $assignment = null;
+      $currentTask = null;
+    }
+    
+    $setToTask = null;
+    if($assignment == null){
+      // we have no task assigned currently
+      // get the highest priority task possible (needs to be >0 here)
+      $setToTask = Util::getBestTask($agent, $assignment);
+    }
+    else{
+      // we are currently assigned to a task
+      $setToTask = $currentTask;
+      $betterTask = Util::getBestTask($agent, $assignment, $currentTask->getPriority());
+      if($betterTask != null){
+        $setToTask = $betterTask;
+      }
+    }
+    
+    if($setToTask == null){
+      API::sendResponse(array(
+        PResponseTask::ACTION => PActions::TASK,
+        PResponseTask::RESPONSE => PValues::SUCCESS,
+        PResponseTask::TASK_ID => PValues::NONE
+      ));
+    }
+    if($currentTask != null && $setToTask->getId() != $currentTask->getId()){
+      // delete old assignment
+      $FACTORIES::getAssignmentFactory()->delete($assignment);
+      
+      $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
+      $FACTORIES::getAssignmentFactory()->save($assignment);
+    }
+  
+    $qF = new QueryFilter(TaskFile::TASK_ID, $setToTask->getId(), "=");
+    $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
+    $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
+    $files = array();
+    for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
+      $files[] = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class)->getFilename();
+    }
+  
+    $hashlist = $FACTORIES::getHashlistFactory()->get($setToTask->getHashlistId());
+    $benchType = ($setToTask->getUseNewBench())?"speed":"run";
+  
+    API::sendResponse(array(
+      PResponseTask::ACTION => PActions::TASK,
+      PResponseTask::RESPONSE => PValues::SUCCESS,
+      PResponseTask::TASK_ID => $setToTask->getId(),
+      PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
+      PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
+      PResponseTask::HASHLIST_ID => $setToTask->getHashlistId(),
+      PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
+      PResponseTask::STATUS_TIMER => $setToTask->getStatusTimer(),
+      PResponseTask::FILES => $files,
+      PResponseTask::BENCHTYPE => $benchType
+    ));
+    
+    
+    
+    /*if ($assignment == null) {
       //search which task we should assign to the agent
       $nextTask = Util::getNextTask($agent);
       if ($nextTask == null) {
@@ -916,7 +983,7 @@ class API {
       PResponseTask::STATUS_TIMER => $assignedTask->getStatusTimer(),
       PResponseTask::FILES => $files,
       PResponseTask::BENCHTYPE => $benchType
-    ));
+    ));*/
   }
   
   //TODO Handle the case where an agent needs reassignment

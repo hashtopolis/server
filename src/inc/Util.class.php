@@ -11,6 +11,7 @@ use DBA\QueryFilter;
 use DBA\StoredValue;
 use DBA\SuperHashlistHashlist;
 use DBA\Task;
+use DBA\TaskFile;
 
 /**
  *
@@ -107,6 +108,70 @@ class Util {
       if(!Util::taskCanBeUsed($task, $agent)){
         return $task;
       }
+    }
+    return null;
+  }
+  
+  /**
+   * @param $agent Agent
+   * @param int $priority
+   * @return Task
+   */
+  public static function getBestTask($agent, $assignment = null, $priority = 0){
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
+  
+    $priorityFilter = new QueryFilter(Task::PRIORITY, $priority, ">");
+    $trustedFilter = new QueryFilter(Hashlist::SECRET, $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
+    $cpuFilter = new QueryFilter(Task::IS_CPU_TASK, $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
+    $crackedFilter = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<", $FACTORIES::getHashlistFactory());
+    $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
+    $descOrder = new OrderFilter(Task::PRIORITY, "DESC");
+    
+    // we first load all tasks and go down by priority and take the first one which matches completely
+    
+    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
+    foreach ($joinedTasks['Task'] as $task) {
+      /** @var $task Task */
+      $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
+      $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
+      $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+      $allowed = true;
+      foreach($joinedFiles["File"] as $file){
+        /** @var $file File */
+        if($file->getSecret() > $agent->getIsTrusted()){
+          $allowed = false;
+        }
+      }
+      if(!$allowed){
+        continue; // the client has not enough access to all required files
+      }
+      
+      // now check if the task is fully dispatched
+      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $dispatched = 0;
+      foreach($chunks as $chunk){
+        // if the chunk times out, we need to remove the agent from it, so it can be done by others
+        if($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)){
+          $chunk->setAgentId(null);
+          $FACTORIES::getChunkFactory()->update($chunk);
+        }
+        
+        // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
+        if($chunk->getRprogress() < 10000 && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())){
+          continue; // so it's not count to the dispatched sum
+        }
+        $dispatched += $chunk->getLength();
+      }
+      if($dispatched == $task->getKeyspace()){
+        // task is fully dispatched
+        continue;
+      }
+      
+      // if one matches now, it's the best choice (hopefully)
+      // TODO: make check here if only one assignment etc.
+      return $task;
     }
     return null;
   }
