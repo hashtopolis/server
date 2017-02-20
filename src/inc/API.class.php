@@ -507,7 +507,18 @@ class API {
     switch ($QUERY[PQueryDownload::BINARY_TYPE]) {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
-        $filename = "7zr" . (($agent->getOs() == DOperatingSystem::WINDOWS) ? ".exe" : "");
+        $filename = "7zr";
+        switch($agent->getOs()){
+          case DOperatingSystem::LINUX:
+            $filename .= ".unix";
+            break;
+          case DOperatingSystem::WINDOWS:
+            $filename .= ".exe";
+            break;
+          case DOperatingSystem::OSX:
+            $filename .= ".osx";
+            break;
+        }
         $content = file_get_contents(dirname(__FILE__) . "/../static/" . $filename);
         API::sendResponse(array(
           PResponseDownload::ACTION => PActions::DOWNLOAD,
