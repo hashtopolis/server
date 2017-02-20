@@ -363,7 +363,8 @@ class Util {
     );
     $oses = array(
       "<img src='static/unix.png' alt='Unix' title='Linux'>",
-      "<img src='static/win.png' alt='Win' title='Windows'>"
+      "<img src='static/win.png' alt='Win' title='Windows'>",
+      "<img src='static/osx.png' alt='OS X' title='OS X'>"
     );
     $formats = array(
       "Text",
