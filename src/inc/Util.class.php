@@ -184,6 +184,10 @@ class Util {
   public static function taskCanBeUsed($task, $agent){
     global $FACTORIES;
     
+    if($task->getKeyspace() == 0){
+      return true;
+    }
+    
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
