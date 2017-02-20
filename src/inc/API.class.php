@@ -407,7 +407,7 @@ class API {
     //create access token & save agent details
     $token = Util::randomString(10);
     $gpu = htmlentities(implode("\n", $gpu), false, "UTF-8");
-    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal(DConfig::AGENT_TIMEOUT), "", 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
+    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
       API::sendResponse(array(
