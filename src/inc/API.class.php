@@ -821,6 +821,7 @@ class API {
       // we have no task assigned currently
       // get the highest priority task possible (needs to be >0 here)
       $setToTask = Util::getBestTask($agent, $assignment);
+      $newAssignment = true;
     }
     else{
       // we are currently assigned to a task
@@ -828,6 +829,10 @@ class API {
       $betterTask = Util::getBestTask($agent, $assignment, $currentTask->getPriority());
       if($betterTask != null){
         $setToTask = $betterTask;
+        $newAssignment = true;
+      }
+      else{
+        $newAssignment = false;
       }
     }
     
@@ -842,8 +847,10 @@ class API {
       // delete old assignment
       $FACTORIES::getAssignmentFactory()->delete($assignment);
     }
-    $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
-    $FACTORIES::getAssignmentFactory()->save($assignment);
+    if($newAssignment) {
+      $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
+      $FACTORIES::getAssignmentFactory()->save($assignment);
+    }
   
     $qF = new QueryFilter(TaskFile::TASK_ID, $setToTask->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
