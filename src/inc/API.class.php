@@ -300,14 +300,14 @@ class API {
     }
     else if ($task->getKeyspace() == 0) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
       ));
     }
     else if ($assignment->getBenchmark() == 0) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
       ));
@@ -318,11 +318,14 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
     foreach ($chunks as $chunk) {
+      if(($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId()) && $chunk->getRProgress() != 10000){
+        continue;
+      }
       $dispatched += $chunk->getLength();
     }
-    if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
+    if ($task->getProgress() == $task->getKeyspace() && $task->getKeyspace() == $dispatched) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
       ));
