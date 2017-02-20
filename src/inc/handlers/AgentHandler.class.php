@@ -134,6 +134,9 @@ class AgentHandler implements Handler {
     }
     
     $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
+    if($this->agent == null){
+      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+    }
     if ($this->agent == null) {
       UI::printError("FATAL", "Agent with ID " . $_POST['agentId'] . " not found!");
     }
