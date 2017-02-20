@@ -725,7 +725,7 @@ class API {
         header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
           $limit = 0;
-          $size = 50000; //TODO: make this configurable
+          $size = 10000; //TODO: make this configurable
           do {
             $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
             $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list, "=");
