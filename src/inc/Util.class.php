@@ -1,4 +1,5 @@
 <?php
+use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\File;
 use DBA\Hashlist;
@@ -99,12 +100,33 @@ class Util {
     $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
     //$jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
     //$jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
-    $descOrder = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
+    $descOrder = new OrderFilter(Task::PRIORITY, "DESC");
     $nextTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
-    if (sizeof($nextTask['Task']) > 0) {
-      return $nextTask['Task'][0];
+    foreach ($nextTask['Task'] as $task) {
+      if(!Util::isFullyDispatched($task)){
+        return $task;
+      }
     }
     return null;
+  }
+  
+  /**
+   * @param $task Task
+   * @return bool
+   */
+  public static function isFullyDispatched($task){
+    global $FACTORIES;
+    
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $dispatched = 0;
+    foreach ($chunks as $chunk) {
+      $dispatched += $chunk->getLength();
+    }
+    if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
+      return true;
+    }
+    return false;
   }
   
   /**
