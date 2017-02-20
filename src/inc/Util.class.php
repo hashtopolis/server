@@ -1,4 +1,5 @@
 <?php
+use DBA\Agent;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\File;
@@ -103,7 +104,7 @@ class Util {
     $descOrder = new OrderFilter(Task::PRIORITY, "DESC");
     $nextTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
     foreach ($nextTask['Task'] as $task) {
-      if(!Util::isFullyDispatched($task)){
+      if(!Util::taskCanBeUsed($task, $agent)){
         return $task;
       }
     }
@@ -112,20 +113,29 @@ class Util {
   
   /**
    * @param $task Task
+   * @param $agent Agent
    * @return bool
    */
-  public static function isFullyDispatched($task){
+  public static function taskCanBeUsed($task, $agent){
     global $FACTORIES;
     
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
+    $uncompletedChunk = null;
     foreach ($chunks as $chunk) {
       $dispatched += $chunk->getLength();
+      if($uncompletedChunk == null && 10000 != $chunk->getRprogress() && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())){
+        $uncompletedChunk = $chunk;
+      }
     }
-    if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
-      return true;
+    if ($task->getKeyspace() != $dispatched) {
+      return true; // task is not fully dispatched
     }
+    else if($uncompletedChunk != null){
+      return true; // there is at least one chunk with no agent or the agent which is requesting
+    }
+    
     return false;
   }
   
