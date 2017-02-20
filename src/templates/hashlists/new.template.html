@@ -100,7 +100,7 @@
 				<td>
 					<select class='form-control' name="importfile">
 						{{FOREACH impfile;[[impfiles]]}}
-							<option value="[[impfile]]">[[impfile]]</option>
+							<option value="[[impfile.getVal('file')]]">[[impfile.getVal('file')]]</option>
 						{{ENDFOREACH}}
 					</select>
 				</td>
