@@ -868,7 +868,7 @@ class API {
     API::sendResponse(array(
       PResponseTask::ACTION => PActions::TASK,
       PResponseTask::RESPONSE => PValues::SUCCESS,
-      PResponseTask::TASK_ID => $setToTask->getId(),
+      PResponseTask::TASK_ID => (int)$setToTask->getId(),
       PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
       PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
       PResponseTask::HASHLIST_ID => (int)$setToTask->getHashlistId(),
