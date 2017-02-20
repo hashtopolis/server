@@ -725,7 +725,7 @@ class API {
         header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
           $limit = 0;
-          $size = 50000; //TODO: make this configurable
+          $size = 10000; //TODO: make this configurable
           do {
             $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
             $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list, "=");
@@ -804,116 +804,74 @@ class API {
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-    $assignedTask = null;
-    if ($assignment == null) {
-      //search which task we should assign to the agent
-      $nextTask = Util::getNextTask($agent);
-      if ($nextTask == null) {
-        API::sendResponse(array(
-          PResponseTask::ACTION => PActions::TASK,
-          PResponseTask::RESPONSE => PValues::SUCCESS,
-          PResponseTask::TASK_ID => PValues::NONE
-        ));
-      }
-      $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0);
-      $FACTORIES::getAssignmentFactory()->save($assignment);
-      $assignedTask = $nextTask;
+   
+    // test if the current task is obsolete anyway, this makes it easier to select a new one
+    $currentTask = null;
+    if($assignment != null) {
+      $currentTask = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
     }
-    else {
-      //check if the agent is assigned to the correct task, if not assign him the right one
-      $task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
-      $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $sumProgress = 0;
-      $chunkIds = array();
-      $dispatched = 0;
-      $incompleteChunk = null;
-      foreach($chunks as $chunk){
-        $sumProgress += $chunk->getProgress();
-        $chunkIds[] = $chunk->getId();
-        $dispatched += $chunk->getLength();
-        if($incompleteChunk == null && 10000 != $chunk->getRprogress() && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())){
-          $incompleteChunk = $chunk;
-        }
+    if($currentTask != null && !Util::taskCanBeUsed($currentTask, $agent)){
+      $FACTORIES::getAssignmentFactory()->delete($assignment);
+      $assignment = null;
+      $currentTask = null;
+    }
+    
+    $setToTask = null;
+    if($assignment == null){
+      // we have no task assigned currently
+      // get the highest priority task possible (needs to be >0 here)
+      $setToTask = Util::getBestTask($agent);
+      $newAssignment = true;
+    }
+    else{
+      // we are currently assigned to a task
+      $setToTask = $currentTask;
+      $betterTask = Util::getBestTask($agent, $currentTask->getPriority());
+      if($betterTask != null){
+        $setToTask = $betterTask;
+        $newAssignment = true;
       }
-      $finished = false;
-      
-      if($incompleteChunk == null){
-        $finished = true;
-      }
-      if ($task->getKeyspace() == $dispatched) {
-        $finished = true;
-      }
-      
-      //check if the task is finished
-      if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
-        //task is finished
-        $task->setPriority(0);
-        //TODO: make massUpdate
-        foreach($chunks as $chunk){
-          $chunk->setProgress($chunk->getLength());
-          $chunk->setRprogress(10000);
-          $FACTORIES::getChunkFactory()->update($chunk);
-        }
-        $task->setProgress($task->getKeyspace());
-        $FACTORIES::getTaskFactory()->update($task);
-        $finished = true;
-      }
-      
-      $highPriorityTask = Util::getNextTask($agent, $task->getPriority());
-      if ($highPriorityTask != null) {
-        //there is a more important task
-        $FACTORIES::getAssignmentFactory()->delete($assignment);
-        $assignment = new Assignment(0, $highPriorityTask->getId(), $agent->getId(), 0);
-        $FACTORIES::getAssignmentFactory()->save($assignment);
-        $assignedTask = $highPriorityTask;
-      }
-      else {
-        if (!$finished) {
-          $assignedTask = $task;
-        }
-        else{
-          $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-          $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-          $assignedTask = Util::getNextTask($agent);
-          if($assignedTask != null) {
-            $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0);
-            $FACTORIES::getAssignmentFactory()->save($assignment);
-          }
-        }
+      else{
+        $newAssignment = false;
       }
     }
     
-    if ($assignedTask == null) {
-      //no task available
+    if($setToTask == null){
       API::sendResponse(array(
         PResponseTask::ACTION => PActions::TASK,
         PResponseTask::RESPONSE => PValues::SUCCESS,
         PResponseTask::TASK_ID => PValues::NONE
       ));
     }
-    
-    $qF = new QueryFilter(TaskFile::TASK_ID, $assignedTask->getId(), "=");
+    if($currentTask != null && $setToTask->getId() != $currentTask->getId()){
+      // delete old assignment
+      $FACTORIES::getAssignmentFactory()->delete($assignment);
+    }
+    if($newAssignment) {
+      $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
+      $FACTORIES::getAssignmentFactory()->save($assignment);
+    }
+  
+    $qF = new QueryFilter(TaskFile::TASK_ID, $setToTask->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
     $files = array();
     for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
       $files[] = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class)->getFilename();
     }
-    
-    $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
-    $benchType = ($assignedTask->getUseNewBench())?"speed":"run";
-    
+  
+    $hashlist = $FACTORIES::getHashlistFactory()->get($setToTask->getHashlistId());
+    $benchType = ($setToTask->getUseNewBench())?"speed":"run";
+  
     API::sendResponse(array(
       PResponseTask::ACTION => PActions::TASK,
       PResponseTask::RESPONSE => PValues::SUCCESS,
-      PResponseTask::TASK_ID => $assignedTask->getId(),
-      PResponseTask::ATTACK_COMMAND => $assignedTask->getAttackCmd(),
+      PResponseTask::TASK_ID => $setToTask->getId(),
+      PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
       PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
-      PResponseTask::HASHLIST_ID => $assignedTask->getHashlistId(),
+      PResponseTask::HASHLIST_ID => $setToTask->getHashlistId(),
       PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
-      PResponseTask::STATUS_TIMER => $assignedTask->getStatusTimer(),
+      PResponseTask::STATUS_TIMER => $setToTask->getStatusTimer(),
       PResponseTask::FILES => $files,
       PResponseTask::BENCHTYPE => $benchType
     ));
