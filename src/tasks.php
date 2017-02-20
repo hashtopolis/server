@@ -146,7 +146,7 @@ if (isset($_GET['id'])) {
   }
   $OBJECTS['timeSpent'] = $timeSpent;
   if($task->getKeyspace() != 0 && ($cProgress/$task->getKeyspace()) != 0) {
-    $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()));
+    $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
   }
   else{
     $OBJECTS['timeLeft'] = -1;
