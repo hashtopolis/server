@@ -827,11 +827,24 @@ class API {
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
       $sumProgress = 0;
       $chunkIds = array();
+      $dispatched = 0;
+      $incompleteChunk = null;
       foreach($chunks as $chunk){
         $sumProgress += $chunk->getProgress();
         $chunkIds[] = $chunk->getId();
+        $dispatched += $chunk->getLength();
+        if($incompleteChunk == null && 10000 != $chunk->getRprogress() && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())){
+          $incompleteChunk = $chunk;
+        }
       }
       $finished = false;
+      
+      if($incompleteChunk == null){
+        $finished = true;
+      }
+      if ($task->getKeyspace() == $dispatched) {
+        $finished = true;
+      }
       
       //check if the task is finished
       if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
