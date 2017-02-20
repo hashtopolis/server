@@ -304,7 +304,7 @@ class HashlistHandler implements Handler {
           }
           $mac_cli = Util::bintohex($mac_cli);
           // we cannot save the network name here, as on the submission we don't get this
-          $hash = new HashBinary(0, $this->hashlist->getId(), /*$network.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).*/$mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli, Util::bintohex($data), null, 0, null, 0);
+          $hash = new HashBinary(0, $this->hashlist->getId(), $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$network, Util::bintohex($data), null, 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }

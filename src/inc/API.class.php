@@ -1041,12 +1041,13 @@ class API {
           //$hash = $splitLine[0];
           $mac_ap = $splitLine[1];
           $mac_cli = $splitLine[2];
+          $essid = $splitLine[3];
           for($i=0;$i<3;$i++){
             unset($splitLine[0]); // delete everything except the plain
           }
           $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
           //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
-          $qF = new QueryFilter(HashBinary::ESSID, $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli, "=");
+          $qF = new QueryFilter(HashBinary::ESSID, $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$essid, "=");
           $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
           if (sizeof($hashes) == 0) {
             $skipped++;
