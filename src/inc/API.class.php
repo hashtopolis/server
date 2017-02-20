@@ -533,8 +533,8 @@ class API {
           API::sendErrorResponse(PQueryDownload::ACTION, "No Hashcat release available!");
         }
         
-        $postfix = array("bin", "exe");
-        $executable = "hashcat64." . $postfix[$agent->getOs()];
+        $postfix = array("hashcat64.bin", "hashcat64.exe", "hashcat");
+        $executable = $postfix[$agent->getOs()];
         
         if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY[PQueryDownload::FORCE_UPDATE]) || $QUERY[PQueryDownload::FORCE_UPDATE] != '1')) {
           API::sendResponse(array(
