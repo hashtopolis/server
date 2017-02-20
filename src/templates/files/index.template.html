@@ -26,7 +26,6 @@
 				<th>File</th>
 				<th><img src="static/lock.gif" alt="Secret"></th>
 				<th style="text-align: right">Size</th>
-				<th>Used</th>
 				<th>Action</th>
 			</tr>
 			{{FOREACH file;[[files]]}}
@@ -53,7 +52,6 @@
 					<td class='num'>
 						[[Util::nicenum([[file.getSize()]])]]B
 					</td>
-					<td>TODO x</td>
 					<td>
 						{{IF [[login.getLevel()]] >= 30}}
 							<form action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
