@@ -14,10 +14,8 @@ class Lang {
   private $defaultLanguage = "EN-en";
   
   /**
-   * Constructs the language object, it needs to be provided with a array containing all
-   * available languages. Language files need to be included BEFORE this constructor.
+   * Constructs the language object. Language files need to be included BEFORE this constructor.
    *
-   * @param array $avail containing all available languages
    */
   public function __construct() {
     global $LANG;

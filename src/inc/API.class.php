@@ -151,7 +151,9 @@ class API {
   }
   
   /**
+   * @param $keyspace
    * @param $benchmark
+   * @param $chunkTime
    * @param int $tolerance
    * @return int
    */
