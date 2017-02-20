@@ -117,7 +117,7 @@ class Util {
    * @param int $priority
    * @return Task
    */
-  public static function getBestTask($agent, $assignment = null, $priority = 0){
+  public static function getBestTask($agent, $priority = 0){
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
   
@@ -131,8 +131,11 @@ class Util {
     // we first load all tasks and go down by priority and take the first one which matches completely
     
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
-    foreach ($joinedTasks['Task'] as $task) {
+    for ($i=0;$i<sizeof($joinedTasks['Task']);$i++) {
       /** @var $task Task */
+      /** @var $hashlist Hashlist */
+      $task = $joinedTasks['Task'][$i];
+      $hashlist = $joinedTasks['Hashlist'][$i];
       $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
       $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
       $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -151,7 +154,9 @@ class Util {
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
       $dispatched = 0;
+      $sumProgress = 0;
       foreach($chunks as $chunk){
+        $sumProgress += $chunk->getProgress();
         // if the chunk times out, we need to remove the agent from it, so it can be done by others
         if($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)){
           $chunk->setAgentId(null);
@@ -166,6 +171,20 @@ class Util {
       }
       if($task->getKeyspace() != 0 && $dispatched == $task->getKeyspace()){
         // task is fully dispatched
+        continue;
+      }
+  
+      if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
+        //task is finished
+        $task->setPriority(0);
+        //TODO: make massUpdate
+        foreach($chunks as $chunk){
+          $chunk->setProgress($chunk->getLength());
+          $chunk->setRprogress(10000);
+          $FACTORIES::getChunkFactory()->update($chunk);
+        }
+        $task->setProgress($task->getKeyspace());
+        $FACTORIES::getTaskFactory()->update($task);
         continue;
       }
       

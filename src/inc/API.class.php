@@ -820,13 +820,13 @@ class API {
     if($assignment == null){
       // we have no task assigned currently
       // get the highest priority task possible (needs to be >0 here)
-      $setToTask = Util::getBestTask($agent, $assignment);
+      $setToTask = Util::getBestTask($agent);
       $newAssignment = true;
     }
     else{
       // we are currently assigned to a task
       $setToTask = $currentTask;
-      $betterTask = Util::getBestTask($agent, $assignment, $currentTask->getPriority());
+      $betterTask = Util::getBestTask($agent, $currentTask->getPriority());
       if($betterTask != null){
         $setToTask = $betterTask;
         $newAssignment = true;
