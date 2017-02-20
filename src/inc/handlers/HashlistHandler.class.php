@@ -422,15 +422,23 @@ class HashlistHandler implements Handler {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    
-    $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getHashlistFactory());
-    $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
+  
+    $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
+    $jF = new JoinFilter($FACTORIES::getHashlistFactory(), SuperHashlistHashlist::SUPER_HASHLIST_ID, Hashlist::HASHLIST_ID, $FACTORIES::getSuperHashlistHashlistFactory());
     $superlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
     for ($x = 0; $x < sizeof($superlists['Hashlist']); $x++) {
-      $superlist = Util::cast($superlists['Hashlist'][$x], Hashlist::class);
+      /** @var Hashlist $superlist */
+      $superlist = $superlists['Hashlist'][$x];
       $superlist->setHashCount($superlist->getHashCount() - $this->hashlist->getHashCount());
       $superlist->setCracked($superlist->getCracked() - $this->hashlist->getCracked());
-      $FACTORIES::getHashlistFactory()->update($superlist);
+      
+      if($superlist->getHashCount() <= 0){
+        // this superlist has no hashlist which belongs to it anymore -> delete it
+        $FACTORIES::getHashlistFactory()->delete($superlist);
+      }
+      else {
+        $FACTORIES::getHashlistFactory()->update($superlist);
+      }
     }
     
     //TODO: delete from zapqueue
