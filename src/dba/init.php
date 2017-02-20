@@ -6,10 +6,11 @@
  * Time: 15:02
  */
 
-define("DBA_SERVER", "localhost");
-define("DBA_DB", "database");
-define("DBA_USER", "example_user");
-define("DBA_PASS", "password");
+/** @var $CONN array */
+define("DBA_SERVER", $CONN['server']);
+define("DBA_DB", $CONN['db']);
+define("DBA_USER", $CONN['user']);
+define("DBA_PASS", $CONN['pass']);
 
 require_once(dirname(__FILE__) . "/AbstractModel.class.php");
 require_once(dirname(__FILE__) . "/AbstractModelFactory.class.php");
