@@ -841,10 +841,9 @@ class API {
     if($currentTask != null && $setToTask->getId() != $currentTask->getId()){
       // delete old assignment
       $FACTORIES::getAssignmentFactory()->delete($assignment);
-      
-      $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
-      $FACTORIES::getAssignmentFactory()->save($assignment);
     }
+    $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
+    $FACTORIES::getAssignmentFactory()->save($assignment);
   
     $qF = new QueryFilter(TaskFile::TASK_ID, $setToTask->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
