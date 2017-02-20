@@ -145,7 +145,7 @@ class AgentHandler implements Handler {
     if (!$task) {
       UI::printError("ERROR", "Invalid task!");
     }
-    $qF = new QueryFilter(Agent::AGENT_ID, $_POST['agentId'], "=");
+    $qF = new QueryFilter(Agent::AGENT_ID, $this->agent->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     
     //determine benchmark number
@@ -156,7 +156,7 @@ class AgentHandler implements Handler {
     $qF4 = new QueryFilter(Chunk::AGENT_ID, $this->agent->getId(), "=");
     $qF5 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
-    $entries = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4, $qF5), 'order' => array($oF)));
+    $entries = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4, $qF5), $FACTORIES::ORDER => array($oF)));
     if (sizeof($entries) > 0) {
       $benchmark = Util::cast($entries[0], Chunk::class)->getLength();
     }
