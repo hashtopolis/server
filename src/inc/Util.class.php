@@ -164,7 +164,7 @@ class Util {
         }
         $dispatched += $chunk->getLength();
       }
-      if($dispatched == $task->getKeyspace()){
+      if($task->getKeyspace() != 0 && $dispatched == $task->getKeyspace()){
         // task is fully dispatched
         continue;
       }
