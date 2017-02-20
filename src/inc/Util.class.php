@@ -85,34 +85,6 @@ class Util {
   }
   
   /**
-   * Get the next task for an agent
-   * @param $agent \DBA\Agent should be the object
-   * @param $priority int
-   * @return \DBA\Task null if there is no next task
-   */
-  public static function getNextTask($agent, $priority = 0) {
-    global $FACTORIES;
-    
-    //TODO: handle the case, if a task is a single assignment task
-    $priorityFilter = new QueryFilter(Task::PRIORITY, $priority, ">");
-    $trustedFilter = new QueryFilter(Hashlist::SECRET, $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
-    $cpuFilter = new QueryFilter(Task::IS_CPU_TASK, $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
-    $crackedFilter = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<", $FACTORIES::getHashlistFactory());
-    //$qF5 = new QueryFilter("secret", $agent->getIsTrusted(), "<=", $FACTORIES::getFileFactory());
-    $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
-    //$jF2 = new JoinFilter($FACTORIES::getTaskFileFactory(), "taskId", "taskId");
-    //$jF3 = new JoinFilter($FACTORIES::getFileFactory(), "fileId", "fileId", $FACTORIES::getTaskFileFactory());
-    $descOrder = new OrderFilter(Task::PRIORITY, "DESC");
-    $nextTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
-    foreach ($nextTask['Task'] as $task) {
-      if(!Util::taskCanBeUsed($task, $agent)){
-        return $task;
-      }
-    }
-    return null;
-  }
-  
-  /**
    * @param $agent Agent
    * @param int $priority
    * @return Task
