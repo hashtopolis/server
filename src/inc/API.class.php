@@ -376,8 +376,7 @@ class API {
   }
   
   public static function registerAgent($QUERY) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     //check required values
     if (!PQueryRegister::isValid($QUERY)) {
@@ -533,8 +532,6 @@ class API {
         }
         
         $url = $hashcat->getUrl();
-        $files = explode("\n", str_replace(" ", "\n", $hashcat->getCommonFiles()));
-        $files[] = $executable;
         $rootdir = $hashcat->getRootdir();
         
         $agent->setHcVersion($hashcat->getVersion());
@@ -544,7 +541,6 @@ class API {
           PResponseDownload::RESPONSE => PValues::SUCCESS,
           PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
           PResponseDownload::URL => $url,
-          PResponseDownload::FILES => $files,
           PResponseDownload::ROOT_DIR => $rootdir,
           PResponseDownload::EXECUTABLE => $executable
         ));
@@ -1042,7 +1038,7 @@ class API {
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
-          $hash = $splitLine[0];
+          //$hash = $splitLine[0];
           $mac_ap = $splitLine[1];
           $mac_cli = $splitLine[2];
           for($i=0;$i<3;$i++){

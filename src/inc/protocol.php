@@ -239,7 +239,6 @@ class PResponseDownload extends PResponse {
   const VERSION = "version";
   const EXECUTABLE = "executable";
   const URL = "url";
-  const FILES = "files";
   const ROOT_DIR = "rootdir";
 }
 
