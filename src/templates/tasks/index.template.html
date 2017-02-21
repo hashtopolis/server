@@ -51,7 +51,7 @@
 						{{IF [[task.getVal('isActive')]] == 1 && [[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]]}}
 							<img src="static/active.gif" alt="Active">
 						{{ENDIF}}
-					  {{IF [[task.getVal('Task').getIsCpuTask() == 1}}
+					  {{IF [[task.getVal('Task').getIsCpuTask()]] == 1}}
               <br>CPU only
             {{ENDIF}}
 					</td>
