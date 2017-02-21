@@ -93,6 +93,16 @@
         {{ENDIF}}
       </td>
     </tr>
+    <tr>
+      <td>Is CPU only task:</td>
+      <td>
+        {{IF [[task.getVal('Task').getIsCpuTask()]] == 1}}
+          Yes
+        {{ELSE}}
+          No
+        {{ENDIF}}
+      </td>
+    </tr>
     {{IF [[task.getHashlistId()]] != null}}
       <tr>
         <td>Keyspace size:</td>
