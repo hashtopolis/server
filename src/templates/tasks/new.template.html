@@ -68,6 +68,15 @@
       					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]">
       				</td>
       			</tr>
+            <tr>
+              <td>Task is CPU only (gets only CPU only agents assigne):</td>
+              <td>
+                <select name="cpuOnly" class="form-control">
+                  <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}}selected{{ENDIF}}>No</option>
+                  <option value="1" {{IF [[copy.getIsCpuTask()]] == 1}}selected{{ENDIF}}>Yes</option>
+                </select>
+              </td>
+            </tr>
       			<tr>
       				<td colspan="2">
       					<input type="submit" class='btn btn-default' value="Create task">
