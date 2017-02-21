@@ -893,7 +893,6 @@ class API {
     ));
   }
   
-  //TODO Handle the case where an agent needs reassignment
   public static function solve($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
@@ -923,7 +922,10 @@ class API {
     if ($agent == null) {
       API::sendErrorResponse(PActions::SOLVE, "Invalid agent token" . $QUERY[PQuerySolve::TOKEN]);
     }
-    if ($chunk->getAgentId() != $agent->getId()) {
+    else if($agent->getIsActive() == 0){
+      API::sendErrorResponse(PActions::SOLVE, "Agent is marked inactive!");
+    }
+    else if ($chunk->getAgentId() != $agent->getId()) {
       API::sendErrorResponse(PActions::SOLVE, "You are not assigned to this chunk");
     }
     
