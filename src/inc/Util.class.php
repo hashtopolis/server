@@ -172,8 +172,39 @@ class Util {
    * @param $agent Agent
    * @return bool
    */
+  public static function agentHasAccessToTask($task, $agent){
+    global $FACTORIES;
+    
+    // check if the agent has rights to get this
+    $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($task->getHashlistId()));
+    foreach($hashlists as $hashlist){
+      if($hashlist->getSecret() > $agent->getIsTrusted()){
+        return false;
+      }
+    }
+    $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
+    $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
+    $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    foreach($joinedFiles['File'] as $file){
+      /** @var $file File */
+      if($file->getSecret() > $agent->getIsTrusted()){
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  /**
+   * @param $task Task
+   * @param $agent Agent
+   * @return bool
+   */
   public static function taskCanBeUsed($task, $agent){
     global $FACTORIES;
+  
+    if(!self::agentHasAccessToTask($task, $agent)){
+      return false;
+    }
     
     if($task->getKeyspace() == 0){
       return true;

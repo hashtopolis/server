@@ -332,6 +332,18 @@ class API {
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
       ));
     }
+    
+    // check here either if we have a better task to run on, or we have no access anymore to this task
+    $bestTask = Util::getBestTask($agent);
+    if($bestTask != null && $task->getId() != $bestTask->getId()){
+      API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
+    }
+    else if($bestTask == null){
+      // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
+      if(!Util::agentHasAccessToTask($task, $agent)){
+        API::sendErrorResponse(PActions::CHUNK, "Not allowed to work on this task!");
+      }
+    }
   
     $qF1 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "<");
     $qF2 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -339,7 +351,6 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
     foreach($chunks as $chunk){
       if($chunk->getAgentId() == $agent->getId()){
-        //API::sendChunk($chunk);
         API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
       $timeoutTime = time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT);
@@ -806,7 +817,16 @@ class API {
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-   
+    
+    // check if the agent is inactive
+    if($agent->getIsActive() == 0){
+      API::sendResponse(array(
+        PResponseTask::ACTION => PActions::TASK,
+        PResponseTask::RESPONSE => PValues::SUCCESS,
+        PResponseTask::TASK_ID => PValues::NONE
+      ));
+    }
+  
     // test if the current task is obsolete anyway, this makes it easier to select a new one
     $currentTask = null;
     if($assignment != null) {
