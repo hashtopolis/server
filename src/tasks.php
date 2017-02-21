@@ -52,6 +52,7 @@ if ($autorefresh > 0) { //renew cookie
 $OBJECTS['autorefresh'] = 0;
 if(isset($_GET['id']) || !isset($_GET['new'])) {
   $OBJECTS['autorefresh'] = $autorefresh;
+  $OBJECTS['autorefreshUrl'] = "";
 }
 
 if (isset($_GET['id'])) {
