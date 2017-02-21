@@ -69,7 +69,7 @@
       				</td>
       			</tr>
             <tr>
-              <td>Task is CPU only (gets only CPU only agents assigne):</td>
+              <td>Task is CPU only (gets only CPU only agents assignee):</td>
               <td>
                 <select name="cpuOnly" class="form-control">
                   <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}}selected{{ENDIF}}>No</option>
@@ -78,7 +78,7 @@
               </td>
             </tr>
             <tr>
-              <td>Task is small (only one agent gets assignd to it):</td>
+              <td>Task is small (only one agent gets assigned to it):</td>
               <td>
                 <select name="isSmall" class="form-control">
                   <option value="0" {{IF [[copy.getIsSmall()]] == 0}}selected{{ENDIF}}>No</option>
