@@ -145,6 +145,13 @@ class AgentHandler implements Handler {
     if (!$task) {
       UI::printError("ERROR", "Invalid task!");
     }
+    
+    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
+    if($task->getIsSmall() && sizeof($assignments) > 0){
+      UI::printError("ERROR", "You cannot assign agent to this task as the limit of assignments is reached!");
+    }
+    
     $qF = new QueryFilter(Agent::AGENT_ID, $this->agent->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     

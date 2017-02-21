@@ -1,5 +1,6 @@
 <?php
 use DBA\Agent;
+use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\File;
@@ -160,8 +161,28 @@ class Util {
         continue;
       }
       
-      // if one matches now, it's the best choice (hopefully)
       // TODO: make check here if only one assignment etc.
+      // if we want to check single assignments we should make sure that the assigned one is not blocking when he becomes inactive.
+      // so if an agent is inactive on a small task we unassign him that we can assign another one to it
+      if($task->getIsSmall()){
+        $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+        $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
+        $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
+        $removed = 0;
+        for($i=0;$i<sizeof($joined['Agent']);$i++){
+          /** @var Agent $ag */
+          $ag = $joined['Agent'][$i];
+          if(time() - $ag->getLastAct() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0){
+            $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$i]); // delete timed out
+            $removed++;
+          }
+        }
+        if($removed < sizeof($joined['Agent'])){
+          continue; // still some assigned
+        }
+      }
+      
+      // if one matches now, it's the best choice (hopefully)
       return $task;
     }
     return null;
