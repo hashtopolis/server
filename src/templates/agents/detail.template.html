@@ -70,6 +70,16 @@
       <td>[[agent.getUid()]]</td>
     </tr>
     <tr>
+      <td>CPU only agent:</td>
+      <td>
+        {{IF [[agent.getCpuOnly()]] == 0}}
+        No
+        {{ELSE}}
+        Yes
+        {{ENDIF}}
+      </td>
+    </tr>
+    <tr>
       <td>Graphic cards:</td>
       <td>[[str_replace("\n","<br>",[[agent.getGpus()]])]]</td></tr>
     <tr>
