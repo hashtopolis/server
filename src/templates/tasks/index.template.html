@@ -54,6 +54,9 @@
 					  {{IF [[task.getVal('Task').getIsCpuTask()]] == 1}}
               <br>CPU only
             {{ENDIF}}
+            {{IF [[task.getVal('Task').getIsSmall()]] == 1}}
+              <br>Small Task
+            {{ENDIF}}
 					</td>
 					<td>
         			{{IF [[task.getVal('Hashlist')->getId()]] == null}}

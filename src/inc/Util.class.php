@@ -161,13 +161,12 @@ class Util {
         continue;
       }
       
-      // TODO: make check here if only one assignment etc.
       // if we want to check single assignments we should make sure that the assigned one is not blocking when he becomes inactive.
       // so if an agent is inactive on a small task we unassign him that we can assign another one to it
       if($task->getIsSmall()){
         $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
         $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
-        $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
+        $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
         $removed = 0;
         for($i=0;$i<sizeof($joined['Agent']);$i++){
           /** @var Agent $ag */

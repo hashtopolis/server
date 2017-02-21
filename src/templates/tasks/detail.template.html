@@ -103,6 +103,16 @@
         {{ENDIF}}
       </td>
     </tr>
+    <tr>
+      <td>Is small task:</td>
+      <td>
+        {{IF [[task.getIsSmall()]] == 1}}
+          Yes
+        {{ELSE}}
+          No
+        {{ENDIF}}
+      </td>
+    </tr>
     {{IF [[task.getHashlistId()]] != null}}
       <tr>
         <td>Keyspace size:</td>
