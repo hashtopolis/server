@@ -96,7 +96,7 @@
     <tr>
       <td>Is CPU only task:</td>
       <td>
-        {{IF [[task.getVal('Task').getIsCpuTask()]] == 1}}
+        {{IF [[task.getIsCpuTask()]] == 1}}
           Yes
         {{ELSE}}
           No
