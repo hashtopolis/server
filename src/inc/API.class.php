@@ -314,6 +314,9 @@ class API {
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
       ));
     }
+    else if($agent->getIsActive() == 0){
+      API::sendErrorResponse(PActions::CHUNK, "Agent is inactive!");
+    }
   
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -817,15 +820,6 @@ class API {
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-    
-    // check if the agent is inactive
-    if($agent->getIsActive() == 0){
-      API::sendResponse(array(
-        PResponseTask::ACTION => PActions::TASK,
-        PResponseTask::RESPONSE => PValues::SUCCESS,
-        PResponseTask::TASK_ID => PValues::NONE
-      ));
-    }
   
     // test if the current task is obsolete anyway, this makes it easier to select a new one
     $currentTask = null;
