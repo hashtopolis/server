@@ -120,12 +120,12 @@
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
-	The server then will send a base64 encoded binary (attribute 'executable') encapsulated in JSON:
+	The server then will send a url where to downooad the binary:
 	\begin{verbatim}
 	{
 	  "action":"download",
 	  "response":"SUCCESS",
-	  "executable":"a2prbGhqa2doa.....2xrZTNnNDM0Zw=="
+	  "url":"https://example.com/getapp.php"
 	}
 	\end{verbatim}
 	To check if a new Hashcat binary is available, following command is used.

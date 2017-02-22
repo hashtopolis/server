@@ -535,11 +535,14 @@ class API {
             $filename .= ".osx";
             break;
         }
-        $content = file_get_contents(dirname(__FILE__) . "/../static/" . $filename);
+        $url = explode("/", $_SERVER['REQUEST_URI']);
+        unset($url[sizeof($url) - 1]);
+        unset($url[sizeof($url) - 1]);
+        $path = implode("/", $url)."/static/" . $filename;
         API::sendResponse(array(
           PResponseDownload::ACTION => PActions::DOWNLOAD,
           PResponseDownload::RESPONSE => PValues::SUCCESS,
-          PResponseDownload::EXECUTABLE => base64_encode($content)
+          PResponseDownload::EXECUTABLE => $path
         ));
         break;
       case PValuesDownloadBinaryType::HASHCAT:
