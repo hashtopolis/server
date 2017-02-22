@@ -22,6 +22,9 @@ $message = "";
 if (isset($_POST['action'])) {
   $hashtypeHandler = new HashtypeHandler();
   $hashtypeHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 $hashtypes = $FACTORIES::getHashTypeFactory()->filter(array());

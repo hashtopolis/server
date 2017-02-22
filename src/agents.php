@@ -37,7 +37,9 @@ if (isset($_POST['action'])) {
   $binaryId = @$_POST['binary'];
   $agentHandler = new AgentHandler($_POST['agentId']);
   $agentHandler->handle($_POST['action']);
-  Util::refresh();
+  if(UI::getNumMessages() == 0) {
+    Util::refresh();
+  }
 }
 
 $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");

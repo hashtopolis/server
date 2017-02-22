@@ -28,6 +28,9 @@ $MENU->setActive("tasks_list");
 if (isset($_POST['action'])) {
   $taskHandler = new TaskHandler();
   $taskHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 //test if auto-reload is enabled

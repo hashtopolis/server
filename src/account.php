@@ -17,6 +17,9 @@ $MENU->setActive("account");
 if (isset($_POST['action'])) {
   $accountHandler = new AccountHandler($LOGIN->getUserID());
   $accountHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 $group = $FACTORIES::getRightGroupFactory()->get($LOGIN->getUser()->getRightGroupId());

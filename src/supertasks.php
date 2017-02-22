@@ -26,6 +26,9 @@ $MENU->setActive("tasks_super");
 if (isset($_POST['action'])) {
   $supertaskHandler = new SupertaskHandler();
   $supertaskHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 if(isset($_GET['create'])){

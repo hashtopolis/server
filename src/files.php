@@ -26,6 +26,9 @@ $message = "";
 if (isset($_POST['action'])) {
   $fileHandler = new FileHandler();
   $fileHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 $view = "dict";

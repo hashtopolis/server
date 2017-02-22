@@ -21,6 +21,9 @@ $MENU->setActive("users_list");
 if (isset($_POST['action'])) {
   $usersHandler = new UsersHandler();
   $usersHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 if(isset($_GET['new'])){

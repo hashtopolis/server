@@ -22,6 +22,9 @@ $MENU->setActive("config_server");
 if (isset($_POST['action'])) {
   $configHandler = new ConfigHandler();
   $configHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 $configuration = array();
