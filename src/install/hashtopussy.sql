@@ -5,7 +5,6 @@ CREATE TABLE `Agent` (
   `uid`          VARCHAR(200)
                  COLLATE utf8_bin      NOT NULL,
   `os`           INT(11)               NOT NULL,
-  `gpuDriver`    INT(11)               NOT NULL,
   `gpus`         TEXT COLLATE utf8_bin NOT NULL,
   `hcVersion`    VARCHAR(20)
                  COLLATE utf8_bin      NOT NULL,
