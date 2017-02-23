@@ -538,7 +538,7 @@ class API {
         $url = explode("/", $_SERVER['REQUEST_URI']);
         unset($url[sizeof($url) - 1]);
         unset($url[sizeof($url) - 1]);
-        $path = implode("/", $url)."/static/" . $filename;
+        $path = Util::buildServerUrl().implode("/", $url)."/static/" . $filename;
         API::sendResponse(array(
           PResponseDownload::ACTION => PActions::DOWNLOAD,
           PResponseDownload::RESPONSE => PValues::SUCCESS,
