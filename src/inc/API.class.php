@@ -1049,7 +1049,7 @@ class API {
           if(sizeof($plainUpdates) >= 1000){
             $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
             $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
-            $qF = new ContainFilter(Hash::IS_CRACKED, $crackHashes);
+            $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
             $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
@@ -1099,7 +1099,7 @@ class API {
     if($format == DHashlistFormat::PLAIN && sizeof($plainUpdates) > 0){
       $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
       $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
-      $qF = new ContainFilter(Hash::IS_CRACKED, $crackedHashes);
+      $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
       $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
