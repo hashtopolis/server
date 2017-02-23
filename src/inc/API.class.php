@@ -1007,12 +1007,17 @@ class API {
     
     // process solved hashes, should there be any
     $crackedHashes = $QUERY[PQuerySolve::CRACKED_HASHES];
-    foreach ($crackedHashes as $crackedHash) {
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+  
+    $plainUpdates = array();
+    $crackHashes = array();
+    
+    for($i=0;$i<sizeof($crackedHashes);$i++) {
+      $crackedHash = $crackedHashes[$i];
       if ($crackedHash == "") {
         continue;
       }
       $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
-      $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
       switch ($format) {
         case DHashlistFormat::PLAIN:
           $hashFilter = new QueryFilter(Hash::HASH, $splitLine[0], "=");
@@ -1035,21 +1040,21 @@ class API {
             $skipped++;
           }
           
-          for($i=0;$i<sizeof($hashes);$i+=1000) {
-            $plainUpdates = array();
-            $crackedHashes = array();
-            for($j=$i;$j<$i+1000&&$j<sizeof($hashes);$j++){
-              $cracked[$hashes[$j]->getHashlistId()]++;
-              $plainUpdates[] = new MassUpdateSet($hashes[$j]->getId(), $plain);
-              $crackedHashes[] = $hashes[$j]->getId();
-            }
+          foreach($hashes as $hash){
+            $cracked[$hash->getHashlistId()]++;
+            $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
+            $crackHashes[] = $hash->getId();
+          }
   
+          if(sizeof($plainUpdates) >= 1000){
             $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
             $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
-            $qF = new ContainFilter(Hash::IS_CRACKED, $crackedHashes);
+            $qF = new ContainFilter(Hash::IS_CRACKED, $crackHashes);
             $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+            $plainUpdates = array();
+            $crackHashes = array();
           }
           
           /*foreach ($hashes as $hash) {  //TODO Mass-update
@@ -1090,8 +1095,17 @@ class API {
           //$plain = $splitLine[1];
           break;
       }
-      $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     }
+    if($format == DHashlistFormat::PLAIN && sizeof($plainUpdates) > 0){
+      $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
+      $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
+      $qF = new ContainFilter(Hash::IS_CRACKED, $crackedHashes);
+      $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
+      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+    }
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     //insert #Cracked hashes and update in hashlist how many hashes were cracked
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
