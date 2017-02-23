@@ -1034,13 +1034,28 @@ class API {
           if (sizeof($hashes) == 0) {
             $skipped++;
           }
-          foreach ($hashes as $hash) {  //TODO Mass-update
+          $plainUpdates = array();
+          $crackedHashes = array();
+          foreach($hashes as $hash){
+            $cracked[$hash->getHashlistId()]++;
+            $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
+            $crackedHashes[] = $hash->getId();
+          }
+          
+          $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
+          $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
+          $qF = new ContainFilter(Hash::IS_CRACKED, $crackedHashes);
+          $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+          $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
+          $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+          
+          /*foreach ($hashes as $hash) {  //TODO Mass-update
             $cracked[$hash->getHashlistId()]++;
             $hash->setPlaintext($plain);
             $hash->setChunkId($chunk->getId());
             $hash->setIsCracked(1);
             $FACTORIES::getHashFactory()->update($hash);
-          }
+          }*/
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
