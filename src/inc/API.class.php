@@ -1011,7 +1011,6 @@ class API {
       if ($crackedHash == "") {
         continue;
       }
-      //TODO: get separator from config
       $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
       $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
       switch ($format) {
