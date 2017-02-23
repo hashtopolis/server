@@ -451,6 +451,35 @@ class HashlistHandler implements Handler {
       $taskList[] = $task->getId();
     }
     $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+  
+    switch ($this->hashlist->getFormat()) {
+      case 0:
+        $count = $FACTORIES::getHashlistFactory()->countFilter(array());
+        if ($count > 1) {
+          $deleted = 1;
+          $qF = new QueryFilter(Hash::HASHLIST_ID, $this->hashlist->getId(), "=");
+          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
+          while ($deleted > 0) {
+            $result = $FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)));
+            $deleted = $result->rowCount();
+            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+          }
+        }
+        else {
+          $FACTORIES::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
+        }
+        break;
+      case 1:
+      case 2:
+        $qF = new QueryFilter(HashBinary::HASHLIST_ID, $this->hashlist->getId(), "=");
+        $FACTORIES::getHashBinaryFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+        break;
+      case 3:
+        $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $this->hashlist->getId(), "=");
+        $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+        break;
+    }
     
     if (sizeof($taskList) > 0) {
       $qF = new ContainFilter(TaskFile::TASK_ID, $taskList);
@@ -467,37 +496,7 @@ class HashlistHandler implements Handler {
     $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    switch ($this->hashlist->getFormat()) {
-      case 0:
-        $count = $FACTORIES::getHashlistFactory()->countFilter(array());
-        if ($count > 1) {
-          $deleted = 1;
-          $qF = new QueryFilter(Hash::HASHLIST_ID, $this->hashlist->getId(), "=");
-          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
-          while ($deleted > 0) {
-            $result = $FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)));
-            $deleted = $result->rowCount();
-            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-          }
-        }
-        else {
-          $FACTORIES::getAgentFactory()->getDB()->query("TRUNCAT TABLE Hash");
-        }
-        break;
-      case 1:
-      case 2:
-        $qF = new QueryFilter(HashBinary::HASHLIST_ID, $this->hashlist->getId(), "=");
-        $FACTORIES::getHashBinaryFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
-        break;
-      case 3:
-        $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $this->hashlist->getId(), "=");
-        $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
-        break;
-    }
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     switch ($this->hashlist->getFormat()) {
       case 0:
       case 1:
