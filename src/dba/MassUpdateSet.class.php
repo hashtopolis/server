@@ -24,6 +24,6 @@ class MassUpdateSet {
   }
   
   function getMassQuery($key) {
-    return "WHEN " . $key . " = ? THEN ?";
+    return "WHEN " . $key . " = ? THEN ? ";
   }
 }
