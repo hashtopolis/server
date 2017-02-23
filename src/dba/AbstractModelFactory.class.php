@@ -622,7 +622,7 @@ abstract class AbstractModelFactory {
     $vals = array();
     
     foreach($updates as $update){
-      $query .= $update->getMassQuery();
+      $query .= $update->getMassQuery($matchingColumn);
       array_push($vals, $update->getMatchValue());
       array_push($vals, $update->getUpdateValue());
     }
