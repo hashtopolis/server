@@ -1034,20 +1034,23 @@ class API {
           if (sizeof($hashes) == 0) {
             $skipped++;
           }
-          $plainUpdates = array();
-          $crackedHashes = array();
-          foreach($hashes as $hash){
-            $cracked[$hash->getHashlistId()]++;
-            $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
-            $crackedHashes[] = $hash->getId();
-          }
           
-          $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
-          $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
-          $qF = new ContainFilter(Hash::IS_CRACKED, $crackedHashes);
-          $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
-          $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
-          $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+          for($i=0;$i<sizeof($hashes);$i+=1000) {
+            $plainUpdates = array();
+            $crackedHashes = array();
+            for($j=$i;$j<$i+1000&&$j<sizeof($hashes);$j++){
+              $cracked[$hashes[$j]->getHashlistId()]++;
+              $plainUpdates[] = new MassUpdateSet($hashes[$j]->getId(), $plain);
+              $crackedHashes[] = $hashes[$j]->getId();
+            }
+  
+            $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
+            $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
+            $qF = new ContainFilter(Hash::IS_CRACKED, $crackedHashes);
+            $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+            $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
+            $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+          }
           
           /*foreach ($hashes as $hash) {  //TODO Mass-update
             $cracked[$hash->getHashlistId()]++;
