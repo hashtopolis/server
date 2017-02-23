@@ -91,10 +91,24 @@ class AgentHandler implements Handler {
       case 'downloadagent':
         $this->downloadAgent();
         break;
+      case 'agentcpu':
+        $this->setAgentCpu();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function setAgentCpu(){
+    global $FACTORIES;
+  
+    $cpuOnly = 0;
+    if($_POST['cpuOnly'] == 1){
+      $cpuOnly = 1;
+    }
+    $this->agent->setCpuOnly($cpuOnly);
+    $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
   private function downloadAgent(){
