@@ -509,6 +509,8 @@ class API {
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryDownload::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
     
+    API::updateAgent($QUERY, $agent);
+    
     // provide agent with requested download
     switch ($QUERY[PQueryDownload::BINARY_TYPE]) {
       case PValuesDownloadBinaryType::EXTRACTOR:
@@ -596,6 +598,8 @@ class API {
     if ($assignment == null) {
       API::sendErrorResponse(PActions::ERROR, "You are not assigned to this task!");
     }
+  
+    API::updateAgent($QUERY, $agent);
     
     //save error message
     $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY[PQueryError::MESSAGE]);
@@ -655,6 +659,8 @@ class API {
     }
     $filename = $file->getFilename();
     $extension = explode(".", $filename)[sizeof(explode(".", $filename)) - 1];
+  
+    API::updateAgent($QUERY, $agent);
     
     API::sendResponse(array(
       PQueryFile::ACTION => PActions::FILE,
@@ -723,6 +729,8 @@ class API {
     else {
       $hashlists[] = $hashlist->getId();
     }
+  
+    API::updateAgent($QUERY, $agent);
     
     if (sizeof($hashlists) == 0) {
       API::sendErrorResponse(PActions::HASHES, "No hashlists selected!");
@@ -810,6 +818,8 @@ class API {
         PResponseTask::TASK_ID => PValues::NONE
       ));
     }
+  
+    API::updateAgent($QUERY, $agent);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
@@ -978,7 +988,8 @@ class API {
     }
     $chunk->setState($state);
     $FACTORIES::getChunkFactory()->update($chunk);
-    
+  
+    API::updateAgent($QUERY, $agent);
     
     $hlistar = Util::checkSuperHashlist($hashList);
     $hlistarIds = array();
@@ -1172,7 +1183,7 @@ class API {
         foreach ($zaps as $zap) {
           $toZap[] = $zap->getHash();
         }
-        $agent->setLastAct(time());
+        $agent->setLastTime(time());
         $FACTORIES::getAgentFactory()->update($agent);
         
         // update hashList age for agent to this task
