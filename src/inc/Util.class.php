@@ -29,7 +29,16 @@ class Util {
   }
   
   public static function createLogEntry($issuer, $issuerId, $level, $message){
-    global $FACTORIES;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
+    
+    $count = $FACTORIES::getLogEntryFactory()->countFilter(array());
+    if($count > $CONFIG->getVal(DConfig::NUMBER_LOGENTRIES)*1.2){
+      // if we have exceeded the log entry limit by 20%, delete the oldest ones
+      $toDelete = round($CONFIG->getVal(DConfig::NUMBER_LOGENTRIES)*0.2);
+      $oF = new OrderFilter(LogEntry::TIME, "ASC LIMIT $toDelete");
+      $FACTORIES::getLogEntryFactory()->massDeletion(array($FACTORIES::ORDER => $oF));
+    }
     
     $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
     $FACTORIES::getLogEntryFactory()->save($entry);

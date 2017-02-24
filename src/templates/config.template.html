@@ -11,14 +11,17 @@
 				<th>Value</th>
 			</tr>
 			{{FOREACH conf;[[configuration]]}}
-				{{IF [[conf.getVal('item')]] != 'password'}}
-					<tr>
-						<td>[[conf.getVal('item')]]</td>
-						<td>
+				<tr>
+					<td>[[conf.getVal('item')]]</td>
+					<td>
+						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == [[DConfigType::STRING_INPUT]]}}
 							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
-						</td>
-					</tr>
-				{{ENDIF}}
+						{{ENDIF}}
+						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == [[DConfigType::NUMBER_INPUT]]}}
+							<input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
+						{{ENDIF}}
+					</td>
+				</tr>
 			{{ENDFOREACH}}
 			<tr>
 				<td colspan="2">
