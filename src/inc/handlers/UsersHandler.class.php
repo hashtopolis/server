@@ -76,7 +76,7 @@ class UsersHandler implements Handler {
     //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
     //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
     //TODO: send proper email for created user
-    Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New User created: " . $user->getUsername());
+    Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New User created: " . $user->getUsername());
     header("Location: users.php");
     die();
   }

@@ -53,7 +53,7 @@ class HashtypeHandler implements Handler {
       UI::addMessage(UI::ERROR, "Failed to add new hash type!");
       return;
     }
-    Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashtype added: " . $hashtype->getDescription());
+    Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashtype added: " . $hashtype->getDescription());
     UI::addMessage(UI::SUCCESS, "New hashtype created successfully!");
   }
   

@@ -47,7 +47,7 @@ class HashcatHandler implements Handler {
       UI::addMessage(UI::ERROR, "Could not create new hashcat release!");
     }
     else {
-      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New hashcat release was created: " . $version);
+      Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New hashcat release was created: " . $version);
       header("Location: hashcat.php");
       die();
     }

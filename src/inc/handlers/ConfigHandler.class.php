@@ -63,7 +63,7 @@ class ConfigHandler implements Handler {
     $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getHashlistFactory()->massDeletion(array());
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    Util::createLogEntry("User", $LOGIN->getUserID(), "WARN", "Complete clear was executed!");
+    Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::WARN, "Complete clear was executed!");
   }
   
   private function scanFiles() {
