@@ -1058,14 +1058,6 @@ class API {
             $plainUpdates = array();
             $crackHashes = array();
           }
-          
-          /*foreach ($hashes as $hash) {  //TODO Mass-update
-            $cracked[$hash->getHashlistId()]++;
-            $hash->setPlaintext($plain);
-            $hash->setChunkId($chunk->getId());
-            $hash->setIsCracked(1);
-            $FACTORIES::getHashFactory()->update($hash);
-          }*/
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
