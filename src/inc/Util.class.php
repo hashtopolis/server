@@ -139,14 +139,16 @@ class Util {
       $sumProgress = 0;
       foreach($chunks as $chunk){
         $sumProgress += $chunk->getProgress();
+        $isTimeout = false;
         // if the chunk times out, we need to remove the agent from it, so it can be done by others
         if($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)){
-          $chunk->setAgentId(null);
-          $FACTORIES::getChunkFactory()->update($chunk);
+          //$chunk->setAgentId(null);
+          //$FACTORIES::getChunkFactory()->update($chunk);
+          $isTimeout = true;
         }
         
         // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
-        if($chunk->getRprogress() < 10000 && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())){
+        if($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId())){
           continue; // so it's not count to the dispatched sum
         }
         $dispatched += $chunk->getLength();
