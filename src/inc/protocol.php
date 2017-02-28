@@ -261,6 +261,7 @@ class PResponseTask extends PResponse {
   const STATUS_TIMER = "statustimer";
   const FILES = "files";
   const BENCHTYPE = "benchType";
+  const HASHLIST_ALIAS = "hashlistAlias";
 }
 
 class PResponseChunk extends PResponse {

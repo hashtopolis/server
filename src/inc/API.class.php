@@ -892,7 +892,8 @@ class API {
       PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
       PResponseTask::STATUS_TIMER => (int)$setToTask->getStatusTimer(),
       PResponseTask::FILES => $files,
-      PResponseTask::BENCHTYPE => $benchType
+      PResponseTask::BENCHTYPE => $benchType,
+      PResponseTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
     ));
   }
   
