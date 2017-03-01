@@ -100,10 +100,6 @@ INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
   (2, 'benchtime', '30'),
   (3, 'chunktime', '600'),
   (4, 'chunktimeout', '30'),
-  (5, 'emailaddr', 'email@example.org'),
-  (6, 'emailerror', '0'),
-  (7, 'emailhldone', '0'),
-  (8, 'emailtaskdone', '0'),
   (9, 'fieldseparator', ':'),
   (10, 'hashlistAlias', '#HL#'),
   (11, 'statustimer', '5'),
@@ -466,7 +462,7 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
   (5, 'Administrator', 50);
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`)
-VALUES (NULL, 'csharp', 'Windows', 'hashtopus.exe');
+VALUES (NULL, 'csharp', 'Windows', 'hashtopussy.exe');
 
 CREATE TABLE `Session` (
   `sessionId`        INT(11)      NOT NULL,
