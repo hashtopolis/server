@@ -28,14 +28,14 @@ class Util {
     return DBA\Util::cast($obj, $to_class);
   }
   
-  public static function createLogEntry($issuer, $issuerId, $level, $message){
+  public static function createLogEntry($issuer, $issuerId, $level, $message) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
     $count = $FACTORIES::getLogEntryFactory()->countFilter(array());
-    if($count > $CONFIG->getVal(DConfig::NUMBER_LOGENTRIES)*1.2){
+    if ($count > $CONFIG->getVal(DConfig::NUMBER_LOGENTRIES) * 1.2) {
       // if we have exceeded the log entry limit by 20%, delete the oldest ones
-      $toDelete = round($CONFIG->getVal(DConfig::NUMBER_LOGENTRIES)*0.2);
+      $toDelete = round($CONFIG->getVal(DConfig::NUMBER_LOGENTRIES) * 0.2);
       $oF = new OrderFilter(LogEntry::TIME, "ASC LIMIT $toDelete");
       $FACTORIES::getLogEntryFactory()->massDeletion(array($FACTORIES::ORDER => $oF));
     }
@@ -99,10 +99,10 @@ class Util {
    * @param int $priority
    * @return Task
    */
-  public static function getBestTask($agent, $priority = 0){
+  public static function getBestTask($agent, $priority = 0) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-  
+    
     $priorityFilter = new QueryFilter(Task::PRIORITY, $priority, ">");
     $trustedFilter = new QueryFilter(Hashlist::SECRET, $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
     $cpuFilter = new QueryFilter(Task::IS_CPU_TASK, $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
@@ -113,7 +113,7 @@ class Util {
     // we first load all tasks and go down by priority and take the first one which matches completely
     
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
-    for ($i=0;$i<sizeof($joinedTasks['Task']);$i++) {
+    for ($i = 0; $i < sizeof($joinedTasks['Task']); $i++) {
       /** @var $task Task */
       /** @var $hashlist Hashlist */
       $task = $joinedTasks['Task'][$i];
@@ -122,13 +122,13 @@ class Util {
       $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
       $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
       $allowed = true;
-      foreach($joinedFiles["File"] as $file){
+      foreach ($joinedFiles["File"] as $file) {
         /** @var $file File */
-        if($file->getSecret() > $agent->getIsTrusted()){
+        if ($file->getSecret() > $agent->getIsTrusted()) {
           $allowed = false;
         }
       }
-      if(!$allowed){
+      if (!$allowed) {
         continue; // the client has not enough access to all required files
       }
       
@@ -137,32 +137,32 @@ class Util {
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
       $dispatched = 0;
       $sumProgress = 0;
-      foreach($chunks as $chunk){
+      foreach ($chunks as $chunk) {
         $sumProgress += $chunk->getProgress();
         $isTimeout = false;
         // if the chunk times out, we need to remove the agent from it, so it can be done by others
-        if($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)){
+        if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
           //$chunk->setAgentId(null);
           //$FACTORIES::getChunkFactory()->update($chunk);
           $isTimeout = true;
         }
         
         // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
-        if($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId())){
+        if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId())) {
           continue; // so it's not count to the dispatched sum
         }
         $dispatched += $chunk->getLength();
       }
-      if($task->getKeyspace() != 0 && $dispatched == $task->getKeyspace()){
+      if ($task->getKeyspace() != 0 && $dispatched == $task->getKeyspace()) {
         // task is fully dispatched
         continue;
       }
-  
+      
       if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
         //task is finished
         $task->setPriority(0);
         //TODO: make massUpdate
-        foreach($chunks as $chunk){
+        foreach ($chunks as $chunk) {
           $chunk->setProgress($chunk->getLength());
           $chunk->setRprogress(10000);
           $FACTORIES::getChunkFactory()->update($chunk);
@@ -174,20 +174,20 @@ class Util {
       
       // if we want to check single assignments we should make sure that the assigned one is not blocking when he becomes inactive.
       // so if an agent is inactive on a small task we unassign him that we can assign another one to it
-      if($task->getIsSmall()){
+      if ($task->getIsSmall()) {
         $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
         $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
         $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
         $removed = 0;
-        for($i=0;$i<sizeof($joined['Agent']);$i++){
+        for ($i = 0; $i < sizeof($joined['Agent']); $i++) {
           /** @var Agent $ag */
           $ag = $joined['Agent'][$i];
-          if(time() - $ag->getLastAct() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0){
+          if (time() - $ag->getLastAct() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
             $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$i]); // delete timed out
             $removed++;
           }
         }
-        if($removed < sizeof($joined['Agent'])){
+        if ($removed < sizeof($joined['Agent'])) {
           continue; // still some assigned
         }
       }
@@ -203,22 +203,22 @@ class Util {
    * @param $agent Agent
    * @return bool
    */
-  public static function agentHasAccessToTask($task, $agent){
+  public static function agentHasAccessToTask($task, $agent) {
     global $FACTORIES;
     
     // check if the agent has rights to get this
     $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($task->getHashlistId()));
-    foreach($hashlists as $hashlist){
-      if($hashlist->getSecret() > $agent->getIsTrusted()){
+    foreach ($hashlists as $hashlist) {
+      if ($hashlist->getSecret() > $agent->getIsTrusted()) {
         return false;
       }
     }
     $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach($joinedFiles['File'] as $file){
+    foreach ($joinedFiles['File'] as $file) {
       /** @var $file File */
-      if($file->getSecret() > $agent->getIsTrusted()){
+      if ($file->getSecret() > $agent->getIsTrusted()) {
         return false;
       }
     }
@@ -230,14 +230,14 @@ class Util {
    * @param $agent Agent
    * @return bool
    */
-  public static function taskCanBeUsed($task, $agent){
+  public static function taskCanBeUsed($task, $agent) {
     global $FACTORIES;
-  
-    if(!self::agentHasAccessToTask($task, $agent)){
+    
+    if (!self::agentHasAccessToTask($task, $agent)) {
       return false;
     }
     
-    if($task->getKeyspace() == 0){
+    if ($task->getKeyspace() == 0) {
       return true;
     }
     
@@ -247,14 +247,14 @@ class Util {
     $uncompletedChunk = null;
     foreach ($chunks as $chunk) {
       $dispatched += $chunk->getLength();
-      if($uncompletedChunk == null && 10000 != $chunk->getRprogress() && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())){
+      if ($uncompletedChunk == null && 10000 != $chunk->getRprogress() && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())) {
         $uncompletedChunk = $chunk;
       }
     }
     if ($task->getKeyspace() != $dispatched) {
       return true; // task is not fully dispatched
     }
-    else if($uncompletedChunk != null){
+    else if ($uncompletedChunk != null) {
       return true; // there is at least one chunk with no agent or the agent which is requesting
     }
     
@@ -351,7 +351,7 @@ class Util {
     if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
       $ip = $_SERVER['HTTP_CLIENT_IP'];
     }
-    elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    else if (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
       $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
     }
     else {
@@ -441,16 +441,14 @@ class Util {
     $return = "";
     if ($seconds > 86400) {
       $days = floor($seconds / 86400);
-      if ($days > 0) {
-        $return .= $days . "d ";
-      }
+      $return = $days . "d ";
       $seconds = $seconds % 86400;
     }
     $return .= gmdate("H:i:s", $seconds);
     return $return;
   }
   
-  public static function escapeSpecial($string){
+  public static function escapeSpecial($string) {
     $string = htmlentities($string, false, "UTF-8");
     $string = str_replace('"', '&#34;', $string);
     $string = str_replace("'", "&#39;", $string);
@@ -458,12 +456,12 @@ class Util {
     return $string;
   }
   
-  public static function containsBlacklistedChars($string){
+  public static function containsBlacklistedChars($string) {
     /** @var $CONFIG DataSet */
     global $CONFIG;
     
-    for($i=0;$i<strlen($CONFIG->getVal(DConfig::BLACKLIST_CHARS));$i++){
-      if(strpos($string, $CONFIG->getVal(DConfig::BLACKLIST_CHARS)[$i]) !== false){
+    for ($i = 0; $i < strlen($CONFIG->getVal(DConfig::BLACKLIST_CHARS)); $i++) {
+      if (strpos($string, $CONFIG->getVal(DConfig::BLACKLIST_CHARS)[$i]) !== false) {
         return true;
       }
     }
@@ -588,69 +586,58 @@ class Util {
    * @return array (boolean, string) success, msg detailing what happened
    */
   public static function uploadFile($target, $type, $sourcedata) {
-    //global $uperrs;
-    
     $success = false;
-    $msg = "<b>Adding file $target:</b><br>";
+    $msg = "ALL_OK";
     if (!file_exists($target)) {
       switch ($type) {
         case "paste":
-          $msg .= "Creating file from text field...";
           if (file_put_contents($target, $sourcedata)) {
-            $msg .= "OK";
             $success = true;
           }
           else {
-            $msg .= "ERROR!";
+            $msg = "Unable to save pasted content!";
           }
           break;
         
         case "upload":
           $hashfile = $sourcedata;
           if ($hashfile["error"] == 0) {
-            $msg .= "Moving uploaded file...";
             if (move_uploaded_file($hashfile["tmp_name"], $target) && file_exists($target)) {
-              $msg .= "OK";
               $success = true;
             }
             else {
-              $msg .= "ERROR";
+              $msg = "Failed to move uploaded file to right place!";
             }
           }
           else {
-            $msg .= "Upload file error: "; //. $uperrs[$hashfile["error"]];
+            $msg = "File upload failed: ". $hashfile['error'];
           }
           break;
         
         case "import":
-          $msg .= "Loading imported file...";
           if (file_exists("import/" . $sourcedata)) {
             rename("import/" . $sourcedata, $target);
             if (file_exists($target)) {
-              $msg .= "OK";
               $success = true;
             }
             else {
-              $msg .= "Could not move source to target";
+              $msg = "Renaming of file from import directory failed!";
             }
           }
           else {
-            $msg .= "Source file does not exist";
+            $msg = "Source file in import directory does not exist!";
           }
           break;
         
         case "url":
-          $local = basename($sourcedata);
-          $msg .= "Downloading remote file <a href=\"$sourcedata\" target=\"_blank\">$local</a>...";
-          
           $furl = fopen($sourcedata, "rb");
           if (!$furl) {
-            $msg .= "Could not open url at source data";
+            $msg = "Could not open url at source data!";
           }
           else {
             $fileLocation = fopen($target, "w");
             if (!$fileLocation) {
-              $msg .= "Could not open target";
+              $msg = "Could not open target file!";
             }
             else {
               $downed = 0;
@@ -658,18 +645,16 @@ class Util {
               $last_logged = time();
               while (!feof($furl)) {
                 if (!$data = fread($furl, $buffersize)) {
-                  $msg .= "READ ERROR";
+                  $msg = "READ ERROR on download";
                   break;
                 }
                 fwrite($fileLocation, $data);
                 $downed += strlen($data);
                 if ($last_logged < time() - 10) {
-                  $msg .= Util::nicenum($downed, 1024) . "B...\n";
                   $last_logged = time();
                 }
               }
               fclose($fileLocation);
-              $msg .= "OK (" . Util::nicenum($downed, 1024) . "B)";
               $success = true;
             }
             fclose($furl);
@@ -677,28 +662,27 @@ class Util {
           break;
         
         default:
-          $msg .= "Unknown import type.";
+          $msg = "Unknown import type!";
           break;
       }
     }
     else {
-      $msg .= "File already exists.";
+      $msg = "File already exists!";
     }
-    $msg .= "<br>";
     return array($success, $msg);
   }
   
-  public static function buildServerUrl(){
-    $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0))?"https://":"https://";
+  public static function buildServerUrl() {
+    $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "https://";
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
-    if($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80){
+    if ($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80) {
       $port = "";
     }
-    else{
+    else {
       $port = ":$port";
     }
-    return $protocol.$hostname.$port;
+    return $protocol . $hostname . $port;
   }
   
   /**

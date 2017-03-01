@@ -74,7 +74,7 @@ class FileHandler implements Handler {
             }
           }
           else {
-            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place!");
+            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
           }
         }
         break;
@@ -103,7 +103,7 @@ class FileHandler implements Handler {
             }
           }
           else {
-            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place!");
+            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
           }
         }
         break;
@@ -123,7 +123,7 @@ class FileHandler implements Handler {
           }
         }
         else {
-          UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place!");
+          UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
         }
         break;
     }
