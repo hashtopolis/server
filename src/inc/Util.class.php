@@ -28,6 +28,12 @@ class Util {
     return DBA\Util::cast($obj, $to_class);
   }
   
+  /**
+   * @param $issuer string API or User
+   * @param $issuerId string either the ID of the user or the token of the client
+   * @param $level DLogEntry
+   * @param $message string
+   */
   public static function createLogEntry($issuer, $issuerId, $level, $message) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
@@ -45,7 +51,7 @@ class Util {
   }
   
   /**
-   * Scans the import-directory for files.
+   * Scans the import-directory for files. Directories are ignored.
    * @return array of all files in the top-level directory /../import
    */
   public static function scanImportDirectory() {
@@ -64,7 +70,7 @@ class Util {
   }
   
   /**
-   * Calculates variable. Used in Templates
+   * Calculates variable. Used in Templates.
    * @param $in mixed calculation to be done
    * @return mixed
    */
@@ -73,11 +79,11 @@ class Util {
   }
   
   /**
-   * Saves a file into the DB using the FileFactory
+   * Saves a file into the DB using the FileFactory.
    * @param $path string
    * @param $name string
    * @param $type string
-   * @return bool result of the save()-function.
+   * @return bool true if the save of the file model succeeded
    */
   public static function insertFile($path, $name, $type) {
     global $FACTORIES;
@@ -95,9 +101,11 @@ class Util {
   }
   
   /**
+   * Searches for the best task which can be assigned to a given agent. It respects all configuration for cpuOnly tasks,
+   * trusted states, etc.
    * @param $agent Agent
-   * @param int $priority
-   * @return Task
+   * @param $priority int
+   * @return Task current best task or null if there is no optimal task (priority bigger than the given limit) available
    */
   public static function getBestTask($agent, $priority = 0) {
     /** @var $CONFIG DataSet */
@@ -142,13 +150,11 @@ class Util {
         $isTimeout = false;
         // if the chunk times out, we need to remove the agent from it, so it can be done by others
         if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-          //$chunk->setAgentId(null);
-          //$FACTORIES::getChunkFactory()->update($chunk);
           $isTimeout = true;
         }
         
         // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
-        if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId())) {
+        if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId() || $chunk->getAgentId() == null)) {
           continue; // so it's not count to the dispatched sum
         }
         $dispatched += $chunk->getLength();
@@ -199,9 +205,11 @@ class Util {
   }
   
   /**
+   * Determines if an agent can be granted access to the given task, so if the agent has trusted if at least one file
+   * of the task or the hashlist requires it.
    * @param $task Task
    * @param $agent Agent
-   * @return bool
+   * @return bool true if access to task can be given to agent
    */
   public static function agentHasAccessToTask($task, $agent) {
     global $FACTORIES;
@@ -226,9 +234,11 @@ class Util {
   }
   
   /**
+   * Tests if this task can be used to run for this agent. It checks if there are incomplete chunks available which are currently
+   * not worked on, or if there is keyspace left which needs to be dispatched.
    * @param $task Task
    * @param $agent Agent
-   * @return bool
+   * @return bool true if task has at least one chunk left to give to the agent
    */
   public static function taskCanBeUsed($task, $agent) {
     global $FACTORIES;
@@ -281,6 +291,8 @@ class Util {
   }
   
   /**
+   * This filesize is able to determine the file size of a given file, also if it's bigger than 4GB which causes
+   * some problems with the built-in filesize() function of PHP.
    * @param $file string Filepath you want to get the size from
    * @return int -1 if the file doesn't exist, else filesize
    */
@@ -313,7 +325,7 @@ class Util {
   }
   
   /**
-   * Refreshes the page
+   * Refreshes the page with the current url, also includes the query string.
    */
   public static function refresh() {
     global $_SERVER;
@@ -327,6 +339,8 @@ class Util {
   }
   
   /**
+   * Checks if the given list is a superhashlist and returns an array containing all hashlists belonging to this superhashlist.
+   * If the hashlist is not a superhashlist it just returns an array containing the list itself.
    * @param $list hashlist-object
    * @return Hashlist[] of all superhashlists belonging to the $list
    */
@@ -343,8 +357,8 @@ class Util {
     return array($list);
   }
   
-  //OLD PART
   /**
+   * Tries to determine the IP of the client.
    * @return string 0.0.0.0 or the client IP
    */
   public static function getIP() {
@@ -364,7 +378,7 @@ class Util {
   }
   
   /**
-   * Checks if a file is writable
+   * Checks if files are writable. If at least one of the files in the list is not writable it returns false.
    * @param $arr array of files to check
    * @return bool
    */
@@ -395,6 +409,8 @@ class Util {
   }
   
   /**
+   * Checks if the task is completed and returns the html tick image if this is the case.
+   * TODO: remove this function and add this tick as a glyphicon and also without using this function
    * @param $prog int progress so far
    * @param $total int total to be done
    * @return string either the check.png with Finished or an empty string
@@ -408,7 +424,7 @@ class Util {
   }
   
   /**
-   * Used in Template
+   * Returns the username from the given userId
    * @param $id int ID for the user
    * @return string username or unknown-id
    */
@@ -424,6 +440,8 @@ class Util {
   
   /**
    * Used in Template. Subtracts two variables
+   * TODO: this should be removed, as it can be done by Util::calculate
+   * TODO: also check if we really need this calculating function or if it can be done otherwise
    * @param $x int value 1
    * @param $y int value 2
    * @return mixed
@@ -448,6 +466,12 @@ class Util {
     return $return;
   }
   
+  /**
+   * Escapes some special string which should be put as value in form fields to avoid breaking. This function should still be used
+   * together with htmlentities(), this function just cares about some special cases which are not handled by htmlentities().
+   * @param $string string to check
+   * @return string escaped string
+   */
   public static function escapeSpecial($string) {
     $string = htmlentities($string, false, "UTF-8");
     $string = str_replace('"', '&#34;', $string);
@@ -456,6 +480,11 @@ class Util {
     return $string;
   }
   
+  /**
+   * Checks if the given string contains characters which are blacklisted
+   * @param $string string
+   * @return bool true if at least one character is in the blacklist
+   */
   public static function containsBlacklistedChars($string) {
     /** @var $CONFIG DataSet */
     global $CONFIG;
@@ -470,11 +499,12 @@ class Util {
   
   /**
    * Used in Template
+   * TODO: this should be made a bit better
    * @param $val string of the array
    * @param $id int index of the array
    * @return string the element or empty string
    */
-  public static function getStaticArray($val, $id) { // TODO: this function should get obsolete later
+  public static function getStaticArray($val, $id) {
     $platforms = array(
       "unknown",
       "NVidia",
@@ -534,6 +564,7 @@ class Util {
   }
   
   /**
+   * Shows big numbers with the right suffixes (k, M, G)
    * @param $num int integer you want formatted
    * @param int $threshold default 1024
    * @param int $divider default 1024
@@ -580,6 +611,8 @@ class Util {
   }
   
   /**
+   * Puts a given file at the right place, depending on which action is used to add a file.
+   * TODO: this function can be improved, some else blocks can be removed when handling a bit differently
    * @param $target string File you want to write to
    * @param $type string paste, upload, import or url
    * @param $sourcedata string
@@ -672,6 +705,10 @@ class Util {
     return array($success, $msg);
   }
   
+  /**
+   * This function determines the protocol, domain and port of the webserver and puts it together as baseurl.
+   * @return string basic server url
+   */
   public static function buildServerUrl() {
     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "https://";
     $hostname = $_SERVER['HTTP_HOST'];
@@ -788,7 +825,8 @@ class Util {
   }
   
   /**
-   * TODO Document me
+   * Is used by DBA
+   * TODO: this function is not used anymore, can be removed after checking that DBA\Util::createPrefixedString() is used.
    * @param $table
    * @param $dict
    * @return string
@@ -840,6 +878,7 @@ class Util {
   
   /**
    * Get an alert div with type and msg
+   * TODO: should not be in util. better use the struct/messages template
    * @param $type
    * @param $msg
    * @return string
