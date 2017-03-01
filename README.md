@@ -1,3 +1,19 @@
+## BETA State: Important
+
+Hashtopussy currently is in BETA state. This means there may be still some bugs or things not working. You are free to test anything and helping us with reporting detected bugs or problems. 
+
+These features are not working / not ready yet:
+
+- WPA cracking (we still need some times on this as we will support hccapx)
+- Currently only the C# client is completely working, others are just partially implemented
+
+There are parts of the documentation/wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
+
+To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducable.
+
+---
+---
+
 # Hashtopussy 
 
 <img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
