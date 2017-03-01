@@ -3,7 +3,7 @@
 use DBA\Factory;
 
 //set to 1 for debugging
-ini_set("display_errors", "1");
+ini_set("display_errors", "0");
 
 //is required for running well with php7
 //TODO: check if this is still a problem
@@ -11,7 +11,7 @@ ini_set('pcre.jit', '0');
 
 $OBJECTS = array();
 
-$VERSION = "0.2.0 ALPHA";
+$VERSION = "0.2.0 BETA";
 $HOST = $_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
