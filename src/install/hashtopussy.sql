@@ -172,8 +172,7 @@ CREATE TABLE `HashcatRelease` (
   `url`              VARCHAR(200)
                      COLLATE utf8_bin NOT NULL,
   `rootdir`          VARCHAR(200)
-                     COLLATE utf8_bin NOT NULL,
-  `minver`           INT(11)          NOT NULL
+                     COLLATE utf8_bin NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

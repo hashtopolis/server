@@ -31,7 +31,7 @@ class Util {
   /**
    * @param $issuer string API or User
    * @param $issuerId string either the ID of the user or the token of the client
-   * @param $level DLogEntry
+   * @param $level string
    * @param $message string
    */
   public static function createLogEntry($issuer, $issuerId, $level, $message) {

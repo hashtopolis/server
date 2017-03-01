@@ -15,15 +15,13 @@ class HashcatRelease extends AbstractModel {
   private $time;
   private $url;
   private $rootdir;
-  private $minver;
   
-  function __construct($hashcatReleaseId, $version, $time, $url, $rootdir, $minver) {
+  function __construct($hashcatReleaseId, $version, $time, $url, $rootdir) {
     $this->hashcatReleaseId = $hashcatReleaseId;
     $this->version = $version;
     $this->time = $time;
     $this->url = $url;
     $this->rootdir = $rootdir;
-    $this->minver = $minver;
   }
   
   function getKeyValueDict() {
@@ -33,7 +31,6 @@ class HashcatRelease extends AbstractModel {
     $dict['time'] = $this->time;
     $dict['url'] = $this->url;
     $dict['rootdir'] = $this->rootdir;
-    $dict['minver'] = $this->minver;
     
     return $dict;
   }
@@ -85,19 +82,10 @@ class HashcatRelease extends AbstractModel {
   function setRootdir($rootdir){
     $this->rootdir = $rootdir;
   }
-  
-  function getMinver(){
-    return $this->minver;
-  }
-  
-  function setMinver($minver){
-    $this->minver = $minver;
-  }
 
   const HASHCAT_RELEASE_ID = "hashcatReleaseId";
   const VERSION = "version";
   const TIME = "time";
   const URL = "url";
   const ROOTDIR = "rootdir";
-  const MINVER = "minver";
 }

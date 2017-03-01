@@ -79,8 +79,7 @@ $CONF['HashcatRelease'] = array(
   'version',
   'time',
   'url',
-  'rootdir',
-  'minver'
+  'rootdir'
 );
 $CONF['Hash'] = array(
   'hashId',
