@@ -682,9 +682,16 @@ abstract class AbstractModelFactory {
    * @return PDO
    */
   public function getDB($test = false) {
-    $dsn = 'mysql:dbname=' . DBA_DB . ";" . "host=" . DBA_SERVER;
-    $user = DBA_USER;
-    $password = DBA_PASS;
+    if(!$test) {
+      $dsn = 'mysql:dbname=' . DBA_DB . ";" . "host=" . DBA_SERVER;
+      $user = DBA_USER;
+      $password = DBA_PASS;
+    }else{
+      global $CONN;
+      $dsn = 'mysql:dbname=' . $CONN['db'] . ";" . "host=" . $CONN['server'];
+      $user = $CONN['user'];
+      $password = $CONN['pass'];
+    }
     
     if ($this->dbh !== null) {
       return $this->dbh;
