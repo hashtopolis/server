@@ -68,6 +68,7 @@ switch($STEP){
 			setcookie("step", "52", time() + 3600);
 			setcookie("prev", "2", time() + 3600);
 			header("Location: index.php");
+			die();
 		}
 		$TEMPLATE = new Template("install/1");
 		echo $TEMPLATE->render(array());
