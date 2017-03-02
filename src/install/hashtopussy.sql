@@ -461,7 +461,7 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
   (5, 'Administrator', 50);
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`, `version`)
-VALUES (NULL, 'csharp', 'Windows', 'hashtopussy.exe', '0.33');
+VALUES (1, 'csharp', 'Windows', 'hashtopussy.exe', '0.33');
 
 CREATE TABLE `Session` (
   `sessionId`        INT(11)      NOT NULL,
