@@ -8,11 +8,6 @@ if(!isset($_POST[PQuery::QUERY])){
 }
 $QUERY = json_decode(@$_POST[PQuery::QUERY], true);
 
-
-//debug logging
-//TODO: remove later
-file_put_contents("../query.log", Util::getIP() . "=" . $_POST[PQuery::QUERY] . "\n", FILE_APPEND);
-
 switch ($QUERY[PQuery::ACTION]) {
   case PActions::TEST:
     API::test();
