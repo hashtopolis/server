@@ -2,7 +2,7 @@
 
 Hashtopussy currently is in BETA state. This means there may be still some bugs or things not working. You are free to test anything and helping us with reporting detected bugs or problems. 
 
-You NEED to use the very new hashcat version, if it's older than 2nd of March, it will not work. 
+You NEED to use the very new hashcat version [commit 5f7c359](https://github.com/hashcat/hashcat/commit/5f7c3590bab4ebae508443188ca2383997f1a14b) or newer, otherwise it will not work. 
 
 Currently it only works with Apache2 webserver, there is an unknown problem with php-fpm/nginx causing the installation to fail. Until we resolved the problem it's recommended to use Apache2 only. Please inform us if you were able to setup it with nginx.
 
@@ -77,5 +77,5 @@ Some screenshots of Hashtopussy (by winxp5421): [Imgur](http://imgur.com/gallery
 * blazer for modifying the agent to get it working with hashcat v3
 * CynoSure Prime for testing
 * atom for [Hashcat](https://github.com/hashcat/hashcat)
-* curlyboi for the original [Hashtopus] (https://github.com/curlyboi/hashtopus) code
+* curlyboi for the original [Hashtopus](https://github.com/curlyboi/hashtopus) code
 * 7zip binaries are compiled from https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/
