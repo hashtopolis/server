@@ -201,7 +201,7 @@ CREATE TABLE `AgentBinary` (
   `type`         VARCHAR(30)  NOT NULL,
   `version`          VARCHAR(20) NOT NULL,
   `operatingSystems` VARCHAR(30)  NOT NULL,
-  `filename`         VARCHAR(200) NOT NULL
+  `filename`         VARCHAR(200) NOT NULL,
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -460,8 +460,8 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
   (4, 'Superuser', 30),
   (5, 'Administrator', 50);
 
-INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`)
-VALUES (NULL, 'csharp', 'Windows', 'hashtopussy.exe');
+INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`, `version`)
+VALUES (NULL, 'csharp', 'Windows', 'hashtopussy.exe', '0.33');
 
 CREATE TABLE `Session` (
   `sessionId`        INT(11)      NOT NULL,
