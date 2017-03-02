@@ -2,6 +2,8 @@
 
 Hashtopussy currently is in BETA state. This means there may be still some bugs or things not working. You are free to test anything and helping us with reporting detected bugs or problems. 
 
+You NEED to use the very new hashcat version, if it's older than 2nd of March, it will not work. 
+
 These features are not working / not ready yet:
 
 - WPA cracking (we still need some times on this as we will support hccapx)
@@ -12,7 +14,6 @@ There are parts of the documentation/wiki which are not up-to-date. If you detec
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducable.
 
----
 ---
 
 # Hashtopussy 
