@@ -69,7 +69,7 @@ switch($STEP){
 			setcookie("prev", "2", time() + 3600);
 			header("Location: index.php");
 		}
-		$TEMPLATE = new Template("install1");
+		$TEMPLATE = new Template("install/1");
 		echo $TEMPLATE->render(array());
 		break;
 	case 2: //installation should be finished now and user should be able to log in
