@@ -17,13 +17,11 @@ use DBA\User;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
-$write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
+$write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
 
 if($INSTALL){
 	die("Installation is already done!");
 }
-
-//TODO: this script needs to be rewritten to apply to the new dba structure
 
 /** @var array $CONN */
 
