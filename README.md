@@ -5,6 +5,7 @@ Hashtopussy currently is in BETA state. This means there may be still some bugs 
 These features are not working / not ready yet:
 
 - WPA cracking (we still need some times on this as we will support hccapx)
+- Binary hash handling is not complete
 - Currently only the C# client is completely working, others are just partially implemented
 
 There are parts of the documentation/wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
