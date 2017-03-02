@@ -86,9 +86,9 @@ else if (isset($_GET['new'])) {
   $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
   $OBJECTS['agentBinaries'] = $binaries;
   
-  $url = implode("/", $_SERVER['PHP_SELF']);
+  $url = explode("/", $_SERVER['PHP_SELF']);
   unset($url[sizeof($url) - 1]);
-  $OBJECTS['apiUrl'] = Util::buildServerUrl() . "/" . $url . "/api/server.php";
+  $OBJECTS['apiUrl'] = Util::buildServerUrl() . "/" . implode("/", $url) . "/api/server.php";
 }
 else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
