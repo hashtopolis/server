@@ -31,12 +31,12 @@ The application has two parts:
 
 Aiming for high usability even on restricted networks, Hashtopussy communicates over HTTP(S) using own proprietary JSON protocol so its easy to understand and text-readable. 
 
-The server part runs on PHP using MySQL as database back end. It is vital that your MySQL server is configured as well as possible performance wise. 
+The server part runs on PHP using MySQL as database back end. It is vital that your MySQL server is configured with performace in mind. 
 
 Some of the queries can be very expensive and proper configuration makes the difference between few milliseconds of waiting and	disaster multi-second lags. 
 
 The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so. 
-The web admin is therefore the single point of access once your agents were deployed on the cracking machines. 
+The web admin interface is the single point of access once your agents were deployed on the client cracking machines. 
 
 New agent deployment requires one-time password generated in the new agent tab, which protects your server from hashes/files leaking to rogue or fake agents.
 
@@ -54,7 +54,6 @@ New agent deployment requires one-time password generated in the new agent tab, 
 - Many options to import/export data
 - A lot of statistic info about tasks/hashes
 - Visual representation of chunk distribution
-- Event-driven cracking mode
 - Multi-User Support
 - User Permission levels
 
@@ -78,5 +77,5 @@ Some screenshots of Hashtopussy (by winxp5421): [Imgur](http://imgur.com/gallery
 * blazer for modifying the agent to get it working with hashcat v3
 * CynoSure Prime for testing
 * atom for [Hashcat](https://github.com/hashcat/hashcat)
-* curlyboi for the original Hashtopus code
+* curlyboi for the original [Hashtopus] (https://github.com/curlyboi/hashtopus) code
 * 7zip binaries are compiled from https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/
