@@ -201,7 +201,7 @@ CREATE TABLE `AgentBinary` (
   `type`         VARCHAR(30)  NOT NULL,
   `version`          VARCHAR(20) NOT NULL,
   `operatingSystems` VARCHAR(30)  NOT NULL,
-  `filename`         VARCHAR(200) NOT NULL,
+  `filename`         VARCHAR(200) NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -720,26 +720,26 @@ ALTER TABLE `Agent`
 
 ALTER TABLE `Assignment`
   ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
-  ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
 ALTER TABLE `Chunk`
   ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
-  ADD CONSTRAINT `Chunk_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Chunk_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `Error_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
-  ADD CONSTRAINT `Error_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Error_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
 ALTER TABLE `Hash`
   ADD CONSTRAINT `Hash_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`),
+  ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
 
 ALTER TABLE `HashBinary`
   ADD CONSTRAINT `HashBinary_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`),
+  ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
 
 ALTER TABLE `Hashlist`
-  ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`),
+  ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
 
 ALTER TABLE `HashlistAgent`
   ADD CONSTRAINT `HashlistAgent_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
@@ -748,7 +748,7 @@ ALTER TABLE `HashlistAgent`
   ADD CONSTRAINT `HashlistAgent_ibfk_4` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
 ALTER TABLE `Session`
-  ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`),
+  ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
 ALTER TABLE `SuperHashlistHashlist`
   ADD CONSTRAINT `SuperHashlistHashlist_ibfk_1` FOREIGN KEY (`superHashlistId`) REFERENCES `Hashlist` (`hashlistId`),
