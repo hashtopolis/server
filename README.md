@@ -77,3 +77,4 @@ Some screenshots of Hashtopussy (by winxp5421): [Imgur](http://imgur.com/gallery
 * CynoSure Prime for testing
 * atom for [Hashcat](https://github.com/hashcat/hashcat)
 * curlyboi for the original Hashtopus code
+* 7zip binaries are compiled from https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/
