@@ -48,7 +48,7 @@ CREATE TABLE `LogEntry` (
   `logEntryId` INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
   `issuer` VARCHAR(20) NOT NULL,
   `issuerId` VARCHAR(30) NOT NULL,
-  `level` VARCHAR(10) NOT NULL,
+  `level` VARCHAR(20) NOT NULL,
   `message` TEXT NOT NULL,
   `time` INT(11) NOT NULL
 )
