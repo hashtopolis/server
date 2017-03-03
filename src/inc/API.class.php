@@ -766,19 +766,24 @@ class API {
         break;
       case DHashlistFormat::BINARY:
       case DHashlistFormat::WPA:
-        header_remove("Content-Type");
-        header('Content-Type: application/octet-stream');
+        //header_remove("Content-Type");
+        //header('Content-Type: application/octet-stream');
+        $output = "";
         foreach ($hashlists as $list) {
           $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $list, "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, "0", "=");
           $current = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
           $count += sizeof($current);
-          $output = "";
           foreach ($current as $entry) {
             $output .= Util::hextobin($entry->getHash());
           }
-          echo $output;
         }
+        $data = base64_encode($output);
+        API::sendResponse(array(
+          PQueryFile::ACTION => PActions::HASHES,
+          PResponse::RESPONSE => PValues::SUCCESS,
+          PResponseHashes::DATA => $data
+        ));
         break;
     }
     
