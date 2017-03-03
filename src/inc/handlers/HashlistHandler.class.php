@@ -150,7 +150,8 @@ class HashlistHandler implements Handler {
   
   private function create() {
     /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $LOGIN, $CONFIG;
     
     $name = htmlentities($_POST["name"], false, "UTF-8");
     $salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1) ? "1" : "0";
@@ -265,22 +266,23 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-        Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashlist created: " . $this->hashlist->getHashlistName());
+        Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
         break;
       case 1:
         $added = 0;
         while (!feof($file)) {
-          $data = fread($file, 392);
+          $data = fread($file, 393);
           if (strlen($data) == 0) {
             break;
           }
-          if (strlen($data) != 392) {
+          if (strlen($data) != 393) {
             UI::printError("ERROR", "Data file only contains " . strlen($data) . " bytes!");
           }
+          // get the SSID
           $network = "";
-          for ($i = 0; $i < 36; $i++) {
+          for ($i = 10; $i < 42; $i++) {
             $byte = $data[$i];
             if ($byte != "\x00") {
               $network .= $byte;
@@ -289,7 +291,20 @@ class HashlistHandler implements Handler {
               break;
             }
           }
-          $hash = new HashBinary(0, $this->hashlist->getId(), $network, Util::bintohex($data), null, 0, null, 0);
+          // get the AP MAC
+          $mac_ap = "";
+          for($i = 59;$i<65;$i++){
+            $mac_ap .= $data[$i];
+          }
+          $mac_ap = Util::bintohex($mac_ap);
+          // get the Client MAC
+          $mac_cli = "";
+          for($i = 97;$i<103;$i++){
+            $mac_cli .= $data[$i];
+          }
+          $mac_cli = Util::bintohex($mac_cli);
+          // we cannot save the network name here, as on the submission we don't get this
+          $hash = new HashBinary(0, $this->hashlist->getId(), $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$network, Util::bintohex($data), null, 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }
@@ -297,7 +312,7 @@ class HashlistHandler implements Handler {
         unlink($tmpfile);
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
-        Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashlist created: " . $this->hashlist->getHashlistName());
+        Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
       case 2:
@@ -310,7 +325,7 @@ class HashlistHandler implements Handler {
         unlink($tmpfile);
         $this->hashlist->setHashCount(1);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
-        Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New Hashlist created: " . $this->hashlist->getHashlistName());
+        Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
     }
@@ -407,15 +422,23 @@ class HashlistHandler implements Handler {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    
-    $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getHashlistFactory());
-    $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
+  
+    $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
+    $jF = new JoinFilter($FACTORIES::getHashlistFactory(), SuperHashlistHashlist::SUPER_HASHLIST_ID, Hashlist::HASHLIST_ID, $FACTORIES::getSuperHashlistHashlistFactory());
     $superlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
     for ($x = 0; $x < sizeof($superlists['Hashlist']); $x++) {
-      $superlist = Util::cast($superlists['Hashlist'][$x], Hashlist::class);
+      /** @var Hashlist $superlist */
+      $superlist = $superlists['Hashlist'][$x];
       $superlist->setHashCount($superlist->getHashCount() - $this->hashlist->getHashCount());
       $superlist->setCracked($superlist->getCracked() - $this->hashlist->getCracked());
-      $FACTORIES::getHashlistFactory()->update($superlist);
+      
+      if($superlist->getHashCount() <= 0){
+        // this superlist has no hashlist which belongs to it anymore -> delete it
+        $FACTORIES::getHashlistFactory()->delete($superlist);
+      }
+      else {
+        $FACTORIES::getHashlistFactory()->update($superlist);
+      }
     }
     
     //TODO: delete from zapqueue
@@ -428,6 +451,35 @@ class HashlistHandler implements Handler {
       $taskList[] = $task->getId();
     }
     $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+  
+    switch ($this->hashlist->getFormat()) {
+      case 0:
+        $count = $FACTORIES::getHashlistFactory()->countFilter(array());
+        if ($count > 1) {
+          $deleted = 1;
+          $qF = new QueryFilter(Hash::HASHLIST_ID, $this->hashlist->getId(), "=");
+          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
+          while ($deleted > 0) {
+            $result = $FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)));
+            $deleted = $result->rowCount();
+            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+          }
+        }
+        else {
+          $FACTORIES::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
+        }
+        break;
+      case 1:
+      case 2:
+        $qF = new QueryFilter(HashBinary::HASHLIST_ID, $this->hashlist->getId(), "=");
+        $FACTORIES::getHashBinaryFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+        break;
+      case 3:
+        $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $this->hashlist->getId(), "=");
+        $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+        break;
+    }
     
     if (sizeof($taskList) > 0) {
       $qF = new ContainFilter(TaskFile::TASK_ID, $taskList);
@@ -444,37 +496,7 @@ class HashlistHandler implements Handler {
     $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    switch ($this->hashlist->getFormat()) {
-      case 0:
-        $count = $FACTORIES::getHashlistFactory()->countFilter(array());
-        if ($count > 1) {
-          $deleted = 1;
-          $qF = new QueryFilter(Hash::HASHLIST_ID, $this->hashlist->getId(), "=");
-          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
-          while ($deleted > 0) {
-            $result = $FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)));
-            $deleted = $result->rowCount();
-            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-          }
-        }
-        else {
-          $FACTORIES::getAgentFactory()->getDB()->query("TRUNCAT TABLE Hash");
-        }
-        break;
-      case 1:
-      case 2:
-        $qF = new QueryFilter(HashBinary::HASHLIST_ID, $this->hashlist->getId(), "=");
-        $FACTORIES::getHashBinaryFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
-        break;
-      case 3:
-        $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $this->hashlist->getId(), "=");
-        $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
-        break;
-    }
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     switch ($this->hashlist->getFormat()) {
       case 0:
       case 1:

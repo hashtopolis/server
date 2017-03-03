@@ -93,6 +93,7 @@ else if (isset($_GET['chunk'])) {
   }
   $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
   $src = "chunk";
+  $OBJECTS['chunk'] = $chunk;
   $srcId = $chunk->getId();
 }
 else if (isset($_GET['task'])) {
@@ -125,6 +126,7 @@ else if (isset($_GET['task'])) {
   }
   $queryFilters[] = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
   $src = "task";
+  $OBJECTS['task'] = $task;
   $srcId = $task->getId();
 }
 

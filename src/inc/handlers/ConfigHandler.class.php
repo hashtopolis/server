@@ -63,7 +63,7 @@ class ConfigHandler implements Handler {
     $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getHashlistFactory()->massDeletion(array());
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    Util::createLogEntry("User", $LOGIN->getUserID(), "WARN", "Complete clear was executed!");
+    Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::WARN, "Complete clear was executed!");
   }
   
   private function scanFiles() {
@@ -174,7 +174,8 @@ class ConfigHandler implements Handler {
   private function updateConfig() {
     global $OBJECTS, $FACTORIES;
     
-    $CONFIG = new DataSet();
+    /** @var DataSet $CONFIG */
+    $CONFIG = $OBJECTS['config'];
     foreach ($_POST as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
@@ -191,6 +192,7 @@ class ConfigHandler implements Handler {
         }
       }
     }
+    UI::addMessage(UI::SUCCESS, "Config was updated!");
     $OBJECTS['config'] = $CONFIG;
   }
 }

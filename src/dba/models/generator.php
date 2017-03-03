@@ -79,8 +79,7 @@ $CONF['HashcatRelease'] = array(
   'version',
   'time',
   'url',
-  'rootdir',
-  'minver'
+  'rootdir'
 );
 $CONF['Hash'] = array(
   'hashId',
@@ -151,7 +150,8 @@ $CONF['Task'] = array(
   'priority',
   'color',
   'isSmall',
-  'isCpuTask'
+  'isCpuTask',
+  'useNewBench'
 );
 $CONF['Supertask'] = array(
   'supertaskId',

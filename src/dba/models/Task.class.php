@@ -22,8 +22,9 @@ class Task extends AbstractModel {
   private $color;
   private $isSmall;
   private $isCpuTask;
+  private $useNewBench;
   
-  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask) {
+  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask, $useNewBench) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -36,6 +37,7 @@ class Task extends AbstractModel {
     $this->color = $color;
     $this->isSmall = $isSmall;
     $this->isCpuTask = $isCpuTask;
+    $this->useNewBench = $useNewBench;
   }
   
   function getKeyValueDict() {
@@ -52,6 +54,7 @@ class Task extends AbstractModel {
     $dict['color'] = $this->color;
     $dict['isSmall'] = $this->isSmall;
     $dict['isCpuTask'] = $this->isCpuTask;
+    $dict['useNewBench'] = $this->useNewBench;
     
     return $dict;
   }
@@ -159,6 +162,14 @@ class Task extends AbstractModel {
   function setIsCpuTask($isCpuTask){
     $this->isCpuTask = $isCpuTask;
   }
+  
+  function getUseNewBench(){
+    return $this->useNewBench;
+  }
+  
+  function setUseNewBench($useNewBench){
+    $this->useNewBench = $useNewBench;
+  }
 
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
@@ -172,4 +183,5 @@ class Task extends AbstractModel {
   const COLOR = "color";
   const IS_SMALL = "isSmall";
   const IS_CPU_TASK = "isCpuTask";
+  const USE_NEW_BENCH = "useNewBench";
 }

@@ -91,10 +91,24 @@ class AgentHandler implements Handler {
       case 'downloadagent':
         $this->downloadAgent();
         break;
+      case 'agentcpu':
+        $this->setAgentCpu();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function setAgentCpu(){
+    global $FACTORIES;
+  
+    $cpuOnly = 0;
+    if($_POST['cpuOnly'] == 1){
+      $cpuOnly = 1;
+    }
+    $this->agent->setCpuOnly($cpuOnly);
+    $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
   private function downloadAgent(){
@@ -134,6 +148,9 @@ class AgentHandler implements Handler {
     }
     
     $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
+    if($this->agent == null){
+      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+    }
     if ($this->agent == null) {
       UI::printError("FATAL", "Agent with ID " . $_POST['agentId'] . " not found!");
     }
@@ -142,7 +159,14 @@ class AgentHandler implements Handler {
     if (!$task) {
       UI::printError("ERROR", "Invalid task!");
     }
-    $qF = new QueryFilter(Agent::AGENT_ID, $_POST['agentId'], "=");
+    
+    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
+    if($task->getIsSmall() && sizeof($assignments) > 0){
+      UI::printError("ERROR", "You cannot assign agent to this task as the limit of assignments is reached!");
+    }
+    
+    $qF = new QueryFilter(Agent::AGENT_ID, $this->agent->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     
     //determine benchmark number
@@ -153,7 +177,7 @@ class AgentHandler implements Handler {
     $qF4 = new QueryFilter(Chunk::AGENT_ID, $this->agent->getId(), "=");
     $qF5 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
-    $entries = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4, $qF5), 'order' => array($oF)));
+    $entries = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4, $qF5), $FACTORIES::ORDER => array($oF)));
     if (sizeof($entries) > 0) {
       $benchmark = Util::cast($entries[0], Chunk::class)->getLength();
     }
@@ -190,7 +214,7 @@ class AgentHandler implements Handler {
     $name = $this->agent->getAgentName();
     if ($this->deleteDependencies($this->agent)) {
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "Agent " . $name . " got deleted.");
+      Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
     }
     else {
       $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
@@ -272,7 +296,11 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     $pars = htmlentities($_POST["cmdpars"], false, "UTF-8");
-    //PROPOSAL: Check here that only normal command line parameters are given and not any maliscious code
+
+    if(Util::containsBlacklistedChars($pars)){
+      UI::addMessage(UI::ERROR, "Parameters must contain no blacklisted characters!");
+      return;
+    }
     $this->agent->setCmdPars($pars);
     $FACTORIES::getAgentFactory()->update($this->agent);
   }

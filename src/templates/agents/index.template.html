@@ -1,14 +1,15 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
 <h2>Agents ([[numAgents]])</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <div class="panel panel-default">
   <table class="table table-bordered table-nonfluid">
     <tr>
       <th>Id</th>
       <th>Act</th>
       <th>Name / Owner</th>
-      <th>GPUs</th>
+      <th>GPUs/CPUs</th>
+      <th>CPU only</th>
       <th>Hashcat</th>
       <th>Last activity</th>
       <th>Assignment</th>
@@ -47,6 +48,13 @@
           {{FOREACH gpu;[[set.getVal('agent').getGpus()]]}}
             [[Util::shortenstring([[gpu]], 20)]]<br>
           {{ENDFOREACH}}
+        </td>
+        <td>
+          {{IF [[set.getVal('agent').getCpuOnly()]] == 0}}
+            No
+          {{ELSE}}
+            Yes
+          {{ENDIF}}
         </td>
         <td>[[set.getVal('agent').getHcVersion()]]</td>
         <td>

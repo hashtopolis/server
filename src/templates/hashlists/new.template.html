@@ -57,7 +57,7 @@
 				<td>
 					<select class='form-control' name="format" onChange="formatChange(this.value);">
 						<option value="0">Text file</option>
-						<option value="1">HCCAP file</option>
+						<option value="1">HCCAPX file</option>
 						<option value="2">Binary file (single hash)</option>
 					</select>
 					<span class="textopt">
@@ -100,7 +100,7 @@
 				<td>
 					<select class='form-control' name="importfile">
 						{{FOREACH impfile;[[impfiles]]}}
-							<option value="[[impfile]]">[[impfile]]</option>
+							<option value="[[impfile.getVal('file')]]">[[impfile.getVal('file')]]</option>
 						{{ENDFOREACH}}
 					</select>
 				</td>

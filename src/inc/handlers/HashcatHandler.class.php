@@ -41,13 +41,13 @@ class HashcatHandler implements Handler {
       return;
     }
     
-    $hashcat = new HashcatRelease(0, $version, time(), $url, $rootdir, 0);
+    $hashcat = new HashcatRelease(0, $version, time(), $url, $rootdir);
     $hashcat = $FACTORIES::getHashcatReleaseFactory()->save($hashcat);
     if ($hashcat == null) {
       UI::addMessage(UI::ERROR, "Could not create new hashcat release!");
     }
     else {
-      Util::createLogEntry("User", $LOGIN->getUserID(), "INFO", "New hashcat release was created: " . $version);
+      Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New hashcat release was created: " . $version);
       header("Location: hashcat.php");
       die();
     }

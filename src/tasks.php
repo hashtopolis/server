@@ -28,6 +28,9 @@ $MENU->setActive("tasks_list");
 if (isset($_POST['action'])) {
   $taskHandler = new TaskHandler();
   $taskHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 //test if auto-reload is enabled
@@ -49,8 +52,10 @@ if (isset($_POST['toggleautorefresh'])) {
 if ($autorefresh > 0) { //renew cookie
   setcookie("autorefresh", "1", time() + 3600 * 24);
 }
+$OBJECTS['autorefresh'] = 0;
 if(isset($_GET['id']) || !isset($_GET['new'])) {
   $OBJECTS['autorefresh'] = $autorefresh;
+  $OBJECTS['autorefreshUrl'] = "";
 }
 
 if (isset($_GET['id'])) {
@@ -146,7 +151,7 @@ if (isset($_GET['id'])) {
   }
   $OBJECTS['timeSpent'] = $timeSpent;
   if($task->getKeyspace() != 0 && ($cProgress/$task->getKeyspace()) != 0) {
-    $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()));
+    $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
   }
   else{
     $OBJECTS['timeLeft'] = -1;
@@ -235,7 +240,7 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
-  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0);
+  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 1);
   if (isset($_GET["copy"])) {
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);

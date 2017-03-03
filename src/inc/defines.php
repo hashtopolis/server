@@ -59,6 +59,43 @@ class DConfig {
   const FIELD_SEPARATOR = "fieldseparator";
   const HASHLIST_ALIAS = "hashlistAlias";
   const STATUS_TIMER = "statustimer";
+  const BLACKLIST_CHARS = "blacklistChars";
+  const NUMBER_LOGENTRIES = "numLogEntries";
+  
+  /**
+   * @param $config string
+   * @return string
+   */
+  public static function getConfigType($config){
+    switch($config){
+      case DConfig::BENCHMARK_TIME:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::CHUNK_DURATION:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::CHUNK_TIMEOUT:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::AGENT_TIMEOUT:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::HASHES_PAGE_SIZE:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::FIELD_SEPARATOR:
+        return DConfigType::STRING_INPUT;
+      case DConfig::HASHLIST_ALIAS:
+        return DConfigType::STRING_INPUT;
+      case DConfig::STATUS_TIMER:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::BLACKLIST_CHARS:
+        return DConfigType::STRING_INPUT;
+      case DConfig::NUMBER_LOGENTRIES:
+        return DConfigType::NUMBER_INPUT;
+    }
+    return DConfigType::STRING_INPUT;
+  }
+}
+
+class DConfigType {
+  const STRING_INPUT = "string";
+  const NUMBER_INPUT = "number";
 }
 
 // log entry types

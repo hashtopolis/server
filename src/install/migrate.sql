@@ -1,3 +1,7 @@
+/*
+WARNING: This file is highly outdated, it might be removed later
+ */
+
 /* Add new column to existing agents table */
 ALTER TABLE agents ADD `userId` int(11) NOT NULL DEFAULT '0';
 ALTER TABLE hashlists ADD `hexsalt` int(11) NOT NULL DEFAULT '0';

@@ -35,6 +35,13 @@ class API {
     $FACTORIES->getAgentFactory()->update($agent);
   }
   
+  public static function test(){
+    API::sendResponse(array(
+      PResponse::ACTION => PActions::TEST,
+      PResponse::RESPONSE => PValues::SUCCESS
+    ));
+  }
+  
   public static function setBenchmark($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
@@ -144,7 +151,9 @@ class API {
   }
   
   /**
+   * @param $keyspace
    * @param $benchmark
+   * @param $chunkTime
    * @param int $tolerance
    * @return int
    */
@@ -293,17 +302,20 @@ class API {
     }
     else if ($task->getKeyspace() == 0) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
       ));
     }
     else if ($assignment->getBenchmark() == 0) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
       ));
+    }
+    else if($agent->getIsActive() == 0){
+      API::sendErrorResponse(PActions::CHUNK, "Agent is inactive!");
     }
   
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
@@ -311,14 +323,29 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
     foreach ($chunks as $chunk) {
+      if(($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId()) && $chunk->getRProgress() != 10000){
+        continue;
+      }
       $dispatched += $chunk->getLength();
     }
-    if ($task->getProgress() == $task->getKeyspace() || $task->getKeyspace() == $dispatched) {
+    if ($task->getProgress() == $task->getKeyspace() && $task->getKeyspace() == $dispatched) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::TASK,
+        PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
       ));
+    }
+    
+    // check here either if we have a better task to run on, or we have no access anymore to this task
+    $bestTask = Util::getBestTask($agent);
+    if($bestTask != null && $task->getId() != $bestTask->getId()){
+      API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
+    }
+    else if($bestTask == null){
+      // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
+      if(!Util::agentHasAccessToTask($task, $agent)){
+        API::sendErrorResponse(PActions::CHUNK, "Not allowed to work on this task!");
+      }
     }
   
     $qF1 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "<");
@@ -327,7 +354,6 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
     foreach($chunks as $chunk){
       if($chunk->getAgentId() == $agent->getId()){
-        //API::sendChunk($chunk);
         API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
       $timeoutTime = time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT);
@@ -369,8 +395,7 @@ class API {
   }
   
   public static function registerAgent($QUERY) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     //check required values
     if (!PQueryRegister::isValid($QUERY)) {
@@ -400,7 +425,7 @@ class API {
     //create access token & save agent details
     $token = Util::randomString(10);
     $gpu = htmlentities(implode("\n", $gpu), false, "UTF-8");
-    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", $CONFIG->getVal(DConfig::AGENT_TIMEOUT), "", 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
+    $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
       API::sendResponse(array(
@@ -457,23 +482,13 @@ class API {
     unset($base[sizeof($base) - 1]);
     unset($base[sizeof($base) - 1]);
     $base = implode("/", $base);
-  
-    $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0))?"https://":"https://";
-    $hostname = $_SERVER['HTTP_HOST'];
-    $port = $_SERVER['SERVER_PORT'];
-    if($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80){
-      $port = "";
-    }
-    else{
-      $port = ":$port";
-    }
     
     if($result->getVersion() != $version){
       API::sendResponse(array(
         PResponseUpdate::ACTION => PActions::UPDATE,
         PResponseUpdate::RESPONSE => PValues::SUCCESS,
         PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-        PResponseUpdate::URL=> $protocol.$hostname.$port.$base."/agents.php?download=".$result->getId()
+        PResponseUpdate::URL=> Util::buildServerUrl().$base."/agents.php?download=".$result->getId()
       ));
     }
     else {
@@ -494,16 +509,32 @@ class API {
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryDownload::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
     
+    API::updateAgent($QUERY, $agent);
+    
     // provide agent with requested download
     switch ($QUERY[PQueryDownload::BINARY_TYPE]) {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
-        $filename = "7zr" . (($agent->getOs() == DOperatingSystem::WINDOWS) ? ".exe" : "");
-        $content = file_get_contents(dirname(__FILE__) . "/../static/" . $filename);
+        $filename = "7zr";
+        switch($agent->getOs()){
+          case DOperatingSystem::LINUX:
+            $filename .= ".unix";
+            break;
+          case DOperatingSystem::WINDOWS:
+            $filename .= ".exe";
+            break;
+          case DOperatingSystem::OSX:
+            $filename .= ".osx";
+            break;
+        }
+        $url = explode("/", $_SERVER['REQUEST_URI']);
+        unset($url[sizeof($url) - 1]);
+        unset($url[sizeof($url) - 1]);
+        $path = Util::buildServerUrl().implode("/", $url)."/static/" . $filename;
         API::sendResponse(array(
           PResponseDownload::ACTION => PActions::DOWNLOAD,
           PResponseDownload::RESPONSE => PValues::SUCCESS,
-          PResponseDownload::EXECUTABLE => base64_encode($content)
+          PResponseDownload::EXECUTABLE => $path
         ));
         break;
       case PValuesDownloadBinaryType::HASHCAT:
@@ -513,8 +544,8 @@ class API {
           API::sendErrorResponse(PQueryDownload::ACTION, "No Hashcat release available!");
         }
         
-        $postfix = array("bin", "exe");
-        $executable = "hashcat64." . $postfix[$agent->getOs()];
+        $postfix = array("hashcat64.bin", "hashcat64.exe", "hashcat");
+        $executable = $postfix[$agent->getOs()];
         
         if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY[PQueryDownload::FORCE_UPDATE]) || $QUERY[PQueryDownload::FORCE_UPDATE] != '1')) {
           API::sendResponse(array(
@@ -526,8 +557,6 @@ class API {
         }
         
         $url = $hashcat->getUrl();
-        $files = explode("\n", str_replace(" ", "\n", $hashcat->getCommonFiles()));
-        $files[] = $executable;
         $rootdir = $hashcat->getRootdir();
         
         $agent->setHcVersion($hashcat->getVersion());
@@ -537,7 +566,6 @@ class API {
           PResponseDownload::RESPONSE => PValues::SUCCESS,
           PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
           PResponseDownload::URL => $url,
-          PResponseDownload::FILES => $files,
           PResponseDownload::ROOT_DIR => $rootdir,
           PResponseDownload::EXECUTABLE => $executable
         ));
@@ -570,6 +598,8 @@ class API {
     if ($assignment == null) {
       API::sendErrorResponse(PActions::ERROR, "You are not assigned to this task!");
     }
+  
+    API::updateAgent($QUERY, $agent);
     
     //save error message
     $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY[PQueryError::MESSAGE]);
@@ -629,6 +659,8 @@ class API {
     }
     $filename = $file->getFilename();
     $extension = explode(".", $filename)[sizeof(explode(".", $filename)) - 1];
+  
+    API::updateAgent($QUERY, $agent);
     
     API::sendResponse(array(
       PQueryFile::ACTION => PActions::FILE,
@@ -697,6 +729,8 @@ class API {
     else {
       $hashlists[] = $hashlist->getId();
     }
+  
+    API::updateAgent($QUERY, $agent);
     
     if (sizeof($hashlists) == 0) {
       API::sendErrorResponse(PActions::HASHES, "No hashlists selected!");
@@ -708,7 +742,7 @@ class API {
         header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
           $limit = 0;
-          $size = 50000; //TODO: make this configurable
+          $size = 10000; //TODO: make this configurable
           do {
             $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
             $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list, "=");
@@ -784,112 +818,88 @@ class API {
         PResponseTask::TASK_ID => PValues::NONE
       ));
     }
+  
+    API::updateAgent($QUERY, $agent);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-    $assignedTask = null;
-    if ($assignment == null) {
-      //search which task we should assign to the agent
-      $nextTask = Util::getNextTask($agent);
-      if ($nextTask == null) {
-        API::sendResponse(array(
-          PResponseTask::ACTION => PActions::TASK,
-          PResponseTask::RESPONSE => PValues::SUCCESS,
-          PResponseTask::TASK_ID => PValues::NONE
-        ));
-      }
-      $assignment = new Assignment(0, $nextTask->getId(), $agent->getId(), 0);
-      $FACTORIES::getAssignmentFactory()->save($assignment);
-      $assignedTask = $nextTask;
+  
+    // test if the current task is obsolete anyway, this makes it easier to select a new one
+    $currentTask = null;
+    if($assignment != null) {
+      $currentTask = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
     }
-    else {
-      //check if the agent is assigned to the correct task, if not assign him the right one
-      $task = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
-      $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $sumProgress = 0;
-      $chunkIds = array();
-      foreach($chunks as $chunk){
-        $sumProgress += $chunk->getProgress();
-        $chunkIds[] = $chunk->getId();
+    if($currentTask != null && !Util::taskCanBeUsed($currentTask, $agent)){
+      $FACTORIES::getAssignmentFactory()->delete($assignment);
+      $assignment = null;
+      $currentTask = null;
+    }
+    
+    $setToTask = null;
+    if($assignment == null){
+      // we have no task assigned currently
+      // get the highest priority task possible (needs to be >0 here)
+      $setToTask = Util::getBestTask($agent);
+      $newAssignment = true;
+    }
+    else{
+      // we are currently assigned to a task
+      $setToTask = $currentTask;
+      $betterTask = Util::getBestTask($agent, $currentTask->getPriority());
+      if($betterTask != null){
+        $setToTask = $betterTask;
+        $newAssignment = true;
       }
-      $finished = false;
-      
-      //check if the task is finished
-      if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
-        //task is finished
-        $task->setPriority(0);
-        //TODO: make massUpdate
-        foreach($chunks as $chunk){
-          $chunk->setProgress($chunk->getLength());
-          $chunk->setRprogress(10000);
-          $FACTORIES::getChunkFactory()->update($chunk);
-        }
-        $task->setProgress($task->getKeyspace());
-        $FACTORIES::getTaskFactory()->update($task);
-        $finished = true;
-      }
-      
-      $highPriorityTask = Util::getNextTask($agent, $task->getPriority());
-      if ($highPriorityTask != null) {
-        //there is a more important task
-        $FACTORIES::getAssignmentFactory()->delete($assignment);
-        $assignment = new Assignment(0, $highPriorityTask->getId(), $agent->getId(), 0);
-        $FACTORIES::getAssignmentFactory()->save($assignment);
-        $assignedTask = $highPriorityTask;
-      }
-      else {
-        if (!$finished) {
-          $assignedTask = $task;
-        }
-        else{
-          $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-          $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-          $assignedTask = Util::getNextTask($agent);
-          if($assignedTask != null) {
-            $assignment = new Assignment(0, $assignedTask->getId(), $agent->getId(), 0);
-            $FACTORIES::getAssignmentFactory()->save($assignment);
-          }
-        }
+      else{
+        $newAssignment = false;
       }
     }
     
-    if ($assignedTask == null) {
-      //no task available
+    if($setToTask == null){
       API::sendResponse(array(
         PResponseTask::ACTION => PActions::TASK,
         PResponseTask::RESPONSE => PValues::SUCCESS,
         PResponseTask::TASK_ID => PValues::NONE
       ));
     }
-    
-    $qF = new QueryFilter(TaskFile::TASK_ID, $assignedTask->getId(), "=");
+    if($currentTask != null && $setToTask->getId() != $currentTask->getId()){
+      // delete old assignment
+      $FACTORIES::getAssignmentFactory()->delete($assignment);
+    }
+    if($newAssignment) {
+      $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
+      $FACTORIES::getAssignmentFactory()->save($assignment);
+    }
+  
+    $qF = new QueryFilter(TaskFile::TASK_ID, $setToTask->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
     $files = array();
     for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
       $files[] = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class)->getFilename();
     }
-    
-    $hashlist = $FACTORIES::getHashlistFactory()->get($assignedTask->getHashlistId());
-    
+  
+    $hashlist = $FACTORIES::getHashlistFactory()->get($setToTask->getHashlistId());
+    $benchType = ($setToTask->getUseNewBench())?"speed":"run";
+  
     API::sendResponse(array(
       PResponseTask::ACTION => PActions::TASK,
       PResponseTask::RESPONSE => PValues::SUCCESS,
-      PResponseTask::TASK_ID => $assignedTask->getId(),
-      PResponseTask::ATTACK_COMMAND => $assignedTask->getAttackCmd(),
+      PResponseTask::TASK_ID => (int)$setToTask->getId(),
+      PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
       PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
-      PResponseTask::HASHLIST_ID => $assignedTask->getHashlistId(),
+      PResponseTask::HASHLIST_ID => (int)$setToTask->getHashlistId(),
       PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
-      PResponseTask::STATUS_TIMER => $assignedTask->getStatusTimer(),
-      PResponseTask::FILES => $files
+      PResponseTask::STATUS_TIMER => (int)$setToTask->getStatusTimer(),
+      PResponseTask::FILES => $files,
+      PResponseTask::BENCHTYPE => $benchType,
+      PResponseTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
     ));
   }
   
-  //TODO Handle the case where an agent needs reassignment
   public static function solve($QUERY) {
-    global $FACTORIES;
+    /** @var DataSet $CONFIG */
+    global $FACTORIES, $CONFIG;
   
     if (!PQuerySolve::isValid($QUERY)) {
       API::sendErrorResponse(PActions::SOLVE, "Invalid hashes query!");
@@ -916,7 +926,10 @@ class API {
     if ($agent == null) {
       API::sendErrorResponse(PActions::SOLVE, "Invalid agent token" . $QUERY[PQuerySolve::TOKEN]);
     }
-    if ($chunk->getAgentId() != $agent->getId()) {
+    else if($agent->getIsActive() == 0){
+      API::sendErrorResponse(PActions::SOLVE, "Agent is marked inactive!");
+    }
+    else if ($chunk->getAgentId() != $agent->getId()) {
       API::sendErrorResponse(PActions::SOLVE, "You are not assigned to this chunk");
     }
     
@@ -976,7 +989,8 @@ class API {
     }
     $chunk->setState($state);
     $FACTORIES::getChunkFactory()->update($chunk);
-    
+  
+    API::updateAgent($QUERY, $agent);
     
     $hlistar = Util::checkSuperHashlist($hashList);
     $hlistarIds = array();
@@ -994,13 +1008,17 @@ class API {
     
     // process solved hashes, should there be any
     $crackedHashes = $QUERY[PQuerySolve::CRACKED_HASHES];
-    foreach ($crackedHashes as $crackedHash) {
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+  
+    $plainUpdates = array();
+    $crackHashes = array();
+    
+    for($i=0;$i<sizeof($crackedHashes);$i++) {
+      $crackedHash = $crackedHashes[$i];
       if ($crackedHash == "") {
         continue;
       }
-      //TODO: get separator from config
-      $splitLine = explode(":", $crackedHash);
-      $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+      $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
       switch ($format) {
         case DHashlistFormat::PLAIN:
           $hashFilter = new QueryFilter(Hash::HASH, $splitLine[0], "=");
@@ -1022,25 +1040,39 @@ class API {
           if (sizeof($hashes) == 0) {
             $skipped++;
           }
-          foreach ($hashes as $hash) {  //TODO Mass-update
+          
+          foreach($hashes as $hash){
             $cracked[$hash->getHashlistId()]++;
-            $hash->setPlaintext($plain);
-            $hash->setChunkId($chunk->getId());
-            $hash->setIsCracked(1);
-            $FACTORIES::getHashFactory()->update($hash);
+            $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
+            $crackHashes[] = $hash->getId();
+          }
+  
+          if(sizeof($plainUpdates) >= 1000){
+            $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
+            $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
+            $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
+            $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+            $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
+            $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+            $plainUpdates = array();
+            $crackHashes = array();
           }
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
-          $network = $splitLine[0];
-          $plain = $splitLine[1];
-          // QUICK-FIX WPA/WPA2 strip mac address
-          if (preg_match("/.+:[0-9a-f]{12}:[0-9a-f]{12}$/", $network) === 1) {
-            // TODO: extend DB model by MACs and implement detection
-            $network = substr($network, 0, strlen($network) - 26);
+          //$hash = $splitLine[0];
+          $mac_ap = $splitLine[1];
+          $mac_cli = $splitLine[2];
+          $essid = $splitLine[3];
+          for($i=0;$i<3;$i++){
+            unset($splitLine[0]); // delete everything except the plain
           }
-          $essIDFilter = new QueryFilter(HashBinary::ESSID, $network, "=");
-          $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => $essIDFilter));
+          $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
+          //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
+          $qF = new QueryFilter(HashBinary::ESSID, $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$essid, "=");
+          $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
           if (sizeof($hashes) == 0) {
             $skipped++;
           }
@@ -1058,8 +1090,17 @@ class API {
           //$plain = $splitLine[1];
           break;
       }
-      $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     }
+    if($format == DHashlistFormat::PLAIN && sizeof($plainUpdates) > 0){
+      $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
+      $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
+      $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
+      $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
+      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+    }
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     //insert #Cracked hashes and update in hashlist how many hashes were cracked
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
@@ -1168,7 +1209,7 @@ class API {
         foreach ($zaps as $zap) {
           $toZap[] = $zap->getHash();
         }
-        $agent->setLastAct(time());
+        $agent->setLastTime(time());
         $FACTORIES::getAgentFactory()->update($agent);
         
         // update hashList age for agent to this task

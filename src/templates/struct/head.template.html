@@ -15,7 +15,7 @@
 		<script type="text/javascript" src="jscolor/jscolor.js"></script>
 
 			{{IF [[autorefresh]] > 0}}
-				<meta http-equiv="refresh" content="[[autorefresh]]; URL=[[autorefreshUrl]]">
+				<meta http-equiv="refresh" content="[[autorefresh]]{{IF [[strlen([[autorefreshUrl]])]] > 0}}; URL=[[autorefreshUrl]]{{ENDIF}}">
 			{{ENDIF}}
 
 			<script type='text/javascript'>

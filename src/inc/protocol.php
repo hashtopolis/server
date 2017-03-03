@@ -239,7 +239,6 @@ class PResponseDownload extends PResponse {
   const VERSION = "version";
   const EXECUTABLE = "executable";
   const URL = "url";
-  const FILES = "files";
   const ROOT_DIR = "rootdir";
 }
 
@@ -261,6 +260,8 @@ class PResponseTask extends PResponse {
   const BENCHMARK = "bench";
   const STATUS_TIMER = "statustimer";
   const FILES = "files";
+  const BENCHTYPE = "benchType";
+  const HASHLIST_ALIAS = "hashlistAlias";
 }
 
 class PResponseChunk extends PResponse {
@@ -302,4 +303,5 @@ class PActions {
   const KEYSPACE = "keyspace";
   const BENCHMARK = "bench";
   const SOLVE = "solve";
+  const TEST = "test";
 }

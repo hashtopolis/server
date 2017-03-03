@@ -50,6 +50,13 @@
 			<tr>
 				<td>[[type.getId()]]</td>
 				<td>[[type.getDescription()]]</td>
+        <td>
+          {{IF [[type.getIsSalted()]] == 1}}
+          Yes
+          {{ELSE}}
+          No
+          {{ENDIF}}
+        </td>
 				<td>
 					<form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getId()]]?')) return false;">
 						<input type="hidden" name="action" value="delete">
@@ -57,13 +64,6 @@
 						<input type="submit" class='btn btn-danger' value="Delete">
 					</form>
 				</td>
-        <td>
-          {{IF [[type.getIsSalted()]] == 1}}
-            Yes
-          {{ELSE}}
-            No
-          {{ENDIF}}
-        </td>
 			</tr>
 		{{ENDFOREACH}}
 	</table>

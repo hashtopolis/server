@@ -22,6 +22,21 @@
 	\end{verbatim}
 	\pagebreak
 	\section*{Commands}
+	
+	\subsection*{Connection Check}
+	To test the connection to the server or to test if an url is valid, you can issue a test action where the server just should respons with success.
+	\begin{verbatim}
+	{
+	  "action":"test"
+	}
+	\end{verbatim}
+	Response:
+	\begin{verbatim}
+	{
+	  "action":"test",
+	  "response":"SUCCESS"
+	} 
+	\end{verbatim}
 
 	\subsection*{Register}
 	When registering a new client to the server, following query should be used:
@@ -105,12 +120,12 @@
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
-	The server then will send a base64 encoded binary (attribute 'executable') encapsulated in JSON:
+	The server then will send a url where to downooad the binary:
 	\begin{verbatim}
 	{
 	  "action":"download",
 	  "response":"SUCCESS",
-	  "executable":"a2prbGhqa2doa.....2xrZTNnNDM0Zw=="
+	  "url":"https://example.com/getapp.php"
 	}
 	\end{verbatim}
 	To check if a new Hashcat binary is available, following command is used.
@@ -130,10 +145,6 @@
 	  "response":"SUCCESS",
 	  "version":"NEW",
 	  "url":"https://hashcat.net/files/hashcat-3.01.7z",
-	  "files":[
-	    "hashcat.hctune",
-	    "hashcat64.bin"
-	  ],
 	  "rootdir":"hashcat-3.0.1",
 	  "executable":"hashcat64.bin"
 	}
@@ -196,7 +207,7 @@
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
-	The server will send then a task to do:
+	The server will send then a task to do (benchType can be 'speed' or 'run'):
 	\begin{verbatim}
 	{
 	  "action":"task",
@@ -205,8 +216,10 @@
 	  "attackcmd": "#HL# -a 3 ?a?a?a?a",
 	  "cmdpars": "--hash-type=0",
 	  "hashlist": 13,
-	  "bench": "new",
+	  "bench": 30,
 	  "statustimer": 5,
+	  "benchType":"speed",
+	  "hashlistAlias":"#HL#",
 	  "files": [
 	    "rockyou.txt",
 	    "wordlist.txt"

@@ -46,7 +46,6 @@ class FileHandler implements Handler {
       mkdir(dirname(__FILE__) . "/../../files");
     }
     
-    $allok = true;
     switch ($source) {
       case "upload":
         // from http upload
@@ -54,7 +53,7 @@ class FileHandler implements Handler {
         $numFiles = count($_FILES["upfile"]["name"]);
         for ($i = 0; $i < $numFiles; $i++) {
           // copy all uploaded attached files to proper directory
-          $realname = htmlentities(basename($uploaded["name"][$i]), false, "UTF-8");
+          $realname = str_replace(" ", "_", htmlentities(basename($uploaded["name"][$i]), false, "UTF-8"));
           if ($realname == "") {
             continue;
           }
@@ -71,11 +70,11 @@ class FileHandler implements Handler {
               $fileCount++;
             }
             else {
-              $allok = false;
+              UI::addMessage(UI::ERROR, "Failed to insert file $realname into DB!");
             }
           }
           else {
-            $allok = false;
+            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
           }
         }
         break;
@@ -91,7 +90,7 @@ class FileHandler implements Handler {
             continue;
           }
           // copy all uploaded attached files to proper directory
-          $realname = htmlentities(basename($import), false, "UTF-8");
+          $realname = str_replace(" ", "_", htmlentities(basename($import), false, "UTF-8"));
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $realname);
           if ($resp[0]) {
@@ -100,18 +99,18 @@ class FileHandler implements Handler {
               $fileCount++;
             }
             else {
-              $allok = false;
+              UI::addMessage(UI::ERROR, "Failed to insert file $realname into DB!");
             }
           }
           else {
-            $allok = false;
+            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
           }
         }
         break;
       
       case "url":
         // from url
-        $realname = htmlentities(basename($_POST["url"]), false, "UTF-8");
+        $realname = str_replace(" ", "_", htmlentities(basename($_POST["url"]), false, "UTF-8"));
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
         $resp = Util::uploadFile($tmpfile, $source, $_POST["url"]);
         if ($resp[0]) {
@@ -120,20 +119,15 @@ class FileHandler implements Handler {
             $fileCount++;
           }
           else {
-            $allok = false;
+            UI::addMessage(UI::ERROR, "Failed to insert file $realname into DB!");
           }
         }
         else {
-          $allok = false;
+          UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
         }
         break;
     }
-    if ($allok) {
-      UI::addMessage(UI::SUCCESS, "Successfully added $fileCount files!");
-    }
-    else {
-      UI::addMessage(UI::ERROR, "Something went wrong when adding files!");
-    }
+    UI::addMessage(UI::SUCCESS, "Successfully added $fileCount files!");
   }
   
   private function switchSecret() {

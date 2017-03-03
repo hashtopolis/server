@@ -17,13 +17,11 @@ use DBA\User;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
-$write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../models", "../templates", "../");
+$write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
 
 if($INSTALL){
 	die("Installation is already done!");
 }
-
-//TODO: this script needs to be rewritten to apply to the new dba structure
 
 /** @var array $CONN */
 
@@ -70,8 +68,9 @@ switch($STEP){
 			setcookie("step", "52", time() + 3600);
 			setcookie("prev", "2", time() + 3600);
 			header("Location: index.php");
+			die();
 		}
-		$TEMPLATE = new Template("install1");
+		$TEMPLATE = new Template("install/1");
 		echo $TEMPLATE->render(array());
 		break;
 	case 2: //installation should be finished now and user should be able to log in

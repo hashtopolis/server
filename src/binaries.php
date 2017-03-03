@@ -21,6 +21,9 @@ $MENU->setActive("config_binaries");
 if (isset($_POST['action'])) {
   $binaryHandler = new AgentBinaryHandler();
   $binaryHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 if(isset($_GET['new'])){
   $OBJECTS['newBinary'] = true;

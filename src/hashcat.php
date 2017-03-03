@@ -24,6 +24,9 @@ $MENU->setActive("hashcat_list");
 if (isset($_POST['action'])) {
   $hashcatHandler = new HashcatHandler();
   $hashcatHandler->handle($_POST['action']);
+  if(UI::getNumMessages() == 0){
+    Util::refresh();
+  }
 }
 
 if(isset($_GET['new'])){
