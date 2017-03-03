@@ -226,7 +226,7 @@ class PResponseRegister extends PResponse {
   const TOKEN = "token";
 }
 
-class PResponseHashes extends Response {
+class PResponseHashes extends PResponse {
   const DATA = "data";
 }
 
