@@ -45,17 +45,22 @@ class FileHandler implements Handler {
     }
   }
   
-  private function saveChanges(){
+  private function saveChanges() {
     global $FACTORIES;
     
     $file = $FACTORIES::getFileFactory()->get($_POST['fileId']);
-    if($file == null){
+    if ($file == null) {
       UI::addMessage(UI::ERROR, "Invalid file ID!");
       return;
     }
     $newName = str_replace(" ", "_", htmlentities($_POST['filename'], false, "UTF-8"));
-    if(strlen($newName) == 0){
+    if (strlen($newName) == 0) {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
+      return;
+    }
+    $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
+    if(!$success){
+      UI::addMessage(UI::ERROR, "Failed to rename file!");
       return;
     }
     $file->setFilename($newName);

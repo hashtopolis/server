@@ -56,7 +56,7 @@
 						{{IF [[login.getLevel()]] >= 30}}
 							<form style ='float: left;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
 								<input type="submit" class='btn btn-primary' value="Rename">
-							</form>
+							</form>&nbsp;&nbsp;
 							<form style ='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
 								<input type="hidden" name="action" value="filedelete">
 								<input type="hidden" name="file" value="[[file.getId()]]">
