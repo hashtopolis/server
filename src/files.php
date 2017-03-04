@@ -36,14 +36,23 @@ if(isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))){
   $view = $_GET['view'];
 }
 
-
-$qF = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule')), "=");
-$oF = new OrderFilter(File::FILENAME, "ASC");
-$OBJECTS['fileType'] = ($view == "dict")?"Wordlists":"Rules";
+if(isset($_GET['edit'])){
+  $file = $FACTORIES::getFileFactory()->get($_GET['edit']);
+  if($file == null){
+    UI::addMessage(UI::ERROR, "Invalid file ID!");
+  }
+  else{
+    $OBJECTS['file'] = $file;
+  }
+}
+else {
+  $qF = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule')), "=");
+  $oF = new OrderFilter(File::FILENAME, "ASC");
+  $OBJECTS['fileType'] = ($view == "dict") ? "Wordlists" : "Rules";
+  $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));;
+  $OBJECTS['impfiles'] = Util::scanImportDirectory();
+}
 $OBJECTS['view'] = $view;
-$OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));;
-$OBJECTS['impfiles'] = Util::scanImportDirectory();
-$OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);
 

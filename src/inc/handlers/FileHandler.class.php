@@ -33,10 +33,33 @@ class FileHandler implements Handler {
       case 'addfile':
         $this->add();
         break;
+      case 'edit':
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->saveChanges();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function saveChanges(){
+    global $FACTORIES;
+    
+    $file = $FACTORIES::getFileFactory()->get($_POST['fileId']);
+    if($file == null){
+      UI::addMessage(UI::ERROR, "Invalid file ID!");
+      return;
+    }
+    $newName = str_replace(" ", "_", htmlentities($_POST['filename'], false, "UTF-8"));
+    if(strlen($newName) == 0){
+      UI::addMessage(UI::ERROR, "Filename cannot be empty!");
+      return;
+    }
+    $file->setFilename($newName);
+    $FACTORIES::getFileFactory()->update($file);
   }
   
   private function add() {
