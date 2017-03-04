@@ -8,6 +8,14 @@
   <div class="panel panel-default">
     <table class="table table-bordered table-nonfluid">
       <tr>
+        <td colspan="2">
+          <div class="alert alert-warning">
+            WARNING: It's not recommended to rename a file during running a task where this file is used. This can cause problems with the agents using the file.<br>
+            Keep in mind that when you rename a file the agents will download the file again as they don't know that it is just a renamed file.
+          </div>
+        </td>
+      </tr>
+      <tr>
         <th>ID</th>
         <td>[[file.getId()]]</td>
       </tr>
