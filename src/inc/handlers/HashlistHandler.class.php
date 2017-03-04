@@ -318,7 +318,7 @@ class HashlistHandler implements Handler {
       case 2:
         if (!feof($file)) {
           $data = fread($file, Util::filesize($tmpfile));
-          $hash = new HashBinary(0, $this->hashlist->getId(), "", Util::bintohex($data), "", 0, 0, 0);
+          $hash = new HashBinary(0, $this->hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
         }
         fclose($file);
