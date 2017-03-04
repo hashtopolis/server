@@ -35,17 +35,18 @@ class API {
     $FACTORIES->getAgentFactory()->update($agent);
   }
   
-  public static function test(){
+  public static function test() {
     API::sendResponse(array(
       PResponse::ACTION => PActions::TEST,
       PResponse::RESPONSE => PValues::SUCCESS
-    ));
+    )
+    );
   }
   
   public static function setBenchmark($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-  
+    
     if (!PQueryBenchmark::isValid($QUERY)) {
       API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark query!");
     }
@@ -67,23 +68,23 @@ class API {
     $type = $QUERY[PQueryBenchmark::TYPE];
     $benchmark = $QUERY[PQueryBenchmark::RESULT];
     
-    switch($type){
+    switch ($type) {
       case PValuesBenchmarkType::SPEED_TEST:
         $split = explode(":", $benchmark);
-        if(sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <=0 || $split[1] <= 0){
+        if (sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <= 0 || $split[1] <= 0) {
           $agent->setIsActive(0);
           $FACTORIES::getAgentFactory()->update($agent);
           API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark result!");
         }
         break;
       case PValuesBenchmarkType::RUN_TIME:
-        if(!is_numeric($benchmark) || $benchmark <= 0){
+        if (!is_numeric($benchmark) || $benchmark <= 0) {
           $agent->setIsActive(0);
           $FACTORIES::getAgentFactory()->update($agent);
           API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
-        $benchmark = $benchmark/$CONFIG->getVal(DConfig::BENCHMARK_TIME)*100;
+        $benchmark = $benchmark / $CONFIG->getVal(DConfig::BENCHMARK_TIME) * 100;
         break;
       default:
         $agent->setIsActive(0);
@@ -97,12 +98,13 @@ class API {
       PResponseBenchmark::ACTION => PActions::BENCHMARK,
       PResponseBenchmark::RESPONSE => PValues::SUCCESS,
       PResponseBenchmark::BENCHMARK => PValues::OK
-    ));
+    )
+    );
   }
   
   public static function setKeyspace($QUERY) {
     global $FACTORIES;
-  
+    
     if (!PQueryKeyspace::isValid($QUERY)) {
       API::sendErrorResponse(PActions::KEYSPACE, "Invalid keyspace query!");
     }
@@ -131,7 +133,8 @@ class API {
       PResponseKeyspace::ACTION => PActions::KEYSPACE,
       PResponseKeyspace::RESPONSE => PValues::SUCCESS,
       PResponseKeyspace::KEYSPACE => PValues::OK
-    ));
+    )
+    );
   }
   
   /**
@@ -147,7 +150,8 @@ class API {
       PResponseChunk::CHUNK_ID => (int)($chunk->getId()),
       PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
       PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
-    ));
+    )
+    );
   }
   
   /**
@@ -157,45 +161,45 @@ class API {
    * @param int $tolerance
    * @return int
    */
-  private static function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1){
+  private static function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1) {
     /** @var DataSet $CONFIG */
     global $CONFIG, $QUERY;
     
-    if($chunkTime <= 0) {
+    if ($chunkTime <= 0) {
       $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     }
-    if(strpos($benchmark, ":") === false){
+    if (strpos($benchmark, ":") === false) {
       // old benchmarking method
-      $size = floor($keyspace*$benchmark*$chunkTime/100);
+      $size = floor($keyspace * $benchmark * $chunkTime / 100);
     }
     else {
       // new benchmarking method
       $benchmark = explode(":", $benchmark);
-      if(sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0){
+      if (sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0) {
         return 0;
       }
-  
+      
       //TODO: check if time adjustments are needed
-      $benchmark[1] *= 2/3;
-  
-      $factor = $chunkTime*1000/$benchmark[1];
-      if($factor <= 0.25){
+      $benchmark[1] *= 2 / 3;
+      
+      $factor = $chunkTime * 1000 / $benchmark[1];
+      if ($factor <= 0.25) {
         $benchmark[0] /= 4;
       }
-      else if($factor <= 0.5){
+      else if ($factor <= 0.5) {
         $benchmark[0] /= 2;
       }
-      else{
+      else {
         $factor = floor($factor);
       }
-      if($factor == 0){
+      if ($factor == 0) {
         $factor = 1;
       }
-      $size = $benchmark[0]*$factor;
+      $size = $benchmark[0] * $factor;
     }
     
-    $chunkSize = $size*$tolerance;
-    if($chunkSize <= 0){
+    $chunkSize = $size * $tolerance;
+    if ($chunkSize <= 0) {
       $chunkSize = 1;
       Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Caluclated chunk size was 0 on benchmark $benchmark!");
     }
@@ -209,14 +213,14 @@ class API {
    * @param $task \DBA\Task
    * @param $assignment \DBA\Assignment
    */
-  private static function handleExistingChunk($chunk, $agent, $task, $assignment){
+  private static function handleExistingChunk($chunk, $agent, $task, $assignment) {
     global $FACTORIES;
     
     $disptolerance = 1.2; //TODO: add this to config
     
     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $agentChunkSizeMax = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance);
-    if($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()){
+    if ($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()) {
       //chunk has not started yet
       $chunk->setRprogress(0);
       $chunk->setDispatchTime(time());
@@ -226,7 +230,7 @@ class API {
       $FACTORIES::getChunkFactory()->update($chunk);
       API::sendChunk($chunk);
     }
-    else if($chunk->getProgress() == 0){
+    else if ($chunk->getProgress() == 0) {
       //split chunk into two parts
       $originalLength = $chunk->getLength();
       $firstPart = $chunk;
@@ -241,7 +245,7 @@ class API {
       $FACTORIES::getChunkFactory()->save($secondPart);
       API::sendChunk($firstPart);
     }
-    else{
+    else {
       $newChunk = new Chunk(0, $task->getId(), $chunk->getSkip() + $chunk->getProgress(), $chunk->getLength() - $chunk->getProgress(), $agent->getId(), time(), 0, 0, DHashcatStatus::INIT, 0, 0, 0);
       $chunk->setLength($chunk->getProgress());
       $chunk->setRprogress(10000);
@@ -257,7 +261,7 @@ class API {
    * @param $task \DBA\Task
    * @param $assignment \DBA\Assignment
    */
-  private static function createNewChunk($agent, $task, $assignment){
+  private static function createNewChunk($agent, $task, $assignment) {
     global $FACTORIES;
     
     $disptolerance = 1.2; //TODO: add to config
@@ -266,7 +270,7 @@ class API {
     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $start = $task->getProgress();
     $length = $agentChunkSize;
-    if($remaining/$length <= $disptolerance){
+    if ($remaining / $length <= $disptolerance) {
       $length = $remaining;
     }
     $newProgress = $task->getProgress() + $length;
@@ -276,12 +280,12 @@ class API {
     $FACTORIES::getChunkFactory()->save($chunk);
     API::sendChunk($chunk);
   }
-
+  
   
   public static function getChunk($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-  
+    
     if (!PQueryChunk::isValid($QUERY)) {
       API::sendErrorResponse(PActions::CHUNK, "Invalid chunk query!");
     }
@@ -305,25 +309,27 @@ class API {
         PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
-      ));
+      )
+      );
     }
     else if ($assignment->getBenchmark() == 0) {
       API::sendResponse(array(
         PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
-      ));
+      )
+      );
     }
-    else if($agent->getIsActive() == 0){
+    else if ($agent->getIsActive() == 0) {
       API::sendErrorResponse(PActions::CHUNK, "Agent is inactive!");
     }
-  
+    
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
     foreach ($chunks as $chunk) {
-      if(($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId()) && $chunk->getRProgress() != 10000){
+      if (($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId()) && $chunk->getRProgress() != 10000) {
         continue;
       }
       $dispatched += $chunk->getLength();
@@ -333,31 +339,32 @@ class API {
         PResponseChunk::ACTION => PActions::CHUNK,
         PResponseChunk::RESPONSE => PValues::SUCCESS,
         PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
-      ));
+      )
+      );
     }
     
     // check here either if we have a better task to run on, or we have no access anymore to this task
     $bestTask = Util::getBestTask($agent);
-    if($bestTask != null && $task->getId() != $bestTask->getId()){
+    if ($bestTask != null && $task->getId() != $bestTask->getId()) {
       API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
     }
-    else if($bestTask == null){
+    else if ($bestTask == null) {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
-      if(!Util::agentHasAccessToTask($task, $agent)){
+      if (!Util::agentHasAccessToTask($task, $agent)) {
         API::sendErrorResponse(PActions::CHUNK, "Not allowed to work on this task!");
       }
     }
-  
+    
     $qF1 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "<");
     $qF2 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SKIP, "ASC");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
-    foreach($chunks as $chunk){
-      if($chunk->getAgentId() == $agent->getId()){
+    foreach ($chunks as $chunk) {
+      if ($chunk->getAgentId() == $agent->getId()) {
         API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
       $timeoutTime = time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT);
-      if($chunk->getState() == DHashcatStatus::ABORTED || $chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime){
+      if ($chunk->getState() == DHashcatStatus::ABORTED || $chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime) {
         API::handleExistingChunk($chunk, $agent, $task, $assignment);
       }
     }
@@ -432,7 +439,8 @@ class API {
         PQueryRegister::ACTION => PActions::REGISTER,
         PResponseRegister::RESPONSE => PValues::SUCCESS,
         PResponseRegister::TOKEN => $token
-      ));
+      )
+      );
     }
     else {
       API::sendErrorResponse(PActions::REGISTER, "Could not register you to server.");
@@ -459,7 +467,8 @@ class API {
       PResponseLogin::ACTION => PActions::LOGIN,
       PResponseLogin::RESPONSE => PValues::SUCCESS,
       PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
-    ));
+    )
+    );
   }
   
   public static function checkClientUpdate($QUERY) {
@@ -475,7 +484,7 @@ class API {
     
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $result = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-    if($result == null){
+    if ($result == null) {
       API::sendErrorResponse(PActions::UPDATE, "Type not found!");
     }
     $base = explode("/", $_SERVER['PHP_SELF']);
@@ -483,20 +492,22 @@ class API {
     unset($base[sizeof($base) - 1]);
     $base = implode("/", $base);
     
-    if($result->getVersion() != $version){
+    if ($result->getVersion() != $version) {
       API::sendResponse(array(
         PResponseUpdate::ACTION => PActions::UPDATE,
         PResponseUpdate::RESPONSE => PValues::SUCCESS,
         PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-        PResponseUpdate::URL=> Util::buildServerUrl().$base."/agents.php?download=".$result->getId()
-      ));
+        PResponseUpdate::URL => Util::buildServerUrl() . $base . "/agents.php?download=" . $result->getId()
+      )
+      );
     }
     else {
       API::sendResponse(array(
         PResponseUpdate::ACTION => PActions::UPDATE,
         PResponseUpdate::RESPONSE => PValues::SUCCESS,
         PResponseUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
-      ));
+      )
+      );
     }
   }
   
@@ -516,7 +527,7 @@ class API {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
         $filename = "7zr";
-        switch($agent->getOs()){
+        switch ($agent->getOs()) {
           case DOperatingSystem::LINUX:
             $filename .= ".unix";
             break;
@@ -530,12 +541,13 @@ class API {
         $url = explode("/", $_SERVER['REQUEST_URI']);
         unset($url[sizeof($url) - 1]);
         unset($url[sizeof($url) - 1]);
-        $path = Util::buildServerUrl().implode("/", $url)."/static/" . $filename;
+        $path = Util::buildServerUrl() . implode("/", $url) . "/static/" . $filename;
         API::sendResponse(array(
           PResponseDownload::ACTION => PActions::DOWNLOAD,
           PResponseDownload::RESPONSE => PValues::SUCCESS,
           PResponseDownload::EXECUTABLE => $path
-        ));
+        )
+        );
         break;
       case PValuesDownloadBinaryType::HASHCAT:
         $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
@@ -553,7 +565,8 @@ class API {
             PResponseDownload::RESPONSE => PValues::SUCCESS,
             PResponseDownload::VERSION => PValuesDownloadVersion::UP_TO_DATE,
             PResponseDownload::EXECUTABLE => $executable
-          ));
+          )
+          );
         }
         
         $url = $hashcat->getUrl();
@@ -568,7 +581,8 @@ class API {
           PResponseDownload::URL => $url,
           PResponseDownload::ROOT_DIR => $rootdir,
           PResponseDownload::EXECUTABLE => $executable
-        ));
+        )
+        );
         break;
       default:
         API::sendErrorResponse(PActions::DOWNLOAD, "Unknown download type!");
@@ -598,7 +612,7 @@ class API {
     if ($assignment == null) {
       API::sendErrorResponse(PActions::ERROR, "You are not assigned to this task!");
     }
-  
+    
     API::updateAgent($QUERY, $agent);
     
     //save error message
@@ -613,7 +627,8 @@ class API {
     API::sendResponse(array(
       PQueryError::ACTION => PActions::ERROR,
       PResponseError::RESPONSE => PValues::SUCCESS
-    ));
+    )
+    );
   }
   
   public static function getFile($QUERY) {
@@ -659,7 +674,7 @@ class API {
     }
     $filename = $file->getFilename();
     $extension = explode(".", $filename)[sizeof(explode(".", $filename)) - 1];
-  
+    
     API::updateAgent($QUERY, $agent);
     
     API::sendResponse(array(
@@ -668,7 +683,8 @@ class API {
       PResponseFile::EXTENSION => $extension,
       PResponseFile::RESPONSE => PValues::SUCCESS,
       PResponseFile::URL => "get.php?file=" . $file->getId() . "&token=" . $agent->getToken()
-    ));
+    )
+    );
   }
   
   public static function getHashes($QUERY) {
@@ -729,7 +745,7 @@ class API {
     else {
       $hashlists[] = $hashlist->getId();
     }
-  
+    
     API::updateAgent($QUERY, $agent);
     
     if (sizeof($hashlists) == 0) {
@@ -783,7 +799,8 @@ class API {
           PQueryFile::ACTION => PActions::HASHES,
           PResponse::RESPONSE => PValues::SUCCESS,
           PResponseHashes::DATA => $data
-        ));
+        )
+        );
         break;
     }
     
@@ -806,7 +823,7 @@ class API {
   public static function getTask($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-  
+    
     if (!PQueryTask::isValid($QUERY)) {
       API::sendErrorResponse(PActions::TASK, "Invalid task query!");
     }
@@ -821,61 +838,63 @@ class API {
         PResponseTask::ACTION => PActions::TASK,
         PResponseTask::RESPONSE => PValues::SUCCESS,
         PResponseTask::TASK_ID => PValues::NONE
-      ));
+      )
+      );
     }
-  
+    
     API::updateAgent($QUERY, $agent);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-  
+    
     // test if the current task is obsolete anyway, this makes it easier to select a new one
     $currentTask = null;
-    if($assignment != null) {
+    if ($assignment != null) {
       $currentTask = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
     }
-    if($currentTask != null && !Util::taskCanBeUsed($currentTask, $agent)){
+    if ($currentTask != null && !Util::taskCanBeUsed($currentTask, $agent)) {
       $FACTORIES::getAssignmentFactory()->delete($assignment);
       $assignment = null;
       $currentTask = null;
     }
     
     $setToTask = null;
-    if($assignment == null){
+    if ($assignment == null) {
       // we have no task assigned currently
       // get the highest priority task possible (needs to be >0 here)
       $setToTask = Util::getBestTask($agent);
       $newAssignment = true;
     }
-    else{
+    else {
       // we are currently assigned to a task
       $setToTask = $currentTask;
       $betterTask = Util::getBestTask($agent, $currentTask->getPriority());
-      if($betterTask != null){
+      if ($betterTask != null) {
         $setToTask = $betterTask;
         $newAssignment = true;
       }
-      else{
+      else {
         $newAssignment = false;
       }
     }
     
-    if($setToTask == null){
+    if ($setToTask == null) {
       API::sendResponse(array(
         PResponseTask::ACTION => PActions::TASK,
         PResponseTask::RESPONSE => PValues::SUCCESS,
         PResponseTask::TASK_ID => PValues::NONE
-      ));
+      )
+      );
     }
-    if($currentTask != null && $setToTask->getId() != $currentTask->getId()){
+    if ($currentTask != null && $setToTask->getId() != $currentTask->getId()) {
       // delete old assignment
       $FACTORIES::getAssignmentFactory()->delete($assignment);
     }
-    if($newAssignment) {
+    if ($newAssignment) {
       $assignment = new Assignment(0, $setToTask->getId(), $agent->getId(), 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
     }
-  
+    
     $qF = new QueryFilter(TaskFile::TASK_ID, $setToTask->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
@@ -883,10 +902,10 @@ class API {
     for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
       $files[] = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class)->getFilename();
     }
-  
+    
     $hashlist = $FACTORIES::getHashlistFactory()->get($setToTask->getHashlistId());
-    $benchType = ($setToTask->getUseNewBench())?"speed":"run";
-  
+    $benchType = ($setToTask->getUseNewBench()) ? "speed" : "run";
+    
     API::sendResponse(array(
       PResponseTask::ACTION => PActions::TASK,
       PResponseTask::RESPONSE => PValues::SUCCESS,
@@ -899,13 +918,14 @@ class API {
       PResponseTask::FILES => $files,
       PResponseTask::BENCHTYPE => $benchType,
       PResponseTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
-    ));
+    )
+    );
   }
   
   public static function solve($QUERY) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-  
+    
     if (!PQuerySolve::isValid($QUERY)) {
       API::sendErrorResponse(PActions::SOLVE, "Invalid hashes query!");
     }
@@ -931,7 +951,7 @@ class API {
     if ($agent == null) {
       API::sendErrorResponse(PActions::SOLVE, "Invalid agent token" . $QUERY[PQuerySolve::TOKEN]);
     }
-    else if($agent->getIsActive() == 0){
+    else if ($agent->getIsActive() == 0) {
       API::sendErrorResponse(PActions::SOLVE, "Agent is marked inactive!");
     }
     else if ($chunk->getAgentId() != $agent->getId()) {
@@ -960,12 +980,12 @@ class API {
     /*
      * Calculate the relative progress inside of the chunk
      */
-    $chunkCombinationStart = floor($combinationTotal/($skip+$length)*$skip);
-    $currentRelativeProgress = round(($combinationProgress - $chunkCombinationStart)/($combinationTotal - $chunkCombinationStart)*10000);
+    $chunkCombinationStart = floor($combinationTotal / ($skip + $length) * $skip);
+    $currentRelativeProgress = round(($combinationProgress - $chunkCombinationStart) / ($combinationTotal - $chunkCombinationStart) * 10000);
     $keyspaceProgress -= $skip;
     
     //if by accident the number of the combinationProgress overshoots the limit
-    if($currentRelativeProgress > 10000){
+    if ($currentRelativeProgress > 10000) {
       $currentRelativeProgress = 10000;
     }
     
@@ -989,17 +1009,17 @@ class API {
     $chunk->setProgress($keyspaceProgress);
     $chunk->setSolveTime(time());
     $aborting = false;
-    if($chunk->getState() == DHashcatStatus::ABORTED){
+    if ($chunk->getState() == DHashcatStatus::ABORTED) {
       $aborting = true;
     }
     $chunk->setState($state);
     $FACTORIES::getChunkFactory()->update($chunk);
-  
+    
     API::updateAgent($QUERY, $agent);
     
     $hlistar = Util::checkSuperHashlist($hashList);
     $hlistarIds = array();
-    foreach($hlistar as $hl){
+    foreach ($hlistar as $hl) {
       $hlistarIds[] = $hl->getId();
     }
     $format = $FACTORIES::getHashlistFactory()->get($hlistar[0]->getId())->getFormat();
@@ -1014,11 +1034,11 @@ class API {
     // process solved hashes, should there be any
     $crackedHashes = $QUERY[PQuerySolve::CRACKED_HASHES];
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-  
+    
     $plainUpdates = array();
     $crackHashes = array();
     
-    for($i=0;$i<sizeof($crackedHashes);$i++) {
+    for ($i = 0; $i < sizeof($crackedHashes); $i++) {
       $crackedHash = $crackedHashes[$i];
       if ($crackedHash == "") {
         continue;
@@ -1030,7 +1050,7 @@ class API {
           $hashListFilter = new ContainFilter(Hash::HASHLIST_ID, $hlistarIds);
           $isCrackedFilter = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($isCrackedFilter, $hashFilter, $hashListFilter)));
-          if(sizeof($hashes) == 0){
+          if (sizeof($hashes) == 0) {
             continue;
           }
           $salt = $hashes[0]->getSalt();
@@ -1046,13 +1066,13 @@ class API {
             $skipped++;
           }
           
-          foreach($hashes as $hash){
+          foreach ($hashes as $hash) {
             $cracked[$hash->getHashlistId()]++;
             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
             $crackHashes[] = $hash->getId();
           }
-  
-          if(sizeof($plainUpdates) >= 1000){
+          
+          if (sizeof($plainUpdates) >= 1000) {
             $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
             $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
             $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
@@ -1072,13 +1092,14 @@ class API {
           $mac_cli = $splitLine[2];
           $essid = $splitLine[3];
           $plain = array();
-          for($i=4;$i<sizeof($splitLine);$i++){
+          for ($i = 4; $i < sizeof($splitLine); $i++) {
             $plain[] = $splitLine[$i];
           }
           $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $plain);
           //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
-          $qF = new QueryFilter(HashBinary::ESSID, $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$essid, "=");
-          $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+          $qF1 = new QueryFilter(HashBinary::ESSID, $mac_ap . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $essid, "=");
+          $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
+          $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
           if (sizeof($hashes) == 0) {
             $skipped++;
           }
@@ -1092,12 +1113,24 @@ class API {
           break;
         case DHashlistFormat::BINARY:
           // save binary password
-          // TODO Fix issue with superhashlists
-          //$plain = $splitLine[1];
+          $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
+          $qF1 = new QueryFilter(HashBinary::CHUNK_ID, $chunk->getId(), "=");
+          $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
+          $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+          if (sizeof($hashes) == 0) {
+            $skipped++;
+          }
+          foreach ($hashes as $hash) {
+            $cracked[$hash->getHashlistId()]++;
+            $hash->setIsCracked(1);
+            $hash->setChunkId($chunk->getId());
+            $hash->setPlaintext($plain);
+            $FACTORIES::getHashBinaryFactory()->update($hash);
+          }
           break;
       }
     }
-    if($format == DHashlistFormat::PLAIN && sizeof($plainUpdates) > 0){
+    if ($format == DHashlistFormat::PLAIN && sizeof($plainUpdates) > 0) {
       $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
       $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
       $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
@@ -1151,12 +1184,12 @@ class API {
     
     $hashlists = Util::checkSuperHashlist($hashList);
     $hashlistIds = array();
-    foreach($hashlists as $hl){
+    foreach ($hashlists as $hl) {
       $hashlistIds[] = $hl->getId();
     }
     $toZap = array();
     
-    if($aborting){
+    if ($aborting) {
       $chunk->setSpeed(0);
       $chunk->setState(DHashcatStatus::ABORTED);
       $FACTORIES::getChunkFactory()->update($chunk);
@@ -1204,9 +1237,10 @@ class API {
             PResponseSolve::NUM_CRACKED => $sumCracked,
             PResponseSolve::NUM_SKIPPED => $skipped,
             PResponseSolve::AGENT_COMMAND => "stop"
-          ));
+          )
+          );
         }
-        $chunk->setSpeed($speed*1000);
+        $chunk->setSpeed($speed * 1000);
         $FACTORIES::getChunkFactory()->update($chunk);
         
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, $hashlistIds);
@@ -1228,6 +1262,7 @@ class API {
       PResponseSolve::NUM_CRACKED => $sumCracked,
       PResponseSolve::NUM_SKIPPED => $skipped,
       PResponseSolve::HASH_ZAPS => $toZap
-    ));
+    )
+    );
   }
 }
