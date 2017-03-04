@@ -1,4 +1,5 @@
 <?php
+use DBA\File;
 use DBA\QueryFilter;
 use DBA\TaskFile;
 
@@ -56,6 +57,12 @@ class FileHandler implements Handler {
     $newName = str_replace(" ", "_", htmlentities($_POST['filename'], false, "UTF-8"));
     if (strlen($newName) == 0) {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
+      return;
+    }
+    $qF = new QueryFilter(File::FILENAME, $newName, "=");
+    $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+    if(sizeof($files) > 0){
+      UI::addMessage(UI::ERROR, "This filename is already used!");
       return;
     }
     $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
