@@ -1087,7 +1087,7 @@ class API {
             $hash->setIsCracked(1);
             $hash->setChunkId($chunk->getId());
             $hash->setPlaintext($plain);
-            $FACTORIES::getHashFactory()->update($hash);
+            $FACTORIES::getHashBinaryFactory()->update($hash);
           }
           break;
         case DHashlistFormat::BINARY:
