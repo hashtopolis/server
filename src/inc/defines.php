@@ -63,6 +63,7 @@ class DConfig {
   const NUMBER_LOGENTRIES = "numLogEntries";
   
   /**
+   * Gives the format which a config input should have. Default is string if it's not a known config.
    * @param $config string
    * @return string
    */
@@ -90,6 +91,36 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
+  }
+  
+  /**
+   * @param $config string
+   * @return string
+   */
+  public static function getConfigDescription($config){
+    switch($config){
+      case DConfig::BENCHMARK_TIME:
+        return "Time in seconds an agent should benchmark a task";
+      case DConfig::CHUNK_DURATION:
+        return "How long an agent approximately should need for completing one chunk";
+      case DConfig::CHUNK_TIMEOUT:
+        return "How long an agent must not respond until it is treated as timed out and the chunk will get shipped to other agents";
+      case DConfig::AGENT_TIMEOUT:
+        return "How long an agent must not respond until he is treated as not active anymore";
+      case DConfig::HASHES_PAGE_SIZE:
+        return "How many hashes are showed at once in the hashes view (Page size)";
+      case DConfig::FIELD_SEPARATOR:
+        return "What separator should be used to separate hash and plain (or salt)";
+      case DConfig::HASHLIST_ALIAS:
+        return "What string is used as hashlist alias when creating a task";
+      case DConfig::STATUS_TIMER:
+        return "After how many seconds the agent should send it's progress and cracks to the server";
+      case DConfig::BLACKLIST_CHARS:
+        return "Chars which are not allowed to be used in attack command inputs";
+      case DConfig::NUMBER_LOGENTRIES:
+        return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
+    }
+    return $config;
   }
 }
 

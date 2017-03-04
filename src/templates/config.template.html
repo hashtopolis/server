@@ -12,7 +12,7 @@
 			</tr>
 			{{FOREACH conf;[[configuration]]}}
 				<tr>
-					<td>[[conf.getVal('item')]]</td>
+					<td>[[DConfig::getConfigDescription([[conf.getVal('item')]])]]</td>
 					<td>
 						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "string"}}
 							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
