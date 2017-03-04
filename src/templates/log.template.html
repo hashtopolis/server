@@ -27,7 +27,7 @@
 			<th>Message</th>
 		</tr>
 		{{FOREACH entry;[[entries]]}}
-			<tr>
+			<tr style="background-color: #{{IF [[entry.getLevel()]] == 'information'}}5cb85c{{ENDIF}}{{IF [[entry.getLevel()]] == 'warning'}}ffff00{{ENDIF}}{{IF [[entry.getLevel()]] == 'error'}}d58512{{ENDIF}}{{IF [[entry.getLevel()]] == 'fatal error'}}d43f3a{{ENDIF}}">
 				<td>[[entry.getId()]]</td>
 				<td>[[date("d.m.Y - H:i:s", [[entry.getTime()]])]]</td>
 				<td>[[entry.getLevel()]]</td>
