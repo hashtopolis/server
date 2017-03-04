@@ -1114,7 +1114,7 @@ class API {
         case DHashlistFormat::BINARY:
           // save binary password
           $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
-          $qF1 = new QueryFilter(HashBinary::CHUNK_ID, $chunk->getId(), "=");
+          $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $hashList->getId(), "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
           if (sizeof($hashes) == 0) {
