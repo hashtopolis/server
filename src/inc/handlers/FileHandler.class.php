@@ -1,6 +1,8 @@
 <?php
 use DBA\File;
+use DBA\JoinFilter;
 use DBA\QueryFilter;
+use DBA\Task;
 use DBA\TaskFile;
 
 /**
@@ -65,6 +67,19 @@ class FileHandler implements Handler {
       UI::addMessage(UI::ERROR, "This filename is already used!");
       return;
     }
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    
+    //check where the file is used and replace the filename in all the tasks
+    $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=", $FACTORIES::getTaskFileFactory());
+    $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), Task::TASK_ID, TaskFile::TASK_ID);
+    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    foreach($joined as $task){
+      /** @var $task Task */
+      $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
+      $FACTORIES::getTaskFactory()->update($task);
+    }
+    
     $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
     if(!$success){
       UI::addMessage(UI::ERROR, "Failed to rename file!");
@@ -72,6 +87,7 @@ class FileHandler implements Handler {
     }
     $file->setFilename($newName);
     $FACTORIES::getFileFactory()->update($file);
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
   private function add() {
