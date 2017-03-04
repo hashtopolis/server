@@ -134,7 +134,7 @@ class Login {
     $FACTORIES::getUserFactory()->update($this->user);
     
     $this->valid = true;
-    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Successful login!");
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Successful login!");
     setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime());
     return true;
   }

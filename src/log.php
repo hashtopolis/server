@@ -21,7 +21,7 @@ else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
 $TEMPLATE = new Template("log");
 $MENU->setActive("config_log");
 
-$level = 0;
+$level = "0";
 if(isset($_POST['show'])){
   $level = $_POST['level'];
 }
