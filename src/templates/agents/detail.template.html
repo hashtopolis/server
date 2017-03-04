@@ -83,7 +83,7 @@
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
-          <input type="text" name='name' value="{{IF [[agent.getCpuOnly()]] == 0}}No{{ELSE{{Yes{{ENDIF}}" class='form-control' readonly>
+          <input type="text" name='name' value="{{IF [[agent.getCpuOnly()]] == 0}}No{{ELSE}}Yes{{ENDIF}}" class='form-control' readonly>
         {{ENDIF}}
       </td>
     </tr>
