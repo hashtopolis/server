@@ -31,7 +31,7 @@ $qF = new QueryFilter(LogEntry::LEVEL, $level, "=");
 $oF = new OrderFilter(LogEntry::TIME, "DESC LIMIT 100");
 
 $filter = array($FACTORIES::ORDER => $oF);
-if($level != 0){
+if($level !== "0"){
   $filter[$FACTORIES::FILTER] = $qF;
 }
 
