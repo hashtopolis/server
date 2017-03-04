@@ -74,7 +74,7 @@ class FileHandler implements Handler {
     $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=", $FACTORIES::getTaskFileFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), Task::TASK_ID, TaskFile::TASK_ID);
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach($joined as $task){
+    foreach($joined['Task'] as $task){
       /** @var $task Task */
       $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
       $FACTORIES::getTaskFactory()->update($task);
