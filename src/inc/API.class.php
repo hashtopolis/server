@@ -1072,7 +1072,7 @@ class API {
           $mac_cli = $splitLine[2];
           $essid = $splitLine[3];
           $plain = array();
-          for($i=3;$i<sizeof($splitLine);$i++){
+          for($i=4;$i<sizeof($splitLine);$i++){
             $plain[] = $splitLine[$i];
           }
           $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $plain);
