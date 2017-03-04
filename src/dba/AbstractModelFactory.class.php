@@ -611,33 +611,33 @@ abstract class AbstractModelFactory {
    * @param $updates MassUpdateSet[]
    * @return null
    */
-  public function massSingleUpdate($matchingColumn, $updateColumn, $updates){
+  public function massSingleUpdate($matchingColumn, $updateColumn, $updates) {
     $query = "UPDATE " . $this->getModelName();
     
-    if(sizeof($updates) == 0){
+    if (sizeof($updates) == 0) {
       return null;
     }
     $query .= " SET `$updateColumn` = ( CASE ";
     
     $vals = array();
     
-    foreach($updates as $update){
+    foreach ($updates as $update) {
       $query .= $update->getMassQuery($matchingColumn);
       array_push($vals, $update->getMatchValue());
       array_push($vals, $update->getUpdateValue());
     }
     
     $matchingArr = array();
-    foreach($updates as $update){
+    foreach ($updates as $update) {
       array_push($vals, $update->getMatchValue());
       $matchingArr[] = "?";
     }
     
-    $query .= "END) WHERE $matchingColumn IN (".implode(",", $matchingArr).")";
+    $query .= "END) WHERE $matchingColumn IN (" . implode(",", $matchingArr) . ")";
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     return $stmt->execute($vals);
-}
+  }
   
   public function massUpdate($options) {
     $query = "UPDATE " . $this->getModelTable();
@@ -682,13 +682,14 @@ abstract class AbstractModelFactory {
    * @return PDO
    */
   public function getDB($test = false) {
-    if(!$test) {
-      $dsn = 'mysql:dbname=' . DBA_DB . ";" . "host=" . DBA_SERVER;
+    if (!$test) {
+      $dsn = 'mysql:dbname=' . DBA_DB . ";host=" . DBA_SERVER . ";port=" . DBA_PORT;
       $user = DBA_USER;
       $password = DBA_PASS;
-    }else{
+    }
+    else {
       global $CONN;
-      $dsn = 'mysql:dbname=' . $CONN['db'] . ";" . "host=" . $CONN['server'];
+      $dsn = 'mysql:dbname=' . $CONN['db'] . ";host=" . $CONN['server'] . ";port=" . $CONN['port'];
       $user = $CONN['user'];
       $password = $CONN['pass'];
     }

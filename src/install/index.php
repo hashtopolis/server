@@ -111,7 +111,8 @@ switch($STEP){
 					'user' => $_POST['user'], 
 					'pass' => $_POST['pass'], 
 					'server' => $_POST['server'], 
-					'db' => $_POST['db']
+					'db' => $_POST['db'],
+          'port' => $_POST['port']
 			);
 			if($FACTORIES::getUserFactory()->getDB(true) === false){
 				//connection not valid
@@ -124,6 +125,7 @@ switch($STEP){
 				$file = str_replace("__DBPASS__", $_POST['pass'], $file);
 				$file = str_replace("__DBSERVER__", $_POST['server'], $file);
 				$file = str_replace("__DBDB__", $_POST['db'], $file);
+        $file = str_replace("__DBPORT__", $_POST['port'], $file);
 				file_put_contents(dirname(__FILE__)."/../inc/load.php", $file);
 				setcookie("step", "$PREV", time() + 3600);
 				sleep(1); // some times there are problems when reading to fast again and the file is not written to disk then
