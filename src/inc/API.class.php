@@ -1067,14 +1067,15 @@ class API {
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
-          //$hash = $splitLine[0];
+          // result sent: 408bc12965e7ce9987cf8fb61e62a90a:aef50f22801c:987bdcf9f950:8381533406003807685881523:hashcat!
           $mac_ap = $splitLine[1];
           $mac_cli = $splitLine[2];
           $essid = $splitLine[3];
-          for($i=0;$i<3;$i++){
-            unset($splitLine[0]); // delete everything except the plain
+          $plain = array();
+          for($i=3;$i<sizeof($splitLine);$i++){
+            $plain[] = $splitLine[$i];
           }
-          $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
+          $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $plain);
           //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
           $qF = new QueryFilter(HashBinary::ESSID, $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$essid, "=");
           $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
