@@ -33,11 +33,15 @@
     <tr>
       <td>Activity:</td>
       <td>
-        <form id="active[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
-          <input type='hidden' name='action' value='agentactive'>
-          <input type="hidden" name="agentId" value="[[agent.getId()]]">
-          <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getId()]]').submit();">
-        </form>
+        {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[login.getLevel()]] >= 30}}
+          <form id="active[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
+            <input type='hidden' name='action' value='agentactive'>
+            <input type="hidden" name="agentId" value="[[agent.getId()]]">
+            <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getId()]]').submit();">
+          </form>
+        {{ELSE}}
+          <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} disabled>
+        {{ENDIF}}
       </td>
     </tr>
 
