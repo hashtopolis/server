@@ -47,7 +47,7 @@ class AgentHandler implements Handler {
         $this->clearErrors();
         break;
       case 'agentrename':
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->rename();
@@ -65,9 +65,15 @@ class AgentHandler implements Handler {
         $this->changeTrusted();
         break;
       case 'agentignore':
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
         $this->changeIgnoreErrors();
         break;
       case 'setparam':
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
         $this->changeCmdParameters();
         break;
       case 'agentactive':
@@ -92,6 +98,9 @@ class AgentHandler implements Handler {
         $this->downloadAgent();
         break;
       case 'agentcpu':
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
         $this->setAgentCpu();
         break;
       default:
