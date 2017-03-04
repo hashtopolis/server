@@ -43,6 +43,7 @@ if(isset($_GET['edit'])){
   }
   else{
     $OBJECTS['file'] = $file;
+    $TEMPLATE = new Template("files/edit");
   }
 }
 else {
