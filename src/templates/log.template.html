@@ -10,10 +10,10 @@
           <input type="hidden" name="show" value="true">
           <select name="level" class="form-control">
             <option value="0"{{IF [[level]] == 0}} selected{{ENDIF}}>ALL</option>
-            <option value="INFO"{{IF [[level]] == 0}} selected{{ENDIF}}>information</option>
-            <option value="WARN"{{IF [[level]] == 1}} selected{{ENDIF}}>warning</option>
-            <option value="ERROR"{{IF [[level]] == 2}} selected{{ENDIF}}>error</option>
-            <option value="FATAL"{{IF [[level]] == 3}} selected{{ENDIF}}>fatal error</option>
+            <option value="INFO"{{IF [[level]] == 'INFO'}} selected{{ENDIF}}>information</option>
+            <option value="WARN"{{IF [[level]] == 'WARN'}} selected{{ENDIF}}>warning</option>
+            <option value="ERROR"{{IF [[level]] == 'ERROR'}} selected{{ENDIF}}>error</option>
+            <option value="FATAL"{{IF [[level]] == 'FATAL'}} selected{{ENDIF}}>fatal error</option>
           </select>
           <input type='submit' class='btn btn-default' value='Show'>
         </form>
