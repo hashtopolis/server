@@ -116,6 +116,7 @@ class Login {
       return false;
     }
     else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
+      Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
       return false;
     }
     $this->user = $user;
@@ -133,6 +134,7 @@ class Login {
     $FACTORIES::getUserFactory()->update($this->user);
     
     $this->valid = true;
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Successful login!");
     setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime());
     return true;
   }

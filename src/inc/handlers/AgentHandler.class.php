@@ -109,32 +109,32 @@ class AgentHandler implements Handler {
     }
   }
   
-  private function setAgentCpu(){
+  private function setAgentCpu() {
     global $FACTORIES;
-  
+    
     $cpuOnly = 0;
-    if($_POST['cpuOnly'] == 1){
+    if ($_POST['cpuOnly'] == 1) {
       $cpuOnly = 1;
     }
     $this->agent->setCpuOnly($cpuOnly);
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
-  private function downloadAgent(){
+  private function downloadAgent() {
     global $FACTORIES, $binaryId;
     
     $agentBinary = $FACTORIES::getAgentBinaryFactory()->get($binaryId);
-    if($agentBinary == null){
+    if ($agentBinary == null) {
       UI::printError("ERROR", "Invalid Agent Binary!");
     }
     $filename = $agentBinary->getFilename();
-    if(!file_exists(dirname(__FILE__)."/../../static/".$filename)) {
+    if (!file_exists(dirname(__FILE__) . "/../../static/" . $filename)) {
       UI::printError("ERROR", "Agent Binary not present on server!");
     }
     header("Content-Type: application/force-download");
     header("Content-Description: " . $filename);
     header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-    echo file_get_contents(dirname(__FILE__)."/../../static/".$filename);
+    echo file_get_contents(dirname(__FILE__) . "/../../static/" . $filename);
     die();
   }
   
@@ -157,7 +157,7 @@ class AgentHandler implements Handler {
     }
     
     $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
-    if($this->agent == null){
+    if ($this->agent == null) {
       $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
     }
     if ($this->agent == null) {
@@ -171,7 +171,7 @@ class AgentHandler implements Handler {
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
-    if($task->getIsSmall() && sizeof($assignments) > 0){
+    if ($task->getIsSmall() && sizeof($assignments) > 0) {
       UI::printError("ERROR", "You cannot assign agent to this task as the limit of assignments is reached!");
     }
     
@@ -305,8 +305,8 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     $pars = htmlentities($_POST["cmdpars"], false, "UTF-8");
-
-    if(Util::containsBlacklistedChars($pars)){
+    
+    if (Util::containsBlacklistedChars($pars)) {
       UI::addMessage(UI::ERROR, "Parameters must contain no blacklisted characters!");
       return;
     }
@@ -326,21 +326,25 @@ class AgentHandler implements Handler {
   }
   
   private function changeTrusted() {
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
     
     $trusted = intval($_POST["trusted"]);
     if ($trusted != 0 && $trusted != 1) {
       UI::printError("ERROR", "Invalid trusted state!");
     }
     $this->agent->setIsTrusted($trusted);
+    Util::createLogEntry(DLogEntryIssuer::USER, $LOGIN->getUserID(), DLogEntry::INFO, "Trust status for agent " . $this->agent->getAgentName() . " was changed to " . $this->agent->getIsTrusted());
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
   private function changeOwner() {
-    global $FACTORIES;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
     
     if ($_POST['owner'] == 0) {
       $this->agent->setUserId(null);
+      $username = "NONE";
       $FACTORIES::getAgentFactory()->update($this->agent);
     }
     else {
@@ -348,8 +352,10 @@ class AgentHandler implements Handler {
       if (!$user) {
         UI::printError("ERROR", "Invalid user selected!");
       }
+      $username = $user->getUsername();
       $this->agent->setUserId($user->getId());
     }
+    Util::createLogEntry(DLogEntryIssuer::USER, $LOGIN->getUserID(), DLogEntry::INFO, "Owner for agent " . $this->agent->getAgentName() . " was changed to " . $username);
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   

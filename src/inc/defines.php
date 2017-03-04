@@ -137,4 +137,9 @@ class DLogEntry {
   const INFO = "information";
 }
 
+class DLogEntryIssuer {
+  const API = "API";
+  const USER = "User";
+}
+
 
