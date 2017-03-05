@@ -3,10 +3,7 @@ require_once(dirname(__FILE__) . "/../inc/load.php");
 set_time_limit(0);
 
 header("Content-Type: application/json");
-if(!isset($_POST[PQuery::QUERY])){
-  API::sendErrorResponse("ERROR", "Query value is not set!");
-}
-$QUERY = json_decode(@$_POST[PQuery::QUERY], true);
+$QUERY = json_decode(file_get_contents('php://input'), true);
 
 switch ($QUERY[PQuery::ACTION]) {
   case PActions::TEST:
