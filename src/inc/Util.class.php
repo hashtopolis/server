@@ -710,7 +710,7 @@ class Util {
    * @return string basic server url
    */
   public static function buildServerUrl() {
-    $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "https://";
+    $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "http://";
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
     if ($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80) {
