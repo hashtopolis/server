@@ -1,16 +1,10 @@
-## Important: BETA Status
+## Important: RC1 State
 
-Hashtopussy currently is in BETA state. This means there may be still some bugs or things not working. You are free to test anything and helping us with reporting detected bugs or problems. 
+Hashtopussy currently is currently available as v0.2.0-rc1. This means there may be still some bugs or things not working. You are free to test anything and helping us with reporting detected bugs or problems. 
 
 You NEED to use hashcat 3.40 or newer, otherwise it will not work. 
 
 Currently it only works with Apache2 webserver, there is an unknown problem with php-fpm/nginx causing the installation to fail. Until we resolved the problem it's recommended to use Apache2 only. Please inform us if you were able to setup it with nginx.
-
-These features are not working / not ready yet:
-
-- WPA cracking (working in dev/v0.2.0 branch)
-- Binary hash handling is not complete
-- Currently only the C# client is completely working, others are just partially implemented
 
 There are parts of the documentation/wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
 
