@@ -155,7 +155,7 @@ CREATE TABLE `HashBinary` (
                  COLLATE utf8_bin NOT NULL,
   `hash`         LONGBLOB         NOT NULL,
   `plaintext`    VARCHAR(200)
-                 COLLATE utf8_bin NOT NULL,
+                 COLLATE utf8_bin DEFAULT NULL,
   `time`         INT(11)          NOT NULL,
   `chunkId`      INT(11)    DEFAULT NULL,
   `isCracked`    TINYINT(1) DEFAULT 0
