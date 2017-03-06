@@ -59,11 +59,11 @@ require_once(dirname(__FILE__)."/../dba/init.php");
 $FACTORIES = new Factory();
 $LANG = new Lang();
 
-$gitcommit = "not versioned";
+$gitcommit = "";
 $out = array();
 exec("cd '".dirname(__FILE__)."/../' && git rev-parse HEAD", $out);
 if (isset($out[0])) {
-  $gitcommit = substr($out[0], 0, 7);
+  $gitcommit = "commit ".substr($out[0], 0, 7);
 }
 $out = array();
 exec("cd '".dirname(__FILE__)."/../' && git rev-parse --abbrev-ref HEAD", $out);

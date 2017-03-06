@@ -61,6 +61,7 @@ class DConfig {
   const STATUS_TIMER = "statustimer";
   const BLACKLIST_CHARS = "blacklistChars";
   const NUMBER_LOGENTRIES = "numLogEntries";
+  const TIME_FORMAT = "timefmt";
   
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
@@ -89,6 +90,8 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::NUMBER_LOGENTRIES:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::TIME_FORMAT:
+        return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -119,6 +122,8 @@ class DConfig {
         return "Chars which are not allowed to be used in attack command inputs";
       case DConfig::NUMBER_LOGENTRIES:
         return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
+      case DConfig::TIME_FORMAT:
+        return "Set the formatting of time displaying. Use syntax for PHPs date() method.";
     }
     return $config;
   }
