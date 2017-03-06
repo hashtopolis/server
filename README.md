@@ -8,7 +8,7 @@ Currently it only works with Apache2 webserver, there is an unknown problem with
 
 These features are not working / not ready yet:
 
-- WPA cracking (we still need some times on this as we will support hccapx)
+- WPA cracking (working in dev/v0.2.0 branch)
 - Binary hash handling is not complete
 - Currently only the C# client is completely working, others are just partially implemented
 
