@@ -11,6 +11,7 @@ define("DBA_SERVER", $CONN['server']);
 define("DBA_DB", $CONN['db']);
 define("DBA_USER", $CONN['user']);
 define("DBA_PASS", $CONN['pass']);
+define("DBA_PORT", $CONN['port']);
 
 require_once(dirname(__FILE__) . "/AbstractModel.class.php");
 require_once(dirname(__FILE__) . "/AbstractModelFactory.class.php");

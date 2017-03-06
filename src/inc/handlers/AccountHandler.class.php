@@ -73,6 +73,7 @@ class AccountHandler implements Handler {
     $this->user->setPasswordSalt($newSalt);
     $this->user->setIsComputedPassword(0);
     $FACTORIES::getUserFactory()->update($this->user);
+    Util::createLogEntry(DLogEntryIssuer::USER, $this->user->getId(), DLogEntry::INFO, "User changed password!");
     UI::addMessage(UI::SUCCESS, "Password was updated successfully!");
   }
   
@@ -101,6 +102,7 @@ class AccountHandler implements Handler {
     
     $this->user->setEmail($email);
     $FACTORIES::getUserFactory()->update($this->user);
+    Util::createLogEntry(DLogEntryIssuer::USER, $this->user->getId(), DLogEntry::INFO, "User changed email!");
     UI::addMessage(UI::SUCCESS, "Email updated successfully!");
   }
 }

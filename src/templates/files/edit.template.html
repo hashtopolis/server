@@ -1,0 +1,36 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Edit File</h2>
+{%TEMPLATE->struct/messages%}
+<form action="files.php?view=[[view]]" method="post">
+  <input type="hidden" name="action" value="edit">
+  <input type="hidden" name="fileId" value="[[file.getId()]]">
+  <div class="panel panel-default">
+    <table class="table table-bordered table-nonfluid">
+      <tr>
+        <td colspan="2">
+          <div class="alert alert-warning">
+            WARNING: It's not recommended to rename a file during running a task where this file is used. This can cause problems with the agents using the file.<br>
+            Keep in mind that when you rename a file the agents will download the file again as they don't know that it is just a renamed file.
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>ID</th>
+        <td>[[file.getId()]]</td>
+      </tr>
+      <tr>
+        <th>Name</th>
+        <td>
+          <input type="text" name="filename" value="[[file.getFilename()]]" class="form-control">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <button type="submit" class="btn btn-success">Save</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</form>
+{%TEMPLATE->struct/foot%}

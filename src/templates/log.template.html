@@ -5,6 +5,21 @@
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
+			<td colspan="5">
+        <form class='form-inline' action="log.php" method="post">
+          <input type="hidden" name="show" value="true">
+          <select name="level" class="form-control">
+            <option value="0"{{IF [[level]] == 0}} selected{{ENDIF}}>ALL</option>
+            <option value="information"{{IF [[level]] == 'information'}} selected{{ENDIF}}>information</option>
+            <option value="warning"{{IF [[level]] == 'warning'}} selected{{ENDIF}}>warning</option>
+            <option value="error"{{IF [[level]] == 'error'}} selected{{ENDIF}}>error</option>
+            <option value="fatal error"{{IF [[level]] == 'fatal error'}} selected{{ENDIF}}>fatal error</option>
+          </select>
+          <input type='submit' class='btn btn-default' value='Show'>
+        </form>
+			</td>
+		</tr>
+		<tr>
 			<th>Entry ID</th>
 			<th>Time</th>
 			<th>Level</th>
@@ -12,7 +27,7 @@
 			<th>Message</th>
 		</tr>
 		{{FOREACH entry;[[entries]]}}
-			<tr>
+			<tr style="background-color: #{{IF [[entry.getLevel()]] == 'information'}}5cb85c{{ENDIF}}{{IF [[entry.getLevel()]] == 'warning'}}ffff00{{ENDIF}}{{IF [[entry.getLevel()]] == 'error'}}d58512{{ENDIF}}{{IF [[entry.getLevel()]] == 'fatal error'}}d43f3a{{ENDIF}}">
 				<td>[[entry.getId()]]</td>
 				<td>[[date("d.m.Y - H:i:s", [[entry.getTime()]])]]</td>
 				<td>[[entry.getLevel()]]</td>

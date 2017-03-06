@@ -203,7 +203,12 @@ $output = "";
 foreach($hashes as $hash){
   $hash = \DBA\Util::cast($hash, $hashClass);
   if($displaying == ""){
-    $output .= $hash->getHash();
+    if(!$binaryFormat) {
+      $output .= $hash->getHash();
+    }
+    else{
+      $output .= "[...]";
+    }
     if(!$binaryFormat && strlen($hash->getSalt()) > 0){
       $output .= ":".htmlentities($hash->getSalt(), false, "UTF-8");
     }

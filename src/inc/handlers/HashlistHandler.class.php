@@ -204,7 +204,7 @@ class HashlistHandler implements Handler {
     $added = 0;
     
     switch ($format) {
-      case 0:
+      case DHashlistFormat::PLAIN:
         $buf = fread($file, 1024);
         $lineSeparators = array("\r\n", "\n", "\r");
         $lineSeparator = "";
@@ -270,7 +270,7 @@ class HashlistHandler implements Handler {
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
         break;
-      case 1:
+      case DHashlistFormat::WPA:
         $added = 0;
         while (!feof($file)) {
           $data = fread($file, 393);
@@ -315,10 +315,10 @@ class HashlistHandler implements Handler {
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
-      case 2:
+      case DHashlistFormat::BINARY:
         if (!feof($file)) {
           $data = fread($file, Util::filesize($tmpfile));
-          $hash = new HashBinary(0, $this->hashlist->getId(), "", Util::bintohex($data), "", 0, 0, 0);
+          $hash = new HashBinary(0, $this->hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
         }
         fclose($file);

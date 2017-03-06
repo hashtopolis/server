@@ -5,13 +5,9 @@ use DBA\Factory;
 //set to 1 for debugging
 ini_set("display_errors", "0");
 
-//is required for running well with php7
-//TODO: check if this is still a problem
-ini_set('pcre.jit', '0');
-
 $OBJECTS = array();
 
-$VERSION = "0.2.0 BETA";
+$VERSION = "0.2.0 RC1";
 $HOST = $_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
@@ -25,6 +21,7 @@ $CONN['user'] = '__DBUSER__';
 $CONN['pass'] = '__DBPASS__';
 $CONN['server'] = '__DBSERVER__';
 $CONN['db'] = '__DBDB__';
+$CONN['port'] = '__DBPORT__';
 $CONN['installed'] = false; //set this to true if you config the mysql and setup manually
 //END CONFIG
 

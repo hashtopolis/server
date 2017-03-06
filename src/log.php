@@ -2,6 +2,7 @@
 
 use DBA\LogEntry;
 use DBA\OrderFilter;
+use DBA\QueryFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -19,11 +20,22 @@ else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
 
 $TEMPLATE = new Template("log");
 $MENU->setActive("config_log");
-$message = "";
 
+$level = "0";
+if(isset($_POST['show'])){
+  $level = $_POST['level'];
+}
+$OBJECTS['level'] = $level;
+
+$qF = new QueryFilter(LogEntry::LEVEL, $level, "=");
 $oF = new OrderFilter(LogEntry::TIME, "DESC LIMIT 100");
-$entries = $FACTORIES::getLogEntryFactory()->filter(array($FACTORIES::ORDER => $oF));
 
+$filter = array($FACTORIES::ORDER => $oF);
+if($level !== "0"){
+  $filter[$FACTORIES::FILTER] = $qF;
+}
+
+$entries = $FACTORIES::getLogEntryFactory()->filter($filter);
 $OBJECTS['entries'] = $entries;
 
 echo $TEMPLATE->render($OBJECTS);

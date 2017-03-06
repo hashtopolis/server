@@ -64,7 +64,7 @@ Hashtopus is a great program but lacking in some areas major differences between
 - Drastically Improved Security
 - Multi User support
 - Improved look and layout
-- Super Tasks (hcmask support)
+- Super Tasks
 - --hex-salt support
 
 Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) to get more information on setup and upgrade.
@@ -74,7 +74,7 @@ Some screenshots of Hashtopussy (by winxp5421): [Imgur](http://imgur.com/gallery
 ## Thanks
 
 * winxp for testing, writing help texts and a lot of input ideas
-* blazer for modifying the agent to get it working with hashcat v3
+* blazer for working on the agent
 * CynoSure Prime for testing
 * atom for [Hashcat](https://github.com/hashcat/hashcat)
 * curlyboi for the original [Hashtopus](https://github.com/curlyboi/hashtopus) code

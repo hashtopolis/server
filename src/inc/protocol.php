@@ -226,6 +226,10 @@ class PResponseRegister extends PResponse {
   const TOKEN = "token";
 }
 
+class PResponseHashes extends PResponse {
+  const DATA = "data";
+}
+
 class PResponseLogin extends PResponse {
   const TIMEOUT = "timeout";
 }
