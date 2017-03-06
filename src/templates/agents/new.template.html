@@ -44,7 +44,7 @@
 			{{FOREACH voucher;[[vouchers]]}}
 				<tr>
 					<td><code>[[voucher.getVoucher()]]</code></td>
-          			<td>[[date([[config.getVal('timefmt')]], [[voucher.getTime()]])]]</td>
+          			<td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[voucher.getTime()]])]]</td>
           			<td>
           				<form action="agents.php?new=true" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
           					<input type="hidden" name="action" value="voucherdelete">

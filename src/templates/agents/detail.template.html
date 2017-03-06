@@ -164,7 +164,7 @@
       <td>Last activity:</td>
       <td>
         Action: [[agent.getLastAct()]]<br>
-        Time: [[date([[config.getVal('timefmt')]], [[agent.getLastTime()]])]]<br>
+        Time: [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
         IP: [[agent.getLastIp()]]
       </td>
     </tr>
@@ -194,7 +194,7 @@
       </tr>
       {{FOREACH error;[[errors]]}}
         <tr>
-          <td>[[date([[config.getVal('timefmt')]], [[error.getTime()]])]]</td>
+          <td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[error.getTime()]])]]</td>
           <td>
             {{IF [[error.getTaskId()]] == null}}
               N/A
@@ -250,7 +250,7 @@
           {{IF [[chunk.getDispatchTime()]] == 0}}
             (no activity)
           {{ELSE}}
-            [[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getDispatchTime()]])]]
           {{ENDIF}}
         </td>
         <td>
@@ -259,7 +259,7 @@
             </td>
             <td>
           {{ELSE}}
-              [[date([[config.getVal('timefmt')]], [[chunk.getSolveTime()]])]]
+              [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getSolveTime()]])]]
             </td>
             <td class='num'>
               [[Util::sectotime(0)]] <!--TODO: get spent time on chunk-->

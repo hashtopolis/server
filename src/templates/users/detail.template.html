@@ -18,11 +18,11 @@
 		</tr>
 		<tr>
 			<th>Creation date</th>
-			<td>[[date([[config.getVal('timefmt')]], [[user.getRegisteredSince()]])]]</td>
+			<td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[user.getRegisteredSince()]])]]</td>
 		</tr>
 		<tr>
 			<th>Last login</th>
-			<td>[[date([[config.getVal('timefmt')]], [[user.getLastLoginDate()]])]]</td>
+			<td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[user.getLastLoginDate()]])]]</td>
 		</tr>
 		<tr>
 			<th>Enable/Disable user</th>
