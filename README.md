@@ -2,7 +2,7 @@
 
 Hashtopussy currently is in BETA state. This means there may be still some bugs or things not working. You are free to test anything and helping us with reporting detected bugs or problems. 
 
-You NEED to use the very new hashcat version [commit 5f7c359](https://github.com/hashcat/hashcat/commit/5f7c3590bab4ebae508443188ca2383997f1a14b) or newer, otherwise it will not work. 
+You NEED to use hashcat 3.40 or newer, otherwise it will not work. 
 
 Currently it only works with Apache2 webserver, there is an unknown problem with php-fpm/nginx causing the installation to fail. Until we resolved the problem it's recommended to use Apache2 only. Please inform us if you were able to setup it with nginx.
 
