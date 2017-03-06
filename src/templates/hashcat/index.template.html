@@ -16,7 +16,7 @@
 				<td>[[release.getVersion()]]</td>
 				<td>
 					{{IF [[release.getTime()]] > 0}}
-						[[date([[config.getVal('timefmt')]], [[release.getTime()]])]]
+						[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[release.getTime()]])]]
 					{{ENDIF}}
 				</td>
 				<td>[[release.getUrl()]]</td>

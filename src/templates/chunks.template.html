@@ -53,13 +53,13 @@
 					{{ENDIF}}
 				</td>
 				<td>
-					[[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+					[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getDispatchTime()]])]]
 				</td>
 				<td>
 					{{IF [[chunk.getSolveTime()]] == 0}}
 						(no activity)</td><td>
 					{{ELSE}}
-							[[date([[config.getVal('timefmt')]], [[chunk.getSolveTime()]])]]
+							[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getSolveTime()]])]]
             </td>
             <td class="num">
               [[Util::sectotime([[spent.getVal([[chunk.getId()]])]])]]

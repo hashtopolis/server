@@ -308,7 +308,7 @@
         </td>
         <td>
           {{IF [[agent.getLastAct()]] > 0}}
-            [[date([[config.getVal('timefmt')]], [[agent.getLastAct()]])]]
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastAct()]])]]
           {{ELSE}}
             ---
           {{ENDIF}}
@@ -405,7 +405,7 @@
           <td class="num">[[agentsCracked.getVal([[agent.getId()]])]]</td>
           <td>
             {{IF [[agent.getLastTime()]] > 0}}
-              [[date([[config.getVal('timefmt')]], [[agent.getLastTime()]])]]
+              [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]
             {{ENDIF}}
           </td>
         </tr>
@@ -461,7 +461,7 @@
           {{IF [[chunk.getDispatchTime()]] == 0}}
             (no activity)
           {{ELSE}}
-            [[date([[config.getVal('timefmt')]], [[chunk.getDispatchTime()]])]]
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getDispatchTime()]])]]
           {{ENDIF}}
         </td>
         <td>
@@ -470,7 +470,7 @@
           </td>
           <td>
           {{ELSE}}
-            [[date([[config.getVal('timefmt')]], [[chunk.getSolveTime()]])]]
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getSolveTime()]])]]
           </td>
           <td class='num'>
             [[Util::sectotime([[chunk.getSolveTime()]] - [[chunk.getDispatchTime()]])]]
