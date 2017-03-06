@@ -13,7 +13,7 @@ require_once(dirname(__FILE__) . "/../../inc/load.php");
 
 echo "Apply updates...\n";
 
-echo "Change logEntry level lengt... ";
+echo "Change logEntry level length... ";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `LogEntry` CHANGE `level` `level` VARCHAR(20) NOT NULL");
 echo "OK\n";
 
