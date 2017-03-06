@@ -59,7 +59,7 @@
         <td>[[set.getVal('agent').getHcVersion()]]</td>
         <td>
           [[set.getVal('agent').getLastAct()]] at <br>
-          [[date([[config.getVal('timefmt')]], [[set.getVal('agent').getLastTime()]])]]<br>
+          [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[set.getVal('agent').getLastTime()]])]]<br>
           IP: <code>[[set.getVal('agent').getLastIp()]]</code>
         </td>
         <td>
