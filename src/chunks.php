@@ -1,5 +1,8 @@
 <?php
 
+use DBA\Chunk;
+use DBA\OrderFilter;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
@@ -17,7 +20,28 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
 $TEMPLATE = new Template("chunks");
 $MENU->setActive("chunks");
 
-$chunks = $FACTORIES::getChunkFactory()->filter(array());
+$oF = null;
+$OBJECTS['all'] = true;
+if(!isset($_GET['show'])){
+  $page = 0;
+  $PAGESIZE = 100;
+  if(isset($_POST['page'])){
+    $page = $_POST['page'];
+  }
+  $OBJECTS['page'] = $page;
+  $numentries = $FACTORIES::getChunkFactory()->countFilter(array());
+  $OBJECTS['maxpage'] = floor($numentries/$PAGESIZE);
+  $limit = $page*$PAGESIZE;
+  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $PAGESIZE, $limit");
+  $OBJECTS['all'] = false;
+}
+
+if($oF == null) {
+  $chunks = $FACTORIES::getChunkFactory()->filter(array());
+}
+else{
+  $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::ORDER => $oF));
+}
 $spent = new DataSet();
 foreach($chunks as $chunk){
   $spent->addValue($chunk->getId(), max($chunk->getDispatchTime(), $chunk->getSolveTime()) - $chunk->getDispatchTime());
