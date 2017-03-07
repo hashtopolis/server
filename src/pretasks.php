@@ -47,9 +47,12 @@ for($z=0;$z<sizeof($taskList);$z++){
     }
   }
   
+  $isUsed = false;
+  
   $set->addValue('numFiles', sizeof($joinedFiles['File']));
   $set->addValue('filesSize', $sizes);
   $set->addValue('fileSecret', $secret);
+  $set->addValue('isUsed', $isUsed);
   
   $tasks[] = $set;
 }
