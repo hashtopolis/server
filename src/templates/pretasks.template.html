@@ -14,12 +14,12 @@
 		</tr>
 		{{FOREACH task;[[tasks]]}}
 			<tr>
-				<td{{IF [[strlen([[task.getVal('Task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('Task').getColor()]]{{ENDIF}}>
+				<td{{IF [[strlen([[task.getVal('Task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('Task').getColor()]]"{{ENDIF}}>
 					<a href="tasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getId()]]</a>
 				</td>
 				<td>
 					<a href="tasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getTaskName()]]</a>
-        		</td>
+				</td>
         <td>[[task.getVal('Task').getAttackCmd()]]</td>
         <td>
           {{IF [[task.getVal('numFiles')]] > 0}}
@@ -42,7 +42,7 @@
             <input type="submit" class='btn btn-default' value="Copy">
           </form>
 					{{IF [[login.getLevel()]] >= 30}}
-						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?') || ({{IF [[isUsed]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
+						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?') || ({{IF [[task.getVal('isUsed')]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
 							<input type="hidden" name="action" value="taskdelete">
 							<input type='hidden' name='refer' value='pretask'>
 							<input type="hidden" name="task" value="[[task.getVal('Task').getId()]]">
