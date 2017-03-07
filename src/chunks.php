@@ -25,8 +25,8 @@ $OBJECTS['all'] = true;
 if(!isset($_GET['show'])){
   $page = 0;
   $PAGESIZE = 100;
-  if(isset($_POST['page'])){
-    $page = $_POST['page'];
+  if(isset($_GET['page'])){
+    $page = $_GET['page'];
   }
   $OBJECTS['page'] = $page;
   $numentries = $FACTORIES::getChunkFactory()->countFilter(array());
