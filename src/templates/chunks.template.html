@@ -6,11 +6,10 @@
 		<tr>
 			<td colspan="12" style="text-align: center">
 				{{IF ![[all]]}}
-					<a href="chunks.php?show=all"><button class="btn btn-primary">Show all chunks</button></a>
-				{{ELSE}}
+					<a href="chunks.php?show=all"><button class="btn btn-primary">Show all chunks</button></a><br>
 					<div class="btn-group" role="group">
 						<a href="chunks.php?page=[[Util::calculate([[page]] - 1)]]"><button type="button" class="btn btn-default"{{IF [[page]] == 0}} disabled{{ENDIF}}>&lt;</button></a>
-						<button type="button" class="btn btn-default" disabled>Page [[Util::calculate([[page]] + 1)]]</button>
+						<a href="#"><button type="button" class="btn btn-default" disabled>Page [[Util::calculate([[page]] + 1)]]</button></a>
 						<a href="chunks.php?page=[[Util::calculate([[page]] + 1)]]"><button type="button" class="btn btn-default"{{IF [[page]] == [[maxpage]]}} disabled{{ENDIF}}>&gt;</button></a>
 					</div>
 				{{ENDIF}}
