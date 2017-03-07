@@ -24,7 +24,7 @@ $oF = null;
 $OBJECTS['all'] = true;
 if(!isset($_GET['show'])){
   $page = 0;
-  $PAGESIZE = 100;
+  $PAGESIZE = 50;
   if(isset($_GET['page'])){
     $page = $_GET['page'];
   }
