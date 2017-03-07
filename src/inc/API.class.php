@@ -266,6 +266,12 @@ class API {
     
     $disptolerance = 1.2; //TODO: add to config
     
+    // if we have set a skip keyspace we set the the current progress to the skip which was set initially
+    if($task->getSkipKeyspace() > $task->getProgress()){
+      $task->setProgress($task->getSkipKeyspace());
+      $FACTORIES::getTaskFactory()->update($task);
+    }
+    
     $remaining = $task->getKeyspace() - $task->getProgress();
     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $start = $task->getProgress();
