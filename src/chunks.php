@@ -32,7 +32,7 @@ if(!isset($_GET['show'])){
   $numentries = $FACTORIES::getChunkFactory()->countFilter(array());
   $OBJECTS['maxpage'] = floor($numentries/$PAGESIZE);
   $limit = $page*$PAGESIZE;
-  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $PAGESIZE, $limit");
+  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE");
   $OBJECTS['all'] = false;
 }
 
