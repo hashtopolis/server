@@ -564,6 +564,34 @@ class Util {
   }
   
   /**
+   * @param $version1
+   * @param $version2
+   * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
+   */
+  public static function versionComparison($version1, $version2){
+    $version1 = explode(".", $version1);
+    $version2 = explode(".", $version2);
+    
+    for($i=0;$i<sizeof($version1)&&$i<sizeof($version2);$i++){
+      $num1 = (int)$version1[$i];
+      $num2 = (int)$version2[$i];
+      if($num1 > $num2){
+        return -1;
+      }
+      else if($num1 < $num2){
+        return 1;
+      }
+    }
+    if(sizeof($version1) > sizeof($version2)){
+      return -1;
+    }
+    else if(sizeof($version1) < sizeof($version2)){
+      return 1;
+    }
+    return 0;
+  }
+  
+  /**
    * Shows big numbers with the right suffixes (k, M, G)
    * @param $num int integer you want formatted
    * @param int $threshold default 1024
