@@ -17,13 +17,17 @@ echo "Change logEntry level length... ";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `LogEntry` CHANGE `level` `level` VARCHAR(20) NOT NULL");
 echo "OK\n";
 
+echo "Change plaintext error on BinaryHash... ";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `HashBinary` CHANGE `plaintext` `plaintext` VARCHAR(200) NULL DEFAULT NULL;");
+echo "OK\n";
+
 echo "Check csharp binary... ";
 $qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
 $binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
 if($binary != null){
-  if($binary->getVersion() < "0.38"){
+  if(Util::versionComparison($binary->getVersion(), "0.40") == 1){
     echo "update version... ";
-    $binary->setVersion("0.38");
+    $binary->setVersion("0.40");
     $FACTORIES::getAgentBinaryFactory()->update($binary);
     echo "OK";
   }
