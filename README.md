@@ -1,17 +1,3 @@
-## Important: RC1 State
-
-Hashtopussy currently is currently available as v0.2.0-rc1. This means there may be still some bugs or things not working. You are free to test anything and helping us with reporting detected bugs or problems. 
-
-You NEED to use hashcat 3.40 or newer, otherwise it will not work. 
-
-Currently it only works with Apache2 webserver, there is an unknown problem with php-fpm/nginx causing the installation to fail. Until we resolved the problem it's recommended to use Apache2 only. Please inform us if you were able to setup it with nginx.
-
-There are parts of the documentation/wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
-
-To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducable.
-
----
-
 # Hashtopussy 
 
 <img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
@@ -33,6 +19,10 @@ The database schema heavily profits from indexing. Therefore, if you see a hint 
 The web admin interface is the single point of access once your agents were deployed on the client cracking machines. 
 
 New agent deployment requires one-time password generated in the new agent tab, which protects your server from hashes/files leaking to rogue or fake agents.
+
+There are parts of the documentation/wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
+
+To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducable.
 
 ## Features
 
