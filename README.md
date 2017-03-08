@@ -28,7 +28,7 @@ To report a bug, please create an issue and try to describe the problem as accur
 - File management for word lists, rules, ...
 - Self-updating of both Hashtopussy and hashcat
 - Cracking multiple hashlists of the same hash type as though they were a single hashlist
-- Running the same binary on Windows and Linux (macOS not yet tested)
+- Running the same binary on Windows and Linux
 - Files and hashes marked as "secret" are only distributed to agents marked as "trusted"
 - Many data import and export options
 - Rich statistics on hashes and running tasks
