@@ -109,7 +109,7 @@
 	  "url":"https://example.com/getclient.php"
 	}
 	\end{verbatim}
-	with 'data' containing the new version of the script.
+	with 'url' providing the download url for the new version.
 	
 	\subsection*{Download}
 	This command is used to either download the 7z binary to extract Hashcat, or to get information where to download the newest Hashcat version and some additional informations about it.
@@ -197,7 +197,16 @@
 	}
 	\end{verbatim}
 	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send a list of hashes which were requested.\\\\
-	The server then will send the whole hashlist as plain-text download on success, otherwise he will send an error.
+	The server then will send the whole hashlist as plain-text download on success, otherwise he will send an error.\\\\
+	The special case appears on Binary Hashes and WPAs, there the server will respond with a JSON response:
+	\begin{verbatim}
+	{
+	  "action":"hashes",
+	  "response":"SUCCESS",
+	  "data":"dGVzdCBzdHJpbmcgOik="
+	}
+	\end{verbatim}
+	where 'data' contains the binary hash data.
 	
 	\subsection*{Get Task}
 	The client requests the current task he should work on.
