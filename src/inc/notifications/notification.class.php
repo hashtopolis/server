@@ -7,14 +7,17 @@
  * Time: 13:38
  */
 abstract class HashtopussyNotification {
-  var $name = "";
+  public $name;
+  protected $receiver;
   //TODO: add HTML messages for templates which can issue html notifications
   
   /**
    * @param $notificationType DNotificationType
    * @param $payload DataSet
+   * @param $receiver string Contains the value where the message can be sent to. This can for example be an URL, an email address, etc.
    */
-  public function execute($notificationType, $payload) {
+  public function execute($notificationType, $payload, $receiver) {
+    $this->receiver = $receiver;
     $template = new Template($this->getTemplateName());
     $obj = $this->getObjects();
     switch ($notificationType) {
