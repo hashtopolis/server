@@ -4,6 +4,7 @@ use DBA\File;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
 
@@ -47,9 +48,17 @@ for($z=0;$z<sizeof($taskList);$z++){
     }
   }
   
+  $isUsed = false;
+  $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
+  $supertaskTasks = $FACTORIES::getSupertaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+  if(sizeof($supertaskTasks) > 0){
+    $isUsed = true;
+  }
+  
   $set->addValue('numFiles', sizeof($joinedFiles['File']));
   $set->addValue('filesSize', $sizes);
   $set->addValue('fileSecret', $secret);
+  $set->addValue('isUsed', $isUsed);
   
   $tasks[] = $set;
 }
