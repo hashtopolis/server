@@ -7,13 +7,11 @@
 
   function updateLists(){
     var id = $( "#actionType" ).val();
-    if(actionSettings[id] == "NONE" || actionSettings[id] == ""){
-        $("#Task").hide();
-        $("#Hashlist").hide();
-        $("#Agent").hide();
-        $("#User").hide();
-    }
-    else{
+    $("#Task").hide();
+    $("#Hashlist").hide();
+    $("#Agent").hide();
+    $("#User").hide();
+    if(actionSettings[id] != "NONE" && actionSettings[id] != ""){
         $("#" + actionSettings[id]).show();
     }
   }
