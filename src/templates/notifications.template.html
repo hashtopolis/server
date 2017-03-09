@@ -8,10 +8,10 @@
   function updateLists(){
     var id = $( "#actionType" ).val();
     if(actionSettings[id] == "NONE" || actionSettings[id] == ""){
-        $("#tasks").hide();
-        $("#hashlists").hide();
-        $("#agents").hide();
-        $("#users").hide();
+        $("#Task").hide();
+        $("#Hashlist").hide();
+        $("#Agent").hide();
+        $("#User").hide();
     }
     else{
         $("#" + actionSettings[id]).show();
@@ -113,10 +113,7 @@
 </div>
 <script type="text/javascript">
   $( document ).ready(function() {
-    $("#tasks").hide();
-    $("#hashlists").hide();
-    $("#agents").hide();
-    $("#users").hide();
+    updateLists();
   });
 </script>
 {%TEMPLATE->struct/foot%}
