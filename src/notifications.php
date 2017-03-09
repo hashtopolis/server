@@ -91,7 +91,7 @@ $actionSettings = array();
 foreach (DNotificationType::getAll() as $notificationType) {
   if (DNotificationType::getRequiredLevel($notificationType) <= $LOGIN->getLevel()) {
     $allowedActions[] = $notificationType;
-    $actionSettings[] = $notificationType . ":" . DNotificationType::getObjectType($notificationType);
+    $actionSettings[] = "\"" . $notificationType . "\":\"" . DNotificationType::getObjectType($notificationType) . "\"";
   }
 }
 $OBJECTS['allowedActions'] = $allowedActions;
