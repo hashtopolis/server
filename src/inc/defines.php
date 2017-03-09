@@ -231,7 +231,7 @@ class DNotificationType {
       case DNotificationType::HASHLIST_CRACKED_HASH:
         return DNotificationObjectType::HASHLIST;
       case DNotificationType::USER_CREATED:
-        return DNotificationObjectType::USER;
+        return DNotificationObjectType::NONE;
       case DNotificationType::USER_DELETED:
         return DNotificationObjectType::USER;
       case DNotificationType::USER_LOGIN_FAILED:
