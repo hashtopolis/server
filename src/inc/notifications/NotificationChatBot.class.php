@@ -21,17 +21,18 @@ class HashtopussyNotificationChatBot extends HashtopussyNotification {
   function sendMessage($message) {
     $username = "Hashtopussy";
     $data = "payload=" . json_encode(array(
-        "username"  =>  $username,
-        "text"      =>  $message
-      ));
-  
+        "username" => $username,
+        "text" => $message
+      )
+      );
+    
     $ch = curl_init($this->receiver);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($ch);
     curl_close($ch);
-  
+    
     return $result;
   }
 }

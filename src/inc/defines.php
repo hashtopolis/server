@@ -144,10 +144,19 @@ class DNotificationObjectType {
 }
 
 class DNotificationType {
-  const TASK_COMPLETE   = "taskComplete";
-  const AGENT_ERROR     = "agentError";
-  const OWN_AGENT_ERROR = "ownAgentError"; //difference to AGENT_ERROR is that this can be configured by owners
-  const LOG_ERROR       = "logError";
+  const TASK_COMPLETE         = "taskComplete";
+  const AGENT_ERROR           = "agentError";
+  const OWN_AGENT_ERROR       = "ownAgentError"; //difference to AGENT_ERROR is that this can be configured by owners
+  const LOG_ERROR             = "logError";
+  const NEW_TASK              = "newTask";
+  const NEW_HASHLIST          = "newHashlist";
+  const HASHLIST_ALL_CRACKED  = "hashlistAllCracked";
+  const HASHLIST_CRACKED_HASH = "hashlistCrackedHash";
+  const USER_CREATED          = "userCreated";
+  const USER_DELETED          = "userDeleted";
+  const USER_LOGIN_FAILED     = "userLoginFailed";
+  const LOG_WARN              = "logWarn";
+  const LOG_FATAL             = "logFatal";
   
   public static function getAll() {
     return array(
@@ -155,6 +164,15 @@ class DNotificationType {
       DNotificationType::AGENT_ERROR,
       DNotificationType::OWN_AGENT_ERROR,
       DNotificationType::LOG_ERROR,
+      DNotificationType::NEW_TASK,
+      DNotificationType::NEW_HASHLIST,
+      DNotificationType::HASHLIST_ALL_CRACKED,
+      DNotificationType::HASHLIST_CRACKED_HASH,
+      DNotificationType::USER_CREATED,
+      DNotificationType::USER_DELETED,
+      DNotificationType::USER_LOGIN_FAILED,
+      DNotificationType::LOG_WARN,
+      DNotificationType::LOG_FATAL
     );
   }
   
@@ -172,6 +190,24 @@ class DNotificationType {
         return DAccessLevel::USER;
       case DNotificationType::LOG_ERROR:
         return DAccessLevel::ADMINISTRATOR;
+      case DNotificationType::NEW_TASK:
+        return DAccessLevel::USER;
+      case DNotificationType::NEW_HASHLIST:
+        return DAccessLevel::USER;
+      case DNotificationType::HASHLIST_ALL_CRACKED:
+        return DAccessLevel::USER;
+      case DNotificationType::HASHLIST_CRACKED_HASH:
+        return DAccessLevel::USER;
+      case DNotificationType::USER_CREATED:
+        return DAccessLevel::ADMINISTRATOR;
+      case DNotificationType::USER_DELETED:
+        return DAccessLevel::ADMINISTRATOR;
+      case DNotificationType::USER_LOGIN_FAILED:
+        return DAccessLevel::ADMINISTRATOR;
+      case DNotificationType::LOG_WARN:
+        return DAccessLevel::ADMINISTRATOR;
+      case DNotificationType::LOG_FATAL:
+        return DAccessLevel::ADMINISTRATOR;
     }
     return DAccessLevel::ADMINISTRATOR;
   }
@@ -185,6 +221,24 @@ class DNotificationType {
       case DNotificationType::OWN_AGENT_ERROR:
         return DNotificationObjectType::AGENT;
       case DNotificationType::LOG_ERROR:
+        return DNotificationObjectType::NONE;
+      case DNotificationType::NEW_TASK:
+        return DNotificationObjectType::TASK;
+      case DNotificationType::NEW_HASHLIST:
+        return DNotificationObjectType::HASHLIST;
+      case DNotificationType::HASHLIST_ALL_CRACKED:
+        return DNotificationObjectType::HASHLIST;
+      case DNotificationType::HASHLIST_CRACKED_HASH:
+        return DNotificationObjectType::HASHLIST;
+      case DNotificationType::USER_CREATED:
+        return DNotificationObjectType::USER;
+      case DNotificationType::USER_DELETED:
+        return DNotificationObjectType::USER;
+      case DNotificationType::USER_LOGIN_FAILED:
+        return DNotificationObjectType::USER;
+      case DNotificationType::LOG_WARN:
+        return DNotificationObjectType::NONE;
+      case DNotificationType::LOG_FATAL:
         return DNotificationObjectType::NONE;
     }
     return DNotificationObjectType::NONE;

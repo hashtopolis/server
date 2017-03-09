@@ -47,6 +47,39 @@ abstract class HashtopussyNotification {
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
         break;
+      case DNotificationType::NEW_TASK:
+        //TODO:
+        break;
+      case DNotificationType::NEW_HASHLIST:
+        //TODO:
+        break;
+      case DNotificationType::HASHLIST_ALL_CRACKED:
+        //TODO:
+        break;
+      case DNotificationType::HASHLIST_CRACKED_HASH:
+        //TODO:
+        break;
+      case DNotificationType::USER_CREATED:
+        //TODO:
+        break;
+      case DNotificationType::USER_DELETED:
+        //TODO:
+        break;
+      case DNotificationType::USER_LOGIN_FAILED:
+        //TODO:
+        break;
+      case DNotificationType::LOG_WARN:
+        $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
+        $obj['message'] = "Log level WARN occured: " . $logEntry->getMessage() . "!";
+        $obj['html'] = $obj['message'];
+        $obj['simplified'] = $obj['message'];
+        break;
+      case DNotificationType::LOG_FATAL:
+        $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
+        $obj['message'] = "Log level FATAL occured: " . $logEntry->getMessage() . "!";
+        $obj['html'] = $obj['message'];
+        $obj['simplified'] = $obj['message'];
+        break;
       default:
         $obj['message'] = "Notification for unknown type: " . print_r($payload->getAllValues(), true);
         $obj['html'] = $obj['message'];
