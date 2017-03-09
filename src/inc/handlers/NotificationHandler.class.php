@@ -93,7 +93,7 @@ class NotificationHandler implements Handler {
         if($_POST['tasks'] == "ALL"){
           break;
         }
-        $task = $FACTORIES::getAgentFactory()->get($_POST['tasks']);
+        $task = $FACTORIES::getTaskFactory()->get($_POST['tasks']);
         if($task == null){
           UI::addMessage(UI::ERROR, "Invalid task selected!");
           return;
