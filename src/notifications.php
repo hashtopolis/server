@@ -81,25 +81,26 @@ foreach ($notifications as $notification) {
 $OBJECTS['allApplies'] = $allApplies;
 
 $allNotifications = array();
-foreach($NOTIFICATIONS as $name => $notification){
+foreach ($NOTIFICATIONS as $name => $notification) {
   $allNotifications[] = $name;
 }
 $OBJECTS['allNotifications'] = $allNotifications;
 
 $allowedActions = array();
 $actionSettings = array();
-foreach(DNotificationType::getAll() as $notificationType){
-  if(DNotificationType::getRequiredLevel($notificationType) <= $LOGIN->getLevel()){
+foreach (DNotificationType::getAll() as $notificationType) {
+  if (DNotificationType::getRequiredLevel($notificationType) <= $LOGIN->getLevel()) {
     $allowedActions[] = $notificationType;
-    $actionSettings[$notificationType] = DNotificationType::getObjectType($notificationType);
+    $actionSettings[] = $notificationType . ":" . DNotificationType::getObjectType($notificationType);
   }
 }
 $OBJECTS['allowedActions'] = $allowedActions;
+$OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
 
 $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
 $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
 $OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array());
-if($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR){
+if ($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR) {
   $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array());
 }
 
