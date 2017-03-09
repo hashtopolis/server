@@ -15,7 +15,9 @@ class HashtopussyNotificationEmail extends HashtopussyNotification {
   }
   
   function getObjects() {
-    return array();
+    $obj = array();
+    $obj['username'] = Util::getUsernameById($this->notification->getUserId());
+    return $obj;
   }
   
   function sendMessage($message) {
