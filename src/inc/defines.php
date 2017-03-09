@@ -191,6 +191,8 @@ class DPayloadKeys {
   const AGENT       = "agent";
   const AGENT_ERROR = "agentError";
   const LOG_ENTRY   = "logEntry";
+  const USER = "user";
+  const HASHLIST = "hashlist";
 }
 
 class DConfigType {

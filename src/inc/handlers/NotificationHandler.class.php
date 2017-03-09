@@ -33,6 +33,10 @@ class NotificationHandler implements Handler {
     }
   }
   
+  /**
+   * @param $action
+   * @param $payload DataSet
+   */
   public static function checkNotifications($action, $payload){
     /** @var $NOTIFICATIONS HashtopussyNotification[] */
     global $FACTORIES, $NOTIFICATIONS;
@@ -41,6 +45,26 @@ class NotificationHandler implements Handler {
     $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     foreach($notifications as $notification){
+      if($notification->getObjectId() != null){
+        $obj = 0;
+        switch(DNotificationType::getObjectType($notification->getAction())){
+          case DNotificationObjectType::USER:
+            $obj = $payload->getVal(DPayloadKeys::USER)->getId();
+            break;
+          case DNotificationObjectType::AGENT:
+            $obj = $payload->getVal(DPayloadKeys::AGENT)->getId();
+            break;
+          case DNotificationObjectType::HASHLIST:
+            $obj = $payload->getVal(DPayloadKeys::HASHLIST)->getId();
+            break;
+          case DNotificationObjectType::TASK:
+            $obj = $payload->getVal(DPayloadKeys::TASK)->getId();
+            break;
+        }
+        if($obj == 0 || $obj != $notification->getObjectId()){
+          continue;
+        }
+      }
       $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification->getReceiver());
     }
   }
