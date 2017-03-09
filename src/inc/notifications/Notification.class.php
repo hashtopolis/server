@@ -7,7 +7,7 @@
  * Time: 13:38
  */
 abstract class HashtopussyNotification {
-  public $name;
+  public static $name;
   protected $receiver;
   //TODO: add HTML messages for templates which can issue html notifications
   
