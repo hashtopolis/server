@@ -8,55 +8,72 @@
   function updateLists(){
     var id = $( "#actionType" ).val();
     if(actionSettings[id] == "NONE" || actionSettings[id] == ""){
-        $("#tasks").prop("hidden", true);
-        $("#hashlists").prop("hidden", true);
-        $("#agents").prop("hidden", true);
-        $("#users").prop("hidden", true);
+        $("#tasks").prop("hidden");
+        $("#hashlists").prop("hidden");
+        $("#agents").prop("hidden");
+        $("#users").prop("hidden");
     }
     else{
-        $("#" + actionSettings[id]).prop("hidden", false);
+        $("#" + actionSettings[id]).removeProp("hidden");
     }
   }
 </script>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
     <tr>
-      <td>Create:</td>
-      <td colspan="6">
+      <th colspan="7">
+        Create Notification
+      </th>
+    </tr>
+    <tr>
+      <td colspan="7">
         <form action="notifications.php" method="post" class="form-inline">
           <input type="hidden" name="action" value="createNotification">
+          Trigger Action:
           <select id="actionType" name="actionType" class="form-control" onchange="updateLists()">
             {{FOREACH action;[[allowedActions]]}}
               <option value="[[action]]">[[action]]</option>
             {{ENDFOREACH}}
           </select>
 
-          <select id="tasks" name="tasks" hidden>
+          <select id="tasks" name="tasks" class="form-control" hidden>
             <option value="ALL">ALL</option>
             {{FOREACH task;[[allTasks]]}}
               <option value="[[task.getId()]]">[[task.getTaskName()]] ([[task.getId()]])</option>
             {{ENDFOREACH}}
           </select>
-          <select id="agents" name="agents" hidden>
+          <select id="agents" name="agents" class="form-control" hidden>
             <option value="ALL">ALL</option>
             {{FOREACH agent;[[allAgents]]}}
               <option value="[[agent.getId()]]">[[agent.getAgentName()]] ([[agent.getId()]])</option>
             {{ENDFOREACH}}
           </select>
-          <select id="hashlists" name="hashlists" hidden>
+          <select id="hashlists" name="hashlists" class="form-control" hidden>
             <option value="ALL">ALL</option>
             {{FOREACH hashlist;[[allHashlists]]}}
               <option value="[[hashlist.getId()]]">[[hashlist.getHashlistName()]] ([[hashlist.getId()]])</option>
             {{ENDFOREACH}}
           </select>
           {{IF [[login.getLevel()]] >= 50}}
-            <select id="users" name="users" hidden>
+            <select id="users" name="users" class="form-control" hidden>
               <option value="ALL">ALL</option>
               {{FOREACH user;[[allUsers]]}}
                 <option value="[[user.getId()]]">[[user.getUsername()]] ([[user.getId()]])</option>
               {{ENDFOREACH}}
             </select>
           {{ENDIF}}
+
+          Executed Notification:
+          <select name="notification" class="form-control">
+            {{FOREACH notification;[[allNotifications]]}}
+              <option value="[[notification]]">[[notification]]</option>
+            {{ENDFOREACH}}
+          </select>
+
+          Receiver:
+          <input type="text" name="receiver" class="form-control">
+
+          <button type="submit" class="btn btn-success">Create</button>
         </form>
       </td>
     </tr>
