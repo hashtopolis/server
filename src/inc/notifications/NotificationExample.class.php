@@ -19,7 +19,7 @@ class HashtopussyNotificationExample extends HashtopussyNotification {
   }
   
   function sendMessage($message) {
-    file_put_contents(dirname(__FILE__) . "/notification.log", "MSG TO " . $this->receiver . ": " . $message, FILE_APPEND);
+    file_put_contents(dirname(__FILE__) . "/notification.log", "MSG TO " . $this->receiver . ": " . $message."\n", FILE_APPEND);
   }
 }
 

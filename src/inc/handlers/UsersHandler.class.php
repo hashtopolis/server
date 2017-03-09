@@ -1,5 +1,6 @@
 <?php
 use DBA\Agent;
+use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;
@@ -175,6 +176,14 @@ class UsersHandler implements Handler {
     else if ($user->getId() == $LOGIN->getUserID()) {
       UI::addMessage(UI::ERROR, "You cannot delete yourself!");
       return;
+    }
+  
+    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $user->getId(), "=");
+    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach($notifications as $notification){
+      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::USER){
+        $FACTORIES::getNotificationSettingFactory()->delete($notification);
+      }
     }
     
     $qF = new QueryFilter(Agent::USER_ID, $user->getId(), "=");

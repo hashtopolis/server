@@ -8,6 +8,7 @@ use DBA\HashBinary;
 use DBA\Hashlist;
 use DBA\HashlistAgent;
 use DBA\JoinFilter;
+use DBA\NotificationSetting;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\SuperHashlistHashlist;
@@ -442,6 +443,14 @@ class HashlistHandler implements Handler {
     }
     
     //TODO: delete from zapqueue
+  
+    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $this->hashlist->getId(), "=");
+    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach($notifications as $notification){
+      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::HASHLIST){
+        $FACTORIES::getNotificationSettingFactory()->delete($notification);
+      }
+    }
     
     $qF = new QueryFilter(Task::HASHLIST_ID, $this->hashlist->getId(), "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));

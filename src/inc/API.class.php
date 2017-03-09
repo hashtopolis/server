@@ -1196,7 +1196,6 @@ class API {
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
       
-      // TODO: notificate task done
       $payload = new DataSet(array(DPayloadKeys::TASK => $task));
       NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
     }
