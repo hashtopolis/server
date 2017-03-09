@@ -41,7 +41,7 @@ require_once(dirname(__FILE__)."/templating/Statement.class.php");
 require_once(dirname(__FILE__)."/templating/Template.class.php");
 
 // include all handlers
-require_once(dirname(__FILE__)."/handlers/Handler.php");
+require_once(dirname(__FILE__)."/handlers/Handler.class.php");
 $dir = scandir(dirname(__FILE__) . "/handlers/");
 foreach ($dir as $entry) {
   if (strpos($entry, ".class.php") !== false) {

@@ -129,11 +129,29 @@ class DConfig {
   }
 }
 
+class DNotificationObjectType {
+  const HASHLIST = "Hashlist";
+  const AGENT = "Agent";
+  const USER = "User";
+  const TASK = "Task";
+  
+  const NONE = "NONE";
+}
+
 class DNotificationType {
   const TASK_COMPLETE = "taskComplete";
   const AGENT_ERROR   = "agentError";
   const OWN_AGENT_ERROR = "ownAgentError"; //difference to AGENT_ERROR is that this can be configured by owners
   const LOG_ERROR     = "logError";
+  
+  public static function getAll(){
+    return array(
+      DNotificationType::TASK_COMPLETE,
+      DNotificationType::AGENT_ERROR,
+      DNotificationType::OWN_AGENT_ERROR,
+      DNotificationType::LOG_ERROR,
+    );
+  }
   
   /**
    * @param $notificationType string
@@ -151,6 +169,20 @@ class DNotificationType {
         return DAccessLevel::ADMINISTRATOR;
     }
     return DAccessLevel::ADMINISTRATOR;
+  }
+  
+  public static function getObjectType($notificationType) {
+    switch($notificationType){
+      case DNotificationType::TASK_COMPLETE:
+        return DNotificationObjectType::TASK;
+      case DNotificationType::AGENT_ERROR:
+        return DNotificationObjectType::AGENT;
+      case DNotificationType::OWN_AGENT_ERROR:
+        return DNotificationObjectType::AGENT;
+      case DNotificationType::LOG_ERROR:
+        return DNotificationObjectType::NONE;
+    }
+    return DNotificationObjectType::NONE;
   }
 }
 

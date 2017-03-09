@@ -2,9 +2,96 @@
 {%TEMPLATE->struct/menu%}
 <h2>Notifications</h2>
 {%TEMPLATE->struct/messages%}
+<script type="text/javascript">
+  var actionSettings = [[actionSettings]];
+
+  function updateLists(){
+    var id = $( "#actionType" ).val();
+    if(actionSettings[id] == "NONE" || actionSettings[id] == ""){
+        $("#tasks").prop("hidden", true);
+        $("#hashlists").prop("hidden", true);
+        $("#agents").prop("hidden", true);
+        $("#users").prop("hidden", true);
+    }
+    else{
+        $("#" + actionSettings[id]).prop("hidden", false);
+    }
+  }
+</script>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
-		TODO
+    <tr>
+      <td>Create:</td>
+      <td colspan="6">
+        <form action="notifications.php" method="post" class="form-inline">
+          <input type="hidden" name="action" value="createNotification">
+          <select id="actionType" name="actionType" class="form-control" onchange="updateLists()">
+            {{FOREACH action;[[allowedActions]]}}
+              <option value="[[action]]">[[action]]</option>
+            {{ENDFOREACH}}
+          </select>
+
+          <select id="tasks" name="tasks" hidden>
+            <option value="ALL">ALL</option>
+            {{FOREACH task;[[allTasks]]}}
+              <option value="[[task.getId()]]">[[task.getTaskName()]] ([[task.getId()]])</option>
+            {{ENDFOREACH}}
+          </select>
+          <select id="agents" name="agents" hidden>
+            <option value="ALL">ALL</option>
+            {{FOREACH agent;[[allAgents]]}}
+              <option value="[[agent.getId()]]">[[agent.getAgentName()]] ([[agent.getId()]])</option>
+            {{ENDFOREACH}}
+          </select>
+          <select id="hashlists" name="hashlists" hidden>
+            <option value="ALL">ALL</option>
+            {{FOREACH hashlist;[[allHashlists]]}}
+              <option value="[[hashlist.getId()]]">[[hashlist.getHashlistName()]] ([[hashlist.getId()]])</option>
+            {{ENDFOREACH}}
+          </select>
+          {{IF [[login.getLevel()]] >= 50}}
+            <select id="users" name="users" hidden>
+              <option value="ALL">ALL</option>
+              {{FOREACH user;[[allUsers]]}}
+                <option value="[[user.getId()]]">[[user.getUsername()]] ([[user.getId()]])</option>
+              {{ENDFOREACH}}
+            </select>
+          {{ENDIF}}
+        </form>
+      </td>
+    </tr>
+		<tr>
+      <th>ID</th>
+      <th>Active</th>
+      <th>Trigger Action</th>
+      <th>Applied To</th>
+      <th>Called Notification</th>
+      <th>Receiver</th>
+      <th>&nbsp;</th>
+    </tr>
+    {{FOREACH notification;[[notifications]]}}
+      <tr>
+        <td>[[notification.getId()]]</td>
+        <td>
+          <form id="active[[notification.getId()]]" action="notifications.php" method="post">
+            <input type='hidden' name='action' value='notificationActive'>
+            <input type="hidden" name="notification" value="[[notification.getId()]]">
+            <input type="checkbox" {{IF [[notification.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[notification.getId()]]').submit();">
+          </form>
+        </td>
+        <td>[[notification.getAction()]]</td>
+        <td>[[allApplies.getVal([[notification.getId()]])]]</td>
+        <td>[[notification.getNotification()]]</td>
+        <td><code>[[notification.getReceiver()]]</code></td>
+        <td>
+          <form action="notifications.php" method="POST" onSubmit="if (!confirm('Really delete notification [[notification.getId()]]?')) return false;">
+            <input type='hidden' name='action' value='notificationDelete'>
+            <input type="hidden" name="notification" value="[[notification.getId()]]">
+            <input type="submit" class='btn btn-danger' value="Delete">
+          </form>
+        </td>
+      </tr>
+    {{ENDFOREACH}}
 	</table>
 </div>
 {%TEMPLATE->struct/foot%}

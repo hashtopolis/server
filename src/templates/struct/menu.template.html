@@ -85,7 +85,9 @@
 					<li class="dropdown[[menu.isActive('account', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('account_settings')]]><a href="account.php">Settings</a></li>
-							<li[[menu.isActive('account_notifications')]]><a href="notifications.php">Notifications</a></li>
+              {{IF [[login.getLevel()]] >= 20}}
+							  <li[[menu.isActive('account_notifications')]]><a href="notifications.php">Notifications</a></li>
+              {{ENDIF}}
 						</ul>
 					</li>
 				{{ENDIF}}
