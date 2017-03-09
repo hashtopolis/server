@@ -120,6 +120,7 @@ class TaskHandler implements Handler {
     $useNewBench = intval($_POST['benchType']);
     $isCpuTask = intval($_POST['cpuOnly']);
     $isSmall = intval($_POST['isSmall']);
+    $skipKeyspace = intval($_POST['skipKeyspace']);
     $color = $_POST["color"];
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
       $color = null;
@@ -131,6 +132,9 @@ class TaskHandler implements Handler {
     else if(Util::containsBlacklistedChars($cmdline)){
       UI::addMessage(UI::ERROR, "The command must contain no blacklisted characters!");
       return;
+    }
+    else if($skipKeyspace < 0){
+      $skipKeyspace = 0;
     }
     $hashlist = null;
     if ($_POST["hashlist"] == null) {
@@ -161,7 +165,7 @@ class TaskHandler implements Handler {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench);
+    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace);
     $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
@@ -188,15 +192,6 @@ class TaskHandler implements Handler {
       $pretask = true;
     }
     $priority = intval($_POST["priority"]);
-    $qF1 = new QueryFilter(Task::PRIORITY, $priority, "="); //TODO: check this
-    $qF2 = new QueryFilter(Task::PRIORITY, $priority, ">");
-    $qF3 = new QueryFilter(Task::TASK_ID, $task->getId(), "<>");
-    $qF4 = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-    $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4)), true);
-    if ($check != null) {
-      UI::addMessage(UI::ERROR, "Priorities must be unique!");
-      return;
-    }
     $task->setPriority($priority);
     $FACTORIES::getTaskFactory()->update($task);
     if ($pretask) {

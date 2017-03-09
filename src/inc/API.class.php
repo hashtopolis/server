@@ -37,9 +37,9 @@ class API {
   
   public static function test() {
     API::sendResponse(array(
-      PResponse::ACTION => PActions::TEST,
-      PResponse::RESPONSE => PValues::SUCCESS
-    )
+        PResponse::ACTION => PActions::TEST,
+        PResponse::RESPONSE => PValues::SUCCESS
+      )
     );
   }
   
@@ -95,10 +95,10 @@ class API {
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
     API::sendResponse(array(
-      PResponseBenchmark::ACTION => PActions::BENCHMARK,
-      PResponseBenchmark::RESPONSE => PValues::SUCCESS,
-      PResponseBenchmark::BENCHMARK => PValues::OK
-    )
+        PResponseBenchmark::ACTION => PActions::BENCHMARK,
+        PResponseBenchmark::RESPONSE => PValues::SUCCESS,
+        PResponseBenchmark::BENCHMARK => PValues::OK
+      )
     );
   }
   
@@ -129,11 +129,22 @@ class API {
       $task->setKeyspace($keyspace);
       $FACTORIES::getTaskFactory()->update($task);
     }
+    
+    // test if the task may have a skip value which is too high for this keyspace
+    if ($task->getSkipKeyspace() > $task->getKeyspace()) {
+      // skip is too high
+      $task->setPriority(0);
+      $FACTORIES::getTaskFactory()->update($task);
+      $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+      $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      Util::createLogEntry(DLogEntryIssuer::API, $agent->getToken(), DLogEntry::ERROR, "Task with ID " . $task->getId() . " has set a skip value which is too high for its keyspace!");
+    }
+    
     API::sendResponse(array(
-      PResponseKeyspace::ACTION => PActions::KEYSPACE,
-      PResponseKeyspace::RESPONSE => PValues::SUCCESS,
-      PResponseKeyspace::KEYSPACE => PValues::OK
-    )
+        PResponseKeyspace::ACTION => PActions::KEYSPACE,
+        PResponseKeyspace::RESPONSE => PValues::SUCCESS,
+        PResponseKeyspace::KEYSPACE => PValues::OK
+      )
     );
   }
   
@@ -144,13 +155,13 @@ class API {
     global $FACTORIES;
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     API::sendResponse(array(
-      PResponseChunk::ACTION => PActions::CHUNK,
-      PResponseChunk::RESPONSE => PValues::SUCCESS,
-      PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
-      PResponseChunk::CHUNK_ID => (int)($chunk->getId()),
-      PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
-      PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
-    )
+        PResponseChunk::ACTION => PActions::CHUNK,
+        PResponseChunk::RESPONSE => PValues::SUCCESS,
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
+        PResponseChunk::CHUNK_ID => (int)($chunk->getId()),
+        PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
+        PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
+      )
     );
   }
   
@@ -266,6 +277,12 @@ class API {
     
     $disptolerance = 1.2; //TODO: add to config
     
+    // if we have set a skip keyspace we set the the current progress to the skip which was set initially
+    if ($task->getSkipKeyspace() > $task->getProgress()) {
+      $task->setProgress($task->getSkipKeyspace());
+      $FACTORIES::getTaskFactory()->update($task);
+    }
+    
     $remaining = $task->getKeyspace() - $task->getProgress();
     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $start = $task->getProgress();
@@ -306,18 +323,18 @@ class API {
     }
     else if ($task->getKeyspace() == 0) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::CHUNK,
-        PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
-      )
+          PResponseChunk::ACTION => PActions::CHUNK,
+          PResponseChunk::RESPONSE => PValues::SUCCESS,
+          PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
+        )
       );
     }
     else if ($assignment->getBenchmark() == 0) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::CHUNK,
-        PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
-      )
+          PResponseChunk::ACTION => PActions::CHUNK,
+          PResponseChunk::RESPONSE => PValues::SUCCESS,
+          PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
+        )
       );
     }
     else if ($agent->getIsActive() == 0) {
@@ -336,10 +353,10 @@ class API {
     }
     if ($task->getProgress() == $task->getKeyspace() && $task->getKeyspace() == $dispatched) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::CHUNK,
-        PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
-      )
+          PResponseChunk::ACTION => PActions::CHUNK,
+          PResponseChunk::RESPONSE => PValues::SUCCESS,
+          PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
+        )
       );
     }
     
@@ -436,10 +453,10 @@ class API {
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
       API::sendResponse(array(
-        PQueryRegister::ACTION => PActions::REGISTER,
-        PResponseRegister::RESPONSE => PValues::SUCCESS,
-        PResponseRegister::TOKEN => $token
-      )
+          PQueryRegister::ACTION => PActions::REGISTER,
+          PResponseRegister::RESPONSE => PValues::SUCCESS,
+          PResponseRegister::TOKEN => $token
+        )
       );
     }
     else {
@@ -464,10 +481,10 @@ class API {
     }
     API::updateAgent($QUERY, $agent);
     API::sendResponse(array(
-      PResponseLogin::ACTION => PActions::LOGIN,
-      PResponseLogin::RESPONSE => PValues::SUCCESS,
-      PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
-    )
+        PResponseLogin::ACTION => PActions::LOGIN,
+        PResponseLogin::RESPONSE => PValues::SUCCESS,
+        PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
+      )
     );
   }
   
@@ -494,19 +511,19 @@ class API {
     
     if ($result->getVersion() != $version) {
       API::sendResponse(array(
-        PResponseUpdate::ACTION => PActions::UPDATE,
-        PResponseUpdate::RESPONSE => PValues::SUCCESS,
-        PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-        PResponseUpdate::URL => Util::buildServerUrl() . $base . "/agents.php?download=" . $result->getId()
-      )
+          PResponseUpdate::ACTION => PActions::UPDATE,
+          PResponseUpdate::RESPONSE => PValues::SUCCESS,
+          PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
+          PResponseUpdate::URL => Util::buildServerUrl() . $base . "/agents.php?download=" . $result->getId()
+        )
       );
     }
     else {
       API::sendResponse(array(
-        PResponseUpdate::ACTION => PActions::UPDATE,
-        PResponseUpdate::RESPONSE => PValues::SUCCESS,
-        PResponseUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
-      )
+          PResponseUpdate::ACTION => PActions::UPDATE,
+          PResponseUpdate::RESPONSE => PValues::SUCCESS,
+          PResponseUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
+        )
       );
     }
   }
@@ -543,10 +560,10 @@ class API {
         unset($url[sizeof($url) - 1]);
         $path = Util::buildServerUrl() . implode("/", $url) . "/static/" . $filename;
         API::sendResponse(array(
-          PResponseDownload::ACTION => PActions::DOWNLOAD,
-          PResponseDownload::RESPONSE => PValues::SUCCESS,
-          PResponseDownload::EXECUTABLE => $path
-        )
+            PResponseDownload::ACTION => PActions::DOWNLOAD,
+            PResponseDownload::RESPONSE => PValues::SUCCESS,
+            PResponseDownload::EXECUTABLE => $path
+          )
         );
         break;
       case PValuesDownloadBinaryType::HASHCAT:
@@ -561,11 +578,11 @@ class API {
         
         if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY[PQueryDownload::FORCE_UPDATE]) || $QUERY[PQueryDownload::FORCE_UPDATE] != '1')) {
           API::sendResponse(array(
-            PResponseDownload::ACTION => PActions::DOWNLOAD,
-            PResponseDownload::RESPONSE => PValues::SUCCESS,
-            PResponseDownload::VERSION => PValuesDownloadVersion::UP_TO_DATE,
-            PResponseDownload::EXECUTABLE => $executable
-          )
+              PResponseDownload::ACTION => PActions::DOWNLOAD,
+              PResponseDownload::RESPONSE => PValues::SUCCESS,
+              PResponseDownload::VERSION => PValuesDownloadVersion::UP_TO_DATE,
+              PResponseDownload::EXECUTABLE => $executable
+            )
           );
         }
         
@@ -575,13 +592,13 @@ class API {
         $agent->setHcVersion($hashcat->getVersion());
         $FACTORIES::getAgentFactory()->update($agent);
         API::sendResponse(array(
-          PResponseDownload::ACTION => PActions::DOWNLOAD,
-          PResponseDownload::RESPONSE => PValues::SUCCESS,
-          PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
-          PResponseDownload::URL => $url,
-          PResponseDownload::ROOT_DIR => $rootdir,
-          PResponseDownload::EXECUTABLE => $executable
-        )
+            PResponseDownload::ACTION => PActions::DOWNLOAD,
+            PResponseDownload::RESPONSE => PValues::SUCCESS,
+            PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
+            PResponseDownload::URL => $url,
+            PResponseDownload::ROOT_DIR => $rootdir,
+            PResponseDownload::EXECUTABLE => $executable
+          )
         );
         break;
       default:
@@ -625,9 +642,9 @@ class API {
       $FACTORIES::getAgentFactory()->update($agent);
     }
     API::sendResponse(array(
-      PQueryError::ACTION => PActions::ERROR,
-      PResponseError::RESPONSE => PValues::SUCCESS
-    )
+        PQueryError::ACTION => PActions::ERROR,
+        PResponseError::RESPONSE => PValues::SUCCESS
+      )
     );
   }
   
@@ -678,12 +695,12 @@ class API {
     API::updateAgent($QUERY, $agent);
     
     API::sendResponse(array(
-      PQueryFile::ACTION => PActions::FILE,
-      PResponseFile::FILENAME => $filename,
-      PResponseFile::EXTENSION => $extension,
-      PResponseFile::RESPONSE => PValues::SUCCESS,
-      PResponseFile::URL => "get.php?file=" . $file->getId() . "&token=" . $agent->getToken()
-    )
+        PQueryFile::ACTION => PActions::FILE,
+        PResponseFile::FILENAME => $filename,
+        PResponseFile::EXTENSION => $extension,
+        PResponseFile::RESPONSE => PValues::SUCCESS,
+        PResponseFile::URL => "get.php?file=" . $file->getId() . "&token=" . $agent->getToken()
+      )
     );
   }
   
@@ -796,10 +813,10 @@ class API {
         }
         $data = base64_encode($output);
         API::sendResponse(array(
-          PQueryFile::ACTION => PActions::HASHES,
-          PResponse::RESPONSE => PValues::SUCCESS,
-          PResponseHashes::DATA => $data
-        )
+            PQueryFile::ACTION => PActions::HASHES,
+            PResponse::RESPONSE => PValues::SUCCESS,
+            PResponseHashes::DATA => $data
+          )
         );
         break;
     }
@@ -835,10 +852,10 @@ class API {
     }
     else if ($agent->getIsActive() == 0) {
       API::sendResponse(array(
-        PResponseTask::ACTION => PActions::TASK,
-        PResponseTask::RESPONSE => PValues::SUCCESS,
-        PResponseTask::TASK_ID => PValues::NONE
-      )
+          PResponseTask::ACTION => PActions::TASK,
+          PResponseTask::RESPONSE => PValues::SUCCESS,
+          PResponseTask::TASK_ID => PValues::NONE
+        )
       );
     }
     
@@ -880,10 +897,10 @@ class API {
     
     if ($setToTask == null) {
       API::sendResponse(array(
-        PResponseTask::ACTION => PActions::TASK,
-        PResponseTask::RESPONSE => PValues::SUCCESS,
-        PResponseTask::TASK_ID => PValues::NONE
-      )
+          PResponseTask::ACTION => PActions::TASK,
+          PResponseTask::RESPONSE => PValues::SUCCESS,
+          PResponseTask::TASK_ID => PValues::NONE
+        )
       );
     }
     if ($currentTask != null && $setToTask->getId() != $currentTask->getId()) {
@@ -907,18 +924,18 @@ class API {
     $benchType = ($setToTask->getUseNewBench()) ? "speed" : "run";
     
     API::sendResponse(array(
-      PResponseTask::ACTION => PActions::TASK,
-      PResponseTask::RESPONSE => PValues::SUCCESS,
-      PResponseTask::TASK_ID => (int)$setToTask->getId(),
-      PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
-      PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
-      PResponseTask::HASHLIST_ID => (int)$setToTask->getHashlistId(),
-      PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
-      PResponseTask::STATUS_TIMER => (int)$setToTask->getStatusTimer(),
-      PResponseTask::FILES => $files,
-      PResponseTask::BENCHTYPE => $benchType,
-      PResponseTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
-    )
+        PResponseTask::ACTION => PActions::TASK,
+        PResponseTask::RESPONSE => PValues::SUCCESS,
+        PResponseTask::TASK_ID => (int)$setToTask->getId(),
+        PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
+        PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
+        PResponseTask::HASHLIST_ID => (int)$setToTask->getHashlistId(),
+        PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
+        PResponseTask::STATUS_TIMER => (int)$setToTask->getStatusTimer(),
+        PResponseTask::FILES => $files,
+        PResponseTask::BENCHTYPE => $benchType,
+        PResponseTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
+      )
     );
   }
   
@@ -1232,12 +1249,12 @@ class API {
         if ($count == 0) {
           //stop agent
           API::sendResponse(array(
-            PResponseSolve::ACTION => PActions::SOLVE,
-            PResponseSolve::RESPONSE => PValues::SUCCESS,
-            PResponseSolve::NUM_CRACKED => $sumCracked,
-            PResponseSolve::NUM_SKIPPED => $skipped,
-            PResponseSolve::AGENT_COMMAND => "stop"
-          )
+              PResponseSolve::ACTION => PActions::SOLVE,
+              PResponseSolve::RESPONSE => PValues::SUCCESS,
+              PResponseSolve::NUM_CRACKED => $sumCracked,
+              PResponseSolve::NUM_SKIPPED => $skipped,
+              PResponseSolve::AGENT_COMMAND => "stop"
+            )
           );
         }
         $chunk->setSpeed($speed * 1000);
@@ -1257,12 +1274,12 @@ class API {
     }
     Util::zapCleaning();
     API::sendResponse(array(
-      PResponseSolve::ACTION => PActions::SOLVE,
-      PResponseSolve::RESPONSE => PValues::SUCCESS,
-      PResponseSolve::NUM_CRACKED => $sumCracked,
-      PResponseSolve::NUM_SKIPPED => $skipped,
-      PResponseSolve::HASH_ZAPS => $toZap
-    )
+        PResponseSolve::ACTION => PActions::SOLVE,
+        PResponseSolve::RESPONSE => PValues::SUCCESS,
+        PResponseSolve::NUM_CRACKED => $sumCracked,
+        PResponseSolve::NUM_SKIPPED => $skipped,
+        PResponseSolve::HASH_ZAPS => $toZap
+      )
     );
   }
 }
