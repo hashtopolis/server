@@ -19,7 +19,7 @@ class HashtopussyNotificationMattermost extends HashtopussyNotification {
   }
   
   function sendMessage($message) {
-    $username = "BOT";
+    $username = "Hashtopussy";
     $data = "payload=" . json_encode(array(
         "username"  =>  $username,
         "text"      =>  $message
