@@ -43,7 +43,7 @@ abstract class HashtopussyNotification {
         break;
       case DNotificationType::LOG_ERROR:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
-        $obj['message'] = "Log level ERROR occured: " . $logEntry->getMessage() . "!";
+        $obj['message'] = "Log level ERROR occured by '".$logEntry->getIssuer()."-".$logEntry->getIssuerId()."': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
         break;
@@ -70,13 +70,13 @@ abstract class HashtopussyNotification {
         break;
       case DNotificationType::LOG_WARN:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
-        $obj['message'] = "Log level WARN occured: " . $logEntry->getMessage() . "!";
+        $obj['message'] = "Log level WARN occured by '".$logEntry->getIssuer()."-".$logEntry->getIssuerId()."': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
         break;
       case DNotificationType::LOG_FATAL:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
-        $obj['message'] = "Log level FATAL occured: " . $logEntry->getMessage() . "!";
+        $obj['message'] = "Log level FATAL occured by '".$logEntry->getIssuer()."-".$logEntry->getIssuerId()."': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
         break;
