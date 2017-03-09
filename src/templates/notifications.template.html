@@ -8,13 +8,13 @@
   function updateLists(){
     var id = $( "#actionType" ).val();
     if(actionSettings[id] == "NONE" || actionSettings[id] == ""){
-        $("#tasks").prop("hidden");
-        $("#hashlists").prop("hidden");
-        $("#agents").prop("hidden");
-        $("#users").prop("hidden");
+        $("#tasks").hide();
+        $("#hashlists").hide();
+        $("#agents").hide();
+        $("#users").hide();
     }
     else{
-        $("#" + actionSettings[id]).removeProp("hidden");
+        $("#" + actionSettings[id]).show();
     }
   }
 </script>
@@ -36,26 +36,26 @@
             {{ENDFOREACH}}
           </select>
 
-          <select id="tasks" name="tasks" class="form-control" hidden>
+          <select id="tasks" name="tasks" class="form-control">
             <option value="ALL">ALL</option>
             {{FOREACH task;[[allTasks]]}}
               <option value="[[task.getId()]]">[[task.getTaskName()]] ([[task.getId()]])</option>
             {{ENDFOREACH}}
           </select>
-          <select id="agents" name="agents" class="form-control" hidden>
+          <select id="agents" name="agents" class="form-control">
             <option value="ALL">ALL</option>
             {{FOREACH agent;[[allAgents]]}}
               <option value="[[agent.getId()]]">[[agent.getAgentName()]] ([[agent.getId()]])</option>
             {{ENDFOREACH}}
           </select>
-          <select id="hashlists" name="hashlists" class="form-control" hidden>
+          <select id="hashlists" name="hashlists" class="form-control">
             <option value="ALL">ALL</option>
             {{FOREACH hashlist;[[allHashlists]]}}
               <option value="[[hashlist.getId()]]">[[hashlist.getHashlistName()]] ([[hashlist.getId()]])</option>
             {{ENDFOREACH}}
           </select>
           {{IF [[login.getLevel()]] >= 50}}
-            <select id="users" name="users" class="form-control" hidden>
+            <select id="users" name="users" class="form-control">
               <option value="ALL">ALL</option>
               {{FOREACH user;[[allUsers]]}}
                 <option value="[[user.getId()]]">[[user.getUsername()]] ([[user.getId()]])</option>
@@ -111,4 +111,10 @@
     {{ENDFOREACH}}
 	</table>
 </div>
+<script type="text/javascript">
+  $("#tasks").hide();
+  $("#hashlists").hide();
+  $("#agents").hide();
+  $("#users").hide();
+</script>
 {%TEMPLATE->struct/foot%}

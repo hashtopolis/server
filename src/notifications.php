@@ -3,6 +3,7 @@
 use DBA\Agent;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -95,7 +96,8 @@ foreach(DNotificationType::getAll() as $notificationType){
 }
 $OBJECTS['allowedActions'] = $allowedActions;
 
-$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array());
+$qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
+$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
 $OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array());
 if($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR){
   $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array());
