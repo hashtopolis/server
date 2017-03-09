@@ -24,3 +24,4 @@ class HashtopussyNotificationExample extends HashtopussyNotification {
 }
 
 $NOTIFICATIONS['Example'] = new HashtopussyNotificationExample();
+
