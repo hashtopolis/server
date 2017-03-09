@@ -23,11 +23,11 @@ abstract class HashtopussyNotification {
     switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         $task = $payload->getVal(DPayloadKeys::TASK);
-        $obj['message'] = "Task " . $task->getTaskName() . " (" . $task->getId() . ") is completed!";
+        $obj['message'] = "Task '" . $task->getTaskName() . "'' (" . $task->getId() . ") is completed!";
         break;
       case DNotificationType::AGENT_ERROR:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
-        $obj['message'] = "Agent " . $agent->getAgentName() . " (" . $agent->getId() . ") errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
+        $obj['message'] = "Agent '" . $agent->getAgentName() . "'' (" . $agent->getId() . ") errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
         break;
       case DNotificationType::LOG_ERROR:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);

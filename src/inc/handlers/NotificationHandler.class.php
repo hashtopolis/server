@@ -70,7 +70,19 @@ class NotificationHandler implements Handler {
   }
   
   private function delete(){
-    //TODO:
+    /** @var $LOGIN Login */
+    global $FACTORIES, $LOGIN;
+    
+    $notification = $FACTORIES::getNotificationSettingFactory()->get($_POST['notification']);
+    if($notification == null){
+      UI::addMessage(UI::ERROR, "Notification not found!");
+      return;
+    }
+    else if($notification->getUserId() != $LOGIN->getUserID()){
+      UI::addMessage(UI::ERROR, "You are not allowed to delete this notification!");
+      return;
+    }
+    $FACTORIES::getNotificationSettingFactory()->delete($notification);
   }
   
   private function toggleActive(){
