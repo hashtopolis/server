@@ -1,5 +1,6 @@
 <?php
 use DBA\NotificationSetting;
+use DBA\QueryFilter;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,10 +21,54 @@ class NotificationHandler implements Handler {
       case 'createNotification':
         $this->create();
         break;
+      case 'notificationActive':
+        $this->toggleActive();
+        break;
+      case 'notificationDelete':
+        $this->delete();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  public static function checkNotifications($action, $payload){
+    /** @var $NOTIFICATIONS HashtopussyNotification[] */
+    global $FACTORIES, $NOTIFICATIONS;
+    
+    $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");
+    $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
+    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    foreach($notifications as $notification){
+      $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification->getReceiver());
+    }
+  }
+  
+  private function delete(){
+    //TODO:
+  }
+  
+  private function toggleActive(){
+    /** @var Login $LOGIN */
+    global $FACTORIES, $LOGIN;
+    
+    $notification = $FACTORIES::getNotificationSettingFactory()->get($_POST['notification']);
+    if($notification == null){
+      UI::addMessage(UI::ERROR, "Notification not found!");
+      return;
+    }
+    else if($notification->getUserId() != $LOGIN->getUserID()){
+      UI::addMessage(UI::ERROR, "You have no access to this notification!");
+      return;
+    }
+    if($notification->getIsActive() == 1){
+      $notification->setIsActive(0);
+    }
+    else{
+      $notification->setIsActive(1);
+    }
+    $FACTORIES::getNotificationSettingFactory()->update($notification);
   }
   
   private function create(){

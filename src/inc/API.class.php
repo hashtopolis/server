@@ -1197,6 +1197,8 @@ class API {
       $FACTORIES::getTaskFactory()->update($task);
       
       // TODO: notificate task done
+      $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+      NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
     }
     
     $hashlists = Util::checkSuperHashlist($hashList);
