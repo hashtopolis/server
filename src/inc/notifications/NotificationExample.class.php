@@ -7,7 +7,7 @@
  * Time: 14:00
  */
 class HashtopussyNotificationExample extends HashtopussyNotification {
-  private       $receiver;
+  protected     $receiver;
   public static $name = "Example";
   
   function getTemplateName() {
