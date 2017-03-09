@@ -6,6 +6,9 @@
  * Time: 12:16
  */
 
+use DBA\Config;
+use DBA\QueryFilter;
+
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
 echo "Apply updates...\n";
@@ -23,6 +26,22 @@ echo "#";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` MODIFY `notificationSettingId` int(11) NOT NULL AUTO_INCREMENT");
 echo "#";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`)");
+echo "OK\n";
+
+
+echo "Please enter the base URL of the webpage (without protocol and hostname, just relatively to the root / of the domain):\n";
+$url = readline();
+$qF = new QueryFilter(Config::ITEM, DConfig::BASE_URL, "=");
+$entry = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+echo "applying... ";
+if($entry == null){
+  $entry = new Config(0, DConfig::BASE_URL, $url);
+  $FACTORIES::getConfigFactory()->save($entry);
+}
+else{
+  $entry->setValue($url);
+  $FACTORIES::getConfigFactory()->update($entry);
+}
 echo "OK\n";
 
 echo "Update complete!\n";

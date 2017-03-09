@@ -62,6 +62,7 @@ class DConfig {
   const BLACKLIST_CHARS   = "blacklistChars";
   const NUMBER_LOGENTRIES = "numLogEntries";
   const TIME_FORMAT       = "timefmt";
+  const BASE_URL          = "baseUrl";
   
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
@@ -91,6 +92,8 @@ class DConfig {
       case DConfig::NUMBER_LOGENTRIES:
         return DConfigType::NUMBER_INPUT;
       case DConfig::TIME_FORMAT:
+        return DConfigType::STRING_INPUT;
+      case DConfig::BASE_URL:
         return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
@@ -124,6 +127,8 @@ class DConfig {
         return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
       case DConfig::TIME_FORMAT:
         return "Set the formatting of time displaying. Use syntax for PHPs date() method.";
+      case DConfig::BASE_URL:
+        return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
     }
     return $config;
   }
@@ -131,20 +136,20 @@ class DConfig {
 
 class DNotificationObjectType {
   const HASHLIST = "Hashlist";
-  const AGENT = "Agent";
-  const USER = "User";
-  const TASK = "Task";
+  const AGENT    = "Agent";
+  const USER     = "User";
+  const TASK     = "Task";
   
   const NONE = "NONE";
 }
 
 class DNotificationType {
-  const TASK_COMPLETE = "taskComplete";
-  const AGENT_ERROR   = "agentError";
+  const TASK_COMPLETE   = "taskComplete";
+  const AGENT_ERROR     = "agentError";
   const OWN_AGENT_ERROR = "ownAgentError"; //difference to AGENT_ERROR is that this can be configured by owners
-  const LOG_ERROR     = "logError";
+  const LOG_ERROR       = "logError";
   
-  public static function getAll(){
+  public static function getAll() {
     return array(
       DNotificationType::TASK_COMPLETE,
       DNotificationType::AGENT_ERROR,
@@ -158,7 +163,7 @@ class DNotificationType {
    * @return int access level
    */
   public static function getRequiredLevel($notificationType) {
-    switch($notificationType){
+    switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         return DAccessLevel::USER;
       case DNotificationType::AGENT_ERROR:
@@ -172,7 +177,7 @@ class DNotificationType {
   }
   
   public static function getObjectType($notificationType) {
-    switch($notificationType){
+    switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         return DNotificationObjectType::TASK;
       case DNotificationType::AGENT_ERROR:
@@ -191,8 +196,8 @@ class DPayloadKeys {
   const AGENT       = "agent";
   const AGENT_ERROR = "agentError";
   const LOG_ENTRY   = "logEntry";
-  const USER = "user";
-  const HASHLIST = "hashlist";
+  const USER        = "user";
+  const HASHLIST    = "hashlist";
 }
 
 class DConfigType {

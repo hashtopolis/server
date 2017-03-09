@@ -65,7 +65,7 @@ class NotificationHandler implements Handler {
           continue;
         }
       }
-      $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification->getReceiver());
+      $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification);
     }
   }
   
