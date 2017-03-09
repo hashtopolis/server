@@ -6,12 +6,12 @@
  * Date: 09.03.17
  * Time: 14:00
  */
-class HashtopussyNotificationMattermost extends HashtopussyNotification {
+class HashtopussyNotificationChatBot extends HashtopussyNotification {
   protected     $receiver;
-  public static $name = "Mattermost";
+  public static $name = "ChatBot";
   
   function getTemplateName() {
-    return "notifications/mattermost";
+    return "notifications/chatbot";
   }
   
   function getObjects() {
@@ -36,7 +36,7 @@ class HashtopussyNotificationMattermost extends HashtopussyNotification {
   }
 }
 
-$NOTIFICATIONS['Mattermost'] = new HashtopussyNotificationMattermost();
+$NOTIFICATIONS['ChatBot'] = new HashtopussyNotificationChatBot();
 
 
 
