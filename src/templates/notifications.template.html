@@ -112,9 +112,11 @@
 	</table>
 </div>
 <script type="text/javascript">
-  $("#tasks").hide();
-  $("#hashlists").hide();
-  $("#agents").hide();
-  $("#users").hide();
+  $( document ).ready(function() {
+    $("#tasks").hide();
+    $("#hashlists").hide();
+    $("#agents").hide();
+    $("#users").hide();
+  });
 </script>
 {%TEMPLATE->struct/foot%}
