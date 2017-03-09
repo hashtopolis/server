@@ -31,7 +31,7 @@ class NotificationHandler implements Handler {
     global $FACTORIES, $NOTIFICATIONS, $LOGIN;
     
     $actionType = $_POST['actionType'];
-    $notification = $_POST['Notification'];
+    $notification = $_POST['notification'];
     $receiver = $_POST['receiver'];
     
     if(!in_array($notification, $NOTIFICATIONS)){
