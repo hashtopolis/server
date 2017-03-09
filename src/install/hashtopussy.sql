@@ -558,6 +558,7 @@ CREATE TABLE `User` (
 CREATE TABLE `NotificationSetting` (
   `notificationSettingId` int(11) NOT NULL,
   `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `objectId` int(11) NOT NULL,
   `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `userId` int(11) NOT NULL,
   `receiver` varchar(200) COLLATE utf8_unicode_ci NOT NULL,

@@ -132,7 +132,26 @@ class DConfig {
 class DNotificationType {
   const TASK_COMPLETE = "taskComplete";
   const AGENT_ERROR   = "agentError";
+  const OWN_AGENT_ERROR = "ownAgentError"; //difference to AGENT_ERROR is that this can be configured by owners
   const LOG_ERROR     = "logError";
+  
+  /**
+   * @param $notificationType string
+   * @return int access level
+   */
+  public static function getRequiredLevel($notificationType) {
+    switch($notificationType){
+      case DNotificationType::TASK_COMPLETE:
+        return DAccessLevel::USER;
+      case DNotificationType::AGENT_ERROR:
+        return DAccessLevel::SUPERUSER;
+      case DNotificationType::OWN_AGENT_ERROR:
+        return DAccessLevel::USER;
+      case DNotificationType::LOG_ERROR:
+        return DAccessLevel::ADMINISTRATOR;
+    }
+    return DAccessLevel::ADMINISTRATOR;
+  }
 }
 
 class DPayloadKeys {

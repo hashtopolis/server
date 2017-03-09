@@ -16,7 +16,7 @@ $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `skipKeysp
 echo "OK\n";
 
 echo "Add Notification Table and Settings...";
-$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `NotificationSetting` (`notificationSettingId` int(11) NOT NULL, `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `userId` int(11) NOT NULL, `receiver` varchar(200) COLLATE utf8_unicode_ci NOT NULL, `isActive` tinyint(4) NOT NULL) ENGINE=InnoDB");
+$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `NotificationSetting` (`notificationSettingId` int(11) NOT NULL, `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `objectId` int(11) NOT NULL, `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `userId` int(11) NOT NULL, `receiver` varchar(200) COLLATE utf8_unicode_ci NOT NULL, `isActive` tinyint(4) NOT NULL) ENGINE=InnoDB");
 echo "#";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` ADD PRIMARY KEY (`notificationSettingId`), ADD KEY `NotificationSetting_ibfk_1` (`userId`)");
 echo "#";

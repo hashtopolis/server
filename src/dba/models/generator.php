@@ -212,6 +212,7 @@ $CONF['LogEntry'] = array(
 $CONF['NotificationSetting'] = array(
   'notificationSettingId',
   'action',
+  'objectId',
   'notification',
   'userId',
   'receiver',

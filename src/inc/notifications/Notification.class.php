@@ -12,7 +12,7 @@ abstract class HashtopussyNotification {
   //TODO: add HTML messages for templates which can issue html notifications
   
   /**
-   * @param $notificationType DNotificationType
+   * @param $notificationType string
    * @param $payload DataSet
    * @param $receiver string Contains the value where the message can be sent to. This can for example be an URL, an email address, etc.
    */

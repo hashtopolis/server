@@ -12,14 +12,16 @@ namespace DBA;
 class NotificationSetting extends AbstractModel {
   private $notificationSettingId;
   private $action;
+  private $objectId;
   private $notification;
   private $userId;
   private $receiver;
   private $isActive;
   
-  function __construct($notificationSettingId, $action, $notification, $userId, $receiver, $isActive) {
+  function __construct($notificationSettingId, $action, $objectId, $notification, $userId, $receiver, $isActive) {
     $this->notificationSettingId = $notificationSettingId;
     $this->action = $action;
+    $this->objectId = $objectId;
     $this->notification = $notification;
     $this->userId = $userId;
     $this->receiver = $receiver;
@@ -30,6 +32,7 @@ class NotificationSetting extends AbstractModel {
     $dict = array();
     $dict['notificationSettingId'] = $this->notificationSettingId;
     $dict['action'] = $this->action;
+    $dict['objectId'] = $this->objectId;
     $dict['notification'] = $this->notification;
     $dict['userId'] = $this->userId;
     $dict['receiver'] = $this->receiver;
@@ -60,6 +63,14 @@ class NotificationSetting extends AbstractModel {
   
   function setAction($action){
     $this->action = $action;
+  }
+  
+  function getObjectId(){
+    return $this->objectId;
+  }
+  
+  function setObjectId($objectId){
+    $this->objectId = $objectId;
   }
   
   function getNotification(){
@@ -96,6 +107,7 @@ class NotificationSetting extends AbstractModel {
 
   const NOTIFICATION_SETTING_ID = "notificationSettingId";
   const ACTION = "action";
+  const OBJECT_ID = "objectId";
   const NOTIFICATION = "notification";
   const USER_ID = "userId";
   const RECEIVER = "receiver";

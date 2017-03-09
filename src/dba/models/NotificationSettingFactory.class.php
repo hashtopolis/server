@@ -30,7 +30,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @return NotificationSetting
    */
   function getNullObject() {
-    $o = new NotificationSetting(-1, null, null, null, null, null);
+    $o = new NotificationSetting(-1, null, null, null, null, null, null);
     return $o;
   }
 
@@ -40,7 +40,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @return NotificationSetting
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new NotificationSetting($pk, $dict['action'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
+    $o = new NotificationSetting($pk, $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
     return $o;
   }
 
