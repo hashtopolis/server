@@ -34,7 +34,7 @@ class NotificationHandler implements Handler {
     $notification = $_POST['notification'];
     $receiver = $_POST['receiver'];
     
-    if(!in_array($notification, $NOTIFICATIONS)){
+    if(!isset($NOTIFICATIONS[$notification])){
       UI::addMessage(UI::ERROR, "This notification is not available!");
       return;
     }
