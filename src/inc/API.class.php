@@ -635,6 +635,9 @@ class API {
     //save error message
     $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY[PQueryError::MESSAGE]);
     $FACTORIES::getAgentErrorFactory()->save($error);
+  
+    $payload = new DataSet(array(DPayloadKeys::AGENT => $agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryError::MESSAGE]));
+    NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
     
     if ($agent->getIgnoreErrors() == 0) {
       //deactivate agent
