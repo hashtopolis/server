@@ -89,6 +89,7 @@ else if (isset($_GET['new'])) {
   $url = explode("/", $_SERVER['PHP_SELF']);
   unset($url[sizeof($url) - 1]);
   $OBJECTS['apiUrl'] = Util::buildServerUrl() . implode("/", $url) . "/api/server.php";
+  $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
 }
 else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
