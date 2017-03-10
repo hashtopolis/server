@@ -31,15 +31,15 @@ abstract class HashtopussyNotification {
     switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         $task = $payload->getVal(DPayloadKeys::TASK);
-        $obj['message'] = "Task '" . $task->getTaskName() . "'' (" . $task->getId() . ") is completed!";
+        $obj['message'] = "Task '" . $task->getTaskName() . "' (" . $task->getId() . ") is completed!";
         $obj['html'] = "Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> is completed!";
-        $obj['simplified'] = "Task '" . $task->getTaskName() . "'' <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "> is completed!";
+        $obj['simplified'] = "Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> is completed!";
         break;
       case DNotificationType::AGENT_ERROR:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
-        $obj['message'] = "Agent '" . $agent->getAgentName() . "'' (" . $agent->getId() . ") errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
+        $obj['message'] = "Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
         $obj['html'] = "Agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
-        $obj['simplified'] = "Agent '" . $agent->getAgentName() . "'' <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
+        $obj['simplified'] = "Agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . "> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
         break;
       case DNotificationType::LOG_ERROR:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
@@ -49,9 +49,9 @@ abstract class HashtopussyNotification {
         break;
       case DNotificationType::NEW_TASK:
         $task = $payload->getVal(DPayloadKeys::TASK);
-        $obj['message'] = "New Task '" . $task->getTaskName() . "'' (" . $task->getId() . ") was created";
+        $obj['message'] = "New Task '" . $task->getTaskName() . "' (" . $task->getId() . ") was created";
         $obj['html'] = "New Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> was created";
-        $obj['simplified'] = "New Task '" . $task->getTaskName() . "'' <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "> was created";
+        $obj['simplified'] = "New Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> was created";
         break;
       case DNotificationType::NEW_HASHLIST:
         //TODO:

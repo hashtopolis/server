@@ -227,9 +227,9 @@ class DNotificationType {
       case DNotificationType::LOG_ERROR:
         return DNotificationObjectType::NONE;
       case DNotificationType::NEW_TASK:
-        return DNotificationObjectType::TASK;
+        return DNotificationObjectType::NONE;
       case DNotificationType::NEW_HASHLIST:
-        return DNotificationObjectType::HASHLIST;
+        return DNotificationObjectType::NONE;
       case DNotificationType::HASHLIST_ALL_CRACKED:
         return DNotificationObjectType::HASHLIST;
       case DNotificationType::HASHLIST_CRACKED_HASH:
