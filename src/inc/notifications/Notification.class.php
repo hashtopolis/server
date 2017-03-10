@@ -48,7 +48,10 @@ abstract class HashtopussyNotification {
         $obj['simplified'] = $obj['message'];
         break;
       case DNotificationType::NEW_TASK:
-        //TODO:
+        $task = $payload->getVal(DPayloadKeys::TASK);
+        $obj['message'] = "New Task '" . $task->getTaskName() . "'' (" . $task->getId() . ") was created";
+        $obj['html'] = "New Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> was created";
+        $obj['simplified'] = "New Task '" . $task->getTaskName() . "'' <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "> was created";
         break;
       case DNotificationType::NEW_HASHLIST:
         //TODO:
@@ -66,6 +69,9 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::USER_LOGIN_FAILED:
+        //TODO:
+        break;
+      case DNotificationType::NEW_AGENT:
         //TODO:
         break;
       case DNotificationType::LOG_WARN:

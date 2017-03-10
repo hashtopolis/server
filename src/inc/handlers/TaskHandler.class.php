@@ -175,6 +175,10 @@ class TaskHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
+    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+    NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
+    
     header("Location: $forward");
     die();
   }

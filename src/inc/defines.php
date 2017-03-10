@@ -157,6 +157,7 @@ class DNotificationType {
   const USER_LOGIN_FAILED     = "userLoginFailed";
   const LOG_WARN              = "logWarn";
   const LOG_FATAL             = "logFatal";
+  const NEW_AGENT             = "newAgent";
   
   public static function getAll() {
     return array(
@@ -172,7 +173,8 @@ class DNotificationType {
       DNotificationType::USER_DELETED,
       DNotificationType::USER_LOGIN_FAILED,
       DNotificationType::LOG_WARN,
-      DNotificationType::LOG_FATAL
+      DNotificationType::LOG_FATAL,
+      DNotificationType::NEW_AGENT
     );
   }
   
@@ -208,6 +210,8 @@ class DNotificationType {
         return DAccessLevel::ADMINISTRATOR;
       case DNotificationType::LOG_FATAL:
         return DAccessLevel::ADMINISTRATOR;
+      case DNotificationType::NEW_AGENT:
+        return DAccessLevel::SUPERUSER;
     }
     return DAccessLevel::ADMINISTRATOR;
   }
@@ -239,6 +243,8 @@ class DNotificationType {
       case DNotificationType::LOG_WARN:
         return DNotificationObjectType::NONE;
       case DNotificationType::LOG_FATAL:
+        return DNotificationObjectType::NONE;
+      case DNotificationType::NEW_AGENT:
         return DNotificationObjectType::NONE;
     }
     return DNotificationObjectType::NONE;
