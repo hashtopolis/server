@@ -54,7 +54,10 @@ abstract class HashtopussyNotification {
         $obj['simplified'] = "New Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> was created";
         break;
       case DNotificationType::NEW_HASHLIST:
-        //TODO:
+        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
+        $obj['message'] = "New Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") was created";
+        $obj['html'] = "New Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> was created";
+        $obj['simplified'] = "New Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> was created";
         break;
       case DNotificationType::HASHLIST_ALL_CRACKED:
         //TODO:
@@ -72,6 +75,15 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::NEW_AGENT:
+        //TODO:
+        break;
+      case DNotificationType::DELETE_TASK:
+        //TODO:
+        break;
+      case DNotificationType::DELETE_HASHLIST:
+        //TODO:
+        break;
+      case DNotificationType::DELETE_AGENT:
         //TODO:
         break;
       case DNotificationType::LOG_WARN:

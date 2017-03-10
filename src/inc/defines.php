@@ -158,6 +158,9 @@ class DNotificationType {
   const LOG_WARN              = "logWarn";
   const LOG_FATAL             = "logFatal";
   const NEW_AGENT             = "newAgent";
+  const DELETE_TASK           = "deleteTask";
+  const DELETE_HASHLIST       = "deleteHashlist";
+  const DELETE_AGENT          = "deleteAgent";
   
   public static function getAll() {
     return array(
@@ -174,7 +177,10 @@ class DNotificationType {
       DNotificationType::USER_LOGIN_FAILED,
       DNotificationType::LOG_WARN,
       DNotificationType::LOG_FATAL,
-      DNotificationType::NEW_AGENT
+      DNotificationType::NEW_AGENT,
+      DNotificationType::DELETE_TASK,
+      DNotificationType::DELETE_HASHLIST,
+      DNotificationType::DELETE_AGENT
     );
   }
   
@@ -212,6 +218,12 @@ class DNotificationType {
         return DAccessLevel::ADMINISTRATOR;
       case DNotificationType::NEW_AGENT:
         return DAccessLevel::SUPERUSER;
+      case DNotificationType::DELETE_TASK:
+        return DAccessLevel::USER;
+      case DNotificationType::DELETE_HASHLIST:
+        return DAccessLevel::USER;
+      case DNotificationType::DELETE_AGENT:
+        return DAccessLevel::SUPERUSER;
     }
     return DAccessLevel::ADMINISTRATOR;
   }
@@ -246,6 +258,12 @@ class DNotificationType {
         return DNotificationObjectType::NONE;
       case DNotificationType::NEW_AGENT:
         return DNotificationObjectType::NONE;
+      case DNotificationType::DELETE_TASK:
+        return DNotificationObjectType::TASK;
+      case DNotificationType::DELETE_HASHLIST:
+        return DNotificationObjectType::HASHLIST;
+      case DNotificationType::DELETE_AGENT:
+        return DNotificationObjectType::AGENT;
     }
     return DNotificationObjectType::NONE;
   }

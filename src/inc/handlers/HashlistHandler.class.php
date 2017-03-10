@@ -268,6 +268,9 @@ class HashlistHandler implements Handler {
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
+        
+        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
+        
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
         break;
@@ -314,6 +317,9 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
+  
+        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
+        
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
       case DHashlistFormat::BINARY:
@@ -327,6 +333,9 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount(1);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
+  
+        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
+        
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
     }
