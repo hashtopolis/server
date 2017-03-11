@@ -65,7 +65,7 @@ if (file_exists($gitfolder) && is_dir($gitfolder)) {
   $head = file_get_contents($gitfolder . "/HEAD");
   $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
   $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
-  $gitcommit = "commit $commit branch $branch";
+  $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
 }
 $OBJECTS['gitcommit'] = $gitcommit;
 
