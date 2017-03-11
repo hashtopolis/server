@@ -60,15 +60,12 @@ $FACTORIES = new Factory();
 $LANG = new Lang();
 
 $gitcommit = "";
-$out = array();
-exec("cd '".dirname(__FILE__)."/../' && git rev-parse HEAD", $out);
-if (isset($out[0])) {
-  $gitcommit = "commit ".substr($out[0], 0, 7);
-}
-$out = array();
-exec("cd '".dirname(__FILE__)."/../' && git rev-parse --abbrev-ref HEAD", $out);
-if (isset($out[0])) {
-  $gitcommit .= " branch " . $out[0];
+$gitfolder = dirname(__FILE__)."/../../.git";
+if(file_exists($gitfolder) && is_dir($gitfolder)) {
+  $head = file_get_contents(".git/HEAD");
+  $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
+  $commit = trim(file_get_contents(".git/refs/heads/" . $branch));
+  $gitcommit = "commit $commit branch $branch";
 }
 $OBJECTS['gitcommit'] = $gitcommit;
 
