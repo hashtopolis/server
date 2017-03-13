@@ -1256,6 +1256,11 @@ class API {
               PResponseSolve::AGENT_COMMAND => "stop"
             )
           );
+          $task->setPriority(0);
+          $chunk->setProgress($chunk->getLength());
+          $chunk->setRprogress(10000);
+          $FACTORIES::getChunkFactory()->update($chunk);
+          $FACTORIES::getTaskFactory()->update($task);
         }
         $chunk->setSpeed($speed * 1000);
         $FACTORIES::getChunkFactory()->update($chunk);
