@@ -347,7 +347,7 @@ class API {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
     foreach ($chunks as $chunk) {
-      if (($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId()) && $chunk->getRProgress() != 10000) {
+      if (($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId() || time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT)) && $chunk->getRProgress() != 10000) {
         continue;
       }
       $dispatched += $chunk->getLength();

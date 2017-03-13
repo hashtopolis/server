@@ -151,7 +151,6 @@ class Util {
         $isTimeout = false;
         // if the chunk times out, we need to remove the agent from it, so it can be done by others
         if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-          $chunk->setAgentId(null);
           $FACTORIES::getChunkFactory()->update($chunk);
           $isTimeout = true;
         }
