@@ -72,7 +72,10 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::USER_LOGIN_FAILED:
-        //TODO:
+        $user = $payload->getVal(DPayloadKeys::USER);
+        $obj['message'] = "User '" . $user->getUsername() . "' (" . $user->getId() . ") failed to login due to wrong password";
+        $obj['html'] = "User <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> failed to login due to wrong password";
+        $obj['simplified'] = "User <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "|" . $user->getUsername() . "> failed to login due to wrong password";
         break;
       case DNotificationType::NEW_AGENT:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
