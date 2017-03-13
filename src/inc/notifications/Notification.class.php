@@ -81,7 +81,10 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::DELETE_HASHLIST:
-        //TODO:
+        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
+        $obj['message'] = "Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") got deleted";
+        $obj['html'] = "Hashlist <a href='#'>" . $hashlist->getHashlistName() . "</a> got deleted";
+        $obj['simplified'] = "Agent '" . $hashlist->getHashlistName() . "' got deleted";
         break;
       case DNotificationType::DELETE_AGENT:
         $agent = $payload->getVal(DPayloadKeys::AGENT);

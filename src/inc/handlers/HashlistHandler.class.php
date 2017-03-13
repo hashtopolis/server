@@ -515,6 +515,10 @@ class HashlistHandler implements Handler {
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
+    
+    $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
+    NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
+    
     switch ($this->hashlist->getFormat()) {
       case 0:
       case 1:
