@@ -99,6 +99,7 @@ foreach (DNotificationType::getAll() as $notificationType) {
     $actionSettings[] = "\"" . $notificationType . "\":\"" . DNotificationType::getObjectType($notificationType) . "\"";
   }
 }
+sort($allowedActions);
 $OBJECTS['allowedActions'] = $allowedActions;
 $OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
 
