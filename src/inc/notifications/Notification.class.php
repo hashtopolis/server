@@ -69,7 +69,10 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::USER_DELETED:
-        //TODO:
+        $user = $payload->getVal(DPayloadKeys::USER);
+        $obj['message'] = "User '" . $user->getUsername() . "' (" . $user->getId() . ") got deleted";
+        $obj['html'] = "User <a href='#'>" . $user->getUsername() . "</a> got deleted";
+        $obj['simplified'] = "User '" . $user->getUsername() . "' got deleted";
         break;
       case DNotificationType::USER_LOGIN_FAILED:
         $user = $payload->getVal(DPayloadKeys::USER);

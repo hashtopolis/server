@@ -190,6 +190,10 @@ class UsersHandler implements Handler {
     $uS = new UpdateSet(Agent::USER_ID, null);
     $FACTORIES::getAgentFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
     $FACTORIES::getUserFactory()->delete($user);
+  
+    $payload = new DataSet(array(DPayloadKeys::USER => $user));
+    NotificationHandler::checkNotifications(DNotificationType::USER_DELETED, $payload);
+    
     header("Location: users.php");
     die();
   }
