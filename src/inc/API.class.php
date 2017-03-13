@@ -1089,7 +1089,7 @@ class API {
             $cracked[$hash->getHashlistId()]++;
             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
             $crackHashes[] = $hash->getId();
-            $zaps[] = new Zap(0, $hash->getHash(), time(), $hashList->getId());
+            $zaps[] = new Zap(0, $hash->getHash(), time(), $agent->getId(), $hashList->getId());
           }
           
           if (sizeof($plainUpdates) >= 1000) {
