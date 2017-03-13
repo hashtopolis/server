@@ -13,6 +13,7 @@ use DBA\StoredValue;
 use DBA\SuperHashlistHashlist;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\Zap;
 
 /**
  *
@@ -150,7 +151,6 @@ class Util {
         $isTimeout = false;
         // if the chunk times out, we need to remove the agent from it, so it can be done by others
         if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-          $chunk->setAgentId(null);
           $FACTORIES::getChunkFactory()->update($chunk);
           $isTimeout = true;
         }
@@ -277,7 +277,6 @@ class Util {
    * Used by the solver. Cleans the zap-queue
    */
   public static function zapCleaning() {
-    //TODO NOT YET IMPLEMENTED
     global $FACTORIES;
     
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
@@ -286,7 +285,10 @@ class Util {
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
-      //TODO: zap cleaning
+      
+      $qF = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
+      $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      
       $entry->setVal(time());
       $FACTORIES::getStoredValueFactory()->update($entry);
     }
