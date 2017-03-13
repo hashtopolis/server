@@ -9,13 +9,13 @@
 
 namespace DBA;
 
-class ZapFactory extends AbstractModelFactory {
+class AgentZapFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Zap";
+    return "AgentZap";
   }
   
   function getModelTable() {
-    return "Zap";
+    return "AgentZap";
   }
   
   function isCachable() {
@@ -27,27 +27,27 @@ class ZapFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return Zap
+   * @return AgentZap
    */
   function getNullObject() {
-    $o = new Zap(-1, null, null, null);
+    $o = new AgentZap(-1, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return Zap
+   * @return AgentZap
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Zap($pk, $dict['hashId'], $dict['solveTime'], $dict['hashlistId']);
+    $o = new AgentZap($pk, $dict['lastZapId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return Zap|Zap[]
+   * @return AgentZap|AgentZap[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -58,7 +58,7 @@ class ZapFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Zap::class);
+      return Util::cast(parent::filter($options, $single), AgentZap::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -66,24 +66,24 @@ class ZapFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, Zap::class);
+      $models[] = Util::cast($object, AgentZap::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return Zap
+   * @return AgentZap
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Zap::class);
+    return Util::cast(parent::get($pk), AgentZap::class);
   }
 
   /**
-   * @param Zap $model
-   * @return Zap
+   * @param AgentZap $model
+   * @return AgentZap
    */
   function save($model) {
-    return Util::cast(parent::save($model), Zap::class);
+    return Util::cast(parent::save($model), AgentZap::class);
   }
 }

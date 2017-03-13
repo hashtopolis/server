@@ -193,9 +193,13 @@ $CONF['RightGroup'] = array(
 );
 $CONF['Zap'] = array(
   'zapId',
-  'hash',
+  'hashId',
   'solveTime',
   'hashlistId'
+);
+$CONF['AgentZap'] = array(
+  'agentId',
+  'lastZapId'
 );
 $CONF['StoredValue'] = array(
   'storedValueId',
@@ -209,25 +213,6 @@ $CONF['LogEntry'] = array(
   'message',
   'time'
 );
-// This will be used later when we add notifications
-/*$CONF['NotificationType'] = array(
-  'notificationTypeId',
-  'notificationName',
-  'filename',
-  'isInstalled'
-);
-$CONF['NotificationSetting'] = array(
-  'notificationSettingId',
-  'actionId',
-  'notificationTypeId',
-  'isActive'
-);
-$CONF['Action'] = array(
-  'actionId',
-  'actionName',
-  'actionIdentifier'
-);*/
-
 
 foreach ($CONF as $NAME => $COLUMNS) {
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");
