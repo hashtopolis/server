@@ -162,6 +162,7 @@ class Util {
         $isTimeout = false;
         // if the chunk times out, we need to remove the agent from it, so it can be done by others
         if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
+          $FACTORIES::getChunkFactory()->update($chunk);
           $isTimeout = true;
         }
         
@@ -753,6 +754,9 @@ class Util {
     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "http://";
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
+    if (strpos($hostname, ":") !== false) {
+        $hostname = substr($hostname, 0, strpos($hostname, ":"));
+    }
     if ($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80) {
       $port = "";
     }
