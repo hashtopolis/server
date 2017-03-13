@@ -1159,6 +1159,7 @@ class API {
       $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+      $FACTORIES::getZapFactory()->massSave($zaps);
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
