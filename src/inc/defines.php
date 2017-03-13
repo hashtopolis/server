@@ -276,6 +276,7 @@ class DPayloadKeys {
   const LOG_ENTRY   = "logEntry";
   const USER        = "user";
   const HASHLIST    = "hashlist";
+  const NUM_CRACKED = "numCracked";
 }
 
 class DConfigType {

@@ -63,7 +63,13 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::HASHLIST_CRACKED_HASH:
-        //TODO:
+        $numCracked = $payload->getVal(DPayloadKeys::NUM_CRACKED);
+        $agent = $payload->getVal(DPayloadKeys::AGENT);
+        $task = $payload->getVal(DPayloadKeys::TASK);
+        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
+        $obj['message'] = "$numCracked Hashes from Hashlist '".$hashlist->getHashlistName()."' (".$hashlist->getId().") were cracked on Task '" . $task->getTaskName() . "' (" . $task->getId() . ") by agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ")";
+        $obj['html'] = "$numCracked Hashes from Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> were cracked on Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> by agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a>";
+        $obj['simplified'] = "$numCracked Hashes from Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> were cracked on Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> by agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . ">";
         break;
       case DNotificationType::USER_CREATED:
         $user = $payload->getVal(DPayloadKeys::USER);

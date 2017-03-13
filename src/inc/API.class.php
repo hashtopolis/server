@@ -1212,6 +1212,9 @@ class API {
       $hashlistIds[] = $hl->getId();
     }
     $toZap = array();
+  
+    $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $hashList));
+    NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
     
     if ($aborting) {
       $chunk->setSpeed(0);
