@@ -60,7 +60,10 @@ abstract class HashtopussyNotification {
         $obj['simplified'] = "New Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> was created";
         break;
       case DNotificationType::HASHLIST_ALL_CRACKED:
-        //TODO:
+        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
+        $obj['message'] = "Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") was cracked completely";
+        $obj['html'] = "Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> was cracked completely";
+        $obj['simplified'] = "Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> was cracked completely";
         break;
       case DNotificationType::HASHLIST_CRACKED_HASH:
         $numCracked = $payload->getVal(DPayloadKeys::NUM_CRACKED);

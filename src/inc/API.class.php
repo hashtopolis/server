@@ -1240,8 +1240,9 @@ class API {
         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
-        
-        //TODO: notificate hashList done
+  
+        $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
+        NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
         break;
       case DHashcatStatus::ABORTED:
       case DHashcatStatus::QUIT:
@@ -1257,6 +1258,9 @@ class API {
         $qF2 = new ContainFilter(Hashlist::HASHLIST_ID, $hashlistIds);
         $count = $FACTORIES::getHashlistFactory()->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
         if ($count == 0) {
+          $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
+          NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
+          
           //stop agent
           API::sendResponse(array(
               PResponseSolve::ACTION => PActions::SOLVE,
