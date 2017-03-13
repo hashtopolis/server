@@ -84,7 +84,10 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::DELETE_AGENT:
-        //TODO:
+        $agent = $payload->getVal(DPayloadKeys::AGENT);
+        $obj['message'] = "Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") got deleted";
+        $obj['html'] = "Agent <a href='#'>" . $agent->getAgentName() . "</a> got deleted";
+        $obj['simplified'] = "Agent '" . $agent->getAgentName() . "' got deleted";
         break;
       case DNotificationType::LOG_WARN:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);

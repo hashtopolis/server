@@ -222,9 +222,13 @@ class AgentHandler implements Handler {
       UI::printError("FATAL", "Agent with ID " . $_POST['agent'] . " not found!");
     }
     $name = $this->agent->getAgentName();
+    $agent = $this->agent;
     if ($this->deleteDependencies($this->agent)) {
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
       Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
+  
+      $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
+      NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
     }
     else {
       $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
