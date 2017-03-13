@@ -218,11 +218,12 @@ class TaskHandler implements Handler {
       return;
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $this->deleteTask($task);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-  
+    
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
+    
+    $this->deleteTask($task);
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     if ($task->getHashlistId() == null) {
       header("Location: pretasks.php");

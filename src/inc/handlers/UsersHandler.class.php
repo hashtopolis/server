@@ -182,6 +182,9 @@ class UsersHandler implements Handler {
       return;
     }
   
+    $payload = new DataSet(array(DPayloadKeys::USER => $user));
+    NotificationHandler::checkNotifications(DNotificationType::USER_DELETED, $payload);
+  
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $user->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach($notifications as $notification){
@@ -194,9 +197,6 @@ class UsersHandler implements Handler {
     $uS = new UpdateSet(Agent::USER_ID, null);
     $FACTORIES::getAgentFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
     $FACTORIES::getUserFactory()->delete($user);
-  
-    $payload = new DataSet(array(DPayloadKeys::USER => $user));
-    NotificationHandler::checkNotifications(DNotificationType::USER_DELETED, $payload);
     
     header("Location: users.php");
     die();

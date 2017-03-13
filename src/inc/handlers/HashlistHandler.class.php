@@ -452,6 +452,9 @@ class HashlistHandler implements Handler {
     }
     
     //TODO: delete from zapqueue
+    
+    $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
+    NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
   
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $this->hashlist->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -514,10 +517,8 @@ class HashlistHandler implements Handler {
     $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    $FACTORIES::getHashlistFactory()->delete($this->hashlist);
     
-    $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
-    NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
+    $FACTORIES::getHashlistFactory()->delete($this->hashlist);
     
     switch ($this->hashlist->getFormat()) {
       case 0:
