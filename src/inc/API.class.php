@@ -1213,8 +1213,10 @@ class API {
     }
     $toZap = array();
   
-    $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $hashList));
-    NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
+    if($sumCracked > 0) {
+      $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $hashList));
+      NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
+    }
     
     if ($aborting) {
       $chunk->setSpeed(0);
