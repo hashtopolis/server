@@ -13,6 +13,7 @@ use DBA\StoredValue;
 use DBA\SuperHashlistHashlist;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\Zap;
 
 /**
  *
@@ -275,7 +276,6 @@ class Util {
    * Used by the solver. Cleans the zap-queue
    */
   public static function zapCleaning() {
-    //TODO NOT YET IMPLEMENTED
     global $FACTORIES;
     
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
@@ -284,7 +284,10 @@ class Util {
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
-      //TODO: zap cleaning
+      
+      $qF = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
+      $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      
       $entry->setVal(time());
       $FACTORIES::getStoredValueFactory()->update($entry);
     }
