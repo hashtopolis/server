@@ -43,7 +43,7 @@ abstract class HashtopussyNotification {
         break;
       case DNotificationType::LOG_ERROR:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
-        $obj['message'] = "Log level ERROR occured by '".$logEntry->getIssuer()."-".$logEntry->getIssuerId()."': " . $logEntry->getMessage() . "!";
+        $obj['message'] = "Log level ERROR occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
         break;
@@ -75,7 +75,10 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::NEW_AGENT:
-        //TODO:
+        $agent = $payload->getVal(DPayloadKeys::AGENT);
+        $obj['message'] = "New Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") was registered";
+        $obj['html'] = "New Agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a> was registered";
+        $obj['simplified'] = "New Agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . "> was registered";
         break;
       case DNotificationType::DELETE_TASK:
         $task = $payload->getVal(DPayloadKeys::TASK);
@@ -97,13 +100,13 @@ abstract class HashtopussyNotification {
         break;
       case DNotificationType::LOG_WARN:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
-        $obj['message'] = "Log level WARN occured by '".$logEntry->getIssuer()."-".$logEntry->getIssuerId()."': " . $logEntry->getMessage() . "!";
+        $obj['message'] = "Log level WARN occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
         break;
       case DNotificationType::LOG_FATAL:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
-        $obj['message'] = "Log level FATAL occured by '".$logEntry->getIssuer()."-".$logEntry->getIssuerId()."': " . $logEntry->getMessage() . "!";
+        $obj['message'] = "Log level FATAL occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
         break;

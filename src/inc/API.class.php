@@ -452,6 +452,9 @@ class API {
     $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
+      $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
+      NotificationHandler::checkNotifications(DNotificationType::NEW_AGENT, $payload);
+      
       API::sendResponse(array(
           PQueryRegister::ACTION => PActions::REGISTER,
           PResponseRegister::RESPONSE => PValues::SUCCESS,
