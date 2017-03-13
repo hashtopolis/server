@@ -1,9 +1,12 @@
 <?php
 
 use DBA\Agent;
+use DBA\Hashlist;
 use DBA\NotificationSetting;
+use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -33,16 +36,18 @@ if (isset($_POST['action'])) {
 }
 
 $qF = new QueryFilter(NotificationSetting::USER_ID, $LOGIN->getUserID(), "=");
-$notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+$oF = new OrderFilter(NotificationSetting::ACTION, "ASC");
+$notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
 $OBJECTS['notifications'] = $notifications;
 
 $allAgents = array();
+$oF = new OrderFilter(Agent::AGENT_NAME, "ASC");
 if ($LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
-  $allAgents = $FACTORIES::getAgentFactory()->filter(array());
+  $allAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::ORDER => $oF));
 }
 else {
   $qF = new QueryFilter(Agent::USER_ID, $LOGIN->getUserID(), "=");
-  $allAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $allAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
 }
 $OBJECTS['allAgents'] = $allAgents;
 
@@ -98,10 +103,13 @@ $OBJECTS['allowedActions'] = $allowedActions;
 $OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
 
 $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-$OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array());
+$oF = new OrderFilter(Task::TASK_NAME, "ASC");
+$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+$oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
+$OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::ORDER => $oF));
 if ($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR) {
-  $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array());
+  $oF = new OrderFilter(User::USERNAME, "ASC");
+  $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::ORDER => $oF));
 }
 
 echo $TEMPLATE->render($OBJECTS);
