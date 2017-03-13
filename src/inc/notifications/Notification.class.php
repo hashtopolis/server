@@ -66,7 +66,11 @@ abstract class HashtopussyNotification {
         //TODO:
         break;
       case DNotificationType::USER_CREATED:
-        //TODO:
+        $user = $payload->getVal(DPayloadKeys::USER);
+        $obj['message'] = "New User '" . $user->getUsername() . "' (" . $user->getId() . ") was created";
+        $obj['html'] = "New User <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> was created";
+        $obj['simplified'] = "New User <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "|" . $user->getUsername() . "> was created";
+        break;
         break;
       case DNotificationType::USER_DELETED:
         $user = $payload->getVal(DPayloadKeys::USER);

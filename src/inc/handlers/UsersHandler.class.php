@@ -77,7 +77,11 @@ class UsersHandler implements Handler {
     //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
     //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
     //TODO: send proper email for created user
+    
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New User created: " . $user->getUsername());
+    $payload = new DataSet(array(DPayloadKeys::USER => $user));
+    NotificationHandler::checkNotifications(DNotificationType::USER_CREATED, $payload);
+    
     header("Location: users.php");
     die();
   }
