@@ -11,13 +11,13 @@ namespace DBA;
 
 class Zap extends AbstractModel {
   private $zapId;
-  private $hashId;
+  private $hash;
   private $solveTime;
   private $hashlistId;
   
-  function __construct($zapId, $hashId, $solveTime, $hashlistId) {
+  function __construct($zapId, $hash, $solveTime, $hashlistId) {
     $this->zapId = $zapId;
-    $this->hashId = $hashId;
+    $this->hash = $hash;
     $this->solveTime = $solveTime;
     $this->hashlistId = $hashlistId;
   }
@@ -25,7 +25,7 @@ class Zap extends AbstractModel {
   function getKeyValueDict() {
     $dict = array();
     $dict['zapId'] = $this->zapId;
-    $dict['hashId'] = $this->hashId;
+    $dict['hash'] = $this->hash;
     $dict['solveTime'] = $this->solveTime;
     $dict['hashlistId'] = $this->hashlistId;
     
@@ -48,12 +48,12 @@ class Zap extends AbstractModel {
     $this->zapId = $id;
   }
   
-  function getHashId(){
-    return $this->hashId;
+  function getHash(){
+    return $this->hash;
   }
   
-  function setHashId($hashId){
-    $this->hashId = $hashId;
+  function setHash($hash){
+    $this->hash = $hash;
   }
   
   function getSolveTime(){
@@ -73,7 +73,7 @@ class Zap extends AbstractModel {
   }
 
   const ZAP_ID = "zapId";
-  const HASH_ID = "hashId";
+  const HASH = "hash";
   const SOLVE_TIME = "solveTime";
   const HASHLIST_ID = "hashlistId";
 }

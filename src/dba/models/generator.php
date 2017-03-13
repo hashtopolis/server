@@ -193,7 +193,7 @@ $CONF['RightGroup'] = array(
 );
 $CONF['Zap'] = array(
   'zapId',
-  'hashId',
+  'hash',
   'solveTime',
   'hashlistId'
 );

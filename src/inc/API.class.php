@@ -1260,8 +1260,10 @@ class API {
         $chunk->setSpeed($speed * 1000);
         $FACTORIES::getChunkFactory()->update($chunk);
         
+        $agentZap = $FACTORIES::getAgentZapFactory()->get($agent->getId());
+        
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, $hashlistIds);
-        $qF2 = new QueryFilter(Zap::SOLVE_TIME, $agent->getLastAct(), ">=");
+        $qF2 = new QueryFilter(Zap::ZAP_ID, $agentZap->getLastZapId(), ">");
         $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
         foreach ($zaps as $zap) {
           $toZap[] = $zap->getHash();

@@ -28,7 +28,7 @@ CREATE TABLE `Agent` (
 
 CREATE TABLE `Zap` (
   `zapId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
-  `hashId`       INT(11)                       NOT NULL,
+  `hash`       INT(11)                       NOT NULL,
   `solveTime`  INT(11)                            NOT NULL,
   `hashlistId` INT(11)                            NOT NULL
 )
