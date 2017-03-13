@@ -30,7 +30,7 @@ class ZapFactory extends AbstractModelFactory {
    * @return Zap
    */
   function getNullObject() {
-    $o = new Zap(-1, null, null, null);
+    $o = new Zap(-1, null, null, null, null);
     return $o;
   }
 
@@ -40,7 +40,7 @@ class ZapFactory extends AbstractModelFactory {
    * @return Zap
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Zap($pk, $dict['hash'], $dict['solveTime'], $dict['hashlistId']);
+    $o = new Zap($pk, $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
     return $o;
   }
 

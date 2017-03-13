@@ -1274,7 +1274,8 @@ class API {
         
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, $hashlistIds);
         $qF2 = new QueryFilter(Zap::ZAP_ID, $agentZap->getLastZapId(), ">");
-        $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+        $qF3 = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "<>");
+        $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
         foreach ($zaps as $zap) {
           if($zap->getId() > $agentZap->getId()){
             $agentZap->setLastZapId($zap->getId());

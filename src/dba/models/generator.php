@@ -195,6 +195,7 @@ $CONF['Zap'] = array(
   'zapId',
   'hash',
   'solveTime',
+  'agentId',
   'hashlistId'
 );
 $CONF['AgentZap'] = array(

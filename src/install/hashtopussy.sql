@@ -30,6 +30,7 @@ CREATE TABLE `Zap` (
   `zapId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
   `hash`       INT(11)                       NOT NULL,
   `solveTime`  INT(11)                            NOT NULL,
+  `agentId`    INT(11)                            NOT NULL,
   `hashlistId` INT(11)                            NOT NULL
 )
   ENGINE = InnoDB
