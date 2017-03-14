@@ -195,7 +195,12 @@ $CONF['Zap'] = array(
   'zapId',
   'hash',
   'solveTime',
+  'agentId',
   'hashlistId'
+);
+$CONF['AgentZap'] = array(
+  'agentId',
+  'lastZapId'
 );
 $CONF['StoredValue'] = array(
   'storedValueId',
@@ -218,7 +223,6 @@ $CONF['NotificationSetting'] = array(
   'receiver',
   'isActive'
 );
-
 
 foreach ($CONF as $NAME => $COLUMNS) {
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");

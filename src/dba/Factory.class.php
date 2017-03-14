@@ -33,6 +33,7 @@ class Factory {
   private static $sessionFactory = null;
   private static $rightGroupFactory = null;
   private static $zapFactory = null;
+  private static $agentZapFactory = null;
   private static $storedValueFactory = null;
   private static $logEntryFactory = null;
   private static $notificationSettingFactory = null;
@@ -264,6 +265,16 @@ class Factory {
       return $f;
     } else {
       return self::$zapFactory;
+    }
+  }
+  
+  public static function getAgentZapFactory() {
+    if (self::$agentZapFactory == null) {
+      $f = new AgentZapFactory();
+      self::$agentZapFactory = $f;
+      return $f;
+    } else {
+      return self::$agentZapFactory;
     }
   }
   

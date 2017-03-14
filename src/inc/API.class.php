@@ -3,6 +3,7 @@
 use DBA\Agent;
 use DBA\AgentBinary;
 use DBA\AgentError;
+use DBA\AgentZap;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
@@ -1060,6 +1061,7 @@ class API {
     
     $plainUpdates = array();
     $crackHashes = array();
+    $zaps = array();
     
     for ($i = 0; $i < sizeof($crackedHashes); $i++) {
       $crackedHash = $crackedHashes[$i];
@@ -1093,6 +1095,7 @@ class API {
             $cracked[$hash->getHashlistId()]++;
             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
             $crackHashes[] = $hash->getId();
+            $zaps[] = new Zap(0, $hash->getHash(), time(), $agent->getId(), $hashList->getId());
           }
           
           if (sizeof($plainUpdates) >= 1000) {
@@ -1102,8 +1105,10 @@ class API {
             $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+            $FACTORIES::getZapFactory()->massSave($zaps);
             $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
             $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+            $zaps = array();
             $plainUpdates = array();
             $crackHashes = array();
           }
@@ -1160,6 +1165,7 @@ class API {
       $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
+      $FACTORIES::getZapFactory()->massSave($zaps);
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
@@ -1272,18 +1278,37 @@ class API {
               PResponseSolve::AGENT_COMMAND => "stop"
             )
           );
+          $task->setPriority(0);
+          $chunk->setProgress($chunk->getLength());
+          $chunk->setRprogress(10000);
+          $FACTORIES::getChunkFactory()->update($chunk);
+          $FACTORIES::getTaskFactory()->update($task);
         }
         $chunk->setSpeed($speed * 1000);
         $FACTORIES::getChunkFactory()->update($chunk);
         
+        $agentZap = $FACTORIES::getAgentZapFactory()->get($agent->getId());
+        if($agentZap == null){
+          $agentZap = new AgentZap($agent->getId(), 0);
+          $FACTORIES::getAgentZapFactory()->save($agentZap);
+        }
+        
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, $hashlistIds);
-        $qF2 = new QueryFilter(Zap::SOLVE_TIME, $agent->getLastAct(), ">=");
-        $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+        $qF2 = new QueryFilter(Zap::ZAP_ID, $agentZap->getLastZapId(), ">");
+        $qF3 = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "<>");
+        $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
         foreach ($zaps as $zap) {
+          if($zap->getId() > $agentZap->getId()){
+            $agentZap->setLastZapId($zap->getId());
+          }
           $toZap[] = $zap->getHash();
         }
         $agent->setLastTime(time());
         $FACTORIES::getAgentFactory()->update($agent);
+        
+        if($agentZap->getLastZapId() > 0){
+          $FACTORIES::getAgentZapFactory()->update($agentZap);
+        }
         
         // update hashList age for agent to this task
         break;

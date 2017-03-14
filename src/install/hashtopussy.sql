@@ -30,7 +30,16 @@ CREATE TABLE `Zap` (
   `zapId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
   `hash`       VARCHAR(512)                       NOT NULL,
   `solveTime`  INT(11)                            NOT NULL,
+  `agentId`    INT(11)                            NOT NULL,
   `hashlistId` INT(11)                            NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_bin;
+
+CREATE TABLE `AgentZap` (
+  `agentId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
+  `lastZapId`       INT(11)                       NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

@@ -13,12 +13,14 @@ class Zap extends AbstractModel {
   private $zapId;
   private $hash;
   private $solveTime;
+  private $agentId;
   private $hashlistId;
   
-  function __construct($zapId, $hash, $solveTime, $hashlistId) {
+  function __construct($zapId, $hash, $solveTime, $agentId, $hashlistId) {
     $this->zapId = $zapId;
     $this->hash = $hash;
     $this->solveTime = $solveTime;
+    $this->agentId = $agentId;
     $this->hashlistId = $hashlistId;
   }
   
@@ -27,6 +29,7 @@ class Zap extends AbstractModel {
     $dict['zapId'] = $this->zapId;
     $dict['hash'] = $this->hash;
     $dict['solveTime'] = $this->solveTime;
+    $dict['agentId'] = $this->agentId;
     $dict['hashlistId'] = $this->hashlistId;
     
     return $dict;
@@ -64,6 +67,14 @@ class Zap extends AbstractModel {
     $this->solveTime = $solveTime;
   }
   
+  function getAgentId(){
+    return $this->agentId;
+  }
+  
+  function setAgentId($agentId){
+    $this->agentId = $agentId;
+  }
+  
   function getHashlistId(){
     return $this->hashlistId;
   }
@@ -75,5 +86,6 @@ class Zap extends AbstractModel {
   const ZAP_ID = "zapId";
   const HASH = "hash";
   const SOLVE_TIME = "solveTime";
+  const AGENT_ID = "agentId";
   const HASHLIST_ID = "hashlistId";
 }

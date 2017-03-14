@@ -1,5 +1,6 @@
 <?php
 use DBA\JoinFilter;
+use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Supertask;
 use DBA\SupertaskTask;
@@ -48,12 +49,18 @@ class SupertaskHandler implements Handler {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    
+    $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
+    $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
+    $highestTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF), true);
+    $highestPriority = $highestTask->getPriority() + 1;
+    
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $tasks = $joinedTasks['Task'];
     foreach ($tasks as $task) {
-      $task = Util::cast($task, Task::class);
+      /** @var $task Task */
       if (strpos($task->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
         UI::addMessage(UI::WARN, "Task must contain the hashlist alias for cracking!");
         continue;
@@ -64,8 +71,9 @@ class SupertaskHandler implements Handler {
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
       }
+      $task->setPriority($highestPriority + $task->getPriority());
       $task->setHashlistId($hashlist->getId());
-      $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
+      $task = $FACTORIES::getTaskFactory()->save($task);
       foreach ($taskFiles as $taskFile) {
         $taskFile = Util::cast($taskFile, TaskFile::class);
         $taskFile->setId(0);
