@@ -36,6 +36,7 @@ class Factory {
   private static $agentZapFactory = null;
   private static $storedValueFactory = null;
   private static $logEntryFactory = null;
+  private static $notificationSettingFactory = null;
 
   public static function getAgentFactory() {
     if (self::$agentFactory == null) {
@@ -294,6 +295,16 @@ class Factory {
       return $f;
     } else {
       return self::$logEntryFactory;
+    }
+  }
+  
+  public static function getNotificationSettingFactory() {
+    if (self::$notificationSettingFactory == null) {
+      $f = new NotificationSettingFactory();
+      self::$notificationSettingFactory = $f;
+      return $f;
+    } else {
+      return self::$notificationSettingFactory;
     }
   }
 

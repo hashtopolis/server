@@ -564,6 +564,23 @@ CREATE TABLE `User` (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_bin;
 
+CREATE TABLE `NotificationSetting` (
+  `notificationSettingId` int(11) NOT NULL,
+  `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `objectId` int(11) NULL,
+  `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `userId` int(11) NOT NULL,
+  `receiver` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
+  `isActive` tinyint(4) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+ALTER TABLE `NotificationSetting`
+  ADD PRIMARY KEY (`notificationSettingId`),
+  ADD KEY `NotificationSetting_ibfk_1` (`userId`);
+
+ALTER TABLE `NotificationSetting`
+  MODIFY `notificationSettingId` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`);
@@ -744,6 +761,9 @@ ALTER TABLE `HashBinary`
 
 ALTER TABLE `Hashlist`
   ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
+
+ALTER TABLE `NotificationSetting`
+  ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
 ALTER TABLE `HashlistAgent`
   ADD CONSTRAINT `HashlistAgent_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),

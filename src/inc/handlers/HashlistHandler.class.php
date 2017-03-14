@@ -8,6 +8,7 @@ use DBA\HashBinary;
 use DBA\Hashlist;
 use DBA\HashlistAgent;
 use DBA\JoinFilter;
+use DBA\NotificationSetting;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\SuperHashlistHashlist;
@@ -267,6 +268,9 @@ class HashlistHandler implements Handler {
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
+        
+        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
+        
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
         break;
@@ -313,6 +317,9 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
+  
+        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
+        
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
       case DHashlistFormat::BINARY:
@@ -326,6 +333,9 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount(1);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
+  
+        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
+        
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
         die();
     }
@@ -443,6 +453,17 @@ class HashlistHandler implements Handler {
     
     //TODO: delete from zapqueue
     
+    $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
+    NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
+  
+    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $this->hashlist->getId(), "=");
+    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach($notifications as $notification){
+      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::HASHLIST){
+        $FACTORIES::getNotificationSettingFactory()->delete($notification);
+      }
+    }
+    
     $qF = new QueryFilter(Task::HASHLIST_ID, $this->hashlist->getId(), "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     $taskList = array();
@@ -496,7 +517,9 @@ class HashlistHandler implements Handler {
     $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
+    
     switch ($this->hashlist->getFormat()) {
       case 0:
       case 1:

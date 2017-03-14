@@ -11,6 +11,7 @@
 // -> when installation is finished, tell to secure the install directory
 // -> ask user for salts in the crypt class to provide and insert them
 
+use DBA\Config;
 use DBA\QueryFilter;
 use DBA\RightGroup;
 use DBA\User;
@@ -65,6 +66,10 @@ switch($STEP){
 		if(isset($_GET['next'])){
 			$query = file_get_contents(dirname(__FILE__)."/hashtopussy.sql");
 			$FACTORIES::getAgentFactory()->getDB()->query($query);
+			$baseUrl = explode("/", $_SERVER['REQUEST_URI']);
+			unset($baseUrl[sizeof($baseUrl) - 1]);
+			$urlConfig = new Config(0, DConfig::BASE_URL, implode("/", $baseUrl));
+			$FACTORIES::getConfigFactory()->save($urlConfig);
 			setcookie("step", "52", time() + 3600);
 			setcookie("prev", "2", time() + 3600);
 			header("Location: index.php");

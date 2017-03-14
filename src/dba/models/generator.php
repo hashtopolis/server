@@ -214,6 +214,15 @@ $CONF['LogEntry'] = array(
   'message',
   'time'
 );
+$CONF['NotificationSetting'] = array(
+  'notificationSettingId',
+  'action',
+  'objectId',
+  'notification',
+  'userId',
+  'receiver',
+  'isActive'
+);
 
 foreach ($CONF as $NAME => $COLUMNS) {
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");

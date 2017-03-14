@@ -453,6 +453,9 @@ class API {
     $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     if ($FACTORIES::getAgentFactory()->save($agent)) {
+      $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
+      NotificationHandler::checkNotifications(DNotificationType::NEW_AGENT, $payload);
+      
       API::sendResponse(array(
           PQueryRegister::ACTION => PActions::REGISTER,
           PResponseRegister::RESPONSE => PValues::SUCCESS,
@@ -636,6 +639,9 @@ class API {
     //save error message
     $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY[PQueryError::MESSAGE]);
     $FACTORIES::getAgentErrorFactory()->save($error);
+  
+    $payload = new DataSet(array(DPayloadKeys::AGENT => $agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryError::MESSAGE]));
+    NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
     
     if ($agent->getIgnoreErrors() == 0) {
       //deactivate agent
@@ -1202,7 +1208,8 @@ class API {
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
       
-      // TODO: notificate task done
+      $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+      NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
     }
     
     $hashlists = Util::checkSuperHashlist($hashList);
@@ -1211,6 +1218,11 @@ class API {
       $hashlistIds[] = $hl->getId();
     }
     $toZap = array();
+  
+    if($sumCracked > 0) {
+      $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $hashList));
+      NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
+    }
     
     if ($aborting) {
       $chunk->setSpeed(0);
@@ -1236,8 +1248,9 @@ class API {
         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
-        
-        //TODO: notificate hashList done
+  
+        $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
+        NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
         break;
       case DHashcatStatus::ABORTED:
       case DHashcatStatus::QUIT:
@@ -1253,6 +1266,9 @@ class API {
         $qF2 = new ContainFilter(Hashlist::HASHLIST_ID, $hashlistIds);
         $count = $FACTORIES::getHashlistFactory()->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
         if ($count == 0) {
+          $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
+          NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
+          
           //stop agent
           API::sendResponse(array(
               PResponseSolve::ACTION => PActions::SOLVE,

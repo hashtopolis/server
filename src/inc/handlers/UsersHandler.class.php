@@ -1,5 +1,6 @@
 <?php
 use DBA\Agent;
+use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;
@@ -76,7 +77,11 @@ class UsersHandler implements Handler {
     //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
     //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
     //TODO: send proper email for created user
+    
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New User created: " . $user->getUsername());
+    $payload = new DataSet(array(DPayloadKeys::USER => $user));
+    NotificationHandler::checkNotifications(DNotificationType::USER_CREATED, $payload);
+    
     header("Location: users.php");
     die();
   }
@@ -176,11 +181,23 @@ class UsersHandler implements Handler {
       UI::addMessage(UI::ERROR, "You cannot delete yourself!");
       return;
     }
+  
+    $payload = new DataSet(array(DPayloadKeys::USER => $user));
+    NotificationHandler::checkNotifications(DNotificationType::USER_DELETED, $payload);
+  
+    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $user->getId(), "=");
+    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach($notifications as $notification){
+      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::USER){
+        $FACTORIES::getNotificationSettingFactory()->delete($notification);
+      }
+    }
     
     $qF = new QueryFilter(Agent::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Agent::USER_ID, null);
     $FACTORIES::getAgentFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
     $FACTORIES::getUserFactory()->delete($user);
+    
     header("Location: users.php");
     die();
   }

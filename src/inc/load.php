@@ -41,7 +41,7 @@ require_once(dirname(__FILE__) . "/templating/Statement.class.php");
 require_once(dirname(__FILE__) . "/templating/Template.class.php");
 
 // include all handlers
-require_once(dirname(__FILE__) . "/handlers/Handler.php");
+require_once(dirname(__FILE__)."/handlers/Handler.class.php");
 $dir = scandir(dirname(__FILE__) . "/handlers/");
 foreach ($dir as $entry) {
   if (strpos($entry, ".class.php") !== false) {
@@ -52,6 +52,16 @@ foreach ($dir as $entry) {
 // DEFINES
 include(dirname(__FILE__) . "/defines.php");
 include(dirname(__FILE__) . "/protocol.php");
+
+// include notifications
+$NOTIFICATIONS = array();
+require_once(dirname(__FILE__)."/notifications/Notification.class.php");
+$dir = scandir(dirname(__FILE__) . "/notifications/");
+foreach ($dir as $entry) {
+  if (strpos($entry, ".class.php") !== false) {
+    require_once(dirname(__FILE__) . "/notifications/" . $entry);
+  }
+}
 
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");

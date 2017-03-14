@@ -49,6 +49,18 @@ class Util {
     
     $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
     $FACTORIES::getLogEntryFactory()->save($entry);
+  
+    switch($level){
+      case DLogEntry::ERROR:
+        NotificationHandler::checkNotifications(DNotificationType::LOG_ERROR, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
+        break;
+      case DLogEntry::FATAL:
+        NotificationHandler::checkNotifications(DNotificationType::LOG_FATAL, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
+        break;
+      case DLogEntry::WARN:
+        NotificationHandler::checkNotifications(DNotificationType::LOG_WARN, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
+        break;
+    }
   }
   
   /**

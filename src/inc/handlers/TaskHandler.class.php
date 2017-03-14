@@ -6,6 +6,7 @@ use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\JoinFilter;
+use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\SupertaskTask;
 use DBA\Task;
@@ -174,6 +175,10 @@ class TaskHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
+    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+    NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
+    
     header("Location: $forward");
     die();
   }
@@ -213,8 +218,13 @@ class TaskHandler implements Handler {
       return;
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    
+    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+    NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
+    
     $this->deleteTask($task);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
     if ($task->getHashlistId() == null) {
       header("Location: pretasks.php");
       die();
@@ -241,6 +251,13 @@ class TaskHandler implements Handler {
     }
     $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
+    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach($notifications as $notification){
+      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::TASK){
+        $FACTORIES::getNotificationSettingFactory()->delete($notification);
+      }
+    }
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");

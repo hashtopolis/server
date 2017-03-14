@@ -8,6 +8,7 @@ use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\HashBinary;
 use DBA\HashlistAgent;
+use DBA\NotificationSetting;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
@@ -221,6 +222,11 @@ class AgentHandler implements Handler {
       UI::printError("FATAL", "Agent with ID " . $_POST['agent'] . " not found!");
     }
     $name = $this->agent->getAgentName();
+    $agent = $this->agent;
+    
+    $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
+    NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
+    
     if ($this->deleteDependencies($this->agent)) {
       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
       Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
@@ -258,6 +264,13 @@ class AgentHandler implements Handler {
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $agent->getId(), "=");
+    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach($notifications as $notification){
+      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::AGENT){
+        $FACTORIES::getNotificationSettingFactory()->delete($notification);
+      }
+    }
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(HashlistAgent::AGENT_ID, $agent->getId(), "=");
