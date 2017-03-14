@@ -513,7 +513,7 @@ class API {
     unset($base[sizeof($base) - 1]);
     $base = implode("/", $base);
     
-    if ($result->getVersion() != $version) {
+    if (Util::versionComparison($result->getVersion(), $version) == -1) {
       API::sendResponse(array(
           PResponseUpdate::ACTION => PActions::UPDATE,
           PResponseUpdate::RESPONSE => PValues::SUCCESS,

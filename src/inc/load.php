@@ -8,7 +8,7 @@ ini_set("display_errors", "0");
 $OBJECTS = array();
 
 $VERSION = "0.2.0";
-$HOST = $_SERVER['HTTP_HOST'];
+$HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
 }

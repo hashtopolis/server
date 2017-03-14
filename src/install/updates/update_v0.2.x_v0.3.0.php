@@ -6,6 +6,7 @@
  * Time: 12:16
  */
 
+use DBA\AgentBinary;
 use DBA\Config;
 use DBA\QueryFilter;
 
@@ -39,6 +40,19 @@ echo "Creating agentZap table... ";
 $FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `AgentZap` (`agentId` INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `lastZapId` INT(11) NOT NULL)");
 echo "OK\n";
 echo "New zapping changes applied!\n";
+
+echo "Check csharp binary... ";
+$qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
+$binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+if($binary != null){
+  if(Util::versionComparison($binary->getVersion(), "0.43") == 1){
+    echo "update version... ";
+    $binary->setVersion("0.43");
+    $FACTORIES::getAgentBinaryFactory()->update($binary);
+    echo "OK";
+  }
+}
+echo "\n";
 
 echo "Please enter the base URL of the webpage (without protocol and hostname, just relatively to the root / of the domain):\n";
 $url = readline();
