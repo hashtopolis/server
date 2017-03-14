@@ -859,7 +859,6 @@ class HashlistHandler implements Handler {
           $files = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => array($qF)));
           foreach ($files as $file) {
             $task = Util::cast($task, Task::class);
-            $file = Util::cast($file, File::class);
             $file->setTaskId($task->getId());
             $file->setId(0);
             $FACTORIES::getTaskFileFactory()->save($file);
