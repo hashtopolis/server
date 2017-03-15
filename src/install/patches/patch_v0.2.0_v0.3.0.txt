@@ -1,0 +1,3317 @@
+diff --git a/README.md b/README.md
+index 94263f2..f93381c 100755
+--- a/README.md
++++ b/README.md
+@@ -1,57 +1,54 @@
+-# Hashtopussy 
++# Hashtopussy
+ 
+ <img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
+ 
+-Hashtopussy is a multi platform client-server tool to distribute Hashcat tasks between multiple computers and is strongly based on Hashtopus. 
+-Like Hashtopus The main goals for its development were portability, robustness, Multi-user support, and to bring Hashtopus to the next level. 
+-The application has two parts:
+-
+-- **Agent** Multiple clients (C#, Python, PHP) easily customizable to suite any need. 
+-- **Server** several PHP/CSS files operating on two endpoints: Admin Gui and Agent Connection Point
++ATTENTION: people using the newest Hashcat beta need to use branch [hashcat-beta](https://github.com/s3inlc/hashtopussy/tree/hashcat-beta)!
+ 
+-Aiming for high usability even on restricted networks, Hashtopussy communicates over HTTP(S) using own proprietary JSON protocol so its easy to understand and text-readable. 
++Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks among multiple computers. It is strongly based on Hashtopus.
++Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
++The application has two parts:
+ 
+-The server part runs on PHP using MySQL as database back end. It is vital that your MySQL server is configured with performace in mind. 
++- **Agent** Multiple clients (C#, Python, PHP), easily customizable to suite any need.
++- **Server** several PHP/CSS files operating on two endpoints: an Admin GUI and an Agent Connection Point
+ 
+-Some of the queries can be very expensive and proper configuration makes the difference between few milliseconds of waiting and	disaster multi-second lags. 
++Aiming for high usability even on restricted networks, Hashtopussy communicates over HTTP(S) using a human-readable, hashing-specific dialect of JSON.
+ 
+-The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so. 
+-The web admin interface is the single point of access once your agents were deployed on the client cracking machines. 
++The server part runs on PHP using MySQL as the database back end. It is vital that your MySQL server be configured with performance in mind. Queries can be very expensive and proper configuration makes the difference between a few milliseconds of waiting and disastrous multi-second lags. The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so.
+ 
+-New agent deployment requires one-time password generated in the new agent tab, which protects your server from hashes/files leaking to rogue or fake agents.
++The web admin interface is the single point of access across all client agents. New agent deployments require a one-time password generated in the New Agent tab. This reduces the risk of leaking hashes or files to rogue or fake agents.
+ 
+-There are parts of the documentation/wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
++There are parts of the documentation and wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
+ 
+-To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducable.
++To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
+ 
+ ## Features
+ 
+ - Easy and comfortable to use
+-- Accessible from anywhere via Web
+-- Server part highly compatible with common web hosting set-ups
+-- Agent part completely unattended
++- Accessible from anywhere via web interface
++- Server component highly compatible with common webhosting setups
++- Unattended agents
+ - File management for word lists, rules, ...
+-- Self-updating of both Hashtopussy and Hashcat
+-- Cracking multiple hashlists of the same type as one
+-- Running the same binary on Windows and Linux (OSX untested)
+-- Files/hashes marked as "secret" only distributed to agents marked as "trusted"
+-- Many options to import/export data
+-- A lot of statistic info about tasks/hashes
++- Self-updating of both Hashtopussy and hashcat
++- Cracking multiple hashlists of the same hash type as though they were a single hashlist
++- Running the same binary on Windows and Linux
++- Files and hashes marked as "secret" are only distributed to agents marked as "trusted"
++- Many data import and export options
++- Rich statistics on hashes and running tasks
+ - Visual representation of chunk distribution
+-- Multi-User Support
+-- User Permission levels
++- Multi-user support
++- User permission levels
+ 
+ ## Hashtopus or Hashtopussy?
+ 
+-Hashtopus is a great program but lacking in some areas major differences between the two are: 
++Hashtopus is a great program but is lacking in some areas. Major differences between the two are:
+ 
+-- Drastically Improved Security
+-- Multi User support
++- Drastically improved security
++- Multi-user support
+ - Improved look and layout
+ - Super Tasks
+ - --hex-salt support
+ 
+-Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) to get more information on setup and upgrade.
++Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) for more information on setup and upgrade.
+ 
+ Some screenshots of Hashtopussy (by winxp5421 and s3in!c): [Imgur1](http://imgur.com/gallery/Fj0s0) [Imgur2](http://imgur.com/gallery/LzTsI)
+ 
+@@ -60,6 +57,6 @@ Some screenshots of Hashtopussy (by winxp5421 and s3in!c): [Imgur1](http://imgur
+ * winxp for testing, writing help texts and a lot of input ideas
+ * blazer for working on the agent
+ * CynoSure Prime for testing
+-* atom for [Hashcat](https://github.com/hashcat/hashcat)
++* atom for [hashcat](https://github.com/hashcat/hashcat)
+ * curlyboi for the original [Hashtopus](https://github.com/curlyboi/hashtopus) code
+ * 7zip binaries are compiled from https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/
+diff --git a/doc/protocol.pdf b/doc/protocol.pdf
+index fd6d59f..a999172 100755
+Binary files a/doc/protocol.pdf and b/doc/protocol.pdf differ
+diff --git a/doc/protocol.tex b/doc/protocol.tex
+index 07d7597..0af9f1f 100755
+--- a/doc/protocol.tex
++++ b/doc/protocol.tex
+@@ -109,7 +109,7 @@
+ 	  "url":"https://example.com/getclient.php"
+ 	}
+ 	\end{verbatim}
+-	with 'data' containing the new version of the script.
++	with 'url' providing the download url for the new version.
+ 	
+ 	\subsection*{Download}
+ 	This command is used to either download the 7z binary to extract Hashcat, or to get information where to download the newest Hashcat version and some additional informations about it.
+@@ -197,7 +197,16 @@
+ 	}
+ 	\end{verbatim}
+ 	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send a list of hashes which were requested.\\\\
+-	The server then will send the whole hashlist as plain-text download on success, otherwise he will send an error.
++	The server then will send the whole hashlist as plain-text download on success, otherwise he will send an error.\\\\
++	The special case appears on Binary Hashes and WPAs, there the server will respond with a JSON response:
++	\begin{verbatim}
++	{
++	  "action":"hashes",
++	  "response":"SUCCESS",
++	  "data":"dGVzdCBzdHJpbmcgOik="
++	}
++	\end{verbatim}
++	where 'data' contains the binary hash data.
+ 	
+ 	\subsection*{Get Task}
+ 	The client requests the current task he should work on.
+diff --git a/src/account.php b/src/account.php
+index 784377b..d58cd99 100755
+--- a/src/account.php
++++ b/src/account.php
+@@ -11,7 +11,7 @@ if (!$LOGIN->isLoggedin()) {
+ }
+ 
+ $TEMPLATE = new Template("account");
+-$MENU->setActive("account");
++$MENU->setActive("account_settings");
+ 
+ //catch actions here...
+ if (isset($_POST['action'])) {
+diff --git a/src/agents.php b/src/agents.php
+index 1936625..9a15028 100755
+--- a/src/agents.php
++++ b/src/agents.php
+@@ -89,6 +89,7 @@ else if (isset($_GET['new'])) {
+   $url = explode("/", $_SERVER['PHP_SELF']);
+   unset($url[sizeof($url) - 1]);
+   $OBJECTS['apiUrl'] = Util::buildServerUrl() . implode("/", $url) . "/api/server.php";
++  $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
+ }
+ else {
+   $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
+diff --git a/src/chunks.php b/src/chunks.php
+index 5d058a4..2d36ede 100755
+--- a/src/chunks.php
++++ b/src/chunks.php
+@@ -1,5 +1,8 @@
+ <?php
+ 
++use DBA\Chunk;
++use DBA\OrderFilter;
++
+ require_once(dirname(__FILE__) . "/inc/load.php");
+ 
+ /** @var Login $LOGIN */
+@@ -17,7 +20,28 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
+ $TEMPLATE = new Template("chunks");
+ $MENU->setActive("chunks");
+ 
+-$chunks = $FACTORIES::getChunkFactory()->filter(array());
++$oF = null;
++$OBJECTS['all'] = true;
++if(!isset($_GET['show'])){
++  $page = 0;
++  $PAGESIZE = 50;
++  if(isset($_GET['page'])){
++    $page = $_GET['page'];
++  }
++  $OBJECTS['page'] = $page;
++  $numentries = $FACTORIES::getChunkFactory()->countFilter(array());
++  $OBJECTS['maxpage'] = floor($numentries/$PAGESIZE);
++  $limit = $page*$PAGESIZE;
++  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE");
++  $OBJECTS['all'] = false;
++}
++
++if($oF == null) {
++  $chunks = $FACTORIES::getChunkFactory()->filter(array());
++}
++else{
++  $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::ORDER => $oF));
++}
+ $spent = new DataSet();
+ foreach($chunks as $chunk){
+   $spent->addValue($chunk->getId(), max($chunk->getDispatchTime(), $chunk->getSolveTime()) - $chunk->getDispatchTime());
+diff --git a/src/dba/Factory.class.php b/src/dba/Factory.class.php
+index e9ff530..5b8389b 100644
+--- a/src/dba/Factory.class.php
++++ b/src/dba/Factory.class.php
+@@ -33,8 +33,10 @@ class Factory {
+   private static $sessionFactory = null;
+   private static $rightGroupFactory = null;
+   private static $zapFactory = null;
++  private static $agentZapFactory = null;
+   private static $storedValueFactory = null;
+   private static $logEntryFactory = null;
++  private static $notificationSettingFactory = null;
+ 
+   public static function getAgentFactory() {
+     if (self::$agentFactory == null) {
+@@ -266,6 +268,16 @@ class Factory {
+     }
+   }
+   
++  public static function getAgentZapFactory() {
++    if (self::$agentZapFactory == null) {
++      $f = new AgentZapFactory();
++      self::$agentZapFactory = $f;
++      return $f;
++    } else {
++      return self::$agentZapFactory;
++    }
++  }
++  
+   public static function getStoredValueFactory() {
+     if (self::$storedValueFactory == null) {
+       $f = new StoredValueFactory();
+@@ -285,6 +297,16 @@ class Factory {
+       return self::$logEntryFactory;
+     }
+   }
++  
++  public static function getNotificationSettingFactory() {
++    if (self::$notificationSettingFactory == null) {
++      $f = new NotificationSettingFactory();
++      self::$notificationSettingFactory = $f;
++      return $f;
++    } else {
++      return self::$notificationSettingFactory;
++    }
++  }
+ 
+   const FILTER = "filter";
+   const JOIN = "join";
+diff --git a/src/dba/models/AgentZap.class.php b/src/dba/models/AgentZap.class.php
+new file mode 100644
+index 0000000..c805b53
+--- /dev/null
++++ b/src/dba/models/AgentZap.class.php
+@@ -0,0 +1,55 @@
++<?php
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 02.01.17
++ * Time: 23:57
++ */
++
++namespace DBA;
++
++class AgentZap extends AbstractModel {
++  private $agentId;
++  private $lastZapId;
++  
++  function __construct($agentId, $lastZapId) {
++    $this->agentId = $agentId;
++    $this->lastZapId = $lastZapId;
++  }
++  
++  function getKeyValueDict() {
++    $dict = array();
++    $dict['agentId'] = $this->agentId;
++    $dict['lastZapId'] = $this->lastZapId;
++    
++    return $dict;
++  }
++  
++  function getPrimaryKey() {
++    return "agentId";
++  }
++  
++  function getPrimaryKeyValue() {
++    return $this->agentId;
++  }
++  
++  function getId() {
++    return $this->agentId;
++  }
++  
++  function setId($id) {
++    $this->agentId = $id;
++  }
++  
++  function getLastZapId(){
++    return $this->lastZapId;
++  }
++  
++  function setLastZapId($lastZapId){
++    $this->lastZapId = $lastZapId;
++  }
++
++  const AGENT_ID = "agentId";
++  const LAST_ZAP_ID = "lastZapId";
++}
+diff --git a/src/dba/models/AgentZapFactory.class.php b/src/dba/models/AgentZapFactory.class.php
+new file mode 100644
+index 0000000..1cf90c6
+--- /dev/null
++++ b/src/dba/models/AgentZapFactory.class.php
+@@ -0,0 +1,89 @@
++<?php
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 02.01.17
++ * Time: 23:57
++ */
++
++namespace DBA;
++
++class AgentZapFactory extends AbstractModelFactory {
++  function getModelName() {
++    return "AgentZap";
++  }
++  
++  function getModelTable() {
++    return "AgentZap";
++  }
++  
++  function isCachable() {
++    return false;
++  }
++  
++  function getCacheValidTime() {
++    return -1;
++  }
++
++  /**
++   * @return AgentZap
++   */
++  function getNullObject() {
++    $o = new AgentZap(-1, null);
++    return $o;
++  }
++
++  /**
++   * @param string $pk
++   * @param array $dict
++   * @return AgentZap
++   */
++  function createObjectFromDict($pk, $dict) {
++    $o = new AgentZap($pk, $dict['lastZapId']);
++    return $o;
++  }
++
++  /**
++   * @param array $options
++   * @param bool $single
++   * @return AgentZap|AgentZap[]
++   */
++  function filter($options, $single = false) {
++    $join = false;
++    if (array_key_exists('join', $options)) {
++      $join = true;
++    }
++    if($single){
++      if($join){
++        return parent::filter($options, $single);
++      }
++      return Util::cast(parent::filter($options, $single), AgentZap::class);
++    }
++    $objects = parent::filter($options, $single);
++    if($join){
++      return $objects;
++    }
++    $models = array();
++    foreach($objects as $object){
++      $models[] = Util::cast($object, AgentZap::class);
++    }
++    return $models;
++  }
++
++  /**
++   * @param string $pk
++   * @return AgentZap
++   */
++  function get($pk) {
++    return Util::cast(parent::get($pk), AgentZap::class);
++  }
++
++  /**
++   * @param AgentZap $model
++   * @return AgentZap
++   */
++  function save($model) {
++    return Util::cast(parent::save($model), AgentZap::class);
++  }
++}
+\ No newline at end of file
+diff --git a/src/dba/models/NotificationSetting.class.php b/src/dba/models/NotificationSetting.class.php
+new file mode 100644
+index 0000000..62db5f4
+--- /dev/null
++++ b/src/dba/models/NotificationSetting.class.php
+@@ -0,0 +1,115 @@
++<?php
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 02.01.17
++ * Time: 23:57
++ */
++
++namespace DBA;
++
++class NotificationSetting extends AbstractModel {
++  private $notificationSettingId;
++  private $action;
++  private $objectId;
++  private $notification;
++  private $userId;
++  private $receiver;
++  private $isActive;
++  
++  function __construct($notificationSettingId, $action, $objectId, $notification, $userId, $receiver, $isActive) {
++    $this->notificationSettingId = $notificationSettingId;
++    $this->action = $action;
++    $this->objectId = $objectId;
++    $this->notification = $notification;
++    $this->userId = $userId;
++    $this->receiver = $receiver;
++    $this->isActive = $isActive;
++  }
++  
++  function getKeyValueDict() {
++    $dict = array();
++    $dict['notificationSettingId'] = $this->notificationSettingId;
++    $dict['action'] = $this->action;
++    $dict['objectId'] = $this->objectId;
++    $dict['notification'] = $this->notification;
++    $dict['userId'] = $this->userId;
++    $dict['receiver'] = $this->receiver;
++    $dict['isActive'] = $this->isActive;
++    
++    return $dict;
++  }
++  
++  function getPrimaryKey() {
++    return "notificationSettingId";
++  }
++  
++  function getPrimaryKeyValue() {
++    return $this->notificationSettingId;
++  }
++  
++  function getId() {
++    return $this->notificationSettingId;
++  }
++  
++  function setId($id) {
++    $this->notificationSettingId = $id;
++  }
++  
++  function getAction(){
++    return $this->action;
++  }
++  
++  function setAction($action){
++    $this->action = $action;
++  }
++  
++  function getObjectId(){
++    return $this->objectId;
++  }
++  
++  function setObjectId($objectId){
++    $this->objectId = $objectId;
++  }
++  
++  function getNotification(){
++    return $this->notification;
++  }
++  
++  function setNotification($notification){
++    $this->notification = $notification;
++  }
++  
++  function getUserId(){
++    return $this->userId;
++  }
++  
++  function setUserId($userId){
++    $this->userId = $userId;
++  }
++  
++  function getReceiver(){
++    return $this->receiver;
++  }
++  
++  function setReceiver($receiver){
++    $this->receiver = $receiver;
++  }
++  
++  function getIsActive(){
++    return $this->isActive;
++  }
++  
++  function setIsActive($isActive){
++    $this->isActive = $isActive;
++  }
++
++  const NOTIFICATION_SETTING_ID = "notificationSettingId";
++  const ACTION = "action";
++  const OBJECT_ID = "objectId";
++  const NOTIFICATION = "notification";
++  const USER_ID = "userId";
++  const RECEIVER = "receiver";
++  const IS_ACTIVE = "isActive";
++}
+diff --git a/src/dba/models/NotificationSettingFactory.class.php b/src/dba/models/NotificationSettingFactory.class.php
+new file mode 100644
+index 0000000..5126c34
+--- /dev/null
++++ b/src/dba/models/NotificationSettingFactory.class.php
+@@ -0,0 +1,89 @@
++<?php
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 02.01.17
++ * Time: 23:57
++ */
++
++namespace DBA;
++
++class NotificationSettingFactory extends AbstractModelFactory {
++  function getModelName() {
++    return "NotificationSetting";
++  }
++  
++  function getModelTable() {
++    return "NotificationSetting";
++  }
++  
++  function isCachable() {
++    return false;
++  }
++  
++  function getCacheValidTime() {
++    return -1;
++  }
++
++  /**
++   * @return NotificationSetting
++   */
++  function getNullObject() {
++    $o = new NotificationSetting(-1, null, null, null, null, null, null);
++    return $o;
++  }
++
++  /**
++   * @param string $pk
++   * @param array $dict
++   * @return NotificationSetting
++   */
++  function createObjectFromDict($pk, $dict) {
++    $o = new NotificationSetting($pk, $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
++    return $o;
++  }
++
++  /**
++   * @param array $options
++   * @param bool $single
++   * @return NotificationSetting|NotificationSetting[]
++   */
++  function filter($options, $single = false) {
++    $join = false;
++    if (array_key_exists('join', $options)) {
++      $join = true;
++    }
++    if($single){
++      if($join){
++        return parent::filter($options, $single);
++      }
++      return Util::cast(parent::filter($options, $single), NotificationSetting::class);
++    }
++    $objects = parent::filter($options, $single);
++    if($join){
++      return $objects;
++    }
++    $models = array();
++    foreach($objects as $object){
++      $models[] = Util::cast($object, NotificationSetting::class);
++    }
++    return $models;
++  }
++
++  /**
++   * @param string $pk
++   * @return NotificationSetting
++   */
++  function get($pk) {
++    return Util::cast(parent::get($pk), NotificationSetting::class);
++  }
++
++  /**
++   * @param NotificationSetting $model
++   * @return NotificationSetting
++   */
++  function save($model) {
++    return Util::cast(parent::save($model), NotificationSetting::class);
++  }
++}
+\ No newline at end of file
+diff --git a/src/dba/models/Task.class.php b/src/dba/models/Task.class.php
+index 75bd0cc..571cc5e 100644
+--- a/src/dba/models/Task.class.php
++++ b/src/dba/models/Task.class.php
+@@ -23,8 +23,9 @@ class Task extends AbstractModel {
+   private $isSmall;
+   private $isCpuTask;
+   private $useNewBench;
++  private $skipKeyspace;
+   
+-  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask, $useNewBench) {
++  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace) {
+     $this->taskId = $taskId;
+     $this->taskName = $taskName;
+     $this->attackCmd = $attackCmd;
+@@ -38,6 +39,7 @@ class Task extends AbstractModel {
+     $this->isSmall = $isSmall;
+     $this->isCpuTask = $isCpuTask;
+     $this->useNewBench = $useNewBench;
++    $this->skipKeyspace = $skipKeyspace;
+   }
+   
+   function getKeyValueDict() {
+@@ -55,6 +57,7 @@ class Task extends AbstractModel {
+     $dict['isSmall'] = $this->isSmall;
+     $dict['isCpuTask'] = $this->isCpuTask;
+     $dict['useNewBench'] = $this->useNewBench;
++    $dict['skipKeyspace'] = $this->skipKeyspace;
+     
+     return $dict;
+   }
+@@ -170,6 +173,14 @@ class Task extends AbstractModel {
+   function setUseNewBench($useNewBench){
+     $this->useNewBench = $useNewBench;
+   }
++  
++  function getSkipKeyspace(){
++    return $this->skipKeyspace;
++  }
++  
++  function setSkipKeyspace($skipKeyspace){
++    $this->skipKeyspace = $skipKeyspace;
++  }
+ 
+   const TASK_ID = "taskId";
+   const TASK_NAME = "taskName";
+@@ -184,4 +195,5 @@ class Task extends AbstractModel {
+   const IS_SMALL = "isSmall";
+   const IS_CPU_TASK = "isCpuTask";
+   const USE_NEW_BENCH = "useNewBench";
++  const SKIP_KEYSPACE = "skipKeyspace";
+ }
+diff --git a/src/dba/models/TaskFactory.class.php b/src/dba/models/TaskFactory.class.php
+index f07b3ed..0f547ed 100644
+--- a/src/dba/models/TaskFactory.class.php
++++ b/src/dba/models/TaskFactory.class.php
+@@ -30,7 +30,7 @@ class TaskFactory extends AbstractModelFactory {
+    * @return Task
+    */
+   function getNullObject() {
+-    $o = new Task(-1, null, null, null, null, null, null, null, null, null, null, null, null);
++    $o = new Task(-1, null, null, null, null, null, null, null, null, null, null, null, null, null);
+     return $o;
+   }
+ 
+@@ -40,7 +40,7 @@ class TaskFactory extends AbstractModelFactory {
+    * @return Task
+    */
+   function createObjectFromDict($pk, $dict) {
+-    $o = new Task($pk, $dict['taskName'], $dict['attackCmd'], $dict['hashlistId'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['progress'], $dict['priority'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench']);
++    $o = new Task($pk, $dict['taskName'], $dict['attackCmd'], $dict['hashlistId'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['progress'], $dict['priority'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['skipKeyspace']);
+     return $o;
+   }
+ 
+diff --git a/src/dba/models/Zap.class.php b/src/dba/models/Zap.class.php
+index a3626e6..c761baf 100644
+--- a/src/dba/models/Zap.class.php
++++ b/src/dba/models/Zap.class.php
+@@ -13,12 +13,14 @@ class Zap extends AbstractModel {
+   private $zapId;
+   private $hash;
+   private $solveTime;
++  private $agentId;
+   private $hashlistId;
+   
+-  function __construct($zapId, $hash, $solveTime, $hashlistId) {
++  function __construct($zapId, $hash, $solveTime, $agentId, $hashlistId) {
+     $this->zapId = $zapId;
+     $this->hash = $hash;
+     $this->solveTime = $solveTime;
++    $this->agentId = $agentId;
+     $this->hashlistId = $hashlistId;
+   }
+   
+@@ -27,6 +29,7 @@ class Zap extends AbstractModel {
+     $dict['zapId'] = $this->zapId;
+     $dict['hash'] = $this->hash;
+     $dict['solveTime'] = $this->solveTime;
++    $dict['agentId'] = $this->agentId;
+     $dict['hashlistId'] = $this->hashlistId;
+     
+     return $dict;
+@@ -64,6 +67,14 @@ class Zap extends AbstractModel {
+     $this->solveTime = $solveTime;
+   }
+   
++  function getAgentId(){
++    return $this->agentId;
++  }
++  
++  function setAgentId($agentId){
++    $this->agentId = $agentId;
++  }
++  
+   function getHashlistId(){
+     return $this->hashlistId;
+   }
+@@ -75,5 +86,6 @@ class Zap extends AbstractModel {
+   const ZAP_ID = "zapId";
+   const HASH = "hash";
+   const SOLVE_TIME = "solveTime";
++  const AGENT_ID = "agentId";
+   const HASHLIST_ID = "hashlistId";
+ }
+diff --git a/src/dba/models/ZapFactory.class.php b/src/dba/models/ZapFactory.class.php
+index 8e835eb..762b864 100644
+--- a/src/dba/models/ZapFactory.class.php
++++ b/src/dba/models/ZapFactory.class.php
+@@ -30,7 +30,7 @@ class ZapFactory extends AbstractModelFactory {
+    * @return Zap
+    */
+   function getNullObject() {
+-    $o = new Zap(-1, null, null, null);
++    $o = new Zap(-1, null, null, null, null);
+     return $o;
+   }
+ 
+@@ -40,7 +40,7 @@ class ZapFactory extends AbstractModelFactory {
+    * @return Zap
+    */
+   function createObjectFromDict($pk, $dict) {
+-    $o = new Zap($pk, $dict['hash'], $dict['solveTime'], $dict['hashlistId']);
++    $o = new Zap($pk, $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
+     return $o;
+   }
+ 
+diff --git a/src/dba/models/generator.php b/src/dba/models/generator.php
+index f530ff8..d82d467 100644
+--- a/src/dba/models/generator.php
++++ b/src/dba/models/generator.php
+@@ -151,7 +151,8 @@ $CONF['Task'] = array(
+   'color',
+   'isSmall',
+   'isCpuTask',
+-  'useNewBench'
++  'useNewBench',
++  'skipKeyspace'
+ );
+ $CONF['Supertask'] = array(
+   'supertaskId',
+@@ -194,8 +195,13 @@ $CONF['Zap'] = array(
+   'zapId',
+   'hash',
+   'solveTime',
++  'agentId',
+   'hashlistId'
+ );
++$CONF['AgentZap'] = array(
++  'agentId',
++  'lastZapId'
++);
+ $CONF['StoredValue'] = array(
+   'storedValueId',
+   'val'
+@@ -208,25 +214,15 @@ $CONF['LogEntry'] = array(
+   'message',
+   'time'
+ );
+-// This will be used later when we add notifications
+-/*$CONF['NotificationType'] = array(
+-  'notificationTypeId',
+-  'notificationName',
+-  'filename',
+-  'isInstalled'
+-);
+ $CONF['NotificationSetting'] = array(
+   'notificationSettingId',
+-  'actionId',
+-  'notificationTypeId',
++  'action',
++  'objectId',
++  'notification',
++  'userId',
++  'receiver',
+   'isActive'
+ );
+-$CONF['Action'] = array(
+-  'actionId',
+-  'actionName',
+-  'actionIdentifier'
+-);*/
+-
+ 
+ foreach ($CONF as $NAME => $COLUMNS) {
+   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");
+diff --git a/src/inc/API.class.php b/src/inc/API.class.php
+index 825407a..0701d78 100755
+--- a/src/inc/API.class.php
++++ b/src/inc/API.class.php
+@@ -3,6 +3,7 @@
+ use DBA\Agent;
+ use DBA\AgentBinary;
+ use DBA\AgentError;
++use DBA\AgentZap;
+ use DBA\Assignment;
+ use DBA\Chunk;
+ use DBA\ComparisonFilter;
+@@ -37,9 +38,9 @@ class API {
+   
+   public static function test() {
+     API::sendResponse(array(
+-      PResponse::ACTION => PActions::TEST,
+-      PResponse::RESPONSE => PValues::SUCCESS
+-    )
++        PResponse::ACTION => PActions::TEST,
++        PResponse::RESPONSE => PValues::SUCCESS
++      )
+     );
+   }
+   
+@@ -95,10 +96,10 @@ class API {
+     $assignment->setBenchmark($benchmark);
+     $FACTORIES::getAssignmentFactory()->update($assignment);
+     API::sendResponse(array(
+-      PResponseBenchmark::ACTION => PActions::BENCHMARK,
+-      PResponseBenchmark::RESPONSE => PValues::SUCCESS,
+-      PResponseBenchmark::BENCHMARK => PValues::OK
+-    )
++        PResponseBenchmark::ACTION => PActions::BENCHMARK,
++        PResponseBenchmark::RESPONSE => PValues::SUCCESS,
++        PResponseBenchmark::BENCHMARK => PValues::OK
++      )
+     );
+   }
+   
+@@ -129,11 +130,22 @@ class API {
+       $task->setKeyspace($keyspace);
+       $FACTORIES::getTaskFactory()->update($task);
+     }
++    
++    // test if the task may have a skip value which is too high for this keyspace
++    if ($task->getSkipKeyspace() > $task->getKeyspace()) {
++      // skip is too high
++      $task->setPriority(0);
++      $FACTORIES::getTaskFactory()->update($task);
++      $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
++      $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
++      Util::createLogEntry(DLogEntryIssuer::API, $agent->getToken(), DLogEntry::ERROR, "Task with ID " . $task->getId() . " has set a skip value which is too high for its keyspace!");
++    }
++    
+     API::sendResponse(array(
+-      PResponseKeyspace::ACTION => PActions::KEYSPACE,
+-      PResponseKeyspace::RESPONSE => PValues::SUCCESS,
+-      PResponseKeyspace::KEYSPACE => PValues::OK
+-    )
++        PResponseKeyspace::ACTION => PActions::KEYSPACE,
++        PResponseKeyspace::RESPONSE => PValues::SUCCESS,
++        PResponseKeyspace::KEYSPACE => PValues::OK
++      )
+     );
+   }
+   
+@@ -144,13 +156,13 @@ class API {
+     global $FACTORIES;
+     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+     API::sendResponse(array(
+-      PResponseChunk::ACTION => PActions::CHUNK,
+-      PResponseChunk::RESPONSE => PValues::SUCCESS,
+-      PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
+-      PResponseChunk::CHUNK_ID => (int)($chunk->getId()),
+-      PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
+-      PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
+-    )
++        PResponseChunk::ACTION => PActions::CHUNK,
++        PResponseChunk::RESPONSE => PValues::SUCCESS,
++        PResponseChunk::CHUNK_STATUS => PValuesChunkType::OK,
++        PResponseChunk::CHUNK_ID => (int)($chunk->getId()),
++        PResponseChunk::KEYSPACE_SKIP => (int)($chunk->getSkip()),
++        PResponseChunk::KEYSPACE_LENGTH => (int)($chunk->getLength())
++      )
+     );
+   }
+   
+@@ -266,6 +278,12 @@ class API {
+     
+     $disptolerance = 1.2; //TODO: add to config
+     
++    // if we have set a skip keyspace we set the the current progress to the skip which was set initially
++    if ($task->getSkipKeyspace() > $task->getProgress()) {
++      $task->setProgress($task->getSkipKeyspace());
++      $FACTORIES::getTaskFactory()->update($task);
++    }
++    
+     $remaining = $task->getKeyspace() - $task->getProgress();
+     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
+     $start = $task->getProgress();
+@@ -306,18 +324,18 @@ class API {
+     }
+     else if ($task->getKeyspace() == 0) {
+       API::sendResponse(array(
+-        PResponseChunk::ACTION => PActions::CHUNK,
+-        PResponseChunk::RESPONSE => PValues::SUCCESS,
+-        PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
+-      )
++          PResponseChunk::ACTION => PActions::CHUNK,
++          PResponseChunk::RESPONSE => PValues::SUCCESS,
++          PResponseChunk::CHUNK_STATUS => PValuesChunkType::KEYSPACE_REQUIRED
++        )
+       );
+     }
+     else if ($assignment->getBenchmark() == 0) {
+       API::sendResponse(array(
+-        PResponseChunk::ACTION => PActions::CHUNK,
+-        PResponseChunk::RESPONSE => PValues::SUCCESS,
+-        PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
+-      )
++          PResponseChunk::ACTION => PActions::CHUNK,
++          PResponseChunk::RESPONSE => PValues::SUCCESS,
++          PResponseChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
++        )
+       );
+     }
+     else if ($agent->getIsActive() == 0) {
+@@ -329,17 +347,17 @@ class API {
+     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+     $dispatched = 0;
+     foreach ($chunks as $chunk) {
+-      if (($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId()) && $chunk->getRProgress() != 10000) {
++      if (($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId() || time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT)) && $chunk->getRProgress() != 10000) {
+         continue;
+       }
+       $dispatched += $chunk->getLength();
+     }
+     if ($task->getProgress() == $task->getKeyspace() && $task->getKeyspace() == $dispatched) {
+       API::sendResponse(array(
+-        PResponseChunk::ACTION => PActions::CHUNK,
+-        PResponseChunk::RESPONSE => PValues::SUCCESS,
+-        PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
+-      )
++          PResponseChunk::ACTION => PActions::CHUNK,
++          PResponseChunk::RESPONSE => PValues::SUCCESS,
++          PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
++        )
+       );
+     }
+     
+@@ -435,11 +453,14 @@ class API {
+     $agent = new Agent(0, $name, $uid, $os, $gpu, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly);
+     $FACTORIES::getRegVoucherFactory()->delete($voucher);
+     if ($FACTORIES::getAgentFactory()->save($agent)) {
++      $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
++      NotificationHandler::checkNotifications(DNotificationType::NEW_AGENT, $payload);
++      
+       API::sendResponse(array(
+-        PQueryRegister::ACTION => PActions::REGISTER,
+-        PResponseRegister::RESPONSE => PValues::SUCCESS,
+-        PResponseRegister::TOKEN => $token
+-      )
++          PQueryRegister::ACTION => PActions::REGISTER,
++          PResponseRegister::RESPONSE => PValues::SUCCESS,
++          PResponseRegister::TOKEN => $token
++        )
+       );
+     }
+     else {
+@@ -464,10 +485,10 @@ class API {
+     }
+     API::updateAgent($QUERY, $agent);
+     API::sendResponse(array(
+-      PResponseLogin::ACTION => PActions::LOGIN,
+-      PResponseLogin::RESPONSE => PValues::SUCCESS,
+-      PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
+-    )
++        PResponseLogin::ACTION => PActions::LOGIN,
++        PResponseLogin::RESPONSE => PValues::SUCCESS,
++        PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
++      )
+     );
+   }
+   
+@@ -492,21 +513,21 @@ class API {
+     unset($base[sizeof($base) - 1]);
+     $base = implode("/", $base);
+     
+-    if ($result->getVersion() != $version) {
++    if (Util::versionComparison($result->getVersion(), $version) == -1) {
+       API::sendResponse(array(
+-        PResponseUpdate::ACTION => PActions::UPDATE,
+-        PResponseUpdate::RESPONSE => PValues::SUCCESS,
+-        PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
+-        PResponseUpdate::URL => Util::buildServerUrl() . $base . "/agents.php?download=" . $result->getId()
+-      )
++          PResponseUpdate::ACTION => PActions::UPDATE,
++          PResponseUpdate::RESPONSE => PValues::SUCCESS,
++          PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
++          PResponseUpdate::URL => Util::buildServerUrl() . $base . "/agents.php?download=" . $result->getId()
++        )
+       );
+     }
+     else {
+       API::sendResponse(array(
+-        PResponseUpdate::ACTION => PActions::UPDATE,
+-        PResponseUpdate::RESPONSE => PValues::SUCCESS,
+-        PResponseUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
+-      )
++          PResponseUpdate::ACTION => PActions::UPDATE,
++          PResponseUpdate::RESPONSE => PValues::SUCCESS,
++          PResponseUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
++        )
+       );
+     }
+   }
+@@ -543,10 +564,10 @@ class API {
+         unset($url[sizeof($url) - 1]);
+         $path = Util::buildServerUrl() . implode("/", $url) . "/static/" . $filename;
+         API::sendResponse(array(
+-          PResponseDownload::ACTION => PActions::DOWNLOAD,
+-          PResponseDownload::RESPONSE => PValues::SUCCESS,
+-          PResponseDownload::EXECUTABLE => $path
+-        )
++            PResponseDownload::ACTION => PActions::DOWNLOAD,
++            PResponseDownload::RESPONSE => PValues::SUCCESS,
++            PResponseDownload::EXECUTABLE => $path
++          )
+         );
+         break;
+       case PValuesDownloadBinaryType::HASHCAT:
+@@ -561,11 +582,11 @@ class API {
+         
+         if ($agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY[PQueryDownload::FORCE_UPDATE]) || $QUERY[PQueryDownload::FORCE_UPDATE] != '1')) {
+           API::sendResponse(array(
+-            PResponseDownload::ACTION => PActions::DOWNLOAD,
+-            PResponseDownload::RESPONSE => PValues::SUCCESS,
+-            PResponseDownload::VERSION => PValuesDownloadVersion::UP_TO_DATE,
+-            PResponseDownload::EXECUTABLE => $executable
+-          )
++              PResponseDownload::ACTION => PActions::DOWNLOAD,
++              PResponseDownload::RESPONSE => PValues::SUCCESS,
++              PResponseDownload::VERSION => PValuesDownloadVersion::UP_TO_DATE,
++              PResponseDownload::EXECUTABLE => $executable
++            )
+           );
+         }
+         
+@@ -575,13 +596,13 @@ class API {
+         $agent->setHcVersion($hashcat->getVersion());
+         $FACTORIES::getAgentFactory()->update($agent);
+         API::sendResponse(array(
+-          PResponseDownload::ACTION => PActions::DOWNLOAD,
+-          PResponseDownload::RESPONSE => PValues::SUCCESS,
+-          PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
+-          PResponseDownload::URL => $url,
+-          PResponseDownload::ROOT_DIR => $rootdir,
+-          PResponseDownload::EXECUTABLE => $executable
+-        )
++            PResponseDownload::ACTION => PActions::DOWNLOAD,
++            PResponseDownload::RESPONSE => PValues::SUCCESS,
++            PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
++            PResponseDownload::URL => $url,
++            PResponseDownload::ROOT_DIR => $rootdir,
++            PResponseDownload::EXECUTABLE => $executable
++          )
+         );
+         break;
+       default:
+@@ -618,6 +639,9 @@ class API {
+     //save error message
+     $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY[PQueryError::MESSAGE]);
+     $FACTORIES::getAgentErrorFactory()->save($error);
++  
++    $payload = new DataSet(array(DPayloadKeys::AGENT => $agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryError::MESSAGE]));
++    NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
+     
+     if ($agent->getIgnoreErrors() == 0) {
+       //deactivate agent
+@@ -625,9 +649,9 @@ class API {
+       $FACTORIES::getAgentFactory()->update($agent);
+     }
+     API::sendResponse(array(
+-      PQueryError::ACTION => PActions::ERROR,
+-      PResponseError::RESPONSE => PValues::SUCCESS
+-    )
++        PQueryError::ACTION => PActions::ERROR,
++        PResponseError::RESPONSE => PValues::SUCCESS
++      )
+     );
+   }
+   
+@@ -678,12 +702,12 @@ class API {
+     API::updateAgent($QUERY, $agent);
+     
+     API::sendResponse(array(
+-      PQueryFile::ACTION => PActions::FILE,
+-      PResponseFile::FILENAME => $filename,
+-      PResponseFile::EXTENSION => $extension,
+-      PResponseFile::RESPONSE => PValues::SUCCESS,
+-      PResponseFile::URL => "get.php?file=" . $file->getId() . "&token=" . $agent->getToken()
+-    )
++        PQueryFile::ACTION => PActions::FILE,
++        PResponseFile::FILENAME => $filename,
++        PResponseFile::EXTENSION => $extension,
++        PResponseFile::RESPONSE => PValues::SUCCESS,
++        PResponseFile::URL => "get.php?file=" . $file->getId() . "&token=" . $agent->getToken()
++      )
+     );
+   }
+   
+@@ -796,10 +820,10 @@ class API {
+         }
+         $data = base64_encode($output);
+         API::sendResponse(array(
+-          PQueryFile::ACTION => PActions::HASHES,
+-          PResponse::RESPONSE => PValues::SUCCESS,
+-          PResponseHashes::DATA => $data
+-        )
++            PQueryFile::ACTION => PActions::HASHES,
++            PResponse::RESPONSE => PValues::SUCCESS,
++            PResponseHashes::DATA => $data
++          )
+         );
+         break;
+     }
+@@ -835,10 +859,10 @@ class API {
+     }
+     else if ($agent->getIsActive() == 0) {
+       API::sendResponse(array(
+-        PResponseTask::ACTION => PActions::TASK,
+-        PResponseTask::RESPONSE => PValues::SUCCESS,
+-        PResponseTask::TASK_ID => PValues::NONE
+-      )
++          PResponseTask::ACTION => PActions::TASK,
++          PResponseTask::RESPONSE => PValues::SUCCESS,
++          PResponseTask::TASK_ID => PValues::NONE
++        )
+       );
+     }
+     
+@@ -880,10 +904,10 @@ class API {
+     
+     if ($setToTask == null) {
+       API::sendResponse(array(
+-        PResponseTask::ACTION => PActions::TASK,
+-        PResponseTask::RESPONSE => PValues::SUCCESS,
+-        PResponseTask::TASK_ID => PValues::NONE
+-      )
++          PResponseTask::ACTION => PActions::TASK,
++          PResponseTask::RESPONSE => PValues::SUCCESS,
++          PResponseTask::TASK_ID => PValues::NONE
++        )
+       );
+     }
+     if ($currentTask != null && $setToTask->getId() != $currentTask->getId()) {
+@@ -907,18 +931,18 @@ class API {
+     $benchType = ($setToTask->getUseNewBench()) ? "speed" : "run";
+     
+     API::sendResponse(array(
+-      PResponseTask::ACTION => PActions::TASK,
+-      PResponseTask::RESPONSE => PValues::SUCCESS,
+-      PResponseTask::TASK_ID => (int)$setToTask->getId(),
+-      PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
+-      PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
+-      PResponseTask::HASHLIST_ID => (int)$setToTask->getHashlistId(),
+-      PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
+-      PResponseTask::STATUS_TIMER => (int)$setToTask->getStatusTimer(),
+-      PResponseTask::FILES => $files,
+-      PResponseTask::BENCHTYPE => $benchType,
+-      PResponseTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
+-    )
++        PResponseTask::ACTION => PActions::TASK,
++        PResponseTask::RESPONSE => PValues::SUCCESS,
++        PResponseTask::TASK_ID => (int)$setToTask->getId(),
++        PResponseTask::ATTACK_COMMAND => $setToTask->getAttackCmd(),
++        PResponseTask::CMD_PARAMETERS => $agent->getCmdPars() . " --hash-type=" . $hashlist->getHashTypeId(),
++        PResponseTask::HASHLIST_ID => (int)$setToTask->getHashlistId(),
++        PResponseTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
++        PResponseTask::STATUS_TIMER => (int)$setToTask->getStatusTimer(),
++        PResponseTask::FILES => $files,
++        PResponseTask::BENCHTYPE => $benchType,
++        PResponseTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
++      )
+     );
+   }
+   
+@@ -1037,6 +1061,7 @@ class API {
+     
+     $plainUpdates = array();
+     $crackHashes = array();
++    $zaps = array();
+     
+     for ($i = 0; $i < sizeof($crackedHashes); $i++) {
+       $crackedHash = $crackedHashes[$i];
+@@ -1070,6 +1095,7 @@ class API {
+             $cracked[$hash->getHashlistId()]++;
+             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
+             $crackHashes[] = $hash->getId();
++            $zaps[] = new Zap(0, $hash->getHash(), time(), $agent->getId(), $hashList->getId());
+           }
+           
+           if (sizeof($plainUpdates) >= 1000) {
+@@ -1079,8 +1105,10 @@ class API {
+             $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
+             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
++            $FACTORIES::getZapFactory()->massSave($zaps);
+             $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+             $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
++            $zaps = array();
+             $plainUpdates = array();
+             $crackHashes = array();
+           }
+@@ -1137,6 +1165,7 @@ class API {
+       $FACTORIES::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
+       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
++      $FACTORIES::getZapFactory()->massSave($zaps);
+     }
+     
+     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+@@ -1179,7 +1208,8 @@ class API {
+       $task->setPriority(0);
+       $FACTORIES::getTaskFactory()->update($task);
+       
+-      // TODO: notificate task done
++      $payload = new DataSet(array(DPayloadKeys::TASK => $task));
++      NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
+     }
+     
+     $hashlists = Util::checkSuperHashlist($hashList);
+@@ -1188,6 +1218,11 @@ class API {
+       $hashlistIds[] = $hl->getId();
+     }
+     $toZap = array();
++  
++    if($sumCracked > 0) {
++      $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $hashList));
++      NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
++    }
+     
+     if ($aborting) {
+       $chunk->setSpeed(0);
+@@ -1213,8 +1248,9 @@ class API {
+         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
+         $uS = new UpdateSet(TASK::PRIORITY, "0");
+         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
+-        
+-        //TODO: notificate hashList done
++  
++        $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
++        NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
+         break;
+       case DHashcatStatus::ABORTED:
+       case DHashcatStatus::QUIT:
+@@ -1230,39 +1266,61 @@ class API {
+         $qF2 = new ContainFilter(Hashlist::HASHLIST_ID, $hashlistIds);
+         $count = $FACTORIES::getHashlistFactory()->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+         if ($count == 0) {
++          $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
++          NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
++          
+           //stop agent
+           API::sendResponse(array(
+-            PResponseSolve::ACTION => PActions::SOLVE,
+-            PResponseSolve::RESPONSE => PValues::SUCCESS,
+-            PResponseSolve::NUM_CRACKED => $sumCracked,
+-            PResponseSolve::NUM_SKIPPED => $skipped,
+-            PResponseSolve::AGENT_COMMAND => "stop"
+-          )
++              PResponseSolve::ACTION => PActions::SOLVE,
++              PResponseSolve::RESPONSE => PValues::SUCCESS,
++              PResponseSolve::NUM_CRACKED => $sumCracked,
++              PResponseSolve::NUM_SKIPPED => $skipped,
++              PResponseSolve::AGENT_COMMAND => "stop"
++            )
+           );
++          $task->setPriority(0);
++          $chunk->setProgress($chunk->getLength());
++          $chunk->setRprogress(10000);
++          $FACTORIES::getChunkFactory()->update($chunk);
++          $FACTORIES::getTaskFactory()->update($task);
+         }
+         $chunk->setSpeed($speed * 1000);
+         $FACTORIES::getChunkFactory()->update($chunk);
+         
++        $agentZap = $FACTORIES::getAgentZapFactory()->get($agent->getId());
++        if($agentZap == null){
++          $agentZap = new AgentZap($agent->getId(), 0);
++          $FACTORIES::getAgentZapFactory()->save($agentZap);
++        }
++        
+         $qF1 = new ContainFilter(Zap::HASHLIST_ID, $hashlistIds);
+-        $qF2 = new QueryFilter(Zap::SOLVE_TIME, $agent->getLastAct(), ">=");
+-        $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
++        $qF2 = new QueryFilter(Zap::ZAP_ID, $agentZap->getLastZapId(), ">");
++        $qF3 = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "<>");
++        $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
+         foreach ($zaps as $zap) {
++          if($zap->getId() > $agentZap->getId()){
++            $agentZap->setLastZapId($zap->getId());
++          }
+           $toZap[] = $zap->getHash();
+         }
+         $agent->setLastTime(time());
+         $FACTORIES::getAgentFactory()->update($agent);
+         
++        if($agentZap->getLastZapId() > 0){
++          $FACTORIES::getAgentZapFactory()->update($agentZap);
++        }
++        
+         // update hashList age for agent to this task
+         break;
+     }
+     Util::zapCleaning();
+     API::sendResponse(array(
+-      PResponseSolve::ACTION => PActions::SOLVE,
+-      PResponseSolve::RESPONSE => PValues::SUCCESS,
+-      PResponseSolve::NUM_CRACKED => $sumCracked,
+-      PResponseSolve::NUM_SKIPPED => $skipped,
+-      PResponseSolve::HASH_ZAPS => $toZap
+-    )
++        PResponseSolve::ACTION => PActions::SOLVE,
++        PResponseSolve::RESPONSE => PValues::SUCCESS,
++        PResponseSolve::NUM_CRACKED => $sumCracked,
++        PResponseSolve::NUM_SKIPPED => $skipped,
++        PResponseSolve::HASH_ZAPS => $toZap
++      )
+     );
+   }
+ }
+\ No newline at end of file
+diff --git a/src/inc/Login.class.php b/src/inc/Login.class.php
+index da4cf7b..3a63c70 100755
+--- a/src/inc/Login.class.php
++++ b/src/inc/Login.class.php
+@@ -117,6 +117,9 @@ class Login {
+     }
+     else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
+       Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
++  
++      $payload = new DataSet(array(DPayloadKeys::USER => $user));
++      NotificationHandler::checkNotifications(DNotificationType::USER_LOGIN_FAILED, $payload);
+       return false;
+     }
+     $this->user = $user;
+diff --git a/src/inc/Util.class.php b/src/inc/Util.class.php
+index 4f3f110..3dd1e82 100755
+--- a/src/inc/Util.class.php
++++ b/src/inc/Util.class.php
+@@ -13,6 +13,7 @@ use DBA\StoredValue;
+ use DBA\SuperHashlistHashlist;
+ use DBA\Task;
+ use DBA\TaskFile;
++use DBA\Zap;
+ 
+ /**
+  *
+@@ -48,6 +49,18 @@ class Util {
+     
+     $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
+     $FACTORIES::getLogEntryFactory()->save($entry);
++  
++    switch($level){
++      case DLogEntry::ERROR:
++        NotificationHandler::checkNotifications(DNotificationType::LOG_ERROR, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
++        break;
++      case DLogEntry::FATAL:
++        NotificationHandler::checkNotifications(DNotificationType::LOG_FATAL, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
++        break;
++      case DLogEntry::WARN:
++        NotificationHandler::checkNotifications(DNotificationType::LOG_WARN, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
++        break;
++    }
+   }
+   
+   /**
+@@ -150,6 +163,7 @@ class Util {
+         $isTimeout = false;
+         // if the chunk times out, we need to remove the agent from it, so it can be done by others
+         if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
++          $FACTORIES::getChunkFactory()->update($chunk);
+           $isTimeout = true;
+         }
+         
+@@ -275,7 +289,6 @@ class Util {
+    * Used by the solver. Cleans the zap-queue
+    */
+   public static function zapCleaning() {
+-    //TODO NOT YET IMPLEMENTED
+     global $FACTORIES;
+     
+     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
+@@ -284,7 +297,10 @@ class Util {
+       $FACTORIES::getStoredValueFactory()->save($entry);
+     }
+     if (time() - $entry->getVal() > 600) {
+-      //TODO: zap cleaning
++      
++      $qF = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
++      $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
++      
+       $entry->setVal(time());
+       $FACTORIES::getStoredValueFactory()->update($entry);
+     }
+@@ -741,6 +757,9 @@ class Util {
+     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "http://";
+     $hostname = $_SERVER['HTTP_HOST'];
+     $port = $_SERVER['SERVER_PORT'];
++    if (strpos($hostname, ":") !== false) {
++        $hostname = substr($hostname, 0, strpos($hostname, ":"));
++    }
+     if ($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80) {
+       $port = "";
+     }
+diff --git a/src/inc/defines.php b/src/inc/defines.php
+index 1dac24d..d3d18d9 100644
+--- a/src/inc/defines.php
++++ b/src/inc/defines.php
+@@ -11,65 +11,66 @@
+  */
+ 
+ // hashcat status numbers
+-class DHashcatStatus{
+-  const INIT = 0;
+-  const AUTOTUNE = 1;
+-  const RUNNING = 2;
+-  const PAUSED = 3;
+-  const EXHAUSTED = 4;
+-  const CRACKED = 5;
+-  const ABORTED = 6;
+-  const QUIT = 7;
+-  const BYPASS = 8;
+-  const ABORTED_CHECKPOINT = 9;
++class DHashcatStatus {
++  const INIT                   = 0;
++  const AUTOTUNE               = 1;
++  const RUNNING                = 2;
++  const PAUSED                 = 3;
++  const EXHAUSTED              = 4;
++  const CRACKED                = 5;
++  const ABORTED                = 6;
++  const QUIT                   = 7;
++  const BYPASS                 = 8;
++  const ABORTED_CHECKPOINT     = 9;
+   const STATUS_ABORTED_RUNTIME = 10;
+ }
+ 
+ // operating systems
+ class DOperatingSystem {
+-  const LINUX = 0;
++  const LINUX   = 0;
+   const WINDOWS = 1;
+-  const OSX = 2;
++  const OSX     = 2;
+ }
+ 
+ // hashlist formats
+ class DHashlistFormat {
+-  const PLAIN = 0;
+-  const WPA = 1;
+-  const BINARY = 2;
++  const PLAIN         = 0;
++  const WPA           = 1;
++  const BINARY        = 2;
+   const SUPERHASHLIST = 3;
+ }
+ 
+ // access levels for user groups
+ class DAccessLevel { // if you change any of them here, you need to check if this is consistent with the database
+-  const VIEW_ONLY = 1;
+-  const READ_ONLY = 5;
+-  const USER = 20;
+-  const SUPERUSER = 30;
++  const VIEW_ONLY     = 1;
++  const READ_ONLY     = 5;
++  const USER          = 20;
++  const SUPERUSER     = 30;
+   const ADMINISTRATOR = 50;
+ }
+ 
+ // used config values
+ class DConfig {
+-  const BENCHMARK_TIME = "benchtime";
+-  const CHUNK_DURATION = "chunktime";
+-  const CHUNK_TIMEOUT = "chunktimeout";
+-  const AGENT_TIMEOUT = "agenttimeout";
+-  const HASHES_PAGE_SIZE = "pagingSize";
+-  const FIELD_SEPARATOR = "fieldseparator";
+-  const HASHLIST_ALIAS = "hashlistAlias";
+-  const STATUS_TIMER = "statustimer";
+-  const BLACKLIST_CHARS = "blacklistChars";
++  const BENCHMARK_TIME    = "benchtime";
++  const CHUNK_DURATION    = "chunktime";
++  const CHUNK_TIMEOUT     = "chunktimeout";
++  const AGENT_TIMEOUT     = "agenttimeout";
++  const HASHES_PAGE_SIZE  = "pagingSize";
++  const FIELD_SEPARATOR   = "fieldseparator";
++  const HASHLIST_ALIAS    = "hashlistAlias";
++  const STATUS_TIMER      = "statustimer";
++  const BLACKLIST_CHARS   = "blacklistChars";
+   const NUMBER_LOGENTRIES = "numLogEntries";
+-  const TIME_FORMAT = "timefmt";
++  const TIME_FORMAT       = "timefmt";
++  const BASE_URL          = "baseUrl";
+   
+   /**
+    * Gives the format which a config input should have. Default is string if it's not a known config.
+    * @param $config string
+    * @return string
+    */
+-  public static function getConfigType($config){
+-    switch($config){
++  public static function getConfigType($config) {
++    switch ($config) {
+       case DConfig::BENCHMARK_TIME:
+         return DConfigType::NUMBER_INPUT;
+       case DConfig::CHUNK_DURATION:
+@@ -92,6 +93,8 @@ class DConfig {
+         return DConfigType::NUMBER_INPUT;
+       case DConfig::TIME_FORMAT:
+         return DConfigType::STRING_INPUT;
++      case DConfig::BASE_URL:
++        return DConfigType::STRING_INPUT;
+     }
+     return DConfigType::STRING_INPUT;
+   }
+@@ -100,8 +103,8 @@ class DConfig {
+    * @param $config string
+    * @return string
+    */
+-  public static function getConfigDescription($config){
+-    switch($config){
++  public static function getConfigDescription($config) {
++    switch ($config) {
+       case DConfig::BENCHMARK_TIME:
+         return "Time in seconds an agent should benchmark a task";
+       case DConfig::CHUNK_DURATION:
+@@ -124,11 +127,158 @@ class DConfig {
+         return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
+       case DConfig::TIME_FORMAT:
+         return "Set the formatting of time displaying. Use syntax for PHPs date() method.";
++      case DConfig::BASE_URL:
++        return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
+     }
+     return $config;
+   }
+ }
+ 
++class DNotificationObjectType {
++  const HASHLIST = "Hashlist";
++  const AGENT    = "Agent";
++  const USER     = "User";
++  const TASK     = "Task";
++  
++  const NONE = "NONE";
++}
++
++class DNotificationType {
++  const TASK_COMPLETE         = "taskComplete";
++  const AGENT_ERROR           = "agentError";
++  const OWN_AGENT_ERROR       = "ownAgentError"; //difference to AGENT_ERROR is that this can be configured by owners
++  const LOG_ERROR             = "logError";
++  const NEW_TASK              = "newTask";
++  const NEW_HASHLIST          = "newHashlist";
++  const HASHLIST_ALL_CRACKED  = "hashlistAllCracked";
++  const HASHLIST_CRACKED_HASH = "hashlistCrackedHash";
++  const USER_CREATED          = "userCreated";
++  const USER_DELETED          = "userDeleted";
++  const USER_LOGIN_FAILED     = "userLoginFailed";
++  const LOG_WARN              = "logWarn";
++  const LOG_FATAL             = "logFatal";
++  const NEW_AGENT             = "newAgent";
++  const DELETE_TASK           = "deleteTask";
++  const DELETE_HASHLIST       = "deleteHashlist";
++  const DELETE_AGENT          = "deleteAgent";
++  
++  public static function getAll() {
++    return array(
++      DNotificationType::TASK_COMPLETE,
++      DNotificationType::AGENT_ERROR,
++      DNotificationType::OWN_AGENT_ERROR,
++      DNotificationType::LOG_ERROR,
++      DNotificationType::NEW_TASK,
++      DNotificationType::NEW_HASHLIST,
++      DNotificationType::HASHLIST_ALL_CRACKED,
++      DNotificationType::HASHLIST_CRACKED_HASH,
++      DNotificationType::USER_CREATED,
++      DNotificationType::USER_DELETED,
++      DNotificationType::USER_LOGIN_FAILED,
++      DNotificationType::LOG_WARN,
++      DNotificationType::LOG_FATAL,
++      DNotificationType::NEW_AGENT,
++      DNotificationType::DELETE_TASK,
++      DNotificationType::DELETE_HASHLIST,
++      DNotificationType::DELETE_AGENT
++    );
++  }
++  
++  /**
++   * @param $notificationType string
++   * @return int access level
++   */
++  public static function getRequiredLevel($notificationType) {
++    switch ($notificationType) {
++      case DNotificationType::TASK_COMPLETE:
++        return DAccessLevel::USER;
++      case DNotificationType::AGENT_ERROR:
++        return DAccessLevel::SUPERUSER;
++      case DNotificationType::OWN_AGENT_ERROR:
++        return DAccessLevel::USER;
++      case DNotificationType::LOG_ERROR:
++        return DAccessLevel::ADMINISTRATOR;
++      case DNotificationType::NEW_TASK:
++        return DAccessLevel::USER;
++      case DNotificationType::NEW_HASHLIST:
++        return DAccessLevel::USER;
++      case DNotificationType::HASHLIST_ALL_CRACKED:
++        return DAccessLevel::USER;
++      case DNotificationType::HASHLIST_CRACKED_HASH:
++        return DAccessLevel::USER;
++      case DNotificationType::USER_CREATED:
++        return DAccessLevel::ADMINISTRATOR;
++      case DNotificationType::USER_DELETED:
++        return DAccessLevel::ADMINISTRATOR;
++      case DNotificationType::USER_LOGIN_FAILED:
++        return DAccessLevel::ADMINISTRATOR;
++      case DNotificationType::LOG_WARN:
++        return DAccessLevel::ADMINISTRATOR;
++      case DNotificationType::LOG_FATAL:
++        return DAccessLevel::ADMINISTRATOR;
++      case DNotificationType::NEW_AGENT:
++        return DAccessLevel::SUPERUSER;
++      case DNotificationType::DELETE_TASK:
++        return DAccessLevel::USER;
++      case DNotificationType::DELETE_HASHLIST:
++        return DAccessLevel::USER;
++      case DNotificationType::DELETE_AGENT:
++        return DAccessLevel::SUPERUSER;
++    }
++    return DAccessLevel::ADMINISTRATOR;
++  }
++  
++  public static function getObjectType($notificationType) {
++    switch ($notificationType) {
++      case DNotificationType::TASK_COMPLETE:
++        return DNotificationObjectType::TASK;
++      case DNotificationType::AGENT_ERROR:
++        return DNotificationObjectType::AGENT;
++      case DNotificationType::OWN_AGENT_ERROR:
++        return DNotificationObjectType::AGENT;
++      case DNotificationType::LOG_ERROR:
++        return DNotificationObjectType::NONE;
++      case DNotificationType::NEW_TASK:
++        return DNotificationObjectType::NONE;
++      case DNotificationType::NEW_HASHLIST:
++        return DNotificationObjectType::NONE;
++      case DNotificationType::HASHLIST_ALL_CRACKED:
++        return DNotificationObjectType::HASHLIST;
++      case DNotificationType::HASHLIST_CRACKED_HASH:
++        return DNotificationObjectType::HASHLIST;
++      case DNotificationType::USER_CREATED:
++        return DNotificationObjectType::NONE;
++      case DNotificationType::USER_DELETED:
++        return DNotificationObjectType::USER;
++      case DNotificationType::USER_LOGIN_FAILED:
++        return DNotificationObjectType::USER;
++      case DNotificationType::LOG_WARN:
++        return DNotificationObjectType::NONE;
++      case DNotificationType::LOG_FATAL:
++        return DNotificationObjectType::NONE;
++      case DNotificationType::NEW_AGENT:
++        return DNotificationObjectType::NONE;
++      case DNotificationType::DELETE_TASK:
++        return DNotificationObjectType::TASK;
++      case DNotificationType::DELETE_HASHLIST:
++        return DNotificationObjectType::HASHLIST;
++      case DNotificationType::DELETE_AGENT:
++        return DNotificationObjectType::AGENT;
++    }
++    return DNotificationObjectType::NONE;
++  }
++}
++
++class DPayloadKeys {
++  const TASK        = "task";
++  const AGENT       = "agent";
++  const AGENT_ERROR = "agentError";
++  const LOG_ENTRY   = "logEntry";
++  const USER        = "user";
++  const HASHLIST    = "hashlist";
++  const NUM_CRACKED = "numCracked";
++}
++
+ class DConfigType {
+   const STRING_INPUT = "string";
+   const NUMBER_INPUT = "number";
+@@ -136,14 +286,14 @@ class DConfigType {
+ 
+ // log entry types
+ class DLogEntry {
+-  const WARN = "warning";
++  const WARN  = "warning";
+   const ERROR = "error";
+   const FATAL = "fatal error";
+-  const INFO = "information";
++  const INFO  = "information";
+ }
+ 
+ class DLogEntryIssuer {
+-  const API = "API";
++  const API  = "API";
+   const USER = "User";
+ }
+ 
+diff --git a/src/inc/handlers/AgentHandler.class.php b/src/inc/handlers/AgentHandler.class.php
+index c75737e..d398504 100644
+--- a/src/inc/handlers/AgentHandler.class.php
++++ b/src/inc/handlers/AgentHandler.class.php
+@@ -8,6 +8,7 @@ use DBA\ContainFilter;
+ use DBA\Hash;
+ use DBA\HashBinary;
+ use DBA\HashlistAgent;
++use DBA\NotificationSetting;
+ use DBA\OrderFilter;
+ use DBA\QueryFilter;
+ use DBA\RegVoucher;
+@@ -221,6 +222,11 @@ class AgentHandler implements Handler {
+       UI::printError("FATAL", "Agent with ID " . $_POST['agent'] . " not found!");
+     }
+     $name = $this->agent->getAgentName();
++    $agent = $this->agent;
++    
++    $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
++    NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
++    
+     if ($this->deleteDependencies($this->agent)) {
+       $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+       Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
+@@ -258,6 +264,13 @@ class AgentHandler implements Handler {
+     
+     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
+     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
++    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $agent->getId(), "=");
++    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
++    foreach($notifications as $notification){
++      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::AGENT){
++        $FACTORIES::getNotificationSettingFactory()->delete($notification);
++      }
++    }
+     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
+     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+     $qF = new QueryFilter(HashlistAgent::AGENT_ID, $agent->getId(), "=");
+diff --git a/src/inc/handlers/Handler.php b/src/inc/handlers/Handler.class.php
+similarity index 100%
+rename from src/inc/handlers/Handler.php
+rename to src/inc/handlers/Handler.class.php
+diff --git a/src/inc/handlers/HashlistHandler.class.php b/src/inc/handlers/HashlistHandler.class.php
+index d3aa3aa..810adf1 100644
+--- a/src/inc/handlers/HashlistHandler.class.php
++++ b/src/inc/handlers/HashlistHandler.class.php
+@@ -8,6 +8,7 @@ use DBA\HashBinary;
+ use DBA\Hashlist;
+ use DBA\HashlistAgent;
+ use DBA\JoinFilter;
++use DBA\NotificationSetting;
+ use DBA\OrderFilter;
+ use DBA\QueryFilter;
+ use DBA\SuperHashlistHashlist;
+@@ -267,6 +268,9 @@ class HashlistHandler implements Handler {
+         $FACTORIES::getHashlistFactory()->update($this->hashlist);
+         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
++        
++        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
++        
+         header("Location: hashlists.php?id=" . $this->hashlist->getId());
+         die();
+         break;
+@@ -313,6 +317,9 @@ class HashlistHandler implements Handler {
+         $this->hashlist->setHashCount($added);
+         $FACTORIES::getHashlistFactory()->update($this->hashlist);
+         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
++  
++        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
++        
+         header("Location: hashlists.php?id=" . $this->hashlist->getId());
+         die();
+       case DHashlistFormat::BINARY:
+@@ -326,6 +333,9 @@ class HashlistHandler implements Handler {
+         $this->hashlist->setHashCount(1);
+         $FACTORIES::getHashlistFactory()->update($this->hashlist);
+         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
++  
++        NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
++        
+         header("Location: hashlists.php?id=" . $this->hashlist->getId());
+         die();
+     }
+@@ -443,6 +453,17 @@ class HashlistHandler implements Handler {
+     
+     //TODO: delete from zapqueue
+     
++    $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
++    NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
++  
++    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $this->hashlist->getId(), "=");
++    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
++    foreach($notifications as $notification){
++      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::HASHLIST){
++        $FACTORIES::getNotificationSettingFactory()->delete($notification);
++      }
++    }
++    
+     $qF = new QueryFilter(Task::HASHLIST_ID, $this->hashlist->getId(), "=");
+     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+     $taskList = array();
+@@ -496,7 +517,9 @@ class HashlistHandler implements Handler {
+     $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+     
+     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
++    
+     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
++    
+     switch ($this->hashlist->getFormat()) {
+       case 0:
+       case 1:
+@@ -836,7 +859,6 @@ class HashlistHandler implements Handler {
+           $files = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+           foreach ($files as $file) {
+             $task = Util::cast($task, Task::class);
+-            $file = Util::cast($file, File::class);
+             $file->setTaskId($task->getId());
+             $file->setId(0);
+             $FACTORIES::getTaskFileFactory()->save($file);
+diff --git a/src/inc/handlers/NotificationHandler.class.php b/src/inc/handlers/NotificationHandler.class.php
+new file mode 100644
+index 0000000..b3cf655
+--- /dev/null
++++ b/src/inc/handlers/NotificationHandler.class.php
+@@ -0,0 +1,189 @@
++<?php
++use DBA\NotificationSetting;
++use DBA\QueryFilter;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 10.11.16
++ * Time: 14:38
++ */
++
++
++class NotificationHandler implements Handler {
++  
++  public function __construct($id = null) {
++    // nothing required here
++  }
++  
++  public function handle($action) {
++    switch ($action) {
++      case 'createNotification':
++        $this->create();
++        break;
++      case 'notificationActive':
++        $this->toggleActive();
++        break;
++      case 'notificationDelete':
++        $this->delete();
++        break;
++      default:
++        UI::addMessage(UI::ERROR, "Invalid action!");
++        break;
++    }
++  }
++  
++  /**
++   * @param $action
++   * @param $payload DataSet
++   */
++  public static function checkNotifications($action, $payload){
++    /** @var $NOTIFICATIONS HashtopussyNotification[] */
++    global $FACTORIES, $NOTIFICATIONS;
++    
++    $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");
++    $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
++    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
++    foreach($notifications as $notification){
++      if($notification->getObjectId() != null){
++        $obj = 0;
++        switch(DNotificationType::getObjectType($notification->getAction())){
++          case DNotificationObjectType::USER:
++            $obj = $payload->getVal(DPayloadKeys::USER)->getId();
++            break;
++          case DNotificationObjectType::AGENT:
++            $obj = $payload->getVal(DPayloadKeys::AGENT)->getId();
++            break;
++          case DNotificationObjectType::HASHLIST:
++            $obj = $payload->getVal(DPayloadKeys::HASHLIST)->getId();
++            break;
++          case DNotificationObjectType::TASK:
++            $obj = $payload->getVal(DPayloadKeys::TASK)->getId();
++            break;
++        }
++        if($obj == 0 || $obj != $notification->getObjectId()){
++          continue;
++        }
++      }
++      $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification);
++    }
++  }
++  
++  private function delete(){
++    /** @var $LOGIN Login */
++    global $FACTORIES, $LOGIN;
++    
++    $notification = $FACTORIES::getNotificationSettingFactory()->get($_POST['notification']);
++    if($notification == null){
++      UI::addMessage(UI::ERROR, "Notification not found!");
++      return;
++    }
++    else if($notification->getUserId() != $LOGIN->getUserID()){
++      UI::addMessage(UI::ERROR, "You are not allowed to delete this notification!");
++      return;
++    }
++    $FACTORIES::getNotificationSettingFactory()->delete($notification);
++  }
++  
++  private function toggleActive(){
++    /** @var Login $LOGIN */
++    global $FACTORIES, $LOGIN;
++    
++    $notification = $FACTORIES::getNotificationSettingFactory()->get($_POST['notification']);
++    if($notification == null){
++      UI::addMessage(UI::ERROR, "Notification not found!");
++      return;
++    }
++    else if($notification->getUserId() != $LOGIN->getUserID()){
++      UI::addMessage(UI::ERROR, "You have no access to this notification!");
++      return;
++    }
++    if($notification->getIsActive() == 1){
++      $notification->setIsActive(0);
++    }
++    else{
++      $notification->setIsActive(1);
++    }
++    $FACTORIES::getNotificationSettingFactory()->update($notification);
++  }
++  
++  private function create(){
++    /** @var Login $LOGIN */
++    global $FACTORIES, $NOTIFICATIONS, $LOGIN;
++    
++    $actionType = $_POST['actionType'];
++    $notification = $_POST['notification'];
++    $receiver = trim($_POST['receiver']);
++    
++    if(!isset($NOTIFICATIONS[$notification])){
++      UI::addMessage(UI::ERROR, "This notification is not available!");
++      return;
++    }
++    else if(!in_array($actionType, DNotificationType::getAll())){
++      UI::addMessage(UI::ERROR, "This actionType is not available!");
++      return;
++    }
++    else if(strlen($receiver) == 0){
++      UI::addMessage(UI::ERROR, "You need to fill in a receiver!");
++      return;
++    }
++    else if(DNotificationType::getRequiredLevel($actionType) > $LOGIN->getLevel()){
++      UI::addMessage(UI::ERROR, "You are not allowed to use this action type!");
++      return;
++    }
++    $objectId = null;
++    switch(DNotificationType::getObjectType($actionType)){
++      case DNotificationObjectType::USER:
++        if($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR){
++          UI::addMessage(UI::ERROR, "You are not allowed to use user action types!");
++          return;
++        }
++        if($_POST['users'] == "ALL"){
++          break;
++        }
++        $user = $FACTORIES::getUserFactory()->get($_POST['users']);
++        if($user == null){
++          UI::addMessage(UI::ERROR, "Invalid user selected!");
++          return;
++        }
++        $objectId = $user->getId();
++        break;
++      case DNotificationObjectType::AGENT:
++        if($_POST['agents'] == "ALL"){
++          break;
++        }
++        $agent = $FACTORIES::getAgentFactory()->get($_POST['agents']);
++        if($agent == null){
++          UI::addMessage(UI::ERROR, "Invalid agent selected!");
++          return;
++        }
++        $objectId = $agent->getId();
++        break;
++      case DNotificationObjectType::HASHLIST:
++        if($_POST['hashlists'] == "ALL"){
++          break;
++        }
++        $hashlist = $FACTORIES::getHashlistFactory()->get($_POST['hashlists']);
++        if($hashlist == null){
++          UI::addMessage(UI::ERROR, "Invalid hashlist selected!");
++          return;
++        }
++        $objectId = $hashlist->getId();
++        break;
++      case DNotificationObjectType::TASK:
++        if($_POST['tasks'] == "ALL"){
++          break;
++        }
++        $task = $FACTORIES::getTaskFactory()->get($_POST['tasks']);
++        if($task == null){
++          UI::addMessage(UI::ERROR, "Invalid task selected!");
++          return;
++        }
++        $objectId = $task->getId();
++        break;
++    }
++    
++    $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, $LOGIN->getUserID(), $receiver, 1);
++    $FACTORIES::getNotificationSettingFactory()->save($notificationSetting);
++  }
++}
+\ No newline at end of file
+diff --git a/src/inc/handlers/SupertaskHandler.class.php b/src/inc/handlers/SupertaskHandler.class.php
+index f28f31a..4c88f4f 100644
+--- a/src/inc/handlers/SupertaskHandler.class.php
++++ b/src/inc/handlers/SupertaskHandler.class.php
+@@ -1,5 +1,6 @@
+ <?php
+ use DBA\JoinFilter;
++use DBA\OrderFilter;
+ use DBA\QueryFilter;
+ use DBA\Supertask;
+ use DBA\SupertaskTask;
+@@ -48,12 +49,18 @@ class SupertaskHandler implements Handler {
+     }
+     
+     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
++    
++    $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
++    $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
++    $highestTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF), true);
++    $highestPriority = $highestTask->getPriority() + 1;
++    
+     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
+     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
+     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+     $tasks = $joinedTasks['Task'];
+     foreach ($tasks as $task) {
+-      $task = Util::cast($task, Task::class);
++      /** @var $task Task */
+       if (strpos($task->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+         UI::addMessage(UI::WARN, "Task must contain the hashlist alias for cracking!");
+         continue;
+@@ -64,8 +71,9 @@ class SupertaskHandler implements Handler {
+       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
+         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
+       }
++      $task->setPriority($highestPriority + $task->getPriority());
+       $task->setHashlistId($hashlist->getId());
+-      $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
++      $task = $FACTORIES::getTaskFactory()->save($task);
+       foreach ($taskFiles as $taskFile) {
+         $taskFile = Util::cast($taskFile, TaskFile::class);
+         $taskFile->setId(0);
+diff --git a/src/inc/handlers/TaskHandler.class.php b/src/inc/handlers/TaskHandler.class.php
+index fddb13f..4a55f5d 100644
+--- a/src/inc/handlers/TaskHandler.class.php
++++ b/src/inc/handlers/TaskHandler.class.php
+@@ -6,6 +6,7 @@ use DBA\ComparisonFilter;
+ use DBA\ContainFilter;
+ use DBA\Hash;
+ use DBA\JoinFilter;
++use DBA\NotificationSetting;
+ use DBA\QueryFilter;
+ use DBA\SupertaskTask;
+ use DBA\Task;
+@@ -120,6 +121,7 @@ class TaskHandler implements Handler {
+     $useNewBench = intval($_POST['benchType']);
+     $isCpuTask = intval($_POST['cpuOnly']);
+     $isSmall = intval($_POST['isSmall']);
++    $skipKeyspace = intval($_POST['skipKeyspace']);
+     $color = $_POST["color"];
+     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
+       $color = null;
+@@ -132,6 +134,9 @@ class TaskHandler implements Handler {
+       UI::addMessage(UI::ERROR, "The command must contain no blacklisted characters!");
+       return;
+     }
++    else if($skipKeyspace < 0){
++      $skipKeyspace = 0;
++    }
+     $hashlist = null;
+     if ($_POST["hashlist"] == null) {
+       // it will be a preconfigured task
+@@ -161,7 +166,7 @@ class TaskHandler implements Handler {
+       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
+     }
+     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+-    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench);
++    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace);
+     $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
+     if (isset($_POST["adfile"])) {
+       foreach ($_POST["adfile"] as $fileId) {
+@@ -170,6 +175,10 @@ class TaskHandler implements Handler {
+       }
+     }
+     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
++    
++    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
++    NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
++    
+     header("Location: $forward");
+     die();
+   }
+@@ -188,15 +197,6 @@ class TaskHandler implements Handler {
+       $pretask = true;
+     }
+     $priority = intval($_POST["priority"]);
+-    $qF1 = new QueryFilter(Task::PRIORITY, $priority, "="); //TODO: check this
+-    $qF2 = new QueryFilter(Task::PRIORITY, $priority, ">");
+-    $qF3 = new QueryFilter(Task::TASK_ID, $task->getId(), "<>");
+-    $qF4 = new QueryFilter(Task::HASHLIST_ID, null, "<>");
+-    $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4)), true);
+-    if ($check != null) {
+-      UI::addMessage(UI::ERROR, "Priorities must be unique!");
+-      return;
+-    }
+     $task->setPriority($priority);
+     $FACTORIES::getTaskFactory()->update($task);
+     if ($pretask) {
+@@ -218,8 +218,13 @@ class TaskHandler implements Handler {
+       return;
+     }
+     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
++    
++    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
++    NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
++    
+     $this->deleteTask($task);
+     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
++    
+     if ($task->getHashlistId() == null) {
+       header("Location: pretasks.php");
+       die();
+@@ -246,6 +251,13 @@ class TaskHandler implements Handler {
+     }
+     $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
+     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
++    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
++    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
++    foreach($notifications as $notification){
++      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::TASK){
++        $FACTORIES::getNotificationSettingFactory()->delete($notification);
++      }
++    }
+     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
+diff --git a/src/inc/handlers/UsersHandler.class.php b/src/inc/handlers/UsersHandler.class.php
+index 19da3ca..794101f 100644
+--- a/src/inc/handlers/UsersHandler.class.php
++++ b/src/inc/handlers/UsersHandler.class.php
+@@ -1,5 +1,6 @@
+ <?php
+ use DBA\Agent;
++use DBA\NotificationSetting;
+ use DBA\QueryFilter;
+ use DBA\Session;
+ use DBA\User;
+@@ -76,7 +77,11 @@ class UsersHandler implements Handler {
+     //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
+     //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
+     //TODO: send proper email for created user
++    
+     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New User created: " . $user->getUsername());
++    $payload = new DataSet(array(DPayloadKeys::USER => $user));
++    NotificationHandler::checkNotifications(DNotificationType::USER_CREATED, $payload);
++    
+     header("Location: users.php");
+     die();
+   }
+@@ -176,11 +181,23 @@ class UsersHandler implements Handler {
+       UI::addMessage(UI::ERROR, "You cannot delete yourself!");
+       return;
+     }
++  
++    $payload = new DataSet(array(DPayloadKeys::USER => $user));
++    NotificationHandler::checkNotifications(DNotificationType::USER_DELETED, $payload);
++  
++    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $user->getId(), "=");
++    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
++    foreach($notifications as $notification){
++      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::USER){
++        $FACTORIES::getNotificationSettingFactory()->delete($notification);
++      }
++    }
+     
+     $qF = new QueryFilter(Agent::USER_ID, $user->getId(), "=");
+     $uS = new UpdateSet(Agent::USER_ID, null);
+     $FACTORIES::getAgentFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
+     $FACTORIES::getUserFactory()->delete($user);
++    
+     header("Location: users.php");
+     die();
+   }
+diff --git a/src/inc/load.php b/src/inc/load.php
+index 7577acf..cf87baf 100755
+--- a/src/inc/load.php
++++ b/src/inc/load.php
+@@ -7,8 +7,8 @@ ini_set("display_errors", "0");
+ 
+ $OBJECTS = array();
+ 
+-$VERSION = "0.2.0 RC1";
+-$HOST = $_SERVER['HTTP_HOST'];
++$VERSION = "0.3.0";
++$HOST = @$_SERVER['HTTP_HOST'];
+ if (strpos($HOST, ":") !== false) {
+   $HOST = substr($HOST, 0, strpos($HOST, ":"));
+ }
+@@ -37,11 +37,11 @@ foreach ($dir as $entry) {
+     require_once(dirname(__FILE__) . "/" . $entry);
+   }
+ }
+-require_once(dirname(__FILE__)."/templating/Statement.class.php");
+-require_once(dirname(__FILE__)."/templating/Template.class.php");
++require_once(dirname(__FILE__) . "/templating/Statement.class.php");
++require_once(dirname(__FILE__) . "/templating/Template.class.php");
+ 
+ // include all handlers
+-require_once(dirname(__FILE__)."/handlers/Handler.php");
++require_once(dirname(__FILE__)."/handlers/Handler.class.php");
+ $dir = scandir(dirname(__FILE__) . "/handlers/");
+ foreach ($dir as $entry) {
+   if (strpos($entry, ".class.php") !== false) {
+@@ -50,25 +50,32 @@ foreach ($dir as $entry) {
+ }
+ 
+ // DEFINES
+-include(dirname(__FILE__)."/defines.php");
+-include(dirname(__FILE__)."/protocol.php");
++include(dirname(__FILE__) . "/defines.php");
++include(dirname(__FILE__) . "/protocol.php");
++
++// include notifications
++$NOTIFICATIONS = array();
++require_once(dirname(__FILE__)."/notifications/Notification.class.php");
++$dir = scandir(dirname(__FILE__) . "/notifications/");
++foreach ($dir as $entry) {
++  if (strpos($entry, ".class.php") !== false) {
++    require_once(dirname(__FILE__) . "/notifications/" . $entry);
++  }
++}
+ 
+ // include DBA
+-require_once(dirname(__FILE__)."/../dba/init.php");
++require_once(dirname(__FILE__) . "/../dba/init.php");
+ 
+ $FACTORIES = new Factory();
+ $LANG = new Lang();
+ 
+ $gitcommit = "";
+-$out = array();
+-exec("cd '".dirname(__FILE__)."/../' && git rev-parse HEAD", $out);
+-if (isset($out[0])) {
+-  $gitcommit = "commit ".substr($out[0], 0, 7);
+-}
+-$out = array();
+-exec("cd '".dirname(__FILE__)."/../' && git rev-parse --abbrev-ref HEAD", $out);
+-if (isset($out[0])) {
+-  $gitcommit .= " branch " . $out[0];
++$gitfolder = dirname(__FILE__) . "/../../.git";
++if (file_exists($gitfolder) && is_dir($gitfolder)) {
++  $head = file_get_contents($gitfolder . "/HEAD");
++  $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
++  $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
++  $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
+ }
+ $OBJECTS['gitcommit'] = $gitcommit;
+ 
+diff --git a/src/inc/notifications/Notification.class.php b/src/inc/notifications/Notification.class.php
+new file mode 100644
+index 0000000..84c4886
+--- /dev/null
++++ b/src/inc/notifications/Notification.class.php
+@@ -0,0 +1,146 @@
++<?php
++use DBA\NotificationSetting;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 09.03.17
++ * Time: 13:38
++ */
++abstract class HashtopussyNotification {
++  public static $name;
++  protected     $receiver;
++  
++  /** @var  $notification NotificationSetting */
++  protected $notification;
++  
++  /**
++   * @param $notificationType string
++   * @param $payload DataSet
++   * @param $receiver string Contains the value where the message can be sent to. This can for example be an URL, an email address, etc.
++   * @param $notification NotificationSetting
++   */
++  public function execute($notificationType, $payload, $notification) {
++    /** @var $CONFIG DataSet */
++    global $CONFIG;
++    
++    $this->receiver = $notification->getReceiver();
++    $this->notification = $notification;
++    $template = new Template($this->getTemplateName());
++    $obj = $this->getObjects();
++    switch ($notificationType) {
++      case DNotificationType::TASK_COMPLETE:
++        $task = $payload->getVal(DPayloadKeys::TASK);
++        $obj['message'] = "Task '" . $task->getTaskName() . "' (" . $task->getId() . ") is completed!";
++        $obj['html'] = "Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> is completed!";
++        $obj['simplified'] = "Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> is completed!";
++        break;
++      case DNotificationType::AGENT_ERROR:
++        $agent = $payload->getVal(DPayloadKeys::AGENT);
++        $obj['message'] = "Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
++        $obj['html'] = "Agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
++        $obj['simplified'] = "Agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . "> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
++        break;
++      case DNotificationType::LOG_ERROR:
++        $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
++        $obj['message'] = "Log level ERROR occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
++        $obj['html'] = $obj['message'];
++        $obj['simplified'] = $obj['message'];
++        break;
++      case DNotificationType::NEW_TASK:
++        $task = $payload->getVal(DPayloadKeys::TASK);
++        $obj['message'] = "New Task '" . $task->getTaskName() . "' (" . $task->getId() . ") was created";
++        $obj['html'] = "New Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> was created";
++        $obj['simplified'] = "New Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> was created";
++        break;
++      case DNotificationType::NEW_HASHLIST:
++        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
++        $obj['message'] = "New Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") was created";
++        $obj['html'] = "New Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> was created";
++        $obj['simplified'] = "New Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> was created";
++        break;
++      case DNotificationType::HASHLIST_ALL_CRACKED:
++        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
++        $obj['message'] = "Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") was cracked completely";
++        $obj['html'] = "Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> was cracked completely";
++        $obj['simplified'] = "Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> was cracked completely";
++        break;
++      case DNotificationType::HASHLIST_CRACKED_HASH:
++        $numCracked = $payload->getVal(DPayloadKeys::NUM_CRACKED);
++        $agent = $payload->getVal(DPayloadKeys::AGENT);
++        $task = $payload->getVal(DPayloadKeys::TASK);
++        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
++        $obj['message'] = "$numCracked Hashes from Hashlist '".$hashlist->getHashlistName()."' (".$hashlist->getId().") were cracked on Task '" . $task->getTaskName() . "' (" . $task->getId() . ") by agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ")";
++        $obj['html'] = "$numCracked Hashes from Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> were cracked on Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> by agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a>";
++        $obj['simplified'] = "$numCracked Hashes from Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> were cracked on Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> by agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . ">";
++        break;
++      case DNotificationType::USER_CREATED:
++        $user = $payload->getVal(DPayloadKeys::USER);
++        $obj['message'] = "New User '" . $user->getUsername() . "' (" . $user->getId() . ") was created";
++        $obj['html'] = "New User <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> was created";
++        $obj['simplified'] = "New User <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "|" . $user->getUsername() . "> was created";
++        break;
++        break;
++      case DNotificationType::USER_DELETED:
++        $user = $payload->getVal(DPayloadKeys::USER);
++        $obj['message'] = "User '" . $user->getUsername() . "' (" . $user->getId() . ") got deleted";
++        $obj['html'] = "User <a href='#'>" . $user->getUsername() . "</a> got deleted";
++        $obj['simplified'] = "User '" . $user->getUsername() . "' got deleted";
++        break;
++      case DNotificationType::USER_LOGIN_FAILED:
++        $user = $payload->getVal(DPayloadKeys::USER);
++        $obj['message'] = "User '" . $user->getUsername() . "' (" . $user->getId() . ") failed to login due to wrong password";
++        $obj['html'] = "User <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> failed to login due to wrong password";
++        $obj['simplified'] = "User <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "|" . $user->getUsername() . "> failed to login due to wrong password";
++        break;
++      case DNotificationType::NEW_AGENT:
++        $agent = $payload->getVal(DPayloadKeys::AGENT);
++        $obj['message'] = "New Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") was registered";
++        $obj['html'] = "New Agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a> was registered";
++        $obj['simplified'] = "New Agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . "> was registered";
++        break;
++      case DNotificationType::DELETE_TASK:
++        $task = $payload->getVal(DPayloadKeys::TASK);
++        $obj['message'] = "Task '" . $task->getTaskName() . "' (" . $task->getId() . ") got deleted";
++        $obj['html'] = "Task <a href='#'>" . $task->getTaskName() . "</a> got deleted";
++        $obj['simplified'] = "Task '" . $task->getTaskName() . "' got deleted";
++        break;
++      case DNotificationType::DELETE_HASHLIST:
++        $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
++        $obj['message'] = "Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") got deleted";
++        $obj['html'] = "Hashlist <a href='#'>" . $hashlist->getHashlistName() . "</a> got deleted";
++        $obj['simplified'] = "Hashlist '" . $hashlist->getHashlistName() . "' got deleted";
++        break;
++      case DNotificationType::DELETE_AGENT:
++        $agent = $payload->getVal(DPayloadKeys::AGENT);
++        $obj['message'] = "Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") got deleted";
++        $obj['html'] = "Agent <a href='#'>" . $agent->getAgentName() . "</a> got deleted";
++        $obj['simplified'] = "Agent '" . $agent->getAgentName() . "' got deleted";
++        break;
++      case DNotificationType::LOG_WARN:
++        $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
++        $obj['message'] = "Log level WARN occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
++        $obj['html'] = $obj['message'];
++        $obj['simplified'] = $obj['message'];
++        break;
++      case DNotificationType::LOG_FATAL:
++        $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
++        $obj['message'] = "Log level FATAL occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
++        $obj['html'] = $obj['message'];
++        $obj['simplified'] = $obj['message'];
++        break;
++      default:
++        $obj['message'] = "Notification for unknown type: " . print_r($payload->getAllValues(), true);
++        $obj['html'] = $obj['message'];
++        $obj['simplified'] = $obj['message'];
++        break;
++    }
++    $this->sendMessage($template->render($obj));
++  }
++  
++  abstract function getTemplateName();
++  
++  abstract function getObjects();
++  
++  abstract function sendMessage($message);
++}
+diff --git a/src/inc/notifications/NotificationChatBot.class.php b/src/inc/notifications/NotificationChatBot.class.php
+new file mode 100644
+index 0000000..2318a87
+--- /dev/null
++++ b/src/inc/notifications/NotificationChatBot.class.php
+@@ -0,0 +1,44 @@
++<?php
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 09.03.17
++ * Time: 14:00
++ */
++class HashtopussyNotificationChatBot extends HashtopussyNotification {
++  protected     $receiver;
++  public static $name = "ChatBot";
++  
++  function getTemplateName() {
++    return "notifications/chatbot";
++  }
++  
++  function getObjects() {
++    return array();
++  }
++  
++  function sendMessage($message) {
++    $username = "Hashtopussy";
++    $data = "payload=" . json_encode(array(
++        "username" => $username,
++        "text" => $message
++      )
++      );
++    
++    $ch = curl_init($this->receiver);
++    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
++    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
++    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
++    $result = curl_exec($ch);
++    curl_close($ch);
++    
++    return $result;
++  }
++}
++
++$NOTIFICATIONS['ChatBot'] = new HashtopussyNotificationChatBot();
++
++
++
++
+diff --git a/src/inc/notifications/NotificationEmail.class.php b/src/inc/notifications/NotificationEmail.class.php
+new file mode 100644
+index 0000000..495b6db
+--- /dev/null
++++ b/src/inc/notifications/NotificationEmail.class.php
+@@ -0,0 +1,29 @@
++<?php
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 09.03.17
++ * Time: 14:00
++ */
++class HashtopussyNotificationEmail extends HashtopussyNotification {
++  protected     $receiver;
++  public static $name = "Email";
++  
++  function getTemplateName() {
++    return "notifications/email";
++  }
++  
++  function getObjects() {
++    $obj = array();
++    $obj['username'] = Util::getUsernameById($this->notification->getUserId());
++    return $obj;
++  }
++  
++  function sendMessage($message) {
++    Util::sendMail($this->receiver, "Hashtopussy Notification", $message);
++  }
++}
++
++$NOTIFICATIONS['Email'] = new HashtopussyNotificationEmail();
++
+diff --git a/src/inc/notifications/NotificationExample.class.php b/src/inc/notifications/NotificationExample.class.php
+new file mode 100644
+index 0000000..c97d457
+--- /dev/null
++++ b/src/inc/notifications/NotificationExample.class.php
+@@ -0,0 +1,27 @@
++<?php
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 09.03.17
++ * Time: 14:00
++ */
++class HashtopussyNotificationExample extends HashtopussyNotification {
++  protected     $receiver;
++  public static $name = "Example";
++  
++  function getTemplateName() {
++    return "notifications/example";
++  }
++  
++  function getObjects() {
++    return array();
++  }
++  
++  function sendMessage($message) {
++    file_put_contents(dirname(__FILE__) . "/notification.log", "MSG TO " . $this->receiver . ": " . $message . "\n", FILE_APPEND);
++  }
++}
++
++$NOTIFICATIONS['Example'] = new HashtopussyNotificationExample();
++
+diff --git a/src/install/hashtopussy.sql b/src/install/hashtopussy.sql
+index 85986c5..4bd5006 100755
+--- a/src/install/hashtopussy.sql
++++ b/src/install/hashtopussy.sql
+@@ -30,12 +30,21 @@ CREATE TABLE `Zap` (
+   `zapId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
+   `hash`       VARCHAR(512)                       NOT NULL,
+   `solveTime`  INT(11)                            NOT NULL,
++  `agentId`    INT(11)                            NOT NULL,
+   `hashlistId` INT(11)                            NOT NULL
+ )
+   ENGINE = InnoDB
+   DEFAULT CHARSET = utf8
+   COLLATE = utf8_bin;
+ 
++CREATE TABLE `AgentZap` (
++  `agentId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
++  `lastZapId`       INT(11)                       NOT NULL
++)
++  ENGINE = InnoDB
++  DEFAULT CHARSET = utf8
++  COLLATE = utf8_bin;
++
+ CREATE TABLE `StoredValue` (
+   `storedValueId` VARCHAR(127) PRIMARY KEY NOT NULL,
+   `val`           VARCHAR(127)             NOT NULL
+@@ -461,7 +470,7 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
+   (5, 'Administrator', 50);
+ 
+ INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`, `version`)
+-VALUES (1, 'csharp', 'Windows', 'hashtopussy.exe', '0.40');
++VALUES (1, 'csharp', 'Windows', 'hashtopussy.exe', '0.43');
+ 
+ CREATE TABLE `Session` (
+   `sessionId`        INT(11)      NOT NULL,
+@@ -518,7 +527,8 @@ CREATE TABLE `Task` (
+                 COLLATE utf8_bin NULL,
+   `isSmall`     INT(11)          NOT NULL,
+   `isCpuTask`   INT(11)          NOT NULL,
+-  `useNewBench` INT(11)          NOT NULL
++  `useNewBench` INT(11)          NOT NULL,
++  `skipKeyspace` BIGINT(20)      NOT NULL
+ )
+   ENGINE = InnoDB
+   DEFAULT CHARSET = utf8
+@@ -554,6 +564,23 @@ CREATE TABLE `User` (
+   DEFAULT CHARSET = utf8
+   COLLATE = utf8_bin;
+ 
++CREATE TABLE `NotificationSetting` (
++  `notificationSettingId` int(11) NOT NULL,
++  `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
++  `objectId` int(11) NULL,
++  `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
++  `userId` int(11) NOT NULL,
++  `receiver` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
++  `isActive` tinyint(4) NOT NULL
++) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
++
++ALTER TABLE `NotificationSetting`
++  ADD PRIMARY KEY (`notificationSettingId`),
++  ADD KEY `NotificationSetting_ibfk_1` (`userId`);
++
++ALTER TABLE `NotificationSetting`
++  MODIFY `notificationSettingId` int(11) NOT NULL AUTO_INCREMENT;
++
+ ALTER TABLE `Agent`
+   ADD PRIMARY KEY (`agentId`),
+   ADD KEY `userId` (`userId`);
+@@ -735,6 +762,9 @@ ALTER TABLE `HashBinary`
+ ALTER TABLE `Hashlist`
+   ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
+ 
++ALTER TABLE `NotificationSetting`
++  ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
++
+ ALTER TABLE `HashlistAgent`
+   ADD CONSTRAINT `HashlistAgent_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+   ADD CONSTRAINT `HashlistAgent_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+diff --git a/src/install/index.php b/src/install/index.php
+index dab48d9..0337ab8 100755
+--- a/src/install/index.php
++++ b/src/install/index.php
+@@ -11,6 +11,7 @@
+ // -> when installation is finished, tell to secure the install directory
+ // -> ask user for salts in the crypt class to provide and insert them
+ 
++use DBA\Config;
+ use DBA\QueryFilter;
+ use DBA\RightGroup;
+ use DBA\User;
+@@ -65,6 +66,10 @@ switch($STEP){
+ 		if(isset($_GET['next'])){
+ 			$query = file_get_contents(dirname(__FILE__)."/hashtopussy.sql");
+ 			$FACTORIES::getAgentFactory()->getDB()->query($query);
++			$baseUrl = explode("/", $_SERVER['REQUEST_URI']);
++			unset($baseUrl[sizeof($baseUrl) - 1]);
++			$urlConfig = new Config(0, DConfig::BASE_URL, implode("/", $baseUrl));
++			$FACTORIES::getConfigFactory()->save($urlConfig);
+ 			setcookie("step", "52", time() + 3600);
+ 			setcookie("prev", "2", time() + 3600);
+ 			header("Location: index.php");
+diff --git a/src/install/updates/reset.php b/src/install/updates/reset.php
+new file mode 100644
+index 0000000..1e56925
+--- /dev/null
++++ b/src/install/updates/reset.php
+@@ -0,0 +1,39 @@
++<?php
++
++require_once(dirname(__FILE__) . "/../../inc/load.php");
++
++/**
++ * Use this file if you want to reset the password for an admin account. Fill in the values and just run it once.
++ */
++
++if (!isset($argv[1])) {
++  die("You need to set an action!\n");
++}
++
++switch ($argv[1]) {
++  case "password":
++    $newPassword = "EnterPasswordToSetHere";
++    $userId = "0"; // fill in the user id of the admin account
++    
++    $user = $FACTORIES::getUserFactory()->get($userId);
++    if ($user == null) {
++      die("User not found!\n");
++    }
++    
++    $newSalt = Util::randomString(20);
++    $newHash = Encryption::passwordHash($newPassword, $newSalt);
++    $user->setPasswordHash($newHash);
++    $user->setPasswordSalt($newSalt);
++    $user->setIsComputedPassword(0);
++    $FACTORIES::getUserFactory()->update($user);
++    echo "User " . $user->getUsername() . " has a new password now\n!";
++    break;
++  case "pepper": // use this if you have overwritten the Encryption class and the pepper values should be generated again.
++    $pepper = array(Util::randomString(50), Util::randomString(50), Util::randomString(50));
++    $crypt = file_get_contents(dirname(__FILE__)."/../../inc/Encryption.class.php");
++    $crypt = str_replace("__PEPPER1__", $pepper[0], str_replace("__PEPPER2__", $pepper[1], str_replace("__PEPPER3__", $pepper[2], $crypt)));
++    file_put_contents(dirname(__FILE__)."/../../inc/Encryption.class.php", $crypt);
++    echo "Peppers are generated new!\n";
++    break;
++}
++
+diff --git a/src/install/updates/update_v0.2.x_v0.3.0.php b/src/install/updates/update_v0.2.x_v0.3.0.php
+new file mode 100644
+index 0000000..6c9c406
+--- /dev/null
++++ b/src/install/updates/update_v0.2.x_v0.3.0.php
+@@ -0,0 +1,72 @@
++<?php
++/**
++ * Created by IntelliJ IDEA.
++ * User: sein
++ * Date: 06.03.17
++ * Time: 12:16
++ */
++
++use DBA\AgentBinary;
++use DBA\Config;
++use DBA\QueryFilter;
++
++require_once(dirname(__FILE__) . "/../../inc/load.php");
++
++echo "Apply updates...\n";
++
++// insert updates here
++echo "Add skipKeyspace column... ";
++$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `skipKeyspace` BIGINT NOT NULL");
++echo "OK\n";
++
++echo "Add Notification Table and Settings...";
++$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `NotificationSetting` (`notificationSettingId` int(11) NOT NULL, `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `objectId` int(11) NOT NULL, `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `userId` int(11) NOT NULL, `receiver` varchar(200) COLLATE utf8_unicode_ci NOT NULL, `isActive` tinyint(4) NOT NULL) ENGINE=InnoDB");
++echo "#";
++$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` ADD PRIMARY KEY (`notificationSettingId`), ADD KEY `NotificationSetting_ibfk_1` (`userId`)");
++echo "#";
++$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` MODIFY `notificationSettingId` int(11) NOT NULL AUTO_INCREMENT");
++echo "#";
++$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`)");
++echo "OK\n";
++
++echo "Applying new zapping...\n";
++echo "Dropping old zap table... ";
++$FACTORIES::getAgentFactory()->getDB()->query("DROP TABLE `Zap`");
++echo "OK\n";
++echo "Creating new zap table... ";
++$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `Zap` (`zapId` INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,`hash` VARCHAR(512) NOT NULL,`solveTime` INT(11) NOT NULL,`agentId` INT(11) NOT NULL,`hashlistId` INT(11) NOT NULL)");
++echo "OK\n";
++echo "Creating agentZap table... ";
++$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `AgentZap` (`agentId` INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL, `lastZapId` INT(11) NOT NULL)");
++echo "OK\n";
++echo "New zapping changes applied!\n";
++
++echo "Check csharp binary... ";
++$qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
++$binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
++if($binary != null){
++  if(Util::versionComparison($binary->getVersion(), "0.43") == 1){
++    echo "update version... ";
++    $binary->setVersion("0.43");
++    $FACTORIES::getAgentBinaryFactory()->update($binary);
++    echo "OK";
++  }
++}
++echo "\n";
++
++echo "Please enter the base URL of the webpage (without protocol and hostname, just relatively to the root / of the domain):\n";
++$url = readline();
++$qF = new QueryFilter(Config::ITEM, DConfig::BASE_URL, "=");
++$entry = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF), true);
++echo "applying... ";
++if($entry == null){
++  $entry = new Config(0, DConfig::BASE_URL, $url);
++  $FACTORIES::getConfigFactory()->save($entry);
++}
++else{
++  $entry->setValue($url);
++  $FACTORIES::getConfigFactory()->update($entry);
++}
++echo "OK\n";
++
++echo "Update complete!\n";
+diff --git a/src/notifications.php b/src/notifications.php
+new file mode 100755
+index 0000000..a38d930
+--- /dev/null
++++ b/src/notifications.php
+@@ -0,0 +1,120 @@
++<?php
++
++use DBA\Agent;
++use DBA\Hashlist;
++use DBA\NotificationSetting;
++use DBA\OrderFilter;
++use DBA\QueryFilter;
++use DBA\Task;
++use DBA\User;
++
++require_once(dirname(__FILE__) . "/inc/load.php");
++
++/** @var Login $LOGIN */
++/** @var array $OBJECTS */
++/** @var array $NOTIFICATIONS */
++
++if (!$LOGIN->isLoggedin()) {
++  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
++  die();
++}
++else if ($LOGIN->getLevel() < DAccessLevel::USER) {
++  $TEMPLATE = new Template("restricted");
++  die($TEMPLATE->render($OBJECTS));
++}
++
++$TEMPLATE = new Template("notifications");
++$MENU->setActive("account_notifications");
++
++//catch actions here...
++if (isset($_POST['action'])) {
++  $notificationHandler = new NotificationHandler();
++  $notificationHandler->handle($_POST['action']);
++  if (UI::getNumMessages() == 0) {
++    Util::refresh();
++  }
++}
++
++$qF = new QueryFilter(NotificationSetting::USER_ID, $LOGIN->getUserID(), "=");
++$oF = new OrderFilter(NotificationSetting::ACTION, "ASC");
++$notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
++$OBJECTS['notifications'] = $notifications;
++
++$allAgents = array();
++$oF = new OrderFilter(Agent::AGENT_NAME, "ASC");
++if ($LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
++  $allAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::ORDER => $oF));
++}
++else {
++  $qF = new QueryFilter(Agent::USER_ID, $LOGIN->getUserID(), "=");
++  $allAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
++}
++$OBJECTS['allAgents'] = $allAgents;
++
++$agentNames = new DataSet();
++foreach ($allAgents as $agent) {
++  $agentNames->addValue($agent->getId(), $agent->getAgentName());
++}
++$OBJECTS['agentNames'] = $agentNames;
++
++$allApplies = new DataSet();
++foreach ($notifications as $notification) {
++  $notificationObject = DNotificationType::getObjectType($notification->getAction());
++  $appliedTo = "N/A";
++  if ($notification->getObjectId() != null) {
++    switch ($notificationObject) {
++      case DNotificationObjectType::TASK:
++        $task = $FACTORIES::getTaskFactory()->get($notification->getObjectId());
++        $appliedTo = "<a href='tasks.php?id=" . $task->getId() . "'>Task: " . $task->getTaskName() . "(" . $task->getId() . ")</a>";
++        break;
++      case DNotificationObjectType::HASHLIST:
++        $hashlist = $FACTORIES::getHashlistFactory()->get($notification->getObjectId());
++        $appliedTo = "<a href='hashlists.php?id=" . $hashlist->getId() . "'>Hashlist: " . $hashlist->getHashlistName() . "(" . $hashlist->getId() . ")</a>";
++        break;
++      case DNotificationObjectType::USER:
++        $user = $FACTORIES::getUserFactory()->get($notification->getObjectId());
++        $appliedTo = "User: " . $user->getUsername() . "(" . $user->getId() . ")";
++        break;
++      case DNotificationObjectType::AGENT:
++        $agent = $FACTORIES::getAgentFactory()->get($notification->getObjectId());
++        $appliedTo = "<a href='agents.php?id=" . $agent->getId() . "'>Hashlist: " . $agent->getAgentName() . "(" . $agent->getId() . ")</a>";
++        break;
++    }
++  }
++  $allApplies->addValue($notification->getId(), $appliedTo);
++}
++$OBJECTS['allApplies'] = $allApplies;
++
++$allNotifications = array();
++foreach ($NOTIFICATIONS as $name => $notification) {
++  $allNotifications[] = $name;
++}
++$OBJECTS['allNotifications'] = $allNotifications;
++
++$allowedActions = array();
++$actionSettings = array();
++foreach (DNotificationType::getAll() as $notificationType) {
++  if (DNotificationType::getRequiredLevel($notificationType) <= $LOGIN->getLevel()) {
++    $allowedActions[] = $notificationType;
++    $actionSettings[] = "\"" . $notificationType . "\":\"" . DNotificationType::getObjectType($notificationType) . "\"";
++  }
++}
++sort($allowedActions);
++$OBJECTS['allowedActions'] = $allowedActions;
++$OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
++
++$qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
++$oF = new OrderFilter(Task::TASK_NAME, "ASC");
++$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
++$oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
++$OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::ORDER => $oF));
++if ($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR) {
++  $oF = new OrderFilter(User::USERNAME, "ASC");
++  $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::ORDER => $oF));
++}
++
++echo $TEMPLATE->render($OBJECTS);
++
++
++
++
+diff --git a/src/pretasks.php b/src/pretasks.php
+index cca770f..6727e7b 100755
+--- a/src/pretasks.php
++++ b/src/pretasks.php
+@@ -4,6 +4,7 @@ use DBA\File;
+ use DBA\JoinFilter;
+ use DBA\OrderFilter;
+ use DBA\QueryFilter;
++use DBA\SupertaskTask;
+ use DBA\Task;
+ use DBA\TaskFile;
+ 
+@@ -47,9 +48,17 @@ for($z=0;$z<sizeof($taskList);$z++){
+     }
+   }
+   
++  $isUsed = false;
++  $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
++  $supertaskTasks = $FACTORIES::getSupertaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
++  if(sizeof($supertaskTasks) > 0){
++    $isUsed = true;
++  }
++  
+   $set->addValue('numFiles', sizeof($joinedFiles['File']));
+   $set->addValue('filesSize', $sizes);
+   $set->addValue('fileSecret', $secret);
++  $set->addValue('isUsed', $isUsed);
+   
+   $tasks[] = $set;
+ }
+diff --git a/src/static/hashtopussy.exe b/src/static/hashtopussy.exe
+index 5d08a8d..9bd0f18 100644
+Binary files a/src/static/hashtopussy.exe and b/src/static/hashtopussy.exe differ
+diff --git a/src/tasks.php b/src/tasks.php
+index 7bb9935..8bf0cf3 100755
+--- a/src/tasks.php
++++ b/src/tasks.php
+@@ -240,7 +240,7 @@ else if (isset($_GET['new'])) {
+   $TEMPLATE = new Template("tasks/new");
+   $MENU->setActive("tasks_new");
+   $orig = 0;
+-  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 1);
++  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 1, 0);
+   if (isset($_GET["copy"])) {
+     //copied from a task
+     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
+diff --git a/src/templates/agents/new.template.html b/src/templates/agents/new.template.html
+index 3bfd663..150687b 100755
+--- a/src/templates/agents/new.template.html
++++ b/src/templates/agents/new.template.html
+@@ -31,7 +31,8 @@
+             <input type="hidden" name="action" value="downloadagent">
+             <input type="hidden" name="binary" value="[[binary.getId()]]">
+             <input type="submit" class='btn btn-primary' value="Download">
+-          </form>
++          </form><br>
++					<code>[[agentUrl]][[binary.getId()]]</code>
+         </td>
+       </tr>
+     {{ENDFOREACH}}
+diff --git a/src/templates/chunks.template.html b/src/templates/chunks.template.html
+index 9b6d54d..4a1341c 100755
+--- a/src/templates/chunks.template.html
++++ b/src/templates/chunks.template.html
+@@ -3,6 +3,18 @@
+ <h2>Chunk activity</h2>
+ <div class="panel panel-default">
+ 	<table class="table table-bordered table-nonfluid">
++		{{IF ![[all]]}}
++			<tr>
++				<td colspan="12" style="text-align: center">
++					<a href="chunks.php?show=all"><button class="btn btn-primary">Show all chunks</button></a><br><br>
++					<div class="btn-group" role="group">
++						<a href="chunks.php?page=[[Util::calculate([[page]] - 1)]]"><button type="button" class="btn btn-default"{{IF [[page]] == 0}} disabled{{ENDIF}}>&lt;</button></a>
++						<a href="#"><button type="button" class="btn btn-default" disabled>Page [[Util::calculate([[page]] + 1)]]</button></a>
++						<a href="chunks.php?page=[[Util::calculate([[page]] + 1)]]"><button type="button" class="btn btn-default"{{IF [[page]] == [[maxpage]]}} disabled{{ENDIF}}>&gt;</button></a>
++					</div>
++				</td>
++			</tr>
++		{{ENDIF}}
+ 		<tr>
+ 			<th>ID</th>
+ 			<th>Start</th>
+diff --git a/src/templates/hashcat/new.template.html b/src/templates/hashcat/new.template.html
+index 00a5882..58b39b1 100755
+--- a/src/templates/hashcat/new.template.html
++++ b/src/templates/hashcat/new.template.html
+@@ -18,7 +18,7 @@
+ 			<tr>
+ 				<td>Archive URL:</td>
+ 				<td>
+-					<input type="text" name="url" class='form-control'></input>
++					<input type="text" name="url" class='form-control'>
+ 				</td>
+ 			</tr>
+ 			<tr>
+@@ -26,7 +26,7 @@
+ 					Archive root directory:
+ 				</td>
+ 				<td>
+-					<input type="text" class='form-control' name="rootdir" value="[[rootDir]]">
++					<input type="text" class='form-control' name="rootdir" value="[[rootDir]]" placeholder="hashcat-x.xx">
+ 				</td>
+ 			</tr>
+ 			<tr>
+diff --git a/src/templates/notifications.template.html b/src/templates/notifications.template.html
+new file mode 100755
+index 0000000..1f72ef1
+--- /dev/null
++++ b/src/templates/notifications.template.html
+@@ -0,0 +1,117 @@
++{%TEMPLATE->struct/head%}
++{%TEMPLATE->struct/menu%}
++<h2>Notifications</h2>
++{%TEMPLATE->struct/messages%}
++<script type="text/javascript">
++  var actionSettings = [[actionSettings]];
++
++  function updateLists(){
++    var id = $( "#actionType" ).val();
++    $("#Task").hide();
++    $("#Hashlist").hide();
++    $("#Agent").hide();
++    $("#User").hide();
++    if(actionSettings[id] != "NONE" && actionSettings[id] != ""){
++        $("#" + actionSettings[id]).show();
++    }
++  }
++</script>
++<div class="panel panel-default">
++	<table class="table table-bordered table-nonfluid">
++    <tr>
++      <th colspan="7">
++        Create Notification
++      </th>
++    </tr>
++    <tr>
++      <td colspan="7">
++        <form action="notifications.php" method="post" class="form-inline">
++          <input type="hidden" name="action" value="createNotification">
++          Trigger Action:
++          <select id="actionType" name="actionType" class="form-control" onchange="updateLists()">
++            {{FOREACH action;[[allowedActions]]}}
++              <option value="[[action]]">[[action]]</option>
++            {{ENDFOREACH}}
++          </select>
++
++          <select id="Task" name="tasks" class="form-control">
++            <option value="ALL">ALL</option>
++            {{FOREACH task;[[allTasks]]}}
++              <option value="[[task.getId()]]">[[task.getTaskName()]] ([[task.getId()]])</option>
++            {{ENDFOREACH}}
++          </select>
++          <select id="Agent" name="agents" class="form-control">
++            <option value="ALL">ALL</option>
++            {{FOREACH agent;[[allAgents]]}}
++              <option value="[[agent.getId()]]">[[agent.getAgentName()]] ([[agent.getId()]])</option>
++            {{ENDFOREACH}}
++          </select>
++          <select id="Hashlist" name="hashlists" class="form-control">
++            <option value="ALL">ALL</option>
++            {{FOREACH hashlist;[[allHashlists]]}}
++              <option value="[[hashlist.getId()]]">[[hashlist.getHashlistName()]] ([[hashlist.getId()]])</option>
++            {{ENDFOREACH}}
++          </select>
++          {{IF [[login.getLevel()]] >= 50}}
++            <select id="User" name="users" class="form-control">
++              <option value="ALL">ALL</option>
++              {{FOREACH user;[[allUsers]]}}
++                <option value="[[user.getId()]]">[[user.getUsername()]] ([[user.getId()]])</option>
++              {{ENDFOREACH}}
++            </select>
++          {{ENDIF}}
++
++          Executed Notification:
++          <select name="notification" class="form-control">
++            {{FOREACH notification;[[allNotifications]]}}
++              <option value="[[notification]]">[[notification]]</option>
++            {{ENDFOREACH}}
++          </select>
++
++          Receiver:
++          <input type="text" name="receiver" class="form-control">
++
++          <button type="submit" class="btn btn-success">Create</button>
++        </form>
++      </td>
++    </tr>
++		<tr>
++      <th>ID</th>
++      <th>Active</th>
++      <th>Trigger Action</th>
++      <th>Applied To</th>
++      <th>Called Notification</th>
++      <th>Receiver</th>
++      <th>&nbsp;</th>
++    </tr>
++    {{FOREACH notification;[[notifications]]}}
++      <tr>
++        <td>[[notification.getId()]]</td>
++        <td>
++          <form id="active[[notification.getId()]]" action="notifications.php" method="post">
++            <input type='hidden' name='action' value='notificationActive'>
++            <input type="hidden" name="notification" value="[[notification.getId()]]">
++            <input type="checkbox" {{IF [[notification.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[notification.getId()]]').submit();">
++          </form>
++        </td>
++        <td>[[notification.getAction()]]</td>
++        <td>[[allApplies.getVal([[notification.getId()]])]]</td>
++        <td>[[notification.getNotification()]]</td>
++        <td><code>[[notification.getReceiver()]]</code></td>
++        <td>
++          <form action="notifications.php" method="POST" onSubmit="if (!confirm('Really delete notification [[notification.getId()]]?')) return false;">
++            <input type='hidden' name='action' value='notificationDelete'>
++            <input type="hidden" name="notification" value="[[notification.getId()]]">
++            <input type="submit" class='btn btn-danger' value="Delete">
++          </form>
++        </td>
++      </tr>
++    {{ENDFOREACH}}
++	</table>
++</div>
++<script type="text/javascript">
++  $( document ).ready(function() {
++    updateLists();
++  });
++</script>
++{%TEMPLATE->struct/foot%}
+diff --git a/src/templates/notifications/chatbot.template.html b/src/templates/notifications/chatbot.template.html
+new file mode 100644
+index 0000000..604f1bf
+--- /dev/null
++++ b/src/templates/notifications/chatbot.template.html
+@@ -0,0 +1 @@
++[[simplified]]
+\ No newline at end of file
+diff --git a/src/templates/notifications/email.template.html b/src/templates/notifications/email.template.html
+new file mode 100644
+index 0000000..9b24f42
+--- /dev/null
++++ b/src/templates/notifications/email.template.html
+@@ -0,0 +1,3 @@
++Hi [[username]]<br><br>
++
++[[html]]
+\ No newline at end of file
+diff --git a/src/templates/notifications/example.template.html b/src/templates/notifications/example.template.html
+new file mode 100644
+index 0000000..a83a00d
+--- /dev/null
++++ b/src/templates/notifications/example.template.html
+@@ -0,0 +1 @@
++[[message]]
+\ No newline at end of file
+diff --git a/src/templates/pretasks.template.html b/src/templates/pretasks.template.html
+index e9695b3..ecc7027 100755
+--- a/src/templates/pretasks.template.html
++++ b/src/templates/pretasks.template.html
+@@ -14,12 +14,12 @@
+ 		</tr>
+ 		{{FOREACH task;[[tasks]]}}
+ 			<tr>
+-				<td{{IF [[strlen([[task.getVal('Task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('Task').getColor()]]{{ENDIF}}>
++				<td{{IF [[strlen([[task.getVal('Task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('Task').getColor()]]"{{ENDIF}}>
+ 					<a href="tasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getId()]]</a>
+ 				</td>
+ 				<td>
+ 					<a href="tasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getTaskName()]]</a>
+-        		</td>
++				</td>
+         <td>[[task.getVal('Task').getAttackCmd()]]</td>
+         <td>
+           {{IF [[task.getVal('numFiles')]] > 0}}
+@@ -42,7 +42,7 @@
+             <input type="submit" class='btn btn-default' value="Copy">
+           </form>
+ 					{{IF [[login.getLevel()]] >= 30}}
+-						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?')) return false;">
++						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?') || ({{IF [[task.getVal('isUsed')]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
+ 							<input type="hidden" name="action" value="taskdelete">
+ 							<input type='hidden' name='refer' value='pretask'>
+ 							<input type="hidden" name="task" value="[[task.getVal('Task').getId()]]">
+diff --git a/src/templates/struct/foot.template.html b/src/templates/struct/foot.template.html
+index c6537d1..331d1ad 100755
+--- a/src/templates/struct/foot.template.html
++++ b/src/templates/struct/foot.template.html
+@@ -5,7 +5,6 @@
+ 				<b>Hashtopussy: [[gitcommit]] [[version]] - <a href='about.php'>About</a></b>
+ 				<p>&copy;2016-[[date("Y")]] s3in!c - <a href='https://github.com/s3inlc/hashtopussy/' target='_blank'>Hashtopussy</a></p>
+ 			</footer>
+-			<script src="static/jquery.min.js"></script>
+ 			<script src="static/bootstrap.min.js"></script>
+ 		</div>
+ 	</body>
+diff --git a/src/templates/struct/head.template.html b/src/templates/struct/head.template.html
+index 46836ec..20b4b93 100755
+--- a/src/templates/struct/head.template.html
++++ b/src/templates/struct/head.template.html
+@@ -13,6 +13,7 @@
+ 		<link href="static/bootstrap.min.css" rel="stylesheet">
+ 		<link href="static/navbar.css" rel="stylesheet">
+ 		<script type="text/javascript" src="jscolor/jscolor.js"></script>
++		<script src="static/jquery.min.js"></script>
+ 
+ 			{{IF [[autorefresh]] > 0}}
+ 				<meta http-equiv="refresh" content="[[autorefresh]]{{IF [[strlen([[autorefreshUrl]])]] > 0}}; URL=[[autorefreshUrl]]{{ENDIF}}">
+diff --git a/src/templates/struct/menu.template.html b/src/templates/struct/menu.template.html
+index 31e17ca..c52f540 100755
+--- a/src/templates/struct/menu.template.html
++++ b/src/templates/struct/menu.template.html
+@@ -82,7 +82,14 @@
+ 					<li[[menu.isActive('hashcat_list')]]><a href="hashcat.php">Hashcat releases</a></li>
+ 				{{ENDIF}}
+ 				{{IF [[login.isLoggedin()]]}}
+-					<li[[menu.isActive('account')]]><a href="account.php">My Account</a></li>
++					<li class="dropdown[[menu.isActive('account', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account <span class="caret"></span></a>
++						<ul class="dropdown-menu">
++							<li[[menu.isActive('account_settings')]]><a href="account.php">Settings</a></li>
++              {{IF [[login.getLevel()]] >= 20}}
++							  <li[[menu.isActive('account_notifications')]]><a href="notifications.php">Notifications</a></li>
++              {{ENDIF}}
++						</ul>
++					</li>
+ 				{{ENDIF}}
+ 				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 40}}
+ 					<li class="dropdown[[menu.isActive('config', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Config <span class="caret"></span></a>
+diff --git a/src/templates/tasks/detail.template.html b/src/templates/tasks/detail.template.html
+index dfa1fb4..821e4c3 100755
+--- a/src/templates/tasks/detail.template.html
++++ b/src/templates/tasks/detail.template.html
+@@ -113,6 +113,12 @@
+         {{ENDIF}}
+       </td>
+     </tr>
++    <tr>
++      <td>Skipping keyspace at the beginning:</td>
++      <td>
++        [[task.getSkipKeyspace()]]
++      </td>
++    </tr>
+     {{IF [[task.getHashlistId()]] != null}}
+       <tr>
+         <td>Keyspace size:</td>
+@@ -267,7 +273,7 @@
+           {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
+             <img src="static/active.gif" alt="Active">
+           {{ENDIF}}
+-          {{IF [[agent.getIsActive()]] == 0 && [[activeAgents.getVal([[agent.getId()]])]] == 0}}
++          {{IF [[agent.getIsActive()]] == 0}}
+             <img src="static/pause.gif" alt="Paused">
+           {{ENDIF}}
+         </td>
+@@ -391,8 +397,6 @@
+             {{ENDIF}}
+             {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
+               <img src="static/active.gif" alt="Active">
+-            {{ELSE}}
+-              <img src="static/pause.gif" alt="Paused">
+             {{ENDIF}}
+           </td>
+           <td class="num">
+diff --git a/src/templates/tasks/new.template.html b/src/templates/tasks/new.template.html
+index d9b5133..58a6e63 100755
+--- a/src/templates/tasks/new.template.html
++++ b/src/templates/tasks/new.template.html
+@@ -86,6 +86,12 @@
+                 </select>
+               </td>
+             </tr>
++            <tr>
++              <td>Skip a given keyspace at the beginning of the task:</td>
++              <td>
++                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]">
++              </td>
++            </tr>
+       			<tr>
+       				<td colspan="2">
+       					<input type="submit" class='btn btn-default' value="Create task">
