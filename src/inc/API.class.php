@@ -285,6 +285,13 @@ class API {
     }
     
     $remaining = $task->getKeyspace() - $task->getProgress();
+    if($remaining == 0){
+      API::sendResponse(array(
+        PResponseChunk::ACTION => PActions::CHUNK,
+        PResponseChunk::RESPONSE => PValues::SUCCESS,
+        PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
+      ));
+    }
     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $start = $task->getProgress();
     $length = $agentChunkSize;
