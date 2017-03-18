@@ -264,6 +264,7 @@ class Util {
     $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
     if($hashlist->getCracked() >= $hashlist->getHashCount()){
       if($task->getPriority() > 0) {
+        $task->setPriority(0);
         $FACTORIES::getTaskFactory()->update($task);
       }
       return false;
