@@ -2,7 +2,6 @@
 
 <img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
 
-ATTENTION: people using the newest Hashcat beta need to use branch [hashcat-beta](https://github.com/s3inlc/hashtopussy/tree/hashcat-beta)!
 
 Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks among multiple computers. It is strongly based on Hashtopus.
 Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
