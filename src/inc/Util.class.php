@@ -259,11 +259,7 @@ class Util {
     if (!self::agentHasAccessToTask($task, $agent)) {
       return false;
     }
-    
-    if ($task->getKeyspace() == 0) {
-      return true;
-    }
-    
+  
     // check if the task is not needed anymore because all hashes already got cracked
     $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
     if($hashlist->getCracked() >= $hashlist->getHashCount()){
@@ -271,6 +267,10 @@ class Util {
         $FACTORIES::getTaskFactory()->update($task);
       }
       return false;
+    }
+    
+    if ($task->getKeyspace() == 0) {
+      return true;
     }
     
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
