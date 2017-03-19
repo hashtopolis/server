@@ -30,7 +30,7 @@ $MENU->setActive("lists_norm");
 if (isset($_POST['action'])) {
   $hashlistHandler = new HashlistHandler();
   $hashlistHandler->handle($_POST['action']);
-  if(UI::getNumMessages() == 0){
+  if(UI::getNumMessages() == 0 && !isset($OBJECTS['zap'])){
     Util::refresh();
   }
 }
