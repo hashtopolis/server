@@ -14,6 +14,7 @@ use DBA\QueryFilter;
 use DBA\SuperHashlistHashlist;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\Zap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -451,7 +452,8 @@ class HashlistHandler implements Handler {
       }
     }
     
-    //TODO: delete from zapqueue
+    $qF = new QueryFilter(Zap::HASHLIST_ID, $this->hashlist->getId(), "=");
+    $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
