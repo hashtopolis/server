@@ -1275,6 +1275,20 @@ class API {
         if ($count == 0) {
           $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
+  
+          $task->setPriority(0);
+          $chunk->setProgress($chunk->getLength());
+          $chunk->setRprogress(10000);
+  
+          $uS = new UpdateSet(Task::PRIORITY, 0);
+          $qF = new QueryFilter(Task::HASHLIST_ID, $hashList->getId(), "=");
+          $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+  
+          $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+          $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+  
+          $FACTORIES::getChunkFactory()->update($chunk);
+          $FACTORIES::getTaskFactory()->update($task);
           
           //stop agent
           API::sendResponse(array(
@@ -1285,11 +1299,6 @@ class API {
               PResponseSolve::AGENT_COMMAND => "stop"
             )
           );
-          $task->setPriority(0);
-          $chunk->setProgress($chunk->getLength());
-          $chunk->setRprogress(10000);
-          $FACTORIES::getChunkFactory()->update($chunk);
-          $FACTORIES::getTaskFactory()->update($task);
         }
         $chunk->setSpeed($speed * 1000);
         $FACTORIES::getChunkFactory()->update($chunk);
