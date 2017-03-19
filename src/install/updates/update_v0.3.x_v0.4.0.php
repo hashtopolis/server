@@ -7,7 +7,6 @@
  */
 
 use DBA\AgentBinary;
-use DBA\Config;
 use DBA\QueryFilter;
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
@@ -16,6 +15,10 @@ echo "Apply updates...\n";
 
 echo "Add new config... ";
 $FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (15, 'disptolerance', '20'), (16, 'batchSize', '10000')");
+echo "OK\n";
+
+echo "Change zap table... ";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Zap` CHANGE `agentId` `agentId` INT(11) NULL");
 echo "OK\n";
 
 echo "Check csharp binary... ";
