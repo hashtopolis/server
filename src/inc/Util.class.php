@@ -201,7 +201,7 @@ class Util {
         for ($i = 0; $i < sizeof($joined['Agent']); $i++) {
           /** @var Agent $ag */
           $ag = $joined['Agent'][$i];
-          if (time() - $ag->getLastAct() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
+          if (time() - $ag->getLastTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
             $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$i]); // delete timed out
             $removed++;
           }
