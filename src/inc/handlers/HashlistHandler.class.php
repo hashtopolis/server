@@ -608,6 +608,7 @@ class HashlistHandler implements Handler {
     $totalLines = 0;
     $newCracked = 0;
     $crackedIn = array();
+    $zaps = array();
     foreach ($hashlists as $l) {
       $l = Util::cast($l, Hashlist::class);
       $crackedIn[$l->getId()] = 0;
@@ -651,6 +652,9 @@ class HashlistHandler implements Handler {
         $hashFactory->update($hashEntry);
         $newCracked++;
         $crackedIn[$hashEntry->getHashlistId()]++;
+        if($hashlist->getFormat() == DHashlistFormat::PLAIN) {
+          $zaps[] = new Zap(0, $hashEntry->getHash(), time(), null, $hashlist->getId());
+        }
       }
       else {
         if (sizeof($split) < 2) {
@@ -687,6 +691,10 @@ class HashlistHandler implements Handler {
         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
         $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
         $bufferCount = 0;
+        if(sizeof($zaps) > 0){
+          $FACTORIES::getZapFactory()->massSave($zaps);
+        }
+        $zaps = array();
       }
     }
     $endTime = time();
@@ -702,6 +710,10 @@ class HashlistHandler implements Handler {
       $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
       $FACTORIES::getHashlistFactory()->update($ll);
     }
+    if(sizeof($zaps) > 0){
+      $FACTORIES::getZapFactory()->massSave($zaps);
+    }
+    
     if ($this->hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       $total = array_sum($crackedIn);
       $this->hashlist = $FACTORIES::getHashlistFactory()->get($this->hashlist->getId());
