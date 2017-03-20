@@ -198,11 +198,11 @@ class Util {
         $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
         $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
         $removed = 0;
-        for ($i = 0; $i < sizeof($joined['Agent']); $i++) {
+        for ($z = 0; $z < sizeof($joined['Agent']); $z++) {
           /** @var Agent $ag */
-          $ag = $joined['Agent'][$i];
+          $ag = $joined['Agent'][$z];
           if (time() - $ag->getLastTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
-            $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$i]); // delete timed out
+            $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$z]); // delete timed out
             $removed++;
           }
         }
