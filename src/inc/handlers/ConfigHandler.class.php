@@ -58,9 +58,11 @@ class ConfigHandler implements Handler {
       $task = Util::cast($task, Task::class);
       $taskIds[] = $task->getId();
     }
-    $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
-    $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $containFilter));
-    $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    if(sizeof($taskIds) > 0) {
+      $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
+      $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $containFilter));
+      $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    }
     $FACTORIES::getHashlistAgentFactory()->massDeletion(array());
     $FACTORIES::getHashlistFactory()->massDeletion(array());
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
