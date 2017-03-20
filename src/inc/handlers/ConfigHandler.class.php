@@ -61,6 +61,7 @@ class ConfigHandler implements Handler {
     $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
     $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $containFilter));
     $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $FACTORIES::getHashlistAgentFactory()->massDeletion(array());
     $FACTORIES::getHashlistFactory()->massDeletion(array());
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::WARN, "Complete clear was executed!");
