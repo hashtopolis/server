@@ -36,6 +36,8 @@ To report a bug, please create an issue and try to describe the problem as accur
 - Visual representation of chunk distribution
 - Multi-user support
 - User permission levels
+- Various notification types
+- Small and/or CPU-only tasks
 
 ## Hashtopus or Hashtopussy?
 
