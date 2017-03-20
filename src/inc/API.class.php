@@ -370,7 +370,7 @@ class API {
     
     // check here either if we have a better task to run on, or we have no access anymore to this task
     $bestTask = Util::getBestTask($agent);
-    if ($bestTask != null && $task->getId() != $bestTask->getId()) {
+    if ($bestTask != null && $task->getPriority() < $bestTask->getPriority()) {
       API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
     }
     else if ($bestTask == null) {
