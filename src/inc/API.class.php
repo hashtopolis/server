@@ -285,12 +285,13 @@ class API {
     }
     
     $remaining = $task->getKeyspace() - $task->getProgress();
-    if($remaining == 0){
+    if ($remaining == 0) {
       API::sendResponse(array(
-        PResponseChunk::ACTION => PActions::CHUNK,
-        PResponseChunk::RESPONSE => PValues::SUCCESS,
-        PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
-      ));
+          PResponseChunk::ACTION => PActions::CHUNK,
+          PResponseChunk::RESPONSE => PValues::SUCCESS,
+          PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
+        )
+      );
     }
     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $start = $task->getProgress();
@@ -323,6 +324,21 @@ class API {
     //check if agent is assigned
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryChunk::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    
+    // check if the agent should be notified about a hashcat update
+    $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
+    $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
+    if ($hashcat != null) {
+      if ($agent->getHcVersion() != $hashcat->getVersion()) {
+        API::sendResponse(array(
+            PResponseChunk::ACTION => PActions::CHUNK,
+            PResponseChunk::RESPONSE => PValues::SUCCESS,
+            PResponseChunk::CHUNK_STATUS => PValuesChunkType::HASHCAT_UPDATE
+          )
+        );
+      }
+    }
+    
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -646,7 +662,7 @@ class API {
     //save error message
     $error = new AgentError(0, $agent->getId(), $task->getId(), time(), $QUERY[PQueryError::MESSAGE]);
     $FACTORIES::getAgentErrorFactory()->save($error);
-  
+    
     $payload = new DataSet(array(DPayloadKeys::AGENT => $agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryError::MESSAGE]));
     NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
     
@@ -1225,8 +1241,8 @@ class API {
       $hashlistIds[] = $hl->getId();
     }
     $toZap = array();
-  
-    if($sumCracked > 0) {
+    
+    if ($sumCracked > 0) {
       $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $hashList));
       NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
     }
@@ -1255,7 +1271,7 @@ class API {
         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
-  
+        
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
         break;
@@ -1275,18 +1291,18 @@ class API {
         if ($count == 0) {
           $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
-  
+          
           $task->setPriority(0);
           $chunk->setProgress($chunk->getLength());
           $chunk->setRprogress(10000);
-  
+          
           $uS = new UpdateSet(Task::PRIORITY, 0);
           $qF = new QueryFilter(Task::HASHLIST_ID, $hashList->getId(), "=");
           $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
-  
+          
           $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
           $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-  
+          
           $FACTORIES::getChunkFactory()->update($chunk);
           $FACTORIES::getTaskFactory()->update($task);
           
@@ -1304,7 +1320,7 @@ class API {
         $FACTORIES::getChunkFactory()->update($chunk);
         
         $agentZap = $FACTORIES::getAgentZapFactory()->get($agent->getId());
-        if($agentZap == null){
+        if ($agentZap == null) {
           $agentZap = new AgentZap($agent->getId(), 0);
           $FACTORIES::getAgentZapFactory()->save($agentZap);
         }
@@ -1314,7 +1330,7 @@ class API {
         $qF3 = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "<>");
         $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
         foreach ($zaps as $zap) {
-          if($zap->getId() > $agentZap->getId()){
+          if ($zap->getId() > $agentZap->getId()) {
             $agentZap->setLastZapId($zap->getId());
           }
           $toZap[] = $zap->getHash();
@@ -1322,7 +1338,7 @@ class API {
         $agent->setLastTime(time());
         $FACTORIES::getAgentFactory()->update($agent);
         
-        if($agentZap->getLastZapId() > 0){
+        if ($agentZap->getLastZapId() > 0) {
           $FACTORIES::getAgentZapFactory()->update($agentZap);
         }
         
