@@ -777,7 +777,7 @@ class API {
     
     $hashlists = array();
     $format = $hashlist->getFormat();
-    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+    if ($format == DHashlistFormat::SUPERHASHLIST) {
       //we have a superhashlist
       $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $hashlist->getId(), "=");
       $lists = $FACTORIES->getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF)));
@@ -785,6 +785,10 @@ class API {
         $hl = $FACTORIES::getHashlistFactory()->get($list->getHashlistId());
         if ($hl->getSecret() > $agent->getIsTrusted()) {
           continue;
+        }
+        else if($format == DHashlistFormat::SUPERHASHLIST){
+          // if we don't know the format yet, load it
+          $format = $FACTORIES::getHashlistFactory()->get($list->getHashlistId())->getFormat();
         }
         $hashlists[] = $list->getHashlistId();
       }
