@@ -289,7 +289,7 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     // delete tasks which are not completed but where the hashlist is fully cracked
-    $qF = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, $FACTORIES::getHashlistFactory());
+    $qF = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "=", $FACTORIES::getHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::HASHLIST_ID, Hashlist::HASHLIST_ID);
     $joinedTasks = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   
