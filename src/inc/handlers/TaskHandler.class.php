@@ -5,6 +5,7 @@ use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\Hash;
+use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
@@ -284,6 +285,18 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     foreach ($tasks as $task) {
       $this->deleteTask($task, true);
+    }
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
+    // delete tasks which are not completed but where the hashlist is fully cracked
+    $qF = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, $FACTORIES::getHashlistFactory());
+    $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $joinedTasks = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    foreach($joinedTasks['Task'] as $task){
+      /** @var $task Task */
+      $this->deleteTask($task);
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
