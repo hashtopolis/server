@@ -878,6 +878,9 @@ class HashlistHandler implements Handler {
             $FACTORIES::getTaskFileFactory()->save($file);
             $fileCount++;
           }
+  
+          $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+          NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
         }
       }
       if ($addCount > 0) {
