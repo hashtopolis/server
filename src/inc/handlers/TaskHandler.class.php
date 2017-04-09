@@ -47,6 +47,18 @@ class TaskHandler implements Handler {
         }
         $this->adjustBenchmark();
         break;
+      case 'smalltask':
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->setSmallTask();
+        break;
+      case 'cputask':
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->setCpuTask();
+        break;
       case 'chunkabort':
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
@@ -108,6 +120,38 @@ class TaskHandler implements Handler {
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function setSmallTask(){
+    global $FACTORIES;
+    
+    $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
+    if($task == null){
+      UI::addMessage(UI::ERROR, "No such task!");
+      return;
+    }
+    $isSmall = intval($_POST['isSmall']);
+    if($isSmall != 0 && $isSmall != 1){
+      $isSmall = 0;
+    }
+    $task->setIsSmall($isSmall);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+  
+  private function setCpuTask(){
+    global $FACTORIES;
+    
+    $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
+    if($task == null){
+      UI::addMessage(UI::ERROR, "No such task!");
+      return;
+    }
+    $isCpuTask = intval($_POST['isCpu']);
+    if($isCpuTask != 0 && $isCpuTask != 1){
+      $isCpuTask = 0;
+    }
+    $task->setIsCpuTask($isCpuTask);
+    $FACTORIES::getTaskFactory()->update($task);
   }
   
   private function create() {

@@ -96,20 +96,44 @@
     <tr>
       <td>Is CPU only task:</td>
       <td>
-        {{IF [[task.getIsCpuTask()]] == 1}}
-          Yes
+        {{IF [[login.getLevel()]] >= 20}}
+          <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+            <input type="hidden" name="action" value="cputask">
+            <input type="hidden" name="task" value="[[task.getId()]]">
+            <select name="isCpu" class="form-control">
+              <option value="0"{{IF [[task.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
+              <option value="1"{{IF [[task.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
+            </select>
+            <input type="submit" class='btn btn-default' value="Set">
+          </form>
         {{ELSE}}
-          No
+          {{IF [[task.getIsCpuTask()]] == 1}}
+            Yes
+          {{ELSE}}
+            No
+          {{ENDIF}}
         {{ENDIF}}
       </td>
     </tr>
     <tr>
       <td>Is small task:</td>
       <td>
-        {{IF [[task.getIsSmall()]] == 1}}
-          Yes
+        {{IF [[login.getLevel()]] >= 20}}
+          <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+            <input type="hidden" name="action" value="smalltask">
+            <input type="hidden" name="task" value="[[task.getId()]]">
+            <select name="isSmall" class="form-control">
+              <option value="0"{{IF [[task.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
+              <option value="1"{{IF [[task.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
+            </select>
+            <input type="submit" class='btn btn-default' value="Set">
+          </form>
         {{ELSE}}
-          No
+          {{IF [[task.getIsSmall()]] == 1}}
+            Yes
+          {{ELSE}}
+            No
+          {{ENDIF}}
         {{ENDIF}}
       </td>
     </tr>
