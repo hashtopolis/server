@@ -65,11 +65,11 @@ foreach ($notifications as $notification) {
     switch ($notificationObject) {
       case DNotificationObjectType::TASK:
         $task = $FACTORIES::getTaskFactory()->get($notification->getObjectId());
-        $appliedTo = "<a href='tasks.php?id=" . $task->getId() . "'>Task: " . $task->getTaskName() . "(" . $task->getId() . ")</a>";
+        $appliedTo = "<a href='tasks.php?id=" . $task->getId() . "'>Task: " . $task->getTaskName() . " (" . $task->getId() . ")</a>";
         break;
       case DNotificationObjectType::HASHLIST:
         $hashlist = $FACTORIES::getHashlistFactory()->get($notification->getObjectId());
-        $appliedTo = "<a href='hashlists.php?id=" . $hashlist->getId() . "'>Hashlist: " . $hashlist->getHashlistName() . "(" . $hashlist->getId() . ")</a>";
+        $appliedTo = "<a href='hashlists.php?id=" . $hashlist->getId() . "'>Hashlist: " . $hashlist->getHashlistName() . " (" . $hashlist->getId() . ")</a>";
         break;
       case DNotificationObjectType::USER:
         $user = $FACTORIES::getUserFactory()->get($notification->getObjectId());
@@ -77,7 +77,7 @@ foreach ($notifications as $notification) {
         break;
       case DNotificationObjectType::AGENT:
         $agent = $FACTORIES::getAgentFactory()->get($notification->getObjectId());
-        $appliedTo = "<a href='agents.php?id=" . $agent->getId() . "'>Hashlist: " . $agent->getAgentName() . "(" . $agent->getId() . ")</a>";
+        $appliedTo = "<a href='agents.php?id=" . $agent->getId() . "'>Hashlist: " . $agent->getAgentName() . " (" . $agent->getId() . ")</a>";
         break;
     }
   }
