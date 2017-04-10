@@ -25,6 +25,12 @@ class DHashcatStatus {
   const STATUS_ABORTED_RUNTIME = 10;
 }
 
+class DTaskTypes {
+  const NORMAL    = 0;
+  const SUPERTASK = 1;
+  const SUBTASK   = 2;
+}
+
 // operating systems
 class DOperatingSystem {
   const LINUX   = 0;

@@ -152,7 +152,13 @@ $CONF['Task'] = array(
   'isSmall',
   'isCpuTask',
   'useNewBench',
-  'skipKeyspace'
+  'skipKeyspace',
+  'taskType'
+);
+$CONF['TaskTask'] = array(
+  'taskTaskId',
+  'taskId',
+  'subtaskId'
 );
 $CONF['Supertask'] = array(
   'supertaskId',
