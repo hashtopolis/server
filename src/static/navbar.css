@@ -31,5 +31,5 @@ td.num {
 
 .table-subtask-border {
 	border-collapse: separate;
-	border: 1px solid #0f00ae !important;
+	border-color: #0f00ae !important;
 }
