@@ -193,7 +193,7 @@ class Util {
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
     $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
     $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
-    $options = array($FACTORIES::JOIN => $jF, $FACTORIES::ORDER => array($oF1, $oF2));
+    $options = array($FACTORIES::JOIN => array($jF), $FACTORIES::ORDER => array($oF1, $oF2));
     if($supertask > 0){
       $options[$FACTORIES::JOIN][] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
       $options[$FACTORIES::FILTER] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
