@@ -290,7 +290,7 @@ class Util {
     if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
       $qF = new QueryFilter(TaskTask::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
       $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-      $joined = $FACTORIES::getTaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+      $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
       $testTasks = array();
       foreach ($joined['Task'] as $t) {
         $testTasks[] = $t;

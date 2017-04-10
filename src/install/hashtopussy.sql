@@ -808,3 +808,5 @@ ALTER TABLE `TaskTask`
 
 ALTER TABLE `TaskTask`
   ADD CONSTRAINT FOREIGN KEY (`subtaskId`) REFERENCES `Task` (`taskId`);
+ALTER TABLE `TaskTask`
+  ADD CONSTRAINT FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);

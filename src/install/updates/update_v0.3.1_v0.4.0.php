@@ -19,6 +19,8 @@ echo ".";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` MODIFY `taskTaskId` int(11) NOT NULL AUTO_INCREMENT;");
 echo ".";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`subtaskId`) REFERENCES `Task` (`taskId`);");
+echo ".";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);");
 echo "OK\n";
 
 echo "Check csharp binary... ";
