@@ -296,6 +296,47 @@ class Util {
   }
   
   /**
+   * @param $supertask Task
+   * @return bool
+   */
+  public static function checkSupertaskCompleted($supertask){
+    global $FACTORIES;
+    
+    $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
+    $qF = new QueryFilter(TaskTask::TASK_ID, $supertask->getId(), "=", $FACTORIES::getTaskTaskFactory());
+    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    foreach($joined['Task'] as $task){
+      /** @var $task Task */
+      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $sumProg = 0;
+      foreach($chunks as $chunk){
+        $sumProg += $chunk->getProgress();
+      }
+      if($sumProg < $task->getKeyspace() || $task->getKeyspace() == 0){
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  /**
+   * @param $task Task
+   * @return Task
+   */
+  public static function getSupertaskOfTask($task){
+    global $FACTORIES;
+    
+    $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::TASK_ID);
+    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    if(sizeof($joined['Task']) == 0){
+      return null;
+    }
+    return $joined['Task'][0];
+  }
+  
+  /**
    * @param $task Task
    * @param $agent Agent
    * @param $hashlist Hashlist

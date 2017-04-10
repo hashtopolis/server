@@ -1255,6 +1255,14 @@ class API {
       // task is fully dispatched and this last chunk is done, deprioritize it
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
+  
+      if($task->getTaskType() == DTaskTypes::SUBTASK){
+        $supertask = Util::getSupertaskOfTask($task);
+        if(Util::checkSupertaskCompleted($supertask)){
+          $supertask->setPriority(0);
+          $FACTORIES::getTaskFactory()->update($supertask);
+        }
+      }
       
       $payload = new DataSet(array(DPayloadKeys::TASK => $task));
       NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
@@ -1296,6 +1304,14 @@ class API {
         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
+        
+        if($task->getTaskType() == DTaskTypes::SUBTASK){
+          $supertask = Util::getSupertaskOfTask($task);
+          if(Util::checkSupertaskCompleted($supertask)){
+            $supertask->setPriority(0);
+            $FACTORIES::getTaskFactory()->update($supertask);
+          }
+        }
         
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
