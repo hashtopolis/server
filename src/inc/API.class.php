@@ -388,7 +388,7 @@ class API {
     $bestTask = Util::getBestTask($agent);
     if ($bestTask != null && $bestTask->getTaskType() == DTaskTypes::SUPERTASK) {
       // if the task is a supertask, get the corresponding task we should work on
-      $bestTask = Util::getBestTask($agent, 0, $bestTask);
+      $bestTask = Util::getBestTask($agent, 0, $bestTask->getId());
     }
     if ($bestTask != null && $task->getPriority() < $bestTask->getPriority()) {
       API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
