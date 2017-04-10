@@ -149,18 +149,124 @@
 					<tr>
 						<td colspan="11" class="hiddenRow">
 							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse">
-                <table class="table table-bordered table-nonfluid">
-                  <tr>
-                    <td>Example subtask</td>
-                    <td>Blub</td>
-                    <td>Hello</td>
-                  </tr>
-                  <tr>
-                    <td>Example subtask #2</td>
-                    <td>Blub</td>
-                    <td>Hello</td>
-                  </tr>
-                </table>
+                <div class="panel panel-default">
+                  <table class="table table-bordered table-nonfluid">
+                    {{FOREACH subTask;[[subTasks.getVal([[task.getVal('Task').getId()]])]]}}
+                      <tr>
+                        <td{{IF [[strlen([[subTask.getVal('Task')->getColor()]])]] > 0}} style="background-color: #[[subTask.getVal('Task')->getColor()]]"{{ENDIF}}>
+                          {{IF [[login.getLevel()]] >= 5}}
+                            <a href="tasks.php?id=[[subTask.getVal('Task')->getId()]]">[[subTask.getVal('Task')->getId()]]</a>
+                          {{ELSE}}
+                            [[subTask.getVal('Task')->getId()]]
+                          {{ENDIF}}
+                        </td>
+                        <td title="[[htmlentities([[subTask.getVal('Task')->getAttackCmd()]], false, 'UTF-8')]]">
+                          {{IF [[login.getLevel()]] >= 5}}
+                            <a href="tasks.php?id=[[subTask.getVal('Task')->getId()]]">[[subTask.getVal('Task')->getTaskName()]]</a>
+                          {{ELSE}}
+                            [[subTask.getVal('Task')->getTaskName()]]
+                          {{ENDIF}}
+                          [[Util::tickdone([[subTask.getVal('sumprog')]], [[subTask.getVal('Task')->getKeyspace()]])]]
+                          {{IF [[subTask.getVal('isActive')]] == 1 && [[subTask.getVal('sumprog')]] < [[subTask.getVal('Task')->getKeyspace()]]}}
+                            <img src="static/active.gif" alt="Active">
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('Task').getIsCpuTask()]] == 1}}
+                            <br>CPU only
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('Task').getIsSmall()]] == 1}}
+                            <br>Small Task
+                          {{ENDIF}}
+                        </td>
+                        <td>
+                          {{IF [[subTask.getVal('Hashlist')->getId()]] == null}}
+                            (pre-configured task)
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('Hashlist')]] != null && [[login.getLevel()]] >= 5}}
+                            <a href="hashlists.php?id=[[subTask.getVal('Hashlist')->getId()]]">[[subTask.getVal('Hashlist')->getHashlistName()]]</a>
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('Hashlist')]] != null && [[login.getLevel()]] < 5}}
+                            [[subTask.getVal('Hashlist')->getHashlistName()]]
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('Hashlist')]] != null && [[subTask.getVal('Hashlist')->getSecret()]] == 1}}
+                            <img src="static/lock.gif" alt="Secret">
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('Hashlist')]] != null && [[subTask.getVal('Hashlist')->getHashcount()]] == [[subTask.getVal('Hashlist')->getCracked()]]}}
+                            [[Util::tickdone(1, 1)]]
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('Hashlist')]] != null && [[subTask.getVal('Hashlist')->getHashcount()]] != [[subTask.getVal('Hashlist')->getCracked()]]}}
+                            [[Util::tickdone(0, 1)]]
+                          {{ENDIF}}
+                        </td>
+                        <td class="num">[[subTask.getVal('numChunks')]]@[[subTask.getVal('Task')->getChunkTime()]]s</td>
+                        {{IF [[task.getVal('Task')->getKeyspace()]] > 0}}
+                          <td class='num'>
+                            [[Util::showperc([[subTask.getVal('Task')->getProgress()]], [[subTask.getVal('Task')->getKeyspace()]])]]%
+                          </td>
+                          <td class='num'>
+                            [[Util::showperc([[subTask.getVal('sumprog')]], [[subTask.getVal('Task')->getKeyspace()]])]]%
+                          </td>
+                        {{ELSE}}
+                          <td colspan='2'>Keyspace unknown</td>
+                        {{ENDIF}}
+                        <td class='num'>
+                          {{IF [[subTask.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5}}
+                            <a href="hashes.php?task=[[subTask.getVal('Task')->getId()]]&filter=cracked">[[subTask.getVal('cracked')]]</a>
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('cracked')]] > 0 && [[login.getLevel()]] < 5}}
+                            [[subTask.getVal('cracked')]]
+                          {{ENDIF}}
+                        </td>
+                        <td class='num'>
+                          {{IF [[subTask.getVal('numAssignments')]] > 0}}
+                            [[subTask.getVal('numAssignments')]]
+                          {{ENDIF}}
+                        </td>
+                        <td style='min-width: 95px'>
+                          {{IF [[subTask.getVal('numFiles')]] > 0}}
+                            [[subTask.getVal('numFiles')]]
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('fileSecret')]]}}
+                            <img src="static/lock.gif" alt="Secret">
+                          {{ENDIF}}
+                          {{IF [[subTask.getVal('numFiles')]] > 0}}
+                            <br>([[Util::nicenum([[subTask.getVal('filesSize')]])]]B)
+                          {{ENDIF}}
+                        </td>
+                        <td style='min-width: 130px'>
+                          {{IF [[login.getLevel()]] >= 20}}
+                            <form class="form-inline" action="tasks.php" method="POST">
+                              <input type='hidden' name='action' value='taskprio'>
+                              <input type="hidden" name="task" value="[[subTask.getVal('Task')->getId()]]">
+                              <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[subTask.getVal('Task')->getPriority()]]">
+                              <input type="submit" class='btn btn-default' value="Set">
+                            </form>
+                          {{ELSE}}
+                            [[subTask.getVal('Task')->getPriority()]]
+                          {{ENDIF}}
+                        </td>
+                        <td style='min-width: 120px'>
+                          {{IF [[login.getLevel()]] >= 30}}
+                            <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[subTask.getVal('Task')->getId()]]" method="post">
+                              <input type="submit" class='btn btn-default' value="Copy">
+                            </form>
+                            <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[subTask.getVal('Task')->getId()]]?')) return false;">
+                              <input type="hidden" name="action" value="taskdelete">
+                              <input type="hidden" name="task" value="[[subTask.getVal('Task')->getId()]]">
+                              <input type="submit" class='btn btn-danger' value="X">
+                            </form>
+                          {{ENDIF}}
+                        </td>
+                      </tr>
+                      {{IF [[subTask.getVal('sumprog')]] < [[subTask.getVal('Task')->getKeyspace()]]}}
+                        <tr>
+                          <td colspan="11" style="padding: 0px 1px;">
+                            <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[subTask.getVal('Task')->getId()]]&x=1200&y=6">
+                          </td>
+                        </tr>
+                      {{ENDIF}}
+                    {{ENDFOREACH}}
+                  </table>
+                </div>
 							</div>
 						</td>
 					</tr>

@@ -311,66 +311,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['rules'] = $rules;
 }
 else {
-  $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
-  $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
-  $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
-  $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::ORDER => array($oF1, $oF2)));
-  $tasks = array();
-  for($z=0;$z<sizeof($joinedTasks['Task']);$z++){
-    $set = new DataSet();
-    $set->addValue('Task', $joinedTasks['Task'][$z]);
-    $set->addValue('Hashlist', $joinedTasks['Hashlist'][$z]);
-    
-    $task = \DBA\Util::cast($joinedTasks['Task'][$z], Task::class);
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $progress = 0;
-    $cracked = 0;
-    $maxTime = 0;
-    foreach($chunks as $chunk){
-      $progress += $chunk->getProgress();
-      $cracked += $chunk->getCracked();
-      if($chunk->getDispatchTime() > $maxTime){
-        $maxTime = $chunk->getDispatchTime();
-      }
-      if($chunk->getSolveTime() > $maxTime){
-        $maxTime = $chunk->getSolveTime();
-      }
-    }
-    
-    $isActive = false;
-    if(time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)){
-      $isActive = true;
-    }
-    
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
-    
-    $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
-    $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $sizes = 0;
-    $secret = false;
-    for($x=0;$x<sizeof($joinedFiles['File']);$x++){
-      $file = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class);
-      $sizes += $file->getSize();
-      if($file->getSecret() == '1'){
-        $secret = true;
-      }
-    }
-    
-    $set->addValue('numFiles', sizeof($joinedFiles['File']));
-    $set->addValue('filesSize', $sizes);
-    $set->addValue('fileSecret', $secret);
-    $set->addValue('numAssignments', sizeof($assignments));
-    $set->addValue('isActive', $isActive);
-    $set->addValue('sumprog', $progress);
-    $set->addValue('cracked', $cracked);
-    $set->addValue('numChunks', sizeof($chunks));
-    
-    $tasks[] = $set;
-  }
-  $OBJECTS['tasks'] = $tasks;
+  Util::loadTasks();
 }
 
 echo $TEMPLATE->render($OBJECTS);
