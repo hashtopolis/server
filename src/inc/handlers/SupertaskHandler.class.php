@@ -6,6 +6,7 @@ use DBA\Supertask;
 use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\TaskTask;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,6 +51,8 @@ class SupertaskHandler implements Handler {
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     
+    $subTasks = array();
+    
     $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
     $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
     $highestTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF), true);
@@ -57,6 +60,8 @@ class SupertaskHandler implements Handler {
     if($highestTask != null) {
       $highestPriority = $highestTask->getPriority() + 1;
     }
+    
+    $isCpuTask = 0;
     
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
@@ -77,6 +82,10 @@ class SupertaskHandler implements Handler {
       $task->setPriority($highestPriority + $task->getPriority());
       $task->setHashlistId($hashlist->getId());
       $task = $FACTORIES::getTaskFactory()->save($task);
+      if($task->getIsCpuTask() == 1){
+        $isCpuTask = 1;
+      }
+      $subTasks[] = $task;
       foreach ($taskFiles as $taskFile) {
         $taskFile = Util::cast($taskFile, TaskFile::class);
         $taskFile->setId(0);
@@ -84,8 +93,17 @@ class SupertaskHandler implements Handler {
         $FACTORIES::getTaskFileFactory()->save($taskFile);
       }
     }
+    $supTask = new Task(0, $supertask->getSupertaskName(), "SUPER", $hashlist->getId(), 0, 0, 0, 0, 0, "", 0, $isCpuTask, 0, 0, DTaskTypes::SUPERTASK);
+    $supTask = $FACTORIES::getTaskFactory()->save($supTask);
+    foreach($subTasks as $task){
+      $task->setIsCpuTask($isCpuTask); // we need to enforce that all tasks have either cpu task or not cpu task setting
+      $FACTORIES::getTaskFactory()->update($task);
+      $taskTask = new TaskTask(0, $supTask->getId(), $task->getId());
+      $FACTORIES::getTaskTaskFactory()->save($taskTask);
+    }
+    
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    UI::addMessage(UI::SUCCESS, "New tasks created successfully!");
+    UI::addMessage(UI::SUCCESS, "New supertask applied successfully!");
   }
   
   private function create() {

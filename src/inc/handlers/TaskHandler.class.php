@@ -292,6 +292,9 @@ class TaskHandler implements Handler {
       $taskIds = array();
       foreach($tasks as $t){
         $taskIds[] = $t->getId();
+        if($onlyFinished && ($t->getKeyspace() == 0 || $t->getKeyspace() != $t->getProgress())){
+          return; // task/subtasks is/are not finished yet
+        }
       }
       $qF = new ContainFilter(Chunk::TASK_ID, $taskIds);
     }
