@@ -386,6 +386,10 @@ class API {
     
     // check here either if we have a better task to run on, or we have no access anymore to this task
     $bestTask = Util::getBestTask($agent);
+    if ($bestTask != null && $bestTask->getTaskType() == DTaskTypes::SUPERTASK) {
+      // if the task is a supertask, get the corresponding task we should work on
+      $bestTask = Util::getBestTask($agent, 0, $bestTask);
+    }
     if ($bestTask != null && $task->getPriority() < $bestTask->getPriority()) {
       API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
     }
@@ -786,7 +790,7 @@ class API {
         if ($hl->getSecret() > $agent->getIsTrusted()) {
           continue;
         }
-        else if($format == DHashlistFormat::SUPERHASHLIST){
+        else if ($format == DHashlistFormat::SUPERHASHLIST) {
           // if we don't know the format yet, load it
           $format = $FACTORIES::getHashlistFactory()->get($list->getHashlistId())->getFormat();
         }
@@ -928,13 +932,13 @@ class API {
         $newAssignment = false;
       }
     }
-  
+    
     // check special handling of supertask
-    if($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUPERTASK){
+    if ($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUPERTASK) {
       // if it's a supertask we need to get the best matching subtask and assign to this
       $origTask = $setToTask;
       $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
-      if($setToTask == null){
+      if ($setToTask == null) {
         $origTask->setPriority(0);
         $FACTORIES::getTaskFactory()->update($origTask);
       }
