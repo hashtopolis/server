@@ -58,12 +58,3 @@ table.styled td {
   background-color: #e8e8ff;
   padding: 2px 4px 1px 4px;
 }
-
-.hiddenRow {
-  padding: 0 !important;
-}
-
-.table-subtask-border {
-  border-collapse: separate;
-  border: 1px solid #0f00ae;
-}
