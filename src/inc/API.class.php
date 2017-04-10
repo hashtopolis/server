@@ -940,7 +940,7 @@ class API {
     else{
       if($setToTask->getTaskType() == DTaskTypes::SUPERTASK){
         // if it's a supertask we need to get the best matching subtask and assign to this
-        $setToTask = Util::getBestTask($agent, 0, $betterTask->getId());
+        $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
       }
     }
     if ($currentTask != null && $setToTask->getId() != $currentTask->getId()) {
