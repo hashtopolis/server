@@ -60,6 +60,12 @@ if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
     if($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
     }
+    else if($subTasks[$i]->getKeyspace() > 0 && $progress > 0){
+      imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $yellow);
+    }
+    else{
+      imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $grey);
+    }
   }
 }
 else {
