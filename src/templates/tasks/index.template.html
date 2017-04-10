@@ -147,10 +147,20 @@
     		{{ENDIF}}
 				{{IF [[task.getVal('Task').getTaskType()]] == 1 && [[task.getVal('sumprog')]] >= [[task.getVal('Task')->getKeyspace()]]}}
 					<tr>
-						<td>&nbsp;</td>
-						<td colspan="10" class="hiddenRow">
+						<td colspan="11" class="hiddenRow">
 							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse">
-								SUBTASKS HERE
+                <table class="table table-bordered table-nonfluid">
+                  <tr>
+                    <td>Example subtask</td>
+                    <td>Blub</td>
+                    <td>Hello</td>
+                  </tr>
+                  <tr>
+                    <td>Example subtask #2</td>
+                    <td>Blub</td>
+                    <td>Hello</td>
+                  </tr>
+                </table>
 							</div>
 						</td>
 					</tr>
