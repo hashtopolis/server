@@ -29,7 +29,7 @@
     		<th>Action</th>
     	</tr>
     	{{FOREACH task;[[tasks]]}}
-    		<tr>
+    		<tr{{IF [[task.getVal('Task').getTaskType()]] == 1}} data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]" class="accordion-toggle"{{ENDIF}}>
     			<td
 	    			{{IF [[strlen([[task.getVal('Task')->getColor()]])]] > 0}}
 	    				style="background-color: #[[task.getVal('Task')->getColor()]]"
