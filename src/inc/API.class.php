@@ -921,6 +921,11 @@ class API {
       $setToTask = $currentTask;
       $betterTask = Util::getBestTask($agent, $currentTask->getPriority());
       if ($betterTask != null) {
+        if($betterTask->getTaskType() == DTaskTypes::SUPERTASK){
+          // if it's a supertask we need to get the best matching subtask and assign to this
+          $betterTask = Util::getBestTask($agent, 0, $betterTask->getId());
+        }
+        
         $setToTask = $betterTask;
         $newAssignment = true;
       }

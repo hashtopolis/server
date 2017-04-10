@@ -13,6 +13,7 @@ use DBA\StoredValue;
 use DBA\SuperHashlistHashlist;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\TaskTask;
 use DBA\Zap;
 
 /**
@@ -49,8 +50,8 @@ class Util {
     
     $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
     $FACTORIES::getLogEntryFactory()->save($entry);
-  
-    switch($level){
+    
+    switch ($level) {
       case DLogEntry::ERROR:
         NotificationHandler::checkNotifications(DNotificationType::LOG_ERROR, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
         break;
@@ -120,75 +121,43 @@ class Util {
    * @param $priority int
    * @return Task current best task or null if there is no optimal task (priority bigger than the given limit) available
    */
-  public static function getBestTask($agent, $priority = 0) {
+  public static function getBestTask($agent, $priority = 0, $supertask = 0) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
     $priorityFilter = new QueryFilter(Task::PRIORITY, $priority, ">");
+    $typeFilter = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "<"); // task has to be either a supertask or a normal task
+    if ($supertask > 0) {
+      // this is the case when we want to find the best subtask for a given supertask
+      $typeFilter = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "=");
+    }
     $trustedFilter = new QueryFilter(Hashlist::SECRET, $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
     $cpuFilter = new QueryFilter(Task::IS_CPU_TASK, $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
     $crackedFilter = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<", $FACTORIES::getHashlistFactory());
     $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
     $descOrder = new OrderFilter(Task::PRIORITY, "DESC");
     
+    $joinFilter = array($hashlistIDJoin);
+    $queryFilter = array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter, $typeFilter);
+    if ($supertask > 0) {
+      $joinFilter[] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
+      $queryFilter[] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
+    }
+    
     // we first load all tasks and go down by priority and take the first one which matches completely
     
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
+    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $queryFilter, $FACTORIES::JOIN => $joinFilter, $FACTORIES::ORDER => array($descOrder)));
     for ($i = 0; $i < sizeof($joinedTasks['Task']); $i++) {
       /** @var $task Task */
       /** @var $hashlist Hashlist */
       $task = $joinedTasks['Task'][$i];
       $hashlist = $joinedTasks['Hashlist'][$i];
-      $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-      $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
-      $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-      $allowed = true;
-      foreach ($joinedFiles["File"] as $file) {
-        /** @var $file File */
-        if ($file->getSecret() > $agent->getIsTrusted()) {
-          $allowed = false;
-        }
-      }
-      if (!$allowed) {
+      
+      if (!Util::agentHasAccessToTask($task, $agent)) {
         continue; // the client has not enough access to all required files
       }
-      
-      // now check if the task is fully dispatched
-      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $dispatched = 0;
-      $sumProgress = 0;
-      foreach ($chunks as $chunk) {
-        $sumProgress += $chunk->getProgress();
-        $isTimeout = false;
-        // if the chunk times out, we need to remove the agent from it, so it can be done by others
-        if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-          $isTimeout = true;
-        }
-        
-        // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
-        if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId() || $chunk->getAgentId() == null)) {
-          continue; // so it's not count to the dispatched sum
-        }
-        $dispatched += $chunk->getLength();
-      }
-      if ($task->getKeyspace() != 0 && $dispatched == $task->getKeyspace()) {
-        // task is fully dispatched
-        continue;
-      }
-      
-      if (($task->getKeyspace() == $sumProgress && $task->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
-        //task is finished
-        $task->setPriority(0);
-        //TODO: make massUpdate
-        foreach ($chunks as $chunk) {
-          $chunk->setProgress($chunk->getLength());
-          $chunk->setRprogress(10000);
-          $FACTORIES::getChunkFactory()->update($chunk);
-        }
-        $task->setProgress($task->getKeyspace());
-        $FACTORIES::getTaskFactory()->update($task);
-        continue;
+      else if (Util::taskIsFullyDispatched($task, $agent, $hashlist)) {
+        continue; // task is fully dispatched
       }
       
       // if we want to check single assignments we should make sure that the assigned one is not blocking when he becomes inactive.
@@ -218,6 +187,66 @@ class Util {
   }
   
   /**
+   * @param $task Task
+   * @param $agent Agent
+   * @param $hashlist Hashlist
+   * @return bool
+   */
+  public static function taskIsFullyDispatched($task, $agent, $hashlist){
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
+  
+    $testTasks = Util::getSubTasks($task);
+    
+    $fullCount = 0;
+    foreach($testTasks as $t) {
+      // now check if the task is fully dispatched
+      $qF = new QueryFilter(Chunk::TASK_ID, $t->getId(), "=");
+      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $dispatched = 0;
+      $sumProgress = 0;
+      foreach ($chunks as $chunk) {
+        $sumProgress += $chunk->getProgress();
+        $isTimeout = false;
+        // if the chunk times out, we need to remove the agent from it, so it can be done by others
+        if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
+          $isTimeout = true;
+        }
+    
+        // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
+        if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId() || $chunk->getAgentId() == null)) {
+          continue; // so it's not count to the dispatched sum
+        }
+        $dispatched += $chunk->getLength();
+      }
+      if ($t->getKeyspace() != 0 && $dispatched == $t->getKeyspace()) {
+        // task is fully dispatched
+        $fullCount++;
+        continue;
+      }
+  
+      if (($t->getKeyspace() == $sumProgress && $t->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
+        //task is finished
+        $t->setPriority(0);
+        //TODO: make massUpdate
+        foreach ($chunks as $chunk) {
+          $chunk->setProgress($chunk->getLength());
+          $chunk->setRprogress(10000);
+          $FACTORIES::getChunkFactory()->update($chunk);
+        }
+        $t->setProgress($t->getKeyspace());
+        $FACTORIES::getTaskFactory()->update($t);
+        $fullCount++;
+        continue;
+      }
+    }
+    if($fullCount >= sizeof($testTasks)){
+      return true;
+    }
+    return false;
+  }
+  
+  /**
    * Determines if an agent can be granted access to the given task, so if the agent has trusted if at least one file
    * of the task or the hashlist requires it.
    * @param $task Task
@@ -234,16 +263,40 @@ class Util {
         return false;
       }
     }
-    $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
-    $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
-    $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joinedFiles['File'] as $file) {
-      /** @var $file File */
-      if ($file->getSecret() > $agent->getIsTrusted()) {
-        return false;
+    
+    $testTasks = Util::getSubTasks($task);
+    foreach($testTasks as $t) {
+      $qF = new QueryFilter(TaskFile::TASK_ID, $t->getId(), "=");
+      $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
+      $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+      foreach ($joinedFiles['File'] as $file) {
+        /** @var $file File */
+        if ($file->getSecret() > $agent->getIsTrusted()) {
+          return false;
+        }
       }
     }
     return true;
+  }
+  
+  /**
+   * @param $task Task
+   * @return Task[]
+   */
+  public static function getSubTasks($task){
+    global $FACTORIES;
+    
+    $testTasks = array($task);
+    if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
+      $qF = new QueryFilter(TaskTask::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
+      $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
+      $joined = $FACTORIES::getTaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+      $testTasks = array();
+      foreach ($joined['Task'] as $t) {
+        $testTasks[] = $t;
+      }
+    }
+    return $testTasks;
   }
   
   /**
@@ -259,11 +312,11 @@ class Util {
     if (!self::agentHasAccessToTask($task, $agent)) {
       return false;
     }
-  
+    
     // check if the task is not needed anymore because all hashes already got cracked
     $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-    if($hashlist->getCracked() >= $hashlist->getHashCount()){
-      if($task->getPriority() > 0) {
+    if ($hashlist->getCracked() >= $hashlist->getHashCount()) {
+      if ($task->getPriority() > 0) {
         $task->setPriority(0);
         $FACTORIES::getTaskFactory()->update($task);
       }
@@ -593,24 +646,24 @@ class Util {
    * @param $version2
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
    */
-  public static function versionComparison($version1, $version2){
+  public static function versionComparison($version1, $version2) {
     $version1 = explode(".", $version1);
     $version2 = explode(".", $version2);
     
-    for($i=0;$i<sizeof($version1)&&$i<sizeof($version2);$i++){
+    for ($i = 0; $i < sizeof($version1) && $i < sizeof($version2); $i++) {
       $num1 = (int)$version1[$i];
       $num2 = (int)$version2[$i];
-      if($num1 > $num2){
+      if ($num1 > $num2) {
         return -1;
       }
-      else if($num1 < $num2){
+      else if ($num1 < $num2) {
         return 1;
       }
     }
-    if(sizeof($version1) > sizeof($version2)){
+    if (sizeof($version1) > sizeof($version2)) {
       return -1;
     }
-    else if(sizeof($version1) < sizeof($version2)){
+    else if (sizeof($version1) < sizeof($version2)) {
       return 1;
     }
     return 0;
@@ -696,7 +749,7 @@ class Util {
             }
           }
           else {
-            $msg = "File upload failed: ". $hashfile['error'];
+            $msg = "File upload failed: " . $hashfile['error'];
           }
           break;
         
@@ -767,7 +820,7 @@ class Util {
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
     if (strpos($hostname, ":") !== false) {
-        $hostname = substr($hostname, 0, strpos($hostname, ":"));
+      $hostname = substr($hostname, 0, strpos($hostname, ":"));
     }
     if ($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80) {
       $port = "";
