@@ -29,7 +29,7 @@
     		<th>Action</th>
     	</tr>
     	{{FOREACH task;[[tasks]]}}
-    		<tr>
+    		<tr{{IF [[task.getVal('Task').getTaskType()]] == 1 && [[task.getVal('sumprog')]] >= [[task.getVal('Task')->getKeyspace()]]}} data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]" class="accordion-toggle"{{ENDIF}}>
     			<td
 	    			{{IF [[strlen([[task.getVal('Task')->getColor()]])]] > 0}}
 	    				style="background-color: #[[task.getVal('Task')->getColor()]]"
@@ -139,12 +139,22 @@
         		</td>
     		</tr>
     		{{IF [[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]]}}
-    			<tr>
+    			<tr{{IF [[task.getVal('Task').getTaskType()]] == 1}} data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]" class="accordion-toggle"{{ENDIF}}>
     				<td colspan="11" style="padding: 0px 1px;">
     					<img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[task.getVal('Task')->getId()]]&x=1200&y=6">
     				</td>
     			</tr>
     		{{ENDIF}}
+				{{IF [[task.getVal('Task').getTaskType()]] == 1 && [[task.getVal('sumprog')]] >= [[task.getVal('Task')->getKeyspace()]]}}
+					<tr>
+						<td>&nbsp;</td>
+						<td colspan="10" class="hiddenRow">
+							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse">
+								SUBTASKS HERE
+							</div>
+						</td>
+					</tr>
+		    {{ENDIF}}
     	{{ENDFOREACH}}
     </table>
 </div>
