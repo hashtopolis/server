@@ -12,6 +12,7 @@ use DBA\QueryFilter;
 use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\TaskTask;
 
 /**
  * Created by IntelliJ IDEA.
@@ -283,9 +284,18 @@ class TaskHandler implements Handler {
   private function deleteTask($task, $onlyFinished = false) {
     global $FACTORIES;
     
-    
-    $uS = new UpdateSet(Hash::CHUNK_ID, null);
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+  
+    if($task->getTaskType() == DTaskTypes::SUPERTASK){
+      // if it's a supertask we have to test all the chunks of the subtasks and not of the task itself
+      $tasks = Util::getSubTasks($task);
+      $taskIds = array();
+      foreach($tasks as $t){
+        $taskIds[] = $t->getId();
+      }
+      $qF = new ContainFilter(Chunk::TASK_ID, $taskIds);
+    }
+    
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
@@ -294,6 +304,15 @@ class TaskHandler implements Handler {
       }
       $chunkIds[] = $chunk->getId();
     }
+  
+    // delete subtasks if it's a supertask
+    if($task->getTaskType() == DTaskTypes::SUPERTASK){
+      $tasks = Util::getSubTasks($task);
+      foreach($tasks as $t){
+        $this->deleteTask($t);
+      }
+    }
+    
     $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
@@ -303,12 +322,16 @@ class TaskHandler implements Handler {
         $FACTORIES::getNotificationSettingFactory()->delete($notification);
       }
     }
+  
+    $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=");
+    $FACTORIES::getTaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
     $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $uS = new UpdateSet(Hash::CHUNK_ID, null);
     if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
