@@ -198,7 +198,7 @@
                           {{ENDIF}}
                         </td>
                         <td class="num">[[subTask.getVal('numChunks')]]@[[subTask.getVal('Task')->getChunkTime()]]s</td>
-                        {{IF [[task.getVal('Task')->getKeyspace()]] > 0}}
+                        {{IF [[subTask.getVal('Task')->getKeyspace()]] > 0}}
                           <td class='num'>
                             [[Util::showperc([[subTask.getVal('Task')->getProgress()]], [[subTask.getVal('Task')->getKeyspace()]])]]%
                           </td>
