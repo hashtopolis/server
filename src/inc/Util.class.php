@@ -188,7 +188,7 @@ class Util {
   
   public static function loadTasks($supertask = 0){
     /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES, $CONFIG, $OBJECTS;
     
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
     $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
