@@ -928,6 +928,17 @@ class API {
         $newAssignment = false;
       }
     }
+  
+    // check special handling of supertask
+    if($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUPERTASK){
+      // if it's a supertask we need to get the best matching subtask and assign to this
+      $origTask = $setToTask;
+      $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
+      if($setToTask == null){
+        $origTask->setPriority(0);
+        $FACTORIES::getTaskFactory()->update($origTask);
+      }
+    }
     
     if ($setToTask == null) {
       API::sendResponse(array(
@@ -937,12 +948,7 @@ class API {
         )
       );
     }
-    else{
-      if($setToTask->getTaskType() == DTaskTypes::SUPERTASK){
-        // if it's a supertask we need to get the best matching subtask and assign to this
-        $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
-      }
-    }
+    
     if ($currentTask != null && $setToTask->getId() != $currentTask->getId()) {
       // delete old assignment
       $FACTORIES::getAssignmentFactory()->delete($assignment);
