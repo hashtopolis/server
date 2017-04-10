@@ -81,6 +81,7 @@ class SupertaskHandler implements Handler {
       }
       $task->setPriority($highestPriority + $task->getPriority());
       $task->setHashlistId($hashlist->getId());
+      $task->setTaskType(DTaskTypes::SUBTASK);
       $task = $FACTORIES::getTaskFactory()->save($task);
       if($task->getIsCpuTask() == 1){
         $isCpuTask = 1;
