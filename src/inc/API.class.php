@@ -1260,6 +1260,8 @@ class API {
         $supertask = Util::getSupertaskOfTask($task);
         if(Util::checkSupertaskCompleted($supertask)){
           $supertask->setPriority(0);
+          $supertask->setKeyspace(1);
+          $supertask->setProgress(1);
           $FACTORIES::getTaskFactory()->update($supertask);
         }
       }
@@ -1309,6 +1311,8 @@ class API {
           $supertask = Util::getSupertaskOfTask($task);
           if(Util::checkSupertaskCompleted($supertask)){
             $supertask->setPriority(0);
+            $supertask->setKeyspace(1);
+            $supertask->setProgress(1);
             $FACTORIES::getTaskFactory()->update($supertask);
           }
         }
