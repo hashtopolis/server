@@ -938,6 +938,9 @@ class API {
       // if it's a supertask we need to get the best matching subtask and assign to this
       $origTask = $setToTask;
       $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
+      if($currentTask->getId() == $setToTask->getId()){
+        $newAssignment = false;
+      }
       if ($setToTask == null) {
         $origTask->setPriority(0);
         $FACTORIES::getTaskFactory()->update($origTask);
