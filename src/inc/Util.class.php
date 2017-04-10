@@ -246,19 +246,36 @@ class Util {
           $secret = true;
         }
       }
+      
+      $numFiles = sizeof($joinedFiles['File']);
+      $numAssignments = sizeof($assignments);
+      if($task->getTaskType() == DTaskTypes::SUPERTASK){
+        Util::loadTasks($task->getId());
+        /** @var $subTasks DataSet */
+        $subTasks = $OBJECTS['subTasks'];
+        foreach($subTasks->getVal($task->getId()) as $subTask){
+          /** @var $subTask DataSet */
+          $numFiles += $subTask->getVal('numFiles');
+          $sizes += $subTask->getVal('filesSize');
+          if($subTask->getVal('fileSecret')) {
+            $secret = true;
+          }
+          $numAssignments += $subTask->getVal('numAssignments');
+          if($subTask->getVal('isActive')){
+            $isActive = true;
+          }
+          $cracked += $subTask->getVal('cracked');
+        }
+      }
     
-      $set->addValue('numFiles', sizeof($joinedFiles['File']));
+      $set->addValue('numFiles', $numFiles);
       $set->addValue('filesSize', $sizes);
       $set->addValue('fileSecret', $secret);
-      $set->addValue('numAssignments', sizeof($assignments));
+      $set->addValue('numAssignments', $numAssignments);
       $set->addValue('isActive', $isActive);
       $set->addValue('sumprog', $progress);
       $set->addValue('cracked', $cracked);
       $set->addValue('numChunks', sizeof($chunks));
-      
-      if($task->getTaskType() == DTaskTypes::SUPERTASK){
-        Util::loadTasks($task->getId());
-      }
     
       $tasks[] = $set;
     }

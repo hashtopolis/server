@@ -78,17 +78,21 @@
         				[[Util::tickdone(0, 1)]]
         			{{ENDIF}}
         		</td>
-        		<td class="num">[[task.getVal('numChunks')]]@[[task.getVal('Task')->getChunkTime()]]s</td>
-						{{IF [[task.getVal('Task')->getKeyspace()]] > 0}}
-							<td class='num'>
-								[[Util::showperc([[task.getVal('Task')->getProgress()]], [[task.getVal('Task')->getKeyspace()]])]]%
-							</td>
-							<td class='num'>
-								[[Util::showperc([[task.getVal('sumprog')]], [[task.getVal('Task')->getKeyspace()]])]]%
-							</td>
-						{{ELSE}}
-							<td colspan='2'>Keyspace unknown</td>
-						{{ENDIF}}
+            {{IF [[task.getVal('Task').getTaskType()]] == 1}}
+              <td colspan="3">Supertask</td>
+            {{ELSE}}
+              <td class="num">[[task.getVal('numChunks')]]@[[task.getVal('Task')->getChunkTime()]]s</td>
+              {{IF [[task.getVal('Task')->getKeyspace()]] > 0}}
+                <td class='num'>
+                  [[Util::showperc([[task.getVal('Task')->getProgress()]], [[task.getVal('Task')->getKeyspace()]])]]%
+                </td>
+                <td class='num'>
+                  [[Util::showperc([[task.getVal('sumprog')]], [[task.getVal('Task')->getKeyspace()]])]]%
+                </td>
+              {{ELSE}}
+                <td colspan='2'>Keyspace unknown</td>
+              {{ENDIF}}
+            {{ENDIF}}
         		<td class='num'>
         			{{IF [[task.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5}}
         				<a href="hashes.php?task=[[task.getVal('Task')->getId()]]&filter=cracked">[[task.getVal('cracked')]]</a>
