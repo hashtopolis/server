@@ -198,6 +198,9 @@ class Util {
       $options[$FACTORIES::JOIN][] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
       $options[$FACTORIES::FILTER] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
     }
+    else{
+      $options[$FACTORIES::FILTER] = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "<");
+    }
     $joinedTasks = $FACTORIES::getTaskFactory()->filter($options);
     $tasks = array();
     for($z=0;$z<sizeof($joinedTasks['Task']);$z++){
