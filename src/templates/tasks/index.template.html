@@ -177,26 +177,6 @@
                             <br>Small Task
                           {{ENDIF}}
                         </td>
-                        <td>
-                          {{IF [[subTask.getVal('Hashlist')->getId()]] == null}}
-                            (pre-configured task)
-                          {{ENDIF}}
-                          {{IF [[subTask.getVal('Hashlist')]] != null && [[login.getLevel()]] >= 5}}
-                            <a href="hashlists.php?id=[[subTask.getVal('Hashlist')->getId()]]">[[subTask.getVal('Hashlist')->getHashlistName()]]</a>
-                          {{ENDIF}}
-                          {{IF [[subTask.getVal('Hashlist')]] != null && [[login.getLevel()]] < 5}}
-                            [[subTask.getVal('Hashlist')->getHashlistName()]]
-                          {{ENDIF}}
-                          {{IF [[subTask.getVal('Hashlist')]] != null && [[subTask.getVal('Hashlist')->getSecret()]] == 1}}
-                            <img src="static/lock.gif" alt="Secret">
-                          {{ENDIF}}
-                          {{IF [[subTask.getVal('Hashlist')]] != null && [[subTask.getVal('Hashlist')->getHashcount()]] == [[subTask.getVal('Hashlist')->getCracked()]]}}
-                            [[Util::tickdone(1, 1)]]
-                          {{ENDIF}}
-                          {{IF [[subTask.getVal('Hashlist')]] != null && [[subTask.getVal('Hashlist')->getHashcount()]] != [[subTask.getVal('Hashlist')->getCracked()]]}}
-                            [[Util::tickdone(0, 1)]]
-                          {{ENDIF}}
-                        </td>
                         <td class="num">[[subTask.getVal('numChunks')]]@[[subTask.getVal('Task')->getChunkTime()]]s</td>
                         {{IF [[subTask.getVal('Task')->getKeyspace()]] > 0}}
                           <td class='num'>
