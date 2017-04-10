@@ -94,10 +94,10 @@
               {{ENDIF}}
             {{ENDIF}}
         		<td class='num'>
-        			{{IF [[task.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5}}
+        			{{IF [[task.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5 && [[task.getVal('Task').getTaskType()]] != 1}}
         				<a href="hashes.php?task=[[task.getVal('Task')->getId()]]&filter=cracked">[[task.getVal('cracked')]]</a>
         			{{ENDIF}}
-        			{{IF [[task.getVal('cracked')]] > 0 && [[login.getLevel()]] < 5}}
+        			{{IF [[task.getVal('cracked')]] > 0 && [[login.getLevel()]] < 5 || [[task.getVal('Task').getTaskType()]] == 1}}
         				[[task.getVal('cracked')]]
         			{{ENDIF}}
         		</td>
