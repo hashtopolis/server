@@ -150,9 +150,9 @@
 						<td colspan="11" class="hiddenRow">
 							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse">
                 <div class="panel panel-default">
-                  <table class="table table-bordered table-nonfluid" style="border-color: #0f00ae">
+                  <table class="table table-bordered table-nonfluid">
                     {{FOREACH subTask;[[subTasks.getVal([[task.getVal('Task').getId()]])]]}}
-                      <tr>
+                      <tr style="border-color: #0f00ae !important;">
                         <td{{IF [[strlen([[subTask.getVal('Task')->getColor()]])]] > 0}} style="background-color: #[[subTask.getVal('Task')->getColor()]]"{{ENDIF}}>
                           {{IF [[login.getLevel()]] >= 5}}
                             <a href="tasks.php?id=[[subTask.getVal('Task')->getId()]]">[[subTask.getVal('Task')->getId()]]</a>
@@ -188,7 +188,7 @@
                         {{ELSE}}
                           <td colspan='2'>Keyspace unknown</td>
                         {{ENDIF}}
-                        <td class='num' style="min-width: 20px;">
+                        <td class='num' style="min-width: 50px;">
                           {{IF [[subTask.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5}}
                             <a href="hashes.php?task=[[subTask.getVal('Task')->getId()]]&filter=cracked">[[subTask.getVal('cracked')]]</a>
                           {{ENDIF}}
@@ -196,7 +196,7 @@
                             [[subTask.getVal('cracked')]]
                           {{ENDIF}}
                         </td>
-                        <td class='num' style="min-width: 20px;">
+                        <td class='num' style="min-width: 50px;">
                           {{IF [[subTask.getVal('numAssignments')]] > 0}}
                             [[subTask.getVal('numAssignments')]]
                           {{ENDIF}}
