@@ -131,9 +131,11 @@
         		</td>
         		<td style='min-width: 120px'>
         			{{IF [[login.getLevel()]] >= 30}}
-	        			<form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[task.getVal('Task')->getId()]]" method="post">
-	        				<input type="submit" class='btn btn-default' value="Copy">
-	        			</form>
+                {{IF [[task.getTaskType()]] != 1}}
+                  <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[task.getVal('Task')->getId()]]" method="post">
+                    <input type="submit" class='btn btn-default' value="Copy">
+                  </form>
+                {{ENDIF}}
 	        			<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task')->getId()]]?')) return false;">
 	        				<input type="hidden" name="action" value="taskdelete">
 	        				<input type="hidden" name="task" value="[[task.getVal('Task')->getId()]]">
