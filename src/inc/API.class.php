@@ -213,7 +213,7 @@ class API {
     $chunkSize = $size * $tolerance;
     if ($chunkSize <= 0) {
       $chunkSize = 1;
-      Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Caluclated chunk size was 0 on benchmark $benchmark!");
+      Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
     
     return $chunkSize;
