@@ -181,7 +181,7 @@ class AgentHandler implements Handler {
     
     //determine benchmark number
     $benchmark = 0;
-    $qF1 = new ComparisonFilter(Chunk::SOLVE_TIME, Chunk::DISPATCH_TIME, ">");
+    /*$qF1 = new ComparisonFilter(Chunk::SOLVE_TIME, Chunk::DISPATCH_TIME, ">");
     $qF2 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "=");
     $qF3 = new ContainFilter(Chunk::STATE, array(DHashcatStatus::EXHAUSTED, DHashcatStatus::CRACKED));
     $qF4 = new QueryFilter(Chunk::AGENT_ID, $this->agent->getId(), "=");
@@ -191,7 +191,7 @@ class AgentHandler implements Handler {
     if (sizeof($entries) > 0) {
       $benchmark = Util::cast($entries[0], Chunk::class)->getLength();
     }
-    unset($entries);
+    unset($entries);*/
     
     if (sizeof($assignments) > 0) {
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
