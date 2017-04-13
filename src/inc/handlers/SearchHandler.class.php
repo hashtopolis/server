@@ -73,9 +73,9 @@ class SearchHandler implements Handler {
         $resultEntry->addValue("query", $queryEntry);
         $matches = array();
         for ($i = 0; $i < sizeof($joined['Hash']); $i++) {
-          $matches[] = $joined['Hash'];
-          if ($hashlists->getVal($joined['Hash']->getHashlistId()) == false) {
-            $hashlists->addValue($joined['Hash']->getHashlistId(), $joined['Hashlist']);
+          $matches[] = $joined['Hash'][$i];
+          if ($hashlists->getVal($joined['Hash'][$i]->getHashlistId()) == false) {
+            $hashlists->addValue($joined['Hash'][$i]->getHashlistId(), $joined['Hashlist'][$i]);
           }
         }
         $resultEntry->addValue("matches", $matches);
