@@ -40,6 +40,10 @@ class SearchHandler implements Handler {
     $resultEntries = array();
     $hashlists = new DataSet();
     foreach ($query as $queryEntry) {
+      if(strlen($queryEntry) == 0){
+        continue;
+      }
+      
       // test if hash contains salt
       if (strpos($queryEntry, ":") !== false) {
         $split = explode(":", $queryEntry);
@@ -87,5 +91,6 @@ class SearchHandler implements Handler {
     $OBJECTS['resultEntries'] = $resultEntries;
     $OBJECTS['hashlists'] = $hashlists;
     $OBJECTS['result'] = true;
+    UI::addMessage(UI::SUCCESS, "Searched for " . sizeof($resultEntries) . " entries!");
   }
 }
