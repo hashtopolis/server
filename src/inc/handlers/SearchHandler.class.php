@@ -40,7 +40,7 @@ class SearchHandler implements Handler {
     $resultEntries = array();
     $hashlists = new DataSet();
     foreach ($query as $queryEntry) {
-      if(strlen($queryEntry) == 0){
+      if (strlen($queryEntry) == 0) {
         continue;
       }
       
@@ -60,7 +60,7 @@ class SearchHandler implements Handler {
       // TODO: make possible to search for plain
       
       $filters = array();
-      $filters[] = new LikeFilter(Hash::HASH, $hash);
+      $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
       if (strlen($salt) > 0) {
         $filters[] = new QueryFilter(Hash::SALT, $salt, "=");
       }
