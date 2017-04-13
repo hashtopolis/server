@@ -57,7 +57,6 @@ class SearchHandler implements Handler {
       }
       
       // TODO: add option to select if exact match or like match
-      // TODO: make possible to search for plain
       
       $filters = array();
       $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
@@ -66,6 +65,13 @@ class SearchHandler implements Handler {
       }
       $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hash::HASHLIST_ID, Hashlist::HASHLIST_ID);
       $joined = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => $filters, $FACTORIES::JOIN => $jF));
+      
+      $qF = new LikeFilter(Hash::PLAINTEXT, "%".$queryEntry."%");
+      $joined2 = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+      for($i=0;$i<sizeof($joined2['Hash']);$i++){
+        $joined['Hash'][] = $joined2['Hash'][$i];
+        $joined['Hashlist'][] = $joined2['Hashlist'][$i];
+      }
       
       $resultEntry = new DataSet();
       if (sizeof($joined['Hash']) == 0) {
