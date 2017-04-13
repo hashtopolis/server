@@ -29,7 +29,7 @@
           <td>
             {{IF [[entry.getVal('found')]]}}
               {{FOREACH match;[[entry.getVal('matches')]]}}
-                <code>[[htmlentities([[match.getHash()]], false, "UTF-8")]]{{IF [[strlen([[match.getSalt()]])]] > 0}}:[[htmlentities([[match.getSalt()]], false, "UTF-8")]]{{ENDIF}}{{IF [[match.getIsCracked()]]}}:[[htmlentities([[match.getPlain()]], false, "UTF-8")]]{{ENDIF}}</code>
+                <code>[[htmlentities([[match.getHash()]], false, "UTF-8")]]{{IF [[strlen([[match.getSalt()]])]] > 0}}:[[htmlentities([[match.getSalt()]], false, "UTF-8")]]{{ENDIF}}{{IF [[match.getIsCracked()]]}}:[[htmlentities([[match.getPlaintext()]], false, "UTF-8")]]{{ENDIF}}</code>
                 in hashlist <a href="hashlists.php?id=[[match.getHashlistId()]]">[[hashlists.getVal([[match.getHashlistId()]]).getHashlistName()]]</a><br>
               {{ENDFOREACH}}
             {{ELSE}}
