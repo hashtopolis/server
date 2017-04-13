@@ -66,9 +66,9 @@ class SearchHandler implements Handler {
       $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hash::HASHLIST_ID, Hashlist::HASHLIST_ID);
       $joined = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => $filters, $FACTORIES::JOIN => $jF));
       
-      $qF = new LikeFilter(Hash::PLAINTEXT, "%".$queryEntry."%");
+      $qF = new LikeFilter(Hash::PLAINTEXT, "%" . $queryEntry . "%");
       $joined2 = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-      for($i=0;$i<sizeof($joined2['Hash']);$i++){
+      for ($i = 0; $i < sizeof($joined2['Hash']); $i++) {
         $joined['Hash'][] = $joined2['Hash'][$i];
         $joined['Hashlist'][] = $joined2['Hashlist'][$i];
       }
