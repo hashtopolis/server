@@ -3,13 +3,11 @@ use DBA\Agent;
 use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
-use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\HashBinary;
 use DBA\HashlistAgent;
 use DBA\NotificationSetting;
-use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
 
@@ -179,20 +177,7 @@ class AgentHandler implements Handler {
     $qF = new QueryFilter(Agent::AGENT_ID, $this->agent->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
     
-    //determine benchmark number
     $benchmark = 0;
-    /*$qF1 = new ComparisonFilter(Chunk::SOLVE_TIME, Chunk::DISPATCH_TIME, ">");
-    $qF2 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "=");
-    $qF3 = new ContainFilter(Chunk::STATE, array(DHashcatStatus::EXHAUSTED, DHashcatStatus::CRACKED));
-    $qF4 = new QueryFilter(Chunk::AGENT_ID, $this->agent->getId(), "=");
-    $qF5 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
-    $entries = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3, $qF4, $qF5), $FACTORIES::ORDER => array($oF)));
-    if (sizeof($entries) > 0) {
-      $benchmark = Util::cast($entries[0], Chunk::class)->getLength();
-    }
-    unset($entries);*/
-    
     if (sizeof($assignments) > 0) {
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
         $FACTORIES::getAssignmentFactory()->delete($assignments[$i]);
