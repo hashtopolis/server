@@ -17,7 +17,7 @@ $binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER =
 if($binary != null){
   if(Util::versionComparison($binary->getVersion(), "0.43.13") == 1){
     echo "update version... ";
-    $binary->setVersion("0.43.12");
+    $binary->setVersion("0.43.13");
     $FACTORIES::getAgentBinaryFactory()->update($binary);
     echo "OK";
   }
