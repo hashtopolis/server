@@ -17,6 +17,7 @@
 ## Features
 
 - Added possibility to change isCpuOnly and isSmall on tasks after creation
+- DB details are now saved separately to the other loading part, so conflicts on updates are avoided
 
 ## Technical
 
