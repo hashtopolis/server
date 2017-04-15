@@ -437,9 +437,9 @@ class HashlistHandler implements Handler {
     $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), SuperHashlistHashlist::SUPER_HASHLIST_ID, Hashlist::HASHLIST_ID, $FACTORIES::getSuperHashlistHashlistFactory());
     $superlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
-    for ($x = 0; $x < sizeof($superlists['Hashlist']); $x++) {
+    for ($x = 0; $x < sizeof($superlists[$FACTORIES::getHashlistFactory()->getModelName()]); $x++) {
       /** @var Hashlist $superlist */
-      $superlist = $superlists['Hashlist'][$x];
+      $superlist = $superlists[$FACTORIES::getHashlistFactory()->getModelName()][$x];
       $superlist->setHashCount($superlist->getHashCount() - $this->hashlist->getHashCount());
       $superlist->setCracked($superlist->getCracked() - $this->hashlist->getCracked());
       
@@ -763,10 +763,10 @@ class HashlistHandler implements Handler {
       $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
       $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
       $joined = $FACTORIES::getAssignmentFactory()->filter(array('join' => array($jF1, $jF2)));
-      for ($x = 0; $x < sizeof($joined['Assignment']); $x++) {
-        $hashlist = Util::cast($joined['Hashlist'][$x], Hashlist::class);
+      for ($x = 0; $x < sizeof($joined[$FACTORIES::getAssignmentFactory()->getModelName()]); $x++) {
+        $hashlist = Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][$x], Hashlist::class);
         if ($hashlist->getId() == $this->hashlist->getId()) {
-          $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$x]);
+          $FACTORIES::getAssignmentFactory()->delete($joined[$FACTORIES::getAssignmentFactory()->getModelName()][$x]);
         }
       }
     }

@@ -338,7 +338,7 @@ class TaskHandler implements Handler {
     $joinedTasks = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    foreach($joinedTasks['Task'] as $task){
+    foreach($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()] as $task){
       /** @var $task Task */
       $this->deleteTask($task);
     }
@@ -373,8 +373,8 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
     $join = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    for ($i = 0; $i < sizeof($join['Task']); $i++) {
-      $assignment = \DBA\Util::cast($join['Assignment'][$i], \DBA\Assignment::class);
+    for ($i = 0; $i < sizeof($join[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
+      $assignment = \DBA\Util::cast($join[$FACTORIES::getAssignmentFactory()->getModelName()][$i], \DBA\Assignment::class);
       $assignment->setBenchmark($assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
       $FACTORIES::getAssignmentFactory()->update($assignment);
     }

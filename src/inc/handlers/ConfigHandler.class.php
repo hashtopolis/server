@@ -109,9 +109,9 @@ class ConfigHandler implements Handler {
     $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
     $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
     $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => array($jF1, $jF2)));
-    for ($i = 0; $i < sizeof($joined['Chunk']); $i++) {
-      $chunk = Util::cast($joined['Chunk'][$i], Chunk::class);
-      $hashlist = Util::cast($joined['Hashlist'][$i], Hashlist::class);
+    for ($i = 0; $i < sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]); $i++) {
+      $chunk = Util::cast($joined[$FACTORIES::getChunkFactory()->getModelName()][$i], Chunk::class);
+      $hashlist = Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][$i], Hashlist::class);
       $hashFactory = $FACTORIES::getHashFactory();
       if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
         $hashlists = Util::checkSuperHashlist($hashlist);

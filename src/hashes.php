@@ -72,11 +72,11 @@ else if (isset($_GET['chunk'])) {
   $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
   $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", $FACTORIES::getChunkFactory());
   $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => array($jF1, $jF2)));
-  if(sizeof($joined['Chunk']) == null){
+  if(sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]) == null){
     UI::printError("ERROR", "Invalid chunk!");
   }
-  $chunk = \DBA\Util::cast($joined['Chunk'][0], \DBA\Chunk::class);
-  $list = \DBA\Util::cast($joined['Hashlist'][0], \DBA\Hashlist::class);
+  $chunk = \DBA\Util::cast($joined[$FACTORIES::getChunkFactory()->getModelName()][0], \DBA\Chunk::class);
+  $list = \DBA\Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][0], \DBA\Hashlist::class);
   $hashlist = $list;
   if($list->getFormat() == DHashlistFormat::SUPERHASHLIST){
     $lists = Util::checkSuperHashlist($list);
@@ -100,11 +100,11 @@ else if (isset($_GET['task'])) {
   $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
   $qF = new QueryFilter(Task::TASK_ID, $_GET['task'], "=");
   $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => array($jF)));
-  if(sizeof($joined['Task']) == null){
+  if(sizeof($joined[$FACTORIES::getTaskFactory()->getModelName()]) == null){
     UI::printError("ERROR", "Invalid task!");
   }
-  $task = Util::cast($joined['Task'][0], \DBA\Task::class);
-  $hashlist = Util::cast($joined['Hashlist'][0], \DBA\Hashlist::class);
+  $task = Util::cast($joined[$FACTORIES::getTaskFactory()->getModelName()][0], \DBA\Task::class);
+  $hashlist = Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][0], \DBA\Hashlist::class);
   if($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST){
     $lists = Util::checkSuperHashlist($hashlist);
     $hashlist = $lists[0];

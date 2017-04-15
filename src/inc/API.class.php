@@ -950,8 +950,8 @@ class API {
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
     $files = array();
-    for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
-      $files[] = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class)->getFilename();
+    for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
+      $files[] = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class)->getFilename();
     }
     
     $hashlist = $FACTORIES::getHashlistFactory()->get($setToTask->getHashlistId());

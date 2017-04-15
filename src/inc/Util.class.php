@@ -134,16 +134,16 @@ class Util {
     // we first load all tasks and go down by priority and take the first one which matches completely
     
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter), $FACTORIES::JOIN => array($hashlistIDJoin), $FACTORIES::ORDER => array($descOrder)));
-    for ($i = 0; $i < sizeof($joinedTasks['Task']); $i++) {
+    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
       /** @var $task Task */
       /** @var $hashlist Hashlist */
-      $task = $joinedTasks['Task'][$i];
-      $hashlist = $joinedTasks['Hashlist'][$i];
+      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
+      $hashlist = $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$i];
       $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
       $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
       $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
       $allowed = true;
-      foreach ($joinedFiles["File"] as $file) {
+      foreach ($joinedFiles[$FACTORIES::getFileFactory()->getModelName()] as $file) {
         /** @var $file File */
         if ($file->getSecret() > $agent->getIsTrusted()) {
           $allowed = false;
@@ -198,15 +198,15 @@ class Util {
         $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
         $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
         $removed = 0;
-        for ($z = 0; $z < sizeof($joined['Agent']); $z++) {
+        for ($z = 0; $z < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()]); $z++) {
           /** @var Agent $ag */
-          $ag = $joined['Agent'][$z];
+          $ag = $joined[$FACTORIES::getAgentFactory()->getModelName()][$z];
           if (time() - $ag->getLastTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
-            $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$z]); // delete timed out
+            $FACTORIES::getAssignmentFactory()->delete($joined[$FACTORIES::getAssignmentFactory()->getModelName()][$z]); // delete timed out
             $removed++;
           }
         }
-        if ($removed < sizeof($joined['Agent'])) {
+        if ($removed < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()])) {
           continue; // still some assigned
         }
       }
@@ -237,7 +237,7 @@ class Util {
     $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joinedFiles['File'] as $file) {
+    foreach ($joinedFiles[$FACTORIES::getFileFactory()->getModelName()] as $file) {
       /** @var $file File */
       if ($file->getSecret() > $agent->getIsTrusted()) {
         return false;
@@ -300,6 +300,7 @@ class Util {
   public static function zapCleaning() {
     global $FACTORIES;
     
+    //TODO: make this as constant
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
     if ($entry == null) {
       $entry = new StoredValue("lastZapCleaning", 0);
@@ -376,7 +377,7 @@ class Util {
       $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
       $superHashListFilter = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=");
       $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::JOIN => $hashlistJoinFilter, $FACTORIES::FILTER => $superHashListFilter));
-      $lists = $joined['Hashlist'];
+      $lists = $joined[$FACTORIES::getHashlistFactory()->getModelName()];
       return $lists;
     }
     return array($list);
@@ -857,6 +858,7 @@ class Util {
    */
   public static function sendMail($address, $subject, $text) {
     $header = "Content-type: text/html; charset=utf8\r\n";
+    // TODO: make sender email configurable
     $header .= "From: Hashtopussy <noreply@hashtopussy>\r\n";
     if (!mail($address, $subject, $text, $header)) {
       return false;
