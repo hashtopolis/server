@@ -786,7 +786,7 @@ class API {
         if ($hl->getSecret() > $agent->getIsTrusted()) {
           continue;
         }
-        else if($format == DHashlistFormat::SUPERHASHLIST){
+        else if ($format == DHashlistFormat::SUPERHASHLIST) {
           // if we don't know the format yet, load it
           $format = $FACTORIES::getHashlistFactory()->get($list->getHashlistId())->getFormat();
         }

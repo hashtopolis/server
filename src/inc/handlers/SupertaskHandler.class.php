@@ -54,7 +54,7 @@ class SupertaskHandler implements Handler {
     $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
     $highestTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF), true);
     $highestPriority = 1;
-    if($highestTask != null) {
+    if ($highestTask != null) {
       $highestPriority = $highestTask->getPriority() + 1;
     }
     

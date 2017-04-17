@@ -251,8 +251,8 @@ class AgentHandler implements Handler {
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $agent->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach($notifications as $notification){
-      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::AGENT){
+    foreach ($notifications as $notification) {
+      if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::AGENT) {
         $FACTORIES::getNotificationSettingFactory()->delete($notification);
       }
     }

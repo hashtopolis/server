@@ -10,7 +10,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
@@ -22,7 +22,7 @@ $TEMPLATE = new Template("log");
 $MENU->setActive("config_log");
 
 $level = "0";
-if(isset($_POST['show'])){
+if (isset($_POST['show'])) {
   $level = $_POST['level'];
 }
 $OBJECTS['level'] = $level;
@@ -31,7 +31,7 @@ $qF = new QueryFilter(LogEntry::LEVEL, $level, "=");
 $oF = new OrderFilter(LogEntry::TIME, "DESC LIMIT 100");
 
 $filter = array($FACTORIES::ORDER => $oF);
-if($level !== "0"){
+if ($level !== "0") {
   $filter[$FACTORIES::FILTER] = $qF;
 }
 

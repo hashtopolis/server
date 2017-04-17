@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
@@ -24,24 +24,24 @@ $MENU->setActive("hashcat_list");
 if (isset($_POST['action'])) {
   $hashcatHandler = new HashcatHandler();
   $hashcatHandler->handle($_POST['action']);
-  if(UI::getNumMessages() == 0){
+  if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
 }
 
-if(isset($_GET['new'])){
+if (isset($_GET['new'])) {
   $TEMPLATE = new Template("hashcat/new");
   $MENU->setActive("hashcat_new");
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
   $releases = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => $oF));
   $rootDir = "";
   $common = "";
-  if(sizeof($releases) > 0){
+  if (sizeof($releases) > 0) {
     $rootDir = $releases[0]->getRootdir();
   }
   $OBJECTS['rootDir'] = $rootDir;
 }
-else{
+else {
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC");
   $OBJECTS['releases'] = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => $oF));
 }

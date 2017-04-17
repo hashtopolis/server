@@ -117,7 +117,7 @@ class Login {
     }
     else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
       Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
-  
+      
       $payload = new DataSet(array(DPayloadKeys::USER => $user));
       NotificationHandler::checkNotifications(DNotificationType::USER_LOGIN_FAILED, $payload);
       return false;

@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 
@@ -17,7 +17,7 @@ $MENU->setActive("account_settings");
 if (isset($_POST['action'])) {
   $accountHandler = new AccountHandler($LOGIN->getUserID());
   $accountHandler->handle($_POST['action']);
-  if(UI::getNumMessages() == 0){
+  if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
 }

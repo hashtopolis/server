@@ -58,7 +58,7 @@ class ConfigHandler implements Handler {
       $task = Util::cast($task, Task::class);
       $taskIds[] = $task->getId();
     }
-    if(sizeof($taskIds) > 0) {
+    if (sizeof($taskIds) > 0) {
       $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
       $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $containFilter));
       $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));

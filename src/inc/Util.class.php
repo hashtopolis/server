@@ -49,8 +49,8 @@ class Util {
     
     $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
     $FACTORIES::getLogEntryFactory()->save($entry);
-  
-    switch($level){
+    
+    switch ($level) {
       case DLogEntry::ERROR:
         NotificationHandler::checkNotifications(DNotificationType::LOG_ERROR, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
         break;
@@ -259,11 +259,11 @@ class Util {
     if (!self::agentHasAccessToTask($task, $agent)) {
       return false;
     }
-  
+    
     // check if the task is not needed anymore because all hashes already got cracked
     $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-    if($hashlist->getCracked() >= $hashlist->getHashCount()){
-      if($task->getPriority() > 0) {
+    if ($hashlist->getCracked() >= $hashlist->getHashCount()) {
+      if ($task->getPriority() > 0) {
         $task->setPriority(0);
         $FACTORIES::getTaskFactory()->update($task);
       }
@@ -594,24 +594,24 @@ class Util {
    * @param $version2
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
    */
-  public static function versionComparison($version1, $version2){
+  public static function versionComparison($version1, $version2) {
     $version1 = explode(".", $version1);
     $version2 = explode(".", $version2);
     
-    for($i=0;$i<sizeof($version1)&&$i<sizeof($version2);$i++){
+    for ($i = 0; $i < sizeof($version1) && $i < sizeof($version2); $i++) {
       $num1 = (int)$version1[$i];
       $num2 = (int)$version2[$i];
-      if($num1 > $num2){
+      if ($num1 > $num2) {
         return -1;
       }
-      else if($num1 < $num2){
+      else if ($num1 < $num2) {
         return 1;
       }
     }
-    if(sizeof($version1) > sizeof($version2)){
+    if (sizeof($version1) > sizeof($version2)) {
       return -1;
     }
-    else if(sizeof($version1) < sizeof($version2)){
+    else if (sizeof($version1) < sizeof($version2)) {
       return 1;
     }
     return 0;
@@ -697,7 +697,7 @@ class Util {
             }
           }
           else {
-            $msg = "File upload failed: ". $hashfile['error'];
+            $msg = "File upload failed: " . $hashfile['error'];
           }
           break;
         
@@ -768,7 +768,7 @@ class Util {
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
     if (strpos($hostname, ":") !== false) {
-        $hostname = substr($hostname, 0, strpos($hostname, ":"));
+      $hostname = substr($hostname, 0, strpos($hostname, ":"));
     }
     if ($protocol == "https://" && $port == 443 || $protocol == "http://" && $port == 80) {
       $port = "";
