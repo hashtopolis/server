@@ -1,4 +1,8 @@
-# v0.3.1 -> v0.4.0
+# v0.3.2 -> v0.4.0
+
+## New Features
+
+- Renewed status page, gives now JSON formatted information which can be parsed however the user wants to.
 
 # v0.3.1 -> v0.3.2
 
@@ -24,3 +28,4 @@
 
 - removed old installation code which was used to upgrade Hashtopus to Hashtopussy 0.1.0
 - reduced size of task progress image
+
