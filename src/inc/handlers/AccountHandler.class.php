@@ -6,8 +6,6 @@
  * Date: 10.11.16
  * Time: 14:38
  */
-
-
 class AccountHandler implements Handler {
   private $user;
   

@@ -30,7 +30,7 @@ CREATE TABLE `Zap` (
   `zapId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
   `hash`       VARCHAR(512)                       NOT NULL,
   `solveTime`  INT(11)                            NOT NULL,
-  `agentId`    INT(11)                            NOT NULL,
+  `agentId`    INT(11)                            NULL,
   `hashlistId` INT(11)                            NOT NULL
 )
   ENGINE = InnoDB
@@ -472,7 +472,7 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
   (5, 'Administrator', 50);
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`, `version`)
-VALUES (1, 'csharp', 'Windows', 'hashtopussy.exe', '0.43');
+VALUES (1, 'csharp', 'Windows', 'hashtopussy.exe', '0.43.13');
 
 CREATE TABLE `Session` (
   `sessionId`        INT(11)      NOT NULL,

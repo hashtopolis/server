@@ -140,8 +140,8 @@
     		</tr>
     		{{IF [[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]]}}
     			<tr>
-    				<td colspan="11">
-    					<img style="width: 100%; height: 6px;" src="api/taskimg.php?task=[[task.getVal('Task')->getId()]]&x=800&y=6">
+    				<td colspan="11" style="padding: 0px 1px;">
+    					<img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[task.getVal('Task')->getId()]]&x=1200&y=6">
     				</td>
     			</tr>
     		{{ENDIF}}

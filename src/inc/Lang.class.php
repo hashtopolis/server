@@ -55,10 +55,10 @@ class Lang {
     }
   }
   
-  public function render($text){
+  public function render($text) {
     $matches = array();
     preg_match_all('/(___([a-zA-Z0-9\-_]+?)___)/mis', $text, $matches);
-    for($i=0;$i<sizeof($matches[0]);$i++){
+    for ($i = 0; $i < sizeof($matches[0]); $i++) {
       $toReplace = $matches[1][$i];
       $languageKey = str_replace("___", "", $matches[1][$i]);
       $text = str_replace($toReplace, $this->getText($languageKey), $text);

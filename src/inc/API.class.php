@@ -217,7 +217,7 @@ class API {
     $chunkSize = $size * $tolerance;
     if ($chunkSize <= 0) {
       $chunkSize = 1;
-      Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Caluclated chunk size was 0 on benchmark $benchmark!");
+      Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
     
     return $chunkSize;
@@ -330,6 +330,20 @@ class API {
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryChunk::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     
+    // check if the agent should be notified about a hashcat update
+    $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
+    $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
+    if ($hashcat != null) {
+      if ($agent->getHcVersion() != $hashcat->getVersion()) {
+        /*API::sendResponse(array(
+            PResponseChunk::ACTION => PActions::CHUNK,
+            PResponseChunk::RESPONSE => PValues::SUCCESS,
+            PResponseChunk::CHUNK_STATUS => PValuesChunkType::HASHCAT_UPDATE
+          )
+        );*/
+      }
+    }
+    
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -377,7 +391,7 @@ class API {
     
     // check here either if we have a better task to run on, or we have no access anymore to this task
     $bestTask = Util::getBestTask($agent);
-    if ($bestTask != null && $task->getId() != $bestTask->getId()) {
+    if ($bestTask != null && $task->getPriority() < $bestTask->getPriority()) {
       API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
     }
     else if ($bestTask == null) {
@@ -769,7 +783,7 @@ class API {
     
     $hashlists = array();
     $format = $hashlist->getFormat();
-    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+    if ($format == DHashlistFormat::SUPERHASHLIST) {
       //we have a superhashlist
       $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $hashlist->getId(), "=");
       $lists = $FACTORIES->getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF)));
@@ -777,6 +791,10 @@ class API {
         $hl = $FACTORIES::getHashlistFactory()->get($list->getHashlistId());
         if ($hl->getSecret() > $agent->getIsTrusted()) {
           continue;
+        }
+        else if ($format == DHashlistFormat::SUPERHASHLIST) {
+          // if we don't know the format yet, load it
+          $format = $FACTORIES::getHashlistFactory()->get($list->getHashlistId())->getFormat();
         }
         $hashlists[] = $list->getHashlistId();
       }
@@ -938,8 +956,8 @@ class API {
     $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
     $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
     $files = array();
-    for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
-      $files[] = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class)->getFilename();
+    for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
+      $files[] = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class)->getFilename();
     }
     
     $hashlist = $FACTORIES::getHashlistFactory()->get($setToTask->getHashlistId());
@@ -1284,6 +1302,20 @@ class API {
           $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
           
+          $task->setPriority(0);
+          $chunk->setProgress($chunk->getLength());
+          $chunk->setRprogress(10000);
+          
+          $uS = new UpdateSet(Task::PRIORITY, 0);
+          $qF = new QueryFilter(Task::HASHLIST_ID, $hashList->getId(), "=");
+          $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+          
+          $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+          $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+          
+          $FACTORIES::getChunkFactory()->update($chunk);
+          $FACTORIES::getTaskFactory()->update($task);
+          
           //stop agent
           API::sendResponse(array(
               PResponseSolve::ACTION => PActions::SOLVE,
@@ -1293,11 +1325,6 @@ class API {
               PResponseSolve::AGENT_COMMAND => "stop"
             )
           );
-          $task->setPriority(0);
-          $chunk->setProgress($chunk->getLength());
-          $chunk->setRprogress(10000);
-          $FACTORIES::getChunkFactory()->update($chunk);
-          $FACTORIES::getTaskFactory()->update($task);
         }
         $chunk->setSpeed($speed * 1000);
         $FACTORIES::getChunkFactory()->update($chunk);

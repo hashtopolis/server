@@ -1,0 +1,225 @@
+diff --git a/README.md b/README.md
+index f93381c..effa169 100755
+--- a/README.md
++++ b/README.md
+@@ -2,7 +2,6 @@
+ 
+ <img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
+ 
+-ATTENTION: people using the newest Hashcat beta need to use branch [hashcat-beta](https://github.com/s3inlc/hashtopussy/tree/hashcat-beta)!
+ 
+ Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks among multiple computers. It is strongly based on Hashtopus.
+ Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
+diff --git a/src/hashlists.php b/src/hashlists.php
+index 2646f8a..2ad2a6d 100755
+--- a/src/hashlists.php
++++ b/src/hashlists.php
+@@ -30,7 +30,7 @@ $MENU->setActive("lists_norm");
+ if (isset($_POST['action'])) {
+   $hashlistHandler = new HashlistHandler();
+   $hashlistHandler->handle($_POST['action']);
+-  if(UI::getNumMessages() == 0){
++  if(UI::getNumMessages() == 0 && !isset($OBJECTS['zap'])){
+     Util::refresh();
+   }
+ }
+diff --git a/src/inc/API.class.php b/src/inc/API.class.php
+index 0701d78..313d0ae 100755
+--- a/src/inc/API.class.php
++++ b/src/inc/API.class.php
+@@ -285,6 +285,13 @@ class API {
+     }
+     
+     $remaining = $task->getKeyspace() - $task->getProgress();
++    if($remaining == 0){
++      API::sendResponse(array(
++        PResponseChunk::ACTION => PActions::CHUNK,
++        PResponseChunk::RESPONSE => PValues::SUCCESS,
++        PResponseChunk::CHUNK_STATUS => PValuesChunkType::FULLY_DISPATCHED
++      ));
++    }
+     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
+     $start = $task->getProgress();
+     $length = $agentChunkSize;
+@@ -1268,6 +1275,20 @@ class API {
+         if ($count == 0) {
+           $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
+           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
++  
++          $task->setPriority(0);
++          $chunk->setProgress($chunk->getLength());
++          $chunk->setRprogress(10000);
++  
++          $uS = new UpdateSet(Task::PRIORITY, 0);
++          $qF = new QueryFilter(Task::HASHLIST_ID, $hashList->getId(), "=");
++          $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
++  
++          $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
++          $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
++  
++          $FACTORIES::getChunkFactory()->update($chunk);
++          $FACTORIES::getTaskFactory()->update($task);
+           
+           //stop agent
+           API::sendResponse(array(
+@@ -1278,11 +1299,6 @@ class API {
+               PResponseSolve::AGENT_COMMAND => "stop"
+             )
+           );
+-          $task->setPriority(0);
+-          $chunk->setProgress($chunk->getLength());
+-          $chunk->setRprogress(10000);
+-          $FACTORIES::getChunkFactory()->update($chunk);
+-          $FACTORIES::getTaskFactory()->update($task);
+         }
+         $chunk->setSpeed($speed * 1000);
+         $FACTORIES::getChunkFactory()->update($chunk);
+diff --git a/src/inc/Util.class.php b/src/inc/Util.class.php
+index 3dd1e82..6df254c 100755
+--- a/src/inc/Util.class.php
++++ b/src/inc/Util.class.php
+@@ -163,7 +163,6 @@ class Util {
+         $isTimeout = false;
+         // if the chunk times out, we need to remove the agent from it, so it can be done by others
+         if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
+-          $FACTORIES::getChunkFactory()->update($chunk);
+           $isTimeout = true;
+         }
+         
+@@ -260,6 +259,16 @@ class Util {
+     if (!self::agentHasAccessToTask($task, $agent)) {
+       return false;
+     }
++  
++    // check if the task is not needed anymore because all hashes already got cracked
++    $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
++    if($hashlist->getCracked() >= $hashlist->getHashCount()){
++      if($task->getPriority() > 0) {
++        $task->setPriority(0);
++        $FACTORIES::getTaskFactory()->update($task);
++      }
++      return false;
++    }
+     
+     if ($task->getKeyspace() == 0) {
+       return true;
+diff --git a/src/inc/handlers/HashlistHandler.class.php b/src/inc/handlers/HashlistHandler.class.php
+index 810adf1..3150819 100644
+--- a/src/inc/handlers/HashlistHandler.class.php
++++ b/src/inc/handlers/HashlistHandler.class.php
+@@ -14,6 +14,7 @@ use DBA\QueryFilter;
+ use DBA\SuperHashlistHashlist;
+ use DBA\Task;
+ use DBA\TaskFile;
++use DBA\Zap;
+ 
+ /**
+  * Created by IntelliJ IDEA.
+@@ -451,7 +452,8 @@ class HashlistHandler implements Handler {
+       }
+     }
+     
+-    //TODO: delete from zapqueue
++    $qF = new QueryFilter(Zap::HASHLIST_ID, $this->hashlist->getId(), "=");
++    $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+     
+     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
+     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
+@@ -606,6 +608,7 @@ class HashlistHandler implements Handler {
+     $totalLines = 0;
+     $newCracked = 0;
+     $crackedIn = array();
++    $zaps = array();
+     foreach ($hashlists as $l) {
+       $l = Util::cast($l, Hashlist::class);
+       $crackedIn[$l->getId()] = 0;
+@@ -649,6 +652,9 @@ class HashlistHandler implements Handler {
+         $hashFactory->update($hashEntry);
+         $newCracked++;
+         $crackedIn[$hashEntry->getHashlistId()]++;
++        if($hashlist->getFormat() == DHashlistFormat::PLAIN) {
++          $zaps[] = new Zap(0, $hashEntry->getHash(), time(), null, $hashlist->getId());
++        }
+       }
+       else {
+         if (sizeof($split) < 2) {
+@@ -685,6 +691,10 @@ class HashlistHandler implements Handler {
+         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+         $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+         $bufferCount = 0;
++        if(sizeof($zaps) > 0){
++          $FACTORIES::getZapFactory()->massSave($zaps);
++        }
++        $zaps = array();
+       }
+     }
+     $endTime = time();
+@@ -700,6 +710,10 @@ class HashlistHandler implements Handler {
+       $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
+       $FACTORIES::getHashlistFactory()->update($ll);
+     }
++    if(sizeof($zaps) > 0){
++      $FACTORIES::getZapFactory()->massSave($zaps);
++    }
++    
+     if ($this->hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+       $total = array_sum($crackedIn);
+       $this->hashlist = $FACTORIES::getHashlistFactory()->get($this->hashlist->getId());
+diff --git a/src/install/hashtopussy.sql b/src/install/hashtopussy.sql
+index 4bd5006..0b8a5dc 100755
+--- a/src/install/hashtopussy.sql
++++ b/src/install/hashtopussy.sql
+@@ -30,7 +30,7 @@ CREATE TABLE `Zap` (
+   `zapId`      INT(11) AUTO_INCREMENT PRIMARY KEY NOT NULL,
+   `hash`       VARCHAR(512)                       NOT NULL,
+   `solveTime`  INT(11)                            NOT NULL,
+-  `agentId`    INT(11)                            NOT NULL,
++  `agentId`    INT(11)                            NULL,
+   `hashlistId` INT(11)                            NOT NULL
+ )
+   ENGINE = InnoDB
+@@ -470,7 +470,7 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
+   (5, 'Administrator', 50);
+ 
+ INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `operatingSystems`, `filename`, `version`)
+-VALUES (1, 'csharp', 'Windows', 'hashtopussy.exe', '0.43');
++VALUES (1, 'csharp', 'Windows', 'hashtopussy.exe', '0.43.7');
+ 
+ CREATE TABLE `Session` (
+   `sessionId`        INT(11)      NOT NULL,
+diff --git a/src/install/updates/update_v0.3.0_v0.3.1.php b/src/install/updates/update_v0.3.0_v0.3.1.php
+new file mode 100644
+index 0000000..0f303c5
+--- /dev/null
++++ b/src/install/updates/update_v0.3.0_v0.3.1.php
+@@ -0,0 +1,27 @@
++<?php
++
++use DBA\AgentBinary;
++use DBA\QueryFilter;
++
++require_once(dirname(__FILE__) . "/../../inc/load.php");
++
++echo "Apply updates...\n";
++
++echo "Update Zap table... ";
++$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Zap` CHANGE `agentId` `agentId` INT(11) NULL");
++echo "OK\n";
++
++echo "Check csharp binary... ";
++$qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
++$binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
++if($binary != null){
++  if(Util::versionComparison($binary->getVersion(), "0.43.7") == 1){
++    echo "update version... ";
++    $binary->setVersion("0.43.7");
++    $FACTORIES::getAgentBinaryFactory()->update($binary);
++    echo "OK";
++  }
++}
++echo "\n";
++
++echo "Update complete!\n";
+diff --git a/src/static/hashtopussy.exe b/src/static/hashtopussy.exe
+index 9bd0f18..53deec7 100644
+Binary files a/src/static/hashtopussy.exe and b/src/static/hashtopussy.exe differ

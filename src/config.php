@@ -7,7 +7,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
@@ -22,7 +22,7 @@ $MENU->setActive("config_server");
 if (isset($_POST['action'])) {
   $configHandler = new ConfigHandler();
   $configHandler->handle($_POST['action']);
-  if(UI::getNumMessages() == 0){
+  if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
 }

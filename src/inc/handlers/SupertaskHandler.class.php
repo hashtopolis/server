@@ -53,12 +53,15 @@ class SupertaskHandler implements Handler {
     $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
     $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
     $highestTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF), true);
-    $highestPriority = $highestTask->getPriority() + 1;
+    $highestPriority = 1;
+    if ($highestTask != null) {
+      $highestPriority = $highestTask->getPriority() + 1;
+    }
     
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $tasks = $joinedTasks['Task'];
+    $tasks = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()];
     foreach ($tasks as $task) {
       /** @var $task Task */
       if (strpos($task->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {

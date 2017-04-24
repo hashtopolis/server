@@ -20,11 +20,11 @@ $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `skipKeysp
 echo "OK\n";
 
 echo "Add Notification Table and Settings...";
-$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `NotificationSetting` (`notificationSettingId` int(11) NOT NULL, `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `objectId` int(11) NOT NULL, `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL, `userId` int(11) NOT NULL, `receiver` varchar(200) COLLATE utf8_unicode_ci NOT NULL, `isActive` tinyint(4) NOT NULL) ENGINE=InnoDB");
+$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `NotificationSetting` (`notificationSettingId` INT(11) NOT NULL, `action` VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL, `objectId` INT(11) NOT NULL, `notification` VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL, `userId` INT(11) NOT NULL, `receiver` VARCHAR(200) COLLATE utf8_unicode_ci NOT NULL, `isActive` TINYINT(4) NOT NULL) ENGINE=InnoDB");
 echo "#";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` ADD PRIMARY KEY (`notificationSettingId`), ADD KEY `NotificationSetting_ibfk_1` (`userId`)");
 echo "#";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` MODIFY `notificationSettingId` int(11) NOT NULL AUTO_INCREMENT");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` MODIFY `notificationSettingId` INT(11) NOT NULL AUTO_INCREMENT");
 echo "#";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `NotificationSetting` ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`)");
 echo "OK\n";
@@ -44,8 +44,8 @@ echo "New zapping changes applied!\n";
 echo "Check csharp binary... ";
 $qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
 $binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-if($binary != null){
-  if(Util::versionComparison($binary->getVersion(), "0.43") == 1){
+if ($binary != null) {
+  if (Util::versionComparison($binary->getVersion(), "0.43") == 1) {
     echo "update version... ";
     $binary->setVersion("0.43");
     $FACTORIES::getAgentBinaryFactory()->update($binary);
@@ -59,11 +59,11 @@ $url = readline();
 $qF = new QueryFilter(Config::ITEM, DConfig::BASE_URL, "=");
 $entry = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF), true);
 echo "applying... ";
-if($entry == null){
+if ($entry == null) {
   $entry = new Config(0, DConfig::BASE_URL, $url);
   $FACTORIES::getConfigFactory()->save($entry);
 }
-else{
+else {
   $entry->setValue($url);
   $FACTORIES::getConfigFactory()->update($entry);
 }

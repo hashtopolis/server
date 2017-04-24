@@ -5,6 +5,7 @@ use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\Hash;
+use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
@@ -45,6 +46,18 @@ class TaskHandler implements Handler {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->adjustBenchmark();
+        break;
+      case 'smalltask':
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->setSmallTask();
+        break;
+      case 'cputask':
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->setCpuTask();
         break;
       case 'chunkabort':
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
@@ -109,6 +122,38 @@ class TaskHandler implements Handler {
     }
   }
   
+  private function setSmallTask() {
+    global $FACTORIES;
+    
+    $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
+    if ($task == null) {
+      UI::addMessage(UI::ERROR, "No such task!");
+      return;
+    }
+    $isSmall = intval($_POST['isSmall']);
+    if ($isSmall != 0 && $isSmall != 1) {
+      $isSmall = 0;
+    }
+    $task->setIsSmall($isSmall);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+  
+  private function setCpuTask() {
+    global $FACTORIES;
+    
+    $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
+    if ($task == null) {
+      UI::addMessage(UI::ERROR, "No such task!");
+      return;
+    }
+    $isCpuTask = intval($_POST['isCpu']);
+    if ($isCpuTask != 0 && $isCpuTask != 1) {
+      $isCpuTask = 0;
+    }
+    $task->setIsCpuTask($isCpuTask);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+  
   private function create() {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
@@ -130,11 +175,11 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }
-    else if(Util::containsBlacklistedChars($cmdline)){
+    else if (Util::containsBlacklistedChars($cmdline)) {
       UI::addMessage(UI::ERROR, "The command must contain no blacklisted characters!");
       return;
     }
-    else if($skipKeyspace < 0){
+    else if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
     $hashlist = null;
@@ -244,7 +289,7 @@ class TaskHandler implements Handler {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
-      if($chunk->getRprogress() != 10000 && $onlyFinished){
+      if ($chunk->getRprogress() != 10000 && $onlyFinished) {
         return; //if at least one chunk is not finished, we should not delete this task
       }
       $chunkIds[] = $chunk->getId();
@@ -253,8 +298,8 @@ class TaskHandler implements Handler {
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach($notifications as $notification){
-      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::TASK){
+    foreach ($notifications as $notification) {
+      if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::TASK) {
         $FACTORIES::getNotificationSettingFactory()->delete($notification);
       }
     }
@@ -284,6 +329,18 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     foreach ($tasks as $task) {
       $this->deleteTask($task, true);
+    }
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
+    // delete tasks which are not completed but where the hashlist is fully cracked
+    $qF = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "=", $FACTORIES::getHashlistFactory());
+    $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $joinedTasks = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    foreach ($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
+      /** @var $task Task */
+      $this->deleteTask($task);
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
@@ -316,8 +373,8 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
     $join = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    for ($i = 0; $i < sizeof($join['Task']); $i++) {
-      $assignment = \DBA\Util::cast($join['Assignment'][$i], \DBA\Assignment::class);
+    for ($i = 0; $i < sizeof($join[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
+      $assignment = \DBA\Util::cast($join[$FACTORIES::getAssignmentFactory()->getModelName()][$i], \DBA\Assignment::class);
       $assignment->setBenchmark($assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
       $FACTORIES::getAssignmentFactory()->update($assignment);
     }

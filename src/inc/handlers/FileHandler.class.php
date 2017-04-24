@@ -63,7 +63,7 @@ class FileHandler implements Handler {
     }
     $qF = new QueryFilter(File::FILENAME, $newName, "=");
     $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
-    if(sizeof($files) > 0){
+    if (sizeof($files) > 0) {
       UI::addMessage(UI::ERROR, "This filename is already used!");
       return;
     }
@@ -74,14 +74,14 @@ class FileHandler implements Handler {
     $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=", $FACTORIES::getTaskFileFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), Task::TASK_ID, TaskFile::TASK_ID);
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach($joined['Task'] as $task){
+    foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
       /** @var $task Task */
       $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
       $FACTORIES::getTaskFactory()->update($task);
     }
     
     $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
-    if(!$success){
+    if (!$success) {
       UI::addMessage(UI::ERROR, "Failed to rename file!");
       return;
     }

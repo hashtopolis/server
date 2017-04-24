@@ -10,7 +10,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
@@ -26,22 +26,22 @@ $message = "";
 if (isset($_POST['action'])) {
   $fileHandler = new FileHandler();
   $fileHandler->handle($_POST['action']);
-  if(UI::getNumMessages() == 0){
+  if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
 }
 
 $view = "dict";
-if(isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))){
+if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))) {
   $view = $_GET['view'];
 }
 
-if(isset($_GET['edit'])){
+if (isset($_GET['edit'])) {
   $file = $FACTORIES::getFileFactory()->get($_GET['edit']);
-  if($file == null){
+  if ($file == null) {
     UI::addMessage(UI::ERROR, "Invalid file ID!");
   }
-  else{
+  else {
     $OBJECTS['file'] = $file;
     $TEMPLATE = new Template("files/edit");
   }

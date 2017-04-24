@@ -284,6 +284,15 @@
 	}
 	\end{verbatim}
 	
+	In case there is an update of hashcat available, the server sends this:
+	\begin{verbatim}
+	{
+	  "action":"chunk",
+	  "response":"SUCCESS",
+	  "status":"hashcat_update"
+	}
+	\end{verbatim}
+	
 	In case there is no benchmark for this task on the current agent. So it should start benchmarking then.
 	\begin{verbatim}
 	{
