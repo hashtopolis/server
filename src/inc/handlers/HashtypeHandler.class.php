@@ -44,7 +44,7 @@ class HashtypeHandler implements Handler {
     }
     
     $salted = 0;
-    if($_POST['isSalted']){
+    if ($_POST['isSalted']) {
       $salted = 1;
     }
     

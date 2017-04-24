@@ -6,7 +6,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
@@ -21,12 +21,12 @@ $MENU->setActive("users_list");
 if (isset($_POST['action'])) {
   $usersHandler = new UsersHandler();
   $usersHandler->handle($_POST['action']);
-  if(UI::getNumMessages() == 0){
+  if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
 }
 
-if(isset($_GET['new'])){
+if (isset($_GET['new'])) {
   $TEMPLATE = new Template("users/new");
   $MENU->setActive("users_new");
   $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());

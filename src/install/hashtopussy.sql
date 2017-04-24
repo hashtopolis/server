@@ -114,7 +114,9 @@ INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
   (11, 'statustimer', '5'),
   (12, 'timefmt', 'd.m.Y, H:i:s'),
   (13, 'blacklistChars', '&|`"\''),
-  (14, 'numLogEntries', '5000');
+  (14, 'numLogEntries', '5000'),
+  (15, 'disptolerance', '20'),
+  (16, 'batchSize', '10000');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11)               NOT NULL,

@@ -298,18 +298,18 @@ class HashlistHandler implements Handler {
           }
           // get the AP MAC
           $mac_ap = "";
-          for($i = 59;$i<65;$i++){
+          for ($i = 59; $i < 65; $i++) {
             $mac_ap .= $data[$i];
           }
           $mac_ap = Util::bintohex($mac_ap);
           // get the Client MAC
           $mac_cli = "";
-          for($i = 97;$i<103;$i++){
+          for ($i = 97; $i < 103; $i++) {
             $mac_cli .= $data[$i];
           }
           $mac_cli = Util::bintohex($mac_cli);
           // we cannot save the network name here, as on the submission we don't get this
-          $hash = new HashBinary(0, $this->hashlist->getId(), $mac_ap.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$mac_cli.$CONFIG->getVal(DConfig::FIELD_SEPARATOR).$network, Util::bintohex($data), null, 0, null, 0);
+          $hash = new HashBinary(0, $this->hashlist->getId(), $mac_ap . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }
@@ -318,7 +318,7 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
-  
+        
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
         
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
@@ -334,7 +334,7 @@ class HashlistHandler implements Handler {
         $this->hashlist->setHashCount(1);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
-  
+        
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
         
         header("Location: hashlists.php?id=" . $this->hashlist->getId());
@@ -433,17 +433,17 @@ class HashlistHandler implements Handler {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-  
+    
     $qF = new QueryFilter(SuperHashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), SuperHashlistHashlist::SUPER_HASHLIST_ID, Hashlist::HASHLIST_ID, $FACTORIES::getSuperHashlistHashlistFactory());
     $superlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
-    for ($x = 0; $x < sizeof($superlists['Hashlist']); $x++) {
+    for ($x = 0; $x < sizeof($superlists[$FACTORIES::getHashlistFactory()->getModelName()]); $x++) {
       /** @var Hashlist $superlist */
-      $superlist = $superlists['Hashlist'][$x];
+      $superlist = $superlists[$FACTORIES::getHashlistFactory()->getModelName()][$x];
       $superlist->setHashCount($superlist->getHashCount() - $this->hashlist->getHashCount());
       $superlist->setCracked($superlist->getCracked() - $this->hashlist->getCracked());
       
-      if($superlist->getHashCount() <= 0){
+      if ($superlist->getHashCount() <= 0) {
         // this superlist has no hashlist which belongs to it anymore -> delete it
         $FACTORIES::getHashlistFactory()->delete($superlist);
       }
@@ -457,11 +457,11 @@ class HashlistHandler implements Handler {
     
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
-  
+    
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $this->hashlist->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach($notifications as $notification){
-      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::HASHLIST){
+    foreach ($notifications as $notification) {
+      if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::HASHLIST) {
         $FACTORIES::getNotificationSettingFactory()->delete($notification);
       }
     }
@@ -474,7 +474,7 @@ class HashlistHandler implements Handler {
       $taskList[] = $task->getId();
     }
     $FACTORIES::getSuperHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
-  
+    
     switch ($this->hashlist->getFormat()) {
       case 0:
         $count = $FACTORIES::getHashlistFactory()->countFilter(array());
@@ -652,7 +652,7 @@ class HashlistHandler implements Handler {
         $hashFactory->update($hashEntry);
         $newCracked++;
         $crackedIn[$hashEntry->getHashlistId()]++;
-        if($hashlist->getFormat() == DHashlistFormat::PLAIN) {
+        if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
           $zaps[] = new Zap(0, $hashEntry->getHash(), time(), null, $hashlist->getId());
         }
       }
@@ -691,7 +691,7 @@ class HashlistHandler implements Handler {
         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
         $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
         $bufferCount = 0;
-        if(sizeof($zaps) > 0){
+        if (sizeof($zaps) > 0) {
           $FACTORIES::getZapFactory()->massSave($zaps);
         }
         $zaps = array();
@@ -710,7 +710,7 @@ class HashlistHandler implements Handler {
       $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
       $FACTORIES::getHashlistFactory()->update($ll);
     }
-    if(sizeof($zaps) > 0){
+    if (sizeof($zaps) > 0) {
       $FACTORIES::getZapFactory()->massSave($zaps);
     }
     
@@ -763,10 +763,10 @@ class HashlistHandler implements Handler {
       $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
       $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
       $joined = $FACTORIES::getAssignmentFactory()->filter(array('join' => array($jF1, $jF2)));
-      for ($x = 0; $x < sizeof($joined['Assignment']); $x++) {
-        $hashlist = Util::cast($joined['Hashlist'][$x], Hashlist::class);
+      for ($x = 0; $x < sizeof($joined[$FACTORIES::getAssignmentFactory()->getModelName()]); $x++) {
+        $hashlist = Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][$x], Hashlist::class);
         if ($hashlist->getId() == $this->hashlist->getId()) {
-          $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$x]);
+          $FACTORIES::getAssignmentFactory()->delete($joined[$FACTORIES::getAssignmentFactory()->getModelName()][$x]);
         }
       }
     }
@@ -878,7 +878,7 @@ class HashlistHandler implements Handler {
             $FACTORIES::getTaskFileFactory()->save($file);
             $fileCount++;
           }
-  
+          
           $payload = new DataSet(array(DPayloadKeys::TASK => $task));
           NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
         }

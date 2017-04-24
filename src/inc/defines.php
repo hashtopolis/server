@@ -25,6 +25,16 @@ class DHashcatStatus {
   const STATUS_ABORTED_RUNTIME = 10;
 }
 
+class DStats {
+  const AGENTS_ONLINE      = "agentsOnline";
+  const AGENTS_ACTIVE      = "agentsActive";
+  const AGENTS_TOTAL_SPEED = "agentsTotalSpeed";
+  const TASKS_TOTAL        = "tasksTotal";
+  const TASKS_FINISHED     = "tasksFinished";
+  const TASKS_RUNNING      = "tasksRunning";
+  const TASKS_QUEUED       = "tasksQueued";
+}
+
 // operating systems
 class DOperatingSystem {
   const LINUX   = 0;
@@ -63,6 +73,8 @@ class DConfig {
   const NUMBER_LOGENTRIES = "numLogEntries";
   const TIME_FORMAT       = "timefmt";
   const BASE_URL          = "baseUrl";
+  const DISP_TOLERANCE    = "disptolerance";
+  const BATCH_SIZE        = "batchSize";
   
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
@@ -95,6 +107,10 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::BASE_URL:
         return DConfigType::STRING_INPUT;
+      case Dconfig::DISP_TOLERANCE:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::BATCH_SIZE:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -129,6 +145,10 @@ class DConfig {
         return "Set the formatting of time displaying. Use syntax for PHPs date() method.";
       case DConfig::BASE_URL:
         return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
+      case DConfig::DISP_TOLERANCE:
+        return "How many percent a chunk can be longer than normally to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
+      case DConfig::BATCH_SIZE:
+        return "Batch size of SQL query when hashlist is sent to the agent.";
     }
     return $config;
   }
