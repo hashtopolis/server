@@ -21,9 +21,9 @@ class HashtopussyNotificationChatBot extends HashtopussyNotification {
   function sendMessage($message) {
     $username = "Hashtopussy";
     $data = "payload=" . json_encode(array(
-        "username" => $username,
-        "text" => $message
-      )
+          "username" => $username,
+          "text" => $message
+        )
       );
     
     $ch = curl_init($this->receiver);

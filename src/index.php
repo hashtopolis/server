@@ -43,7 +43,7 @@ else if (isset($_GET['logout'])) {
 
 $OBJECTS['message'] = $message;
 $fw = "";
-if(isset($_GET['fw'])){
+if (isset($_GET['fw'])) {
   $fw = $_GET['fw'];
 }
 $OBJECTS['fw'] = $fw;

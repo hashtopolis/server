@@ -27,27 +27,27 @@ class UI {
     $OBJECTS['messages'][] = new DataSet(array('type' => $type, 'message' => $message));
   }
   
-  public static function getNumMessages($type = "ALL"){
+  public static function getNumMessages($type = "ALL") {
     global $OBJECTS;
     
     $count = 0;
-    foreach($OBJECTS['messages'] as $message){
+    foreach ($OBJECTS['messages'] as $message) {
       /** @var $message DataSet */
-      if($message->getVal('type') == $type || $type == "ALL"){
+      if ($message->getVal('type') == $type || $type == "ALL") {
         $count++;
       }
     }
     return $count;
   }
   
-  public static function setForward($url, $delay){
+  public static function setForward($url, $delay) {
     global $OBJECTS;
     
     $OBJECTS['autorefresh'] = $delay;
     $OBJECTS['autorefreshUrl'] = $url;
   }
   
-  const ERROR = "danger";
+  const ERROR   = "danger";
   const SUCCESS = "success";
-  const WARN = "warning";
+  const WARN    = "warning";
 }

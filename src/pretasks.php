@@ -14,7 +14,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var array $OBJECTS */
 
 if (!$LOGIN->isLoggedin()) {
-  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF']."?".$_SERVER['QUERY_STRING']));
+  header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
@@ -30,7 +30,7 @@ $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
 $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
 $taskList = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
 $tasks = array();
-for($z=0;$z<sizeof($taskList);$z++){
+for ($z = 0; $z < sizeof($taskList); $z++) {
   $set = new DataSet();
   $task = $taskList[$z];
   $set->addValue('Task', $taskList[$z]);
@@ -40,10 +40,10 @@ for($z=0;$z<sizeof($taskList);$z++){
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $sizes = 0;
   $secret = false;
-  for($x=0;$x<sizeof($joinedFiles['File']);$x++){
-    $file = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class);
+  for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
+    $file = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class);
     $sizes += $file->getSize();
-    if($file->getSecret() == '1'){
+    if ($file->getSecret() == '1') {
       $secret = true;
     }
   }
@@ -51,7 +51,7 @@ for($z=0;$z<sizeof($taskList);$z++){
   $isUsed = false;
   $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
   $supertaskTasks = $FACTORIES::getSupertaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-  if(sizeof($supertaskTasks) > 0){
+  if (sizeof($supertaskTasks) > 0) {
     $isUsed = true;
   }
   
