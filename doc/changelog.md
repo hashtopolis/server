@@ -5,6 +5,10 @@
 - Renewed status page, gives now JSON formatted information which can be parsed however the user wants to.
 - added search page to search for hashes and plains
 
+## Technical
+
+- DB connection details now are stored in a file which is not in repository (a template is provided instead). This avoids conflicts on updates in `inc/load.php`
+
 # v0.3.1 -> v0.3.2
 
 ## Client
