@@ -3,6 +3,7 @@
 ## New Features
 
 - Renewed status page, gives now JSON formatted information which can be parsed however the user wants to.
+- added search page to search for hashes and plains
 
 # v0.3.1 -> v0.3.2
 
