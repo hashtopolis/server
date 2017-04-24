@@ -74,9 +74,9 @@ switch ($STEP) {
     echo $TEMPLATE->render(array());
     break;
   case 2: //installation should be finished now and user should be able to log in
-    $load = file_get_contents(dirname(__FILE__) . "/../inc/load.php");
-    $load = str_replace('$CONN[\'installed\'] = false;', '$CONN[\'installed\'] = true;', $load);
-    file_put_contents(dirname(__FILE__) . "/../inc/load.php", $load);
+    $load = file_get_contents(dirname(__FILE__) . "/../inc/db.php");
+    $load = str_replace('$INSTALL = false;', '$INSTALL = true;', $load);
+    file_put_contents(dirname(__FILE__) . "/../inc/db.php", $load);
     if (!file_exists(dirname(__FILE__) . "/../import")) {
       mkdir(dirname(__FILE__) . "/../import");
     }
@@ -121,13 +121,13 @@ switch ($STEP) {
       }
       else {
         //save database details
-        $file = file_get_contents(dirname(__FILE__) . "/../inc/load.php");
+        $file = file_get_contents(dirname(__FILE__) . "/../inc/db.template.php");
         $file = str_replace("__DBUSER__", $_POST['user'], $file);
         $file = str_replace("__DBPASS__", $_POST['pass'], $file);
         $file = str_replace("__DBSERVER__", $_POST['server'], $file);
         $file = str_replace("__DBDB__", $_POST['db'], $file);
         $file = str_replace("__DBPORT__", $_POST['port'], $file);
-        file_put_contents(dirname(__FILE__) . "/../inc/load.php", $file);
+        file_put_contents(dirname(__FILE__) . "/../inc/db.php", $file);
         setcookie("step", "$PREV", time() + 3600);
         sleep(1); // some times there are problems when reading to fast again and the file is not written to disk then
         header("Location: index.php");
