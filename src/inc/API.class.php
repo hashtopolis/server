@@ -52,13 +52,14 @@ class API {
       API::sendErrorResponse(PActions::BENCHMARK, "Invalid benchmark query!");
     }
     
-    // agent submits benchmark for task
     $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryBenchmark::TASK_ID]);
     if ($task == null) {
       API::sendErrorResponse(PActions::BENCHMARK, "Invalid task ID!");
     }
+    
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryBenchmark::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -110,14 +111,16 @@ class API {
       API::sendErrorResponse(PActions::KEYSPACE, "Invalid keyspace query!");
     }
     
-    // agent submits keyspace size for this task
     $keyspace = intval($QUERY[PQueryKeyspace::KEYSPACE]);
+    
     $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryKeyspace::TASK_ID]);
     if ($task == null) {
       API::sendErrorResponse(PActions::KEYSPACE, "Invalid task ID!");
     }
+    
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryKeyspace::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -154,6 +157,7 @@ class API {
    */
   private static function sendChunk($chunk) {
     global $FACTORIES;
+    
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     API::sendResponse(array(
         PResponseChunk::ACTION => PActions::CHUNK,
@@ -226,9 +230,10 @@ class API {
    * @param $assignment \DBA\Assignment
    */
   private static function handleExistingChunk($chunk, $agent, $task, $assignment) {
-    global $FACTORIES;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
     
-    $disptolerance = 1.2; //TODO: add this to config
+    $disptolerance = 1 + $CONFIG->getVal(DConfig::DISP_TOLERANCE) / 100;
     
     $agentChunkSize = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $agentChunkSizeMax = API::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance);
@@ -274,9 +279,10 @@ class API {
    * @param $assignment \DBA\Assignment
    */
   private static function createNewChunk($agent, $task, $assignment) {
-    global $FACTORIES;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
     
-    $disptolerance = 1.2; //TODO: add to config
+    $disptolerance = 1 + $CONFIG->getVal(DConfig::DISP_TOLERANCE) / 100;
     
     // if we have set a skip keyspace we set the the current progress to the skip which was set initially
     if ($task->getSkipKeyspace() > $task->getProgress()) {
@@ -321,7 +327,6 @@ class API {
       API::sendErrorResponse(PActions::CHUNK, "Invalid task ID!");
     }
     
-    //check if agent is assigned
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQueryChunk::TOKEN], "=");
     $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     
@@ -735,7 +740,8 @@ class API {
   }
   
   public static function getHashes($QUERY) {
-    global $FACTORIES;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
     
     //check required values
     if (!PQueryHashes::isValid($QUERY)) {
@@ -809,7 +815,7 @@ class API {
         header('Content-Type: text/plain');
         foreach ($hashlists as $list) {
           $limit = 0;
-          $size = 10000; //TODO: make this configurable
+          $size = $CONFIG->getVal(DConfig::BATCH_SIZE);
           do {
             $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
             $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list, "=");
