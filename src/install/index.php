@@ -100,7 +100,7 @@ switch ($STEP) {
     break;
   case 51: //enter database connection details
     $fail = false;
-    if ($CONN['user'] != "__DBUSER__") {
+    if (isset($CONN['user']) && $CONN['user'] != "__DBUSER__") {
       //it might be already configured, so we'll continue
       setcookie("step", "$PREV", time() + 3600);
       header("Location: index.php");
