@@ -70,7 +70,7 @@
         <td>
           <select class='form-control' name="importfile">
             {{FOREACH impfile;[[impfiles]]}}
-              <option value="[[impfile]]">[[impfile]]</option>
+              <option value="[[impfile.getVal('file')]]">[[impfile.getVal('file')]]</option>
             {{ENDFOREACH}}
             {{IF [[sizeof([[impfiles]])]] == 0}}
 							<option value="-1">'import' directory is empty</option>
