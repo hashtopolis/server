@@ -73,7 +73,7 @@
               <option value="[[impfile]]">[[impfile]]</option>
             {{ENDFOREACH}}
             {{IF [[sizeof([[impfiles]])]] == 0}}
-              'import' directory is empty
+							<option value="-1">'import' directory is empty</option>
             {{ENDIF}}
           </select>
         </td>
