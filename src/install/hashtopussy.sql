@@ -145,7 +145,7 @@ CREATE TABLE `File` (
 CREATE TABLE `Hash` (
   `hashId`     INT(11)          NOT NULL,
   `hashlistId` INT(11)          NOT NULL,
-  `hash`       VARCHAR(512)
+  `hash`       VARCHAR(1024)
                COLLATE utf8_bin NOT NULL,
   `salt`       VARCHAR(200)
                COLLATE utf8_bin NOT NULL,
@@ -793,3 +793,5 @@ ALTER TABLE `TaskFile`
 
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
+
+ALTER TABLE `Hash` ADD INDEX(`hash`);
