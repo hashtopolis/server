@@ -6,6 +6,7 @@
 - added search page to search for hashes and plains
 - '-r' is now automatically prepended when selecting rule files on task creation
 - added help page with some helpful links
+- Left hashlists can be downloaded now
 
 ## Technical
 
