@@ -5,6 +5,7 @@
 - Renewed status page, gives now JSON formatted information which can be parsed however the user wants to.
 - added search page to search for hashes and plains
 - '-r' is now automatically prepended when selecting rule files on task creation
+- Left hashlists can be downloaded now
 
 ## Technical
 
