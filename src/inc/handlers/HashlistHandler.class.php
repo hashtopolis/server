@@ -601,7 +601,7 @@ class HashlistHandler implements Handler {
       $inSuperHashlists = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     }
     $hashFactory = $FACTORIES::getHashFactory();
-    if ($hashlist->getFormat() != 0) {
+    if ($hashlist->getFormat() != DHashlistFormat::PLAIN) {
       $hashFactory = $FACTORIES::getHashBinaryFactory();
     }
     //start inserting
@@ -661,10 +661,22 @@ class HashlistHandler implements Handler {
           $invalid++;
           continue;
         }
-        $hash = $split[0];
-        $qF1 = new QueryFilter(Hash::HASH, $hash, "=");
-        $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-        $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+        else if ($hashlist->getFormat() == DHashlistFormat::WPA) {
+          if (sizeof($split) < 4) {
+            $invalid++;
+            continue;
+          }
+          $hash = $split[0] . $separator . $split[1] . $separator . $split[2];
+          $qF1 = new QueryFilter(HashBinary::ESSID, $hash, "=");
+          $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
+          $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+        }
+        else {
+          $hash = $split[0];
+          $qF1 = new QueryFilter(Hash::HASH, $hash, "=");
+          $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
+          $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+        }
         if ($hashEntry == null) {
           $notFound++;
           continue;
