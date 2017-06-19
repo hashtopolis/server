@@ -116,7 +116,7 @@
             {{FOREACH file;[[rules]]}}
               <tr>
                 <td>
-                  <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                  <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getSecret()]] == 1}}
                   <img src="static/lock.gif" alt="Secret">
@@ -141,7 +141,7 @@
           {{FOREACH file;[[wordlists]]}}
             <tr>
               <td>
-                <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
                 [[file.getVal('file').getFilename()]]
                 {{IF [[file.getVal('file').getSecret()]] == 1}}
                   <img src="static/lock.gif" alt="Secret">
@@ -162,7 +162,7 @@
       function toggleFiles(){
         var wordlist = document.getElementById('wordlists');
         var rule = document.getElementById('rules');
-        if(show == 'wordlists'){
+        if(show === 'wordlists'){
           wordlist.style.visibility = "hidden"; // or
           wordlist.style.display = "none";
           rule.style.visibility = "visible"; // or
@@ -183,25 +183,31 @@
         return false;
       }
 
-      function assignFile(cmdLine,addObject,fileName) {
-        if (fileName.indexOf('.7z') != -1) {
+      function assignFile(cmdLine, addObject, fileName, type) {
+        if (fileName.indexOf('.7z') !== -1) {
           fileName=fileName.substring(0,fileName.length-2)+'???';
         }
         var cmdObject = document.getElementById(cmdLine);
-        if (addObject == true) {
-          if (cmdObject.value.indexOf(fileName) == -1) {
-            if (cmdObject.value.length>0 && cmdObject.value.slice(-1)!=' ') {
+        if (addObject === true) {
+          if (cmdObject.value.indexOf(fileName) === -1) {
+            if (cmdObject.value.length > 0 && cmdObject.value.slice(-1) !== ' ') {
               cmdObject.value += ' ';
+            }
+            if(type === 'rule'){
+                cmdObject.value += '-r ';
             }
             cmdObject.value += fileName;
           }
         }
         else {
-          cmdObject.value = cmdObject.value.replace(fileName,'');
-          while (cmdObject.value.slice(-1)==' ') {
+          if(type === 'rule'){
+              cmdObject.value = cmdObject.value.replace('-r ' + fileName, '');
+          }
+          cmdObject.value = cmdObject.value.replace(fileName, '');
+          while (cmdObject.value.slice(-1) === ' ') {
             cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1);
           }
-          while (cmdObject.value.substring(0,1)==' ') {
+          while (cmdObject.value.substring(0,1) === ' ') {
             cmdObject.value=cmdObject.value.substring(1);
           }
         }
