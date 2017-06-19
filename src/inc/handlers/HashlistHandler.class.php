@@ -104,10 +104,62 @@ class HashlistHandler implements Handler {
         }
         $this->createSuperhashlist();
         break;
+      case 'leftlist':
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->leftlist();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function leftlist() {
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
+    
+    $hashlist = $FACTORIES::getHashlistFactory()->get($_POST['hashlist']);
+    if ($hashlist == null) {
+      UI::printError("ERROR", "Invalid hashlist!");
+    }
+    else if ($hashlist->getFormat() == DHashlistFormat::WPA || $hashlist->getFormat() == DHashlistFormat::BINARY) {
+      UI::printError("ERROR", "You cannot create left lists for binary hashes!");
+    }
+    $hashlists = Util::checkSuperHashlist($hashlist);
+    if ($hashlists[0]->getFormat() != DHashlistFormat::PLAIN) {
+      UI::printError("ERROR", "You cannot create left lists for binary hashes!");
+    }
+    
+    $hashlistIds = array();
+    foreach ($hashlists as $hl) {
+      $hashlistIds[] = $hl->getId();
+    }
+    
+    $qF1 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
+    $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
+    
+    header("Content-Type: application/force-download");
+    header("Content-Description: " . $hashlist->getHashlistName() . "_left.txt");
+    header("Content-Disposition: attachment; filename=\"" . $hashlist->getHashlistName() . "_left.txt\"");
+    
+    $count = 0;
+    do {
+      $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . $count . ",5000");
+      $hashEntries = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
+      $output = "";
+      foreach ($hashEntries as $hashEntry) {
+        $output .= $hashEntry->getHash();
+        if ($hashlist->getIsSalted()) {
+          $output .= $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $hashEntry->getSalt();
+        }
+        $output .= "\n";
+      }
+      echo $output;
+      $count += 5000;
+    } while (sizeof($hashEntries) > 0);
+    die(); // download finished
   }
   
   private function createSuperhashlist() {
