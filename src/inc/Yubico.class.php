@@ -8,7 +8,7 @@
    * @copyright   2007-2015 Yubico AB
    * @license     http://opensource.org/licenses/bsd-license.php New BSD License
    * @version     2.0
-   * @link        http://www.yubico.com/
+   * @link        http://www.yubico.com
    */
 require_once 'PEAR.php';
 /**
