@@ -164,7 +164,7 @@ switch ($STEP) {
         $group = $group[0];
         $newSalt = Util::randomString(20);
         $newHash = Encryption::passwordHash($password, $newSalt);
-        $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
+        $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
         $FACTORIES::getUserFactory()->save($user);
         setcookie("step", "$PREV", time() + 3600);
         header("Location: index.php");
