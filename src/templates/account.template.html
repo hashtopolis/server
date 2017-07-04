@@ -48,6 +48,17 @@
        			</form>
 			</td>
 		</tr>
+	</table>
+</div>
+<div class="panel panel-default">
+	<table class="table table-bordered table-nonfluid">
+		<tr>
+			<td colspan="2">
+				<div class="alert alert-warning">
+					<b>Disclaimer:</b> Administrators cannot reset your OTP auth information if your key is lost.
+				</div>
+			</td>
+		</tr>
 		{{IF ![[Util::isYubikeyEnabled()]]}}
 			<tr>
 				<th>Yubikey OTP</th>
@@ -72,10 +83,7 @@
 								<input type='hidden' name='action' value='ykenable'>
 								<input type="submit" class='btn btn-success' value="Enable">
 							</form>
-						{{ENDIF}}<br>
-						<div class="alert alert-warning">
-							<b>Disclaimer:</b> Administrators cannot reset your OTP auth information if your key is lost.
-						</div>
+						{{ENDIF}}
 					</td>
 			</tr>
 			<tr>
