@@ -2,6 +2,7 @@
 use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;
+
 /**
  * Handles the login sessions
  *
@@ -99,9 +100,10 @@ class Login {
    * @param string $password password which was entered on login form
    * @return true on success and false on failure
    */
-  public function login($username, $password, $otp=NULL){
+  public function login($username, $password, $otp = NULL) {
+    /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-
+    
     if ($this->valid == true) {
       return false;
     }
@@ -112,7 +114,7 @@ class Login {
       return false;
     }
     $user = $check[0];
-
+    
     if ($user->getIsValid() != 1) {
       return false;
     }
@@ -124,44 +126,51 @@ class Login {
       return false;
     }
     $this->user = $user;
-
+    
     /***** YUBIKEY *****/
-    if($user->getYubikey()==true && sizeof($CONFIG->getVal(DConfig::YUBIKEY_ID))!=0 &&
-       sizeof($CONFIG->getVal(DConfig::YUBIKEY_KEY)!=0)){
-
+    if ($user->getYubikey() == true && sizeof($CONFIG->getVal(DConfig::YUBIKEY_ID)) != 0 &&
+      sizeof($CONFIG->getVal(DConfig::YUBIKEY_KEY) != 0)
+    ) {
+      
       $https = true;
-      $keyid=substr($otp,0,12);
-
-      if (strtoupper($user->getOtp1())!=strtoupper($keyid) && strtoupper($user->getOtp2())!=strtoupper($keyid) && strtoupper($user->getOtp3())!=strtoupper($keyid) && strtoupper($user->getOtp4())!=strtoupper($keyid)) {
+      $keyid = substr($otp, 0, 12);
+      
+      if (strtoupper($user->getOtp1()) != strtoupper($keyid) && strtoupper($user->getOtp2()) != strtoupper($keyid) && strtoupper($user->getOtp3()) != strtoupper($keyid) && strtoupper($user->getOtp4()) != strtoupper($keyid)) {
         return false;
       }
-
-      $url_otp=$CONFIG->getVal(DConfig::YUBIKEY_URL);
+      
+      $url_otp = $CONFIG->getVal(DConfig::YUBIKEY_URL);
       if (!empty($url_otp) && $_url = parse_url($url_otp)) {
-        if ($_url['scheme'] == "http") $https = false;
+        if ($_url['scheme'] == "http") {
+          $https = false;
+        }
         $urlpart = $_url['host'];
-        if (!empty($_url['port'])) $urlpart .= ':'.$_url['port'];
+        if (!empty($_url['port'])) {
+          $urlpart .= ':' . $_url['port'];
+        }
         $urlpart .= $_url['path'];
       }
       
       $yubi = new Auth_Yubico($CONFIG->getVal(DConfig::YUBIKEY_ID),
-                              $CONFIG->getVal(DConfig::YUBIKEY_KEY),
-                              $https,
-                              true);
-       
-      if (!empty($urlpart)) $yubi->addURLpart($urlpart);    
+        $CONFIG->getVal(DConfig::YUBIKEY_KEY),
+        $https,
+        true
+      );
+      
+      if (!empty($urlpart)) {
+        $yubi->addURLpart($urlpart);
+      }
       $auth = $yubi->verify($otp);
-       
+      
       if (PEAR::isError($auth)) {
         return false;
       }
-    } 
-    elseif($user->getYubikey()==true)
-    {
+    }
+    elseif ($user->getYubikey() == true) {
       return false;
     }
     /***** FIN YUBIKEY *****/
-
+    
     $startTime = time();
     $s = new Session(0, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
     $s = $FACTORIES::getSessionFactory()->save($s);

@@ -25,10 +25,11 @@ if (isset($_GET['err'])) {
         $message = "<div class='alert alert-danger'>You need to fill in both fields!</div>";
         break;
       case '3':
-        $message = "<div class='alert alert-danger'>Wrong username/password!</div>";
+        $message = "<div class='alert alert-danger'>Wrong username/password/OTP!</div>";
         break;
       case '4':
         $message = "<div class='alert alert-warning'>You need to be logged in to view this! Please log in again.</div>";
+        break;
     }
   }
 }
