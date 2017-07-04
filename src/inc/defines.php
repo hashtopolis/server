@@ -149,7 +149,7 @@ class DConfig {
       case DConfig::BASE_URL:
         return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
       case DConfig::DISP_TOLERANCE:
-        return "How many percent a chunk can be longer than normally to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
+        return "How many percent a chunk can be longer than normal to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
       case DConfig::BATCH_SIZE:
         return "Batch size of SQL query when hashlist is sent to the agent";
       case DConfig::YUBIKEY_ID:
