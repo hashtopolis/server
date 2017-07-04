@@ -98,6 +98,7 @@ class Login {
    *
    * @param string $username username of the user to be logged in
    * @param string $password password which was entered on login form
+   * @param string $otp OTP login field
    * @return true on success and false on failure
    */
   public function login($username, $password, $otp = NULL) {
@@ -128,45 +129,40 @@ class Login {
     $this->user = $user;
     
     /***** YUBIKEY *****/
-    if ($user->getYubikey() == true && sizeof($CONFIG->getVal(DConfig::YUBIKEY_ID)) != 0 &&
-      sizeof($CONFIG->getVal(DConfig::YUBIKEY_KEY) != 0)
-    ) {
+    if ($user->getYubikey() == true && sizeof($CONFIG->getVal(DConfig::YUBIKEY_ID)) != 0 && sizeof($CONFIG->getVal(DConfig::YUBIKEY_KEY) != 0)) {
+      $keyId = substr($otp, 0, 12);
       
-      $https = true;
-      $keyid = substr($otp, 0, 12);
-      
-      if (strtoupper($user->getOtp1()) != strtoupper($keyid) && strtoupper($user->getOtp2()) != strtoupper($keyid) && strtoupper($user->getOtp3()) != strtoupper($keyid) && strtoupper($user->getOtp4()) != strtoupper($keyid)) {
+      if (strtoupper($user->getOtp1()) != strtoupper($keyId) && strtoupper($user->getOtp2()) != strtoupper($keyId) && strtoupper($user->getOtp3()) != strtoupper($keyId) && strtoupper($user->getOtp4()) != strtoupper($keyId)) {
+        Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed Yubikey login attempt due to wrong keyId!");
         return false;
       }
       
-      $url_otp = $CONFIG->getVal(DConfig::YUBIKEY_URL);
-      if (!empty($url_otp) && $_url = parse_url($url_otp)) {
+      $useHttps = true;
+      $urlOTP = $CONFIG->getVal(DConfig::YUBIKEY_URL);
+      if (!empty($urlOTP) && $_url = parse_url($urlOTP)) {
         if ($_url['scheme'] == "http") {
-          $https = false;
+          $useHttps = false;
         }
-        $urlpart = $_url['host'];
+        $urlPart = $_url['host'];
         if (!empty($_url['port'])) {
-          $urlpart .= ':' . $_url['port'];
+          $urlPart .= ':' . $_url['port'];
         }
-        $urlpart .= $_url['path'];
+        $urlPart .= $_url['path'];
       }
       
-      $yubi = new Auth_Yubico($CONFIG->getVal(DConfig::YUBIKEY_ID),
-        $CONFIG->getVal(DConfig::YUBIKEY_KEY),
-        $https,
-        true
-      );
+      $yubi = new Auth_Yubico($CONFIG->getVal(DConfig::YUBIKEY_ID), $CONFIG->getVal(DConfig::YUBIKEY_KEY), $useHttps, true);
       
-      if (!empty($urlpart)) {
-        $yubi->addURLpart($urlpart);
+      if (!empty($urlPart)) {
+        $yubi->addURLpart($urlPart);
       }
       $auth = $yubi->verify($otp);
       
       if (PEAR::isError($auth)) {
+        Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong Yubikey OTP!");
         return false;
       }
     }
-    elseif ($user->getYubikey() == true) {
+    else if ($user->getYubikey() == true) {
       return false;
     }
     /***** FIN YUBIKEY *****/
