@@ -564,11 +564,15 @@ CREATE TABLE `User` (
   `registeredSince`    INT(11)          NOT NULL,
   `sessionLifetime`    INT(11)          NOT NULL DEFAULT '600',
   `rightGroupId`       INT(11)          NOT NULL DEFAULT '1',
-  `yubikey`            INT(1)           NOT NULL DEFAULT '0',
-  `otp1`               VARCHAR(50)      NOT NULL,
-  `otp2`               VARCHAR(50)      NOT NULL,
-  `otp3`               VARCHAR(50)      NOT NULL,
-  `otp4`               VARCHAR(50)      NOT NULL
+  `yubikey`            INT(1)           DEFAULT '0',
+  `otp1`               VARCHAR(50)
+                       COLLATE utf8_bin DEFAULT NULL,
+  `otp2`               VARCHAR(50)
+                       COLLATE utf8_bin DEFAULT NULL,
+  `otp3`               VARCHAR(50)
+                       COLLATE utf8_bin DEFAULT NULL,
+  `otp4`               VARCHAR(50)
+                       COLLATE utf8_bin DEFAULT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
