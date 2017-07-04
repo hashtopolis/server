@@ -75,6 +75,9 @@ class DConfig {
   const BASE_URL          = "baseUrl";
   const DISP_TOLERANCE    = "disptolerance";
   const BATCH_SIZE        = "batchSize";
+  const YUBIKEY_ID        = "yubikey_id";
+  const YUBIKEY_KEY       = "yubikey_key";
+  const YUBIKEY_URL       = "yubikey_url";
   
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
@@ -149,6 +152,12 @@ class DConfig {
         return "How many percent a chunk can be longer than normally to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
       case DConfig::BATCH_SIZE:
         return "Batch size of SQL query when hashlist is sent to the agent.";
+      case DConfig::YUBIKEY_ID:
+        return "Yubikey Id.";
+      case DConfig::YUBIKEY_KEY:
+        return "Yubikey Key.";
+      case DConfig::YUBIKEY_URL:
+        return "Yubikey Url.";
     }
     return $config;
   }

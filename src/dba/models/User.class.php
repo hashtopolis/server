@@ -21,8 +21,13 @@ class User extends AbstractModel {
   private $registeredSince;
   private $sessionLifetime;
   private $rightGroupId;
+  private $yubikey;
+  private $otp1;
+  private $otp2;
+  private $otp3;
+  private $otp4;
   
-  function __construct($userId, $username, $email, $passwordHash, $passwordSalt, $isValid, $isComputedPassword, $lastLoginDate, $registeredSince, $sessionLifetime, $rightGroupId) {
+  function __construct($userId, $username, $email, $passwordHash, $passwordSalt, $isValid, $isComputedPassword, $lastLoginDate, $registeredSince, $sessionLifetime, $rightGroupId, $yubikey, $otp1, $otp2, $otp3, $otp4) {
     $this->userId = $userId;
     $this->username = $username;
     $this->email = $email;
@@ -34,6 +39,11 @@ class User extends AbstractModel {
     $this->registeredSince = $registeredSince;
     $this->sessionLifetime = $sessionLifetime;
     $this->rightGroupId = $rightGroupId;
+    $this->yubikey = $yubikey;
+    $this->otp1 = $otp1;
+    $this->otp2 = $otp2;
+    $this->otp3 = $otp3;
+    $this->otp4 = $otp4;
   }
   
   function getKeyValueDict() {
@@ -49,6 +59,11 @@ class User extends AbstractModel {
     $dict['registeredSince'] = $this->registeredSince;
     $dict['sessionLifetime'] = $this->sessionLifetime;
     $dict['rightGroupId'] = $this->rightGroupId;
+    $dict['yubikey'] = $this->yubikey;
+    $dict['otp1'] = $this->otp1;
+    $dict['otp2'] = $this->otp2;
+    $dict['otp3'] = $this->otp3;
+    $dict['otp4'] = $this->otp4;
     
     return $dict;
   }
@@ -149,6 +164,46 @@ class User extends AbstractModel {
     $this->rightGroupId = $rightGroupId;
   }
 
+  function getYubikey(){
+    return $this->yubikey;
+  }
+
+  function setYubikey($yubikey){
+    $this->yubikey = $yubikey;
+  }
+
+  function getOtp1(){
+    return $this->otp1;
+  }
+
+  function setOtp1($otp1){
+    $this->otp1 = $otp1;
+  }
+
+  function getOtp2(){
+    return $this->otp2;
+  }
+
+  function setOtp2($otp2){
+    $this->otp2 = $otp2;
+  }
+
+  function getOtp3(){
+    return $this->otp3;
+  }
+
+  function setOtp3($otp3){
+    $this->otp3 = $otp3;
+  }
+
+  function getOtp4(){
+    return $this->otp4;
+  }
+
+  function setOtp4($otp4){
+    $this->otp4 = $otp4;
+  }
+
   const USER_ID = "userId";
   const USERNAME = "username";
   const EMAIL = "email";
@@ -160,4 +215,9 @@ class User extends AbstractModel {
   const REGISTERED_SINCE = "registeredSince";
   const SESSION_LIFETIME = "sessionLifetime";
   const RIGHT_GROUP_ID = "rightGroupId";
+  const YUBIKEY = "yubikey";
+  const OTP1 = "otp1";
+  const OTP2 = "otp2";
+  const OTP3 = "otp3";
+  const OTP4 = "otp4";
 }

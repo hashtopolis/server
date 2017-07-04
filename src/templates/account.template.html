@@ -48,6 +48,64 @@
        			</form>
 			</td>
 		</tr>
+		<tr>
+			<th>Enable/Disable Yubikey OTP</th>
+			<td>
+				{{IF [[user.getYubikey()]] == 1}}
+					Yubikey OTP currently enabled
+					<form class='form-inline' action="account.php" method="post">
+						<input type='hidden' name='action' value='ykdisable'>
+						<input type="submit" class='btn btn-warning' value="Disable">
+					</form>
+				{{ELSE}}
+					Yubikey OTP is currently disabled
+					<form class='form-inline' action="account.php" method="post">
+						<input type='hidden' name='action' value='ykenable'>
+						<input type="submit" class='btn btn-success' value="Enable">
+					</form>
+				{{ENDIF}}
+			</td>
+		</tr>
+		<tr>
+			<th>OTP KEY 1:</th>
+			<td>
+				<form class='form-inline' action="account.php" method="post">
+       				<input type='hidden' name='action' value='setotp1'>
+       				<input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]'>
+       				<input type="submit" class='btn btn-default' value="Update">
+       			</form>
+			</td>	
+		</tr>
+		<tr>
+			<th>OTP KEY 2:</th>
+			<td>
+				<form class='form-inline' action="account.php" method="post">
+       				<input type='hidden' name='action' value='setotp2'>
+       				<input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]'>
+       				<input type="submit" class='btn btn-default' value="Update">
+       			</form>
+			</td>	
+		</tr>
+		<tr>
+			<th>OTP KEY 3:</th>
+			<td>
+				<form class='form-inline' action="account.php" method="post">
+       				<input type='hidden' name='action' value='setotp3'>
+       				<input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]'>
+       				<input type="submit" class='btn btn-default' value="Update">
+       			</form>
+			</td>	
+		</tr>
+		<tr>
+			<th>OTP KEY 4:</th>
+			<td>
+				<form class='form-inline' action="account.php" method="post">
+       				<input type='hidden' name='action' value='setotp4'>
+       				<input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]'>
+       				<input type="submit" class='btn btn-default' value="Update">
+       			</form>
+			</td>	
+		</tr>
 	</table>
 </div>
 {%TEMPLATE->struct/foot%}
