@@ -61,14 +61,14 @@
 				<th>Enable/Disable Yubikey OTP</th>
 					<td>
 						{{IF [[user.getYubikey()]] == 1}}
-							Yubikey OTP currently enabled
 							<form class='form-inline' action="account.php" method="post">
+								Yubikey OTP currently enabled
 								<input type='hidden' name='action' value='ykdisable'>
 								<input type="submit" class='btn btn-warning' value="Disable">
 							</form>
 						{{ELSE}}
-							Yubikey OTP is currently disabled
 							<form class='form-inline' action="account.php" method="post">
+								Yubikey OTP is currently disabled
 								<input type='hidden' name='action' value='ykenable'>
 								<input type="submit" class='btn btn-success' value="Enable">
 							</form>
