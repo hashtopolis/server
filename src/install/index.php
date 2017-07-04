@@ -17,7 +17,6 @@ use DBA\RightGroup;
 use DBA\User;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
-require_once(dirname(__FILE__) . "/../inc/db.php");
 
 $write_files = array(".", "../inc/Encryption.class.php", "../inc/load.php", "../files", "../templates", "../inc", "../files", "../lang", "../");
 

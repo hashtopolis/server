@@ -566,9 +566,9 @@ CREATE TABLE `User` (
   `rightGroupId`       INT(11)          NOT NULL DEFAULT '1',
   `yubikey`            INT(1)           NOT NULL DEFAULT '0',
   `otp1`               VARCHAR(50)      NOT NULL,
-  `otp2`               INT(50)          NOT NULL,
-  `otp3`               INT(50)          NOT NULL,
-  `otp4`               INT(50)          NOT NULL
+  `otp2`               VARCHAR(50)      NOT NULL,
+  `otp3`               VARCHAR(50)      NOT NULL,
+  `otp4`               VARCHAR(50)      NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
