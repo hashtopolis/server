@@ -121,7 +121,7 @@ class Auth_Yubico
 		if ($this->_url) {
 			return $this->_url;
 		} else {
-			return "127.0.0.1/verf/2.0/verify";
+			return "api.yubico.com/wsapi/verify";
 		}
 	}
 	/**
@@ -133,7 +133,11 @@ class Auth_Yubico
 	function getNextURLpart()
 	{
 	  if ($this->_url_list) $url_list=$this->_url_list;
-	  else $url_list=array('127.0.0.1/verf/2.0/verify');
+	  else $url_list=array('api.yubico.com/wsapi/2.0/verify',
+			       'api2.yubico.com/wsapi/2.0/verify', 
+			       'api3.yubico.com/wsapi/2.0/verify', 
+			       'api4.yubico.com/wsapi/2.0/verify',
+			       'api5.yubico.com/wsapi/2.0/verify');
 	  
 	  if ($this->_url_index>=count($url_list)) return false;
 	  else return $url_list[$this->_url_index++];
