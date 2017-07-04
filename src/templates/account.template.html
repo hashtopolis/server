@@ -52,9 +52,8 @@
 			<tr>
 				<th>Yubikey OTP</th>
 				<td>
-					Yubikey is currently not configured to be used on this Hashtopussy installation.<br>
-					Please contact the admin as
-					it needs to be enabled and set up on the server configuration.
+					Yubikey is currently not configured.<br>
+					Please contact an admin as it needs to be enabled and set up on the server configuration.
 				</td>
 			</tr>
 		{{ELSE}}
@@ -73,47 +72,50 @@
 								<input type='hidden' name='action' value='ykenable'>
 								<input type="submit" class='btn btn-success' value="Enable">
 							</form>
-						{{ENDIF}}
+						{{ENDIF}}<br>
+						<div class="alert alert-warning">
+							<b>Disclaimer:</b> Administrators cannot reset your OTP auth information if your key is lost.
+						</div>
 					</td>
-				</tr>
-				<tr>
+			</tr>
+			<tr>
 				<th>OTP KEY 1:</th>
-					<td>
-						<form class='form-inline' action="account.php" method="post">
-							<input type='hidden' name='action' value='setotp1'>
-							<input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]'>
-							<input type="submit" class='btn btn-default' value="Update">
-						</form>
-					</td>
-				</tr>
-				<tr>
-					<th>OTP KEY 2:</th>
-					<td>
-						<form class='form-inline' action="account.php" method="post">
-							<input type='hidden' name='action' value='setotp2'>
-							<input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]'>
-							<input type="submit" class='btn btn-default' value="Update">
-						</form>
-					</td>
-				</tr>
-				<tr>
-					<th>OTP KEY 3:</th>
-					<td>
-						<form class='form-inline' action="account.php" method="post">
-							<input type='hidden' name='action' value='setotp3'>
-							<input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]'>
-							<input type="submit" class='btn btn-default' value="Update">
-						</form>
-					</td>
-				</tr>
-				<tr>
-					<th>OTP KEY 4:</th>
-					<td>
-						<form class='form-inline' action="account.php" method="post">
-							<input type='hidden' name='action' value='setotp4'>
-							<input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]'>
-							<input type="submit" class='btn btn-default' value="Update">
-						</form>
+				<td>
+					<form class='form-inline' action="account.php" method="post">
+						<input type='hidden' name='action' value='setotp1'>
+						<input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]'>
+						<input type="submit" class='btn btn-default' value="Update">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>OTP KEY 2:</th>
+				<td>
+					<form class='form-inline' action="account.php" method="post">
+						<input type='hidden' name='action' value='setotp2'>
+						<input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]'>
+						<input type="submit" class='btn btn-default' value="Update">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>OTP KEY 3:</th>
+				<td>
+					<form class='form-inline' action="account.php" method="post">
+						<input type='hidden' name='action' value='setotp3'>
+						<input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]'>
+						<input type="submit" class='btn btn-default' value="Update">
+					</form>
+				</td>
+			</tr>
+			<tr>
+				<th>OTP KEY 4:</th>
+				<td>
+					<form class='form-inline' action="account.php" method="post">
+						<input type='hidden' name='action' value='setotp4'>
+						<input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]'>
+						<input type="submit" class='btn btn-default' value="Update">
+					</form>
 				</td>
 			</tr>
 		{{ENDIF}}
