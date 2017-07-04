@@ -30,9 +30,9 @@ $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` CHANGE `hash` 
 echo "OK\n";
 
 echo "Add Yubikey... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (17, 'yubikey_id', 'id')");
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (18, 'yubikey_key', 'key=')");
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (19, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (17, 'yubikey_id', '')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (18, 'yubikey_key', '')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (19, 'yubikey_url', 'https://api.yubico.com/wsapi/2.0/verify')");
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `User` ADD yubikey INT(1) NOT NULL, ADD otp1 VARCHAR(50) NOT NULL, ADD otp2 VARCHAR(50) NOT NULL, ADD otp3 VARCHAR(50) NOT NULL, ADD otp4 VARCHAR(50) NOT NULL;");
 echo "OK\n";
 

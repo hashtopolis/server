@@ -145,19 +145,19 @@ class DConfig {
       case DConfig::NUMBER_LOGENTRIES:
         return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
       case DConfig::TIME_FORMAT:
-        return "Set the formatting of time displaying. Use syntax for PHPs date() method.";
+        return "Set the formatting of time displaying. Use syntax for PHPs date() method";
       case DConfig::BASE_URL:
         return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
       case DConfig::DISP_TOLERANCE:
         return "How many percent a chunk can be longer than normally to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
       case DConfig::BATCH_SIZE:
-        return "Batch size of SQL query when hashlist is sent to the agent.";
+        return "Batch size of SQL query when hashlist is sent to the agent";
       case DConfig::YUBIKEY_ID:
-        return "Yubikey Id.";
+        return "Yubikey Client Id";
       case DConfig::YUBIKEY_KEY:
-        return "Yubikey Key.";
+        return "Yubikey Secret Key";
       case DConfig::YUBIKEY_URL:
-        return "Yubikey Url.";
+        return "Yubikey API Url";
     }
     return $config;
   }

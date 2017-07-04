@@ -129,7 +129,7 @@ class Login {
     $this->user = $user;
     
     /***** YUBIKEY *****/
-    if ($user->getYubikey() == true && sizeof($CONFIG->getVal(DConfig::YUBIKEY_ID)) != 0 && sizeof($CONFIG->getVal(DConfig::YUBIKEY_KEY) != 0)) {
+    if ($user->getYubikey() == true && Util::isYubikeyEnabled() && sizeof($CONFIG->getVal(DConfig::YUBIKEY_ID)) != 0 && sizeof($CONFIG->getVal(DConfig::YUBIKEY_KEY) != 0)) {
       $keyId = substr($otp, 0, 12);
       
       if (strtoupper($user->getOtp1()) != strtoupper($keyId) && strtoupper($user->getOtp2()) != strtoupper($keyId) && strtoupper($user->getOtp3()) != strtoupper($keyId) && strtoupper($user->getOtp4()) != strtoupper($keyId)) {

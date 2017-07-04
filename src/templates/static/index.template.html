@@ -27,13 +27,15 @@
             <input name='otp' type="password" class="form-control" id="inputOTP" placeholder="OTP">
           </div>
         </div>
-        <div class="form-group">
-          <div class="col-sm-offset-4 col-sm-8">
-            <button type="submit" class="btn btn-success">Sign in</button>
-            &nbsp;&nbsp;&nbsp;
-            <a href='forgot.php'>Forgot password</a>
+        {{IF [[Util::isYubikeyEnabled()]]}}
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+              <button type="submit" class="btn btn-success">Sign in</button>
+              &nbsp;&nbsp;&nbsp;
+              <a href='forgot.php'>Forgot password</a>
+            </div>
           </div>
-        </div>
+        {{ENDIF}}
       </form>
     </div>
     <div class='col-md-2'></div>
