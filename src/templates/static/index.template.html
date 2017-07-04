@@ -4,33 +4,41 @@
   <h2>Login</h2>
   [[message]]
   <div class='alert alert-neutral'>
-    <div class='col-md-3'></div>
-    <div class='col-md-6'>
+    <div class='col-md-2'></div>
+    <div class='col-md-8'>
       <br>
       <form action='login.php' method='post' class="form-horizontal">
         <input type='hidden' name='fw' value='[[fw]]'>
         <div class="form-group">
-          <label for="inputUsername" class="col-sm-2 control-label">Username</label>
-          <div class="col-sm-10">
+          <label for="inputUsername" class="col-sm-4 control-label">Username</label>
+          <div class="col-sm-8">
             <input name='username' type="text" class="form-control" id="inputUsername" placeholder="Username">
           </div>
         </div>
         <div class="form-group">
-          <label for="inputPassword" class="col-sm-2 control-label">Password</label>
-          <div class="col-sm-10">
+          <label for="inputPassword" class="col-sm-4 control-label">Password</label>
+          <div class="col-sm-8">
             <input name='password' type="password" class="form-control" id="inputPassword" placeholder="Password">
           </div>
         </div>
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-success">Sign in</button>
-            &nbsp;&nbsp;&nbsp;
-            <a href='forgot.php'>Forgot password</a>
+          <label for="inputOTP" class="col-sm-4 control-label">Yubikey OTP (if enabled)</label>
+          <div class="col-sm-8">
+            <input name='otp' type="password" class="form-control" id="inputOTP" placeholder="OTP">
           </div>
         </div>
+        {{IF [[Util::isYubikeyEnabled()]]}}
+          <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-8">
+              <button type="submit" class="btn btn-success">Sign in</button>
+              &nbsp;&nbsp;&nbsp;
+              <a href='forgot.php'>Forgot password</a>
+            </div>
+          </div>
+        {{ENDIF}}
       </form>
     </div>
-    <div class='col-md-3'></div>
+    <div class='col-md-2'></div>
   </div>
   <div class='alert alert-info'>
     This is a private closed system. If you need access you need to contact an admin of this page and

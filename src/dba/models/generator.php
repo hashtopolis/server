@@ -175,7 +175,12 @@ $CONF['User'] = array(
   'lastLoginDate',
   'registeredSince',
   'sessionLifetime',
-  'rightGroupId'
+  'rightGroupId',
+  'yubikey',
+  'otp1',
+  'otp2',
+  'otp3',
+  'otp4'
 );
 $CONF['Session'] = array(
   'sessionId',

@@ -70,7 +70,7 @@ class UsersHandler implements Handler {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
+    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
     $FACTORIES::getUserFactory()->save($user);
     //$tmpl = new Template("email.creation");
     //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");

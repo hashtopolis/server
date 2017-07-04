@@ -31,6 +31,24 @@ class AccountHandler implements Handler {
       case 'setemail':
         $this->setEmail();
         break;
+      case 'ykdisable':
+        $this->setOTP(-1);
+        break;
+      case 'ykenable':
+        $this->setOTP(0);
+        break;
+      case 'setotp1':
+        $this->setOTP(1);
+        break;
+      case 'setotp2':
+        $this->setOTP(2);
+        break;
+      case 'setotp3':
+        $this->setOTP(3);
+        break;
+      case 'setotp4':
+        $this->setOTP(4);
+        break;
       case 'updatelifetime':
         $this->updateLifetime();
         break;
@@ -102,5 +120,54 @@ class AccountHandler implements Handler {
     $FACTORIES::getUserFactory()->update($this->user);
     Util::createLogEntry(DLogEntryIssuer::USER, $this->user->getId(), DLogEntry::INFO, "User changed email!");
     UI::addMessage(UI::SUCCESS, "Email updated successfully!");
+  }
+
+  private function setOTP($num) {
+    global $FACTORIES;
+    
+    if($_POST['action'] =='ykenable'){
+      $confotpstate=false;
+
+      if (strlen($this->user->getOtp1())==12) $confotpstate=true;
+      elseif (strlen($this->user->getOtp2())==12) $confotpstate=true;
+      elseif (strlen($this->user->getOtp3())==12) $confotpstate=true;
+      elseif (strlen($this->user->getOtp4())==12) $confotpstate=true;
+        
+      if(!$confotpstate){
+        UI::addMessage(UI::ERROR, "Configure OTP KEY first!");
+        return;
+      }
+    }
+
+    switch ($num) {
+      case -1:
+        $this->user->setYubikey(0);
+        break;
+      case 0:
+        $this->user->setYubikey(1);
+        break;
+      case 1:
+        $otp = $_POST['otp1'];
+        $this->user->setOtp1(substr($otp, 0, 12));
+        break;
+      case 2:
+        $otp = $_POST['otp2'];
+        $this->user->setOtp2(substr($otp, 0, 12));
+        break;
+      case 3:
+        $otp = $_POST['otp3'];
+        $this->user->setOtp3(substr($otp, 0, 12));
+        break;
+      case 3:
+        $otp = $_POST['otp4'];
+        $this->user->setOtp4(substr($otp, 0, 12));
+        break;
+      default:
+        return;
+    }
+    
+    $FACTORIES::getUserFactory()->update($this->user);
+    Util::createLogEntry(DLogEntryIssuer::USER, $this->user->getId(), DLogEntry::INFO, "User changed OTP!");
+    UI::addMessage(UI::SUCCESS, "OTP updated successfully!");
   }
 }

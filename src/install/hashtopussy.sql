@@ -116,7 +116,10 @@ INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
   (13, 'blacklistChars', '&|`"\''),
   (14, 'numLogEntries', '5000'),
   (15, 'disptolerance', '20'),
-  (16, 'batchSize', '10000');
+  (16, 'batchSize', '10000'),
+  (18, 'yubikey_id', ''),
+  (19, 'yubikey_key', ''),
+  (20, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11)               NOT NULL,
@@ -560,7 +563,12 @@ CREATE TABLE `User` (
   `lastLoginDate`      INT(11)          NOT NULL,
   `registeredSince`    INT(11)          NOT NULL,
   `sessionLifetime`    INT(11)          NOT NULL DEFAULT '600',
-  `rightGroupId`       INT(11)          NOT NULL DEFAULT '1'
+  `rightGroupId`       INT(11)          NOT NULL DEFAULT '1',
+  `yubikey`            INT(1)           NOT NULL DEFAULT '0',
+  `otp1`               VARCHAR(50)      NOT NULL,
+  `otp2`               VARCHAR(50)      NOT NULL,
+  `otp3`               VARCHAR(50)      NOT NULL,
+  `otp4`               VARCHAR(50)      NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
