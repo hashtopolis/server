@@ -36,6 +36,38 @@ $FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`,
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `User` ADD yubikey INT(1) NOT NULL, ADD otp1 VARCHAR(50) NOT NULL, ADD otp2 VARCHAR(50) NOT NULL, ADD otp3 VARCHAR(50) NOT NULL, ADD otp4 VARCHAR(50) NOT NULL;");
 echo "OK\n";
 
+echo "Add new Hashtypes... ";
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO HashType (hashTypeId, description, isSalted) VALUES
+  (600,'BLAKE2b-512',0),
+  (9710,'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1',0),
+  (9720,'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2',0),
+  (9810,'MS Office <= 2003 $3, SHA1 + RC4, collider #1',0),
+  (9820,'MS Office <= 2003 $3, SHA1 + RC4, collider #2',0),
+  (10410,'PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #1',0),
+  (10420,'PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #2',0),
+  (12001,'Atlassian (PBKDF2-HMAC-SHA1)',0),
+  (13711,'VeraCrypt PBKDF2-HMAC-RIPEMD160 + AES, Serpent, Twofish',0),
+  (13712,'VeraCrypt PBKDF2-HMAC-RIPEMD160 + AES-Twofish, Serpent-AES, Twofish-Serpent',0),
+  (13713,'VeraCrypt PBKDF2-HMAC-RIPEMD160 + Serpent-Twofish-AES',0),
+  (13721,'VeraCrypt PBKDF2-HMAC-SHA512 + AES, Serpent, Twofish',0),
+  (13722,'VeraCrypt PBKDF2-HMAC-SHA512 + AES-Twofish, Serpent-AES, Twofish-Serpent',0),
+  (13723,'VeraCrypt PBKDF2-HMAC-SHA512 + Serpent-Twofish-AES',0),
+  (13731,'VeraCrypt PBKDF2-HMAC-Whirlpool + AES, Serpent, Twofish',0),
+  (13732,'VeraCrypt PBKDF2-HMAC-Whirlpool + AES-Twofish, Serpent-AES, Twofish-Serpent',0),
+  (13733,'VeraCrypt PBKDF2-HMAC-Whirlpool + Serpent-Twofish-AES',0),
+  (13751,'VeraCrypt PBKDF2-HMAC-SHA256 + AES, Serpent, Twofish',0),
+  (13752,'VeraCrypt PBKDF2-HMAC-SHA256 + AES-Twofish, Serpent-AES, Twofish-Serpent',0),
+  (13753,'VeraCrypt PBKDF2-HMAC-SHA256 + Serpent-Twofish-AES',0),
+  (15000,'FileZilla Server >= 0.9.55',0),
+  (15100,'Juniper/NetBSD sha1crypt',0),
+  (15200,'Blockchain, My Wallet, V2',0),
+  (15300,'DPAPI masterkey file v1 and v2',0),
+  (15400,'ChaCha20',0),
+  (15500,'JKS Java Key Store Private Keys (SHA1)',0),
+  (15600,'Ethereum Wallet, PBKDF2-HMAC-SHA256',0),
+  (15700,'Ethereum Wallet, SCRYPT',0);");
+echo "OK\n";
+
 echo "Check csharp binary... ";
 $qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
 $binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);

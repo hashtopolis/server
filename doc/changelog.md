@@ -14,6 +14,7 @@
 - DB connection details now are stored in a file which is not in repository (a template is provided instead). This avoids conflicts on updates in `inc/load.php`
 - Hash length is increased to 1024 (old 512)
 - Added special case when handling pre-crack import of WPA as they are not matched via the hash but the ESSID instead.
+- Added new hashtypes from Hashcat
 
 # v0.3.1 -> v0.3.2
 
