@@ -25,6 +25,12 @@ class DHashcatStatus {
   const STATUS_ABORTED_RUNTIME = 10;
 }
 
+class DTaskTypes {
+  const NORMAL    = 0;
+  const SUPERTASK = 1;
+  const SUBTASK   = 2;
+}
+
 class DStats {
   const AGENTS_ONLINE      = "agentsOnline";
   const AGENTS_ACTIVE      = "agentsActive";
@@ -78,7 +84,7 @@ class DConfig {
   const YUBIKEY_ID        = "yubikey_id";
   const YUBIKEY_KEY       = "yubikey_key";
   const YUBIKEY_URL       = "yubikey_url";
-  
+
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
    * @param $config string

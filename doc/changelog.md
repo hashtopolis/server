@@ -8,6 +8,7 @@
 - added help page with some helpful links
 - Left hashlists can be downloaded now
 - Added Yubikey OTP login
+- Supertasks added
 
 ## Technical
 

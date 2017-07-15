@@ -391,6 +391,10 @@ class API {
     
     // check here either if we have a better task to run on, or we have no access anymore to this task
     $bestTask = Util::getBestTask($agent);
+    if ($bestTask != null && $bestTask->getTaskType() == DTaskTypes::SUPERTASK) {
+      // if the task is a supertask, get the corresponding task we should work on
+      $bestTask = Util::getBestTask($agent, 0, $bestTask->getId());
+    }
     if ($bestTask != null && $task->getPriority() < $bestTask->getPriority()) {
       API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
     }
@@ -935,6 +939,22 @@ class API {
       }
     }
     
+    // check special handling of supertask
+    if ($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUPERTASK) {
+      // if it's a supertask we need to get the best matching subtask and assign to this
+      $origTask = $setToTask;
+      $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
+      
+      // this is a special case when the agent continues on the task and it's NOT a new assignment. Otherwise there will be duplicate assignments
+      if($currentTask != null && $currentTask->getId() == $setToTask->getId()){
+        $newAssignment = false;
+      }
+      if ($setToTask == null) {
+        $origTask->setPriority(0);
+        $FACTORIES::getTaskFactory()->update($origTask);
+      }
+    }
+    
     if ($setToTask == null) {
       API::sendResponse(array(
           PResponseTask::ACTION => PActions::TASK,
@@ -943,6 +963,7 @@ class API {
         )
       );
     }
+    
     if ($currentTask != null && $setToTask->getId() != $currentTask->getId()) {
       // delete old assignment
       $FACTORIES::getAssignmentFactory()->delete($assignment);
@@ -1240,6 +1261,14 @@ class API {
       // task is fully dispatched and this last chunk is done, deprioritize it
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
+  
+      if($task->getTaskType() == DTaskTypes::SUBTASK){
+        $supertask = Util::getSupertaskOfTask($task);
+        if(Util::checkSupertaskCompleted($supertask)){
+          $supertask->setPriority(0);
+          $FACTORIES::getTaskFactory()->update($supertask);
+        }
+      }
       
       $payload = new DataSet(array(DPayloadKeys::TASK => $task));
       NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
@@ -1281,6 +1310,14 @@ class API {
         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
+        
+        if($task->getTaskType() == DTaskTypes::SUBTASK){
+          $supertask = Util::getSupertaskOfTask($task);
+          if(Util::checkSupertaskCompleted($supertask)){
+            $supertask->setPriority(0);
+            $FACTORIES::getTaskFactory()->update($supertask);
+          }
+        }
         
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);

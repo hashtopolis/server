@@ -24,8 +24,9 @@ class Task extends AbstractModel {
   private $isCpuTask;
   private $useNewBench;
   private $skipKeyspace;
+  private $taskType;
   
-  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace) {
+  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $taskType) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -40,6 +41,7 @@ class Task extends AbstractModel {
     $this->isCpuTask = $isCpuTask;
     $this->useNewBench = $useNewBench;
     $this->skipKeyspace = $skipKeyspace;
+    $this->taskType = $taskType;
   }
   
   function getKeyValueDict() {
@@ -58,6 +60,7 @@ class Task extends AbstractModel {
     $dict['isCpuTask'] = $this->isCpuTask;
     $dict['useNewBench'] = $this->useNewBench;
     $dict['skipKeyspace'] = $this->skipKeyspace;
+    $dict['taskType'] = $this->taskType;
     
     return $dict;
   }
@@ -181,6 +184,14 @@ class Task extends AbstractModel {
   function setSkipKeyspace($skipKeyspace){
     $this->skipKeyspace = $skipKeyspace;
   }
+  
+  function getTaskType(){
+    return $this->taskType;
+  }
+  
+  function setTaskType($taskType){
+    $this->taskType = $taskType;
+  }
 
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
@@ -196,4 +207,5 @@ class Task extends AbstractModel {
   const IS_CPU_TASK = "isCpuTask";
   const USE_NEW_BENCH = "useNewBench";
   const SKIP_KEYSPACE = "skipKeyspace";
+  const TASK_TYPE = "taskType";
 }
