@@ -3,7 +3,6 @@ use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\File;
-use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -240,7 +239,7 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
-  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0, 0);
+  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0, 0, 0);
   if (isset($_GET["copy"])) {
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
