@@ -53,6 +53,15 @@ Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) for more inf
 
 Some screenshots of Hashtopussy (by winxp5421 and s3in!c): [Imgur1](http://imgur.com/gallery/Fj0s0) [Imgur2](http://imgur.com/gallery/LzTsI)
 
+## Contribution Guidelines
+
+We are open too all kind of contributions. If it's a bug fix or a new feature, feel free to create a pull request. Please consider some points:
+
+* Just include one feature or one bugfix in one pull request. In case you have two new features please also create two pull requests.
+* Try to stick with the code style used (especially in the PHP parts). IntelliJ users can get a code style xml [here](https://gist.github.com/s3inlc/226ed78b05eb6dc8f60f18d6fd310d74).
+
+The pull request then will be reviewed by at least one member and merged after an approve. Don't be discuraged just because the first review is not approving, often these are just small changes.
+
 ## Thanks
 
 * winxp for testing, writing help texts and a lot of input ideas

@@ -30,6 +30,25 @@ class Util {
     return DBA\Util::cast($obj, $to_class);
   }
   
+  public static function isYubikeyEnabled() {
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+
+    $clientId = $CONFIG->getVal(DConfig::YUBIKEY_ID);
+    if (!is_numeric($clientId) || $clientId <= 0) {
+      return false;
+    }
+    $secretKey = $CONFIG->getVal(DConfig::YUBIKEY_KEY);
+    if (!base64_decode($secretKey)) {
+      return false;
+    }
+    $apiUrl = $CONFIG->getVal(DConfig::YUBIKEY_URL);
+    if (filter_var($apiUrl, FILTER_VALIDATE_URL) === false) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * @param $issuer string API or User
    * @param $issuerId string either the ID of the user or the token of the client
@@ -50,7 +69,7 @@ class Util {
     
     $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
     $FACTORIES::getLogEntryFactory()->save($entry);
-    
+
     switch ($level) {
       case DLogEntry::ERROR:
         NotificationHandler::checkNotifications(DNotificationType::LOG_ERROR, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
@@ -143,7 +162,7 @@ class Util {
       $joinFilter[] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
       $queryFilter[] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
     }
-    
+
     // we first load all tasks and go down by priority and take the first one which matches completely
     
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $queryFilter, $FACTORIES::JOIN => $joinFilter, $FACTORIES::ORDER => array($descOrder)));
@@ -152,14 +171,14 @@ class Util {
       /** @var $hashlist Hashlist */
       $task = $joinedTasks['Task'][$i];
       $hashlist = $joinedTasks['Hashlist'][$i];
-      
+
       if (!Util::agentHasAccessToTask($task, $agent)) {
         continue; // the client has not enough access to all required files
       }
       else if (Util::taskIsFullyDispatched($task, $agent, $hashlist)) {
         continue; // task is fully dispatched
       }
-      
+
       // if we want to check single assignments we should make sure that the assigned one is not blocking when he becomes inactive.
       // so if an agent is inactive on a small task we unassign him that we can assign another one to it
       if ($task->getIsSmall()) {
@@ -179,17 +198,17 @@ class Util {
           continue; // still some assigned
         }
       }
-      
+
       // if one matches now, it's the best choice (hopefully)
       return $task;
     }
     return null;
   }
-  
+
   public static function loadTasks($supertask = 0){
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG, $OBJECTS;
-    
+
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
     $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
     $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
@@ -207,7 +226,7 @@ class Util {
       $set = new DataSet();
       $set->addValue('Task', $joinedTasks['Task'][$z]);
       $set->addValue('Hashlist', $joinedTasks['Hashlist'][$z]);
-    
+
       /** @var $task Task */
       $task = $joinedTasks['Task'][$z];
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -225,15 +244,15 @@ class Util {
           $maxTime = $chunk->getSolveTime();
         }
       }
-    
+
       $isActive = false;
       if(time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)){
         $isActive = true;
       }
-    
+
       $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
       $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
-    
+
       $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
       $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
       $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -246,7 +265,7 @@ class Util {
           $secret = true;
         }
       }
-      
+
       $numFiles = sizeof($joinedFiles['File']);
       $numAssignments = sizeof($assignments);
       if($task->getTaskType() == DTaskTypes::SUPERTASK){
@@ -267,7 +286,7 @@ class Util {
           $cracked += $subTask->getVal('cracked');
         }
       }
-    
+
       $set->addValue('numFiles', $numFiles);
       $set->addValue('filesSize', $sizes);
       $set->addValue('fileSecret', $secret);
@@ -276,7 +295,7 @@ class Util {
       $set->addValue('sumprog', $progress);
       $set->addValue('cracked', $cracked);
       $set->addValue('numChunks', sizeof($chunks));
-    
+
       $tasks[] = $set;
     }
     if($supertask > 0){
@@ -294,14 +313,14 @@ class Util {
       $OBJECTS['tasks'] = $tasks;
     }
   }
-  
+
   /**
    * @param $supertask Task
    * @return bool
    */
   public static function checkSupertaskCompleted($supertask){
     global $FACTORIES;
-    
+
     $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
     $qF = new QueryFilter(TaskTask::TASK_ID, $supertask->getId(), "=", $FACTORIES::getTaskTaskFactory());
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -319,14 +338,14 @@ class Util {
     }
     return true;
   }
-  
+
   /**
    * @param $task Task
    * @return Task
    */
   public static function getSupertaskOfTask($task){
     global $FACTORIES;
-    
+
     $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::TASK_ID);
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -335,7 +354,7 @@ class Util {
     }
     return $joined['Task'][0];
   }
-  
+
   /**
    * @param $task Task
    * @param $agent Agent
@@ -345,9 +364,9 @@ class Util {
   public static function taskIsFullyDispatched($task, $agent, $hashlist){
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-  
+
     $testTasks = Util::getSubTasks($task);
-    
+
     $fullCount = 0;
     foreach($testTasks as $t) {
       // now check if the task is fully dispatched
@@ -362,7 +381,7 @@ class Util {
         if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
           $isTimeout = true;
         }
-    
+
         // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
         if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId() || $chunk->getAgentId() == null)) {
           continue; // so it's not count to the dispatched sum
@@ -374,7 +393,7 @@ class Util {
         $fullCount++;
         continue;
       }
-  
+
       if (($t->getKeyspace() == $sumProgress && $t->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
         //task is finished
         $t->setPriority(0);
@@ -413,7 +432,7 @@ class Util {
         return false;
       }
     }
-    
+
     $testTasks = Util::getSubTasks($task);
     foreach($testTasks as $t) {
       $qF = new QueryFilter(TaskFile::TASK_ID, $t->getId(), "=");
@@ -435,7 +454,7 @@ class Util {
    */
   public static function getSubTasks($task){
     global $FACTORIES;
-    
+
     $testTasks = array($task);
     if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
       $qF = new QueryFilter(TaskTask::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
@@ -448,7 +467,7 @@ class Util {
     }
     return $testTasks;
   }
-  
+
   /**
    * Tests if this task can be used to run for this agent. It checks if there are incomplete chunks available which are currently
    * not worked on, or if there is keyspace left which needs to be dispatched.
@@ -462,7 +481,7 @@ class Util {
     if (!self::agentHasAccessToTask($task, $agent)) {
       return false;
     }
-    
+
     // check if the task is not needed anymore because all hashes already got cracked
     $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
     if ($hashlist->getCracked() >= $hashlist->getHashCount()) {
@@ -503,6 +522,7 @@ class Util {
   public static function zapCleaning() {
     global $FACTORIES;
     
+    //TODO: make this as constant
     $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
     if ($entry == null) {
       $entry = new StoredValue("lastZapCleaning", 0);
@@ -579,7 +599,7 @@ class Util {
       $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
       $superHashListFilter = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=");
       $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::JOIN => $hashlistJoinFilter, $FACTORIES::FILTER => $superHashListFilter));
-      $lists = $joined['Hashlist'];
+      $lists = $joined[$FACTORIES::getHashlistFactory()->getModelName()];
       return $lists;
     }
     return array($list);
@@ -1060,6 +1080,7 @@ class Util {
    */
   public static function sendMail($address, $subject, $text) {
     $header = "Content-type: text/html; charset=utf8\r\n";
+    // TODO: make sender email configurable
     $header .= "From: Hashtopussy <noreply@hashtopussy>\r\n";
     if (!mail($address, $subject, $text, $header)) {
       return false;

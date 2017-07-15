@@ -1,0 +1,45 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Hash Search</h2>
+{%TEMPLATE->struct/messages%}
+<form action="search.php" method="post">
+  <input type="hidden" name="action" value="search">
+  <div class="panel panel-default">
+    <table class="table table-bordered table-nonfluid">
+      <tr>
+        <th>Search</th>
+        <td>
+          <textarea class="form-control" rows="15" name="search" placeholder="Enter hashes to search for here..."></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center;">
+          <button type="submit" name="send" class="btn btn-primary">Search</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</form>
+{{IF [[result]]}}
+  <div class="panel panel-default">
+    <table class="table table-bordered table-nonfluid">
+      {{FOREACH entry;[[resultEntries]]}}
+        <tr>
+          <th><code>[[htmlentities([[entry.getVal('query')]], false, "UTF-8")]]</code></th>
+          <td>
+            {{IF [[entry.getVal('found')]]}}
+              {{FOREACH match;[[entry.getVal('matches')]]}}
+                <code>[[htmlentities([[match.getHash()]], false, "UTF-8")]]{{IF [[strlen([[match.getSalt()]])]] > 0}}:[[htmlentities([[match.getSalt()]], false, "UTF-8")]]{{ENDIF}}</code>
+                {{IF [[match.getIsCracked()]]}} cracked: <code>[[htmlentities([[match.getPlaintext()]], false, "UTF-8")]]</code>{{ENDIF}}
+                in hashlist <a href="hashlists.php?id=[[match.getHashlistId()]]">[[hashlists.getVal([[match.getHashlistId()]]).getHashlistName()]]</a><br>
+              {{ENDFOREACH}}
+            {{ELSE}}
+              NOT FOUND
+            {{ENDIF}}
+          </td>
+        </tr>
+      {{ENDFOREACH}}
+    </table>
+  </div>
+{{ENDIF}}
+{%TEMPLATE->struct/foot%}

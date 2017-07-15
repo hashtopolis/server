@@ -54,7 +54,7 @@ if (!file_exists($filename)) {
 $file = $filename;
 $fp = @fopen($file, "rb");
 
-$size = filesize($file); // File size
+$size = Util::filesize($file); // File size
 $length = $size;           // Content length
 $start = 0;               // Start byte
 $end = $size - 1;       // End byte

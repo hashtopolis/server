@@ -11,7 +11,6 @@ use DBA\User;
  * Date: 18.11.16
  * Time: 20:21
  */
-
 class UsersHandler implements Handler {
   public function __construct($userId = null) {
     //nothing to do
@@ -43,10 +42,10 @@ class UsersHandler implements Handler {
     }
   }
   
-  private function create(){
+  private function create() {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
-  
+    
     $username = htmlentities($_POST['username'], false, "UTF-8");
     $email = $_POST['email'];
     $group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
@@ -71,7 +70,7 @@ class UsersHandler implements Handler {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId());
+    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
     $FACTORIES::getUserFactory()->save($user);
     //$tmpl = new Template("email.creation");
     //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
@@ -86,10 +85,10 @@ class UsersHandler implements Handler {
     die();
   }
   
-  private function setPassword(){
+  private function setPassword() {
     /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
-  
+    
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
       UI::addMessage(UI::ERROR, "Invalid user!");
@@ -109,10 +108,10 @@ class UsersHandler implements Handler {
     UI::addMessage(UI::SUCCESS, "User password was updated successfully!");
   }
   
-  private function setRights(){
+  private function setRights() {
     /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
-  
+    
     $group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
@@ -132,7 +131,7 @@ class UsersHandler implements Handler {
     UI::addMessage(UI::SUCCESS, "Updated user rights successfully!");
   }
   
-  private function disable(){
+  private function disable() {
     /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
     
@@ -154,9 +153,9 @@ class UsersHandler implements Handler {
     UI::addMessage(UI::SUCCESS, "User was disabled successfully!");
   }
   
-  private function enable(){
+  private function enable() {
     global $FACTORIES;
-  
+    
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
       UI::addMessage(UI::ERROR, "Invalid user!");
@@ -168,10 +167,10 @@ class UsersHandler implements Handler {
     UI::addMessage(UI::SUCCESS, "User account enabled successfully!");
   }
   
-  private function delete(){
+  private function delete() {
     /** @var Login $LOGIN */
     global $FACTORIES, $LOGIN;
-  
+    
     $user = $FACTORIES::getUserFactory()->get($_POST['user']);
     if ($user == null) {
       UI::addMessage(UI::ERROR, "Invalid user!");
@@ -181,14 +180,14 @@ class UsersHandler implements Handler {
       UI::addMessage(UI::ERROR, "You cannot delete yourself!");
       return;
     }
-  
+    
     $payload = new DataSet(array(DPayloadKeys::USER => $user));
     NotificationHandler::checkNotifications(DNotificationType::USER_DELETED, $payload);
-  
+    
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $user->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach($notifications as $notification){
-      if(DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::USER){
+    foreach ($notifications as $notification) {
+      if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::USER) {
         $FACTORIES::getNotificationSettingFactory()->delete($notification);
       }
     }

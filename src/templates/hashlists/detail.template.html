@@ -95,6 +95,11 @@
             <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
             <input type='submit' class='btn btn-default' value='Export hashes for pre-crack'>
           </form>
+          <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
+            <input type='hidden' name='action' value='leftlist'>
+            <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
+            <input type='submit' class='btn btn-default' value='Export left hashes'>
+          </form>
         {{ENDIF}}
         {{IF [[list.getVal('hashlist')->getCracked()]] < [[list.getVal('hashlist')->getHashCount()]] && [[login.getLevel()]] >= 20}}
           <form style='float: left;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>

@@ -31,6 +31,16 @@ class DTaskTypes {
   const SUBTASK   = 2;
 }
 
+class DStats {
+  const AGENTS_ONLINE      = "agentsOnline";
+  const AGENTS_ACTIVE      = "agentsActive";
+  const AGENTS_TOTAL_SPEED = "agentsTotalSpeed";
+  const TASKS_TOTAL        = "tasksTotal";
+  const TASKS_FINISHED     = "tasksFinished";
+  const TASKS_RUNNING      = "tasksRunning";
+  const TASKS_QUEUED       = "tasksQueued";
+}
+
 // operating systems
 class DOperatingSystem {
   const LINUX   = 0;
@@ -69,7 +79,12 @@ class DConfig {
   const NUMBER_LOGENTRIES = "numLogEntries";
   const TIME_FORMAT       = "timefmt";
   const BASE_URL          = "baseUrl";
-  
+  const DISP_TOLERANCE    = "disptolerance";
+  const BATCH_SIZE        = "batchSize";
+  const YUBIKEY_ID        = "yubikey_id";
+  const YUBIKEY_KEY       = "yubikey_key";
+  const YUBIKEY_URL       = "yubikey_url";
+
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
    * @param $config string
@@ -101,6 +116,10 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::BASE_URL:
         return DConfigType::STRING_INPUT;
+      case Dconfig::DISP_TOLERANCE:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::BATCH_SIZE:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -132,9 +151,19 @@ class DConfig {
       case DConfig::NUMBER_LOGENTRIES:
         return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
       case DConfig::TIME_FORMAT:
-        return "Set the formatting of time displaying. Use syntax for PHPs date() method.";
+        return "Set the formatting of time displaying. Use syntax for PHPs date() method";
       case DConfig::BASE_URL:
         return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
+      case DConfig::DISP_TOLERANCE:
+        return "How many percent a chunk can be longer than normal to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
+      case DConfig::BATCH_SIZE:
+        return "Batch size of SQL query when hashlist is sent to the agent";
+      case DConfig::YUBIKEY_ID:
+        return "Yubikey Client Id";
+      case DConfig::YUBIKEY_KEY:
+        return "Yubikey Secret Key";
+      case DConfig::YUBIKEY_URL:
+        return "Yubikey API Url";
     }
     return $config;
   }

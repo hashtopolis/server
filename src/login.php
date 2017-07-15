@@ -1,6 +1,5 @@
 <?php
 require_once(dirname(__FILE__) . "/inc/load.php");
-
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
@@ -11,8 +10,9 @@ if (!isset($_POST['username']) || !isset($_POST['password'])) {
 
 $username = $_POST['username'];
 $password = $_POST['password'];
+$otp = $_POST['otp'];
 $fw = "";
-if(isset($_POST['fw'])) {
+if (isset($_POST['fw'])) {
   $fw = $_POST['fw'];
 }
 
@@ -21,7 +21,7 @@ if (strlen($username) == 0 || strlen($password) == 0) {
   die();
 }
 
-$LOGIN->login($username, $password);
+$LOGIN->login($username, $password, $otp);
 
 if ($LOGIN->isLoggedin()) {
   if (strlen($fw) > 0) {

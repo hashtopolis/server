@@ -9,21 +9,22 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
+else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
+  $TEMPLATE = new Template("restricted");
+  die($TEMPLATE->render($OBJECTS));
+}
 
-$TEMPLATE = new Template("account");
-$MENU->setActive("account_settings");
+$TEMPLATE = new Template("search");
+$MENU->setActive("lists_search");
 
 //catch actions here...
 if (isset($_POST['action'])) {
-  $accountHandler = new AccountHandler($LOGIN->getUserID());
-  $accountHandler->handle($_POST['action']);
+  $searchHandler = new SearchHandler();
+  $searchHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
 }
-
-$group = $FACTORIES::getRightGroupFactory()->get($LOGIN->getUser()->getRightGroupId());
-$OBJECTS['group'] = $group;
 
 echo $TEMPLATE->render($OBJECTS);
 
