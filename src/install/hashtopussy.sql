@@ -552,7 +552,8 @@ CREATE TABLE `Task` (
   `isSmall`     INT(11)          NOT NULL,
   `isCpuTask`   INT(11)          NOT NULL,
   `useNewBench` INT(11)          NOT NULL,
-  `skipKeyspace` BIGINT(20)      NOT NULL
+  `skipKeyspace` BIGINT(20)      NOT NULL,
+  `taskType`    INT(11)          NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
