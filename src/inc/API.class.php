@@ -18,6 +18,7 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\SuperHashlistHashlist;
+use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
 use DBA\Zap;
@@ -937,6 +938,12 @@ class API {
       else {
         $newAssignment = false;
       }
+    }
+
+    if($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUBTASK){
+      $qF = new QueryFilter(SupertaskTask::SUPERTASK_TASK_ID, $setToTask->getId(), "=");
+      $supertaskTask = $FACTORIES::getSupertaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+      $setToTask = $supertaskTask->getSupertaskId();
     }
     
     // check special handling of supertask
