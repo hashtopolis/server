@@ -26,6 +26,9 @@ use DBA\Zap;
 class Util {
   /**
    * TODO: document me
+   * @param $obj
+   * @param $to_class
+   * @return mixed|null
    */
   public static function cast($obj, $to_class) {
     return DBA\Util::cast($obj, $to_class);
@@ -133,12 +136,13 @@ class Util {
     }
     return true;
   }
-  
+
   /**
    * Searches for the best task which can be assigned to a given agent. It respects all configuration for cpuOnly tasks,
    * trusted states, etc.
    * @param $agent Agent
    * @param $priority int
+   * @param int $supertask sets if a the task where it should be searched for the best task is a supertask
    * @return Task current best task or null if there is no optimal task (priority bigger than the given limit) available
    */
   public static function getBestTask($agent, $priority = 0, $supertask = 0) {
@@ -804,7 +808,7 @@ class Util {
         break;
       case 'platforms':
         if ($val == '-1') {
-          return $platforms;
+          return $platforms[0];
         }
         return $platforms[$val];
         break;
@@ -892,7 +896,7 @@ class Util {
    * TODO: this function can be improved, some else blocks can be removed when handling a bit differently
    * @param $target string File you want to write to
    * @param $type string paste, upload, import or url
-   * @param $sourcedata string
+   * @param $sourcedata string|array
    * @return array (boolean, string) success, msg detailing what happened
    */
   public static function uploadFile($target, $type, $sourcedata) {
