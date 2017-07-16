@@ -212,7 +212,7 @@ class TaskHandler implements Handler {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace);
+    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, 0);
     $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
