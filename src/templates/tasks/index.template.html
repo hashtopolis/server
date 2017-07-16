@@ -48,7 +48,7 @@
     					[[task.getVal('Task')->getTaskName()]]
     				{{ENDIF}}
 						[[Util::tickdone([[task.getVal('sumprog')]], [[task.getVal('Task')->getKeyspace()]])]]
-						{{IF [[task.getVal('isActive')]] == 1 && [[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]]}}
+						{{IF [[task.getVal('isActive')]] == 1 && ([[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]] || [[task.getVal('Task').getTaskType()]] == 1)}}
 							<img src="static/active.gif" alt="Active">
 						{{ENDIF}}
 					  {{IF [[task.getVal('Task').getIsCpuTask()]] == 1}}
