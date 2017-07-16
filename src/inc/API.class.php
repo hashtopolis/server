@@ -943,7 +943,7 @@ class API {
     if($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUBTASK){
       $qF = new QueryFilter(TaskTask::SUBTASK_ID, $setToTask->getId(), "=");
       $supertaskTask = $FACTORIES::getTaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-      $setToTask = $supertaskTask->getTaskId();
+      $setToTask = $FACTORIES::getTaskFactory()->get($supertaskTask->getTaskId());
     }
     
     // check special handling of supertask
