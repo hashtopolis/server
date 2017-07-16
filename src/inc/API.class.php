@@ -18,9 +18,9 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\SuperHashlistHashlist;
-use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\TaskTask;
 use DBA\Zap;
 
 class API {
@@ -941,9 +941,9 @@ class API {
     }
 
     if($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUBTASK){
-      $qF = new QueryFilter(SupertaskTask::SUPERTASK_TASK_ID, $setToTask->getId(), "=");
-      $supertaskTask = $FACTORIES::getSupertaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-      $setToTask = $supertaskTask->getSupertaskId();
+      $qF = new QueryFilter(TaskTask::SUBTASK_ID, $setToTask->getId(), "=");
+      $supertaskTask = $FACTORIES::getTaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+      $setToTask = $supertaskTask->getTaskId();
     }
     
     // check special handling of supertask
