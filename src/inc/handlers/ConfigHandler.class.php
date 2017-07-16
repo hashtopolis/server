@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Chunk;
 use DBA\Config;
 use DBA\ContainFilter;
@@ -9,12 +10,6 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskFile;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 18.11.16
- * Time: 20:21
- */
 class ConfigHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load

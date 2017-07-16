@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 03.01.17
- * Time: 15:02
- */
 
 /** @var $CONN array */
 define("DBA_SERVER", $CONN['server']);

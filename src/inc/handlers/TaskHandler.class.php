@@ -1,4 +1,5 @@
 <?php
+
 use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
@@ -14,12 +15,6 @@ use DBA\Task;
 use DBA\TaskFile;
 use DBA\TaskTask;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 18.11.16
- * Time: 20:21
- */
 class TaskHandler implements Handler {
   private $task;
   

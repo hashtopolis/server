@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 13.11.16
- * Time: 21:56
- */
 class Template {
   private $content;
   private $statements;

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 02.01.17
- * Time: 23:57
- */
-
 $CONF = array();
 
 // Configure the required models here

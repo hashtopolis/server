@@ -1,16 +1,11 @@
 <?php
+
 use DBA\Agent;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 18.11.16
- * Time: 20:21
- */
 class UsersHandler implements Handler {
   public function __construct($userId = null) {
     //nothing to do

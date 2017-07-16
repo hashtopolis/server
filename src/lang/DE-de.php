@@ -1,8 +1,4 @@
 <?php
-/*
- * This file is part of Bricky (https://github.com/s3inlc/bricky)
- * Copyright 2016 by Sein Coray
- */
 
 //language setup
 $LANGUAGES[] = 'DE-de';

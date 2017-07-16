@@ -1,8 +1,10 @@
 <?php
+
 /*
- * 
+ *
  * Draws graphic about chunk progress
  */
+
 use DBA\Chunk;
 use DBA\QueryFilter;
 use DBA\Task;

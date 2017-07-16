@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 23.01.17
- * Time: 19:55
- */
 
 // protocol defines (these are started with 'P')
 

@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;

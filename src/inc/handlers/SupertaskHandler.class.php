@@ -1,4 +1,5 @@
 <?php
+
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -8,12 +9,6 @@ use DBA\Task;
 use DBA\TaskFile;
 use DBA\TaskTask;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 10.11.16
- * Time: 14:38
- */
 class SupertaskHandler implements Handler {
   public function __construct($supertaskId = null) {
     //nothing

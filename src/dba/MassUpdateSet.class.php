@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 23.02.17
- * Time: 20:11
- */
 class MassUpdateSet {
   private $matchValue;
   private $updateValue;
