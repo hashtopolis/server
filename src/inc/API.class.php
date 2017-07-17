@@ -1142,11 +1142,11 @@ class API {
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
             // unsalted hashes
-            $plain = str_replace($hashes[0]->getHash() . ':', "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . ':', "", $crackedHash);
           }
           else {
             // salted hashes
-            $plain = str_replace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $crackedHash);
           }
           if (sizeof($hashes) == 0) {
             $skipped++;
