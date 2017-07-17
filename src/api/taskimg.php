@@ -60,19 +60,17 @@ if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
     foreach($chunks as $chunk){
       $progress += $chunk->getProgress();
     }
-    if($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
-      $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $cracked = 0;
-      foreach($chunks as $chunk){
-        $cracked += $chunk->getCracked();
-      }
-      if($cracked > 0) {
-        imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
-      }
-      else{
-        imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $blue);
-      }
+    $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $cracked = 0;
+    foreach($chunks as $chunk){
+      $cracked += $chunk->getCracked();
+    }
+    if($cracked > 0) {
+      imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
+    }
+    else if($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
+      imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $blue);
     }
     else if($subTasks[$i]->getKeyspace() > 0 && $progress > 0){
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $yellow);
