@@ -389,9 +389,11 @@ class Util {
 
         // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
         if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId() || $chunk->getAgentId() == null)) {
-          continue; // so it's not count to the dispatched sum
+          // nothing as it does not count to the dispatched sum
         }
-        $dispatched += $chunk->getLength();
+        else {
+          $dispatched += $chunk->getLength();
+        }
       }
       if ($t->getKeyspace() != 0 && $dispatched == $t->getKeyspace()) {
         // task is fully dispatched
