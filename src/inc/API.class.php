@@ -17,6 +17,7 @@ use DBA\HashlistAgent;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\QueryFilterNoCase;
 use DBA\SuperHashlistHashlist;
 use DBA\Task;
 use DBA\TaskFile;
@@ -1132,7 +1133,7 @@ class API {
       $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
       switch ($format) {
         case DHashlistFormat::PLAIN:
-          $hashFilter = new QueryFilter(Hash::HASH, $splitLine[0], "=");
+          $hashFilter = new QueryFilterNoCase(Hash::HASH, $splitLine[0], "=");
           $hashListFilter = new ContainFilter(Hash::HASHLIST_ID, $hlistarIds);
           $isCrackedFilter = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($isCrackedFilter, $hashFilter, $hashListFilter)));
