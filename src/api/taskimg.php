@@ -40,7 +40,7 @@ $yellow = imagecolorallocate($image, 255, 255, 0);
 $red = imagecolorallocate($image, 255, 0, 0);
 $grey = imagecolorallocate($image, 192, 192, 192);
 $green = imagecolorallocate($image, 0, 255, 0);
-$blue = imagecolorallocate($image, 24, 24, 97);
+$blue = imagecolorallocate($image, 60, 60, 245);
 
 //prepare image
 imagefill($image, 0, 0, $transparency);
