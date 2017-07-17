@@ -40,6 +40,7 @@ $yellow = imagecolorallocate($image, 255, 255, 0);
 $red = imagecolorallocate($image, 255, 0, 0);
 $grey = imagecolorallocate($image, 192, 192, 192);
 $green = imagecolorallocate($image, 0, 255, 0);
+$blue = imagecolorallocate($image, 24, 24, 97);
 
 //prepare image
 imagefill($image, 0, 0, $transparency);
@@ -60,7 +61,18 @@ if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
       $progress += $chunk->getProgress();
     }
     if($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
-      imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
+      $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
+      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $cracked = 0;
+      foreach($chunks as $chunk){
+        $cracked += $chunk->getCracked();
+      }
+      if($cracked > 0) {
+        imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
+      }
+      else{
+        imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $blue);
+      }
     }
     else if($subTasks[$i]->getKeyspace() > 0 && $progress > 0){
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $yellow);
