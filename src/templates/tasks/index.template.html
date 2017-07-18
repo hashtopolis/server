@@ -25,7 +25,7 @@
     		<th>Cracked</th>
     		<th>Agents</th>
     		<th>Files</th>
-    		<th>Priority</th>
+    		<th>Task Priority</th>
     		<th>Action</th>
     	</tr>
     	{{FOREACH task;[[tasks]]}}
@@ -164,6 +164,18 @@
 							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse" style="margin: 10px;">
                 <div class="panel panel-default" style="margin-bottom: 0;">
                   <table class="table table-bordered table-nonfluid table-subtask-border">
+					  <tr>
+						  <th>ID</th>
+						  <th>Name</th>
+						  <th>Chunks</th>
+						  <th>Dispatched</th>
+						  <th>Searched</th>
+						  <th>Cracked</th>
+						  <th>Agents</th>
+						  <th>Files</th>
+						  <th>Subtask Priority</th>
+						  <th>Action</th>
+					  </tr>
                     {{FOREACH subTask;[[subTasks.getVal([[task.getVal('Task').getId()]])]]}}
                       <tr>
                         <td{{IF [[strlen([[subTask.getVal('Task')->getColor()]])]] > 0}} style="background-color: #[[subTask.getVal('Task')->getColor()]]"{{ENDIF}}>
