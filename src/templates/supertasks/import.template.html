@@ -1,0 +1,33 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Create Supertask from Hashcat masks</h2>
+{%TEMPLATE->struct/messages%}
+<div class="alert alert-info">
+	<b>Information:</b><br>
+	For every imported mask there will be a pre-conf task created which is then included in the newly created supertask.
+</div>
+<form class='form-inline' action="supertasks.php" method="POST">
+	<input type='hidden' name='action' value='createsupertask'>
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<td>Name:</td>
+				<td>
+					<input type='text' name='name' class='form-control'>
+				</td>
+			</tr>
+			<tr>
+				<td>Insert masks</td>
+				<td>
+					<textarea class="form-control" placeholder="Paste your Hashcat mask lines here. Format should be according to .hcmask files..."></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<input type="submit" class='btn btn-default' value="Create Supertask">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+{%TEMPLATE->struct/foot%}
