@@ -1,14 +1,9 @@
 <?php
+
 use DBA\Agent;
 use DBA\HashcatRelease;
 use DBA\QueryFilter;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 10.11.16
- * Time: 14:38
- */
 class HashcatHandler implements Handler {
   public function __construct($hashcatId = null) {
     //nothing

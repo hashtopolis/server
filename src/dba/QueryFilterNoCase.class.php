@@ -2,7 +2,7 @@
 
 namespace DBA;
 
-class QueryFilter extends Filter {
+class QueryFilterNoCase extends Filter {
   private $key;
   private $value;
   private $operator;
@@ -32,14 +32,14 @@ class QueryFilter extends Filter {
       }
       return $table . $this->key . " IS NULL ";
     }
-    return $table . $this->key . $this->operator . "?";
+    return "(LOWER(" . $table . $this->key. ") " . $this->operator . "? OR " . $table . $this->key . $this->operator . "?)";
   }
   
   function getValue() {
     if ($this->value === null) {
       return null;
     }
-    return $this->value;
+    return array($this->value, $this->value);
   }
   
   function getHasValue() {

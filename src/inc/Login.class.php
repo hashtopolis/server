@@ -1,4 +1,5 @@
 <?php
+
 use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;

@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 02.01.17
- * Time: 23:57
- */
-
 namespace DBA;
 
 class Factory {
@@ -27,6 +20,7 @@ class Factory {
   private static $superHashlistHashlistFactory = null;
   private static $taskFileFactory = null;
   private static $taskFactory = null;
+  private static $taskTaskFactory = null;
   private static $supertaskFactory = null;
   private static $supertaskTaskFactory = null;
   private static $userFactory = null;
@@ -205,6 +199,16 @@ class Factory {
       return $f;
     } else {
       return self::$taskFactory;
+    }
+  }
+  
+  public static function getTaskTaskFactory() {
+    if (self::$taskTaskFactory == null) {
+      $f = new TaskTaskFactory();
+      self::$taskTaskFactory = $f;
+      return $f;
+    } else {
+      return self::$taskTaskFactory;
     }
   }
   

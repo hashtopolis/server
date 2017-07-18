@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 06.03.17
- * Time: 12:16
- */
 
 use DBA\AgentBinary;
 use DBA\QueryFilter;
@@ -66,6 +60,22 @@ $FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO HashType (hashTypeId,
   (15500,'JKS Java Key Store Private Keys (SHA1)',0),
   (15600,'Ethereum Wallet, PBKDF2-HMAC-SHA256',0),
   (15700,'Ethereum Wallet, SCRYPT',0);");
+echo "OK\n";
+
+echo "Update Task table... ";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD taskType INT(11);");
+echo "OK\n";
+
+echo "Create TaskTask table... ";
+$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `TaskTask` (`taskTaskId` int(11) NOT NULL, `taskId` int(11) NOT NULL, `subtaskId` int(11) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
+echo ".";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD PRIMARY KEY (`taskTaskId`), ADD KEY `taskId` (`taskId`), ADD KEY `subtaskId` (`subtaskId`);");
+echo ".";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` MODIFY `taskTaskId` int(11) NOT NULL AUTO_INCREMENT;");
+echo ".";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`subtaskId`) REFERENCES `Task` (`taskId`);");
+echo ".";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);");
 echo "OK\n";
 
 echo "Check csharp binary... ";

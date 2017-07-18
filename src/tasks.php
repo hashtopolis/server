@@ -1,9 +1,9 @@
 <?php
+
 use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\File;
-use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -240,7 +240,7 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
-  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0, 0);
+  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0, 0, DTaskTypes::NORMAL);
   if (isset($_GET["copy"])) {
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
@@ -311,66 +311,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['rules'] = $rules;
 }
 else {
-  $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
-  $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
-  $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
-  $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::ORDER => array($oF1, $oF2)));
-  $tasks = array();
-  for ($z = 0; $z < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $z++) {
-    $set = new DataSet();
-    $set->addValue('Task', $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z]);
-    $set->addValue('Hashlist', $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$z]);
-    
-    $task = \DBA\Util::cast($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z], Task::class);
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $progress = 0;
-    $cracked = 0;
-    $maxTime = 0;
-    foreach ($chunks as $chunk) {
-      $progress += $chunk->getProgress();
-      $cracked += $chunk->getCracked();
-      if ($chunk->getDispatchTime() > $maxTime) {
-        $maxTime = $chunk->getDispatchTime();
-      }
-      if ($chunk->getSolveTime() > $maxTime) {
-        $maxTime = $chunk->getSolveTime();
-      }
-    }
-    
-    $isActive = false;
-    if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-      $isActive = true;
-    }
-    
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
-    
-    $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
-    $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $sizes = 0;
-    $secret = false;
-    for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
-      $file = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class);
-      $sizes += $file->getSize();
-      if ($file->getSecret() == '1') {
-        $secret = true;
-      }
-    }
-    
-    $set->addValue('numFiles', sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]));
-    $set->addValue('filesSize', $sizes);
-    $set->addValue('fileSecret', $secret);
-    $set->addValue('numAssignments', sizeof($assignments));
-    $set->addValue('isActive', $isActive);
-    $set->addValue('sumprog', $progress);
-    $set->addValue('cracked', $cracked);
-    $set->addValue('numChunks', sizeof($chunks));
-    
-    $tasks[] = $set;
-  }
-  $OBJECTS['tasks'] = $tasks;
+  Util::loadTasks();
 }
 
 echo $TEMPLATE->render($OBJECTS);

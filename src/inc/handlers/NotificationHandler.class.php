@@ -1,13 +1,8 @@
 <?php
+
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 10.11.16
- * Time: 14:38
- */
 class NotificationHandler implements Handler {
   
   public function __construct($id = null) {

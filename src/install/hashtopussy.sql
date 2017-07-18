@@ -552,7 +552,8 @@ CREATE TABLE `Task` (
   `isSmall`     INT(11)          NOT NULL,
   `isCpuTask`   INT(11)          NOT NULL,
   `useNewBench` INT(11)          NOT NULL,
-  `skipKeyspace` BIGINT(20)      NOT NULL
+  `skipKeyspace` BIGINT(20)      NOT NULL,
+  `taskType`    INT(11)          NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -820,5 +821,24 @@ ALTER TABLE `TaskFile`
 
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
+
+CREATE TABLE `TaskTask` (
+  `taskTaskId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `subtaskId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+ALTER TABLE `TaskTask`
+  ADD PRIMARY KEY (`taskTaskId`),
+  ADD KEY `taskId` (`taskId`),
+  ADD KEY `subtaskId` (`subtaskId`);
+
+ALTER TABLE `TaskTask`
+  MODIFY `taskTaskId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `TaskTask`
+  ADD CONSTRAINT FOREIGN KEY (`subtaskId`) REFERENCES `Task` (`taskId`);
+ALTER TABLE `TaskTask`
+  ADD CONSTRAINT FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
 ALTER TABLE `Hash` ADD INDEX(`hash`);

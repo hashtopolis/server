@@ -1,4 +1,5 @@
 <?php
+
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */

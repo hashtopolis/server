@@ -1,16 +1,11 @@
 <?php
+
 use DBA\File;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskFile;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 18.11.16
- * Time: 20:21
- */
 class FileHandler implements Handler {
   public function __construct($fileId = null) {
     //we need nothing to load

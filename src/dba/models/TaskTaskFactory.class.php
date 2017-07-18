@@ -1,14 +1,21 @@
 <?php
 
+/**
+ * Created by IntelliJ IDEA.
+ * User: sein
+ * Date: 02.01.17
+ * Time: 23:57
+ */
+
 namespace DBA;
 
-class __MODEL_NAME__Factory extends AbstractModelFactory {
+class TaskTaskFactory extends AbstractModelFactory {
   function getModelName() {
-    return "__MODEL_NAME__";
+    return "TaskTask";
   }
   
   function getModelTable() {
-    return "__MODEL_NAME__";
+    return "TaskTask";
   }
   
   function isCachable() {
@@ -20,27 +27,27 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
   }
 
   /**
-   * @return __MODEL_NAME__
+   * @return TaskTask
    */
   function getNullObject() {
-    $o = new __MODEL_NAME__(__MODEL_DICT__);
+    $o = new TaskTask(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return __MODEL_NAME__
+   * @return TaskTask
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new __MODEL_NAME__(__MODEL__DICT2__);
+    $o = new TaskTask($pk, $dict['taskId'], $dict['subtaskId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return __MODEL_NAME__|__MODEL_NAME__[]
+   * @return TaskTask|TaskTask[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +58,7 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), __MODEL_NAME__::class);
+      return Util::cast(parent::filter($options, $single), TaskTask::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +66,24 @@ class __MODEL_NAME__Factory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, __MODEL_NAME__::class);
+      $models[] = Util::cast($object, TaskTask::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return __MODEL_NAME__
+   * @return TaskTask
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), __MODEL_NAME__::class);
+    return Util::cast(parent::get($pk), TaskTask::class);
   }
 
   /**
-   * @param __MODEL_NAME__ $model
-   * @return __MODEL_NAME__
+   * @param TaskTask $model
+   * @return TaskTask
    */
   function save($model) {
-    return Util::cast(parent::save($model), __MODEL_NAME__::class);
+    return Util::cast(parent::save($model), TaskTask::class);
   }
 }

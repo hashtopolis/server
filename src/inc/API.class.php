@@ -17,9 +17,11 @@ use DBA\HashlistAgent;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\QueryFilterNoCase;
 use DBA\SuperHashlistHashlist;
 use DBA\Task;
 use DBA\TaskFile;
+use DBA\TaskTask;
 use DBA\Zap;
 
 class API {
@@ -391,6 +393,10 @@ class API {
     
     // check here either if we have a better task to run on, or we have no access anymore to this task
     $bestTask = Util::getBestTask($agent);
+    if ($bestTask != null && $bestTask->getTaskType() == DTaskTypes::SUPERTASK) {
+      // if the task is a supertask, get the corresponding task we should work on
+      $bestTask = Util::getBestTask($agent, 0, $bestTask->getId());
+    }
     if ($bestTask != null && $task->getPriority() < $bestTask->getPriority()) {
       API::sendErrorResponse(PActions::CHUNK, "Task with higher priority available!");
     }
@@ -934,6 +940,28 @@ class API {
         $newAssignment = false;
       }
     }
+
+    if($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUBTASK){
+      $qF = new QueryFilter(TaskTask::SUBTASK_ID, $setToTask->getId(), "=");
+      $supertaskTask = $FACTORIES::getTaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+      $setToTask = $FACTORIES::getTaskFactory()->get($supertaskTask->getTaskId());
+    }
+    
+    // check special handling of supertask
+    if ($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUPERTASK) {
+      // if it's a supertask we need to get the best matching subtask and assign to this
+      $origTask = $setToTask;
+      $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
+      
+      // this is a special case when the agent continues on the task and it's NOT a new assignment. Otherwise there will be duplicate assignments
+      if($currentTask != null && $currentTask->getId() == $setToTask->getId()){
+        $newAssignment = false;
+      }
+      if ($setToTask == null) {
+        $origTask->setPriority(0);
+        $FACTORIES::getTaskFactory()->update($origTask);
+      }
+    }
     
     if ($setToTask == null) {
       API::sendResponse(array(
@@ -943,6 +971,7 @@ class API {
         )
       );
     }
+    
     if ($currentTask != null && $setToTask->getId() != $currentTask->getId()) {
       // delete old assignment
       $FACTORIES::getAssignmentFactory()->delete($assignment);
@@ -1104,7 +1133,7 @@ class API {
       $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
       switch ($format) {
         case DHashlistFormat::PLAIN:
-          $hashFilter = new QueryFilter(Hash::HASH, $splitLine[0], "=");
+          $hashFilter = new QueryFilterNoCase(Hash::HASH, $splitLine[0], "=");
           $hashListFilter = new ContainFilter(Hash::HASHLIST_ID, $hlistarIds);
           $isCrackedFilter = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($isCrackedFilter, $hashFilter, $hashListFilter)));
@@ -1114,11 +1143,11 @@ class API {
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
             // unsalted hashes
-            $plain = str_replace($hashes[0]->getHash() . ':', "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . ':', "", $crackedHash);
           }
           else {
             // salted hashes
-            $plain = str_replace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $crackedHash);
           }
           if (sizeof($hashes) == 0) {
             $skipped++;
@@ -1240,6 +1269,14 @@ class API {
       // task is fully dispatched and this last chunk is done, deprioritize it
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
+  
+      if($task->getTaskType() == DTaskTypes::SUBTASK){
+        $supertask = Util::getSupertaskOfTask($task);
+        if(Util::checkSupertaskCompleted($supertask)){
+          $supertask->setPriority(0);
+          $FACTORIES::getTaskFactory()->update($supertask);
+        }
+      }
       
       $payload = new DataSet(array(DPayloadKeys::TASK => $task));
       NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
@@ -1281,6 +1318,14 @@ class API {
         $qF = new ContainFilter(Task::HASHLIST_ID, $hashlistIds);
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
+        
+        if($task->getTaskType() == DTaskTypes::SUBTASK){
+          $supertask = Util::getSupertaskOfTask($task);
+          if(Util::checkSupertaskCompleted($supertask)){
+            $supertask->setPriority(0);
+            $FACTORIES::getTaskFactory()->update($supertask);
+          }
+        }
         
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashList));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);

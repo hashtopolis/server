@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 03.01.17
- * Time: 15:02
- */
 
 /** @var $CONN array */
 define("DBA_SERVER", $CONN['server']);
@@ -27,6 +21,7 @@ require_once(dirname(__FILE__) . "/Util.class.php");
 require_once(dirname(__FILE__) . "/UpdateSet.class.php");
 require_once(dirname(__FILE__) . "/MassUpdateSet.class.php");
 require_once(dirname(__FILE__) . "/LikeFilter.class.php");
+require_once(dirname(__FILE__) . "/QueryFilterNoCase.class.php");
 
 $entries = scandir(dirname(__FILE__) . "/models");
 foreach ($entries as $entry) {

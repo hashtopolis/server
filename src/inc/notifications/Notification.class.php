@@ -1,12 +1,7 @@
 <?php
+
 use DBA\NotificationSetting;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 09.03.17
- * Time: 13:38
- */
 abstract class HashtopussyNotification {
   public static $name;
   protected     $receiver;

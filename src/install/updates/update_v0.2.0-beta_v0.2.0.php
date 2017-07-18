@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 03.03.17
- * Time: 14:54
- */
 
 use DBA\AgentBinary;
 use DBA\QueryFilter;

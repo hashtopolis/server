@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 10.11.16
- * Time: 14:38
- */
 class AccountHandler implements Handler {
   private $user;
   

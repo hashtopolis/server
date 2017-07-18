@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 09.03.17
- * Time: 14:00
- */
 class HashtopussyNotificationEmail extends HashtopussyNotification {
   protected     $receiver;
   public static $name = "Email";

@@ -1,13 +1,8 @@
 <?php
+
 use DBA\AgentBinary;
 use DBA\QueryFilter;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 18.02.17
- * Time: 14:48
- */
 class AgentBinaryHandler implements Handler {
   
   public function __construct($id = null) {

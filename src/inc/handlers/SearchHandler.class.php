@@ -1,16 +1,11 @@
 <?php
+
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\LikeFilter;
 use DBA\QueryFilter;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 13.04.17
- * Time: 12:43
- */
 class SearchHandler implements Handler {
   public function __construct($id = null) {
     // nothing

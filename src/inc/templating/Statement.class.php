@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 13.11.16
- * Time: 21:38
- */
 class Statement {
   private $statementType; //if, for, foreach, content
   /**

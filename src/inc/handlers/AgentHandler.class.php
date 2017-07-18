@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Agent;
 use DBA\AgentError;
 use DBA\Assignment;
@@ -11,12 +12,6 @@ use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 10.11.16
- * Time: 14:38
- */
 class AgentHandler implements Handler {
   private $agent;
   

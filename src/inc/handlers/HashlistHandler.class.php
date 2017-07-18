@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
@@ -16,12 +17,6 @@ use DBA\Task;
 use DBA\TaskFile;
 use DBA\Zap;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 24.11.16
- * Time: 16:44
- */
 class HashlistHandler implements Handler {
   /**
    * @var Hashlist $hashlist

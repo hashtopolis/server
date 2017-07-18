@@ -1,14 +1,9 @@
 <?php
+
 use DBA\Hashlist;
 use DBA\HashType;
 use DBA\QueryFilter;
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 18.11.16
- * Time: 20:21
- */
 class HashtypeHandler implements Handler {
   public function __construct($hashtypeId = null) {
     //we need nothing to load

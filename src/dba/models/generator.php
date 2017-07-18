@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 02.01.17
- * Time: 23:57
- */
-
 $CONF = array();
 
 // Configure the required models here
@@ -152,7 +145,13 @@ $CONF['Task'] = array(
   'isSmall',
   'isCpuTask',
   'useNewBench',
-  'skipKeyspace'
+  'skipKeyspace',
+  'taskType'
+);
+$CONF['TaskTask'] = array(
+  'taskTaskId',
+  'taskId',
+  'subtaskId'
 );
 $CONF['Supertask'] = array(
   'supertaskId',
