@@ -25,10 +25,90 @@ class SupertaskHandler implements Handler {
       case 'newsupertask':
         $this->createTasks();
         break;
+      case 'importsupertask':
+        $this->importSupertask();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+
+  private function importSupertask(){
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
+
+    $name = htmlentities($_POST['name'], false, "UTF-8");
+    $masks = $_POST['masks'];
+    if(strlen($name) == 0 || strlen($masks) == 0){
+      UI::addMessage(UI::ERROR, "Name or masks is empty!");
+      return;
+    }
+
+    $masks = explode("\n", str_replace("\r\n", "\n", $masks));
+    for($i=0;$i<sizeof($masks);$i++){
+      if(strlen($masks[$i]) == 0){
+        unset($masks[$i]);
+        continue;
+      }
+      $mask = str_replace("\\,", "COMMA_PLACEHOLDER", $masks[$i]);
+      $mask = str_replace("\\#", "HASH_PLACEHOLDER", $mask);
+      if(strpos($mask, "#") !== false){
+        $mask = substr($mask, 0, strpos($mask, "#"));
+      }
+      $mask = explode(",", $mask);
+      if(sizeof($mask) > 5){
+        unset($masks[$i]);
+        continue;
+      }
+      $masks[$i] = $mask;
+    }
+
+    if(sizeof($masks) == 0){
+      UI::addMessage(UI::ERROR, "No valid mask lines! Supertask was not created.");
+      return;
+    }
+
+    // create the preconf tasks
+    $preTasks = array();
+    $priority = sizeof($masks) + 1;
+    foreach($masks as $mask){
+      $pattern = $mask[sizeof($mask) - 1];
+      $cmd = "";
+      switch(sizeof($mask)){
+        case 5:
+          $cmd .= " -4 ".$mask[3];
+        case 4:
+          $cmd .= " -3 ".$mask[2];
+        case 3:
+          $cmd .= " -2 ".$mask[1];
+        case 2:
+          $cmd .= " -1 ".$mask[0];
+        case 1:
+          $cmd .= " $pattern";
+      }
+      $preTaskName = $cmd;
+      $qF1 = new QueryFilter(Task::TASK_NAME, $preTaskName, "=");
+      $qF2 = new QueryFilter(Task::HASHLIST_ID, null, "=");
+      $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+      if(sizeof($check) > 0){
+        $preTasks[] = $check[0];
+        continue;
+      }
+      //TODO: make configurable if small task, cpu only task etc.
+      $preTask = new Task(0, $cmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." -a 3 ".$cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
+      $preTask = $FACTORIES::getTaskFactory()->save($preTask);
+      $preTasks[] = $preTask;
+      $priority--;
+    }
+    $supertask = new Supertask(0, $name);
+    $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
+    foreach($preTasks as $preTask){
+      $relation = new SupertaskTask(0, $preTask->getId(), $supertask->getId());
+      $FACTORIES::getSupertaskTaskFactory()->save($relation);
+    }
+    header("Location: supertasks.php");
+    die();
   }
   
   private function createTasks() {
