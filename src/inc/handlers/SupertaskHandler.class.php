@@ -77,26 +77,31 @@ class SupertaskHandler implements Handler {
       $cmd = "";
       switch(sizeof($mask)){
         case 5:
-          $cmd .= " -4 ".$mask[3];
+          $cmd = " -4 ".$mask[3].$cmd;
         case 4:
-          $cmd .= " -3 ".$mask[2];
+          $cmd = " -3 ".$mask[2].$cmd;
         case 3:
-          $cmd .= " -2 ".$mask[1];
+          $cmd = " -2 ".$mask[1].$cmd;
         case 2:
-          $cmd .= " -1 ".$mask[0];
+          $cmd = " -1 ".$mask[0].$cmd;
         case 1:
           $cmd .= " $pattern";
       }
-      $preTaskName = $cmd;
+      $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
+      $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
+      $preTaskName = implode(",", $mask);
+      $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
+      $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       $qF1 = new QueryFilter(Task::TASK_NAME, $preTaskName, "=");
       $qF2 = new QueryFilter(Task::HASHLIST_ID, null, "=");
       $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
       if(sizeof($check) > 0){
-        $preTasks[] = $check[0];
+        $preTask = $check[0];
+        $preTasks[] = $preTask;
         continue;
       }
       //TODO: make configurable if small task, cpu only task etc.
-      $preTask = new Task(0, $cmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." -a 3 ".$cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
+      $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." -a 3 ".$cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
       $preTask = $FACTORIES::getTaskFactory()->save($preTask);
       $preTasks[] = $preTask;
       $priority--;
