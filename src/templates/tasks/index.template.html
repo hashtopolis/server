@@ -132,7 +132,9 @@
         		<td style='min-width: 120px'>
 
                     {{IF [[task.getVal('Task').getTaskType()]] == 1}}
-                        <a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
+						<form style ='float: left; padding-right: 5px;'>
+        	                <a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
+						</form>
                     {{ENDIF}}
         			{{IF [[login.getLevel()]] >= 30}}
                 {{IF [[task.getVal('Task').getTaskType()]] != 1}}
