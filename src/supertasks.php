@@ -31,11 +31,15 @@ if (isset($_POST['action'])) {
   }
 }
 
-if (isset($_GET['create'])) {
+if (isset($_GET['create']) && $_GET['create'] == "new") {
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
   $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
   $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+}
+else if (isset($_GET['create']) && $_GET['create'] == "import") {
+  $MENU->setActive("tasks_superimport");
+  $TEMPLATE = new Template("supertasks/import");
 }
 else if (isset($_GET['id']) && isset($_GET['new'])) {
   $TEMPLATE = new Template("supertasks/new");
