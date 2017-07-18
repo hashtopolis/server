@@ -29,7 +29,7 @@
     		<th>Action</th>
     	</tr>
     	{{FOREACH task;[[tasks]]}}
-    		<tr{{IF [[task.getVal('Task').getTaskType()]] == 1}} style="background-color: rgba(0,0,0,0.1);" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]" class="accordion-toggle"{{ENDIF}}>
+    		<tr{{IF [[task.getVal('Task').getTaskType()]] == 1}} style="background-color: rgba(0,0,0,0.1);"{{ENDIF}}>
     			<td
 	    			{{IF [[strlen([[task.getVal('Task')->getColor()]])]] > 0}}
 	    				style="background-color: #[[task.getVal('Task')->getColor()]]"
@@ -142,6 +142,9 @@
 	        				<input type="submit" class='btn btn-danger' value="X">
 	        			</form>
 	        		{{ENDIF}}
+					{{IF [[task.getVal('Task').getTaskType()]] == 1}}
+						<a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
+					{{ENDIF}}
         		</td>
     		</tr>
     		{{IF [[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]] || [[task.getVal('Task').getTaskType()]] == 1}}
