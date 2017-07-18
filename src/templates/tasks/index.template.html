@@ -135,16 +135,15 @@
                   <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[task.getVal('Task')->getId()]]" method="post">
                     <input type="submit" class='btn btn-default' value="Copy">
                   </form>
-                {{ENDIF}}
+                {{ELSE}}
+					<a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>&nbsp;&nbsp;
+					{{ENDIF}}
 	        			<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task')->getId()]]?')) return false;">
 	        				<input type="hidden" name="action" value="taskdelete">
 	        				<input type="hidden" name="task" value="[[task.getVal('Task')->getId()]]">
 	        				<input type="submit" class='btn btn-danger' value="X">
 	        			</form>
 	        		{{ENDIF}}
-					{{IF [[task.getVal('Task').getTaskType()]] == 1}}
-						<a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
-					{{ENDIF}}
         		</td>
     		</tr>
     		{{IF [[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]] || [[task.getVal('Task').getTaskType()]] == 1}}
