@@ -716,28 +716,30 @@ class HashlistHandler implements Handler {
           $hash = $split[0] . $separator . $split[1] . $separator . $split[2];
           $qF1 = new QueryFilter(HashBinary::ESSID, $hash, "=");
           $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-          $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+          $hashEntries = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
         }
         else {
           $hash = $split[0];
           $qF1 = new QueryFilter(Hash::HASH, $hash, "=");
           $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-          $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+          $hashEntries = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
         }
-        if ($hashEntry == null) {
+        if (sizeof($hashEntries) == 0) {
           $notFound++;
           continue;
         }
-        else if ($hashEntry->getIsCracked() == '1') {
-          $alreadyCracked++;
-          continue;
+        foreach ($hashEntries as $hashEntry) {
+          if ($hashEntry->getIsCracked() == 1) {
+            $alreadyCracked++;
+            continue;
+          }
+          $plain = str_replace($hash . $separator, "", $data);
+          $hashEntry->setPlaintext($plain);
+          $hashEntry->setIsCracked(1);
+          $hashFactory->update($hashEntry);
+          $crackedIn[$hashEntry->getHashlistId()]++;
+          $newCracked++;
         }
-        $plain = str_replace($hash . $separator, "", $data);
-        $hashEntry->setPlaintext($plain);
-        $hashEntry->setIsCracked(1);
-        $hashFactory->update($hashEntry);
-        $crackedIn[$hashEntry->getHashlistId()]++;
-        $newCracked++;
       }
       $bufferCount++;
       if ($bufferCount > 1000) {
@@ -749,6 +751,7 @@ class HashlistHandler implements Handler {
         }
         $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
         $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+        $crackedIn = array();
         $bufferCount = 0;
         if (sizeof($zaps) > 0) {
           $FACTORIES::getZapFactory()->massSave($zaps);
