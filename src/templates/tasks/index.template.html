@@ -133,8 +133,13 @@
 
                     {{IF [[task.getVal('Task').getTaskType()]] == 1}}
 						<form style ='float: left; padding-right: 5px;'>
-        	                <a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
+        	                <a class="btn btn-primary accordion-toggle" onclick="expansionCheck('#task[[task.getVal('Task').getId()]]')" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
 						</form>
+							<script type="text/javascript">
+                  $( document ).ready(function() {
+                      checkOnLoading("#task[[task.getVal('Task').getId()]]");
+                  });
+							</script>
                     {{ENDIF}}
         			{{IF [[login.getLevel()]] >= 30}}
                 {{IF [[task.getVal('Task').getTaskType()]] != 1}}
