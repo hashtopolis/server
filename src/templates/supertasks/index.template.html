@@ -7,13 +7,13 @@
 		<tr>
 			<th>ID</th>
 			<th>Name</th>
-			<th>Actions</th>
+			<th class="right">Actions</th>
 		</tr>
 		{{FOREACH supertask;[[supertasks]]}}
 			<tr>
 				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a></td>
 				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a></td>
-				<td>
+				<td class="right">
 					<form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
 						<input type="submit" class='btn btn-default' value="Apply to Hashlist">
 					</form>
@@ -37,7 +37,7 @@
 									<th>Name</th>
 									<th>Files</th>
 									<th>Subtask Priority</th>
-									<th>Action</th>
+									<th class="right">Action</th>
 								</tr>
 								{{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
 									<tr>
@@ -56,7 +56,7 @@
 												[[subTask.getVal('Task')->getPriority()]]
 											{{ENDIF}}
 										</td>
-										<td>
+										<td class="right">
 											{{IF [[login.getLevel()]] >= 30}}
 												<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
 													<input type="hidden" name="action" value="taskdelete">
