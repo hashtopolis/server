@@ -639,7 +639,7 @@ class HashlistHandler implements Handler {
       }
     }
     rewind($file);
-    $FACTORIES::getAgentFactory()->getDB()->exec("START TRANSACTION");
+    //$FACTORIES::getAgentFactory()->getDB()->exec("START TRANSACTION");
     $hashlists = Util::checkSuperHashlist($this->hashlist);
     $inSuperHashlists = array();
     $hashlist = Util::cast($hashlists[0], Hashlist::class);
@@ -749,8 +749,8 @@ class HashlistHandler implements Handler {
           $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
           $FACTORIES::getHashlistFactory()->update($ll);
         }
-        $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-        $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+        //$FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+        //$FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
         $bufferCount = 0;
         if (sizeof($zaps) > 0) {
           $FACTORIES::getZapFactory()->massSave($zaps);
@@ -789,7 +789,7 @@ class HashlistHandler implements Handler {
         $FACTORIES::getHashlistFactory()->update($superHashlist);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    //$FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
   }
   
