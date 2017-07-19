@@ -33,82 +33,82 @@ class SupertaskHandler implements Handler {
         break;
     }
   }
-
-  private function importSupertask(){
+  
+  private function importSupertask() {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-
+    
     $name = htmlentities($_POST['name'], false, "UTF-8");
     $masks = $_POST['masks'];
-    if(strlen($name) == 0 || strlen($masks) == 0){
+    if (strlen($name) == 0 || strlen($masks) == 0) {
       UI::addMessage(UI::ERROR, "Name or masks is empty!");
       return;
     }
-
+    
     $masks = explode("\n", str_replace("\r\n", "\n", $masks));
-    for($i=0;$i<sizeof($masks);$i++){
-      if(strlen($masks[$i]) == 0){
+    for ($i = 0; $i < sizeof($masks); $i++) {
+      if (strlen($masks[$i]) == 0) {
         unset($masks[$i]);
         continue;
       }
       $mask = str_replace("\\,", "COMMA_PLACEHOLDER", $masks[$i]);
       $mask = str_replace("\\#", "HASH_PLACEHOLDER", $mask);
-      if(strpos($mask, "#") !== false){
+      if (strpos($mask, "#") !== false) {
         $mask = substr($mask, 0, strpos($mask, "#"));
       }
       $mask = explode(",", $mask);
-      if(sizeof($mask) > 5){
+      if (sizeof($mask) > 5) {
         unset($masks[$i]);
         continue;
       }
       $masks[$i] = $mask;
     }
-
-    if(sizeof($masks) == 0){
+    
+    if (sizeof($masks) == 0) {
       UI::addMessage(UI::ERROR, "No valid mask lines! Supertask was not created.");
       return;
     }
-
+    
     // create the preconf tasks
     $preTasks = array();
     $priority = sizeof($masks) + 1;
-    foreach($masks as $mask){
+    foreach ($masks as $mask) {
       $pattern = $mask[sizeof($mask) - 1];
       $cmd = "";
-      switch(sizeof($mask)){
+      switch (sizeof($mask)) {
         case 5:
-          $cmd = " -4 ".$mask[3].$cmd;
+          $cmd = " -4 " . $mask[3] . $cmd;
         case 4:
-          $cmd = " -3 ".$mask[2].$cmd;
+          $cmd = " -3 " . $mask[2] . $cmd;
         case 3:
-          $cmd = " -2 ".$mask[1].$cmd;
+          $cmd = " -2 " . $mask[1] . $cmd;
         case 2:
-          $cmd = " -1 ".$mask[0].$cmd;
+          $cmd = " -1 " . $mask[0] . $cmd;
         case 1:
           $cmd .= " $pattern";
       }
       $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
       $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
-      $preTaskName = implode(",", $mask);
+      $preTaskName = "HIDDEN: " . implode(",", $mask);
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       $qF1 = new QueryFilter(Task::TASK_NAME, $preTaskName, "=");
       $qF2 = new QueryFilter(Task::HASHLIST_ID, null, "=");
       $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
-      if(sizeof($check) > 0){
+      if (sizeof($check) > 0) {
         $preTask = $check[0];
         $preTasks[] = $preTask;
         continue;
       }
       //TODO: make configurable if small task, cpu only task etc.
-      $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." -a 3 ".$cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
+      $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
       $preTask = $FACTORIES::getTaskFactory()->save($preTask);
       $preTasks[] = $preTask;
       $priority--;
     }
     $supertask = new Supertask(0, $name);
     $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
-    foreach($preTasks as $preTask){
+    foreach ($preTasks as $preTask) {
       $relation = new SupertaskTask(0, $preTask->getId(), $supertask->getId());
       $FACTORIES::getSupertaskTaskFactory()->save($relation);
     }
@@ -163,7 +163,7 @@ class SupertaskHandler implements Handler {
       $task->setHashlistId($hashlist->getId());
       $task->setTaskType(DTaskTypes::SUBTASK);
       $task = $FACTORIES::getTaskFactory()->save($task);
-      if($task->getIsCpuTask() == 1){
+      if ($task->getIsCpuTask() == 1) {
         $isCpuTask = 1;
       }
       $subTasks[] = $task;
@@ -176,7 +176,7 @@ class SupertaskHandler implements Handler {
     }
     $supTask = new Task(0, $supertask->getSupertaskName(), "SUPER", $hashlist->getId(), 0, 0, 0, 0, 0, "", 0, $isCpuTask, 0, 0, DTaskTypes::SUPERTASK);
     $supTask = $FACTORIES::getTaskFactory()->save($supTask);
-    foreach($subTasks as $task){
+    foreach ($subTasks as $task) {
       $task->setIsCpuTask($isCpuTask); // we need to enforce that all tasks have either cpu task or not cpu task setting
       $FACTORIES::getTaskFactory()->update($task);
       $taskTask = new TaskTask(0, $supTask->getId(), $task->getId());

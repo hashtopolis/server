@@ -280,14 +280,14 @@ class TaskHandler implements Handler {
     global $FACTORIES;
     
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  
-    if($task->getTaskType() == DTaskTypes::SUPERTASK){
+    
+    if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
       // if it's a supertask we have to test all the chunks of the subtasks and not of the task itself
       $tasks = Util::getSubTasks($task);
       $taskIds = array();
-      foreach($tasks as $t){
+      foreach ($tasks as $t) {
         $taskIds[] = $t->getId();
-        if($onlyFinished && ($t->getKeyspace() == 0 || $t->getKeyspace() != $t->getProgress())){
+        if ($onlyFinished && ($t->getKeyspace() == 0 || $t->getKeyspace() != $t->getProgress())) {
           return; // task/subtasks is/are not finished yet
         }
       }
@@ -302,11 +302,11 @@ class TaskHandler implements Handler {
       }
       $chunkIds[] = $chunk->getId();
     }
-  
+    
     // delete subtasks if it's a supertask
-    if($task->getTaskType() == DTaskTypes::SUPERTASK){
+    if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
       $tasks = Util::getSubTasks($task);
-      foreach($tasks as $t){
+      foreach ($tasks as $t) {
         $this->deleteTask($t);
       }
     }
@@ -320,7 +320,7 @@ class TaskHandler implements Handler {
         $FACTORIES::getNotificationSettingFactory()->delete($notification);
       }
     }
-  
+    
     $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=");
     $FACTORIES::getTaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");

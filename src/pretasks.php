@@ -33,6 +33,9 @@ $tasks = array();
 for ($z = 0; $z < sizeof($taskList); $z++) {
   $set = new DataSet();
   $task = $taskList[$z];
+  if (strpos($task->getTaskName(), "HIDDEN:") === 0) {
+    continue;
+  }
   $set->addValue('Task', $taskList[$z]);
   
   $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
