@@ -1,16 +1,17 @@
 function expansionCheck(elementId) {
     var isExpanded = $(elementId).attr("aria-expanded");
-    if(isExpanded === false){
+    if (isExpanded === false) {
         window.localStorage.setItem(elementId, "yes");
     }
-    else{
+    else {
         window.localStorage.setItem(elementId, "no");
     }
 }
 
-function checkOnLoading(elementId){
+function checkOnLoading(elementId) {
     isExpanded = window.localStorage.getItem(elementId);
-    if(isExpanded === "yes"){
+    alert("Status on " + elementId + ": " + isExpanded);
+    if (isExpanded === "yes") {
         $(elementId).collapse("show");
     }
 }
