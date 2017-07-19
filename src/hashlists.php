@@ -96,6 +96,11 @@ else if (isset($_GET['id'])) {
   //load list of available preconfigured tasks
   $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
   $preTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+  for ($i = 0; $i < sizeof($preTasks); $i++) {
+    if (strpos($preTasks[$i]->getTaskName(), "HIDDEN:") === 0) {
+      unset($preTasks[$i]);
+    }
+  }
   $OBJECTS['preTasks'] = $preTasks;
   $TEMPLATE = new Template("hashlists/detail");
 }
