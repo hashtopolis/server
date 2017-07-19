@@ -1,7 +1,5 @@
-function expansionCheck(elementId){
+function expansionCheck(elementId) {
     var isExpanded = $(elementId).attr("aria-expanded");
-    if(isExpanded){
-        alert("Expanded!");
-    }
+    alert("Status: " + isExpanded);
 }
 
