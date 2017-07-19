@@ -46,7 +46,7 @@
 										<td>TODO...</td>
 										<td>
 											{{IF [[login.getLevel()]] >= 20}}
-												<form class="form-inline" action="tasks.php" method="POST">
+												<form class="form-inline" action="tasks.php?super=true" method="POST">
 													<input type='hidden' name='action' value='taskprio'>
 													<input type="hidden" name="task" value="[[task.getId()]]">
 													<input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getPriority()]]">
@@ -58,7 +58,7 @@
 										</td>
 										<td class="right">
 											{{IF [[login.getLevel()]] >= 30}}
-												<form style ='float: right;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
+												<form style ='float: right;' action="tasks.php?super=true" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
 													<input type="hidden" name="action" value="taskdelete">
 													<input type="hidden" name="task" value="[[task.getId()]]">
 													<input type="submit" class='btn btn-danger' value="X">
