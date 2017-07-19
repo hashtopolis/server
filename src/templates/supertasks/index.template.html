@@ -15,11 +15,6 @@
 				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a></td>
 				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a></td>
 				<td>
-					{{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
-						<a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
-					{{ENDFOREACH}}
-				</td>
-				<td>
 					<form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
 						<input type="submit" class='btn btn-default' value="Apply to Hashlist">
 					</form>
@@ -64,7 +59,7 @@
 										</td>
 										<td>
 											{{IF [[login.getLevel()]] >= 30}}
-												<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.->getId()]]?')) return false;">
+												<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
 													<input type="hidden" name="action" value="taskdelete">
 													<input type="hidden" name="task" value="[[task.getId()]]">
 													<input type="submit" class='btn btn-danger' value="X">
