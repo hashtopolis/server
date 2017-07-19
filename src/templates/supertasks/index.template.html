@@ -71,7 +71,9 @@
 				</td>
 			</tr>
 			<script type="text/javascript">
-				checkOnLoading("#supertask[[supertask.getId()]]");
+				$( document ).ready(function() {
+					checkOnLoading("#supertask[[supertask.getId()]]");
+				});
 			</script>
 		{{ENDFOREACH}}
 	</table>
