@@ -92,14 +92,7 @@ class SupertaskHandler implements Handler {
       $preTaskName = "HIDDEN: " . implode(",", $mask);
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
-      $qF1 = new QueryFilter(Task::TASK_NAME, $preTaskName, "=");
-      $qF2 = new QueryFilter(Task::HASHLIST_ID, null, "=");
-      $check = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
-      if (sizeof($check) > 0) {
-        $preTask = $check[0];
-        $preTasks[] = $preTask;
-        continue;
-      }
+      
       //TODO: make configurable if small task, cpu only task etc.
       $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
       $preTask = $FACTORIES::getTaskFactory()->save($preTask);
@@ -218,7 +211,17 @@ class SupertaskHandler implements Handler {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=");
+    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), Task::TASK_ID, SupertaskTask::TASK_ID);
+    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
+      /** @var $task Task */
+      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
+      if (strpos($task->getTaskName(), "HIDDEN:") === 0) {
+        $FACTORIES::getTaskFactory()->delete($task);
+      }
+    }
+    
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getSupertaskFactory()->delete($supertask);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
