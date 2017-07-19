@@ -20,7 +20,7 @@
             <input type="submit" class='btn btn-danger' value="X">
           </form>
 					<form style ='float: right; padding-right: 5px;'>
-						<a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#supertask[[supertask.getId()]]">Show/Hide</a>
+						<a class="btn btn-primary accordion-toggle" role="button" onclick="expansionCheck('#supertask[[supertask.getId()]]')" href="#" data-toggle="collapse" data-target="#supertask[[supertask.getId()]]">Show/Hide</a>
 					</form>
 					<form style ='float: right; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
 						<input type="submit" class='btn btn-default' value="Apply to Hashlist">
