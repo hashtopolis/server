@@ -993,6 +993,14 @@ class Util {
    * @return string basic server url
    */
   public static function buildServerUrl() {
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+    
+    // when the server hostname is set on the config, use this
+    if (strlen($CONFIG->getVal(DConfig::BASE_HOST)) > 0) {
+      return $CONFIG->getVal(DConfig::BASE_HOST);
+    }
+    
     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "http://";
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];

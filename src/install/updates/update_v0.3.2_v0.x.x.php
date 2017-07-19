@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . "/../../inc/load.php");
 echo "Apply updates...\n";
 
 echo "Add new config... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (15, 'disptolerance', '20'), (16, 'batchSize', '10000')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'disptolerance', '20'), (NULL, 'batchSize', '10000')");
 echo "OK\n";
 
 echo "Change zap table... ";
@@ -24,9 +24,9 @@ $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` CHANGE `hash` 
 echo "OK\n";
 
 echo "Add Yubikey... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (17, 'yubikey_id', '')");
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (18, 'yubikey_key', '')");
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (19, 'yubikey_url', 'https://api.yubico.com/wsapi/2.0/verify')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_id', '')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_key', '')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_url', 'https://api.yubico.com/wsapi/2.0/verify')");
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `User` ADD yubikey INT(1) NOT NULL, ADD otp1 VARCHAR(50) NOT NULL, ADD otp2 VARCHAR(50) NOT NULL, ADD otp3 VARCHAR(50) NOT NULL, ADD otp4 VARCHAR(50) NOT NULL;");
 echo "OK\n";
 
@@ -77,6 +77,10 @@ echo ".";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`subtaskId`) REFERENCES `Task` (`taskId`);");
 echo ".";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);");
+echo "OK\n";
+
+echo "Update config... ";
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'baseHost', '')");
 echo "OK\n";
 
 echo "Check csharp binary... ";

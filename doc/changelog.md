@@ -9,6 +9,7 @@
 - Left hashlists can be downloaded now
 - Added Yubikey OTP login
 - Supertasks added
+- HCmask style can be imported
 
 ## Technical
 
@@ -16,6 +17,7 @@
 - Hash length is increased to 1024 (old 512)
 - Added special case when handling pre-crack import of WPA as they are not matched via the hash but the ESSID instead.
 - Added new hashtypes from Hashcat
+- Server hostname can be overridden in config
 
 # v0.3.1 -> v0.3.2
 

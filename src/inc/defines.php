@@ -78,7 +78,8 @@ class DConfig {
   const YUBIKEY_ID        = "yubikey_id";
   const YUBIKEY_KEY       = "yubikey_key";
   const YUBIKEY_URL       = "yubikey_url";
-
+  const BASE_HOST         = "baseHost";
+  
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
    * @param $config string
@@ -114,6 +115,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::BATCH_SIZE:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::BASE_HOST:
+        return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -158,6 +161,8 @@ class DConfig {
         return "Yubikey Secret Key";
       case DConfig::YUBIKEY_URL:
         return "Yubikey API Url";
+      case DConfig::BASE_HOST:
+        return "Base hostname/port/protocol to use. Only fill in to override the self-determined value.";
     }
     return $config;
   }
