@@ -14,13 +14,13 @@
 				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a></td>
 				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a></td>
 				<td class="right">
-					<form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
+					<form style ='float: right; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
 						<input type="submit" class='btn btn-default' value="Apply to Hashlist">
 					</form>
-					<form style ='float: left; padding-right: 5px;'>
+					<form style ='float: right; padding-right: 5px;'>
 						<a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#supertask[[supertask.getId()]]">Show/Hide</a>
 					</form>
-          <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
+          <form style ='float: right;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
             <input type="hidden" name="action" value="taskdelete">
             <input type="hidden" name="supertask" value="[[supertask.getId()]]">
             <input type="submit" class='btn btn-danger' value="X">
@@ -58,7 +58,7 @@
 										</td>
 										<td class="right">
 											{{IF [[login.getLevel()]] >= 30}}
-												<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
+												<form style ='float: right;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
 													<input type="hidden" name="action" value="taskdelete">
 													<input type="hidden" name="task" value="[[task.getId()]]">
 													<input type="submit" class='btn btn-danger' value="X">
