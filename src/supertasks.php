@@ -2,6 +2,7 @@
 
 use DBA\JoinFilter;
 use DBA\QueryFilter;
+use DBA\LikeFilter;
 use DBA\SupertaskTask;
 use DBA\Task;
 
@@ -34,8 +35,9 @@ if (isset($_POST['action'])) {
 if (isset($_GET['create']) && $_GET['create'] == "new") {
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
-  $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
-  $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $qF1 = new QueryFilter(Task::HASHLIST_ID, null, "=");
+  $qF2 = new LikeFilter(Task::TASK_NAME, "HIDDEN:%");
+  $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import") {
   $MENU->setActive("tasks_superimport");
