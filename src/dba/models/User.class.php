@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by IntelliJ IDEA.
- * User: sein
- * Date: 02.01.17
- * Time: 23:57
- */
-
 namespace DBA;
 
 class User extends AbstractModel {
@@ -163,43 +156,43 @@ class User extends AbstractModel {
   function setRightGroupId($rightGroupId){
     $this->rightGroupId = $rightGroupId;
   }
-
+  
   function getYubikey(){
     return $this->yubikey;
   }
-
+  
   function setYubikey($yubikey){
     $this->yubikey = $yubikey;
   }
-
+  
   function getOtp1(){
     return $this->otp1;
   }
-
+  
   function setOtp1($otp1){
     $this->otp1 = $otp1;
   }
-
+  
   function getOtp2(){
     return $this->otp2;
   }
-
+  
   function setOtp2($otp2){
     $this->otp2 = $otp2;
   }
-
+  
   function getOtp3(){
     return $this->otp3;
   }
-
+  
   function setOtp3($otp3){
     $this->otp3 = $otp3;
   }
-
+  
   function getOtp4(){
     return $this->otp4;
   }
-
+  
   function setOtp4($otp4){
     $this->otp4 = $otp4;
   }

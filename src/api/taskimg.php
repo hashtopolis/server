@@ -53,29 +53,29 @@ if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
   // handle supertask progress drawing here
   $subTasks = Util::getSubTasks($task);
   $numTasks = sizeof($subTasks);
-  for($i=0;$i<sizeof($subTasks);$i++){
+  for ($i = 0; $i < sizeof($subTasks); $i++) {
     $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $progress = 0;
-    foreach($chunks as $chunk){
+    foreach ($chunks as $chunk) {
       $progress += $chunk->getProgress();
     }
     $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $cracked = 0;
-    foreach($chunks as $chunk){
+    foreach ($chunks as $chunk) {
       $cracked += $chunk->getCracked();
     }
-    if($cracked > 0) {
+    if ($cracked > 0) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
     }
-    else if($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
+    else if ($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $blue);
     }
-    else if($subTasks[$i]->getKeyspace() > 0 && $progress > 0){
+    else if ($subTasks[$i]->getKeyspace() > 0 && $progress > 0) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $yellow);
     }
-    else{
+    else {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $grey);
     }
   }

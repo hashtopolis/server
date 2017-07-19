@@ -78,7 +78,7 @@ class SupertaskHandler implements Handler {
       $task->setHashlistId($hashlist->getId());
       $task->setTaskType(DTaskTypes::SUBTASK);
       $task = $FACTORIES::getTaskFactory()->save($task);
-      if($task->getIsCpuTask() == 1){
+      if ($task->getIsCpuTask() == 1) {
         $isCpuTask = 1;
       }
       $subTasks[] = $task;
@@ -91,7 +91,7 @@ class SupertaskHandler implements Handler {
     }
     $supTask = new Task(0, $supertask->getSupertaskName(), "SUPER", $hashlist->getId(), 0, 0, 0, 0, 0, "", 0, $isCpuTask, 0, 0, DTaskTypes::SUPERTASK);
     $supTask = $FACTORIES::getTaskFactory()->save($supTask);
-    foreach($subTasks as $task){
+    foreach ($subTasks as $task) {
       $task->setIsCpuTask($isCpuTask); // we need to enforce that all tasks have either cpu task or not cpu task setting
       $FACTORIES::getTaskFactory()->update($task);
       $taskTask = new TaskTask(0, $supTask->getId(), $task->getId());

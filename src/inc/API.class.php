@@ -940,8 +940,8 @@ class API {
         $newAssignment = false;
       }
     }
-
-    if($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUBTASK){
+    
+    if ($setToTask != null && $setToTask->getTaskType() == DTaskTypes::SUBTASK) {
       $qF = new QueryFilter(TaskTask::SUBTASK_ID, $setToTask->getId(), "=");
       $supertaskTask = $FACTORIES::getTaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
       $setToTask = $FACTORIES::getTaskFactory()->get($supertaskTask->getTaskId());
@@ -954,7 +954,7 @@ class API {
       $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
       
       // this is a special case when the agent continues on the task and it's NOT a new assignment. Otherwise there will be duplicate assignments
-      if($currentTask != null && $currentTask->getId() == $setToTask->getId()){
+      if ($currentTask != null && $currentTask->getId() == $setToTask->getId()) {
         $newAssignment = false;
       }
       if ($setToTask == null) {
@@ -1269,10 +1269,10 @@ class API {
       // task is fully dispatched and this last chunk is done, deprioritize it
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
-  
-      if($task->getTaskType() == DTaskTypes::SUBTASK){
+      
+      if ($task->getTaskType() == DTaskTypes::SUBTASK) {
         $supertask = Util::getSupertaskOfTask($task);
-        if(Util::checkSupertaskCompleted($supertask)){
+        if (Util::checkSupertaskCompleted($supertask)) {
           $supertask->setPriority(0);
           $FACTORIES::getTaskFactory()->update($supertask);
         }
@@ -1319,9 +1319,9 @@ class API {
         $uS = new UpdateSet(TASK::PRIORITY, "0");
         $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::UPDATE => $uS, $FACTORIES::FILTER => $qF));
         
-        if($task->getTaskType() == DTaskTypes::SUBTASK){
+        if ($task->getTaskType() == DTaskTypes::SUBTASK) {
           $supertask = Util::getSupertaskOfTask($task);
-          if(Util::checkSupertaskCompleted($supertask)){
+          if (Util::checkSupertaskCompleted($supertask)) {
             $supertask->setPriority(0);
             $FACTORIES::getTaskFactory()->update($supertask);
           }
