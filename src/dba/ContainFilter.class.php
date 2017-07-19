@@ -16,10 +16,13 @@ class ContainFilter extends Filter {
       $table = $table . ".";
     }
     $app = array();
-    for($x = 0;$x<sizeof($this->values);$x++){
+    for ($x = 0; $x < sizeof($this->values); $x++) {
       $app[] = "?";
     }
-    return $table . $this->key . " IN (".implode(",", $app).")";
+    if (sizeof($app) == 0) {
+      return "FALSE";
+    }
+    return $table . $this->key . " IN (" . implode(",", $app) . ")";
   }
   
   function getValue() {
