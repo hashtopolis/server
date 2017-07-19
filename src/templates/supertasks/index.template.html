@@ -7,7 +7,6 @@
 		<tr>
 			<th>ID</th>
 			<th>Name</th>
-			<th>Tasks</th>
 			<th>Actions</th>
 		</tr>
 		{{FOREACH supertask;[[supertasks]]}}
@@ -42,7 +41,7 @@
 								</tr>
 								{{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
 									<tr>
-										<td>[[task.getId]]</td>
+										<td>[[task.getId()]]</td>
 										<td><a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a></td>
 										<td>TODO...</td>
 										<td>
