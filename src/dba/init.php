@@ -21,6 +21,7 @@ require_once(dirname(__FILE__) . "/Util.class.php");
 require_once(dirname(__FILE__) . "/UpdateSet.class.php");
 require_once(dirname(__FILE__) . "/MassUpdateSet.class.php");
 require_once(dirname(__FILE__) . "/LikeFilter.class.php");
+require_once(dirname(__FILE__) . "/LikeFilterInsensitive.class.php");
 require_once(dirname(__FILE__) . "/QueryFilterNoCase.class.php");
 
 $entries = scandir(dirname(__FILE__) . "/models");
