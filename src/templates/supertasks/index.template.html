@@ -35,7 +35,6 @@
 								<tr>
 									<th>ID</th>
 									<th>Name</th>
-									<th>Files</th>
 									<th>Subtask Priority</th>
 									<th class="right">Action</th>
 								</tr>
@@ -43,7 +42,6 @@
 									<tr>
 										<td>[[task.getId()]]</td>
 										<td><a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a></td>
-										<td>TODO...</td>
 										<td>
 											{{IF [[login.getLevel()]] >= 20}}
 												<form class="form-inline" action="tasks.php?super=true" method="POST">
