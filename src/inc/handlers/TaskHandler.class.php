@@ -243,6 +243,9 @@ class TaskHandler implements Handler {
     if ($pretask) {
       header("Location: pretasks.php");
     }
+    else if (isset($_GET['super'])) {
+      header("Location: supertasks.php");
+    }
     else {
       header("Location: " . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']);
     }
@@ -266,7 +269,11 @@ class TaskHandler implements Handler {
     $this->deleteTask($task);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
-    if ($task->getHashlistId() == null) {
+    if (isset($_GET['super'])) {
+      header("Location: supertasks.php");
+      die();
+    }
+    else if ($task->getHashlistId() == null) {
       header("Location: pretasks.php");
       die();
     }

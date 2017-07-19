@@ -25,10 +25,88 @@ class SupertaskHandler implements Handler {
       case 'newsupertask':
         $this->createTasks();
         break;
+      case 'importsupertask':
+        $this->importSupertask();
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function importSupertask() {
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
+    
+    $name = htmlentities($_POST['name'], false, "UTF-8");
+    $masks = $_POST['masks'];
+    if (strlen($name) == 0 || strlen($masks) == 0) {
+      UI::addMessage(UI::ERROR, "Name or masks is empty!");
+      return;
+    }
+    
+    $masks = explode("\n", str_replace("\r\n", "\n", $masks));
+    for ($i = 0; $i < sizeof($masks); $i++) {
+      if (strlen($masks[$i]) == 0) {
+        unset($masks[$i]);
+        continue;
+      }
+      $mask = str_replace("\\,", "COMMA_PLACEHOLDER", $masks[$i]);
+      $mask = str_replace("\\#", "HASH_PLACEHOLDER", $mask);
+      if (strpos($mask, "#") !== false) {
+        $mask = substr($mask, 0, strpos($mask, "#"));
+      }
+      $mask = explode(",", $mask);
+      if (sizeof($mask) > 5) {
+        unset($masks[$i]);
+        continue;
+      }
+      $masks[$i] = $mask;
+    }
+    
+    if (sizeof($masks) == 0) {
+      UI::addMessage(UI::ERROR, "No valid mask lines! Supertask was not created.");
+      return;
+    }
+    
+    // create the preconf tasks
+    $preTasks = array();
+    $priority = sizeof($masks) + 1;
+    foreach ($masks as $mask) {
+      $pattern = $mask[sizeof($mask) - 1];
+      $cmd = "";
+      switch (sizeof($mask)) {
+        case 5:
+          $cmd = " -4 " . $mask[3] . $cmd;
+        case 4:
+          $cmd = " -3 " . $mask[2] . $cmd;
+        case 3:
+          $cmd = " -2 " . $mask[1] . $cmd;
+        case 2:
+          $cmd = " -1 " . $mask[0] . $cmd;
+        case 1:
+          $cmd .= " $pattern";
+      }
+      $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
+      $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
+      $preTaskName = "HIDDEN: " . implode(",", $mask);
+      $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
+      $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
+      
+      //TODO: make configurable if small task, cpu only task etc.
+      $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
+      $preTask = $FACTORIES::getTaskFactory()->save($preTask);
+      $preTasks[] = $preTask;
+      $priority--;
+    }
+    $supertask = new Supertask(0, $name);
+    $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
+    foreach ($preTasks as $preTask) {
+      $relation = new SupertaskTask(0, $preTask->getId(), $supertask->getId());
+      $FACTORIES::getSupertaskTaskFactory()->save($relation);
+    }
+    header("Location: supertasks.php");
+    die();
   }
   
   private function createTasks() {
@@ -133,8 +211,20 @@ class SupertaskHandler implements Handler {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=");
+    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), Task::TASK_ID, SupertaskTask::TASK_ID);
+    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    
+    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
+      /** @var $task Task */
+      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
+      if (strpos($task->getTaskName(), "HIDDEN:") === 0) {
+        $FACTORIES::getTaskFactory()->delete($task);
+      }
+    }
+    
     $FACTORIES::getSupertaskFactory()->delete($supertask);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage(UI::SUCCESS, "Supertask deleted successfully!");

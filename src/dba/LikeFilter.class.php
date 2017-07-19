@@ -5,6 +5,7 @@ namespace DBA;
 class LikeFilter extends Filter {
   private $key;
   private $value;
+  private $match;
   /**
    * @var AbstractModelFactory
    */
@@ -14,6 +15,11 @@ class LikeFilter extends Filter {
     $this->key = $key;
     $this->value = $value;
     $this->factory = $factory;
+    $this->match = true;
+  }
+  
+  function setMatch($status) {
+    $this->match = $status;
   }
   
   function getQueryString($table = "") {
@@ -24,7 +30,12 @@ class LikeFilter extends Filter {
       $table = $this->factory->getModelTable() . ".";
     }
     
-    return $table . $this->key . " LIKE ?";
+    $inv = "";
+    if ($this->match === false) {
+      $inv = " NOT";
+    }
+    
+    return $table . $this->key . $inv . " LIKE ?";
   }
   
   function getValue() {

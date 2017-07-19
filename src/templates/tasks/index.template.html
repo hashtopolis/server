@@ -133,8 +133,13 @@
 
                     {{IF [[task.getVal('Task').getTaskType()]] == 1}}
 						<form style ='float: left; padding-right: 5px;'>
-        	                <a class="btn btn-primary accordion-toggle" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
+        	                <a class="btn btn-primary accordion-toggle" onclick="expansionCheck('#task[[task.getVal('Task').getId()]]')" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
 						</form>
+							<script type="text/javascript">
+                  $( document ).ready(function() {
+                      checkOnLoading("#task[[task.getVal('Task').getId()]]");
+                  });
+							</script>
                     {{ENDIF}}
         			{{IF [[login.getLevel()]] >= 30}}
                 {{IF [[task.getVal('Task').getTaskType()]] != 1}}
@@ -161,7 +166,7 @@
 				{{IF [[task.getVal('Task').getTaskType()]] == 1}}
 					<tr>
 						<td colspan="11" class="hiddenRow">
-							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse" style="margin: 10px;">
+							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse" style="margin: 10px;" aria-expanded="false">
                 <div class="panel panel-default" style="margin-bottom: 0;">
                   <table class="table table-bordered table-nonfluid table-subtask-border">
 					  <tr>
