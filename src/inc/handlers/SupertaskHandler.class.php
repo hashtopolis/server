@@ -214,6 +214,9 @@ class SupertaskHandler implements Handler {
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), Task::TASK_ID, SupertaskTask::TASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  
+    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    
     for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
       /** @var $task Task */
       $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
@@ -222,7 +225,6 @@ class SupertaskHandler implements Handler {
       }
     }
     
-    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getSupertaskFactory()->delete($supertask);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage(UI::SUCCESS, "Supertask deleted successfully!");
