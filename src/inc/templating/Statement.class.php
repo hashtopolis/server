@@ -187,7 +187,7 @@ class Statement {
         return substr($value, 1);
       }
       else {
-        return eval(substr($value, 1));
+        return eval(substr($value, 1) . ";");
       }
     }
     else {
