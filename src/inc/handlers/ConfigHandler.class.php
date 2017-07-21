@@ -50,7 +50,6 @@ class ConfigHandler implements Handler {
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     $taskIds = array();
     foreach ($tasks as $task) {
-      $task = Util::cast($task, Task::class);
       $taskIds[] = $task->getId();
     }
     if (sizeof($taskIds) > 0) {
@@ -105,12 +104,14 @@ class ConfigHandler implements Handler {
     $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
     $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => array($jF1, $jF2)));
     for ($i = 0; $i < sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]); $i++) {
-      $chunk = Util::cast($joined[$FACTORIES::getChunkFactory()->getModelName()][$i], Chunk::class);
-      $hashlist = Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][$i], Hashlist::class);
+      /** @var $chunk Chunk */
+      $chunk = $joined[$FACTORIES::getChunkFactory()->getModelName()][$i];
+      /** @var $hashlist Hashlist */
+      $hashlist = $joined[$FACTORIES::getHashlistFactory()->getModelName()][$i];
       $hashFactory = $FACTORIES::getHashFactory();
       if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
         $hashlists = Util::checkSuperHashlist($hashlist);
-        if (Util::cast($hashlists[0], Hashlist::class)->getFormat() != DHashlistFormat::PLAIN) {
+        if ($hashlists[0]->getFormat() != DHashlistFormat::PLAIN) {
           $hashFactory = $FACTORIES::getHashBinaryFactory();
         }
       }
@@ -130,7 +131,6 @@ class ConfigHandler implements Handler {
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($hashlists as $hashlist) {
-      $hashlist = Util::cast($hashlist, Hashlist::class);
       $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
       $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
       $hashFactory = $FACTORIES::getHashFactory();
@@ -151,11 +151,9 @@ class ConfigHandler implements Handler {
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($hashlists as $hashlist) {
-      $hashlist = Util::cast($hashlist, Hashlist::class);
       $children = Util::checkSuperHashlist($hashlist);
       $cracked = 0;
       foreach ($children as $child) {
-        $child = Util::cast($child, Hashlist::class);
         $cracked += $child->getCracked();
       }
       if ($cracked != $hashlist->getCracked()) {

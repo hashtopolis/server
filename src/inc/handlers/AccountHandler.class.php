@@ -91,7 +91,7 @@ class AccountHandler implements Handler {
     global $FACTORIES;
     
     $lifetime = intval($_POST['lifetime']);
-    if ($lifetime < 60 || $lifetime > 24 * 3600) {
+    if ($lifetime < 60 || $lifetime > 48 * 3600) {
       UI::addMessage(UI::ERROR, "Lifetime must be larger than 1 minute and smaller than 2 days!");
       return;
     }

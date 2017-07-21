@@ -167,7 +167,7 @@ if (isset($_GET['id'])) {
   $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $assignedAgents = array();
   foreach ($joinedAgents[$FACTORIES::getAgentFactory()->getModelName()] as $agent) {
-    $agent = \DBA\Util::cast($agent, \DBA\Agent::class);
+    /** @var $agent Agent */
     $assignedAgents[] = $agent->getId();
   }
   $OBJECTS['agents'] = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
@@ -193,8 +193,10 @@ if (isset($_GET['id'])) {
     $jF = new JoinFilter($FACTORIES::getChunkFactory(), Chunk::AGENT_ID, Agent::AGENT_ID);
     $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     for ($i = 0; $i < sizeof($joinedAgents[$FACTORIES::getAgentFactory()->getModelName()]); $i++) {
-      $chunk = \DBA\Util::cast($joinedAgents[$FACTORIES::getChunkFactory()->getModelName()][$i], \DBA\Chunk::class);
-      $agent = \DBA\Util::cast($joinedAgents[$FACTORIES::getAgentFactory()->getModelName()][$i], \DBA\Agent::class);
+      /** @var $chunk Chunk */
+      $chunk = $joinedAgents[$FACTORIES::getChunkFactory()->getModelName()][$i];
+      /** @var $agent Agent */
+      $agent = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()][$i];
       if ($allAgents->getVal($agent->getId()) == null) {
         $allAgents->addValue($agent->getId(), $agent);
         $agentObjects[] = $agent;

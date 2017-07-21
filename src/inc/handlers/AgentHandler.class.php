@@ -177,7 +177,7 @@ class AgentHandler implements Handler {
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
         $FACTORIES::getAssignmentFactory()->delete($assignments[$i]);
       }
-      $assignment = Util::cast($assignments[0], Assignment::class);
+      $assignment = $assignments[0];
       $assignment->setTaskId($task->getId());
       $assignment->setBenchmark($benchmark);
       $FACTORIES::getAssignmentFactory()->update($assignment);
@@ -260,7 +260,6 @@ class AgentHandler implements Handler {
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
-      $chunk = Util::cast($chunk, Chunk::class);
       $chunkIds[] = $chunk->getId();
     }
     if (sizeof($chunks) > 0) {

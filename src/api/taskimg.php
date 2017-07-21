@@ -1,8 +1,7 @@
 <?php
 
 /*
- *
- * Draws graphic about chunk progress
+ * Draws a graphic about chunk progress
  */
 
 use DBA\Chunk;
@@ -81,11 +80,10 @@ if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
   }
 }
 else {
-//load chunks
+  //load chunks
   $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
   foreach ($chunks as $chunk) {
-    $chunk = Util::cast($chunk, Chunk::class);
     $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);
     $end = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength()) / $keyspace) - 1;
     //division by 10000 is required because rprogress is saved in percents with two decimals

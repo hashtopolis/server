@@ -208,7 +208,7 @@ class TaskHandler implements Handler {
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, DTaskTypes::NORMAL);
-    $task = Util::cast($FACTORIES::getTaskFactory()->save($task), Task::class);
+    $task = $FACTORIES::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
         $taskFile = new TaskFile(0, $task->getId(), $fileId);

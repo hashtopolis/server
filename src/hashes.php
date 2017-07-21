@@ -75,8 +75,10 @@ else if (isset($_GET['chunk'])) {
   if (sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]) == null) {
     UI::printError("ERROR", "Invalid chunk!");
   }
-  $chunk = \DBA\Util::cast($joined[$FACTORIES::getChunkFactory()->getModelName()][0], \DBA\Chunk::class);
-  $list = \DBA\Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][0], \DBA\Hashlist::class);
+  /** @var $chunk Chunk */
+  $chunk = $joined[$FACTORIES::getChunkFactory()->getModelName()][0];
+  /** @var $list Hashlist */
+  $list = $joined[$FACTORIES::getHashlistFactory()->getModelName()][0];
   $hashlist = $list;
   if ($list->getFormat() == DHashlistFormat::SUPERHASHLIST) {
     $lists = Util::checkSuperHashlist($list);
@@ -103,8 +105,10 @@ else if (isset($_GET['task'])) {
   if (sizeof($joined[$FACTORIES::getTaskFactory()->getModelName()]) == null) {
     UI::printError("ERROR", "Invalid task!");
   }
-  $task = Util::cast($joined[$FACTORIES::getTaskFactory()->getModelName()][0], \DBA\Task::class);
-  $hashlist = Util::cast($joined[$FACTORIES::getHashlistFactory()->getModelName()][0], \DBA\Hashlist::class);
+  /** @var $task Task */
+  $task = $joined[$FACTORIES::getTaskFactory()->getModelName()][0];
+  /** @var $hashlist Hashlist */
+  $hashlist = $joined[$FACTORIES::getHashlistFactory()->getModelName()][0];
   if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
     $lists = Util::checkSuperHashlist($hashlist);
     $hashlist = $lists[0];

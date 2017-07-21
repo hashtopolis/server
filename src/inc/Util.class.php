@@ -171,11 +171,11 @@ class Util {
     // we first load all tasks and go down by priority and take the first one which matches completely
     
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $queryFilter, $FACTORIES::JOIN => $joinFilter, $FACTORIES::ORDER => array($descOrder)));
-    for ($i = 0; $i < sizeof($joinedTasks['Task']); $i++) {
+    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
       /** @var $task Task */
       /** @var $hashlist Hashlist */
-      $task = $joinedTasks['Task'][$i];
-      $hashlist = $joinedTasks['Hashlist'][$i];
+      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
+      $hashlist = $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$i];
       
       if (!Util::agentHasAccessToTask($task, $agent)) {
         continue; // the client has not enough access to all required files
@@ -191,15 +191,15 @@ class Util {
         $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
         $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
         $removed = 0;
-        for ($z = 0; $z < sizeof($joined['Agent']); $z++) {
+        for ($z = 0; $z < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()]); $z++) {
           /** @var Agent $ag */
-          $ag = $joined['Agent'][$z];
+          $ag = $joined[$FACTORIES::getAgentFactory()->getModelName()][$z];
           if (time() - $ag->getLastTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
-            $FACTORIES::getAssignmentFactory()->delete($joined['Assignment'][$z]); // delete timed out
+            $FACTORIES::getAssignmentFactory()->delete($joined[$FACTORIES::getAssignmentFactory()->getModelName()][$z]); // delete timed out
             $removed++;
           }
         }
-        if ($removed < sizeof($joined['Agent'])) {
+        if ($removed < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()])) {
           continue; // still some assigned
         }
       }
@@ -227,13 +227,13 @@ class Util {
     }
     $joinedTasks = $FACTORIES::getTaskFactory()->filter($options);
     $tasks = array();
-    for ($z = 0; $z < sizeof($joinedTasks['Task']); $z++) {
+    for ($z = 0; $z < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $z++) {
       $set = new DataSet();
-      $set->addValue('Task', $joinedTasks['Task'][$z]);
-      $set->addValue('Hashlist', $joinedTasks['Hashlist'][$z]);
+      $set->addValue('Task', $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z]);
+      $set->addValue('Hashlist', $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$z]);
       
       /** @var $task Task */
-      $task = $joinedTasks['Task'][$z];
+      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z];
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
       $progress = 0;
@@ -263,15 +263,15 @@ class Util {
       $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
       $sizes = 0;
       $secret = false;
-      for ($x = 0; $x < sizeof($joinedFiles['File']); $x++) {
-        $file = \DBA\Util::cast($joinedFiles['File'][$x], \DBA\File::class);
+      for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
+        $file = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class);
         $sizes += $file->getSize();
         if ($file->getSecret() == '1') {
           $secret = true;
         }
       }
       
-      $numFiles = sizeof($joinedFiles['File']);
+      $numFiles = sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]);
       $numAssignments = sizeof($assignments);
       if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
         Util::loadTasks($task->getId());
@@ -329,7 +329,7 @@ class Util {
     $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
     $qF = new QueryFilter(TaskTask::TASK_ID, $supertask->getId(), "=", $FACTORIES::getTaskTaskFactory());
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joined['Task'] as $task) {
+    foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
       /** @var $task Task */
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -354,10 +354,10 @@ class Util {
     $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::TASK_ID);
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    if (sizeof($joined['Task']) == 0) {
+    if (sizeof($joined[$FACTORIES::getTaskFactory()->getModelName()]) == 0) {
       return null;
     }
-    return $joined['Task'][0];
+    return $joined[$FACTORIES::getTaskFactory()->getModelName()][0];
   }
   
   /**
@@ -445,7 +445,7 @@ class Util {
       $qF = new QueryFilter(TaskFile::TASK_ID, $t->getId(), "=");
       $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
       $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-      foreach ($joinedFiles['File'] as $file) {
+      foreach ($joinedFiles[$FACTORIES::getFileFactory()->getModelName()] as $file) {
         /** @var $file File */
         if ($file->getSecret() > $agent->getIsTrusted()) {
           return false;
@@ -469,7 +469,7 @@ class Util {
       $oF = new OrderFilter(Task::PRIORITY, "DESC");
       $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF, $FACTORIES::ORDER => $oF));
       $testTasks = array();
-      foreach ($joined['Task'] as $t) {
+      foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $t) {
         $testTasks[] = $t;
       }
     }

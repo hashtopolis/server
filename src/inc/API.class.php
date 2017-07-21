@@ -197,7 +197,6 @@ class API {
         return 0;
       }
       
-      //TODO: check if time adjustments are needed
       $benchmark[1] *= 2 / 3;
       
       $factor = $chunkTime * 1000 / $benchmark[1];

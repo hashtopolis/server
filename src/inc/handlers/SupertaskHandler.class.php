@@ -161,7 +161,6 @@ class SupertaskHandler implements Handler {
       }
       $subTasks[] = $task;
       foreach ($taskFiles as $taskFile) {
-        $taskFile = Util::cast($taskFile, TaskFile::class);
         $taskFile->setId(0);
         $taskFile->setTaskId($task->getId());
         $FACTORIES::getTaskFileFactory()->save($taskFile);
@@ -187,7 +186,7 @@ class SupertaskHandler implements Handler {
     $tasks = $_POST['task'];
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $supertask = new Supertask(0, $name);
-    $supertask = Util::cast($FACTORIES::getSupertaskFactory()->save($supertask), Supertask::class);
+    $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
     foreach ($tasks as $t) {
       $task = $FACTORIES::getTaskFactory()->get($t);
       if ($task == null) {
