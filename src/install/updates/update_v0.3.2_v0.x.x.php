@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . "/../../inc/load.php");
 echo "Apply updates...\n";
 
 echo "Add new config... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'disptolerance', '20'), (NULL, 'batchSize', '10000')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'disptolerance', '20'), (NULL, 'batchSize', '10000'), (NULL, 'donateOff', '0')");
 echo "OK\n";
 
 echo "Change zap table... ";
