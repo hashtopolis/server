@@ -31,6 +31,108 @@ class DAccountAction {
   const CHANGE_PASSWORD = "changePassword";
 }
 
+class DAgentBinaryAction {
+  const NEW_BINARY    = "newBinary";
+  const EDIT_BINARY   = "editBinary";
+  const DELETE_BINARY = "deleteBinary";
+}
+
+class DAgentAction {
+  const CLEAR_ERRORS   = "clearErrors";
+  const RENAME_AGENT   = "renameAgent";
+  const SET_OWNER      = "setOwner";
+  const SET_TRUSTED    = "setTrusted";
+  const SET_IGNORE     = "setIgnore";
+  const SET_PARAMETERS = "setParameters";
+  const SET_ACTIVE     = "setActive";
+  const DELETE_AGENT   = "deleteAgent";
+  const ASSIGN_AGENT   = "assignAgent";
+  const CREATE_VOUCHER = "createVoucher";
+  const DELETE_VOUCHER = "deleteVoucher";
+  const DOWNLOAD_AGENT = "downloadAgent";
+  const SET_CPU        = "setCpu";
+}
+
+class DConfigAction {
+  const UPDATE_CONFIG = "updateConfig";
+  const REBUILD_CACHE = "rebuildCache";
+  const RESCAN_FILES  = "rescanFiles";
+  const CLEAR_ALL     = "clearAll";
+}
+
+class DFileAction {
+  const DELETE_FILE = "deleteFile";
+  const SET_SECRET  = "setSecret";
+  const ADD_FILE    = "addFile";
+  const EDIT_FILE   = "editFile";
+}
+
+class DHashcatAction {
+  const DELETE_RELEASE = "deleteRelease";
+  const CREATE_RELEASE = "createRelease";
+}
+
+class DHashlistAction {
+  const APPLY_PRECONFIGURED_TASKS = "applyPreconfiguredTasks";
+  const CREATE_WORDLIST           = "createWordlist";
+  const SET_SECRET                = "setSecret";
+  const RENAME_HASHLIST           = "renameHashlist";
+  const PROCESS_ZAP               = "processZap";
+  const EXPORT_HASHLIST           = "exportHashlist";
+  const ZAP_HASHLIST              = "zapHashlist";
+  const DELETE_HASHLIST           = "deleteHashlist";
+  const CREATE_HASHLIST           = "createHashlist";
+  const CREATE_SUPERHASHLIST      = "createSuperhashlist";
+  const CREATE_LEFTLIST           = "createLeftlist";
+}
+
+class DHashtypeAction {
+  const DELETE_HASHTYPE = "deleteHashtype";
+  const ADD_HASHTYPE    = "addHashtype";
+}
+
+class DNotificationAction {
+  const CREATE_NOTIFICATION = "createNotification";
+  const SET_ACTIVE          = "setActive";
+  const DELETE_NOTIFICATION = "deleteNotification";
+}
+
+class DSearchAction {
+  const SEARCH = "search";
+}
+
+class DSupertaskAction {
+  const DELETE_SUPERTASK = "deleteSupertask";
+  const CREATE_SUPERTASK = "createSupertask";
+  const APPLY_SUPERTASK  = "applySupertask";
+  const IMPORT_SUPERTASK = "importSupertask";
+}
+
+class DTaskAction {
+  const SET_BENCHMARK   = "setBenchmark";
+  const SET_SMALL_TASK  = "setSmallTask";
+  const SET_CPU_TASK    = "setCpuTask";
+  const ABORT_CHUNK     = "abortChunk";
+  const RESET_CHUNK     = "resetChunk";
+  const PURGE_TASK      = "purgeTask";
+  const SET_COLOR       = "setColor";
+  const SET_TIME        = "setTime";
+  const RENAME_TASK     = "renameTask";
+  const DELETE_FINISHED = "deleteFinished";
+  const DELETE_TASK     = "deleteTask";
+  const SET_PRIORITY    = "setPriority";
+  const CREATE_TASK     = "createTask";
+}
+
+class DUserAction {
+  const DELETE_USER  = "deleteUser";
+  const ENABLE_USER  = "enableUser";
+  const DISABLE_USER = "disableUser";
+  const SET_RIGHTS   = "setRights";
+  const SET_PASSWORD = "setPassword";
+  const CREATE_USER  = "createUser";
+}
+
 class DTaskTypes {
   const NORMAL    = 0;
   const SUPERTASK = 1;

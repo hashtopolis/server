@@ -4,7 +4,7 @@
 {%TEMPLATE->struct/messages%}
 {{IF [[newBinary]]}}
   <form action="" method="post">
-    <input type="hidden" name="action" value="new">
+    <input type="hidden" name="action" value="[[$DAgentBinaryAction::NEW_BINARY]]">
     <div class="panel panel-default">
       <table class="table table-bordered table-nonfluid">
         <tr>
@@ -34,7 +34,7 @@
 {{ENDIF}}
 {{IF [[editBinary]]}}
   <form action="" method="post">
-    <input type="hidden" name="action" value="edit">
+    <input type="hidden" name="action" value="[[$DAgentBinaryAction::EDIT_BINARY]]">
     <input type="hidden" name="id" value="[[bin.getId()]]">
     <div class="panel panel-default">
       <table class="table table-bordered table-nonfluid">
@@ -92,7 +92,7 @@
         </td>
         <td>
           <form action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
-            <input type='hidden' name='action' value='delete'>
+            <input type='hidden' name='action' value='[[$DAgentBinaryAction::DELETE_BINARY]]'>
             <input type="hidden" name="id" value="[[binary.getId()]]">
             <input type="submit" class='btn btn-danger' value="Delete">
           </form>

@@ -142,7 +142,7 @@ class AccountHandler implements Handler {
   private function setOTP($num) {
     global $FACTORIES;
     
-    if ($_POST['action'] == 'ykenable') {
+    if ($_POST['action'] == DAccountAction::YUBIKEY_ENABLE) {
       $isValid = false;
       
       if (strlen($this->user->getOtp1()) == 12) {

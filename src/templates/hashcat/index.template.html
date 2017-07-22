@@ -26,7 +26,7 @@
 				<td>
 					{{IF [[login.getLevel()]] >= 30}}
 						<form action="hashcat.php" method="POST" onSubmit="if (!confirm('Really delete Hashcat release [[release.getVersion()]]?')) return false;">
-							<input type="hidden" name="action" value="releasedelete">
+							<input type="hidden" name="action" value="[[$DHashcatAction::DELETE_RELEASE]]">
 							<input type="hidden" name="release" value="[[release.getId()]]">
 							<input type="submit" class='btn btn-danger' value="Delete">
 						</form>

@@ -34,64 +34,64 @@ class AgentHandler implements Handler {
     global $LOGIN;
     
     switch ($action) {
-      case 'clearerrors':
+      case DAgentAction::CLEAR_ERRORS:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->clearErrors();
         break;
-      case 'agentrename':
+      case DAgentAction::RENAME_AGENT:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->rename();
         break;
-      case 'agentowner':
+      case DAgentAction::SET_OWNER:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->changeOwner();
         break;
-      case 'agenttrusted':
+      case DAgentAction::SET_TRUSTED:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->changeTrusted();
         break;
-      case 'agentignore':
+      case DAgentAction::SET_IGNORE:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->changeIgnoreErrors();
         break;
-      case 'setparam':
+      case DAgentAction::SET_PARAMETERS:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->changeCmdParameters();
         break;
-      case 'agentactive':
+      case DAgentAction::SET_ACTIVE:
         $this->toggleActive();
         break;
-      case 'agentdelete':
+      case DAgentAction::DELETE_AGENT:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->delete();
         break;
-      case 'agentassign':
+      case DAgentAction::ASSIGN_AGENT:
         $this->assign();
         break;
-      case 'vouchercreate':
+      case DAgentAction::CREATE_VOUCHER:
         $this->createVoucher();
         break;
-      case 'voucherdelete':
+      case DAgentAction::DELETE_VOUCHER:
         $this->deleteVoucher();
         break;
-      case 'downloadagent':
+      case DAgentAction::DOWNLOAD_AGENT:
         $this->downloadAgent();
         break;
-      case 'agentcpu':
+      case DAgentAction::SET_CPU:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }

@@ -41,7 +41,7 @@
 						{{IF [[login.getLevel()]] >= 30}}
 							<form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
 								<input type="hidden" name="file" value="[[file.getId()]]">
-								<input type="hidden" name="action" value="filesecret">
+								<input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
 								<input type='hidden' name="secret" value="{{IF [[file.getSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
 								<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getSecret()]] == '1'}} checked{{ENDIF}}>
 							</form>
@@ -58,7 +58,7 @@
 								<input type="submit" class='btn btn-primary' value="Rename">
 							</form>
 							<form style ='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
-								<input type="hidden" name="action" value="filedelete">
+								<input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="submit" class='btn btn-danger' value="Delete">
 							</form>
@@ -73,7 +73,7 @@
 	<h3>Add new [[fileType]]</h3>
 	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="source" value="upload">
-		<input type="hidden" name="action" value="addfile">
+		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
 		<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid" id='upfiles'>
 				<tr>
@@ -92,7 +92,7 @@
 	</form>
 	<form id="impfiles" action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
     	<input type="hidden" name="source" value="import">
-    	<input type="hidden" name="action" value="addfile">
+    	<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
       	<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid" id='imfiles'>
 				<tr>
@@ -122,7 +122,7 @@
 		</div>
 	</form>
 	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-		<input type="hidden" name="action" value="addfile">
+		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
       	<input type="hidden" name="source" value="url">
       	<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid" id='upfiles'>

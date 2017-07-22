@@ -14,7 +14,7 @@ class SearchHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'search':
+      case DSearchAction::SEARCH:
         $this->search();
         break;
       default:

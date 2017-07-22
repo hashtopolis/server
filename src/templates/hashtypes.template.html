@@ -3,7 +3,7 @@
 <h2>Hashtypes</h2>
 {%TEMPLATE->struct/messages%}
 <form action="hashtypes.php" method="POST">
-	<input type='hidden' name='action' value='add'>
+	<input type='hidden' name='action' value='[[$DHashtypeAction::ADD_HASHTYPE]]'>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>
@@ -59,7 +59,7 @@
         </td>
 				<td>
 					<form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getId()]]?')) return false;">
-						<input type="hidden" name="action" value="delete">
+						<input type="hidden" name="action" value="[[$DHashtypeAction::DELETE_HASHTYPE]]">
 						<input type="hidden" name="type" value="[[type.getId()]]">
 						<input type="submit" class='btn btn-danger' value="Delete">
 					</form>

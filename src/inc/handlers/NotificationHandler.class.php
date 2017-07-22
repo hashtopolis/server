@@ -11,13 +11,13 @@ class NotificationHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'createNotification':
+      case DNotificationAction::CREATE_NOTIFICATION:
         $this->create();
         break;
-      case 'notificationActive':
+      case DNotificationAction::SET_ACTIVE:
         $this->toggleActive();
         break;
-      case 'notificationDelete':
+      case DNotificationAction::DELETE_NOTIFICATION:
         $this->delete();
         break;
       default:

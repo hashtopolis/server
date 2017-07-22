@@ -17,16 +17,16 @@ class ConfigHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'update':
+      case DConfigAction::UPDATE_CONFIG:
         $this->updateConfig();
         break;
-      case 'rebuildcache':
+      case DConfigAction::REBUILD_CACHE:
         $this->rebuildCache();
         break;
-      case 'rescanfiles':
+      case DConfigAction::RESCAN_FILES:
         $this->scanFiles();
         break;
-      case 'clearall':
+      case DConfigAction::CLEAR_ALL:
         $this->clearAll();
         break;
       default:

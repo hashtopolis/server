@@ -11,10 +11,10 @@ class HashtypeHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'delete':
+      case DHashtypeAction::DELETE_HASHTYPE:
         $this->delete();
         break;
-      case 'add':
+      case DHashtypeAction::ADD_HASHTYPE:
         $this->add();
         break;
       default:
