@@ -119,7 +119,7 @@ class DConfig {
       case DConfig::BASE_HOST:
         return DConfigType::STRING_INPUT;
       case DConfig::DONATE_OFF:
-        return DConfigType::TICKBOX;
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -167,7 +167,7 @@ class DConfig {
       case DConfig::BASE_HOST:
         return "Base hostname/port/protocol to use. Only fill in to override the self-determined value.";
       case DConfig::DONATE_OFF:
-        return "Hide donate information";
+        return "Hide donate information (insert '1' to hide)";
     }
     return $config;
   }

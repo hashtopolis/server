@@ -20,11 +20,6 @@
 						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
 							<input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
 						{{ENDIF}}
-						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "checkbox"}}
-							<div class="checkbox">
-								<label><input type="checkbox" name="config_[[conf.getVal('item')]]" value="1" {{IF [[Util::escapeSpecial([[conf.getVal('value')]])]] == 1}}checked{{ENDIF}}>&nbsp;</label>
-							</div>
-						{{ENDIF}}
 					</td>
 				</tr>
 			{{ENDFOREACH}}
