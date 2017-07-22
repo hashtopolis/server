@@ -20,6 +20,9 @@
 						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
 							<input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
 						{{ENDIF}}
+						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "checkbox"}}
+							<input type="checkbox" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
+						{{ENDIF}}
 					</td>
 				</tr>
 			{{ENDFOREACH}}
