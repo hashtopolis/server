@@ -1,4 +1,4 @@
-# v0.3.2 -> v0.x.x
+# v0.3.2 -> v0.4.0
 
 ## New Features
 
@@ -18,6 +18,15 @@
 - Added special case when handling pre-crack import of WPA as they are not matched via the hash but the ESSID instead.
 - Added new hashtypes from Hashcat
 - Server hostname can be overridden in config
+
+## Client
+
+- Client updated to version 0.43.19 
+- Fixed debug not showing hashcat parameters on calls
+- Improve error handling on keyspace measuring, client will now signal the server to pause agent instead of crash
+- Added more information for task assigning, client will now display task and hashlist on task get
+- Fixed slow file downloading issue
+- Changed the way hashcat version is queried (should work properly on linuc/mac)
 
 # v0.3.1 -> v0.3.2
 

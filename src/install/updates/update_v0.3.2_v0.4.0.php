@@ -87,9 +87,9 @@ echo "Check csharp binary... ";
 $qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
 $binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
 if ($binary != null) {
-  if (Util::versionComparison($binary->getVersion(), "0.43.13") == 1) {
+  if (Util::versionComparison($binary->getVersion(), "0.43.19") == 1) {
     echo "update version... ";
-    $binary->setVersion("0.43.4");
+    $binary->setVersion("0.43.19");
     $FACTORIES::getAgentBinaryFactory()->update($binary);
     echo "OK";
   }
