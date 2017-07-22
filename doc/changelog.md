@@ -26,7 +26,7 @@
 - Improve error handling on keyspace measuring, client will now signal the server to pause agent instead of crash
 - Added more information for task assigning, client will now display task and hashlist on task get
 - Fixed slow file downloading issue
-- Changed the way hashcat version is queried (should work properly on linuc/mac)
+- Changed the way hashcat version is queried (should work properly on linux/mac)
 
 # v0.3.1 -> v0.3.2
 
