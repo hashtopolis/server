@@ -19,6 +19,18 @@ class DHashcatStatus {
   const STATUS_ABORTED_RUNTIME = 10;
 }
 
+class DAccountAction {
+  const SET_EMAIL       = "setEmail";
+  const YUBIKEY_DISABLE = "yubikeyDisable";
+  const YUBIKEY_ENABLE  = "yubikeyEnable";
+  const SET_OTP1        = "setOTP1";
+  const SET_OTP2        = "setOTP2";
+  const SET_OTP3        = "setOTP3";
+  const SET_OTP4        = "setOTP4";
+  const UPDATE_LIFETIME = "updateLifetime";
+  const CHANGE_PASSWORD = "changePassword";
+}
+
 class DTaskTypes {
   const NORMAL    = 0;
   const SUPERTASK = 1;

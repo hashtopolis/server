@@ -20,7 +20,7 @@
 			<th>Email address</th>
 			<td>
 				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='setemail'>
+       				<input type='hidden' name='action' value='[[$DAccountAction::SET_EMAIL]]'>
        				<input type='email' name='email' class='form-control' value='[[user.getEmail()]]'>
        				<input type="submit" class='btn btn-default' value="Update">
        			</form>
@@ -30,7 +30,7 @@
 			<th>Set session length</th>
 			<td>
 				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='updatelifetime'>
+       				<input type='hidden' name='action' value='[[$DAccountAction::UPDATE_LIFETIME]]'>
        				<input type='text' name='lifetime' class='form-control' value='[[user.getSessionLifetime()]]'> seconds
        				<input type="submit" class='btn btn-default' value="Update">
        			</form>
@@ -40,7 +40,7 @@
 			<th>Password</th>
 			<td>
 				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='changepass'>
+       				<input type='hidden' name='action' value='[[$DAccountAction::CHANGE_PASSWORD]]'>
        				<input type='password' name='oldpass' class='form-control' placeholder='Old password here...'>
        				<input type='password' name='newpass' class='form-control' placeholder='New password here...'>
        				<input type='password' name='reppass' class='form-control' placeholder='Repeat password...'>
@@ -74,13 +74,13 @@
 						{{IF [[user.getYubikey()]] == 1}}
 							<form class='form-inline' action="account.php" method="post">
 								Yubikey OTP currently enabled
-								<input type='hidden' name='action' value='ykdisable'>
+								<input type='hidden' name='action' value='[[$DAccountAction::YUBKEY_DISABLE]]'>
 								<input type="submit" class='btn btn-warning' value="Disable">
 							</form>
 						{{ELSE}}
 							<form class='form-inline' action="account.php" method="post">
 								Yubikey OTP is currently disabled
-								<input type='hidden' name='action' value='ykenable'>
+								<input type='hidden' name='action' value='[[$DAccountAction::YUBKEY_ENABLE]]'>
 								<input type="submit" class='btn btn-success' value="Enable">
 							</form>
 						{{ENDIF}}
@@ -90,7 +90,7 @@
 				<th>OTP KEY 1:</th>
 				<td>
 					<form class='form-inline' action="account.php" method="post">
-						<input type='hidden' name='action' value='setotp1'>
+						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP1]]'>
 						<input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]'>
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
@@ -100,7 +100,7 @@
 				<th>OTP KEY 2:</th>
 				<td>
 					<form class='form-inline' action="account.php" method="post">
-						<input type='hidden' name='action' value='setotp2'>
+						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP2]]'>
 						<input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]'>
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
@@ -110,7 +110,7 @@
 				<th>OTP KEY 3:</th>
 				<td>
 					<form class='form-inline' action="account.php" method="post">
-						<input type='hidden' name='action' value='setotp3'>
+						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP3]]'>
 						<input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]'>
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
@@ -120,7 +120,7 @@
 				<th>OTP KEY 4:</th>
 				<td>
 					<form class='form-inline' action="account.php" method="post">
-						<input type='hidden' name='action' value='setotp4'>
+						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP4]]'>
 						<input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]'>
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
