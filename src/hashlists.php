@@ -25,12 +25,13 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
 
 $TEMPLATE = new Template("hashlists/index");
 $MENU->setActive("lists_norm");
+$OBJECTS['zap'] = false;
 
 //catch actions here...
 if (isset($_POST['action'])) {
   $hashlistHandler = new HashlistHandler();
   $hashlistHandler->handle($_POST['action']);
-  if (UI::getNumMessages() == 0 && !isset($OBJECTS['zap'])) {
+  if (UI::getNumMessages() == 0 && !$OBJECTS['zap']) {
     Util::refresh();
   }
 }

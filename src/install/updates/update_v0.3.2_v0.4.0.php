@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . "/../../inc/load.php");
 echo "Apply updates...\n";
 
 echo "Add new config... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'disptolerance', '20'), (NULL, 'batchSize', '10000')");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'disptolerance', '20'), (NULL, 'batchSize', '10000'), (NULL, 'donateOff', '0')");
 echo "OK\n";
 
 echo "Change zap table... ";
@@ -87,9 +87,9 @@ echo "Check csharp binary... ";
 $qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
 $binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
 if ($binary != null) {
-  if (Util::versionComparison($binary->getVersion(), "0.43.13") == 1) {
+  if (Util::versionComparison($binary->getVersion(), "0.43.19") == 1) {
     echo "update version... ";
-    $binary->setVersion("0.43.4");
+    $binary->setVersion("0.43.19");
     $FACTORIES::getAgentBinaryFactory()->update($binary);
     echo "OK";
   }

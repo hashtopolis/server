@@ -193,6 +193,7 @@ class DConfig {
   const YUBIKEY_KEY       = "yubikey_key";
   const YUBIKEY_URL       = "yubikey_url";
   const BASE_HOST         = "baseHost";
+  const DONATE_OFF        = "donateOff";
   
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
@@ -231,6 +232,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::BASE_HOST:
         return DConfigType::STRING_INPUT;
+      case DConfig::DONATE_OFF:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -277,6 +280,8 @@ class DConfig {
         return "Yubikey API Url";
       case DConfig::BASE_HOST:
         return "Base hostname/port/protocol to use. Only fill in to override the self-determined value.";
+      case DConfig::DONATE_OFF:
+        return "Hide donate information (insert '1' to hide)";
     }
     return $config;
   }
@@ -430,6 +435,7 @@ class DPayloadKeys {
 class DConfigType {
   const STRING_INPUT = "string";
   const NUMBER_INPUT = "number";
+  const TICKBOX      = "checkbox";
 }
 
 // log entry types
