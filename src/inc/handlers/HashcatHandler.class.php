@@ -11,10 +11,10 @@ class HashcatHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'releasedelete':
+      case DHashcatAction::DELETE_RELEASE:
         $this->delete();
         break;
-      case 'newhashcatp':
+      case DHashcatAction::CREATE_RELEASE:
         $this->newHashcat();
         break;
       default:

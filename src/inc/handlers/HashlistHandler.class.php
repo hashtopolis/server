@@ -42,64 +42,64 @@ class HashlistHandler implements Handler {
     global $LOGIN;
     
     switch ($action) {
-      case 'preconf':
+      case DHashlistAction::APPLY_PRECONFIGURED_TASKS:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->preconf();
         break;
-      case 'wordlist':
+      case DHashlistAction::CREATE_WORDLIST:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->createWordlists();
         break;
-      case 'hashlistsecret':
+      case DHashlistAction::SET_SECRET:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->toggleSecret();
         break;
-      case 'hashlistrename':
+      case DHashlistAction::RENAME_HASHLIST:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->rename();
         break;
-      case 'hashlistzapp':
+      case DHashlistAction::PROCESS_ZAP:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->processZap();
         break;
-      case 'export':
+      case DHashlistAction::EXPORT_HASHLIST:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->export();
         break;
-      case 'hashlistzap':
+      case DHashlistAction::ZAP_HASHLIST:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->zap();
         break;
-      case 'hashlistdelete':
+      case DHashlistAction::DELETE_HASHLIST:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->delete();
         break;
-      case 'newhashlistp':
+      case DHashlistAction::CREATE_HASHLIST:
         $this->create();
         break;
-      case 'newsuperhashlistp':
+      case DHashlistAction::CREATE_SUPERHASHLIST:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->createSuperhashlist();
         break;
-      case 'leftlist':
+      case DHashlistAction::CREATE_LEFTLIST:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }

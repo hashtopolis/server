@@ -14,6 +14,9 @@ else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   die($TEMPLATE->render($OBJECTS));
 }
 
+$OBJECTS['newBinary'] = false;
+$OBJECTS['editBinary'] = false;
+
 $TEMPLATE = new Template("binaries");
 $MENU->setActive("config_binaries");
 

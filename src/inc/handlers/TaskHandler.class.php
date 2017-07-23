@@ -37,79 +37,79 @@ class TaskHandler implements Handler {
     global $LOGIN;
     
     switch ($action) {
-      case 'agentbench':
+      case DTaskAction::SET_BENCHMARK:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->adjustBenchmark();
         break;
-      case 'smalltask':
+      case DTaskAction::SET_SMALL_TASK:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->setSmallTask();
         break;
-      case 'cputask':
+      case DTaskAction::SET_CPU_TASK:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->setCpuTask();
         break;
-      case 'chunkabort':
+      case DTaskAction::ABORT_CHUNK:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->abortChunk();
         break;
-      case 'chunkreset':
+      case DTaskAction::RESET_CHUNK:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->resetChunk();
         break;
-      case 'taskpurge':
+      case DTaskAction::PURGE_TASK:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->purgeTask();
         break;
-      case 'taskcolor':
+      case DTaskAction::SET_COLOR:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->updateColor();
         break;
-      case 'taskchunk':
+      case DTaskAction::SET_TIME:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->changeChunkTime();
         break;
-      case 'taskrename':
+      case DTaskAction::RENAME_TASK:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->rename();
         break;
-      case "finishedtasksdelete":
+      case DTaskAction::DELETE_FINISHED:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->deleteFinished();
         break;
-      case 'taskdelete':
+      case DTaskAction::DELETE_TASK:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->delete();
         break;
-      case 'taskprio':
+      case DTaskAction::SET_PRIORITY:
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->updatePriority();
         break;
-      case 'newtaskp':
+      case DTaskAction::CREATE_TASK:
         $this->create();
         break;
       default:

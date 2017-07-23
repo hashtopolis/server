@@ -3,7 +3,7 @@
 <h2>Server configuration</h2>
 {%TEMPLATE->struct/messages%}
 <form action="config.php" method="POST">
-	<input type='hidden' name='action' value='update'>
+	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>
@@ -38,7 +38,7 @@
 		<tr>
 			<td>
 				<form action='config.php' method='post'>
-					<input type='hidden' name='action' value='rebuildcache'>
+					<input type='hidden' name='action' value='[[$DConfigAction::REBUILD_CACHE]]'>
 					<input type='submit' class='btn btn-default' value='Rebuild chunk cache'>
 				</form>
 			</td>
@@ -47,7 +47,7 @@
 		<tr>
 			<td>
 				<form action='config.php' method='post'>
-					<input type='hidden' name='action' value='rescanfiles'>
+					<input type='hidden' name='action' value='[[$DConfigAction::RESCAN_FILES]]'>
 					<input type='submit' class='btn btn-default' value='Rescan global files'>
 				</form>
 			</td>
@@ -55,8 +55,8 @@
 		</tr>
 		<tr>
 			<td>
-				<form action='config.php' method='post' onSubmit='if(prompt("Do you really want to delete everything? Enter OK to confirm.") != "OK")return false'>
-					<input type='hidden' name='action' value='clearall'>
+				<form action='config.php' method='post' onSubmit='if(prompt("Do you really want to delete everything? Enter OK to confirm.") !== "OK")return false'>
+					<input type='hidden' name='action' value='[[$DConfigAction::CLEAR_ALL]]'>
 					<input type='submit' class='btn btn-danger' value='Clear all'>
 				</form>
 			</td>

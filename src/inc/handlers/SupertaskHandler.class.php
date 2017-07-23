@@ -16,16 +16,16 @@ class SupertaskHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'taskdelete':
+      case DSupertaskAction::DELETE_SUPERTASK:
         $this->delete();
         break;
-      case 'createsupertask':
+      case DSupertaskAction::CREATE_SUPERTASK:
         $this->create();
         break;
-      case 'newsupertask':
+      case DSupertaskAction::APPLY_SUPERTASK:
         $this->createTasks();
         break;
-      case 'importsupertask':
+      case DSupertaskAction::IMPORT_SUPERTASK:
         $this->importSupertask();
         break;
       default:
@@ -213,7 +213,7 @@ class SupertaskHandler implements Handler {
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), Task::TASK_ID, SupertaskTask::TASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-  
+    
     $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {

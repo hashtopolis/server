@@ -181,7 +181,19 @@ class Statement {
         return eval("return $value;");
       }
     }
+    else if (strpos($value, '$') === 0) {
+      // is a constant
+      if ($inner) {
+        return substr($value, 1);
+      }
+      else {
+        return eval("return " . substr($value, 1) . ";");
+      }
+    }
     else {
+      if (ini_get("display_errors") == '1') {
+        echo "WARN: failed to parse: $value<br>\n";
+      }
       return "false";
     }
   }

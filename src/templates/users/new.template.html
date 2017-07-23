@@ -3,7 +3,7 @@
 <h2>New user</h2>
 {%TEMPLATE->struct/messages%}
 <form action='users.php' method='post'>
-	<input type='hidden' name='action' value='create'>
+	<input type='hidden' name='action' value='[[$DUserAction::CREATE_USER]]'>
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>

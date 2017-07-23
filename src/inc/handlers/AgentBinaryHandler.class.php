@@ -11,13 +11,13 @@ class AgentBinaryHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'new':
+      case DAgentBinaryAction::NEW_BINARY:
         $this->newBinary();
         break;
-      case 'edit':
+      case DAgentBinaryAction::EDIT_BINARY:
         $this->editBinary();
         break;
-      case 'delete':
+      case DAgentBinaryAction::DELETE_BINARY:
         $this->deleteBinary();
         break;
       default:

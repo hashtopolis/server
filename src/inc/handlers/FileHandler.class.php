@@ -16,22 +16,22 @@ class FileHandler implements Handler {
     global $LOGIN;
     
     switch ($action) {
-      case 'filedelete':
+      case DFileAction::DELETE_FILE:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->delete();
         break;
-      case 'filesecret':
+      case DFileAction::SET_SECRET:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
         $this->switchSecret();
         break;
-      case 'addfile':
+      case DFileAction::ADD_FILE:
         $this->add();
         break;
-      case 'edit':
+      case DFileAction::EDIT_FILE:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }

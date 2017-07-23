@@ -17,7 +17,7 @@
         <td>Owner</td>
         <td>
           <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
-            <input type='hidden' name='action' value='agentowner'>
+            <input type='hidden' name='action' value='[[$DAgentAction::SET_OWNER]]'>
             <input type='hidden' name='agentId' value='[[agent.getId()]]'>
             <select class='form-control' name='owner'>
               <option value="">---</option>
@@ -35,7 +35,7 @@
       <td>
         {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[login.getLevel()]] >= 30}}
           <form id="active[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
-            <input type='hidden' name='action' value='agentactive'>
+            <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getId()]]').submit();">
           </form>
@@ -50,7 +50,7 @@
       <td>
         {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[login.getLevel()]] >= 30}}
           <form class='form-inline' id="name[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
-            <input type='hidden' name='action' value='agentrename'>
+            <input type='hidden' name='action' value='[[$DAgentAction::RENAME_AGENT]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="text" name='name' value="[[agent.getAgentName()]]" class='form-control'>&nbsp;&nbsp;
             <input type='submit' class='btn btn-default' value='Change'>
@@ -78,7 +78,7 @@
       <td>
         {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[login.getLevel()]] >= 30}}
           <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
-            <input type='hidden' name='action' value='agentcpu'>
+            <input type='hidden' name='action' value='[[$DAgentAction::SET_CPU]]'>
             <input type='hidden' name='agentId' value='[[agent.getId()]]'>
             <select class='form-control' name='cpuOnly'>
               <option value="0"{{IF [[agent.getCpuOnly()]] == 0}}selected{{ENDIF}}>No</option>
@@ -104,7 +104,7 @@
         {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[login.getLevel()]] >= 30}}
           <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="POST">
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
-            <input type="hidden" name="action" value="setparam">
+            <input type="hidden" name="action" value="[[$DAgentAction::SET_PARAMETERS]]">
             <input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
@@ -118,7 +118,7 @@
       <td>
         {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[login.getLevel()]] >= 30}}
           <form id="agentignore" action="agents.php?id=[[agent.getId()]]" method="post">
-            <input type='hidden' name='action' value='agentignore'>
+            <input type='hidden' name='action' value='[[$DAgentAction::SET_IGNORE]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="checkbox" name='ignore' value='1'{{IF [[agent.getIgnoreErrors()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
             Ignore <br><i>(Be careful, this might lead to endless loops!)</i>
@@ -133,7 +133,7 @@
       <td>
         {{IF [[login.getLevel()]] >= 30}}
           <form id="agenttrusted" action="agents.php?id=[[agent.getId()]]" method="post">
-            <input type='hidden' name='action' value='agenttrusted'>
+            <input type='hidden' name='action' value='[[$DAgentAction::SET_TRUSTED]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="checkbox" name='trusted' value='1'{{IF [[agent.getIsTrusted()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agenttrusted').submit();">
             Trust agent with secret data
@@ -148,7 +148,7 @@
       <td>Assignment:</td>
       <td>
         <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
-          <input type='hidden' name='action' value='agentassign'>
+          <input type='hidden' name='action' value='[[$DAgentAction::ASSIGN_AGENT]]'>
           <input type='hidden' name='agent' value='[[agent.getId()]]'>
           <select class='form-control' name='task'>
             <option value="">(unassigned)</option>
@@ -178,7 +178,7 @@
   <h3>Error messages:</h3>
   {{IF [[login.getLevel()]] >= 30}}
     <form action="agents.php?id=[[agent.getId()]]" method='post' class='form-inline'>
-      <input type='hidden' name='action' value='clearerrors'>
+      <input type='hidden' name='action' value='[[$DAgentAction::CLEAR_ERRORS]]'>
       <input type='hidden' name='agent' value="[[agent.getId()]]">
       <input type='submit' class='btn btn-danger' value='Delete All'>
     </form>

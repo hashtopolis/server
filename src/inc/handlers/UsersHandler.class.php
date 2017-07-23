@@ -13,22 +13,22 @@ class UsersHandler implements Handler {
   
   public function handle($action) {
     switch ($action) {
-      case 'deleteuser':
+      case DUserAction::DELETE_USER:
         $this->delete();
         break;
-      case 'enable':
+      case DUserAction::ENABLE_USER:
         $this->enable();
         break;
-      case 'disable':
+      case DUserAction::DISABLE_USER:
         $this->disable();
         break;
-      case 'setrights':
+      case DUserAction::SET_RIGHTS:
         $this->setRights();
         break;
-      case 'setpass':
+      case DUserAction::SET_PASSWORD:
         $this->setPassword();
         break;
-      case 'create':
+      case DUserAction::CREATE_USER:
         $this->create();
         break;
       default:

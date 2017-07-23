@@ -3,7 +3,7 @@
 <h2>Edit File</h2>
 {%TEMPLATE->struct/messages%}
 <form action="files.php?view=[[view]]" method="post">
-  <input type="hidden" name="action" value="edit">
+  <input type="hidden" name="action" value="[[$DFileAction::EDIT_FILE]]">
   <input type="hidden" name="fileId" value="[[file.getId()]]">
   <div class="panel panel-default">
     <table class="table table-bordered table-nonfluid">

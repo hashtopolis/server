@@ -20,7 +20,7 @@
         <td><a href="agents.php?id=[[set.getVal('agent').getId()]]">[[set.getVal('agent').getId()]]</a></td>
         <td>
           <form id="active[[set.getVal('agent').getId()]]" action="agents.php" method="post">
-            <input type='hidden' name='action' value='agentactive'>
+            <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
             <input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
             <input type="checkbox" {{IF [[set.getVal('agent').getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('agent').getId()]]').submit();">
           </form>
@@ -64,7 +64,7 @@
         </td>
         <td>
           <form id="assign[[set.getVal('agent').getId()]]" action="agents.php" method="post">
-            <input type='hidden' name='action' value='agentassign'>
+            <input type='hidden' name='action' value='[[$DAgentAction::ASSIGN_AGENT]]'>
             <input type='hidden' name='agentId' value='[[set.getVal('agent').getId()]]'>
             <select class="form-control" name='task' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
               <option value="">(unassigned)</option>
@@ -77,7 +77,7 @@
         {{IF [[login.getLevel()]] >= 30}}
           <td>
             <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('agent').getId()]]?')) return false;">
-              <input type='hidden' name='action' value='agentdelete'>
+              <input type='hidden' name='action' value='[[$DAgentAction::DELETE_AGENT]]'>
               <input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
               <input type="submit" class='btn btn-danger' value="Delete">
             </form>

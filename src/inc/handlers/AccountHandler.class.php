@@ -22,31 +22,31 @@ class AccountHandler implements Handler {
     global $LOGIN, $OBJECTS;
     
     switch ($action) {
-      case 'setemail':
+      case DAccountAction::SET_EMAIL:
         $this->setEmail();
         break;
-      case 'ykdisable':
+      case DAccountAction::YUBIKEY_DISABLE:
         $this->setOTP(-1);
         break;
-      case 'ykenable':
+      case DAccountAction::YUBIKEY_ENABLE:
         $this->setOTP(0);
         break;
-      case 'setotp1':
+      case DAccountAction::SET_OTP1:
         $this->setOTP(1);
         break;
-      case 'setotp2':
+      case DAccountAction::SET_OTP2:
         $this->setOTP(2);
         break;
-      case 'setotp3':
+      case DAccountAction::SET_OTP3:
         $this->setOTP(3);
         break;
-      case 'setotp4':
+      case DAccountAction::SET_OTP4:
         $this->setOTP(4);
         break;
-      case 'updatelifetime':
+      case DAccountAction::UPDATE_LIFETIME:
         $this->updateLifetime();
         break;
-      case 'changepass':
+      case DAccountAction::CHANGE_PASSWORD:
         $this->changePassword();
         break;
       default:
@@ -142,7 +142,7 @@ class AccountHandler implements Handler {
   private function setOTP($num) {
     global $FACTORIES;
     
-    if ($_POST['action'] == 'ykenable') {
+    if ($_POST['action'] == DAccountAction::YUBIKEY_ENABLE) {
       $isValid = false;
       
       if (strlen($this->user->getOtp1()) == 12) {
