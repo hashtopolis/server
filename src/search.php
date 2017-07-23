@@ -17,6 +17,8 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
 $TEMPLATE = new Template("search");
 $MENU->setActive("lists_search");
 
+$OBJECTS['result'] = false;
+
 //catch actions here...
 if (isset($_POST['action'])) {
   $searchHandler = new SearchHandler();
