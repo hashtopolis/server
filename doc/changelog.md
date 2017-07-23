@@ -1,3 +1,9 @@
+# v0.4.0 -> v0.x.x
+
+## Technical
+
+- Improved code handling, constants can be used in templates.
+
 # v0.3.2 -> v0.x.x
 
 ## New Features
