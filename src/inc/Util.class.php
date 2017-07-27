@@ -1184,10 +1184,14 @@ class Util {
   }
   
   public static function checkCSRF($csrf) {
-    if(!isset($_SESSION['csrf']) || $csrf != $_SESSION['csrf']){
+    global $OBJECTS;
+    
+    if (!isset($_SESSION['csrf']) || $csrf != $_SESSION['csrf']) {
       unset($_SESSION['csrf']);
       UI::printError("ERROR", "Invalid form submission!");
     }
     unset($_SESSION['csrf']);
+    $_SESSION['csrf'] = Util::randomString(30);
+    $OBJECTS['csrf'] = $_SESSION['csrf'];
   }
 }
