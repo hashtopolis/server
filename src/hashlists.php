@@ -62,6 +62,7 @@ else if (isset($_GET['id'])) {
   $OBJECTS['list'] = $list;
   
   //check if the list is a superhashlist
+  $OBJECTS['sublists'] = array();
   if ($list->getVal('hashlist')->getFormat() == 3) {
     $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), SuperHashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
     $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
