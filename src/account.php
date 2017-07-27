@@ -14,7 +14,7 @@ $TEMPLATE = new Template("account");
 $MENU->setActive("account_settings");
 
 //catch actions here...
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   $accountHandler = new AccountHandler($LOGIN->getUserID());
   $accountHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

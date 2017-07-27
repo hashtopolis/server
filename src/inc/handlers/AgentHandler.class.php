@@ -83,9 +83,15 @@ class AgentHandler implements Handler {
         $this->assign();
         break;
       case DAgentAction::CREATE_VOUCHER:
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
         $this->createVoucher();
         break;
       case DAgentAction::DELETE_VOUCHER:
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
         $this->deleteVoucher();
         break;
       case DAgentAction::DOWNLOAD_AGENT:

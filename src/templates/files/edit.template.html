@@ -5,6 +5,7 @@
 <form action="files.php?view=[[view]]" method="post">
   <input type="hidden" name="action" value="[[$DFileAction::EDIT_FILE]]">
   <input type="hidden" name="fileId" value="[[file.getId()]]">
+  <input type="hidden" name="csrf" value="[[csrf]]">
   <div class="panel panel-default">
     <table class="table table-bordered table-nonfluid">
       <tr>

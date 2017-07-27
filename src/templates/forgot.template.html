@@ -3,11 +3,12 @@
 <h2>Forgot password</h2>
 [[message]]
 <div class='alert alert-neutral'>
-    <div class='col-md-3'></div>
-    <div class='col-md-6'>
-    	<br>
-    	<form action='forgot.php' method='post' class="form-horizontal">
-    		<input type='hidden' name='action' value='resetpassword'>
+	<div class='col-md-3'></div>
+	<div class='col-md-6'>
+		<br>
+		<form action='forgot.php' method='post' class="form-horizontal">
+			<input type='hidden' name='action' value='resetpassword'>
+			<input type="hidden" name="csrf" value="[[csrf]]">
 			<div class="form-group">
 				<label for="inputUsername" class="col-sm-2 control-label">Username</label>
 				<div class="col-sm-10">
@@ -21,12 +22,12 @@
 				</div>
 			</div>
 			<div class="form-group">
-			  	<div class="col-sm-offset-2 col-sm-10">
-			    	<button type="submit" class="btn btn-success">Send new password</button>
-			  	</div>
+				<div class="col-sm-offset-2 col-sm-10">
+					<button type="submit" class="btn btn-success">Send new password</button>
+				</div>
 			</div>
 		</form>
-    </div>
-    <div class='col-md-3'></div>
+	</div>
+	<div class='col-md-3'></div>
 </div>
 {%TEMPLATE->struct/foot%}

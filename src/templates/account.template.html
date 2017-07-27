@@ -20,32 +20,35 @@
 			<th>Email address</th>
 			<td>
 				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='[[$DAccountAction::SET_EMAIL]]'>
-       				<input type='email' name='email' class='form-control' value='[[user.getEmail()]]'>
-       				<input type="submit" class='btn btn-default' value="Update">
-       			</form>
+					<input type='hidden' name='action' value='[[$DAccountAction::SET_EMAIL]]'>
+					<input type='email' name='email' class='form-control' value='[[user.getEmail()]]'>
+					<input type="hidden" name="csrf" value="[[csrf]]">
+					<input type="submit" class='btn btn-default' value="Update">
+				</form>
 			</td>	
 		</tr>
 		<tr>
 			<th>Set session length</th>
 			<td>
 				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='[[$DAccountAction::UPDATE_LIFETIME]]'>
-       				<input type='text' name='lifetime' class='form-control' value='[[user.getSessionLifetime()]]'> seconds
-       				<input type="submit" class='btn btn-default' value="Update">
-       			</form>
+					<input type='hidden' name='action' value='[[$DAccountAction::UPDATE_LIFETIME]]'>
+					<input type='text' name='lifetime' class='form-control' value='[[user.getSessionLifetime()]]'> seconds
+					<input type="hidden" name="csrf" value="[[csrf]]">
+					<input type="submit" class='btn btn-default' value="Update">
+				</form>
 			</td>	
 		</tr>
 		<tr>
 			<th>Password</th>
 			<td>
 				<form class='form-inline' action="account.php" method="post">
-       				<input type='hidden' name='action' value='[[$DAccountAction::CHANGE_PASSWORD]]'>
-       				<input type='password' name='oldpass' class='form-control' placeholder='Old password here...'>
-       				<input type='password' name='newpass' class='form-control' placeholder='New password here...'>
-       				<input type='password' name='reppass' class='form-control' placeholder='Repeat password...'>
-       				<input type="submit" class='btn btn-default' value="Change Password">
-       			</form>
+					<input type='hidden' name='action' value='[[$DAccountAction::CHANGE_PASSWORD]]'>
+					<input type='password' name='oldpass' class='form-control' placeholder='Old password here...'>
+					<input type='password' name='newpass' class='form-control' placeholder='New password here...'>
+					<input type='password' name='reppass' class='form-control' placeholder='Repeat password...'>
+					<input type="hidden" name="csrf" value="[[csrf]]">
+					<input type="submit" class='btn btn-default' value="Change Password">
+				</form>
 			</td>
 		</tr>
 	</table>
@@ -75,12 +78,14 @@
 							<form class='form-inline' action="account.php" method="post">
 								Yubikey OTP currently enabled
 								<input type='hidden' name='action' value='[[$DAccountAction::YUBKEY_DISABLE]]'>
+								<input type="hidden" name="csrf" value="[[csrf]]">
 								<input type="submit" class='btn btn-warning' value="Disable">
 							</form>
 						{{ELSE}}
 							<form class='form-inline' action="account.php" method="post">
 								Yubikey OTP is currently disabled
 								<input type='hidden' name='action' value='[[$DAccountAction::YUBKEY_ENABLE]]'>
+								<input type="hidden" name="csrf" value="[[csrf]]">
 								<input type="submit" class='btn btn-success' value="Enable">
 							</form>
 						{{ENDIF}}
@@ -92,6 +97,7 @@
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP1]]'>
 						<input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]'>
+						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
 				</td>
@@ -102,6 +108,7 @@
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP2]]'>
 						<input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]'>
+						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
 				</td>
@@ -112,6 +119,7 @@
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP3]]'>
 						<input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]'>
+						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
 				</td>
@@ -122,6 +130,7 @@
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP4]]'>
 						<input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]'>
+						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
 				</td>

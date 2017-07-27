@@ -6,6 +6,7 @@
 	{{IF [[login.getLevel()]] >= 30}}
 		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
 			<input type='hidden' name='action' value='[[$DTaskAction::DELETE_FINISHED]]'>
+			<input type="hidden" name="csrf" value="[[csrf]]">
 			<input type="submit" value="Delete finished" class='btn btn-default'>
 		</form>
 	{{ENDIF}}
@@ -122,6 +123,7 @@
 	        			<form class="form-inline" action="tasks.php" method="POST">
 	        				<input type='hidden' name='action' value='[[$DTaskAction::SET_PRIORITY]]'>
 	        				<input type="hidden" name="task" value="[[task.getVal('Task')->getId()]]">
+									<input type="hidden" name="csrf" value="[[csrf]]">
 	        				<input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getVal('Task')->getPriority()]]">
 	        				<input type="submit" class='btn btn-default' value="Set">
 	        			</form>
@@ -151,6 +153,7 @@
 	        			<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task')->getId()]]?')) return false;">
 	        				<input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
 	        				<input type="hidden" name="task" value="[[task.getVal('Task')->getId()]]">
+									<input type="hidden" name="csrf" value="[[csrf]]">
 	        				<input type="submit" class='btn btn-danger' value="X">
 	        			</form>
 	        		{{ENDIF}}
@@ -169,18 +172,18 @@
 							<div id="task[[task.getVal('Task').getId()]]" class="accordian-body collapse" style="margin: 10px;" aria-expanded="false">
                 <div class="panel panel-default" style="margin-bottom: 0;">
                   <table class="table table-bordered table-nonfluid table-subtask-border">
-					  <tr>
-						  <th>ID</th>
-						  <th>Name</th>
-						  <th>Chunks</th>
-						  <th>Dispatched</th>
-						  <th>Searched</th>
-						  <th>Cracked</th>
-						  <th>Agents</th>
-						  <th>Files</th>
-						  <th>Subtask Priority</th>
-						  <th>Action</th>
-					  </tr>
+										<tr>
+											<th>ID</th>
+											<th>Name</th>
+											<th>Chunks</th>
+											<th>Dispatched</th>
+											<th>Searched</th>
+											<th>Cracked</th>
+											<th>Agents</th>
+											<th>Files</th>
+											<th>Subtask Priority</th>
+											<th>Action</th>
+										</tr>
                     {{FOREACH subTask;[[subTasks.getVal([[task.getVal('Task').getId()]])]]}}
                       <tr>
                         <td{{IF [[strlen([[subTask.getVal('Task')->getColor()]])]] > 0}} style="background-color: #[[subTask.getVal('Task')->getColor()]]"{{ENDIF}}>
@@ -247,6 +250,7 @@
                             <form class="form-inline" action="tasks.php" method="POST">
                               <input type='hidden' name='action' value='[[$DTaskAction::SET_PRIORITY]]'>
                               <input type="hidden" name="task" value="[[subTask.getVal('Task')->getId()]]">
+															<input type="hidden" name="csrf" value="[[csrf]]">
                               <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[subTask.getVal('Task')->getPriority()]]">
                               <input type="submit" class='btn btn-default' value="Set">
                             </form>
@@ -261,6 +265,7 @@
                             </form>
                             <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[subTask.getVal('Task')->getId()]]?')) return false;">
                               <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
+															<input type="hidden" name="csrf" value="[[csrf]]">
                               <input type="hidden" name="task" value="[[subTask.getVal('Task')->getId()]]">
                               <input type="submit" class='btn btn-danger' value="X">
                             </form>

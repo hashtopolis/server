@@ -19,7 +19,7 @@ $MENU->setActive("config_hashtypes");
 $message = "";
 
 //catch actions here...
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   $hashtypeHandler = new HashtypeHandler();
   $hashtypeHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

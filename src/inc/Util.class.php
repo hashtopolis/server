@@ -1182,4 +1182,17 @@ class Util {
   public static function getMessage($type, $msg) {
     return "<div class='alert alert-$type'>$msg</div>";
   }
+  
+  public static function checkCSRF($csrf) {
+    global $OBJECTS;
+    
+    if (!isset($_SESSION['csrf']) || $csrf != $_SESSION['csrf']) {
+      unset($_SESSION['csrf']);
+      UI::addMessage(UI::ERROR, "Invalid form submission!");
+      return false;
+    }
+    $_SESSION['csrf'] = Util::randomString(30);
+    $OBJECTS['csrf'] = $_SESSION['csrf'];
+    return true;
+  }
 }
