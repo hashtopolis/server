@@ -27,6 +27,7 @@
       <td colspan="7">
         <form action="notifications.php" method="post" class="form-inline">
           <input type="hidden" name="action" value="[[$DNotificationAction::CREATE_NOTIFICATION]]">
+          <input type="hidden" name="csrf" value="[[csrf]]">
           Trigger Action:
           <select id="actionType" name="actionType" class="form-control" onchange="updateLists()">
             {{FOREACH action;[[allowedActions]]}}
@@ -91,6 +92,7 @@
           <form id="active[[notification.getId()]]" action="notifications.php" method="post">
             <input type='hidden' name='action' value='[[$DNotificationAction::SET_ACTIVE]]'>
             <input type="hidden" name="notification" value="[[notification.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="checkbox" {{IF [[notification.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[notification.getId()]]').submit();">
           </form>
         </td>
@@ -102,6 +104,7 @@
           <form action="notifications.php" method="POST" onSubmit="if (!confirm('Really delete notification [[notification.getId()]]?')) return false;">
             <input type='hidden' name='action' value='[[$DNotificationAction::DELETE_NOTIFICATION]]'>
             <input type="hidden" name="notification" value="[[notification.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="submit" class='btn btn-danger' value="Delete">
           </form>
         </td>

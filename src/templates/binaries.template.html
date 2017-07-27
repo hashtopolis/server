@@ -36,6 +36,7 @@
   <form action="" method="post">
     <input type="hidden" name="action" value="[[$DAgentBinaryAction::EDIT_BINARY]]">
     <input type="hidden" name="id" value="[[bin.getId()]]">
+    <input type="hidden" name="csrf" value="[[csrf]]">
     <div class="panel panel-default">
       <table class="table table-bordered table-nonfluid">
         <tr>
@@ -94,6 +95,7 @@
           <form action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
             <input type='hidden' name='action' value='[[$DAgentBinaryAction::DELETE_BINARY]]'>
             <input type="hidden" name="id" value="[[binary.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="submit" class='btn btn-danger' value="Delete">
           </form>
         </td>

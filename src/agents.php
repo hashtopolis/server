@@ -33,7 +33,7 @@ $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
 
 //catch actions here...
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   $binaryId = @$_POST['binary'];
   $agentHandler = new AgentHandler($_POST['agentId']);
   $agentHandler->handle($_POST['action']);

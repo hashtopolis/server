@@ -4,6 +4,7 @@
 {%TEMPLATE->struct/messages%}
 <form action="config.php" method="POST">
 	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
+	<input type="hidden" name="csrf" value="[[csrf]]">
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>
@@ -39,6 +40,7 @@
 			<td>
 				<form action='config.php' method='post'>
 					<input type='hidden' name='action' value='[[$DConfigAction::REBUILD_CACHE]]'>
+					<input type="hidden" name="csrf" value="[[csrf]]">
 					<input type='submit' class='btn btn-default' value='Rebuild chunk cache'>
 				</form>
 			</td>
@@ -48,6 +50,7 @@
 			<td>
 				<form action='config.php' method='post'>
 					<input type='hidden' name='action' value='[[$DConfigAction::RESCAN_FILES]]'>
+					<input type="hidden" name="csrf" value="[[csrf]]">
 					<input type='submit' class='btn btn-default' value='Rescan global files'>
 				</form>
 			</td>
@@ -57,6 +60,7 @@
 			<td>
 				<form action='config.php' method='post' onSubmit='if(prompt("Do you really want to delete everything? Enter OK to confirm.") !== "OK")return false'>
 					<input type='hidden' name='action' value='[[$DConfigAction::CLEAR_ALL]]'>
+					<input type="hidden" name="csrf" value="[[csrf]]">
 					<input type='submit' class='btn btn-danger' value='Clear all'>
 				</form>
 			</td>

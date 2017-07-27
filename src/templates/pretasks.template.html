@@ -33,6 +33,7 @@
           <form class='form-inline' action="tasks.php?pre=true" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_PRIORITY]]">
             <input type="hidden" name="task" value="[[task.getVal('Task').getId()]]">
+						<input type="hidden" name="csrf" value="[[csrf]]">
             <input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('Task').getPriority()]]">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
@@ -46,6 +47,7 @@
 							<input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
 							<input type='hidden' name='refer' value='pretask'>
 							<input type="hidden" name="task" value="[[task.getVal('Task').getId()]]">
+							<input type="hidden" name="csrf" value="[[csrf]]">
 							<input type="submit" class='btn btn-danger' value="Delete">
 						</form>
 					{{ENDIF}}

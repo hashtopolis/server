@@ -42,6 +42,7 @@
 							<form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
+								<input type="hidden" name="csrf" value="[[csrf]]">
 								<input type='hidden' name="secret" value="{{IF [[file.getSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
 								<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getSecret()]] == '1'}} checked{{ENDIF}}>
 							</form>
@@ -59,6 +60,7 @@
 							</form>
 							<form style ='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
 								<input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
+								<input type="hidden" name="csrf" value="[[csrf]]">
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="submit" class='btn btn-danger' value="Delete">
 							</form>
@@ -73,6 +75,7 @@
 	<h3>Add new [[fileType]]</h3>
 	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="source" value="upload">
+		<input type="hidden" name="csrf" value="[[csrf]]">
 		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
 		<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid" id='upfiles'>
@@ -91,9 +94,10 @@
 		</div>
 	</form>
 	<form id="impfiles" action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-    	<input type="hidden" name="source" value="import">
-    	<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-      	<div class="panel panel-default">
+		<input type="hidden" name="source" value="import">
+		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
+		<input type="hidden" name="csrf" value="[[csrf]]">
+			<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid" id='imfiles'>
 				<tr>
 					<th>Import files</th>
@@ -123,8 +127,9 @@
 	</form>
 	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
 		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-      	<input type="hidden" name="source" value="url">
-      	<div class="panel panel-default">
+			<input type="hidden" name="source" value="url">
+		<input type="hidden" name="csrf" value="[[csrf]]">
+			<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid" id='upfiles'>
 				<tr>
 					<td colspan='2'>Download URL</td>

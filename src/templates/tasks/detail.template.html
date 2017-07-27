@@ -22,6 +22,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::RENAME_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="submit" class='btn btn-default' value="Change">
           </form>
         {{ELSE}}
@@ -42,6 +43,7 @@
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_TIME]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getChunkTime()]]">
             seconds
             <input type="submit" class='btn btn-default' value="Set">
@@ -57,6 +59,7 @@
         <form class='form-inline' id="taskcolor" action="tasks.php?id=[[task.getId()]]" method="POST">
           <input type="hidden" name="action" value="[[$DTaskAction::SET_COLOR]]">
           <input type="hidden" name="task" value="[[task.getId()]]">
+          <input type="hidden" name="csrf" value="[[csrf]]">
           #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]">
           {{IF [[login.getLevel()]] >= 20}}
             <input type="submit" class='btn btn-default' value="Set">
@@ -85,6 +88,7 @@
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_PRIORITY]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="text" class='form-control' name="priority" size="4" value="[[task.getPriority()]]">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
@@ -100,6 +104,7 @@
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_CPU_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <select name="isCpu" class="form-control">
               <option value="0"{{IF [[task.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
               <option value="1"{{IF [[task.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
@@ -122,6 +127,7 @@
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAtion::SET_SMALL_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <select name="isSmall" class="form-control">
               <option value="0"{{IF [[task.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
               <option value="1"{{IF [[task.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
@@ -162,6 +168,7 @@
             <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::PURGE_TASK]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="submit" class='btn btn-danger' value="Purge">
             </form>
           {{ENDIF}}
@@ -306,6 +313,7 @@
             <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::SET_BENCHMARK]]">
               <input type="hidden" name="agent" value="[[agent.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8">
               <input type="submit" class='btn btn-default' value="Set">
             </form>
@@ -348,6 +356,7 @@
             <form style='float: left; padding-right: 5px;' action="agents.php?task=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
               <input type="hidden" name="agent" value="[[agent.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="hidden" name="task" value="">
               <input type="submit" class='btn btn-default' value="Unassign">
             </form>
@@ -363,6 +372,7 @@
             <div class="col-md-8">
               <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
               <select class='form-control' name="agent">
                 {{FOREACH agent;[[assignAgents]]}}
                   <option value='[[agent.getId()]]'>[[agent.getId()]]
@@ -519,6 +529,7 @@
             <form action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really reset chunk [[chunk.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::RESET_CHUNK]]">
               <input type="hidden" name="chunk" value="[[chunk.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="submit" class='btn btn-default' value="Reset">
             </form>
           {{ENDIF}}
@@ -526,6 +537,7 @@
             <form action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really abort cracking chunk [[chunk.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::ABORT_CHUNK]]">
               <input type="hidden" name="chunk" value="[[chunk.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="submit" class='btn btn-danger' value="Abort">
             </form>
           {{ENDIF}}
