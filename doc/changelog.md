@@ -1,5 +1,9 @@
 # v0.4.0 -> v0.x.x
 
+## Bugfixes
+
+- Various vulnerabilities fixed, see [issue #241](https://github.com/s3inlc/hashtopussy/issues/241)
+
 ## Technical
 
 - Improved code handling, constants can be used in templates.
