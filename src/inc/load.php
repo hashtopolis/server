@@ -95,6 +95,7 @@ if ($INSTALL) {
 // CSRF setup
 if (!isset($_SESSION['csrf'])) {
   $_SESSION['csrf'] = Util::randomString(30);
+  $OBJECTS['csrf'] = $_SESSION['csrf'];
 }
 
 
