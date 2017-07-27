@@ -10,7 +10,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
-  $TEMPLATE = new Template("restricted");
+  $TEMPLATE = new Template("errors/restricted");
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -19,6 +19,7 @@ $MENU->setActive("users_list");
 
 //catch actions here...
 if (isset($_POST['action'])) {
+  Util::checkCSRF($_POST['csrf']);
   $usersHandler = new UsersHandler();
   $usersHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

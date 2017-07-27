@@ -1182,4 +1182,12 @@ class Util {
   public static function getMessage($type, $msg) {
     return "<div class='alert alert-$type'>$msg</div>";
   }
+  
+  public static function checkCSRF($csrf) {
+    if(!isset($_SESSION['csrf']) || $csrf != $_SESSION['csrf']){
+      unset($_SESSION['csrf']);
+      UI::printError("ERROR", "Invalid form submission!");
+    }
+    unset($_SESSION['csrf']);
+  }
 }
