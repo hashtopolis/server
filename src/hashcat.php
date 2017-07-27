@@ -39,7 +39,7 @@ if (isset($_GET['new'])) {
   if (sizeof($releases) > 0) {
     $rootDir = $releases[0]->getRootdir();
   }
-  $OBJECTS['rootDir'] = $rootDir;
+  $OBJECTS['rootDir'] = htmlentities($rootDir, false, "UTF-8");
 }
 else {
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC");
