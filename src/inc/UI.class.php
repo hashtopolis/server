@@ -2,7 +2,8 @@
 
 class UI {
   public static function printError($level, $message) {
-    $OBJECTS = array();
+    global $OBJECTS;
+    
     $TEMPLATE = new Template("errors/error");
     $OBJECTS['message'] = $message;
     $OBJECTS['level'] = $level;

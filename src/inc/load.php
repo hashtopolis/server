@@ -5,6 +5,8 @@ use DBA\Factory;
 //set to 1 for debugging
 ini_set("display_errors", "0");
 
+session_start();
+
 $OBJECTS = array();
 
 $VERSION = "0.4.0";
@@ -89,5 +91,13 @@ if ($INSTALL) {
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
 }
+
+// CSRF setup
+if (!isset($_SESSION['csrf'])) {
+  $_SESSION['csrf'] = Util::randomString(30);
+}
+$OBJECTS['csrf'] = $_SESSION['csrf'];
+
+
 
 

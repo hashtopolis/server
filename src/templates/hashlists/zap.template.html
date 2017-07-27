@@ -2,6 +2,7 @@
 <form action="hashlists.php{{IF [[list.getVal('hashlist').getId()]] != ""}}?id=[[list.getVal('hashlist').getId()]]{{ENDIF}}" method="POST" enctype="multipart/form-data">
 	<input type='hidden' name='action' value='[[$DHashlistAction::PROCESS_ZAP]]'>
 	<input type="hidden" name="hashlist" value="[[list.getVal('hashlist').getId()]]">
+	<input type="hidden" name="csrf" value="[[csrf]]">
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>

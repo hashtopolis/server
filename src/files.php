@@ -23,7 +23,7 @@ $MENU->setActive("files");
 $message = "";
 
 //catch actions here...
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   $fileHandler = new FileHandler();
   $fileHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

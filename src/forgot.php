@@ -13,7 +13,7 @@ $message = "";
 
 // TODO: add forgot handler
 
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   switch ($_POST['action']) {
     case 'resetpassword':
       $username = htmlentities(@$_POST['username'], false, "UTF-8");

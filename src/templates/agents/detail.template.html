@@ -19,6 +19,7 @@
           <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::SET_OWNER]]'>
             <input type='hidden' name='agentId' value='[[agent.getId()]]'>
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <select class='form-control' name='owner'>
               <option value="">---</option>
               {{FOREACH user;[[users]]}}
@@ -37,6 +38,7 @@
           <form id="active[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getId()]]').submit();">
           </form>
         {{ELSE}}
@@ -52,6 +54,7 @@
           <form class='form-inline' id="name[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::RENAME_AGENT]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="text" name='name' value="[[agent.getAgentName()]]" class='form-control'>&nbsp;&nbsp;
             <input type='submit' class='btn btn-default' value='Change'>
           </form>
@@ -80,6 +83,7 @@
           <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::SET_CPU]]'>
             <input type='hidden' name='agentId' value='[[agent.getId()]]'>
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <select class='form-control' name='cpuOnly'>
               <option value="0"{{IF [[agent.getCpuOnly()]] == 0}}selected{{ENDIF}}>No</option>
               <option value="1"{{IF [[agent.getCpuOnly()]] == 1}}selected{{ENDIF}}>Yes</option>
@@ -105,6 +109,7 @@
           <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="POST">
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="hidden" name="action" value="[[$DAgentAction::SET_PARAMETERS]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
@@ -120,6 +125,7 @@
           <form id="agentignore" action="agents.php?id=[[agent.getId()]]" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::SET_IGNORE]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="checkbox" name='ignore' value='1'{{IF [[agent.getIgnoreErrors()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
             Ignore <br><i>(Be careful, this might lead to endless loops!)</i>
           </form>
@@ -135,6 +141,7 @@
           <form id="agenttrusted" action="agents.php?id=[[agent.getId()]]" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::SET_TRUSTED]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
+            <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="checkbox" name='trusted' value='1'{{IF [[agent.getIsTrusted()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agenttrusted').submit();">
             Trust agent with secret data
           </form>
@@ -150,6 +157,7 @@
         <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
           <input type='hidden' name='action' value='[[$DAgentAction::ASSIGN_AGENT]]'>
           <input type='hidden' name='agent' value='[[agent.getId()]]'>
+          <input type="hidden" name="csrf" value="[[csrf]]">
           <select class='form-control' name='task'>
             <option value="">(unassigned)</option>
             {{FOREACH task;[[allTasks]]}}
@@ -165,7 +173,7 @@
       <td>
         Action: [[agent.getLastAct()]]<br>
         Time: [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
-        IP: [[agent.getLastIp()]]
+        IP: <code>[[agent.getLastIp()]]</code>
       </td>
     </tr>
     <tr>
@@ -180,6 +188,7 @@
     <form action="agents.php?id=[[agent.getId()]]" method='post' class='form-inline'>
       <input type='hidden' name='action' value='[[$DAgentAction::CLEAR_ERRORS]]'>
       <input type='hidden' name='agent' value="[[agent.getId()]]">
+      <input type="hidden" name="csrf" value="[[csrf]]">
       <input type='submit' class='btn btn-danger' value='Delete All'>
     </form>
   {{ENDIF}}

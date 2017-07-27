@@ -27,7 +27,7 @@ $LOGIN->login($username, $password, $otp);
 
 if ($LOGIN->isLoggedin()) {
   if (strlen($fw) > 0) {
-    header("Location: " . urldecode($fw));
+    header("Location: " . Util::buildServerUrl() . "/" . urldecode($fw));
     die();
   }
   header("Location: index.php");

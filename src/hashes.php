@@ -141,12 +141,12 @@ $displaying = "";
 if (isset($_GET['display'])) {
   $displaying = $_GET["display"];
 }
-$OBJECTS['displaying'] = $displaying;
+$OBJECTS['displaying'] = htmlentities($displaying, false, "UTF-8");
 $filter = "";
 if (isset($_GET['filter'])) {
   $filter = $_GET['filter'];
 }
-$OBJECTS['filtering'] = $filter;
+$OBJECTS['filtering'] = htmlentities($filter, false, "UTF-8");
 
 $displays = array("hash" => "Hashes only", "" => "Hashes + plaintexts", "plain" => "Plaintexts only");
 $filters = array("cracked" => "Cracked", "uncracked" => "Uncracked", "" => "All");

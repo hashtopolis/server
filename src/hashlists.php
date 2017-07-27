@@ -28,7 +28,7 @@ $MENU->setActive("lists_norm");
 $OBJECTS['zap'] = false;
 
 //catch actions here...
-if (isset($_POST['action'])) {
+if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   $hashlistHandler = new HashlistHandler();
   $hashlistHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0 && !$OBJECTS['zap']) {

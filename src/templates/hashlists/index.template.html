@@ -41,11 +41,13 @@
 					<form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
 						<input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
 						<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
+						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Import">
 					</form>
 					<form style ='float: left;' action="hashlists.php" method="POST">
 						<input type="hidden" name="action" value="[[$DHashlistAction::EXPORT_HASHLIST]]">
 						<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
+						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Export">
 					</form>
 				</td>
@@ -54,6 +56,7 @@
 						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[entry.getVal('hashlist').getId()]]?')) return false;">
 							<input type="hidden" name="action" value="[[$DHashlistAction::DELETE_HASHLIST]]">
 							<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
+							<input type="hidden" name="csrf" value="[[csrf]]">
 							<input type="submit" class='btn btn-danger' value="Delete">
 						</form>
 					{{ENDIF}}
