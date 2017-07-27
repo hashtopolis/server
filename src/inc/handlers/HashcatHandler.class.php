@@ -10,11 +10,20 @@ class HashcatHandler implements Handler {
   }
   
   public function handle($action) {
+    /** @var $LOGIN Login */
+    global $LOGIN;
+    
     switch ($action) {
       case DHashcatAction::DELETE_RELEASE:
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
         $this->delete();
         break;
       case DHashcatAction::CREATE_RELEASE:
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
         $this->newHashcat();
         break;
       default:
