@@ -1189,10 +1189,10 @@ class Util {
     if (!isset($_SESSION['csrf']) || $csrf != $_SESSION['csrf']) {
       unset($_SESSION['csrf']);
       UI::addMessage(UI::ERROR, "Invalid form submission!");
-      return;
+      return false;
     }
-    unset($_SESSION['csrf']);
     $_SESSION['csrf'] = Util::randomString(30);
     $OBJECTS['csrf'] = $_SESSION['csrf'];
+    return true;
   }
 }
