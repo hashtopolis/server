@@ -19,9 +19,9 @@
 						[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[release.getTime()]])]]
 					{{ENDIF}}
 				</td>
-				<td>[[htmlentities([[[[release.getUrl()]], false, "UTF-8")]]</td>
+				<td>[[htmlentities([[release.getUrl()]], false, "UTF-8")]]</td>
 				<td>
-					[[htmlentities([[[[release.getRootdir()]], false, "UTF-8")]]<br>
+					[[htmlentities([[release.getRootdir()]], false, "UTF-8")]]<br>
 				</td>
 				<td>
 					{{IF [[login.getLevel()]] >= 30}}
