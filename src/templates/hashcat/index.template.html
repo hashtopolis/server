@@ -13,15 +13,15 @@
 		</tr>
 		{{FOREACH release;[[releases]]}}
 			<tr>
-				<td>[[release.getVersion()]]</td>
+				<td>[[htmlentities([[release.getVersion()]], false, "UTF-8")]]</td>
 				<td>
 					{{IF [[release.getTime()]] > 0}}
 						[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[release.getTime()]])]]
 					{{ENDIF}}
 				</td>
-				<td>[[release.getUrl()]]</td>
+				<td>[[htmlentities([[[[release.getUrl()]], false, "UTF-8")]]</td>
 				<td>
-					[[release.getRootdir()]]<br>
+					[[htmlentities([[[[release.getRootdir()]], false, "UTF-8")]]<br>
 				</td>
 				<td>
 					{{IF [[login.getLevel()]] >= 30}}
