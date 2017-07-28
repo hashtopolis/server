@@ -1186,7 +1186,7 @@ class Util {
   public static function checkCSRF($csrf) {
     global $OBJECTS;
     
-    if (!isset($_SESSION['csrf']) || $csrf != $_SESSION['csrf']) {
+    if (!isset($_SESSION['csrf']) || $csrf !== $_SESSION['csrf']) {
       unset($_SESSION['csrf']);
       UI::addMessage(UI::ERROR, "Invalid form submission!");
       return false;
