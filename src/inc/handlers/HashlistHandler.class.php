@@ -904,6 +904,9 @@ class HashlistHandler implements Handler {
       }
       foreach ($_POST['task'] as $pretask) {
         $task = $FACTORIES::getTaskFactory()->get($pretask);
+        if ($task->getTaskType() == null) {
+          $task->setTaskType(DTaskTypes::NORMAL);
+        }
         if ($task != null) {
           if ($this->hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
             $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
