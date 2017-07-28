@@ -1,3 +1,20 @@
+# v0.4.1 -> v0.x.x
+
+## New Features
+
+- Supertask imports can now be set to be small tasks for every subtask
+
+## Bugfixes
+
+- Fixed broken agent download
+
+## Technical
+
+- Typos in constants fixed
+- Tasks can also be deleted from the detailed view
+- Fixed update to 0.4.0 when adding taskType column
+- Supertasks are getting default priority from the subtasks
+
 # v0.4.0 -> v0.4.1
 
 ## Bugfixes
