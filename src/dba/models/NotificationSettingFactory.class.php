@@ -33,7 +33,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
    * @return NotificationSetting
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new NotificationSetting($pk, $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
+    $o = new NotificationSetting($dict['notificationSettingId'], $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
     return $o;
   }
 

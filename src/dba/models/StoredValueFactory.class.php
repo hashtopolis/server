@@ -33,7 +33,7 @@ class StoredValueFactory extends AbstractModelFactory {
    * @return StoredValue
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new StoredValue($pk, $dict['val']);
+    $o = new StoredValue($dict['storedValueId'], $dict['val']);
     return $o;
   }
 

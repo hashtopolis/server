@@ -187,7 +187,7 @@ $currentPage = 0;
 $nextPage = -1;
 $previousPage = -1;
 if (isset($_GET['page']) && $_GET['page'] >= 0 && $_GET['page'] < $numPages) {
-  $currentPage = $_GET['page'];
+  $currentPage = intval($_GET['page']);
 }
 if ($currentPage > 0) {
   $previousPage = $currentPage - 1;

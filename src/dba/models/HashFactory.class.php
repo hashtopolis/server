@@ -33,7 +33,7 @@ class HashFactory extends AbstractModelFactory {
    * @return Hash
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Hash($pk, $dict['hashlistId'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['time'], $dict['chunkId'], $dict['isCracked']);
+    $o = new Hash($dict['hashId'], $dict['hashlistId'], $dict['hash'], $dict['salt'], $dict['plaintext'], $dict['time'], $dict['chunkId'], $dict['isCracked']);
     return $o;
   }
 

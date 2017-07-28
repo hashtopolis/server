@@ -33,7 +33,7 @@ class SupertaskTaskFactory extends AbstractModelFactory {
    * @return SupertaskTask
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new SupertaskTask($pk, $dict['taskId'], $dict['supertaskId']);
+    $o = new SupertaskTask($dict['supertaskTaskId'], $dict['taskId'], $dict['supertaskId']);
     return $o;
   }
 

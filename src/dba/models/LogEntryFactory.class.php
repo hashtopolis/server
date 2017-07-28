@@ -33,7 +33,7 @@ class LogEntryFactory extends AbstractModelFactory {
    * @return LogEntry
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new LogEntry($pk, $dict['issuer'], $dict['issuerId'], $dict['level'], $dict['message'], $dict['time']);
+    $o = new LogEntry($dict['logEntryId'], $dict['issuer'], $dict['issuerId'], $dict['level'], $dict['message'], $dict['time']);
     return $o;
   }
 

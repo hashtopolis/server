@@ -33,7 +33,7 @@ class SuperHashlistHashlistFactory extends AbstractModelFactory {
    * @return SuperHashlistHashlist
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new SuperHashlistHashlist($pk, $dict['superHashlistId'], $dict['hashlistId']);
+    $o = new SuperHashlistHashlist($dict['superHashlistHashlistId'], $dict['superHashlistId'], $dict['hashlistId']);
     return $o;
   }
 

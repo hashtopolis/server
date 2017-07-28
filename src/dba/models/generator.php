@@ -270,7 +270,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
   foreach ($COLUMNS as $col) {
     if (sizeof($dict) == 0) {
       $dict[] = "-1";
-      $dict2[] = "\$pk";
+      $dict2[] = "\$dict['$col']";
     }
     else {
       $dict[] = "null";

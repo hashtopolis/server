@@ -33,7 +33,7 @@ class AssignmentFactory extends AbstractModelFactory {
    * @return Assignment
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Assignment($pk, $dict['taskId'], $dict['agentId'], $dict['benchmark']);
+    $o = new Assignment($dict['assignmentId'], $dict['taskId'], $dict['agentId'], $dict['benchmark']);
     return $o;
   }
 

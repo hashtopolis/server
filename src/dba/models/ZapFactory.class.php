@@ -33,7 +33,7 @@ class ZapFactory extends AbstractModelFactory {
    * @return Zap
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Zap($pk, $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
+    $o = new Zap($dict['zapId'], $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
     return $o;
   }
 

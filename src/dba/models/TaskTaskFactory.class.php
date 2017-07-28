@@ -33,7 +33,7 @@ class TaskTaskFactory extends AbstractModelFactory {
    * @return TaskTask
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new TaskTask($pk, $dict['taskId'], $dict['subtaskId']);
+    $o = new TaskTask($dict['taskTaskId'], $dict['taskId'], $dict['subtaskId']);
     return $o;
   }
 

@@ -33,7 +33,7 @@ class FileFactory extends AbstractModelFactory {
    * @return File
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new File($pk, $dict['filename'], $dict['size'], $dict['secret'], $dict['fileType']);
+    $o = new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['secret'], $dict['fileType']);
     return $o;
   }
 

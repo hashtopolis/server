@@ -33,7 +33,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @return Hashlist
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Hashlist($pk, $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['secret'], $dict['hexSalt'], $dict['isSalted']);
+    $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['secret'], $dict['hexSalt'], $dict['isSalted']);
     return $o;
   }
 

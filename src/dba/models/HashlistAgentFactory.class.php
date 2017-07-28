@@ -33,7 +33,7 @@ class HashlistAgentFactory extends AbstractModelFactory {
    * @return HashlistAgent
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HashlistAgent($pk, $dict['hashlistId'], $dict['agentId']);
+    $o = new HashlistAgent($dict['hashlistAgentId'], $dict['hashlistId'], $dict['agentId']);
     return $o;
   }
 

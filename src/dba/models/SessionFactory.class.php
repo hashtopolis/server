@@ -33,7 +33,7 @@ class SessionFactory extends AbstractModelFactory {
    * @return Session
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Session($pk, $dict['userId'], $dict['sessionStartDate'], $dict['lastActionDate'], $dict['isOpen'], $dict['sessionLifetime'], $dict['sessionKey']);
+    $o = new Session($dict['sessionId'], $dict['userId'], $dict['sessionStartDate'], $dict['lastActionDate'], $dict['isOpen'], $dict['sessionLifetime'], $dict['sessionKey']);
     return $o;
   }
 
