@@ -29,7 +29,7 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new'])) {
+if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $TEMPLATE = new Template("hashcat/new");
   $MENU->setActive("hashcat_new");
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
