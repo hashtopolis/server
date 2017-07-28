@@ -1,7 +1,6 @@
 <?php
 
 use DBA\JoinFilter;
-use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Supertask;
 use DBA\SupertaskTask;
