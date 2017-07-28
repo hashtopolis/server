@@ -155,7 +155,7 @@ class TaskHandler implements Handler {
     global $FACTORIES, $CONFIG;
     
     // new task creator
-    $name = htmlentities($_POST["name"], false, "UTF-8");
+    $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $cmdline = $_POST["cmdline"];
     $chunk = intval($_POST["chunk"]);
     $status = intval($_POST["status"]);
@@ -382,7 +382,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
-    $name = htmlentities($_POST["name"], false, "UTF-8");
+    $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $task->setTaskName($name);
     $FACTORIES::getTaskFactory()->update($task);
   }

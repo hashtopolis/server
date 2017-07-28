@@ -21,7 +21,7 @@
             </td>
             <td>
               <input type="checkbox" name="task[]" value="[[task.getId()]]">
-              <a href="tasks.php?id=[[task.getId()]]" title="[[htmlentities([[task.getAttackCmd()]], false, "UTF-8")]]">[[task.getTaskName()]]</a>
+              <a href="tasks.php?id=[[task.getId()]]" title="[[htmlentities([[task.getAttackCmd()]], ENT_QUOTES, "UTF-8")]]">[[task.getTaskName()]]</a>
             </td>
           </tr>
         {{ENDFOREACH}}

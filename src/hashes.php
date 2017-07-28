@@ -141,12 +141,12 @@ $displaying = "";
 if (isset($_GET['display'])) {
   $displaying = $_GET["display"];
 }
-$OBJECTS['displaying'] = htmlentities($displaying, false, "UTF-8");
+$OBJECTS['displaying'] = htmlentities($displaying, ENT_QUOTES, "UTF-8");
 $filter = "";
 if (isset($_GET['filter'])) {
   $filter = $_GET['filter'];
 }
-$OBJECTS['filtering'] = htmlentities($filter, false, "UTF-8");
+$OBJECTS['filtering'] = htmlentities($filter, ENT_QUOTES, "UTF-8");
 
 $displays = array("hash" => "Hashes only", "" => "Hashes + plaintexts", "plain" => "Plaintexts only");
 $filters = array("cracked" => "Cracked", "uncracked" => "Uncracked", "" => "All");
@@ -214,23 +214,23 @@ foreach ($hashes as $hash) {
       $output .= "[...]";
     }
     if (!$binaryFormat && strlen($hash->getSalt()) > 0) {
-      $output .= ":" . htmlentities($hash->getSalt(), false, "UTF-8");
+      $output .= ":" . htmlentities($hash->getSalt(), ENT_QUOTES, "UTF-8");
     }
     if ($filter == "cracked" || $filter == "") {
       if ($hash->getIsCracked() == 1) {
-        $output .= ":" . htmlentities($hash->getPlaintext(), false, "UTF-8");
+        $output .= ":" . htmlentities($hash->getPlaintext(), ENT_QUOTES, "UTF-8");
       }
     }
   }
   else if ($displaying == "hash") {
     $output .= $hash->getHash();
     if (!$binaryFormat && strlen($hash->getSalt()) > 0) {
-      $output .= ":" . htmlentities($hash->getSalt(), false, "UTF-8");
+      $output .= ":" . htmlentities($hash->getSalt(), ENT_QUOTES, "UTF-8");
     }
   }
   else if ($displaying == "plain") {
     if ($hash->getIsCracked() == 1) {
-      $output .= htmlentities($hash->getPlaintext(), false, "UTF-8");
+      $output .= htmlentities($hash->getPlaintext(), ENT_QUOTES, "UTF-8");
     }
     else {
       continue;

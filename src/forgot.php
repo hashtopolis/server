@@ -16,7 +16,7 @@ $message = "";
 if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   switch ($_POST['action']) {
     case 'resetpassword':
-      $username = htmlentities(@$_POST['username'], false, "UTF-8");
+      $username = htmlentities(@$_POST['username'], ENT_QUOTES, "UTF-8");
       $email = @$_POST['email'];
       $qF = new QueryFilter(User::USERNAME, $username, "=");
       $res = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($qF)));

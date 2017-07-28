@@ -37,7 +37,7 @@ class SupertaskHandler implements Handler {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
-    $name = htmlentities($_POST['name'], false, "UTF-8");
+    $name = htmlentities($_POST['name'], ENT_QUOTES, "UTF-8");
     $masks = $_POST['masks'];
     $isSmall = intval($_POST['isSmall']);
     if (strlen($name) == 0 || strlen($masks) == 0) {
@@ -180,7 +180,7 @@ class SupertaskHandler implements Handler {
   private function create() {
     global $FACTORIES;
     
-    $name = htmlentities($_POST['name'], false, "UTF-8");
+    $name = htmlentities($_POST['name'], ENT_QUOTES, "UTF-8");
     $tasks = $_POST['task'];
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $supertask = new Supertask(0, $name);

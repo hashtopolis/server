@@ -169,7 +169,7 @@ class HashlistHandler implements Handler {
     if (sizeof($hashlists) == 0) {
       UI::printError("ERROR", "No hashlists selected!");
     }
-    $name = htmlentities($_POST["name"], false, "UTF-8");
+    $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $qF = new ContainFilter(Hashlist::HASHLIST_ID, $hashlists);
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $lists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -199,7 +199,7 @@ class HashlistHandler implements Handler {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $LOGIN, $CONFIG;
     
-    $name = htmlentities($_POST["name"], false, "UTF-8");
+    $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $salted = (isset($_POST["salted"]) && intval($_POST["salted"]) == 1) ? "1" : "0";
     $secret = (isset($_POST["secret"]) && intval($_POST["secret"]) == 1) ? "1" : "0";
     $hexsalted = (isset($_POST["hexsalted"]) && $salted && intval($_POST["hexsalted"]) == 1) ? "1" : "0";
@@ -792,7 +792,7 @@ class HashlistHandler implements Handler {
     if ($this->hashlist == null) {
       UI::printError("ERROR", "Invalid hashlist!");
     }
-    $name = htmlentities($_POST["name"], false, "UTF-8");
+    $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $this->hashlist->setHashlistName($name);
     $FACTORIES::getHashlistFactory()->update($this->hashlist);
     Util::refresh();

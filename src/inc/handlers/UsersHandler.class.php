@@ -41,7 +41,7 @@ class UsersHandler implements Handler {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
     
-    $username = htmlentities($_POST['username'], false, "UTF-8");
+    $username = htmlentities($_POST['username'], ENT_QUOTES, "UTF-8");
     $email = $_POST['email'];
     $group = $FACTORIES::getRightGroupFactory()->get($_POST['group']);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) == 0) {

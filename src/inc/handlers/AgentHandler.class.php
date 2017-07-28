@@ -233,7 +233,7 @@ class AgentHandler implements Handler {
   private function createVoucher() {
     global $FACTORIES;
     
-    $key = htmlentities($_POST["newvoucher"], false, "UTF-8");
+    $key = htmlentities($_POST["newvoucher"], ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(0, $key, time());
     $FACTORIES::getRegVoucherFactory()->save($voucher);
   }
@@ -302,7 +302,7 @@ class AgentHandler implements Handler {
   private function changeCmdParameters() {
     global $FACTORIES;
     
-    $pars = htmlentities($_POST["cmdpars"], false, "UTF-8");
+    $pars = htmlentities($_POST["cmdpars"], ENT_QUOTES, "UTF-8");
     
     if (Util::containsBlacklistedChars($pars)) {
       UI::addMessage(UI::ERROR, "Parameters must contain no blacklisted characters!");
@@ -367,7 +367,7 @@ class AgentHandler implements Handler {
   private function rename() {
     global $FACTORIES;
     
-    $name = htmlentities($_POST['name'], false, "UTF-8");
+    $name = htmlentities($_POST['name'], ENT_QUOTES, "UTF-8");
     if (strlen($name) > 0) {
       $this->agent->setAgentName($name);
       $FACTORIES::getAgentFactory()->update($this->agent);

@@ -51,7 +51,7 @@ class FileHandler implements Handler {
       UI::addMessage(UI::ERROR, "Invalid file ID!");
       return;
     }
-    $newName = str_replace(" ", "_", htmlentities($_POST['filename'], false, "UTF-8"));
+    $newName = str_replace(" ", "_", htmlentities($_POST['filename'], ENT_QUOTES, "UTF-8"));
     if (strlen($newName) == 0) {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
       return;
@@ -99,7 +99,7 @@ class FileHandler implements Handler {
         $numFiles = count($_FILES["upfile"]["name"]);
         for ($i = 0; $i < $numFiles; $i++) {
           // copy all uploaded attached files to proper directory
-          $realname = str_replace(" ", "_", htmlentities(basename($uploaded["name"][$i]), false, "UTF-8"));
+          $realname = str_replace(" ", "_", htmlentities(basename($uploaded["name"][$i]), ENT_QUOTES, "UTF-8"));
           if ($realname == "") {
             continue;
           }
@@ -136,7 +136,7 @@ class FileHandler implements Handler {
             continue;
           }
           // copy all uploaded attached files to proper directory
-          $realname = str_replace(" ", "_", htmlentities(basename($import), false, "UTF-8"));
+          $realname = str_replace(" ", "_", htmlentities(basename($import), ENT_QUOTES, "UTF-8"));
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $realname);
           if ($resp[0]) {
@@ -156,7 +156,7 @@ class FileHandler implements Handler {
       
       case "url":
         // from url
-        $realname = str_replace(" ", "_", htmlentities(basename($_POST["url"]), false, "UTF-8"));
+        $realname = str_replace(" ", "_", htmlentities(basename($_POST["url"]), ENT_QUOTES, "UTF-8"));
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
         $resp = Util::uploadFile($tmpfile, $source, $_POST["url"]);
         if ($resp[0]) {

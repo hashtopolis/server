@@ -39,7 +39,7 @@ if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   if (sizeof($releases) > 0) {
     $rootDir = $releases[0]->getRootdir();
   }
-  $OBJECTS['rootDir'] = htmlentities($rootDir, false, "UTF-8");
+  $OBJECTS['rootDir'] = htmlentities($rootDir, ENT_QUOTES, "UTF-8");
 }
 else {
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC");

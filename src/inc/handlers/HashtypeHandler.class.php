@@ -32,7 +32,7 @@ class HashtypeHandler implements Handler {
       UI::addMessage(UI::ERROR, "This hash number is already used!");
       return;
     }
-    $desc = htmlentities($_POST['description']);
+    $desc = htmlentities($_POST['description'], ENT_QUOTES, "UTF-8");
     if (strlen($desc) == 0 || $_POST['id'] < 0) {
       UI::addMessage(UI::ERROR, "Invalid inputs!");
       return;

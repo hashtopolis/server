@@ -138,7 +138,7 @@ switch ($STEP) {
     
     $message = "";
     if (isset($_POST['create'])) {
-      $username = htmlentities(@$_POST['username'], false, "UTF-8");
+      $username = htmlentities(@$_POST['username'], ENT_QUOTES, "UTF-8");
       $password = @$_POST['password'];
       $email = @$_POST['email'];
       $repeat = @$_POST['repeat'];

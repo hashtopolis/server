@@ -729,7 +729,7 @@ class Util {
    * @return string escaped string
    */
   public static function escapeSpecial($string) {
-    $string = htmlentities($string, false, "UTF-8");
+    $string = htmlentities($string, ENT_QUOTES, "UTF-8");
     $string = str_replace('"', '&#34;', $string);
     $string = str_replace("'", "&#39;", $string);
     $string = str_replace('`', '&#96;', $string);
