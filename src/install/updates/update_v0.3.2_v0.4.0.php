@@ -65,6 +65,7 @@ echo "OK\n";
 
 echo "Update Task table... ";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD taskType INT(11);");
+$FACTORIES::getAgentFactory()->getDB()->query("UPDATE `Task` SET taskType=1 WHERE 1");
 echo "OK\n";
 
 echo "Create TaskTask table... ";
