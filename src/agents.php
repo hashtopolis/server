@@ -17,7 +17,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 if (isset($_GET['download'])) {
   $binaryId = $_GET['download'];
   $agentHandler = new AgentHandler();
-  $agentHandler->handle('downloadagent');
+  $agentHandler->handle(DAgentAction::DOWNLOAD_AGENT);
 }
 
 if (!$LOGIN->isLoggedin()) {
