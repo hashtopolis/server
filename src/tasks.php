@@ -184,6 +184,7 @@ if (isset($_GET['id'])) {
   }
   $OBJECTS['assignAgents'] = $assignAgents;
   
+  $OBJECTS['showAllAgents'] = false;
   if (isset($_GET['allagents'])) {
     $OBJECTS['showAllAgents'] = true;
     $allAgentsSpent = new DataSet();

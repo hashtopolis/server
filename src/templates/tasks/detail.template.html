@@ -12,7 +12,15 @@
     </tr>
     <tr>
       <td>ID:</td>
-      <td><code>[[task.getId()]]</code></td>
+      <td>
+        <code>[[task.getId()]]</code>
+        <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
+          <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
+          <input type="hidden" name="csrf" value="[[csrf]]">
+          <input type="hidden" name="task" value="[[task.getId()]]">
+          <input type="submit" class='btn btn-danger' value="Delete">
+        </form>
+      </td>
     </tr>
     <tr>
       <td>Name:</td>
