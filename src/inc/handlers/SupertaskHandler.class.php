@@ -39,9 +39,13 @@ class SupertaskHandler implements Handler {
     
     $name = htmlentities($_POST['name'], false, "UTF-8");
     $masks = $_POST['masks'];
+    $isSmall = intval($_POST['isSmall']);
     if (strlen($name) == 0 || strlen($masks) == 0) {
       UI::addMessage(UI::ERROR, "Name or masks is empty!");
       return;
+    }
+    if ($isSmall != 0 && $isSmall != 1) {
+      $isSmall = 0;
     }
     
     $masks = explode("\n", str_replace("\r\n", "\n", $masks));
@@ -92,8 +96,8 @@ class SupertaskHandler implements Handler {
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       
-      //TODO: make configurable if small task, cpu only task etc.
-      $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", 0, 0, 0, 0, 0);
+      //TODO: make configurable if cpu only task etc.
+      $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", $isSmall, 0, 0, 0, 0);
       $preTask = $FACTORIES::getTaskFactory()->save($preTask);
       $preTasks[] = $preTask;
       $priority--;
