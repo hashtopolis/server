@@ -336,12 +336,12 @@ class API {
     $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
     if ($hashcat != null) {
       if ($agent->getHcVersion() != $hashcat->getVersion()) {
-        /*API::sendResponse(array(
+        API::sendResponse(array(
             PResponseChunk::ACTION => PActions::CHUNK,
             PResponseChunk::RESPONSE => PValues::SUCCESS,
             PResponseChunk::CHUNK_STATUS => PValuesChunkType::HASHCAT_UPDATE
           )
-        );*/
+        );
       }
     }
     
