@@ -140,6 +140,7 @@ class SupertaskHandler implements Handler {
     $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $tasks = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()];
+    $supertaskPriority = 0;
     foreach ($tasks as $task) {
       /** @var $task Task */
       if (strpos($task->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
@@ -151,6 +152,9 @@ class SupertaskHandler implements Handler {
       $task->setId(0);
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
+      }
+      if ($supertaskPriority == 0 || $supertaskPriority > $task->getPriority()) {
+        $supertaskPriority = $task->getPriority();
       }
       $task->setPriority($highestPriority + $task->getPriority());
       $task->setHashlistId($hashlist->getId());
@@ -166,7 +170,7 @@ class SupertaskHandler implements Handler {
         $FACTORIES::getTaskFileFactory()->save($taskFile);
       }
     }
-    $supTask = new Task(0, $supertask->getSupertaskName(), "SUPER", $hashlist->getId(), 0, 0, 0, 0, 0, "", 0, $isCpuTask, 0, 0, DTaskTypes::SUPERTASK);
+    $supTask = new Task(0, $supertask->getSupertaskName(), "SUPER", $hashlist->getId(), 0, 0, 0, 0, $supertaskPriority, "", 0, $isCpuTask, 0, 0, DTaskTypes::SUPERTASK);
     $supTask = $FACTORIES::getTaskFactory()->save($supTask);
     foreach ($subTasks as $task) {
       $task->setIsCpuTask($isCpuTask); // we need to enforce that all tasks have either cpu task or not cpu task setting
