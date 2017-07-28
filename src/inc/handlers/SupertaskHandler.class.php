@@ -126,14 +126,6 @@ class SupertaskHandler implements Handler {
     
     $subTasks = array();
     
-    $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
-    $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-    $highestTask = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF), true);
-    $highestPriority = 1;
-    if ($highestTask != null) {
-      $highestPriority = $highestTask->getPriority() + 1;
-    }
-    
     $isCpuTask = 0;
     
     $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
@@ -156,7 +148,6 @@ class SupertaskHandler implements Handler {
       if ($supertaskPriority == 0 || $supertaskPriority > $task->getPriority()) {
         $supertaskPriority = $task->getPriority();
       }
-      $task->setPriority($highestPriority + $task->getPriority());
       $task->setHashlistId($hashlist->getId());
       $task->setTaskType(DTaskTypes::SUBTASK);
       $task = $FACTORIES::getTaskFactory()->save($task);
