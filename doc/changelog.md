@@ -14,6 +14,8 @@
 - Tasks can also be deleted from the detailed view
 - Fixed update to 0.4.0 when adding taskType column
 - Supertasks are getting default priority from the subtasks
+- Fixed DBA issue with handling invalid input
+- Fixed additional vulnerabilities reported
 
 # v0.4.0 -> v0.4.1
 
