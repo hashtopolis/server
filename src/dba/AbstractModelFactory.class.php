@@ -444,7 +444,6 @@ abstract class AbstractModelFactory {
     $stmt->execute($vals);
     
     $res = array();
-    $primaryKey = array();
     $values = array();
     foreach ($factories as $factory) {
       $res[$factory->getModelTable()] = array();
@@ -456,18 +455,13 @@ abstract class AbstractModelFactory {
         foreach ($factories as $factory) {
           if (Util::startsWith($k, $factory->getModelTable())) {
             $column = str_replace($factory->getModelTable() . ".", "", $k);
-            if ($column != $factory->getNullObject()->getPrimaryKey()) {
-              $values[$factory->getModelTable()][$column] = $v;
-            }
-            else {
-              $primaryKey[$factory->getModelTable()] = $v;
-            }
+            $values[$factory->getModelTable()][$column] = $v;
           }
         }
       }
       
       foreach ($factories as $factory) {
-        $model = $factory->createObjectFromDict($primaryKey[$factory->getModelTable()], $values[$factory->getModelTable()]);
+        $model = $factory->createObjectFromDict($values[$factory->getModelTable()][$factory->getPrimaryKey()], $values[$factory->getModelTable()]);
         array_push($res[$factory->getModelTable()], $model);
       }
     }
