@@ -119,7 +119,8 @@ INSERT INTO `Config` (`configId`, `item`, `value`) VALUES
   (16, 'batchSize', '10000'),
   (18, 'yubikey_id', ''),
   (19, 'yubikey_key', ''),
-  (20, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify');
+  (20, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
+  (21, 'donateOff', '0');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11)               NOT NULL,
