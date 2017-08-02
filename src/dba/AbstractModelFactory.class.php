@@ -461,7 +461,7 @@ abstract class AbstractModelFactory {
       }
       
       foreach ($factories as $factory) {
-        $model = $factory->createObjectFromDict($values[$factory->getModelTable()][$factory->getPrimaryKey()], $values[$factory->getModelTable()]);
+        $model = $factory->createObjectFromDict($values[$factory->getModelTable()][$factory->getNullObject()->getPrimaryKey()], $values[$factory->getModelTable()]);
         array_push($res[$factory->getModelTable()], $model);
       }
     }
