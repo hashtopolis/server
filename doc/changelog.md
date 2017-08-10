@@ -1,3 +1,13 @@
+# v0.4.2 -> v0.x.x
+
+## New Features
+
+- Added telegram bot notification
+
+## Bugfixes
+
+- Notification display fixed
+
 # v0.4.1 -> v0.4.2
 
 ## New Features
