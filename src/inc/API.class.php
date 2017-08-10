@@ -1370,7 +1370,7 @@ class API {
             )
           );
         }
-        $chunk->setSpeed($speed * 1000);
+        $chunk->setSpeed($speed);
         $FACTORIES::getChunkFactory()->update($chunk);
         
         $agentZap = $FACTORIES::getAgentZapFactory()->get($agent->getId());
