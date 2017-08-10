@@ -5,7 +5,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
-if (!isset($_POST['username']) || !isset($_POST['password']) || !isset($_POST['otp'])) {
+if (!isset($_POST['username']) || !isset($_POST['password'])) {
   header("Location: index.php?err=1" . time());
   die();
 }
@@ -15,7 +15,7 @@ $password = $_POST['password'];
 
 // isYubikeyEnabled() ?
 $otp = (isset($_POST['otp'])) ? $_POST['otp'] : "";
-$fw  = (isset($_POST['fw']))  ? $_POST['fw']  : "";
+$fw = (isset($_POST['fw'])) ? $_POST['fw'] : "";
 
 if (strlen($username) == 0 || strlen($password) == 0) {
   header("Location: index.php?err=2" . time());
