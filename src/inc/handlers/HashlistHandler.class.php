@@ -660,6 +660,7 @@ class HashlistHandler implements Handler {
     $hashlistIds = array();
     foreach ($hashlists as $l) {
       $hashlistIds[] = $l->getId();
+      $crackedIn[$l->getId()] = 0;
     }
     while (!feof($file)) {
       $data = stream_get_line($file, 1024, $lineSeparator);
