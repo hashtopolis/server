@@ -395,13 +395,13 @@ class Util {
           $dispatched += $chunk->getLength();
         }
       }
-      if ($t->getKeyspace() != 0 && $dispatched == $t->getKeyspace()) {
+      if ($t->getKeyspace() != 0 && $dispatched >= $t->getKeyspace()) {
         // task is fully dispatched
         $fullCount++;
         continue;
       }
       
-      if (($t->getKeyspace() == $sumProgress && $t->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
+      if (($t->getKeyspace() <= $sumProgress && $t->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
         //task is finished
         $t->setPriority(0);
         //TODO: make massUpdate
@@ -514,7 +514,7 @@ class Util {
         $uncompletedChunk = $chunk;
       }
     }
-    if ($task->getKeyspace() != $dispatched) {
+    if ($task->getKeyspace() > $dispatched) {
       return true; // task is not fully dispatched
     }
     else if ($uncompletedChunk != null) {
