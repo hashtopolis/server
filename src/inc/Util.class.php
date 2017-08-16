@@ -673,7 +673,7 @@ class Util {
    */
   public static function tickdone($prog, $total) {
     // show tick of progress is done
-    if ($total > 0 && $prog == $total) {
+    if ($total > 0 && $prog >= $total) {
       return " <img src='static/check.png' alt='Finished'>";
     }
     return "";
