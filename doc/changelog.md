@@ -3,6 +3,7 @@
 ## New Features
 
 - Added telegram bot notification
+- Supertasks can now also be applied when viewing hashlist details (similar to preconfigured tasks)
 
 ## Bugfixes
 
