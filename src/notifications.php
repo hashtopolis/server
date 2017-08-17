@@ -77,7 +77,7 @@ foreach ($notifications as $notification) {
         break;
       case DNotificationObjectType::AGENT:
         $agent = $FACTORIES::getAgentFactory()->get($notification->getObjectId());
-        $appliedTo = "<a href='agents.php?id=" . $agent->getId() . "'>Hashlist: " . $agent->getAgentName() . " (" . $agent->getId() . ")</a>";
+        $appliedTo = "<a href='agents.php?id=" . $agent->getId() . "'>Agent: " . $agent->getAgentName() . " (" . $agent->getId() . ")</a>";
         break;
     }
   }
