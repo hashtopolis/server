@@ -7,6 +7,7 @@
 ## Bugfixes
 
 - Notification display fixed
+- Updated problem where agents were looping when tasks go over 100%
 
 ## Technical
 
