@@ -104,6 +104,10 @@ else if (isset($_GET['id'])) {
     }
   }
   $OBJECTS['preTasks'] = $preTasks;
+  
+  // load list of available supertasks
+  $OBJECTS['superTasks'] = $FACTORIES::getSupertaskFactory()->filter(array());
+  
   $TEMPLATE = new Template("hashlists/detail");
 }
 else {
