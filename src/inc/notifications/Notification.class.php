@@ -12,7 +12,6 @@ abstract class HashtopussyNotification {
   /**
    * @param $notificationType string
    * @param $payload DataSet
-   * @param $receiver string Contains the value where the message can be sent to. This can for example be an URL, an email address, etc.
    * @param $notification NotificationSetting
    */
   public function execute($notificationType, $payload, $notification) {
