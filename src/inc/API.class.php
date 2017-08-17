@@ -675,6 +675,7 @@ class API {
     
     $payload = new DataSet(array(DPayloadKeys::AGENT => $agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryError::MESSAGE]));
     NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
+    NotificationHandler::checkNotifications(DNotificationType::OWN_AGENT_ERROR, $payload);
     
     if ($agent->getIgnoreErrors() == 0) {
       //deactivate agent
