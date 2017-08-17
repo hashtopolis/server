@@ -127,4 +127,7 @@
 {{IF [[sizeof([[preTasks]])]] > 0}}
   {%TEMPLATE->hashlists/detail/pretasks%}
 {{ENDIF}}
+{{IF [[sizeof([superTasks]])]] > 0}}
+  {%TEMPLATE->hashlists/detail/supertasks%}
+{{ENDIF}}
 {%TEMPLATE->struct/foot%}
