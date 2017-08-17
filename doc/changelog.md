@@ -35,6 +35,7 @@
 - Supertasks are getting default priority from the subtasks
 - Fixed DBA issue with handling invalid input
 - Fixed additional vulnerabilities reported
+- Fixed remaining fragments when deleting finished supertasks
 
 # v0.4.0 -> v0.4.1
 
