@@ -294,11 +294,14 @@ class TaskHandler implements Handler {
       $taskIds = array();
       foreach ($tasks as $t) {
         $taskIds[] = $t->getId();
-        if ($onlyFinished && ($t->getKeyspace() == 0 || $t->getKeyspace() != $t->getProgress())) {
-          return; // task/subtasks is/are not finished yet
+        if ($onlyFinished && ($t->getKeyspace() == 0 || $t->getKeyspace() > $t->getProgress())) {
+          return; // subtask(s) is/are not finished yet
         }
       }
       $qF = new ContainFilter(Chunk::TASK_ID, $taskIds);
+    }
+    else if ($onlyFinished && ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getProgress())) {
+      return; // task is not finished yet
     }
     
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -349,10 +352,21 @@ class TaskHandler implements Handler {
   private function deleteFinished() {
     global $FACTORIES;
     
+    // delete finished supertasks
+    $qF = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUPERTASK, "=");
+    $supertasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($FACTORIES::FILTER => $qF)));
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    foreach ($supertasks as $supertask) {
+      $this->deleteTask($supertask, true);
+    }
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    
     // delete finished tasks
     $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
-    $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "<=");
+    $qF3 = new QueryFilter(Task::TASK_TYPE, DTaskTypes::NORMAL, "=");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     foreach ($tasks as $task) {
