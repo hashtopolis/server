@@ -348,11 +348,22 @@ class TaskHandler implements Handler {
   
   private function deleteFinished() {
     global $FACTORIES;
+  
+    // delete finished supertasks
+    $qF = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUPERTASK, "=");
+    $supertasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($FACTORIES::FILTER => $qF)));
+  
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    foreach ($supertasks as $supertask) {
+      $this->deleteTask($supertask, true);
+    }
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     
     // delete finished tasks
     $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
-    $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "=<");
+    $qF3 = new QueryFilter(Task::TASK_TYPE, DTaskTypes::NORMAL, "=");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     foreach ($tasks as $task) {
