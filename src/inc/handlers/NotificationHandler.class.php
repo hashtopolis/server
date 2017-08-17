@@ -58,6 +58,11 @@ class NotificationHandler implements Handler {
           continue;
         }
       }
+      if ($action == DNotificationType::OWN_AGENT_ERROR) {
+        if ($payload->getVal(DPayloadKeys::AGENT)->getUserId() != $notification->getUserId()) {
+          continue;
+        }
+      }
       $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification);
     }
   }
