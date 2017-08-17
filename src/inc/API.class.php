@@ -953,13 +953,13 @@ class API {
       $origTask = $setToTask;
       $setToTask = Util::getBestTask($agent, 0, $setToTask->getId());
       
-      // this is a special case when the agent continues on the task and it's NOT a new assignment. Otherwise there will be duplicate assignments
-      if ($currentTask != null && $currentTask->getId() == $setToTask->getId()) {
-        $newAssignment = false;
-      }
       if ($setToTask == null) {
         $origTask->setPriority(0);
         $FACTORIES::getTaskFactory()->update($origTask);
+      }
+      // this is a special case when the agent continues on the task and it's NOT a new assignment. Otherwise there will be duplicate assignments
+      else if ($currentTask != null && $currentTask->getId() == $setToTask->getId()) {
+        $newAssignment = false;
       }
     }
     
