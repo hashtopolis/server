@@ -361,7 +361,7 @@ class TaskHandler implements Handler {
     
     // delete finished tasks
     $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
-    $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "=<");
+    $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "<=");
     $qF3 = new QueryFilter(Task::TASK_TYPE, DTaskTypes::NORMAL, "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
     
