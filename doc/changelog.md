@@ -12,6 +12,7 @@
 
 - Fixed warnings during found import
 - Fixed edge case where it could happen that agents started to loop after a task when no new task was available
+- Pre-crack import warns when too long plaintexts are in the import file
 
 # v0.4.1 -> v0.4.2
 
