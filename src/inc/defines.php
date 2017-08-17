@@ -19,6 +19,10 @@ class DHashcatStatus {
   const STATUS_ABORTED_RUNTIME = 10;
 }
 
+class DLimits {
+  const PLAINTEXT_LENGTH = 200;
+}
+
 class DAccountAction {
   const SET_EMAIL       = "setEmail";
   const YUBIKEY_DISABLE = "yubikeyDisable";

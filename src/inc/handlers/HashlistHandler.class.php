@@ -648,6 +648,7 @@ class HashlistHandler implements Handler {
     //start inserting
     $totalLines = 0;
     $newCracked = 0;
+    $tooLong = 0;
     $crackedIn = array();
     $zaps = array();
     foreach ($hashlists as $l) {
@@ -687,6 +688,10 @@ class HashlistHandler implements Handler {
           continue;
         }
         $plain = str_replace($hash . $separator . $hashEntry->getSalt() . $separator, "", $data);
+        if(strlen($plain) > DLimits::PLAINTEXT_LENGTH){
+          $tooLong++;
+          continue;
+        }
         $hashEntry->setPlaintext($plain);
         $hashEntry->setIsCracked(1);
         $hashFactory->update($hashEntry);
@@ -727,6 +732,10 @@ class HashlistHandler implements Handler {
             continue;
           }
           $plain = str_replace($hash . $separator, "", $data);
+          if(strlen($plain) > DLimits::PLAINTEXT_LENGTH){
+            $tooLong++;
+            continue;
+          }
           $hashEntry->setPlaintext($plain);
           $hashEntry->setIsCracked(1);
           $hashFactory->update($hashEntry);
@@ -782,7 +791,7 @@ class HashlistHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
+    UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $tooLong with too long plaintext, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
   }
   
   private function rename() {
