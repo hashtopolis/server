@@ -688,7 +688,7 @@ class HashlistHandler implements Handler {
           continue;
         }
         $plain = str_replace($hash . $separator . $hashEntry->getSalt() . $separator, "", $data);
-        if(strlen($plain) > DLimits::PLAINTEXT_LENGTH){
+        if (strlen($plain) > DLimits::PLAINTEXT_LENGTH) {
           $tooLong++;
           continue;
         }
@@ -732,7 +732,7 @@ class HashlistHandler implements Handler {
             continue;
           }
           $plain = str_replace($hash . $separator, "", $data);
-          if(strlen($plain) > DLimits::PLAINTEXT_LENGTH){
+          if (strlen($plain) > DLimits::PLAINTEXT_LENGTH) {
             $tooLong++;
             continue;
           }
@@ -791,7 +791,10 @@ class HashlistHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $tooLong with too long plaintext, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
+    UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
+    if ($tooLong > 0) {
+      UI::addMessage(UI::WARN, "$tooLong entries with too long plaintext");
+    }
   }
   
   private function rename() {
