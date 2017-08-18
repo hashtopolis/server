@@ -1217,7 +1217,7 @@ class Util {
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
     if ($limit >= $maxLength) {
-      if ($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit);") === false) {
+      if ($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit) NOT NULL;") === false) {
         return false;
       }
     }
