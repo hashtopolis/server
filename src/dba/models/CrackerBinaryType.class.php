@@ -2,20 +2,20 @@
 
 namespace DBA;
 
-class BinaryType extends AbstractModel {
-  private $binaryTypeId;
+class CrackerBinaryType extends AbstractModel {
+  private $crackerBinaryTypeId;
   private $typeName;
   private $isChunkingAvailable;
   
-  function __construct($binaryTypeId, $typeName, $isChunkingAvailable) {
-    $this->binaryTypeId = $binaryTypeId;
+  function __construct($crackerBinaryTypeId, $typeName, $isChunkingAvailable) {
+    $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->typeName = $typeName;
     $this->isChunkingAvailable = $isChunkingAvailable;
   }
   
   function getKeyValueDict() {
     $dict = array();
-    $dict['binaryTypeId'] = $this->binaryTypeId;
+    $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     $dict['typeName'] = $this->typeName;
     $dict['isChunkingAvailable'] = $this->isChunkingAvailable;
     
@@ -23,19 +23,19 @@ class BinaryType extends AbstractModel {
   }
   
   function getPrimaryKey() {
-    return "binaryTypeId";
+    return "crackerBinaryTypeId";
   }
   
   function getPrimaryKeyValue() {
-    return $this->binaryTypeId;
+    return $this->crackerBinaryTypeId;
   }
   
   function getId() {
-    return $this->binaryTypeId;
+    return $this->crackerBinaryTypeId;
   }
   
   function setId($id) {
-    $this->binaryTypeId = $id;
+    $this->crackerBinaryTypeId = $id;
   }
   
   function getTypeName(){
@@ -54,7 +54,7 @@ class BinaryType extends AbstractModel {
     $this->isChunkingAvailable = $isChunkingAvailable;
   }
 
-  const BINARY_TYPE_ID = "binaryTypeId";
+  const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const TYPE_NAME = "typeName";
   const IS_CHUNKING_AVAILABLE = "isChunkingAvailable";
 }

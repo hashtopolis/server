@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class BinaryTypeFactory extends AbstractModelFactory {
+class AccessGroupFactory extends AbstractModelFactory {
   function getModelName() {
-    return "BinaryType";
+    return "AccessGroup";
   }
   
   function getModelTable() {
-    return "BinaryType";
+    return "AccessGroup";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class BinaryTypeFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return BinaryType
+   * @return AccessGroup
    */
   function getNullObject() {
-    $o = new BinaryType(-1, null, null);
+    $o = new AccessGroup(-1, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return BinaryType
+   * @return AccessGroup
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new BinaryType($dict['binaryTypeId'], $dict['typeName'], $dict['isChunkingAvailable']);
+    $o = new AccessGroup($dict['accessGroupId'], $dict['groupName']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return BinaryType|BinaryType[]
+   * @return AccessGroup|AccessGroup[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class BinaryTypeFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), BinaryType::class);
+      return Util::cast(parent::filter($options, $single), AccessGroup::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class BinaryTypeFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, BinaryType::class);
+      $models[] = Util::cast($object, AccessGroup::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return BinaryType
+   * @return AccessGroup
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), BinaryType::class);
+    return Util::cast(parent::get($pk), AccessGroup::class);
   }
 
   /**
-   * @param BinaryType $model
-   * @return BinaryType
+   * @param AccessGroup $model
+   * @return AccessGroup
    */
   function save($model) {
-    return Util::cast(parent::save($model), BinaryType::class);
+    return Util::cast(parent::save($model), AccessGroup::class);
   }
 }

@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class GroupAgentFactory extends AbstractModelFactory {
+class AccessGroupAgentFactory extends AbstractModelFactory {
   function getModelName() {
-    return "GroupAgent";
+    return "AccessGroupAgent";
   }
   
   function getModelTable() {
-    return "GroupAgent";
+    return "AccessGroupAgent";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class GroupAgentFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return GroupAgent
+   * @return AccessGroupAgent
    */
   function getNullObject() {
-    $o = new GroupAgent(-1, null, null);
+    $o = new AccessGroupAgent(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return GroupAgent
+   * @return AccessGroupAgent
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new GroupAgent($dict['groupAgentId'], $dict['groupId'], $dict['agentId']);
+    $o = new AccessGroupAgent($dict['accessGroupAgentId'], $dict['accessGroupId'], $dict['agentId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return GroupAgent|GroupAgent[]
+   * @return AccessGroupAgent|AccessGroupAgent[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class GroupAgentFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), GroupAgent::class);
+      return Util::cast(parent::filter($options, $single), AccessGroupAgent::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class GroupAgentFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, GroupAgent::class);
+      $models[] = Util::cast($object, AccessGroupAgent::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return GroupAgent
+   * @return AccessGroupAgent
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), GroupAgent::class);
+    return Util::cast(parent::get($pk), AccessGroupAgent::class);
   }
 
   /**
-   * @param GroupAgent $model
-   * @return GroupAgent
+   * @param AccessGroupAgent $model
+   * @return AccessGroupAgent
    */
   function save($model) {
-    return Util::cast(parent::save($model), GroupAgent::class);
+    return Util::cast(parent::save($model), AccessGroupAgent::class);
   }
 }

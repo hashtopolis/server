@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class BinaryFactory extends AbstractModelFactory {
+class CrackerBinaryTypeFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Binary";
+    return "CrackerBinaryType";
   }
   
   function getModelTable() {
-    return "Binary";
+    return "CrackerBinaryType";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class BinaryFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return Binary
+   * @return CrackerBinaryType
    */
   function getNullObject() {
-    $o = new Binary(-1, null, null, null);
+    $o = new CrackerBinaryType(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return Binary
+   * @return CrackerBinaryType
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Binary($dict['binaryId'], $dict['binaryTypeId'], $dict['version'], $dict['platform']);
+    $o = new CrackerBinaryType($dict['crackerBinaryTypeId'], $dict['typeName'], $dict['isChunkingAvailable']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return Binary|Binary[]
+   * @return CrackerBinaryType|CrackerBinaryType[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class BinaryFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Binary::class);
+      return Util::cast(parent::filter($options, $single), CrackerBinaryType::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class BinaryFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, Binary::class);
+      $models[] = Util::cast($object, CrackerBinaryType::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return Binary
+   * @return CrackerBinaryType
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Binary::class);
+    return Util::cast(parent::get($pk), CrackerBinaryType::class);
   }
 
   /**
-   * @param Binary $model
-   * @return Binary
+   * @param CrackerBinaryType $model
+   * @return CrackerBinaryType
    */
   function save($model) {
-    return Util::cast(parent::save($model), Binary::class);
+    return Util::cast(parent::save($model), CrackerBinaryType::class);
   }
 }

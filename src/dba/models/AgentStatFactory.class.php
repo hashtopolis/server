@@ -23,7 +23,7 @@ class AgentStatFactory extends AbstractModelFactory {
    * @return AgentStat
    */
   function getNullObject() {
-    $o = new AgentStat(-1, null, null, null);
+    $o = new AgentStat(-1, null, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class AgentStatFactory extends AbstractModelFactory {
    * @return AgentStat
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new AgentStat($dict['agentStatId'], $dict['statType'], $dict['time'], $dict['value']);
+    $o = new AgentStat($dict['agentStatId'], $dict['agentId'], $dict['statType'], $dict['time'], $dict['value']);
     return $o;
   }
 

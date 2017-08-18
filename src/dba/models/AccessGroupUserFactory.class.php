@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class GroupUserFactory extends AbstractModelFactory {
+class AccessGroupUserFactory extends AbstractModelFactory {
   function getModelName() {
-    return "GroupUser";
+    return "AccessGroupUser";
   }
   
   function getModelTable() {
-    return "GroupUser";
+    return "AccessGroupUser";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class GroupUserFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return GroupUser
+   * @return AccessGroupUser
    */
   function getNullObject() {
-    $o = new GroupUser(-1, null, null);
+    $o = new AccessGroupUser(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return GroupUser
+   * @return AccessGroupUser
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new GroupUser($dict['groupUserId'], $dict['groupId'], $dict['userId']);
+    $o = new AccessGroupUser($dict['accessGroupUserId'], $dict['accessGroupId'], $dict['userId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return GroupUser|GroupUser[]
+   * @return AccessGroupUser|AccessGroupUser[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class GroupUserFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), GroupUser::class);
+      return Util::cast(parent::filter($options, $single), AccessGroupUser::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class GroupUserFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, GroupUser::class);
+      $models[] = Util::cast($object, AccessGroupUser::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return GroupUser
+   * @return AccessGroupUser
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), GroupUser::class);
+    return Util::cast(parent::get($pk), AccessGroupUser::class);
   }
 
   /**
-   * @param GroupUser $model
-   * @return GroupUser
+   * @param AccessGroupUser $model
+   * @return AccessGroupUser
    */
   function save($model) {
-    return Util::cast(parent::save($model), GroupUser::class);
+    return Util::cast(parent::save($model), AccessGroupUser::class);
   }
 }

@@ -3,6 +3,10 @@
 $CONF = array();
 
 // entities
+$CONF['AccessGroup'] = array(
+  'accessGroupId',
+  'groupName'
+);
 $CONF['Agent'] = array(
   'agentId',
   'agentName',
@@ -36,6 +40,7 @@ $CONF['AgentError'] = array(
 );
 $CONF['AgentStat'] = array(
   'agentStatId',
+  'agentId',
   'statType',
   'time',
   'value'
@@ -50,17 +55,6 @@ $CONF['Assignment'] = array(
   'taskId',
   'agentId',
   'benchmark',
-);
-$CONF['Binary'] = array(
-  'binaryId',
-  'binaryTypeId',
-  'version',
-  'platform'
-);
-$CONF['BinaryType'] = array(
-  'binaryTypeId',
-  'typeName',
-  'isChunkingAvailable'
 );
 $CONF['Chunk'] = array(
   'chunkId',
@@ -86,16 +80,23 @@ $CONF['ConfigSection'] = array(
   'configSectionId',
   'sectionName'
 );
+$CONF['CrackerBinary'] = array(
+  'crackerBinaryId',
+  'crackerBinaryTypeId',
+  'version',
+  'platform'
+);
+$CONF['CrackerBinaryType'] = array(
+  'crackerBinaryTypeId',
+  'typeName',
+  'isChunkingAvailable'
+);
 $CONF['File'] = array(
   'fileId',
   'filename',
   'size',
   'isSecret',
   'fileType'
-);
-$CONF['Group'] = array(
-  'groupId',
-  'groupName'
 );
 $CONF['Hash'] = array(
   'hashId',
@@ -205,14 +206,14 @@ $CONF['Task'] = array(
   'isCpuTask',
   'useNewBench',
   'skipKeyspace',
-  'binaryId'
+  'crackerBinaryId'
 );
 $CONF['TaskWrapper'] = array(
   'taskWrapperId',
   'priority',
   'taskType',
   'hashlistId',
-  'groupId'
+  'accessGroupId'
 );
 $CONF['User'] = array(
   'userId',
@@ -241,14 +242,14 @@ $CONF['Zap'] = array(
 );
 
 // relations
-$CONF['GroupUser'] = array(
-  'groupUserId',
-  'groupId',
+$CONF['AccessGroupUser'] = array(
+  'accessGroupUserId',
+  'accessGroupId',
   'userId'
 );
-$CONF['GroupAgent'] = array(
-  'groupAgentId',
-  'groupId',
+$CONF['AccessGroupAgent'] = array(
+  'accessGroupAgentId',
+  'accessGroupId',
   'agentId'
 );
 $CONF['FileTask'] = array(

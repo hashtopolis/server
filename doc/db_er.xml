@@ -78,8 +78,8 @@
 		<relationshipid id="74" posX="1796" posY="1305" name="in2"></relationshipid>
 		<relationshipid id="75" posX="1184" posY="1053" name="cracked1"></relationshipid>
 		<relationshipid id="76" posX="1157" posY="1169" name="cracked2"></relationshipid>
-		<entityid id="77" posX="1645" posY="303" name="Binary"></entityid>
-		<entityid id="78" posX="1241" posY="339" name="BinaryType"></entityid>
+		<entityid id="77" posX="1647" posY="309" name="CrackerBinary"></entityid>
+		<entityid id="78" posX="1219" posY="359" name="CrackerBinaryType"></entityid>
 		<attributeid id="79" posX="1234" posY="279" type="key" name="binaryTypeId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="80" posX="1358" posY="324" type="normal" name="typeName" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="81" posX="1106" posY="308" type="normal" name="isChunkingAvailable" required="false" unique="false" datatype="varchar" length="50"></attributeid>
@@ -196,7 +196,7 @@
 		<attributeid id="192" posX="66" posY="831" type="normal" name="yubikey" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="193" posX="114" posY="908" type="normal" name="otp1-4" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="194" posX="250" posY="1047" name="hasLevel"></relationshipid>
-		<entityid id="195" posX="192" posY="185" name="Group"></entityid>
+		<entityid id="195" posX="192" posY="185" name="AccessGroup"></entityid>
 		<attributeid id="196" posX="77" posY="184" type="normal" name="groupId" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="197" posX="182" posY="118" type="normal" name="groupName" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="198" posX="357" posY="286" name="hasAccess1"></relationshipid>

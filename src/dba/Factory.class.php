@@ -3,19 +3,19 @@
 namespace DBA;
 
 class Factory {
+  private static $accessGroupFactory = null;
   private static $agentFactory = null;
   private static $agentBinaryFactory = null;
   private static $agentErrorFactory = null;
   private static $agentStatFactory = null;
   private static $agentZapFactory = null;
   private static $assignmentFactory = null;
-  private static $binaryFactory = null;
-  private static $binaryTypeFactory = null;
   private static $chunkFactory = null;
   private static $configFactory = null;
   private static $configSectionFactory = null;
+  private static $crackerBinaryFactory = null;
+  private static $crackerBinaryTypeFactory = null;
   private static $fileFactory = null;
-  private static $groupFactory = null;
   private static $hashFactory = null;
   private static $hashBinaryFactory = null;
   private static $hashlistFactory = null;
@@ -32,13 +32,23 @@ class Factory {
   private static $taskWrapperFactory = null;
   private static $userFactory = null;
   private static $zapFactory = null;
-  private static $groupUserFactory = null;
-  private static $groupAgentFactory = null;
+  private static $accessGroupUserFactory = null;
+  private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
   private static $filePretaskFactory = null;
   private static $supertaskPretaskFactory = null;
   private static $hashlistHashlistFactory = null;
 
+  public static function getAccessGroupFactory() {
+    if (self::$accessGroupFactory == null) {
+      $f = new AccessGroupFactory();
+      self::$accessGroupFactory = $f;
+      return $f;
+    } else {
+      return self::$accessGroupFactory;
+    }
+  }
+  
   public static function getAgentFactory() {
     if (self::$agentFactory == null) {
       $f = new AgentFactory();
@@ -99,26 +109,6 @@ class Factory {
     }
   }
   
-  public static function getBinaryFactory() {
-    if (self::$binaryFactory == null) {
-      $f = new BinaryFactory();
-      self::$binaryFactory = $f;
-      return $f;
-    } else {
-      return self::$binaryFactory;
-    }
-  }
-  
-  public static function getBinaryTypeFactory() {
-    if (self::$binaryTypeFactory == null) {
-      $f = new BinaryTypeFactory();
-      self::$binaryTypeFactory = $f;
-      return $f;
-    } else {
-      return self::$binaryTypeFactory;
-    }
-  }
-  
   public static function getChunkFactory() {
     if (self::$chunkFactory == null) {
       $f = new ChunkFactory();
@@ -149,6 +139,26 @@ class Factory {
     }
   }
   
+  public static function getCrackerBinaryFactory() {
+    if (self::$crackerBinaryFactory == null) {
+      $f = new CrackerBinaryFactory();
+      self::$crackerBinaryFactory = $f;
+      return $f;
+    } else {
+      return self::$crackerBinaryFactory;
+    }
+  }
+  
+  public static function getCrackerBinaryTypeFactory() {
+    if (self::$crackerBinaryTypeFactory == null) {
+      $f = new CrackerBinaryTypeFactory();
+      self::$crackerBinaryTypeFactory = $f;
+      return $f;
+    } else {
+      return self::$crackerBinaryTypeFactory;
+    }
+  }
+  
   public static function getFileFactory() {
     if (self::$fileFactory == null) {
       $f = new FileFactory();
@@ -156,16 +166,6 @@ class Factory {
       return $f;
     } else {
       return self::$fileFactory;
-    }
-  }
-  
-  public static function getGroupFactory() {
-    if (self::$groupFactory == null) {
-      $f = new GroupFactory();
-      self::$groupFactory = $f;
-      return $f;
-    } else {
-      return self::$groupFactory;
     }
   }
   
@@ -329,23 +329,23 @@ class Factory {
     }
   }
   
-  public static function getGroupUserFactory() {
-    if (self::$groupUserFactory == null) {
-      $f = new GroupUserFactory();
-      self::$groupUserFactory = $f;
+  public static function getAccessGroupUserFactory() {
+    if (self::$accessGroupUserFactory == null) {
+      $f = new AccessGroupUserFactory();
+      self::$accessGroupUserFactory = $f;
       return $f;
     } else {
-      return self::$groupUserFactory;
+      return self::$accessGroupUserFactory;
     }
   }
   
-  public static function getGroupAgentFactory() {
-    if (self::$groupAgentFactory == null) {
-      $f = new GroupAgentFactory();
-      self::$groupAgentFactory = $f;
+  public static function getAccessGroupAgentFactory() {
+    if (self::$accessGroupAgentFactory == null) {
+      $f = new AccessGroupAgentFactory();
+      self::$accessGroupAgentFactory = $f;
       return $f;
     } else {
-      return self::$groupAgentFactory;
+      return self::$accessGroupAgentFactory;
     }
   }
   

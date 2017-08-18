@@ -33,7 +33,7 @@ class TaskWrapperFactory extends AbstractModelFactory {
    * @return TaskWrapper
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new TaskWrapper($dict['taskWrapperId'], $dict['priority'], $dict['taskType'], $dict['hashlistId'], $dict['groupId']);
+    $o = new TaskWrapper($dict['taskWrapperId'], $dict['priority'], $dict['taskType'], $dict['hashlistId'], $dict['accessGroupId']);
     return $o;
   }
 

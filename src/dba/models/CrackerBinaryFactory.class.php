@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class GroupFactory extends AbstractModelFactory {
+class CrackerBinaryFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Group";
+    return "CrackerBinary";
   }
   
   function getModelTable() {
-    return "Group";
+    return "CrackerBinary";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class GroupFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return Group
+   * @return CrackerBinary
    */
   function getNullObject() {
-    $o = new Group(-1, null);
+    $o = new CrackerBinary(-1, null, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return Group
+   * @return CrackerBinary
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Group($dict['groupId'], $dict['groupName']);
+    $o = new CrackerBinary($dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['version'], $dict['platform']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return Group|Group[]
+   * @return CrackerBinary|CrackerBinary[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class GroupFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Group::class);
+      return Util::cast(parent::filter($options, $single), CrackerBinary::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class GroupFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, Group::class);
+      $models[] = Util::cast($object, CrackerBinary::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return Group
+   * @return CrackerBinary
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Group::class);
+    return Util::cast(parent::get($pk), CrackerBinary::class);
   }
 
   /**
-   * @param Group $model
-   * @return Group
+   * @param CrackerBinary $model
+   * @return CrackerBinary
    */
   function save($model) {
-    return Util::cast(parent::save($model), Group::class);
+    return Util::cast(parent::save($model), CrackerBinary::class);
   }
 }
