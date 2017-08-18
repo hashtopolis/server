@@ -55,7 +55,7 @@ switch ($STEP) {
       if ($baseUrl[sizeof($baseUrl) - 1] == "install") {
         unset($baseUrl[sizeof($baseUrl) - 1]);
       }
-      $urlConfig = new Config(0, DConfig::BASE_URL, implode("/", $baseUrl));
+      $urlConfig = new Config(0, 5, DConfig::BASE_URL, implode("/", $baseUrl));
       $FACTORIES::getConfigFactory()->save($urlConfig);
       setcookie("step", "52", time() + 3600);
       setcookie("prev", "2", time() + 3600);

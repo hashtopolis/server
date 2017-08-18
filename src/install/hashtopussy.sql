@@ -226,7 +226,8 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
 (1, 'Cracking/Tasks'),
 (2, 'Yubikey'),
 (3, 'Finetuning'),
-(4, 'UI');
+(4, 'UI'),
+(5, 'Server');
 
 -- --------------------------------------------------------
 
