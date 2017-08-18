@@ -169,7 +169,7 @@
 		<attributeid id="165" posX="1292" posY="700" type="normal" name="isCpuTask" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="166" posX="1413" posY="396" type="normal" name="useNewBench" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="167" posX="1457" posY="435" type="normal" name="skipKeyspace" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="168" posX="1567" posY="571" type="normal" name="binaryVersion" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="168" posX="1576" posY="564" type="normal" name="binaryVersion" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="169" posX="1209" posY="424" name="runs"></relationshipid>
 		<relationshipid id="170" posX="1551" posY="715" name="needs2"></relationshipid>
 		<entityid id="171" posX="2027" posY="205" name="TaskWrapper"></entityid>
@@ -202,12 +202,13 @@
 		<relationshipid id="198" posX="357" posY="286" name="hasAccess1"></relationshipid>
 		<relationshipid id="199" posX="111" posY="526" name="hasAccess2"></relationshipid>
 		<relationshipid id="200" posX="963" posY="77" name="containedIn"></relationshipid>
-		<entityid id="259" posX="856" posY="662" name="AgentStat"></entityid>
-		<attributeid id="260" posX="861" posY="590" type="key" name="agentStatId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="261" posX="942" posY="617" type="normal" name="statType" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="262" posX="977" posY="676" type="normal" name="time" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="263" posX="879" posY="724" type="normal" name="value" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<relationshipid id="264" posX="701" posY="593" name="sent"></relationshipid>
+		<entityid id="201" posX="856" posY="662" name="AgentStat"></entityid>
+		<attributeid id="202" posX="861" posY="590" type="key" name="agentStatId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="203" posX="942" posY="617" type="normal" name="statType" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="204" posX="977" posY="676" type="normal" name="time" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="205" posX="879" posY="724" type="normal" name="value" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<relationshipid id="206" posX="701" posY="593" name="sent"></relationshipid>
+		<attributeid id="267" posX="2153" posY="207" type="normal" name="priority" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 	</elements>
 	<entity id="0">
 		<attributelist>
@@ -573,6 +574,7 @@
 		<attributelist>
 			<attribute id="173"></attribute>
 			<attribute id="174"></attribute>
+			<attribute id="267"></attribute>
 		</attributelist>
 	</entity>
 	<relationship id="172">
@@ -636,18 +638,18 @@
 			<role mincard="1" maxcard="1" name="" entityid="171" refintegrity="false"></role>
 		</rolelist>
 	</relationship>
-	<entity id="259">
+	<entity id="201">
 		<attributelist>
-			<attribute id="260"></attribute>
-			<attribute id="261"></attribute>
-			<attribute id="262"></attribute>
-			<attribute id="263"></attribute>
+			<attribute id="202"></attribute>
+			<attribute id="203"></attribute>
+			<attribute id="204"></attribute>
+			<attribute id="205"></attribute>
 		</attributelist>
 	</entity>
-	<relationship id="264">
+	<relationship id="206">
 		<rolelist>
 			<role mincard="0" maxcard="N" name="" entityid="3" refintegrity="false"></role>
-			<role mincard="1" maxcard="1" name="" entityid="259" refintegrity="false"></role>
+			<role mincard="1" maxcard="1" name="" entityid="201" refintegrity="false"></role>
 		</rolelist>
 	</relationship>
 </diagram>
