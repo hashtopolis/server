@@ -177,120 +177,6 @@ class DAccessLevel { // if you change any of them here, you need to check if thi
   const ADMINISTRATOR = 50;
 }
 
-// used config values
-class DConfig {
-  const BENCHMARK_TIME    = "benchtime";
-  const CHUNK_DURATION    = "chunktime";
-  const CHUNK_TIMEOUT     = "chunktimeout";
-  const AGENT_TIMEOUT     = "agenttimeout";
-  const HASHES_PAGE_SIZE  = "pagingSize";
-  const FIELD_SEPARATOR   = "fieldseparator";
-  const HASHLIST_ALIAS    = "hashlistAlias";
-  const STATUS_TIMER      = "statustimer";
-  const BLACKLIST_CHARS   = "blacklistChars";
-  const NUMBER_LOGENTRIES = "numLogEntries";
-  const TIME_FORMAT       = "timefmt";
-  const BASE_URL          = "baseUrl";
-  const DISP_TOLERANCE    = "disptolerance";
-  const BATCH_SIZE        = "batchSize";
-  const YUBIKEY_ID        = "yubikey_id";
-  const YUBIKEY_KEY       = "yubikey_key";
-  const YUBIKEY_URL       = "yubikey_url";
-  const BASE_HOST         = "baseHost";
-  const DONATE_OFF        = "donateOff";
-  
-  /**
-   * Gives the format which a config input should have. Default is string if it's not a known config.
-   * @param $config string
-   * @return string
-   */
-  public static function getConfigType($config) {
-    switch ($config) {
-      case DConfig::BENCHMARK_TIME:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::CHUNK_DURATION:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::CHUNK_TIMEOUT:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::AGENT_TIMEOUT:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::HASHES_PAGE_SIZE:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::FIELD_SEPARATOR:
-        return DConfigType::STRING_INPUT;
-      case DConfig::HASHLIST_ALIAS:
-        return DConfigType::STRING_INPUT;
-      case DConfig::STATUS_TIMER:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::BLACKLIST_CHARS:
-        return DConfigType::STRING_INPUT;
-      case DConfig::NUMBER_LOGENTRIES:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::TIME_FORMAT:
-        return DConfigType::STRING_INPUT;
-      case DConfig::BASE_URL:
-        return DConfigType::STRING_INPUT;
-      case Dconfig::DISP_TOLERANCE:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::BATCH_SIZE:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::BASE_HOST:
-        return DConfigType::STRING_INPUT;
-      case DConfig::DONATE_OFF:
-        return DConfigType::NUMBER_INPUT;
-    }
-    return DConfigType::STRING_INPUT;
-  }
-  
-  /**
-   * @param $config string
-   * @return string
-   */
-  public static function getConfigDescription($config) {
-    switch ($config) {
-      case DConfig::BENCHMARK_TIME:
-        return "How long an agent should benchmark a task (in seconds)";
-      case DConfig::CHUNK_DURATION:
-        return "Estimate of the time it will take for an agent to complete one chunk of work (in seconds)";
-      case DConfig::CHUNK_TIMEOUT:
-        return "How long an agent must not respond until it is treated as timed out and the chunk will get shipped to other agents (in seconds)";
-      case DConfig::AGENT_TIMEOUT:
-        return "How long an agent must not respond until it is treated as no longer active (in seconds)";
-      case DConfig::HASHES_PAGE_SIZE:
-        return "How many hashes to display at once in the hashes view (page size)";
-      case DConfig::FIELD_SEPARATOR:
-        return "Separator used to separate the hash and plaintext (or salt)";
-      case DConfig::HASHLIST_ALIAS:
-        return "String to use as hashlist alias when creating a task";
-      case DConfig::STATUS_TIMER:
-        return "Interval in which the agent sends its progress to the server (in seconds)";
-      case DConfig::BLACKLIST_CHARS:
-        return "Disallowed characters in attack command inputs";
-      case DConfig::NUMBER_LOGENTRIES:
-        return "Number of log entries to save. When this number is exceeded by 120%, the oldest ones will be deleted";
-      case DConfig::TIME_FORMAT:
-        return "The date/time format. Use syntax for PHP's date() method";
-      case DConfig::BASE_URL:
-        return "Base URL for the webpage (this does not include hostname and is normally determined automatically on the installation)";
-      case DConfig::DISP_TOLERANCE:
-        return "How many percent a chunk can be longer than normal to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
-      case DConfig::BATCH_SIZE:
-        return "Batch size of SQL query when hashlist is sent to the agent";
-      case DConfig::YUBIKEY_ID:
-        return "Yubikey Client Id";
-      case DConfig::YUBIKEY_KEY:
-        return "Yubikey Secret Key";
-      case DConfig::YUBIKEY_URL:
-        return "Yubikey API Url";
-      case DConfig::BASE_HOST:
-        return "Base hostname/port/protocol to use. Only fill in to override the self-determined value.";
-      case DConfig::DONATE_OFF:
-        return "Hide donate information (insert '1' to hide)";
-    }
-    return $config;
-  }
-}
-
 class DNotificationObjectType {
   const HASHLIST = "Hashlist";
   const AGENT    = "Agent";
@@ -434,12 +320,6 @@ class DPayloadKeys {
   const USER        = "user";
   const HASHLIST    = "hashlist";
   const NUM_CRACKED = "numCracked";
-}
-
-class DConfigType {
-  const STRING_INPUT = "string";
-  const NUMBER_INPUT = "number";
-  const TICKBOX      = "checkbox";
 }
 
 // log entry types

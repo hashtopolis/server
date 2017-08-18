@@ -9,9 +9,9 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
 --
@@ -25,9 +25,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `AccessGroup` (
-  `accessGroupId` int(11) NOT NULL,
-  `groupName` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `accessGroupId` INT(11) NOT NULL,
+  `groupName`     INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -36,10 +39,13 @@ CREATE TABLE `AccessGroup` (
 --
 
 CREATE TABLE `AccessGroupAgent` (
-  `accessGroupAgentId` int(11) NOT NULL,
-  `accessGroupId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `accessGroupAgentId` INT(11) NOT NULL,
+  `accessGroupId`      INT(11) NOT NULL,
+  `agentId`            INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -48,10 +54,13 @@ CREATE TABLE `AccessGroupAgent` (
 --
 
 CREATE TABLE `AccessGroupUser` (
-  `accessGroupUserId` int(11) NOT NULL,
-  `accessGroupId` int(11) NOT NULL,
-  `userId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `accessGroupUserId` INT(11) NOT NULL,
+  `accessGroupId`     INT(11) NOT NULL,
+  `userId`            INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -60,22 +69,31 @@ CREATE TABLE `AccessGroupUser` (
 --
 
 CREATE TABLE `Agent` (
-  `agentId` int(11) NOT NULL,
-  `agentName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `uid` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `os` int(11) NOT NULL,
-  `devices` text COLLATE utf8_unicode_ci NOT NULL,
-  `cmdPars` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `ignoreErrors` int(11) NOT NULL,
-  `isActive` int(11) NOT NULL,
-  `isTrusted` int(11) NOT NULL,
-  `token` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `lastAct` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `lastTime` int(11) NOT NULL,
-  `lastIp` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `userId` int(11) DEFAULT NULL,
-  `cpuOnly` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `agentId`      INT(11)                      NOT NULL,
+  `agentName`    VARCHAR(50)
+                 COLLATE utf8_unicode_ci      NOT NULL,
+  `uid`          VARCHAR(100)
+                 COLLATE utf8_unicode_ci      NOT NULL,
+  `os`           INT(11)                      NOT NULL,
+  `devices`      TEXT COLLATE utf8_unicode_ci NOT NULL,
+  `cmdPars`      VARCHAR(256)
+                 COLLATE utf8_unicode_ci      NOT NULL,
+  `ignoreErrors` INT(11)                      NOT NULL,
+  `isActive`     INT(11)                      NOT NULL,
+  `isTrusted`    INT(11)                      NOT NULL,
+  `token`        VARCHAR(30)
+                 COLLATE utf8_unicode_ci      NOT NULL,
+  `lastAct`      VARCHAR(50)
+                 COLLATE utf8_unicode_ci      NOT NULL,
+  `lastTime`     INT(11)                      NOT NULL,
+  `lastIp`       VARCHAR(50)
+                 COLLATE utf8_unicode_ci      NOT NULL,
+  `userId`       INT(11) DEFAULT NULL,
+  `cpuOnly`      INT(11)                      NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -84,19 +102,26 @@ CREATE TABLE `Agent` (
 --
 
 CREATE TABLE `AgentBinary` (
-  `agentBinaryId` int(11) NOT NULL,
-  `type` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `version` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `operatingSystems` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `filename` varchar(50) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `agentBinaryId`    INT(11)                 NOT NULL,
+  `type`             VARCHAR(20)
+                     COLLATE utf8_unicode_ci NOT NULL,
+  `version`          VARCHAR(20)
+                     COLLATE utf8_unicode_ci NOT NULL,
+  `operatingSystems` VARCHAR(50)
+                     COLLATE utf8_unicode_ci NOT NULL,
+  `filename`         VARCHAR(50)
+                     COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 --
 -- Daten für Tabelle `AgentBinary`
 --
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
-(1, 'csharp', '0.45.8', 'Windows,Linux(mono),OSX(mono)', 'hashtopussy.exe');
+  (1, 'csharp', '0.45.8', 'Windows,Linux(mono),OSX(mono)', 'hashtopussy.exe');
 
 -- --------------------------------------------------------
 
@@ -105,12 +130,15 @@ INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems
 --
 
 CREATE TABLE `AgentError` (
-  `agentErrorId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `taskId` int(11) DEFAULT NULL,
-  `time` int(11) NOT NULL,
-  `error` text COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `agentErrorId` INT(11)                      NOT NULL,
+  `agentId`      INT(11)                      NOT NULL,
+  `taskId`       INT(11) DEFAULT NULL,
+  `time`         INT(11)                      NOT NULL,
+  `error`        TEXT COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -119,12 +147,15 @@ CREATE TABLE `AgentError` (
 --
 
 CREATE TABLE `AgentStat` (
-  `agentStatId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `statType` int(11) NOT NULL,
-  `time` int(11) NOT NULL,
-  `value` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `agentStatId` INT(11) NOT NULL,
+  `agentId`     INT(11) NOT NULL,
+  `statType`    INT(11) NOT NULL,
+  `time`        INT(11) NOT NULL,
+  `value`       INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -133,10 +164,13 @@ CREATE TABLE `AgentStat` (
 --
 
 CREATE TABLE `AgentZap` (
-  `agentZapId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `lastZapId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `agentZapId` INT(11) NOT NULL,
+  `agentId`    INT(11) NOT NULL,
+  `lastZapId`  INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -145,11 +179,15 @@ CREATE TABLE `AgentZap` (
 --
 
 CREATE TABLE `Assignment` (
-  `assignmentId` int(11) NOT NULL,
-  `taskId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `benchmark` varchar(50) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `assignmentId` INT(11)                 NOT NULL,
+  `taskId`       INT(11)                 NOT NULL,
+  `agentId`      INT(11)                 NOT NULL,
+  `benchmark`    VARCHAR(50)
+                 COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -158,19 +196,22 @@ CREATE TABLE `Assignment` (
 --
 
 CREATE TABLE `Chunk` (
-  `chunkId` int(11) NOT NULL,
-  `taskId` int(11) NOT NULL,
-  `skip` int(11) NOT NULL,
-  `length` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `dispatchTime` int(11) NOT NULL,
-  `solveTime` int(11) NOT NULL,
-  `checkpoint` int(11) NOT NULL,
-  `progress` int(11) NOT NULL,
-  `state` int(11) NOT NULL,
-  `cracked` int(11) NOT NULL,
-  `speed` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `chunkId`      INT(11) NOT NULL,
+  `taskId`       INT(11) NOT NULL,
+  `skip`         INT(11) NOT NULL,
+  `length`       INT(11) NOT NULL,
+  `agentId`      INT(11) NOT NULL,
+  `dispatchTime` INT(11) NOT NULL,
+  `solveTime`    INT(11) NOT NULL,
+  `checkpoint`   INT(11) NOT NULL,
+  `progress`     INT(11) NOT NULL,
+  `state`        INT(11) NOT NULL,
+  `cracked`      INT(11) NOT NULL,
+  `speed`        INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -179,33 +220,47 @@ CREATE TABLE `Chunk` (
 --
 
 CREATE TABLE `Config` (
-  `configId` int(11) NOT NULL,
-  `configSectionId` int(11) NOT NULL,
-  `item` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
-  `value` text COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `configId`        INT(11)                      NOT NULL,
+  `configSectionId` INT(11)                      NOT NULL,
+  `item`            VARCHAR(80)
+                    COLLATE utf8_unicode_ci      NOT NULL,
+  `value`           TEXT COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 --
 -- Daten für Tabelle `Config`
 --
 
 INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
-(1, 1, 'agenttimeout', '30'),
-(2, 1, 'benchtime', '30'),
-(3, 1, 'chunktime', '600'),
-(4, 1, 'chunktimeout', '30'),
-(9, 1, 'fieldseparator', ':'),
-(10, 1, 'hashlistAlias', '#HL#'),
-(11, 1, 'statustimer', '5'),
-(12, 4, 'timefmt', 'd.m.Y, H:i:s'),
-(13, 1, 'blacklistChars', '&|`\"\''),
-(14, 3, 'numLogEntries', '5000'),
-(15, 1, 'disptolerance', '20'),
-(16, 3, 'batchSize', '10000'),
-(18, 2, 'yubikey_id', ''),
-(19, 2, 'yubikey_key', ''),
-(20, 2, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
-(21, 4, 'donateOff', '0');
+  (1, 1, 'agenttimeout', '30'),
+  (2, 1, 'benchtime', '30'),
+  (3, 1, 'chunktime', '600'),
+  (4, 1, 'chunktimeout', '30'),
+  (9, 1, 'fieldseparator', ':'),
+  (10, 1, 'hashlistAlias', '#HL#'),
+  (11, 1, 'statustimer', '5'),
+  (12, 4, 'timefmt', 'd.m.Y, H:i:s'),
+  (13, 1, 'blacklistChars', '&|`\"\''),
+  (14, 3, 'numLogEntries', '5000'),
+  (15, 1, 'disptolerance', '20'),
+  (16, 3, 'batchSize', '10000'),
+  (18, 2, 'yubikey_id', ''),
+  (19, 2, 'yubikey_key', ''),
+  (20, 2, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
+  (21, 4, 'donateOff', '0'),
+  (22, 3, 'pagingSize', '5000'),
+  (23, 3, 'hashlistDownloadChunkSize', '5000'),
+  (24, 3, 'plainTextMaxLength', '200'),
+  (25, 3, 'hashMaxLength', '1024'),
+  (26, 5, 'emailSender', 'hashtopussy@example.org'),
+  (27, 5, 'baseHost', ''),
+  (28, 3, 'maxHashlistSize', '5000000'),
+  (29, 4, 'hideImportMasks', '1'),
+  (30, 5, 'telegramBotToken', ''),
+  (31, 5, 'contactEmail', '');
 
 -- --------------------------------------------------------
 
@@ -214,20 +269,24 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
 --
 
 CREATE TABLE `ConfigSection` (
-  `configSectionId` int(11) NOT NULL,
-  `sectionName` varchar(100) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `configSectionId` INT(11)                 NOT NULL,
+  `sectionName`     VARCHAR(100)
+                    COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 --
 -- Daten für Tabelle `ConfigSection`
 --
 
 INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
-(1, 'Cracking/Tasks'),
-(2, 'Yubikey'),
-(3, 'Finetuning'),
-(4, 'UI'),
-(5, 'Server');
+  (1, 'Cracking/Tasks'),
+  (2, 'Yubikey'),
+  (3, 'Finetuning'),
+  (4, 'UI'),
+  (5, 'Server');
 
 -- --------------------------------------------------------
 
@@ -236,11 +295,16 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
 --
 
 CREATE TABLE `CrackerBinary` (
-  `crackerBinaryId` int(11) NOT NULL,
-  `crackerBinaryTypeId` int(11) NOT NULL,
-  `version` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `platform` varchar(50) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `crackerBinaryId`     INT(11)                 NOT NULL,
+  `crackerBinaryTypeId` INT(11)                 NOT NULL,
+  `version`             VARCHAR(20)
+                        COLLATE utf8_unicode_ci NOT NULL,
+  `platform`            VARCHAR(50)
+                        COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -249,10 +313,14 @@ CREATE TABLE `CrackerBinary` (
 --
 
 CREATE TABLE `CrackerBinaryType` (
-  `crackerBinaryTypeId` int(11) NOT NULL,
-  `typeName` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-  `isChunkingAvailable` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `crackerBinaryTypeId` INT(11)                 NOT NULL,
+  `typeName`            VARCHAR(30)
+                        COLLATE utf8_unicode_ci NOT NULL,
+  `isChunkingAvailable` INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -261,12 +329,16 @@ CREATE TABLE `CrackerBinaryType` (
 --
 
 CREATE TABLE `File` (
-  `fileId` int(11) NOT NULL,
-  `filename` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `size` int(11) NOT NULL,
-  `isSecret` int(11) NOT NULL,
-  `fileType` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `fileId`   INT(11)                 NOT NULL,
+  `filename` VARCHAR(100)
+             COLLATE utf8_unicode_ci NOT NULL,
+  `size`     INT(11)                 NOT NULL,
+  `isSecret` INT(11)                 NOT NULL,
+  `fileType` INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -275,10 +347,13 @@ CREATE TABLE `File` (
 --
 
 CREATE TABLE `FilePretask` (
-  `filePretaskId` int(11) NOT NULL,
-  `fileId` int(11) NOT NULL,
-  `pretaskId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `filePretaskId` INT(11) NOT NULL,
+  `fileId`        INT(11) NOT NULL,
+  `pretaskId`     INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -287,10 +362,13 @@ CREATE TABLE `FilePretask` (
 --
 
 CREATE TABLE `FileTask` (
-  `fileTaskId` int(11) NOT NULL,
-  `fileId` int(11) NOT NULL,
-  `taskId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `fileTaskId` INT(11) NOT NULL,
+  `fileId`     INT(11) NOT NULL,
+  `taskId`     INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -299,15 +377,21 @@ CREATE TABLE `FileTask` (
 --
 
 CREATE TABLE `Hash` (
-  `hashId` int(11) NOT NULL,
-  `hashlistId` int(11) NOT NULL,
-  `hash` varchar(1024) COLLATE utf8_unicode_ci NOT NULL,
-  `salt` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `plaintext` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `timeCracked` int(11) DEFAULT NULL,
-  `chunkId` int(11) DEFAULT NULL,
-  `isCracked` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `hashId`      INT(11)                 NOT NULL,
+  `hashlistId`  INT(11)                 NOT NULL,
+  `hash`        VARCHAR(1024)
+                COLLATE utf8_unicode_ci NOT NULL,
+  `salt`        VARCHAR(256)
+                COLLATE utf8_unicode_ci DEFAULT NULL,
+  `plaintext`   VARCHAR(256)
+                COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timeCracked` INT(11)                 DEFAULT NULL,
+  `chunkId`     INT(11)                 DEFAULT NULL,
+  `isCracked`   INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -316,15 +400,20 @@ CREATE TABLE `Hash` (
 --
 
 CREATE TABLE `HashBinary` (
-  `hashBinaryId` int(11) NOT NULL,
-  `hashlistId` int(11) NOT NULL,
-  `essid` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `hash` mediumtext COLLATE utf8_unicode_ci NOT NULL,
-  `plaintext` varchar(1024) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `timeCracked` int(11) DEFAULT NULL,
-  `chunkId` int(11) DEFAULT NULL,
-  `isCracked` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `hashBinaryId` INT(11)                            NOT NULL,
+  `hashlistId`   INT(11)                            NOT NULL,
+  `essid`        VARCHAR(100)
+                 COLLATE utf8_unicode_ci            NOT NULL,
+  `hash`         MEDIUMTEXT COLLATE utf8_unicode_ci NOT NULL,
+  `plaintext`    VARCHAR(1024)
+                 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `timeCracked`  INT(11)                 DEFAULT NULL,
+  `chunkId`      INT(11)                 DEFAULT NULL,
+  `isCracked`    INT(11)                            NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -333,17 +422,22 @@ CREATE TABLE `HashBinary` (
 --
 
 CREATE TABLE `Hashlist` (
-  `hashlistId` int(11) NOT NULL,
-  `hashlistName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `format` int(11) NOT NULL,
-  `hashTypeId` int(11) NOT NULL,
-  `hashCount` int(11) NOT NULL,
-  `saltSeparator` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cracked` int(11) NOT NULL,
-  `isSecret` int(11) NOT NULL,
-  `hexSalt` int(11) NOT NULL,
-  `isSalted` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `hashlistId`    INT(11)                 NOT NULL,
+  `hashlistName`  VARCHAR(100)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `format`        INT(11)                 NOT NULL,
+  `hashTypeId`    INT(11)                 NOT NULL,
+  `hashCount`     INT(11)                 NOT NULL,
+  `saltSeparator` VARCHAR(10)
+                  COLLATE utf8_unicode_ci DEFAULT NULL,
+  `cracked`       INT(11)                 NOT NULL,
+  `isSecret`      INT(11)                 NOT NULL,
+  `hexSalt`       INT(11)                 NOT NULL,
+  `isSalted`      INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -352,10 +446,13 @@ CREATE TABLE `Hashlist` (
 --
 
 CREATE TABLE `HashlistHashlist` (
-  `hashlistHashlistId` int(11) NOT NULL,
-  `parentHashlistId` int(11) NOT NULL,
-  `hashlistId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `hashlistHashlistId` INT(11) NOT NULL,
+  `parentHashlistId`   INT(11) NOT NULL,
+  `hashlistId`         INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -364,240 +461,244 @@ CREATE TABLE `HashlistHashlist` (
 --
 
 CREATE TABLE `HashType` (
-  `hashTypeId` int(11) NOT NULL,
-  `description` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `isSalted` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `hashTypeId`  INT(11)                 NOT NULL,
+  `description` VARCHAR(256)
+                COLLATE utf8_unicode_ci NOT NULL,
+  `isSalted`    INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 --
 -- Daten für Tabelle `HashType`
 --
 
 INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`) VALUES
-(0, 'MD5', 0),
-(10, 'md5($pass.$salt)', 1),
-(11, 'Joomla < 2.5.18', 1),
-(12, 'PostgreSQL', 1),
-(20, 'md5($salt.$pass)', 1),
-(21, 'osCommerce, xt:Commerce', 1),
-(22, 'Juniper Netscreen/SSG (ScreenOS)', 1),
-(23, 'Skype', 1),
-(30, 'md5(unicode($pass).$salt)', 1),
-(40, 'md5($salt.unicode($pass))', 1),
-(50, 'HMAC-MD5 (key = $pass)', 1),
-(60, 'HMAC-MD5 (key = $salt)', 1),
-(100, 'SHA1', 0),
-(101, 'nsldap, SHA-1(Base64), Netscape LDAP SHA', 0),
-(110, 'sha1($pass.$salt)', 1),
-(111, 'nsldaps, SSHA-1(Base64), Netscape LDAP SSHA', 0),
-(112, 'Oracle S: Type (Oracle 11+)', 1),
-(120, 'sha1($salt.$pass)', 1),
-(121, 'SMF >= v1.1', 1),
-(122, 'OS X v10.4, v10.5, v10.6', 0),
-(123, 'EPi', 0),
-(124, 'Django (SHA-1)', 0),
-(125, 'ArubaOS', 0),
-(130, 'sha1(unicode($pass).$salt)', 1),
-(131, 'MSSQL(2000)', 0),
-(132, 'MSSQL(2005)', 0),
-(133, 'PeopleSoft', 0),
-(140, 'sha1($salt.unicode($pass))', 1),
-(141, 'EPiServer 6.x < v4', 0),
-(150, 'HMAC-SHA1 (key = $pass)', 1),
-(160, 'HMAC-SHA1 (key = $salt)', 1),
-(200, 'MySQL323', 0),
-(300, 'MySQL4.1/MySQL5+', 0),
-(400, 'phpass, MD5(Wordpress), MD5(Joomla), MD5(phpBB3)', 0),
-(500, 'md5crypt, MD5(Unix), FreeBSD MD5, Cisco-IOS MD5 2', 0),
-(501, 'Juniper IVE', 0),
-(600, 'BLAKE2b-512', 0),
-(900, 'MD4', 0),
-(1000, 'NTLM', 0),
-(1100, 'Domain Cached Credentials (DCC), MS Cache', 1),
-(1300, 'SHA-224', 0),
-(1400, 'SHA256', 0),
-(1410, 'sha256($pass.$salt)', 1),
-(1411, 'SSHA-256(Base64), LDAP {SSHA256}', 0),
-(1420, 'sha256($salt.$pass)', 1),
-(1421, 'hMailServer', 0),
-(1430, 'sha256(unicode($pass).$salt)', 1),
-(1440, 'sha256($salt.unicode($pass))', 1),
-(1441, 'EPiServer 6.x >= v4', 0),
-(1450, 'HMAC-SHA256 (key = $pass)', 1),
-(1460, 'HMAC-SHA256 (key = $salt)', 1),
-(1500, 'descrypt, DES(Unix), Traditional DES', 0),
-(1600, 'md5apr1, MD5(APR), Apache MD5', 0),
-(1700, 'SHA512', 0),
-(1710, 'sha512($pass.$salt)', 0),
-(1711, 'SSHA-512(Base64), LDAP {SSHA512}', 0),
-(1720, 'sha512($salt.$pass)', 1),
-(1722, 'OS X v10.7', 0),
-(1730, 'sha512(unicode($pass).$salt)', 1),
-(1731, 'MSSQL(2012), MSSQL(2014)', 0),
-(1740, 'sha512($salt.unicode($pass))', 1),
-(1750, 'HMAC-SHA512 (key = $pass)', 1),
-(1760, 'HMAC-SHA512 (key = $salt)', 1),
-(1800, 'sha512crypt, SHA512(Unix)', 0),
-(2100, 'Domain Cached Credentials 2 (DCC2), MS Cache', 0),
-(2400, 'Cisco-PIX MD5', 0),
-(2410, 'Cisco-ASA MD5', 1),
-(2500, 'WPA/WPA2', 0),
-(2600, 'md5(md5($pass))', 0),
-(2611, 'vBulletin < v3.8.5', 1),
-(2612, 'PHPS', 0),
-(2711, 'vBulletin >= v3.8.5', 1),
-(2811, 'IPB2+, MyBB1.2+', 1),
-(3000, 'LM', 0),
-(3100, 'Oracle H: Type (Oracle 7+), DES(Oracle)', 1),
-(3200, 'bcrypt, Blowfish(OpenBSD)', 0),
-(3710, 'md5($salt.md5($pass))', 1),
-(3711, 'Mediawiki B type', 0),
-(3800, 'md5($salt.$pass.$salt)', 1),
-(3910, 'md5(md5($pass).md5($salt))', 1),
-(4010, 'md5($salt.md5($salt.$pass))', 1),
-(4110, 'md5($salt.md5($pass.$salt))', 1),
-(4300, 'md5(strtoupper(md5($pass)))', 0),
-(4400, 'md5(sha1($pass))', 0),
-(4500, 'sha1(sha1($pass))', 0),
-(4520, 'sha1($salt.sha1($pass))', 1),
-(4521, 'Redmine Project Management Web App', 0),
-(4522, 'PunBB', 0),
-(4700, 'sha1(md5($pass))', 0),
-(4800, 'MD5(Chap), iSCSI CHAP authentication', 1),
-(4900, 'sha1($salt.$pass.$salt)', 1),
-(5000, 'SHA-3(Keccak)', 0),
-(5100, 'Half MD5', 0),
-(5200, 'Password Safe v3', 0),
-(5300, 'IKE-PSK MD5', 0),
-(5400, 'IKE-PSK SHA1', 0),
-(5500, 'NetNTLMv1-VANILLA / NetNTLMv1+ESS', 0),
-(5600, 'NetNTLMv2', 0),
-(5700, 'Cisco-IOS SHA256', 0),
-(5800, 'Samsung Android Password/PIN', 1),
-(6000, 'RipeMD160', 0),
-(6100, 'Whirlpool', 0),
-(6211, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish', 0),
-(6212, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0),
-(6213, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0),
-(6221, 'TrueCrypt 5.0+ SHA512 + AES/Serpent/Twofish', 0),
-(6222, 'TrueCrypt 5.0+ SHA512 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0),
-(6223, 'TrueCrypt 5.0+ SHA512 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0),
-(6231, 'TrueCrypt 5.0+ Whirlpool + AES/Serpent/Twofish', 0),
-(6232, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish/Serpent-AES/Twofish-Serpent', 0),
-(6233, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish-Serpent/Serpent-Twofish-AES', 0),
-(6241, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish + boot', 0),
-(6242, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent + boot', 0),
-(6243, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES + boot', 0),
-(6300, 'AIX {smd5}', 0),
-(6400, 'AIX {ssha256}', 0),
-(6500, 'AIX {ssha512}', 0),
-(6600, '1Password, Agile Keychain', 0),
-(6700, 'AIX {ssha1}', 0),
-(6800, 'Lastpass', 1),
-(6900, 'GOST R 34.11-94', 0),
-(7000, 'Fortigate (FortiOS)', 0),
-(7100, 'OS X v10.8 / v10.9', 0),
-(7200, 'GRUB 2', 0),
-(7300, 'IPMI2 RAKP HMAC-SHA1', 1),
-(7400, 'sha256crypt, SHA256(Unix)', 0),
-(7500, 'Kerberos 5 AS-REQ Pre-Auth', 0),
-(7700, 'SAP CODVN B (BCODE)', 0),
-(7800, 'SAP CODVN F/G (PASSCODE)', 0),
-(7900, 'Drupal7', 0),
-(8000, 'Sybase ASE', 0),
-(8100, 'Citrix Netscaler', 0),
-(8200, '1Password, Cloud Keychain', 0),
-(8300, 'DNSSEC (NSEC3)', 0),
-(8400, 'WBB3, Woltlab Burning Board 3', 0),
-(8500, 'RACF', 0),
-(8600, 'Lotus Notes/Domino 5', 0),
-(8700, 'Lotus Notes/Domino 6', 0),
-(8800, 'Android FDE <= 4.3', 0),
-(8900, 'scrypt', 0),
-(9000, 'Password Safe v2', 0),
-(9100, 'Lotus Notes/Domino', 0),
-(9200, 'Cisco $8$', 0),
-(9300, 'Cisco $9$', 0),
-(9400, 'Office 2007', 0),
-(9500, 'Office 2010', 0),
-(9600, 'Office 2013', 0),
-(9700, 'MS Office ⇐ 2003 MD5 + RC4, oldoffice$0, oldoffice$1', 0),
-(9710, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1', 0),
-(9720, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2', 0),
-(9800, 'MS Office ⇐ 2003 SHA1 + RC4, oldoffice$3, oldoffice$4', 0),
-(9810, 'MS Office <= 2003 $3, SHA1 + RC4, collider #1', 0),
-(9820, 'MS Office <= 2003 $3, SHA1 + RC4, collider #2', 0),
-(9900, 'Radmin2', 0),
-(10000, 'Django (PBKDF2-SHA256)', 0),
-(10100, 'SipHash', 0),
-(10200, 'Cram MD5', 0),
-(10300, 'SAP CODVN H (PWDSALTEDHASH) iSSHA-1', 0),
-(10400, 'PDF 1.1 - 1.3 (Acrobat 2 - 4)', 0),
-(10410, 'PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #1', 0),
-(10420, 'PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #2', 0),
-(10500, 'PDF 1.4 - 1.6 (Acrobat 5 - 8)', 0),
-(10600, 'PDF 1.7 Level 3 (Acrobat 9)', 0),
-(10700, 'PDF 1.7 Level 8 (Acrobat 10 - 11)', 0),
-(10800, 'SHA384', 0),
-(10900, 'PBKDF2-HMAC-SHA256', 0),
-(11000, 'PrestaShop', 0),
-(11100, 'PostgreSQL Challenge-Response Authentication (MD5)', 0),
-(11200, 'MySQL Challenge-Response Authentication (SHA1)', 0),
-(11300, 'Bitcoin/Litecoin wallet.dat', 0),
-(11400, 'SIP digest authentication (MD5)', 0),
-(11500, 'CRC32', 1),
-(11600, '7-Zip', 0),
-(11700, 'GOST R 34.11-2012 (Streebog) 256-bit', 0),
-(11800, 'GOST R 34.11-2012 (Streebog) 512-bit', 0),
-(11900, 'PBKDF2-HMAC-MD5', 0),
-(12000, 'PBKDF2-HMAC-SHA1', 0),
-(12001, 'Atlassian (PBKDF2-HMAC-SHA1)', 0),
-(12100, 'PBKDF2-HMAC-SHA512', 0),
-(12200, 'eCryptfs', 0),
-(12300, 'Oracle T: Type (Oracle 12+)', 0),
-(12400, 'BSDiCrypt, Extended DES', 0),
-(12500, 'RAR3-hp', 0),
-(12600, 'ColdFusion 10+', 0),
-(12700, 'Blockchain, My Wallet', 0),
-(12800, 'MS-AzureSync PBKDF2-HMAC-SHA256', 0),
-(12900, 'Android FDE (Samsung DEK)', 0),
-(13000, 'RAR5', 0),
-(13100, 'Kerberos 5 TGS-REP etype 23', 0),
-(13200, 'AxCrypt', 0),
-(13300, 'AxCrypt in memory SHA1', 0),
-(13400, 'Keepass 1/2 AES/Twofish with/without keyfile', 0),
-(13500, 'PeopleSoft PS_TOKEN', 0),
-(13600, 'WinZip', 0),
-(13711, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + AES, Serpent, Twofish', 0),
-(13712, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
-(13713, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + Serpent-Twofish-AES', 0),
-(13721, 'VeraCrypt PBKDF2-HMAC-SHA512 + AES, Serpent, Twofish', 0),
-(13722, 'VeraCrypt PBKDF2-HMAC-SHA512 + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
-(13723, 'VeraCrypt PBKDF2-HMAC-SHA512 + Serpent-Twofish-AES', 0),
-(13731, 'VeraCrypt PBKDF2-HMAC-Whirlpool + AES, Serpent, Twofish', 0),
-(13732, 'VeraCrypt PBKDF2-HMAC-Whirlpool + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
-(13733, 'VeraCrypt PBKDF2-HMAC-Whirlpool + Serpent-Twofish-AES', 0),
-(13751, 'VeraCrypt PBKDF2-HMAC-SHA256 + AES, Serpent, Twofish', 0),
-(13752, 'VeraCrypt PBKDF2-HMAC-SHA256 + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
-(13753, 'VeraCrypt PBKDF2-HMAC-SHA256 + Serpent-Twofish-AES', 0),
-(13800, 'Windows 8+ phone PIN/Password', 0),
-(13900, 'OpenCart', 1),
-(14000, 'DES (PT = $salt, key = $pass)', 1),
-(14100, '3DES (PT = $salt, key = $pass)', 1),
-(14400, 'sha1(CX)', 1),
-(14600, 'LUKS 10', 0),
-(14700, 'iTunes Backup < 10.0 11', 0),
-(14800, 'iTunes Backup >= 10.0 11', 0),
-(14900, 'Skip32 12', 1),
-(15000, 'FileZilla Server >= 0.9.55', 0),
-(15100, 'Juniper/NetBSD sha1crypt', 0),
-(15200, 'Blockchain, My Wallet, V2', 0),
-(15300, 'DPAPI masterkey file v1 and v2', 0),
-(15400, 'ChaCha20', 0),
-(15500, 'JKS Java Key Store Private Keys (SHA1)', 0),
-(15600, 'Ethereum Wallet, PBKDF2-HMAC-SHA256', 0),
-(15700, 'Ethereum Wallet, SCRYPT', 0),
-(99999, 'Plaintext', 0);
+  (0, 'MD5', 0),
+  (10, 'md5($pass.$salt)', 1),
+  (11, 'Joomla < 2.5.18', 1),
+  (12, 'PostgreSQL', 1),
+  (20, 'md5($salt.$pass)', 1),
+  (21, 'osCommerce, xt:Commerce', 1),
+  (22, 'Juniper Netscreen/SSG (ScreenOS)', 1),
+  (23, 'Skype', 1),
+  (30, 'md5(unicode($pass).$salt)', 1),
+  (40, 'md5($salt.unicode($pass))', 1),
+  (50, 'HMAC-MD5 (key = $pass)', 1),
+  (60, 'HMAC-MD5 (key = $salt)', 1),
+  (100, 'SHA1', 0),
+  (101, 'nsldap, SHA-1(Base64), Netscape LDAP SHA', 0),
+  (110, 'sha1($pass.$salt)', 1),
+  (111, 'nsldaps, SSHA-1(Base64), Netscape LDAP SSHA', 0),
+  (112, 'Oracle S: Type (Oracle 11+)', 1),
+  (120, 'sha1($salt.$pass)', 1),
+  (121, 'SMF >= v1.1', 1),
+  (122, 'OS X v10.4, v10.5, v10.6', 0),
+  (123, 'EPi', 0),
+  (124, 'Django (SHA-1)', 0),
+  (125, 'ArubaOS', 0),
+  (130, 'sha1(unicode($pass).$salt)', 1),
+  (131, 'MSSQL(2000)', 0),
+  (132, 'MSSQL(2005)', 0),
+  (133, 'PeopleSoft', 0),
+  (140, 'sha1($salt.unicode($pass))', 1),
+  (141, 'EPiServer 6.x < v4', 0),
+  (150, 'HMAC-SHA1 (key = $pass)', 1),
+  (160, 'HMAC-SHA1 (key = $salt)', 1),
+  (200, 'MySQL323', 0),
+  (300, 'MySQL4.1/MySQL5+', 0),
+  (400, 'phpass, MD5(Wordpress), MD5(Joomla), MD5(phpBB3)', 0),
+  (500, 'md5crypt, MD5(Unix), FreeBSD MD5, Cisco-IOS MD5 2', 0),
+  (501, 'Juniper IVE', 0),
+  (600, 'BLAKE2b-512', 0),
+  (900, 'MD4', 0),
+  (1000, 'NTLM', 0),
+  (1100, 'Domain Cached Credentials (DCC), MS Cache', 1),
+  (1300, 'SHA-224', 0),
+  (1400, 'SHA256', 0),
+  (1410, 'sha256($pass.$salt)', 1),
+  (1411, 'SSHA-256(Base64), LDAP {SSHA256}', 0),
+  (1420, 'sha256($salt.$pass)', 1),
+  (1421, 'hMailServer', 0),
+  (1430, 'sha256(unicode($pass).$salt)', 1),
+  (1440, 'sha256($salt.unicode($pass))', 1),
+  (1441, 'EPiServer 6.x >= v4', 0),
+  (1450, 'HMAC-SHA256 (key = $pass)', 1),
+  (1460, 'HMAC-SHA256 (key = $salt)', 1),
+  (1500, 'descrypt, DES(Unix), Traditional DES', 0),
+  (1600, 'md5apr1, MD5(APR), Apache MD5', 0),
+  (1700, 'SHA512', 0),
+  (1710, 'sha512($pass.$salt)', 0),
+  (1711, 'SSHA-512(Base64), LDAP {SSHA512}', 0),
+  (1720, 'sha512($salt.$pass)', 1),
+  (1722, 'OS X v10.7', 0),
+  (1730, 'sha512(unicode($pass).$salt)', 1),
+  (1731, 'MSSQL(2012), MSSQL(2014)', 0),
+  (1740, 'sha512($salt.unicode($pass))', 1),
+  (1750, 'HMAC-SHA512 (key = $pass)', 1),
+  (1760, 'HMAC-SHA512 (key = $salt)', 1),
+  (1800, 'sha512crypt, SHA512(Unix)', 0),
+  (2100, 'Domain Cached Credentials 2 (DCC2), MS Cache', 0),
+  (2400, 'Cisco-PIX MD5', 0),
+  (2410, 'Cisco-ASA MD5', 1),
+  (2500, 'WPA/WPA2', 0),
+  (2600, 'md5(md5($pass))', 0),
+  (2611, 'vBulletin < v3.8.5', 1),
+  (2612, 'PHPS', 0),
+  (2711, 'vBulletin >= v3.8.5', 1),
+  (2811, 'IPB2+, MyBB1.2+', 1),
+  (3000, 'LM', 0),
+  (3100, 'Oracle H: Type (Oracle 7+), DES(Oracle)', 1),
+  (3200, 'bcrypt, Blowfish(OpenBSD)', 0),
+  (3710, 'md5($salt.md5($pass))', 1),
+  (3711, 'Mediawiki B type', 0),
+  (3800, 'md5($salt.$pass.$salt)', 1),
+  (3910, 'md5(md5($pass).md5($salt))', 1),
+  (4010, 'md5($salt.md5($salt.$pass))', 1),
+  (4110, 'md5($salt.md5($pass.$salt))', 1),
+  (4300, 'md5(strtoupper(md5($pass)))', 0),
+  (4400, 'md5(sha1($pass))', 0),
+  (4500, 'sha1(sha1($pass))', 0),
+  (4520, 'sha1($salt.sha1($pass))', 1),
+  (4521, 'Redmine Project Management Web App', 0),
+  (4522, 'PunBB', 0),
+  (4700, 'sha1(md5($pass))', 0),
+  (4800, 'MD5(Chap), iSCSI CHAP authentication', 1),
+  (4900, 'sha1($salt.$pass.$salt)', 1),
+  (5000, 'SHA-3(Keccak)', 0),
+  (5100, 'Half MD5', 0),
+  (5200, 'Password Safe v3', 0),
+  (5300, 'IKE-PSK MD5', 0),
+  (5400, 'IKE-PSK SHA1', 0),
+  (5500, 'NetNTLMv1-VANILLA / NetNTLMv1+ESS', 0),
+  (5600, 'NetNTLMv2', 0),
+  (5700, 'Cisco-IOS SHA256', 0),
+  (5800, 'Samsung Android Password/PIN', 1),
+  (6000, 'RipeMD160', 0),
+  (6100, 'Whirlpool', 0),
+  (6211, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish', 0),
+  (6212, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0),
+  (6213, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0),
+  (6221, 'TrueCrypt 5.0+ SHA512 + AES/Serpent/Twofish', 0),
+  (6222, 'TrueCrypt 5.0+ SHA512 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0),
+  (6223, 'TrueCrypt 5.0+ SHA512 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0),
+  (6231, 'TrueCrypt 5.0+ Whirlpool + AES/Serpent/Twofish', 0),
+  (6232, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish/Serpent-AES/Twofish-Serpent', 0),
+  (6233, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish-Serpent/Serpent-Twofish-AES', 0),
+  (6241, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish + boot', 0),
+  (6242, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent + boot', 0),
+  (6243, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES + boot', 0),
+  (6300, 'AIX {smd5}', 0),
+  (6400, 'AIX {ssha256}', 0),
+  (6500, 'AIX {ssha512}', 0),
+  (6600, '1Password, Agile Keychain', 0),
+  (6700, 'AIX {ssha1}', 0),
+  (6800, 'Lastpass', 1),
+  (6900, 'GOST R 34.11-94', 0),
+  (7000, 'Fortigate (FortiOS)', 0),
+  (7100, 'OS X v10.8 / v10.9', 0),
+  (7200, 'GRUB 2', 0),
+  (7300, 'IPMI2 RAKP HMAC-SHA1', 1),
+  (7400, 'sha256crypt, SHA256(Unix)', 0),
+  (7500, 'Kerberos 5 AS-REQ Pre-Auth', 0),
+  (7700, 'SAP CODVN B (BCODE)', 0),
+  (7800, 'SAP CODVN F/G (PASSCODE)', 0),
+  (7900, 'Drupal7', 0),
+  (8000, 'Sybase ASE', 0),
+  (8100, 'Citrix Netscaler', 0),
+  (8200, '1Password, Cloud Keychain', 0),
+  (8300, 'DNSSEC (NSEC3)', 0),
+  (8400, 'WBB3, Woltlab Burning Board 3', 0),
+  (8500, 'RACF', 0),
+  (8600, 'Lotus Notes/Domino 5', 0),
+  (8700, 'Lotus Notes/Domino 6', 0),
+  (8800, 'Android FDE <= 4.3', 0),
+  (8900, 'scrypt', 0),
+  (9000, 'Password Safe v2', 0),
+  (9100, 'Lotus Notes/Domino', 0),
+  (9200, 'Cisco $8$', 0),
+  (9300, 'Cisco $9$', 0),
+  (9400, 'Office 2007', 0),
+  (9500, 'Office 2010', 0),
+  (9600, 'Office 2013', 0),
+  (9700, 'MS Office ⇐ 2003 MD5 + RC4, oldoffice$0, oldoffice$1', 0),
+  (9710, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1', 0),
+  (9720, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2', 0),
+  (9800, 'MS Office ⇐ 2003 SHA1 + RC4, oldoffice$3, oldoffice$4', 0),
+  (9810, 'MS Office <= 2003 $3, SHA1 + RC4, collider #1', 0),
+  (9820, 'MS Office <= 2003 $3, SHA1 + RC4, collider #2', 0),
+  (9900, 'Radmin2', 0),
+  (10000, 'Django (PBKDF2-SHA256)', 0),
+  (10100, 'SipHash', 0),
+  (10200, 'Cram MD5', 0),
+  (10300, 'SAP CODVN H (PWDSALTEDHASH) iSSHA-1', 0),
+  (10400, 'PDF 1.1 - 1.3 (Acrobat 2 - 4)', 0),
+  (10410, 'PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #1', 0),
+  (10420, 'PDF 1.1 - 1.3 (Acrobat 2 - 4), collider #2', 0),
+  (10500, 'PDF 1.4 - 1.6 (Acrobat 5 - 8)', 0),
+  (10600, 'PDF 1.7 Level 3 (Acrobat 9)', 0),
+  (10700, 'PDF 1.7 Level 8 (Acrobat 10 - 11)', 0),
+  (10800, 'SHA384', 0),
+  (10900, 'PBKDF2-HMAC-SHA256', 0),
+  (11000, 'PrestaShop', 0),
+  (11100, 'PostgreSQL Challenge-Response Authentication (MD5)', 0),
+  (11200, 'MySQL Challenge-Response Authentication (SHA1)', 0),
+  (11300, 'Bitcoin/Litecoin wallet.dat', 0),
+  (11400, 'SIP digest authentication (MD5)', 0),
+  (11500, 'CRC32', 1),
+  (11600, '7-Zip', 0),
+  (11700, 'GOST R 34.11-2012 (Streebog) 256-bit', 0),
+  (11800, 'GOST R 34.11-2012 (Streebog) 512-bit', 0),
+  (11900, 'PBKDF2-HMAC-MD5', 0),
+  (12000, 'PBKDF2-HMAC-SHA1', 0),
+  (12001, 'Atlassian (PBKDF2-HMAC-SHA1)', 0),
+  (12100, 'PBKDF2-HMAC-SHA512', 0),
+  (12200, 'eCryptfs', 0),
+  (12300, 'Oracle T: Type (Oracle 12+)', 0),
+  (12400, 'BSDiCrypt, Extended DES', 0),
+  (12500, 'RAR3-hp', 0),
+  (12600, 'ColdFusion 10+', 0),
+  (12700, 'Blockchain, My Wallet', 0),
+  (12800, 'MS-AzureSync PBKDF2-HMAC-SHA256', 0),
+  (12900, 'Android FDE (Samsung DEK)', 0),
+  (13000, 'RAR5', 0),
+  (13100, 'Kerberos 5 TGS-REP etype 23', 0),
+  (13200, 'AxCrypt', 0),
+  (13300, 'AxCrypt in memory SHA1', 0),
+  (13400, 'Keepass 1/2 AES/Twofish with/without keyfile', 0),
+  (13500, 'PeopleSoft PS_TOKEN', 0),
+  (13600, 'WinZip', 0),
+  (13711, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + AES, Serpent, Twofish', 0),
+  (13712, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
+  (13713, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + Serpent-Twofish-AES', 0),
+  (13721, 'VeraCrypt PBKDF2-HMAC-SHA512 + AES, Serpent, Twofish', 0),
+  (13722, 'VeraCrypt PBKDF2-HMAC-SHA512 + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
+  (13723, 'VeraCrypt PBKDF2-HMAC-SHA512 + Serpent-Twofish-AES', 0),
+  (13731, 'VeraCrypt PBKDF2-HMAC-Whirlpool + AES, Serpent, Twofish', 0),
+  (13732, 'VeraCrypt PBKDF2-HMAC-Whirlpool + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
+  (13733, 'VeraCrypt PBKDF2-HMAC-Whirlpool + Serpent-Twofish-AES', 0),
+  (13751, 'VeraCrypt PBKDF2-HMAC-SHA256 + AES, Serpent, Twofish', 0),
+  (13752, 'VeraCrypt PBKDF2-HMAC-SHA256 + AES-Twofish, Serpent-AES, Twofish-Serpent', 0),
+  (13753, 'VeraCrypt PBKDF2-HMAC-SHA256 + Serpent-Twofish-AES', 0),
+  (13800, 'Windows 8+ phone PIN/Password', 0),
+  (13900, 'OpenCart', 1),
+  (14000, 'DES (PT = $salt, key = $pass)', 1),
+  (14100, '3DES (PT = $salt, key = $pass)', 1),
+  (14400, 'sha1(CX)', 1),
+  (14600, 'LUKS 10', 0),
+  (14700, 'iTunes Backup < 10.0 11', 0),
+  (14800, 'iTunes Backup >= 10.0 11', 0),
+  (14900, 'Skip32 12', 1),
+  (15000, 'FileZilla Server >= 0.9.55', 0),
+  (15100, 'Juniper/NetBSD sha1crypt', 0),
+  (15200, 'Blockchain, My Wallet, V2', 0),
+  (15300, 'DPAPI masterkey file v1 and v2', 0),
+  (15400, 'ChaCha20', 0),
+  (15500, 'JKS Java Key Store Private Keys (SHA1)', 0),
+  (15600, 'Ethereum Wallet, PBKDF2-HMAC-SHA256', 0),
+  (15700, 'Ethereum Wallet, SCRYPT', 0),
+  (99999, 'Plaintext', 0);
 
 -- --------------------------------------------------------
 
@@ -606,13 +707,19 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`) VALUES
 --
 
 CREATE TABLE `LogEntry` (
-  `logEntryId` int(11) NOT NULL,
-  `issuer` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `issuerId` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `level` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `message` text COLLATE utf8_unicode_ci NOT NULL,
-  `time` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `logEntryId` INT(11)                      NOT NULL,
+  `issuer`     VARCHAR(50)
+               COLLATE utf8_unicode_ci      NOT NULL,
+  `issuerId`   VARCHAR(50)
+               COLLATE utf8_unicode_ci      NOT NULL,
+  `level`      VARCHAR(50)
+               COLLATE utf8_unicode_ci      NOT NULL,
+  `message`    TEXT COLLATE utf8_unicode_ci NOT NULL,
+  `time`       INT(11)                      NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -621,14 +728,20 @@ CREATE TABLE `LogEntry` (
 --
 
 CREATE TABLE `NotificationSetting` (
-  `notificationSettingId` int(11) NOT NULL,
-  `action` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `objectId` int(11) NOT NULL,
-  `notification` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `userId` int(11) NOT NULL,
-  `receiver` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `isActive` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `notificationSettingId` INT(11)                 NOT NULL,
+  `action`                VARCHAR(50)
+                          COLLATE utf8_unicode_ci NOT NULL,
+  `objectId`              INT(11)                 NOT NULL,
+  `notification`          VARCHAR(50)
+                          COLLATE utf8_unicode_ci NOT NULL,
+  `userId`                INT(11)                 NOT NULL,
+  `receiver`              VARCHAR(256)
+                          COLLATE utf8_unicode_ci NOT NULL,
+  `isActive`              INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -637,18 +750,24 @@ CREATE TABLE `NotificationSetting` (
 --
 
 CREATE TABLE `Pretask` (
-  `pretaskId` int(11) NOT NULL,
-  `taskName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `attackCmd` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `chunkTime` int(11) NOT NULL,
-  `statusTimer` int(11) NOT NULL,
-  `color` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `isSmall` int(11) NOT NULL,
-  `isCpuTask` int(11) NOT NULL,
-  `useNewBench` int(11) NOT NULL,
-  `priority` int(11) NOT NULL,
-  `isMaskImport` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `pretaskId`    INT(11)                 NOT NULL,
+  `taskName`     VARCHAR(100)
+                 COLLATE utf8_unicode_ci NOT NULL,
+  `attackCmd`    VARCHAR(256)
+                 COLLATE utf8_unicode_ci NOT NULL,
+  `chunkTime`    INT(11)                 NOT NULL,
+  `statusTimer`  INT(11)                 NOT NULL,
+  `color`        VARCHAR(20)
+                 COLLATE utf8_unicode_ci NOT NULL,
+  `isSmall`      INT(11)                 NOT NULL,
+  `isCpuTask`    INT(11)                 NOT NULL,
+  `useNewBench`  INT(11)                 NOT NULL,
+  `priority`     INT(11)                 NOT NULL,
+  `isMaskImport` INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -657,10 +776,14 @@ CREATE TABLE `Pretask` (
 --
 
 CREATE TABLE `RegVoucher` (
-  `regVoucherId` int(11) NOT NULL,
-  `voucher` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `time` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `regVoucherId` INT(11)                 NOT NULL,
+  `voucher`      VARCHAR(100)
+                 COLLATE utf8_unicode_ci NOT NULL,
+  `time`         INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -669,21 +792,25 @@ CREATE TABLE `RegVoucher` (
 --
 
 CREATE TABLE `RightGroup` (
-  `rightGroupId` int(11) NOT NULL,
-  `groupName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `level` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `rightGroupId` INT(11)                 NOT NULL,
+  `groupName`    VARCHAR(50)
+                 COLLATE utf8_unicode_ci NOT NULL,
+  `level`        INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 --
 -- Daten für Tabelle `RightGroup`
 --
 
 INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
-(1, 'View User', 1),
-(2, 'Read Only User', 5),
-(3, 'Normal User', 20),
-(4, 'Superuser', 30),
-(5, 'Administrator', 50);
+  (1, 'View User', 1),
+  (2, 'Read Only User', 5),
+  (3, 'Normal User', 20),
+  (4, 'Superuser', 30),
+  (5, 'Administrator', 50);
 
 -- --------------------------------------------------------
 
@@ -692,14 +819,18 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
 --
 
 CREATE TABLE `Session` (
-  `sessionId` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
-  `sessionStartDate` int(11) NOT NULL,
-  `lastActionDate` int(11) NOT NULL,
-  `isOpen` int(11) NOT NULL,
-  `sessionLifetime` int(11) NOT NULL,
-  `sessionKey` varchar(256) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `sessionId`        INT(11)                 NOT NULL,
+  `userId`           INT(11)                 NOT NULL,
+  `sessionStartDate` INT(11)                 NOT NULL,
+  `lastActionDate`   INT(11)                 NOT NULL,
+  `isOpen`           INT(11)                 NOT NULL,
+  `sessionLifetime`  INT(11)                 NOT NULL,
+  `sessionKey`       VARCHAR(256)
+                     COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -708,9 +839,14 @@ CREATE TABLE `Session` (
 --
 
 CREATE TABLE `StoredValue` (
-  `storedValueId` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
-  `val` varchar(256) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `storedValueId` VARCHAR(50)
+                  COLLATE utf8_unicode_ci NOT NULL,
+  `val`           VARCHAR(256)
+                  COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -719,9 +855,13 @@ CREATE TABLE `StoredValue` (
 --
 
 CREATE TABLE `Supertask` (
-  `supertaskId` int(11) NOT NULL,
-  `supertaskName` varchar(50) COLLATE utf8_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `supertaskId`   INT(11)                 NOT NULL,
+  `supertaskName` VARCHAR(50)
+                  COLLATE utf8_unicode_ci NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -730,10 +870,13 @@ CREATE TABLE `Supertask` (
 --
 
 CREATE TABLE `SupertaskPretask` (
-  `supertaskPretaskId` int(11) NOT NULL,
-  `supertaskId` int(11) NOT NULL,
-  `pretaskId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `supertaskPretaskId` INT(11) NOT NULL,
+  `supertaskId`        INT(11) NOT NULL,
+  `pretaskId`          INT(11) NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -742,21 +885,27 @@ CREATE TABLE `SupertaskPretask` (
 --
 
 CREATE TABLE `Task` (
-  `taskId` int(11) NOT NULL,
-  `taskName` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `attackCmd` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `chunkTime` int(11) NOT NULL,
-  `statusTimer` int(11) NOT NULL,
-  `keyspace` int(11) NOT NULL,
-  `keyspaceProgress` int(11) NOT NULL,
-  `priority` int(11) NOT NULL,
-  `color` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `isSmall` int(11) NOT NULL,
-  `isCpuTask` int(11) NOT NULL,
-  `useNewBench` int(11) NOT NULL,
-  `skipKeyspace` int(11) NOT NULL,
-  `crackerBinaryId` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `taskId`           INT(11)                 NOT NULL,
+  `taskName`         VARCHAR(100)
+                     COLLATE utf8_unicode_ci NOT NULL,
+  `attackCmd`        VARCHAR(256)
+                     COLLATE utf8_unicode_ci NOT NULL,
+  `chunkTime`        INT(11)                 NOT NULL,
+  `statusTimer`      INT(11)                 NOT NULL,
+  `keyspace`         INT(11)                 NOT NULL,
+  `keyspaceProgress` INT(11)                 NOT NULL,
+  `priority`         INT(11)                 NOT NULL,
+  `color`            VARCHAR(20)
+                     COLLATE utf8_unicode_ci NOT NULL,
+  `isSmall`          INT(11)                 NOT NULL,
+  `isCpuTask`        INT(11)                 NOT NULL,
+  `useNewBench`      INT(11)                 NOT NULL,
+  `skipKeyspace`     INT(11)                 NOT NULL,
+  `crackerBinaryId`  INT(11) DEFAULT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -765,12 +914,15 @@ CREATE TABLE `Task` (
 --
 
 CREATE TABLE `TaskWrapper` (
-  `taskWrapperId` int(11) NOT NULL,
-  `priority` int(11) NOT NULL,
-  `taskType` int(11) NOT NULL,
-  `hashlistId` int(11) NOT NULL,
-  `accessGroupId` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `taskWrapperId` INT(11) NOT NULL,
+  `priority`      INT(11) NOT NULL,
+  `taskType`      INT(11) NOT NULL,
+  `hashlistId`    INT(11) NOT NULL,
+  `accessGroupId` INT(11) DEFAULT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -779,23 +931,35 @@ CREATE TABLE `TaskWrapper` (
 --
 
 CREATE TABLE `User` (
-  `userId` int(11) NOT NULL,
-  `username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `email` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
-  `passwordHash` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `passwordSalt` varchar(256) COLLATE utf8_unicode_ci NOT NULL,
-  `isValid` int(11) NOT NULL,
-  `isComputedPassword` int(11) NOT NULL,
-  `lastLoginDate` int(11) NOT NULL,
-  `registeredSince` int(11) NOT NULL,
-  `sessionLifetime` int(11) NOT NULL,
-  `rightGroupId` int(11) NOT NULL,
-  `yubikey` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp1` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp2` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp3` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp4` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `userId`             INT(11)                 NOT NULL,
+  `username`           VARCHAR(100)
+                       COLLATE utf8_unicode_ci NOT NULL,
+  `email`              VARCHAR(150)
+                       COLLATE utf8_unicode_ci NOT NULL,
+  `passwordHash`       VARCHAR(256)
+                       COLLATE utf8_unicode_ci NOT NULL,
+  `passwordSalt`       VARCHAR(256)
+                       COLLATE utf8_unicode_ci NOT NULL,
+  `isValid`            INT(11)                 NOT NULL,
+  `isComputedPassword` INT(11)                 NOT NULL,
+  `lastLoginDate`      INT(11)                 NOT NULL,
+  `registeredSince`    INT(11)                 NOT NULL,
+  `sessionLifetime`    INT(11)                 NOT NULL,
+  `rightGroupId`       INT(11)                 NOT NULL,
+  `yubikey`            VARCHAR(256)
+                       COLLATE utf8_unicode_ci DEFAULT NULL,
+  `otp1`               VARCHAR(256)
+                       COLLATE utf8_unicode_ci DEFAULT NULL,
+  `otp2`               VARCHAR(256)
+                       COLLATE utf8_unicode_ci DEFAULT NULL,
+  `otp3`               VARCHAR(256)
+                       COLLATE utf8_unicode_ci DEFAULT NULL,
+  `otp4`               VARCHAR(256)
+                       COLLATE utf8_unicode_ci DEFAULT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -804,12 +968,16 @@ CREATE TABLE `User` (
 --
 
 CREATE TABLE `Zap` (
-  `zapId` int(11) NOT NULL,
-  `hash` varchar(1024) COLLATE utf8_unicode_ci NOT NULL,
-  `solveTime` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `hashlistId` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `zapId`      INT(11)                 NOT NULL,
+  `hash`       VARCHAR(1024)
+               COLLATE utf8_unicode_ci NOT NULL,
+  `solveTime`  INT(11)                 NOT NULL,
+  `agentId`    INT(11)                 NOT NULL,
+  `hashlistId` INT(11)                 NOT NULL
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8
+  COLLATE = utf8_unicode_ci;
 
 --
 -- Indizes der exportierten Tabellen
@@ -1071,167 +1239,171 @@ ALTER TABLE `Zap`
 -- AUTO_INCREMENT für Tabelle `AccessGroup`
 --
 ALTER TABLE `AccessGroup`
-  MODIFY `accessGroupId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroupAgent`
 --
 ALTER TABLE `AccessGroupAgent`
-  MODIFY `accessGroupAgentId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `accessGroupAgentId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroupUser`
 --
 ALTER TABLE `AccessGroupUser`
-  MODIFY `accessGroupUserId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `accessGroupUserId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Agent`
 --
 ALTER TABLE `Agent`
-  MODIFY `agentId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `agentId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `AgentBinary`
 --
 ALTER TABLE `AgentBinary`
-  MODIFY `agentBinaryId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `agentBinaryId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
 --
 -- AUTO_INCREMENT für Tabelle `AgentError`
 --
 ALTER TABLE `AgentError`
-  MODIFY `agentErrorId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `agentErrorId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `AgentStat`
 --
 ALTER TABLE `AgentStat`
-  MODIFY `agentStatId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `agentStatId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `AgentZap`
 --
 ALTER TABLE `AgentZap`
-  MODIFY `agentZapId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `agentZapId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Assignment`
 --
 ALTER TABLE `Assignment`
-  MODIFY `assignmentId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `assignmentId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Chunk`
 --
 ALTER TABLE `Chunk`
-  MODIFY `chunkId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `chunkId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Config`
 --
 ALTER TABLE `Config`
-  MODIFY `configId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `configId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 22;
 --
 -- AUTO_INCREMENT für Tabelle `ConfigSection`
 --
 ALTER TABLE `ConfigSection`
-  MODIFY `configSectionId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `configSectionId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 5;
 --
 -- AUTO_INCREMENT für Tabelle `CrackerBinary`
 --
 ALTER TABLE `CrackerBinary`
-  MODIFY `crackerBinaryId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `crackerBinaryId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `CrackerBinaryType`
 --
 ALTER TABLE `CrackerBinaryType`
-  MODIFY `crackerBinaryTypeId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `crackerBinaryTypeId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `File`
 --
 ALTER TABLE `File`
-  MODIFY `fileId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `fileId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `FilePretask`
 --
 ALTER TABLE `FilePretask`
-  MODIFY `filePretaskId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `filePretaskId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `FileTask`
 --
 ALTER TABLE `FileTask`
-  MODIFY `fileTaskId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `fileTaskId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Hash`
 --
 ALTER TABLE `Hash`
-  MODIFY `hashId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `hashId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `HashBinary`
 --
 ALTER TABLE `HashBinary`
-  MODIFY `hashBinaryId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `hashBinaryId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Hashlist`
 --
 ALTER TABLE `Hashlist`
-  MODIFY `hashlistId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `hashlistId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `HashlistHashlist`
 --
 ALTER TABLE `HashlistHashlist`
-  MODIFY `hashlistHashlistId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `hashlistHashlistId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `LogEntry`
 --
 ALTER TABLE `LogEntry`
-  MODIFY `logEntryId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `logEntryId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `NotificationSetting`
 --
 ALTER TABLE `NotificationSetting`
-  MODIFY `notificationSettingId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `notificationSettingId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Pretask`
 --
 ALTER TABLE `Pretask`
-  MODIFY `pretaskId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pretaskId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `RegVoucher`
 --
 ALTER TABLE `RegVoucher`
-  MODIFY `regVoucherId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `regVoucherId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `RightGroup`
 --
 ALTER TABLE `RightGroup`
-  MODIFY `rightGroupId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `rightGroupId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 6;
 --
 -- AUTO_INCREMENT für Tabelle `Session`
 --
 ALTER TABLE `Session`
-  MODIFY `sessionId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `sessionId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Supertask`
 --
 ALTER TABLE `Supertask`
-  MODIFY `supertaskId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `supertaskId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `SupertaskPretask`
 --
 ALTER TABLE `SupertaskPretask`
-  MODIFY `supertaskPretaskId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `supertaskPretaskId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Task`
 --
 ALTER TABLE `Task`
-  MODIFY `taskId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `TaskWrapper`
 --
 ALTER TABLE `TaskWrapper`
-  MODIFY `taskWrapperId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `taskWrapperId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `User`
 --
 ALTER TABLE `User`
-  MODIFY `userId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `userId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT für Tabelle `Zap`
 --
 ALTER TABLE `Zap`
-  MODIFY `zapId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
 --
 -- Constraints der exportierten Tabellen
 --
@@ -1388,6 +1560,6 @@ ALTER TABLE `Zap`
   ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Zap_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
 
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;

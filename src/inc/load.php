@@ -41,7 +41,15 @@ foreach ($dir as $entry) {
 }
 
 // DEFINES
-include(dirname(__FILE__) . "/defines.php");
+// include all defines
+$dir = scandir(dirname(__FILE__) . "/defines/");
+foreach ($dir as $entry) {
+  if($entry[0] == '.'){
+    continue;
+  }
+  require_once(dirname(__FILE__) . "/defines/" . $entry);
+}
+
 include(dirname(__FILE__) . "/protocol.php");
 
 // include notifications
