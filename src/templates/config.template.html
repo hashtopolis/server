@@ -11,6 +11,8 @@
 	<button onclick="window.location='config.php?view=5'" type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
 </div>
 
+<br>
+
 <form action="" method="POST">
 	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
@@ -38,7 +40,7 @@
 			{{ENDFOREACH}}
 			<tr>
 				<td colspan="2">
-					<input type="submit" class='btn btn-default' value="Set">
+					<input type="submit" class='btn btn-success' value="Save Changes">
 				</td>
 			</tr>
 		</table>
