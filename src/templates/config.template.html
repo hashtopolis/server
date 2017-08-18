@@ -4,11 +4,11 @@
 {%TEMPLATE->struct/messages%}
 
 <div class="btn-group" role="group">
-	<a href="config.php?view=1"><button type="button" class="btn btn-default{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button></a>
-	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
-	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
-	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
-	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
+	<button onclick="window.location='config.php?view=1'" type="button" class="btn btn-default{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
+	<button onclick="window.location='config.php?view=2'" type="button" class="btn btn-default{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
+	<button onclick="window.location='config.php?view=3'" type="button" class="btn btn-default{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
+	<button onclick="window.location='config.php?view=4'" type="button" class="btn btn-default{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
+	<button onclick="window.location='config.php?view=5'" type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
 </div>
 
 <form action="" method="POST">
@@ -30,7 +30,7 @@
 						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
 							<input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
 						{{ENDIF}}
-						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
+						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "email"}}
 							<input type="email" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
 						{{ENDIF}}
 					</td>
