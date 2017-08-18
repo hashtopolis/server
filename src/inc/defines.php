@@ -263,7 +263,7 @@ class DConfig {
       case DConfig::HASHLIST_ALIAS:
         return "What string is used as hashlist alias when creating a task";
       case DConfig::STATUS_TIMER:
-        return "After how many seconds the agent should send it's progress and cracks to the server";
+        return "After how many seconds the agent should send its progress and cracks to the server";
       case DConfig::BLACKLIST_CHARS:
         return "Chars which are not allowed to be used in attack command inputs";
       case DConfig::NUMBER_LOGENTRIES:

@@ -16,9 +16,9 @@ class Task extends AbstractModel {
   private $isCpuTask;
   private $useNewBench;
   private $skipKeyspace;
-  private $binaryId;
+  private $crackerBinaryId;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $binaryId) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -32,7 +32,7 @@ class Task extends AbstractModel {
     $this->isCpuTask = $isCpuTask;
     $this->useNewBench = $useNewBench;
     $this->skipKeyspace = $skipKeyspace;
-    $this->binaryId = $binaryId;
+    $this->crackerBinaryId = $crackerBinaryId;
   }
   
   function getKeyValueDict() {
@@ -50,7 +50,7 @@ class Task extends AbstractModel {
     $dict['isCpuTask'] = $this->isCpuTask;
     $dict['useNewBench'] = $this->useNewBench;
     $dict['skipKeyspace'] = $this->skipKeyspace;
-    $dict['binaryId'] = $this->binaryId;
+    $dict['crackerBinaryId'] = $this->crackerBinaryId;
     
     return $dict;
   }
@@ -167,12 +167,12 @@ class Task extends AbstractModel {
     $this->skipKeyspace = $skipKeyspace;
   }
   
-  function getBinaryId(){
-    return $this->binaryId;
+  function getCrackerBinaryId(){
+    return $this->crackerBinaryId;
   }
   
-  function setBinaryId($binaryId){
-    $this->binaryId = $binaryId;
+  function setCrackerBinaryId($crackerBinaryId){
+    $this->crackerBinaryId = $crackerBinaryId;
   }
 
   const TASK_ID = "taskId";
@@ -188,5 +188,5 @@ class Task extends AbstractModel {
   const IS_CPU_TASK = "isCpuTask";
   const USE_NEW_BENCH = "useNewBench";
   const SKIP_KEYSPACE = "skipKeyspace";
-  const BINARY_ID = "binaryId";
+  const CRACKER_BINARY_ID = "crackerBinaryId";
 }

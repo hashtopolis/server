@@ -4,12 +4,14 @@ namespace DBA;
 
 class AgentStat extends AbstractModel {
   private $agentStatId;
+  private $agentId;
   private $statType;
   private $time;
   private $value;
   
-  function __construct($agentStatId, $statType, $time, $value) {
+  function __construct($agentStatId, $agentId, $statType, $time, $value) {
     $this->agentStatId = $agentStatId;
+    $this->agentId = $agentId;
     $this->statType = $statType;
     $this->time = $time;
     $this->value = $value;
@@ -18,6 +20,7 @@ class AgentStat extends AbstractModel {
   function getKeyValueDict() {
     $dict = array();
     $dict['agentStatId'] = $this->agentStatId;
+    $dict['agentId'] = $this->agentId;
     $dict['statType'] = $this->statType;
     $dict['time'] = $this->time;
     $dict['value'] = $this->value;
@@ -39,6 +42,14 @@ class AgentStat extends AbstractModel {
   
   function setId($id) {
     $this->agentStatId = $id;
+  }
+  
+  function getAgentId(){
+    return $this->agentId;
+  }
+  
+  function setAgentId($agentId){
+    $this->agentId = $agentId;
   }
   
   function getStatType(){
@@ -66,6 +77,7 @@ class AgentStat extends AbstractModel {
   }
 
   const AGENT_STAT_ID = "agentStatId";
+  const AGENT_ID = "agentId";
   const STAT_TYPE = "statType";
   const TIME = "time";
   const VALUE = "value";

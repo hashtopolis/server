@@ -7,14 +7,14 @@ class TaskWrapper extends AbstractModel {
   private $priority;
   private $taskType;
   private $hashlistId;
-  private $groupId;
+  private $accessGroupId;
   
-  function __construct($taskWrapperId, $priority, $taskType, $hashlistId, $groupId) {
+  function __construct($taskWrapperId, $priority, $taskType, $hashlistId, $accessGroupId) {
     $this->taskWrapperId = $taskWrapperId;
     $this->priority = $priority;
     $this->taskType = $taskType;
     $this->hashlistId = $hashlistId;
-    $this->groupId = $groupId;
+    $this->accessGroupId = $accessGroupId;
   }
   
   function getKeyValueDict() {
@@ -23,7 +23,7 @@ class TaskWrapper extends AbstractModel {
     $dict['priority'] = $this->priority;
     $dict['taskType'] = $this->taskType;
     $dict['hashlistId'] = $this->hashlistId;
-    $dict['groupId'] = $this->groupId;
+    $dict['accessGroupId'] = $this->accessGroupId;
     
     return $dict;
   }
@@ -68,17 +68,17 @@ class TaskWrapper extends AbstractModel {
     $this->hashlistId = $hashlistId;
   }
   
-  function getGroupId(){
-    return $this->groupId;
+  function getAccessGroupId(){
+    return $this->accessGroupId;
   }
   
-  function setGroupId($groupId){
-    $this->groupId = $groupId;
+  function setAccessGroupId($accessGroupId){
+    $this->accessGroupId = $accessGroupId;
   }
 
   const TASK_WRAPPER_ID = "taskWrapperId";
   const PRIORITY = "priority";
   const TASK_TYPE = "taskType";
   const HASHLIST_ID = "hashlistId";
-  const GROUP_ID = "groupId";
+  const ACCESS_GROUP_ID = "accessGroupId";
 }
