@@ -31,7 +31,7 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
 
 $configuration = array();
 $configSectionId = (isset($_GET['view'])) ? $_GET['view'] : 1;
-$qF = new QueryFilter(Config::CONFIG_SECTION_ID, $_GET['view'], "=");
+$qF = new QueryFilter(Config::CONFIG_SECTION_ID, $configSectionId, "=");
 $entries = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF));
 foreach ($entries as $entry) {
   $set = new DataSet();
