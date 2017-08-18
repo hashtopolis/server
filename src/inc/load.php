@@ -9,7 +9,7 @@ session_start();
 
 $OBJECTS = array();
 
-$VERSION = "0.4.3";
+$VERSION = "dev";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
