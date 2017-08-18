@@ -6,14 +6,14 @@ class File extends AbstractModel {
   private $fileId;
   private $filename;
   private $size;
-  private $secret;
+  private $isSecret;
   private $fileType;
   
-  function __construct($fileId, $filename, $size, $secret, $fileType) {
+  function __construct($fileId, $filename, $size, $isSecret, $fileType) {
     $this->fileId = $fileId;
     $this->filename = $filename;
     $this->size = $size;
-    $this->secret = $secret;
+    $this->isSecret = $isSecret;
     $this->fileType = $fileType;
   }
   
@@ -22,7 +22,7 @@ class File extends AbstractModel {
     $dict['fileId'] = $this->fileId;
     $dict['filename'] = $this->filename;
     $dict['size'] = $this->size;
-    $dict['secret'] = $this->secret;
+    $dict['isSecret'] = $this->isSecret;
     $dict['fileType'] = $this->fileType;
     
     return $dict;
@@ -60,12 +60,12 @@ class File extends AbstractModel {
     $this->size = $size;
   }
   
-  function getSecret(){
-    return $this->secret;
+  function getIsSecret(){
+    return $this->isSecret;
   }
   
-  function setSecret($secret){
-    $this->secret = $secret;
+  function setIsSecret($isSecret){
+    $this->isSecret = $isSecret;
   }
   
   function getFileType(){
@@ -79,6 +79,6 @@ class File extends AbstractModel {
   const FILE_ID = "fileId";
   const FILENAME = "filename";
   const SIZE = "size";
-  const SECRET = "secret";
+  const IS_SECRET = "isSecret";
   const FILE_TYPE = "fileType";
 }

@@ -8,17 +8,17 @@ class HashBinary extends AbstractModel {
   private $essid;
   private $hash;
   private $plaintext;
-  private $time;
+  private $timeCracked;
   private $chunkId;
   private $isCracked;
   
-  function __construct($hashBinaryId, $hashlistId, $essid, $hash, $plaintext, $time, $chunkId, $isCracked) {
+  function __construct($hashBinaryId, $hashlistId, $essid, $hash, $plaintext, $timeCracked, $chunkId, $isCracked) {
     $this->hashBinaryId = $hashBinaryId;
     $this->hashlistId = $hashlistId;
     $this->essid = $essid;
     $this->hash = $hash;
     $this->plaintext = $plaintext;
-    $this->time = $time;
+    $this->timeCracked = $timeCracked;
     $this->chunkId = $chunkId;
     $this->isCracked = $isCracked;
   }
@@ -30,7 +30,7 @@ class HashBinary extends AbstractModel {
     $dict['essid'] = $this->essid;
     $dict['hash'] = $this->hash;
     $dict['plaintext'] = $this->plaintext;
-    $dict['time'] = $this->time;
+    $dict['timeCracked'] = $this->timeCracked;
     $dict['chunkId'] = $this->chunkId;
     $dict['isCracked'] = $this->isCracked;
     
@@ -85,12 +85,12 @@ class HashBinary extends AbstractModel {
     $this->plaintext = $plaintext;
   }
   
-  function getTime(){
-    return $this->time;
+  function getTimeCracked(){
+    return $this->timeCracked;
   }
   
-  function setTime($time){
-    $this->time = $time;
+  function setTimeCracked($timeCracked){
+    $this->timeCracked = $timeCracked;
   }
   
   function getChunkId(){
@@ -114,7 +114,7 @@ class HashBinary extends AbstractModel {
   const ESSID = "essid";
   const HASH = "hash";
   const PLAINTEXT = "plaintext";
-  const TIME = "time";
+  const TIME_CRACKED = "timeCracked";
   const CHUNK_ID = "chunkId";
   const IS_CRACKED = "isCracked";
 }

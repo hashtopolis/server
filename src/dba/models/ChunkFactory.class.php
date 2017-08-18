@@ -33,7 +33,7 @@ class ChunkFactory extends AbstractModelFactory {
    * @return Chunk
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Chunk($dict['chunkId'], $dict['taskId'], $dict['skip'], $dict['length'], $dict['agentId'], $dict['dispatchTime'], $dict['progress'], $dict['rprogress'], $dict['state'], $dict['cracked'], $dict['solveTime'], $dict['speed']);
+    $o = new Chunk($dict['chunkId'], $dict['taskId'], $dict['skip'], $dict['length'], $dict['agentId'], $dict['dispatchTime'], $dict['solveTime'], $dict['checkpoint'], $dict['progress'], $dict['state'], $dict['cracked'], $dict['speed']);
     return $o;
   }
 

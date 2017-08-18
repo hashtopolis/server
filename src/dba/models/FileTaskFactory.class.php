@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class TaskFactory extends AbstractModelFactory {
+class FileTaskFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Task";
+    return "FileTask";
   }
   
   function getModelTable() {
-    return "Task";
+    return "FileTask";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class TaskFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return Task
+   * @return FileTask
    */
   function getNullObject() {
-    $o = new Task(-1, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new FileTask(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return Task
+   * @return FileTask
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Task($dict['taskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['keyspaceProgress'], $dict['priority'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['skipKeyspace'], $dict['binaryId']);
+    $o = new FileTask($dict['fileTaskId'], $dict['fileId'], $dict['taskId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return Task|Task[]
+   * @return FileTask|FileTask[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class TaskFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Task::class);
+      return Util::cast(parent::filter($options, $single), FileTask::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class TaskFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, Task::class);
+      $models[] = Util::cast($object, FileTask::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return Task
+   * @return FileTask
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Task::class);
+    return Util::cast(parent::get($pk), FileTask::class);
   }
 
   /**
-   * @param Task $model
-   * @return Task
+   * @param FileTask $model
+   * @return FileTask
    */
   function save($model) {
-    return Util::cast(parent::save($model), Task::class);
+    return Util::cast(parent::save($model), FileTask::class);
   }
 }

@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class SupertaskTaskFactory extends AbstractModelFactory {
+class BinaryFactory extends AbstractModelFactory {
   function getModelName() {
-    return "SupertaskTask";
+    return "Binary";
   }
   
   function getModelTable() {
-    return "SupertaskTask";
+    return "Binary";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class SupertaskTaskFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return SupertaskTask
+   * @return Binary
    */
   function getNullObject() {
-    $o = new SupertaskTask(-1, null, null);
+    $o = new Binary(-1, null, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return SupertaskTask
+   * @return Binary
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new SupertaskTask($dict['supertaskTaskId'], $dict['taskId'], $dict['supertaskId']);
+    $o = new Binary($dict['binaryId'], $dict['binaryTypeId'], $dict['version'], $dict['platform']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return SupertaskTask|SupertaskTask[]
+   * @return Binary|Binary[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class SupertaskTaskFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), SupertaskTask::class);
+      return Util::cast(parent::filter($options, $single), Binary::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class SupertaskTaskFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, SupertaskTask::class);
+      $models[] = Util::cast($object, Binary::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return SupertaskTask
+   * @return Binary
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), SupertaskTask::class);
+    return Util::cast(parent::get($pk), Binary::class);
   }
 
   /**
-   * @param SupertaskTask $model
-   * @return SupertaskTask
+   * @param Binary $model
+   * @return Binary
    */
   function save($model) {
-    return Util::cast(parent::save($model), SupertaskTask::class);
+    return Util::cast(parent::save($model), Binary::class);
   }
 }

@@ -23,7 +23,7 @@ class AgentZapFactory extends AbstractModelFactory {
    * @return AgentZap
    */
   function getNullObject() {
-    $o = new AgentZap(-1, null);
+    $o = new AgentZap(-1, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class AgentZapFactory extends AbstractModelFactory {
    * @return AgentZap
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new AgentZap($dict['agentId'], $dict['lastZapId']);
+    $o = new AgentZap($dict['agentZapId'], $dict['agentId'], $dict['lastZapId']);
     return $o;
   }
 

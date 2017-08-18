@@ -1,0 +1,60 @@
+<?php
+
+namespace DBA;
+
+class FileTask extends AbstractModel {
+  private $fileTaskId;
+  private $fileId;
+  private $taskId;
+  
+  function __construct($fileTaskId, $fileId, $taskId) {
+    $this->fileTaskId = $fileTaskId;
+    $this->fileId = $fileId;
+    $this->taskId = $taskId;
+  }
+  
+  function getKeyValueDict() {
+    $dict = array();
+    $dict['fileTaskId'] = $this->fileTaskId;
+    $dict['fileId'] = $this->fileId;
+    $dict['taskId'] = $this->taskId;
+    
+    return $dict;
+  }
+  
+  function getPrimaryKey() {
+    return "fileTaskId";
+  }
+  
+  function getPrimaryKeyValue() {
+    return $this->fileTaskId;
+  }
+  
+  function getId() {
+    return $this->fileTaskId;
+  }
+  
+  function setId($id) {
+    $this->fileTaskId = $id;
+  }
+  
+  function getFileId(){
+    return $this->fileId;
+  }
+  
+  function setFileId($fileId){
+    $this->fileId = $fileId;
+  }
+  
+  function getTaskId(){
+    return $this->taskId;
+  }
+  
+  function setTaskId($taskId){
+    $this->taskId = $taskId;
+  }
+
+  const FILE_TASK_ID = "fileTaskId";
+  const FILE_ID = "fileId";
+  const TASK_ID = "taskId";
+}

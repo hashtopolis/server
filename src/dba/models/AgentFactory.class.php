@@ -23,7 +23,7 @@ class AgentFactory extends AbstractModelFactory {
    * @return Agent
    */
   function getNullObject() {
-    $o = new Agent(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new Agent(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class AgentFactory extends AbstractModelFactory {
    * @return Agent
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Agent($dict['agentId'], $dict['agentName'], $dict['uid'], $dict['os'], $dict['gpus'], $dict['hcVersion'], $dict['cmdPars'], $dict['ignoreErrors'], $dict['isActive'], $dict['isTrusted'], $dict['token'], $dict['lastAct'], $dict['lastTime'], $dict['lastIp'], $dict['userId'], $dict['cpuOnly']);
+    $o = new Agent($dict['agentId'], $dict['agentName'], $dict['uid'], $dict['os'], $dict['devices'], $dict['cmdPars'], $dict['ignoreErrors'], $dict['isActive'], $dict['isTrusted'], $dict['token'], $dict['lastAct'], $dict['lastTime'], $dict['lastIp'], $dict['userId'], $dict['cpuOnly']);
     return $o;
   }
 

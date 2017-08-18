@@ -10,11 +10,11 @@ class Hashlist extends AbstractModel {
   private $hashCount;
   private $saltSeparator;
   private $cracked;
-  private $secret;
+  private $isSecret;
   private $hexSalt;
   private $isSalted;
   
-  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $secret, $hexSalt, $isSalted) {
+  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -22,7 +22,7 @@ class Hashlist extends AbstractModel {
     $this->hashCount = $hashCount;
     $this->saltSeparator = $saltSeparator;
     $this->cracked = $cracked;
-    $this->secret = $secret;
+    $this->isSecret = $isSecret;
     $this->hexSalt = $hexSalt;
     $this->isSalted = $isSalted;
   }
@@ -36,7 +36,7 @@ class Hashlist extends AbstractModel {
     $dict['hashCount'] = $this->hashCount;
     $dict['saltSeparator'] = $this->saltSeparator;
     $dict['cracked'] = $this->cracked;
-    $dict['secret'] = $this->secret;
+    $dict['isSecret'] = $this->isSecret;
     $dict['hexSalt'] = $this->hexSalt;
     $dict['isSalted'] = $this->isSalted;
     
@@ -107,12 +107,12 @@ class Hashlist extends AbstractModel {
     $this->cracked = $cracked;
   }
   
-  function getSecret(){
-    return $this->secret;
+  function getIsSecret(){
+    return $this->isSecret;
   }
   
-  function setSecret($secret){
-    $this->secret = $secret;
+  function setIsSecret($isSecret){
+    $this->isSecret = $isSecret;
   }
   
   function getHexSalt(){
@@ -138,7 +138,7 @@ class Hashlist extends AbstractModel {
   const HASH_COUNT = "hashCount";
   const SALT_SEPARATOR = "saltSeparator";
   const CRACKED = "cracked";
-  const SECRET = "secret";
+  const IS_SECRET = "isSecret";
   const HEX_SALT = "hexSalt";
   const IS_SALTED = "isSalted";
 }

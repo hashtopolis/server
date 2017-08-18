@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class TaskTaskFactory extends AbstractModelFactory {
+class GroupUserFactory extends AbstractModelFactory {
   function getModelName() {
-    return "TaskTask";
+    return "GroupUser";
   }
   
   function getModelTable() {
-    return "TaskTask";
+    return "GroupUser";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class TaskTaskFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return TaskTask
+   * @return GroupUser
    */
   function getNullObject() {
-    $o = new TaskTask(-1, null, null);
+    $o = new GroupUser(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return TaskTask
+   * @return GroupUser
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new TaskTask($dict['taskTaskId'], $dict['taskId'], $dict['subtaskId']);
+    $o = new GroupUser($dict['groupUserId'], $dict['groupId'], $dict['userId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskTask|TaskTask[]
+   * @return GroupUser|GroupUser[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class TaskTaskFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), TaskTask::class);
+      return Util::cast(parent::filter($options, $single), GroupUser::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class TaskTaskFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, TaskTask::class);
+      $models[] = Util::cast($object, GroupUser::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return TaskTask
+   * @return GroupUser
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), TaskTask::class);
+    return Util::cast(parent::get($pk), GroupUser::class);
   }
 
   /**
-   * @param TaskTask $model
-   * @return TaskTask
+   * @param GroupUser $model
+   * @return GroupUser
    */
   function save($model) {
-    return Util::cast(parent::save($model), TaskTask::class);
+    return Util::cast(parent::save($model), GroupUser::class);
   }
 }
