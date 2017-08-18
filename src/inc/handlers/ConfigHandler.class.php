@@ -194,7 +194,7 @@ class ConfigHandler implements Handler {
           }
           else if ($name == DConfig::PLAINTEXT_MAX_LENGTH) {
             $limit = intval($val);
-            if (!Util::setMaxHashLength($limit)) {
+            if (!Util::setPlaintextMaxLength($limit)) {
               UI::addMessage(UI::ERROR, "Failed to update max plaintext length!");
             }
           }
