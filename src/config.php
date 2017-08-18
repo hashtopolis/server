@@ -1,5 +1,8 @@
 <?php
 
+use DBA\QueryFilter;
+use DBA\Config;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
