@@ -175,7 +175,10 @@ class ConfigHandler implements Handler {
     foreach ($_POST as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
-        $CONFIG->addValue($name, $val);
+        if ($CONFIG->getVal($item) == $val) {
+          continue; // the value was not changed, so we don't need to update it
+        }
+        
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
         if ($config == null) {
@@ -183,18 +186,19 @@ class ConfigHandler implements Handler {
           $FACTORIES::getConfigFactory()->save($config);
         }
         else {
-          if ($name == DConfig::HASH_MAX_LENGTH && $CONFIG->getVal(DConfig::HASH_MAX_LENGTH) != $val) {
+          if ($name == DConfig::HASH_MAX_LENGTH) {
             $limit = intval($val);
-            if(!Util::setMaxHashLength($limit)){
+            if (!Util::setMaxHashLength($limit)) {
               UI::addMessage(UI::ERROR, "Failed to update max hash length!");
             }
           }
-          else if ($name == DConfig::PLAINTEXT_MAX_LENGTH && $CONFIG->getVal(DConfig::PLAINTEXT_MAX_LENGTH) != $val) {
+          else if ($name == DConfig::PLAINTEXT_MAX_LENGTH) {
             $limit = intval($val);
-            if(!Util::setMaxHashLength($limit)){
+            if (!Util::setMaxHashLength($limit)) {
               UI::addMessage(UI::ERROR, "Failed to update max plaintext length!");
             }
           }
+          $CONFIG->addValue($name, $val);
           $config->setValue($val);
           $FACTORIES::getConfigFactory()->update($config);
         }
