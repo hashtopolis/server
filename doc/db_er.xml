@@ -19,7 +19,7 @@
 		<attributeid id="15" posX="341" posY="534" type="normal" name="isTrusted" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="16" posX="485" posY="612" type="normal" name="token" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="17" posX="409" posY="584" type="normal" name="lastAct" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="18" posX="642" posY="619" type="normal" name="lastTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="18" posX="623" posY="628" type="normal" name="lastTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="19" posX="376" posY="499" type="normal" name="lastIp" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="20" posX="335" posY="462" type="normal" name="cpuOnly" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="21" posX="248" posY="624" name="owns"></relationshipid>
@@ -37,18 +37,18 @@
 		<attributeid id="33" posX="920" posY="377" type="normal" name="benchmark" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="34" posX="715" posY="441" name="assigned"></relationshipid>
 		<relationshipid id="35" posX="1063" posY="508" name="working"></relationshipid>
-		<attributeid id="36" posX="764" posY="945" type="normal" name="solveTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="36" posX="762" posY="942" type="normal" name="solveTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="37" posX="785" posY="985" type="normal" name="cracked" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="38" posX="842" posY="1022" type="normal" name="state" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="39" posX="911" posY="1046" type="normal" name="progress" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="40" posX="987" posY="1066" type="normal" name="checkpoint" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="41" posX="854" posY="861" type="normal" name="dispatchTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="41" posX="768" posY="858" type="normal" name="dispatchTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="42" posX="1051" posY="945" type="normal" name="length" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="43" posX="1041" posY="900" type="normal" name="skip" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="44" posX="1000" posY="859" type="key" name="chunkId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="45" posX="770" posY="899" type="normal" name="speed" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="45" posX="746" posY="899" type="normal" name="speed" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="46" posX="946" posY="768" name="belongs"></relationshipid>
-		<relationshipid id="47" posX="580" posY="762" name="works"></relationshipid>
+		<relationshipid id="47" posX="697" posY="659" name="works"></relationshipid>
 		<entityid id="48" posX="733" posY="1669" name="Config"></entityid>
 		<attributeid id="49" posX="690" posY="1602" type="key" name="configId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="50" posX="767" posY="1576" type="normal" name="item" required="false" unique="false" datatype="varchar" length="50"></attributeid>
@@ -144,16 +144,16 @@
 		<attributeid id="140" posX="1528" posY="846" type="normal" name="supertaskName" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="141" posX="1578" posY="906" type="key" name="supertaskId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
 		<entityid id="142" posX="2091" posY="714" name="Pretask"></entityid>
-		<attributeid id="143" posX="2256" posY="661" type="normal" name="pretaskId" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="143" posX="2256" posY="661" type="key" name="pretaskId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="144" posX="2272" posY="700" type="normal" name="taskName" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="145" posX="2265" posY="747" type="normal" name="attackCmd" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="146" posX="2225" posY="785" type="normal" name="chunkTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="147" posX="2166" posY="817" type="normal" name="statusTimer" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="148" posX="2073" posY="822" type="normal" name="priority" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="149" posX="1986" posY="762" type="normal" name="color" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="150" posX="1989" posY="667" type="normal" name="isSmall" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="151" posX="2071" posY="636" type="normal" name="isCpuTask" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="152" posX="2159" posY="638" type="normal" name="useNewBench" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="150" posX="1982" posY="689" type="normal" name="isSmall" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="151" posX="2090" posY="627" type="normal" name="isCpuTask" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="152" posX="2169" posY="641" type="normal" name="useNewBench" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="153" posX="1925" posY="870" name="containsTask"></relationshipid>
 		<relationshipid id="154" posX="1910" posY="730" name="needs1"></relationshipid>
 		<attributeid id="155" posX="1177" posY="592" type="normal" name="taskName" required="false" unique="false" datatype="varchar" length="50"></attributeid>
@@ -161,16 +161,16 @@
 		<attributeid id="157" posX="1494" posY="595" type="normal" name="keyspace" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="158" posX="1426" posY="684" type="normal" name="priority" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="159" posX="1373" posY="717" type="normal" name="color" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="160" posX="1355" posY="433" type="normal" name="attackCmd" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="161" posX="1476" posY="481" type="normal" name="chunkTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="162" posX="1294" posY="468" type="key" name="taskId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="160" posX="1294" posY="463" type="normal" name="attackCmd" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="161" posX="1158" posY="630" type="normal" name="chunkTime" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="162" posX="1257" posY="505" type="key" name="taskId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="163" posX="1507" posY="637" type="normal" name="keyspaceProgress" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="164" posX="1225" posY="676" type="normal" name="isSmall" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="165" posX="1292" posY="700" type="normal" name="isCpuTask" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="166" posX="1413" posY="396" type="normal" name="useNewBench" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<attributeid id="167" posX="1457" posY="435" type="normal" name="skipKeyspace" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="166" posX="1341" posY="427" type="normal" name="useNewBench" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="167" posX="1395" posY="458" type="normal" name="skipKeyspace" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="168" posX="1576" posY="564" type="normal" name="binaryVersion" required="false" unique="false" datatype="varchar" length="50"></attributeid>
-		<relationshipid id="169" posX="1209" posY="424" name="runs"></relationshipid>
+		<relationshipid id="169" posX="1557" posY="417" name="runs"></relationshipid>
 		<relationshipid id="170" posX="1551" posY="715" name="needs2"></relationshipid>
 		<entityid id="171" posX="2027" posY="205" name="TaskWrapper"></entityid>
 		<relationshipid id="172" posX="1751" posY="384" name="wraps"></relationshipid>
@@ -208,7 +208,12 @@
 		<attributeid id="204" posX="977" posY="676" type="normal" name="time" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<attributeid id="205" posX="879" posY="724" type="normal" name="value" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 		<relationshipid id="206" posX="701" posY="593" name="sent"></relationshipid>
-		<attributeid id="267" posX="2153" posY="207" type="normal" name="priority" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<attributeid id="207" posX="2153" posY="207" type="normal" name="priority" required="false" unique="false" datatype="varchar" length="50"></attributeid>
+		<entityid id="629" posX="584" posY="1037" name="AgentZap"></entityid>
+		<attributeid id="630" posX="670" posY="982" type="key" name="agentZapId" required="true" unique="false" datatype="varchar" length="50"></attributeid>
+		<relationshipid id="632" posX="586" posY="839" name="lastZap"></relationshipid>
+		<relationshipid id="633" posX="752" posY="1125" name="lastZapId"></relationshipid>
+		<attributeid id="3452" posX="2008" posY="644" type="normal" name="isHidden" required="false" unique="false" datatype="varchar" length="50"></attributeid>
 	</elements>
 	<entity id="0">
 		<attributelist>
@@ -544,6 +549,7 @@
 			<attribute id="150"></attribute>
 			<attribute id="151"></attribute>
 			<attribute id="152"></attribute>
+			<attribute id="3452"></attribute>
 		</attributelist>
 	</entity>
 	<relationship id="153">
@@ -561,7 +567,7 @@
 	<relationship id="169">
 		<rolelist>
 			<role mincard="1" maxcard="1" name="" entityid="5" refintegrity="false"></role>
-			<role mincard="0" maxcard="N" name="" entityid="78" refintegrity="false"></role>
+			<role mincard="0" maxcard="N" name="" entityid="77" refintegrity="false"></role>
 		</rolelist>
 	</relationship>
 	<relationship id="170">
@@ -574,7 +580,7 @@
 		<attributelist>
 			<attribute id="173"></attribute>
 			<attribute id="174"></attribute>
-			<attribute id="267"></attribute>
+			<attribute id="207"></attribute>
 		</attributelist>
 	</entity>
 	<relationship id="172">
@@ -650,6 +656,23 @@
 		<rolelist>
 			<role mincard="0" maxcard="N" name="" entityid="3" refintegrity="false"></role>
 			<role mincard="1" maxcard="1" name="" entityid="201" refintegrity="false"></role>
+		</rolelist>
+	</relationship>
+	<entity id="629">
+		<attributelist>
+			<attribute id="630"></attribute>
+		</attributelist>
+	</entity>
+	<relationship id="632">
+		<rolelist>
+			<role mincard="0" maxcard="1" name="" entityid="3" refintegrity="false"></role>
+			<role mincard="1" maxcard="1" name="" entityid="629" refintegrity="false"></role>
+		</rolelist>
+	</relationship>
+	<relationship id="633">
+		<rolelist>
+			<role mincard="1" maxcard="1" name="" entityid="629" refintegrity="false"></role>
+			<role mincard="0" maxcard="N" name="" entityid="176" refintegrity="false"></role>
 		</rolelist>
 	</relationship>
 </diagram>
