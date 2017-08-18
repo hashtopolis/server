@@ -49,7 +49,7 @@ foreach ($dir as $entry) {
   }
   require_once(dirname(__FILE__) . "/defines/" . $entry);
 }
-
+include(dirname(__FILE__) . "/protocol.php"); // TODO: remove this when all defines were split into the subdirectory
 include(dirname(__FILE__) . "/protocol.php");
 
 // include notifications
