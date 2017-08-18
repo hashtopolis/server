@@ -183,13 +183,17 @@ class ConfigHandler implements Handler {
           $FACTORIES::getConfigFactory()->save($config);
         }
         else {
-          if($name == DConfig::HASH_MAX_LENGTH){
+          if ($name == DConfig::HASH_MAX_LENGTH && $CONFIG->getVal(DConfig::HASH_MAX_LENGTH) != $val) {
             $limit = intval($val);
-            Util::setMaxHashLength($limit);
+            if(!Util::setMaxHashLength($limit)){
+              UI::addMessage(UI::ERROR, "Failed to update max hash length!");
+            }
           }
-          else if($name == DConfig::PLAINTEXT_MAX_LENGTH){
+          else if ($name == DConfig::PLAINTEXT_MAX_LENGTH && $CONFIG->getVal(DConfig::PLAINTEXT_MAX_LENGTH) != $val) {
             $limit = intval($val);
-            Util::setPlaintextMaxLength($limit);
+            if(!Util::setMaxHashLength($limit)){
+              UI::addMessage(UI::ERROR, "Failed to update max plaintext length!");
+            }
           }
           $config->setValue($val);
           $FACTORIES::getConfigFactory()->update($config);

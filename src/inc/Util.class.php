@@ -1201,39 +1201,47 @@ class Util {
    * @note dev
    * Sets the max length of hashes in the database
    * @param $limit int limit for hash length
+   * @return bool true on success
    */
   public static function setMaxHashLength($limit) {
     global $FACTORIES;
     
     if ($limit < 1) {
-      return;
+      return false;
     }
     
     $DB = $FACTORIES::getAgentFactory()->getDB();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
     if ($limit < $maxLength) {
-      $DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit);");
+      if($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit);") === false){
+        return false;
+      }
     }
+    return true;
   }
   
   /**
    * @note dev
    * Sets the max length of plaintexts in the database
    * @param $limit int limit for hash length
+   * @return bool true on success
    */
   public static function setPlaintextMaxLength($limit) {
     global $FACTORIES;
     
     if ($limit < 1) {
-      return;
+      return false;
     }
     
     $DB = $FACTORIES::getAgentFactory()->getDB();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::PLAINTEXT . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
     if ($limit < $maxLength) {
-      $DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::PLAINTEXT . " VARCHAR($limit);");
+      if($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::PLAINTEXT . " VARCHAR($limit);") === false){
+        return false;
+      }
     }
+    return true;
   }
 }
