@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class HashlistAgentFactory extends AbstractModelFactory {
+class HashlistHashlistFactory extends AbstractModelFactory {
   function getModelName() {
-    return "HashlistAgent";
+    return "HashlistHashlist";
   }
   
   function getModelTable() {
-    return "HashlistAgent";
+    return "HashlistHashlist";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class HashlistAgentFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return HashlistAgent
+   * @return HashlistHashlist
    */
   function getNullObject() {
-    $o = new HashlistAgent(-1, null, null);
+    $o = new HashlistHashlist(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return HashlistAgent
+   * @return HashlistHashlist
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HashlistAgent($dict['hashlistAgentId'], $dict['hashlistId'], $dict['agentId']);
+    $o = new HashlistHashlist($dict['hashlistHashlistId'], $dict['parentHashlistId'], $dict['hashlistId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return HashlistAgent|HashlistAgent[]
+   * @return HashlistHashlist|HashlistHashlist[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class HashlistAgentFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), HashlistAgent::class);
+      return Util::cast(parent::filter($options, $single), HashlistHashlist::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class HashlistAgentFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, HashlistAgent::class);
+      $models[] = Util::cast($object, HashlistHashlist::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return HashlistAgent
+   * @return HashlistHashlist
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), HashlistAgent::class);
+    return Util::cast(parent::get($pk), HashlistHashlist::class);
   }
 
   /**
-   * @param HashlistAgent $model
-   * @return HashlistAgent
+   * @param HashlistHashlist $model
+   * @return HashlistHashlist
    */
   function save($model) {
-    return Util::cast(parent::save($model), HashlistAgent::class);
+    return Util::cast(parent::save($model), HashlistHashlist::class);
   }
 }

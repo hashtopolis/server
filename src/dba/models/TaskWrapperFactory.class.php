@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class TaskFactory extends AbstractModelFactory {
+class TaskWrapperFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Task";
+    return "TaskWrapper";
   }
   
   function getModelTable() {
-    return "Task";
+    return "TaskWrapper";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class TaskFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return Task
+   * @return TaskWrapper
    */
   function getNullObject() {
-    $o = new Task(-1, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new TaskWrapper(-1, null, null, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return Task
+   * @return TaskWrapper
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Task($dict['taskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['keyspace'], $dict['keyspaceProgress'], $dict['priority'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['skipKeyspace'], $dict['binaryId']);
+    $o = new TaskWrapper($dict['taskWrapperId'], $dict['priority'], $dict['taskType'], $dict['hashlistId'], $dict['groupId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return Task|Task[]
+   * @return TaskWrapper|TaskWrapper[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class TaskFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Task::class);
+      return Util::cast(parent::filter($options, $single), TaskWrapper::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class TaskFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, Task::class);
+      $models[] = Util::cast($object, TaskWrapper::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return Task
+   * @return TaskWrapper
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Task::class);
+    return Util::cast(parent::get($pk), TaskWrapper::class);
   }
 
   /**
-   * @param Task $model
-   * @return Task
+   * @param TaskWrapper $model
+   * @return TaskWrapper
    */
   function save($model) {
-    return Util::cast(parent::save($model), Task::class);
+    return Util::cast(parent::save($model), TaskWrapper::class);
   }
 }

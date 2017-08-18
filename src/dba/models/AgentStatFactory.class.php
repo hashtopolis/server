@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class TaskFileFactory extends AbstractModelFactory {
+class AgentStatFactory extends AbstractModelFactory {
   function getModelName() {
-    return "TaskFile";
+    return "AgentStat";
   }
   
   function getModelTable() {
-    return "TaskFile";
+    return "AgentStat";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class TaskFileFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return TaskFile
+   * @return AgentStat
    */
   function getNullObject() {
-    $o = new TaskFile(-1, null, null);
+    $o = new AgentStat(-1, null, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return TaskFile
+   * @return AgentStat
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new TaskFile($dict['taskFileId'], $dict['taskId'], $dict['fileId']);
+    $o = new AgentStat($dict['agentStatId'], $dict['statType'], $dict['time'], $dict['value']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return TaskFile|TaskFile[]
+   * @return AgentStat|AgentStat[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class TaskFileFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), TaskFile::class);
+      return Util::cast(parent::filter($options, $single), AgentStat::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class TaskFileFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, TaskFile::class);
+      $models[] = Util::cast($object, AgentStat::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return TaskFile
+   * @return AgentStat
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), TaskFile::class);
+    return Util::cast(parent::get($pk), AgentStat::class);
   }
 
   /**
-   * @param TaskFile $model
-   * @return TaskFile
+   * @param AgentStat $model
+   * @return AgentStat
    */
   function save($model) {
-    return Util::cast(parent::save($model), TaskFile::class);
+    return Util::cast(parent::save($model), AgentStat::class);
   }
 }

@@ -3,16 +3,19 @@
 namespace DBA;
 
 class AgentZap extends AbstractModel {
+  private $agentZapId;
   private $agentId;
   private $lastZapId;
   
-  function __construct($agentId, $lastZapId) {
+  function __construct($agentZapId, $agentId, $lastZapId) {
+    $this->agentZapId = $agentZapId;
     $this->agentId = $agentId;
     $this->lastZapId = $lastZapId;
   }
   
   function getKeyValueDict() {
     $dict = array();
+    $dict['agentZapId'] = $this->agentZapId;
     $dict['agentId'] = $this->agentId;
     $dict['lastZapId'] = $this->lastZapId;
     
@@ -20,19 +23,27 @@ class AgentZap extends AbstractModel {
   }
   
   function getPrimaryKey() {
-    return "agentId";
+    return "agentZapId";
   }
   
   function getPrimaryKeyValue() {
-    return $this->agentId;
+    return $this->agentZapId;
   }
   
   function getId() {
-    return $this->agentId;
+    return $this->agentZapId;
   }
   
   function setId($id) {
-    $this->agentId = $id;
+    $this->agentZapId = $id;
+  }
+  
+  function getAgentId(){
+    return $this->agentId;
+  }
+  
+  function setAgentId($agentId){
+    $this->agentId = $agentId;
   }
   
   function getLastZapId(){
@@ -43,6 +54,7 @@ class AgentZap extends AbstractModel {
     $this->lastZapId = $lastZapId;
   }
 
+  const AGENT_ZAP_ID = "agentZapId";
   const AGENT_ID = "agentId";
   const LAST_ZAP_ID = "lastZapId";
 }

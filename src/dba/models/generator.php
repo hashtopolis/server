@@ -2,14 +2,13 @@
 
 $CONF = array();
 
-// Configure the required models here
+// entities
 $CONF['Agent'] = array(
   'agentId',
   'agentName',
   'uid',
   'os',
-  'gpus',
-  'hcVersion',
+  'devices',
   'cmdPars',
   'ignoreErrors',
   'isActive',
@@ -28,11 +27,40 @@ $CONF['AgentBinary'] = array(
   'operatingSystems',
   'filename'
 );
+$CONF['AgentError'] = array(
+  'agentErrorId',
+  'agentId',
+  'taskId',
+  'time',
+  'error'
+);
+$CONF['AgentStat'] = array(
+  'agentStatId',
+  'statType',
+  'time',
+  'value'
+);
+$CONF['AgentZap'] = array(
+  'agentZapId',
+  'agentId',
+  'lastZapId'
+);
 $CONF['Assignment'] = array(
   'assignmentId',
   'taskId',
   'agentId',
   'benchmark',
+);
+$CONF['Binary'] = array(
+  'binaryId',
+  'binaryTypeId',
+  'version',
+  'platform'
+);
+$CONF['BinaryType'] = array(
+  'binaryTypeId',
+  'typeName',
+  'isChunkingAvailable'
 );
 $CONF['Chunk'] = array(
   'chunkId',
@@ -41,38 +69,33 @@ $CONF['Chunk'] = array(
   'length',
   'agentId',
   'dispatchTime',
+  'solveTime',
+  'checkpoint',
   'progress',
-  'rprogress',
   'state',
   'cracked',
-  'solveTime',
   'speed'
 );
 $CONF['Config'] = array(
   'configId',
+  'configSectionId',
   'item',
   'value'
 );
-$CONF['AgentError'] = array(
-  'agentErrorId',
-  'agentId',
-  'taskId',
-  'time',
-  'error'
+$CONF['ConfigSection'] = array(
+  'configSectionId',
+  'sectionName'
 );
 $CONF['File'] = array(
   'fileId',
   'filename',
   'size',
-  'secret',
+  'isSecret',
   'fileType'
 );
-$CONF['HashcatRelease'] = array(
-  'hashcatReleaseId',
-  'version',
-  'time',
-  'url',
-  'rootdir'
+$CONF['Group'] = array(
+  'groupId',
+  'groupName'
 );
 $CONF['Hash'] = array(
   'hashId',
@@ -80,7 +103,7 @@ $CONF['Hash'] = array(
   'hash',
   'salt',
   'plaintext',
-  'time',
+  'timeCracked',
   'chunkId',
   'isCracked'
 );
@@ -90,7 +113,7 @@ $CONF['HashBinary'] = array(
   'essid',
   'hash',
   'plaintext',
-  'time',
+  'timeCracked',
   'chunkId',
   'isCracked'
 );
@@ -102,67 +125,95 @@ $CONF['Hashlist'] = array(
   'hashCount',
   'saltSeparator',
   'cracked',
-  'secret',
+  'isSecret',
   'hexSalt',
   'isSalted'
-);
-$CONF['HashlistAgent'] = array(
-  'hashlistAgentId',
-  'hashlistId',
-  'agentId'
 );
 $CONF['HashType'] = array(
   'hashTypeId',
   'description',
   'isSalted'
 );
+$CONF['LogEntry'] = array(
+  'logEntryId',
+  'issuer',
+  'issuerId',
+  'level',
+  'message',
+  'time'
+);
+$CONF['NotificationSetting'] = array(
+  'notificationSettingId',
+  'action',
+  'objectId',
+  'notification',
+  'userId',
+  'receiver',
+  'isActive'
+);
+$CONF['Pretask'] = array(
+  'pretaskId',
+  'taskName',
+  'attackCmd',
+  'chunkTime',
+  'statusTimer',
+  'color',
+  'isSmall',
+  'isCpuTask',
+  'useNewBench',
+  'priority',
+  'isHidden'
+);
 $CONF['RegVoucher'] = array(
   'regVoucherId',
   'voucher',
   'time'
 );
-$CONF['SuperHashlistHashlist'] = array(
-  'superHashlistHashlistId',
-  'superHashlistId',
-  'hashlistId'
+$CONF['RightGroup'] = array(
+  'rightGroupId',
+  'groupName',
+  'level'
 );
-$CONF['TaskFile'] = array(
-  'taskFileId',
-  'taskId',
-  'fileId'
+$CONF['Session'] = array(
+  'sessionId',
+  'userId',
+  'sessionStartDate',
+  'lastActionDate',
+  'isOpen',
+  'sessionLifetime',
+  'sessionKey'
+);
+$CONF['StoredValue'] = array(
+  'storedValueId',
+  'val'
+);
+$CONF['Supertask'] = array(
+  'supertaskId',
+  'supertaskName'
 );
 $CONF['Task'] = array(
   'taskId',
   'taskName',
   'attackCmd',
-  'hashlistId',
   'chunkTime',
   'statusTimer',
   'keyspace',
-  'progress',
+  'keyspaceProgress',
   'priority',
   'color',
   'isSmall',
   'isCpuTask',
   'useNewBench',
   'skipKeyspace',
-  'taskType'
+  'binaryId'
 );
-$CONF['TaskTask'] = array(
-  'taskTaskId',
-  'taskId',
-  'subtaskId'
+$CONF['TaskWrapper'] = array(
+  'taskWrapperId',
+  'priority',
+  'taskType',
+  'hashlistId',
+  'groupId'
 );
-$CONF['Supertask'] = array(
-  'supertaskId',
-  'supertaskName'
-);
-$CONF['SupertaskTask'] = array(
-  'supertaskTaskId',
-  'taskId',
-  'supertaskId'
-);
-
 $CONF['User'] = array(
   'userId',
   'username',
@@ -181,20 +232,6 @@ $CONF['User'] = array(
   'otp3',
   'otp4'
 );
-$CONF['Session'] = array(
-  'sessionId',
-  'userId',
-  'sessionStartDate',
-  'lastActionDate',
-  'isOpen',
-  'sessionLifetime',
-  'sessionKey'
-);
-$CONF['RightGroup'] = array(
-  'rightGroupId',
-  'groupName',
-  'level'
-);
 $CONF['Zap'] = array(
   'zapId',
   'hash',
@@ -202,30 +239,37 @@ $CONF['Zap'] = array(
   'agentId',
   'hashlistId'
 );
-$CONF['AgentZap'] = array(
-  'agentId',
-  'lastZapId'
+
+// relations
+$CONF['GroupUser'] = array(
+  'groupUserId',
+  'groupId',
+  'userId'
 );
-$CONF['StoredValue'] = array(
-  'storedValueId',
-  'val'
+$CONF['GroupAgent'] = array(
+  'groupAgentId',
+  'groupId',
+  'agentId'
 );
-$CONF['LogEntry'] = array(
-  'logEntryId',
-  'issuer',
-  'issuerId',
-  'level',
-  'message',
-  'time'
+$CONF['FileTask'] = array(
+  'fileTaskId',
+  'fileId',
+  'taskId'
 );
-$CONF['NotificationSetting'] = array(
-  'notificationSettingId',
-  'action',
-  'objectId',
-  'notification',
-  'userId',
-  'receiver',
-  'isActive'
+$CONF['FilePretask'] = array(
+  'filePretaskId',
+  'fileId',
+  'pretaskId'
+);
+$CONF['SupertaskPretask'] = array(
+  'supertaskPretaskId',
+  'supertaskId',
+  'pretaskId'
+);
+$CONF['HashlistHashlist'] = array(
+  'hashlistHashlistId',
+  'parentHashlistId',
+  'hashlistId'
 );
 
 foreach ($CONF as $NAME => $COLUMNS) {
@@ -259,7 +303,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
   $class = str_replace("__MODEL_GETTER_SETTER__", implode("\n  \n  ", $functions), $class);
   $class = str_replace("__MODEL_VARIABLE_NAMES__", implode("\n  ", $variables), $class);
   
-  if (!file_exists(dirname(__FILE__) . "/" . $NAME . ".class.php")) {
+  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . ".class.php")) {
     file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
   }
   
@@ -280,7 +324,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
   $class = str_replace("__MODEL_DICT__", implode(", ", $dict), $class);
   $class = str_replace("__MODEL__DICT2__", implode(", ", $dict2), $class);
   
-  if (!file_exists(dirname(__FILE__) . "/" . $NAME . "Factory.class.php")) {
+  if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . "Factory.class.php")) {
     file_put_contents(dirname(__FILE__) . "/" . $NAME . "Factory.class.php", $class);
   }
 }

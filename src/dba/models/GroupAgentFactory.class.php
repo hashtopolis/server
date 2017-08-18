@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class HashcatReleaseFactory extends AbstractModelFactory {
+class GroupAgentFactory extends AbstractModelFactory {
   function getModelName() {
-    return "HashcatRelease";
+    return "GroupAgent";
   }
   
   function getModelTable() {
-    return "HashcatRelease";
+    return "GroupAgent";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class HashcatReleaseFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return HashcatRelease
+   * @return GroupAgent
    */
   function getNullObject() {
-    $o = new HashcatRelease(-1, null, null, null, null);
+    $o = new GroupAgent(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return HashcatRelease
+   * @return GroupAgent
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HashcatRelease($dict['hashcatReleaseId'], $dict['version'], $dict['time'], $dict['url'], $dict['rootdir']);
+    $o = new GroupAgent($dict['groupAgentId'], $dict['groupId'], $dict['agentId']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return HashcatRelease|HashcatRelease[]
+   * @return GroupAgent|GroupAgent[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class HashcatReleaseFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), HashcatRelease::class);
+      return Util::cast(parent::filter($options, $single), GroupAgent::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class HashcatReleaseFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, HashcatRelease::class);
+      $models[] = Util::cast($object, GroupAgent::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return HashcatRelease
+   * @return GroupAgent
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), HashcatRelease::class);
+    return Util::cast(parent::get($pk), GroupAgent::class);
   }
 
   /**
-   * @param HashcatRelease $model
-   * @return HashcatRelease
+   * @param GroupAgent $model
+   * @return GroupAgent
    */
   function save($model) {
-    return Util::cast(parent::save($model), HashcatRelease::class);
+    return Util::cast(parent::save($model), GroupAgent::class);
   }
 }

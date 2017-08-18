@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class SuperHashlistHashlistFactory extends AbstractModelFactory {
+class BinaryTypeFactory extends AbstractModelFactory {
   function getModelName() {
-    return "SuperHashlistHashlist";
+    return "BinaryType";
   }
   
   function getModelTable() {
-    return "SuperHashlistHashlist";
+    return "BinaryType";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class SuperHashlistHashlistFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return SuperHashlistHashlist
+   * @return BinaryType
    */
   function getNullObject() {
-    $o = new SuperHashlistHashlist(-1, null, null);
+    $o = new BinaryType(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return SuperHashlistHashlist
+   * @return BinaryType
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new SuperHashlistHashlist($dict['superHashlistHashlistId'], $dict['superHashlistId'], $dict['hashlistId']);
+    $o = new BinaryType($dict['binaryTypeId'], $dict['typeName'], $dict['isChunkingAvailable']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return SuperHashlistHashlist|SuperHashlistHashlist[]
+   * @return BinaryType|BinaryType[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class SuperHashlistHashlistFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), SuperHashlistHashlist::class);
+      return Util::cast(parent::filter($options, $single), BinaryType::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class SuperHashlistHashlistFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, SuperHashlistHashlist::class);
+      $models[] = Util::cast($object, BinaryType::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return SuperHashlistHashlist
+   * @return BinaryType
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), SuperHashlistHashlist::class);
+    return Util::cast(parent::get($pk), BinaryType::class);
   }
 
   /**
-   * @param SuperHashlistHashlist $model
-   * @return SuperHashlistHashlist
+   * @param BinaryType $model
+   * @return BinaryType
    */
   function save($model) {
-    return Util::cast(parent::save($model), SuperHashlistHashlist::class);
+    return Util::cast(parent::save($model), BinaryType::class);
   }
 }

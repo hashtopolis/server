@@ -2,73 +2,64 @@
 
 namespace DBA;
 
-class Task extends AbstractModel {
-  private $taskId;
+class Pretask extends AbstractModel {
+  private $pretaskId;
   private $taskName;
   private $attackCmd;
   private $chunkTime;
   private $statusTimer;
-  private $keyspace;
-  private $keyspaceProgress;
-  private $priority;
   private $color;
   private $isSmall;
   private $isCpuTask;
   private $useNewBench;
-  private $skipKeyspace;
-  private $binaryId;
+  private $priority;
+  private $isHidden;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $binaryId) {
-    $this->taskId = $taskId;
+  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $isHidden) {
+    $this->pretaskId = $pretaskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
     $this->chunkTime = $chunkTime;
     $this->statusTimer = $statusTimer;
-    $this->keyspace = $keyspace;
-    $this->keyspaceProgress = $keyspaceProgress;
-    $this->priority = $priority;
     $this->color = $color;
     $this->isSmall = $isSmall;
     $this->isCpuTask = $isCpuTask;
     $this->useNewBench = $useNewBench;
-    $this->skipKeyspace = $skipKeyspace;
-    $this->binaryId = $binaryId;
+    $this->priority = $priority;
+    $this->isHidden = $isHidden;
   }
   
   function getKeyValueDict() {
     $dict = array();
-    $dict['taskId'] = $this->taskId;
+    $dict['pretaskId'] = $this->pretaskId;
     $dict['taskName'] = $this->taskName;
     $dict['attackCmd'] = $this->attackCmd;
     $dict['chunkTime'] = $this->chunkTime;
     $dict['statusTimer'] = $this->statusTimer;
-    $dict['keyspace'] = $this->keyspace;
-    $dict['keyspaceProgress'] = $this->keyspaceProgress;
-    $dict['priority'] = $this->priority;
     $dict['color'] = $this->color;
     $dict['isSmall'] = $this->isSmall;
     $dict['isCpuTask'] = $this->isCpuTask;
     $dict['useNewBench'] = $this->useNewBench;
-    $dict['skipKeyspace'] = $this->skipKeyspace;
-    $dict['binaryId'] = $this->binaryId;
+    $dict['priority'] = $this->priority;
+    $dict['isHidden'] = $this->isHidden;
     
     return $dict;
   }
   
   function getPrimaryKey() {
-    return "taskId";
+    return "pretaskId";
   }
   
   function getPrimaryKeyValue() {
-    return $this->taskId;
+    return $this->pretaskId;
   }
   
   function getId() {
-    return $this->taskId;
+    return $this->pretaskId;
   }
   
   function setId($id) {
-    $this->taskId = $id;
+    $this->pretaskId = $id;
   }
   
   function getTaskName(){
@@ -103,30 +94,6 @@ class Task extends AbstractModel {
     $this->statusTimer = $statusTimer;
   }
   
-  function getKeyspace(){
-    return $this->keyspace;
-  }
-  
-  function setKeyspace($keyspace){
-    $this->keyspace = $keyspace;
-  }
-  
-  function getKeyspaceProgress(){
-    return $this->keyspaceProgress;
-  }
-  
-  function setKeyspaceProgress($keyspaceProgress){
-    $this->keyspaceProgress = $keyspaceProgress;
-  }
-  
-  function getPriority(){
-    return $this->priority;
-  }
-  
-  function setPriority($priority){
-    $this->priority = $priority;
-  }
-  
   function getColor(){
     return $this->color;
   }
@@ -159,34 +126,31 @@ class Task extends AbstractModel {
     $this->useNewBench = $useNewBench;
   }
   
-  function getSkipKeyspace(){
-    return $this->skipKeyspace;
+  function getPriority(){
+    return $this->priority;
   }
   
-  function setSkipKeyspace($skipKeyspace){
-    $this->skipKeyspace = $skipKeyspace;
+  function setPriority($priority){
+    $this->priority = $priority;
   }
   
-  function getBinaryId(){
-    return $this->binaryId;
+  function getIsHidden(){
+    return $this->isHidden;
   }
   
-  function setBinaryId($binaryId){
-    $this->binaryId = $binaryId;
+  function setIsHidden($isHidden){
+    $this->isHidden = $isHidden;
   }
 
-  const TASK_ID = "taskId";
+  const PRETASK_ID = "pretaskId";
   const TASK_NAME = "taskName";
   const ATTACK_CMD = "attackCmd";
   const CHUNK_TIME = "chunkTime";
   const STATUS_TIMER = "statusTimer";
-  const KEYSPACE = "keyspace";
-  const KEYSPACE_PROGRESS = "keyspaceProgress";
-  const PRIORITY = "priority";
   const COLOR = "color";
   const IS_SMALL = "isSmall";
   const IS_CPU_TASK = "isCpuTask";
   const USE_NEW_BENCH = "useNewBench";
-  const SKIP_KEYSPACE = "skipKeyspace";
-  const BINARY_ID = "binaryId";
+  const PRIORITY = "priority";
+  const IS_HIDDEN = "isHidden";
 }
