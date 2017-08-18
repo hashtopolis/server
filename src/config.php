@@ -4,7 +4,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -28,11 +27,13 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
 }
 
 $configuration = array();
-$all = $CONFIG->getAllValues();
-foreach ($all as $key => $value) {
+$configSectionId = (isset($_GET['view'])) ? $_GET['view'] : 1;
+$qF = new QueryFilter(Config::CONFIG_SECTION_ID, $_GET['view'], "=");
+$entries = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF));
+foreach ($entries as $entry) {
   $set = new DataSet();
-  $set->addValue('item', $key);
-  $set->addValue('value', $value);
+  $set->addValue('item', $entry->getItem());
+  $set->addValue('value', $entry->getValue());
   $configuration[] = $set;
 }
 
