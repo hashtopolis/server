@@ -647,7 +647,7 @@ CREATE TABLE `Pretask` (
   `isCpuTask` int(11) NOT NULL,
   `useNewBench` int(11) NOT NULL,
   `priority` int(11) NOT NULL,
-  `isHidden` int(11) NOT NULL
+  `isMaskImport` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
