@@ -1216,10 +1216,13 @@ class Util {
     $DB = $FACTORIES::getAgentFactory()->getDB();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
-    if ($limit < $maxLength) {
-      if($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit);") === false){
+    if ($limit >= $maxLength) {
+      if ($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit);") === false) {
         return false;
       }
+    }
+    else {
+      return false;
     }
     return true;
   }
@@ -1240,10 +1243,13 @@ class Util {
     $DB = $FACTORIES::getAgentFactory()->getDB();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::PLAINTEXT . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
-    if ($limit < $maxLength) {
-      if($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::PLAINTEXT . " VARCHAR($limit);") === false){
+    if ($limit >= $maxLength) {
+      if ($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::PLAINTEXT . " VARCHAR($limit);") === false) {
         return false;
       }
+    }
+    else {
+      return false;
     }
     return true;
   }
