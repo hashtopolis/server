@@ -5,6 +5,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\File;
+use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\LogEntry;
@@ -1197,5 +1198,45 @@ class Util {
     $_SESSION['csrf'] = Util::randomString(30);
     $OBJECTS['csrf'] = $_SESSION['csrf'];
     return true;
+  }
+  
+  /**
+   * @note dev
+   * Sets the max length of hashes in the database
+   * @param $limit int limit for hash length
+   */
+  public static function setMaxHashLength($limit) {
+    global $FACTORIES;
+    
+    if ($limit < 1) {
+      return;
+    }
+    
+    $DB = $FACTORIES::getAgentFactory()->getDB();
+    $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
+    $maxLength = $result->fetch()['maxLength'];
+    if ($limit < $maxLength) {
+      $DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit);");
+    }
+  }
+  
+  /**
+   * @note dev
+   * Sets the max length of plaintexts in the database
+   * @param $limit int limit for hash length
+   */
+  public static function setPlaintextMaxLength($limit) {
+    global $FACTORIES;
+    
+    if ($limit < 1) {
+      return;
+    }
+    
+    $DB = $FACTORIES::getAgentFactory()->getDB();
+    $result = $DB->query("SELECT MAX(LENGTH(" . Hash::PLAINTEXT . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
+    $maxLength = $result->fetch()['maxLength'];
+    if ($limit < $maxLength) {
+      $DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::PLAINTEXT . " VARCHAR($limit);");
+    }
   }
 }

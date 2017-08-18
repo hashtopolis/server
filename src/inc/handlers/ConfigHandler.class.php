@@ -179,10 +179,18 @@ class ConfigHandler implements Handler {
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
         if ($config == null) {
-          $config = new Config(0, $name, $val);
+          $config = new Config(0, 5, $name, $val);
           $FACTORIES::getConfigFactory()->save($config);
         }
         else {
+          if($name == DConfig::HASH_MAX_LENGTH){
+            $limit = intval($val);
+            Util::setMaxHashLength($limit);
+          }
+          else if($name == DConfig::PLAINTEXT_MAX_LENGTH){
+            $limit = intval($val);
+            Util::setPlaintextMaxLength($limit);
+          }
           $config->setValue($val);
           $FACTORIES::getConfigFactory()->update($config);
         }
