@@ -2,7 +2,16 @@
 {%TEMPLATE->struct/menu%}
 <h2>Server configuration</h2>
 {%TEMPLATE->struct/messages%}
-<form action="config.php" method="POST">
+
+<div class="btn-group" role="group">
+	<a href="config.php?view=1"><button type="button" class="btn btn-default{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button></a>
+	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
+	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
+	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
+	<button type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
+</div>
+
+<form action="" method="POST">
 	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
 	<div class="panel panel-default">

@@ -33,11 +33,13 @@ $configuration = array();
 $configSectionId = (isset($_GET['view'])) ? $_GET['view'] : 1;
 $qF = new QueryFilter(Config::CONFIG_SECTION_ID, $configSectionId, "=");
 $entries = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF));
+$OBJECTS['configSectionId'] = 0;
 foreach ($entries as $entry) {
   $set = new DataSet();
   $set->addValue('item', $entry->getItem());
   $set->addValue('value', $entry->getValue());
   $configuration[] = $set;
+  $OBJECTS['configSectionId'] = $configSectionId;
 }
 
 $OBJECTS['configuration'] = $configuration;
