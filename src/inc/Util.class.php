@@ -101,6 +101,7 @@ class Util {
           $importFiles[] = new DataSet(array("file" => $file, "size" => Util::filesize($directory . "/" . $file)));
         }
       }
+      sort($importFiles);
       return $importFiles;
     }
     return array();
