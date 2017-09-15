@@ -12,4 +12,5 @@ class DAccessLevel {
 
 class DAccessGroupAction {
   const CREATE_GROUP = "createGroup";
+  const DELETE_GROUP = "deleteGroup";
 }
