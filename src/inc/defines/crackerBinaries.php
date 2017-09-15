@@ -1,8 +1,10 @@
 <?php
 
-class CrackerBinaryAction {
+class DCrackerBinaryAction {
   const DELETE_BINARY_TYPE = "deleteBinaryType";
   const DELETE_BINARY      = "deleteBinary";
+  const CREATE_BINARY_TYPE = "createBinaryType";
+  const CREATE_BINARY      = "createBinary";
 }
 
 class DPlatforms {
