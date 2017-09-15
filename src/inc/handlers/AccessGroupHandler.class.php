@@ -1,6 +1,7 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\AccessGroupAgent;
 use DBA\QueryFilter;
 
 class AccessGroupHandler implements Handler {
@@ -13,10 +14,50 @@ class AccessGroupHandler implements Handler {
       case DAccessGroupAction::CREATE_GROUP:
         $this->createGroup($_POST['groupName']);
         break;
+      case DAccessGroupAction::DELETE_GROUP:
+        $this->deleteGroup($_POST['groupId']);
+        break;
+      case DAccessGroupAction::REMOVE_USER:
+        $this->removeUser($_POST['userId'], $_POST['groupId']);
+        break;
+      case DAccessGroupAction::REMOVE_AGENT:
+        $this->removeAgent($_POST['agentId'], $_POST['groupId']);
+        break;
+      case DAccessGroupAction::ADD_USER:
+        $this->addUser($_POST['userId'], $_POST['groupId']);
+        break;
+      case DAccessGroupAction::ADD_AGENT:
+        $this->addAgent($_POST['agentId'], $_POST['groupId']);
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function addAgent($agentId, $groupId) {
+    global $FACTORIES;
+    
+    $group = $FACTORIES::getAccessGroupFactory()->get($groupId);
+    if ($group === null) {
+      UI::addMessage(UI::ERROR, "Invalid access group!");
+      return;
+    }
+    $agent = $FACTORIES::getAgentFactory()->get($agentId);
+    if ($agent === null) {
+      UI::addMessage(UI::ERROR, "Invalid agent!");
+      return;
+    }
+    $qF1 = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
+    $qF2 = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=");
+    $check = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    if (sizeof($check) > 0) {
+      UI::addMessage(UI::ERROR, "Agent is already member of this group!");
+      return;
+    }
+    
+    $accessGroupAgent = new AccessGroupAgent(0, $group->getId(), $agent->getId());
+    $FACTORIES::getAccessGroupAgentFactory()->save($accessGroupAgent);
   }
   
   private function createGroup($groupName) {
