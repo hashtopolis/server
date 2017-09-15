@@ -1,5 +1,6 @@
 <?php
 
+// access levels for user groups
 class DAccessLevel {
   // if you change any of them here, you need to check if this is consistent with the database
   const VIEW_ONLY     = 1;
