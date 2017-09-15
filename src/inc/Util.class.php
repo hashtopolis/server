@@ -1253,4 +1253,12 @@ class Util {
     }
     return true;
   }
+  
+  public static function arrayOfIds($array, $fieldName) {
+    $arr = array();
+    foreach ($array as $entry) {
+      $arr[] = $entry[$fieldName];
+    }
+    return $arr;
+  }
 }

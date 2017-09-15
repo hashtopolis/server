@@ -1,9 +1,9 @@
 <?php
 
-use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
 use DBA\Agent;
+use DBA\ContainFilter;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\User;
@@ -49,14 +49,18 @@ else if (isset($_GET['id'])) {
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
     $joinedUsers = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $OBJECTS['users'] = $joinedUsers[$FACTORIES::getUserFactory()->getModelName()];
-  
+    $excludedUsers = Util::arrayOfIds($joinedUsers[$FACTORIES::getUserFactory()->getModelName()], User::USER_ID);
+    
     $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
     $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
-    $joinedUsers = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $OBJECTS['agents'] = $joinedUsers[$FACTORIES::getAgentFactory()->getModelName()];
+    $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $OBJECTS['agents'] = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
+    $excludedAgents = Util::arrayOfIds($joinedAgents[$FACTORIES::getAgentFactory()->getModelName()], Agent::AGENT_ID);
     
-    $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array());
-    $OBJECTS['allAgents'] = $FACTORIES::getAgentFactory()->filter(array());
+    $qF = new ContainFilter(User::USER_ID, $excludedUsers, true);
+    $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $qF = new ContainFilter(Agent::AGENT_ID, $excludedAgents, true);
+    $OBJECTS['allAgents'] = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
     $TEMPLATE = new Template("groups/detail");
   }
 }
