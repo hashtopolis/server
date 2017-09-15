@@ -19,8 +19,8 @@ $MENU->setActive("users_groups");
 
 //catch actions here...
 if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
-  $groupsHandler = new GroupsHandler();
-  $groupsHandler->handle($_POST['action']);
+  $accessGroupHandler = new AccessGroupHandler();
+  $accessGroupHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
