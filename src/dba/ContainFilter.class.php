@@ -22,7 +22,7 @@ class ContainFilter extends Filter {
       $app[] = "?";
     }
     if (sizeof($app) == 0) {
-      return "FALSE";
+      return ($this->inverted) ? "TRUE" : "FALSE";
     }
     return $table . $this->key . (($this->inverted) ? " NOT" : "") . " IN (" . implode(",", $app) . ")";
   }
