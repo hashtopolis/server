@@ -47,15 +47,12 @@ else {
   foreach ($userList as $user) {
     $users->addValue($user->getAccessGroupId(), $users->getVal($user->getAccessGroupId()) + 1);
   }
-  $OBJECTS['users'] = $users;
   
   $agentList = $FACTORIES::getAccessGroupAgentFactory()->filter(array());
   $agents = new DataSet();
   foreach ($agentList as $agent) {
     $agents->addValue($agent->getAccessGroupId(), $agents->getVal($agent->getAccessGroupId()) + 1);
   }
-  $OBJECTS['agents'] = $agents;
-  
   
   $OBJECTS['groups'] = $FACTORIES::getAccessGroupFactory()->filter(array());
   foreach ($OBJECTS['groups'] as $group) {
@@ -66,6 +63,9 @@ else {
       $agents->addValue($group->getId(), 0);
     }
   }
+  
+  $OBJECTS['agents'] = $agents;
+  $OBJECTS['users'] = $users;
 }
 
 echo $TEMPLATE->render($OBJECTS);
