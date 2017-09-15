@@ -1,7 +1,9 @@
 <?php
 
-use DBA\HashcatRelease;
+use DBA\CrackerBinary;
+use DBA\CrackerBinaryType;
 use DBA\OrderFilter;
+use DBA\QueryFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -17,8 +19,8 @@ else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("hashcat/index");
-$MENU->setActive("hashcat_list");
+$TEMPLATE = new Template("binaries/index");
+$MENU->setActive("binaries_list");
 
 //catch actions here...
 if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
@@ -42,8 +44,21 @@ if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $OBJECTS['rootDir'] = htmlentities($rootDir, ENT_QUOTES, "UTF-8");
 }
 else {
-  $oF = new OrderFilter(HashcatRelease::TIME, "DESC");
-  $OBJECTS['releases'] = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => $oF));
+  $oF = new OrderFilter(CrackerBinaryType::TYPE_NAME, "ASC");
+  $OBJECTS['binaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array($FACTORIES::ORDER => $oF));
+  $binariesVersions = new DataSet();
+  foreach ($OBJECTS['binaryTypes'] as $binaryType) {
+    $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
+    $binaries = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $arr = array();
+    foreach ($binaries as $binary) {
+      if (!isset($arr[$binary->getVersion()])) {
+        $arr[$binary->getVersion()] = $binary->getVersion();
+      }
+    }
+    $binariesVersions->addValue($binaryType->getId(), implode("<br>", $arr));
+  }
+  $OBJECTS['versions'] = $binariesVersions;
 }
 
 echo $TEMPLATE->render($OBJECTS);
