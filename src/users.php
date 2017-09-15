@@ -1,5 +1,8 @@
 <?php
 
+use DBA\QueryFilter;
+use DBA\AccessGroupUser;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
@@ -39,6 +42,12 @@ else if (isset($_GET['id'])) {
   else {
     $OBJECTS['user'] = $user;
     $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
+    
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joinedGroups = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $OBJECTS['accessGroups'] = $joinedGroups[$FACTORIES::getAccessGroupFactory()->getModelName()];
+    
     $TEMPLATE = new Template("users/detail");
   }
 }

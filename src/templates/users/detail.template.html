@@ -25,6 +25,14 @@
 			<td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[user.getLastLoginDate()]])]]</td>
 		</tr>
 		<tr>
+			<th>Member of groups</th>
+			<td>
+				{{FOREACH group;[[accessGroups]]}}
+					<a href="groups.php?id=[[group.getId()]]">[[group.getGroupName()]]</a><br>
+				{{ENDFOREACH}}
+			</td>
+		</tr>
+		<tr>
 			<th>Enable/Disable user</th>
 			<td>
 				{{IF [[user.getIsValid()]] == 1}}
