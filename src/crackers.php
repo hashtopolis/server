@@ -33,15 +33,7 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
 
 if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $TEMPLATE = new Template("crackers/new");
-  $MENU->setActive("hashcat_new");
-  $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
-  $releases = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => $oF));
-  $rootDir = "";
-  $common = "";
-  if (sizeof($releases) > 0) {
-    $rootDir = $releases[0]->getRootdir();
-  }
-  $OBJECTS['rootDir'] = htmlentities($rootDir, ENT_QUOTES, "UTF-8");
+  $MENU->setActive("crackers_new");
 }
 else if (isset($_GET['id'])) {
   $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
