@@ -9,3 +9,7 @@ class DAccessLevel {
   const SUPERUSER     = 30;
   const ADMINISTRATOR = 50;
 }
+
+class DAccessGroupAction {
+  const CREATE_GROUP = "createGroup";
+}

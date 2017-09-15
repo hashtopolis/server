@@ -4,17 +4,17 @@
 {%TEMPLATE->struct/messages%}
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
+    <tr>
+      <th colspan="5" class="text-center">
+        <a href="groups.php?new=true"><button class="btn btn-success">Create New Access Group</button></a>
+      </th>
+    </tr>
 		<tr>
 			<th>ID</th>
 			<th>Name</th>
 			<th># of Members</th>
 			<th># of Agents</th>
 			<th>Action</th>
-		</tr>
-		<tr>
-			<th colspan="5" class="text-center">
-				<a href="groups.php?new=true"><button class="btn btn-success">Create New Access Group</button></a>
-			</th>
 		</tr>
 		{{FOREACH group;[[groups]]}}
 			<tr>
