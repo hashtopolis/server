@@ -4,6 +4,7 @@ use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
 use DBA\QueryFilter;
+use DBA\TaskWrapper;
 
 class AccessGroupHandler implements Handler {
   public function __construct($configId = null) {
@@ -34,6 +35,55 @@ class AccessGroupHandler implements Handler {
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function deleteGroup($groupId) {
+    global $FACTORIES;
+    
+    $group = $FACTORIES::getAccessGroupFactory()->get($groupId);
+    if ($group === null) {
+      UI::addMessage(UI::ERROR, "Invalid group!");
+      return;
+    }
+    
+    // delete association of tasks with this group
+    $qF = new QueryFilter(TaskWrapper::ACCESS_GROUP_ID, $group->getId(), "=");
+    $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, null);
+    $FACTORIES::getTaskWrapperFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+    
+    // delete all associations to users
+    $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=");
+    $FACTORIES::getAccessGroupUserFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    
+    // delete all associations to agents
+    $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=");
+    $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+  }
+  
+  private function removeUser($userId, $groupId) {
+    global $FACTORIES;
+    
+    $qF1 = new QueryFilter(AccessGroupUser::USER_ID, $userId, "=");
+    $qF2 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $groupId, "=");
+    $accessGroupUser = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+    if ($accessGroupUser === null) {
+      UI::addMessage(UI::ERROR, "User was not member of this group!");
+      return;
+    }
+    $FACTORIES::getAccessGroupUserFactory()->delete($accessGroupUser);
+  }
+  
+  private function removeAgent($agentId, $groupId) {
+    global $FACTORIES;
+    
+    $qF1 = new QueryFilter(AccessGroupAgent::AGENT_ID, $agentId, "=");
+    $qF2 = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $groupId, "=");
+    $accessGroupAgent = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+    if ($accessGroupAgent === null) {
+      UI::addMessage(UI::ERROR, "Agent was not member of this group!");
+      return;
+    }
+    $FACTORIES::getAccessGroupAgentFactory()->delete($accessGroupAgent);
   }
   
   private function addUser($userId, $groupId) {
