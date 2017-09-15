@@ -1,7 +1,9 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
+use DBA\Agent;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\User;
@@ -47,6 +49,11 @@ else if (isset($_GET['id'])) {
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
     $joinedUsers = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $OBJECTS['users'] = $joinedUsers[$FACTORIES::getUserFactory()->getModelName()];
+  
+    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
+    $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
+    $joinedUsers = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $OBJECTS['agents'] = $joinedUsers[$FACTORIES::getAgentFactory()->getModelName()];
     
     $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array());
     $OBJECTS['allAgents'] = $FACTORIES::getAgentFactory()->filter(array());
