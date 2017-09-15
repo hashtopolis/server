@@ -73,15 +73,15 @@
 					<li[[menu.isActive('chunks')]]><a href="chunks.php">Chunk activity</a></li>
 				{{ENDIF}}
 				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
-					<li class="dropdown[[menu.isActive('binaries', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cracker Binaries <span class="caret"></span></a>
+					<li class="dropdown[[menu.isActive('crackers', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cracker Binaries <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li[[menu.isActive('binaries_list')]]><a href="binaries.php">Binaries</a></li>
-							<li[[menu.isActive('binaries_new')]]><a href="binaries.php?new=true">New Binary</a></li>
+							<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Binaries</a></li>
+							<li[[menu.isActive('crackers_new')]]><a href="crackers.php?new=true">New Binary</a></li>
 						</ul>
 					</li>
 				{{ENDIF}}
 				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 10 && [[login.getLevel()]] < [[$DAccessLevel::SUPERUSER]]}}
-					<li[[menu.isActive('binaries_list')]]><a href="binaries.php">Cracker Binaries</a></li>
+					<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Cracker Binaries</a></li>
 				{{ENDIF}}
 				{{IF [[login.isLoggedin()]]}}
 					<li class="dropdown[[menu.isActive('account', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account <span class="caret"></span></a>
