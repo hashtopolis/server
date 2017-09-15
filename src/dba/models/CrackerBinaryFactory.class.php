@@ -23,7 +23,7 @@ class CrackerBinaryFactory extends AbstractModelFactory {
    * @return CrackerBinary
    */
   function getNullObject() {
-    $o = new CrackerBinary(-1, null, null, null);
+    $o = new CrackerBinary(-1, null, null, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class CrackerBinaryFactory extends AbstractModelFactory {
    * @return CrackerBinary
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new CrackerBinary($dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['version'], $dict['platform']);
+    $o = new CrackerBinary($dict['crackerBinaryId'], $dict['crackerBinaryTypeId'], $dict['version'], $dict['platform'], $dict['downloadUrl'], $dict['binaryName']);
     return $o;
   }
 
