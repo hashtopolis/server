@@ -44,7 +44,7 @@ else if (isset($_GET['id'])) {
     $OBJECTS['group'] = $group;
     
     $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
-    $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=");
+    $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
     $joinedUsers = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $OBJECTS['users'] = $joinedUsers[$FACTORIES::getUserFactory()->getModelName()];
     
