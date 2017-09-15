@@ -19,7 +19,7 @@ else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("binaries/index");
+$TEMPLATE = new Template("crackers/index");
 $MENU->setActive("binaries_list");
 
 //catch actions here...
@@ -32,7 +32,7 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
 }
 
 if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
-  $TEMPLATE = new Template("hashcat/new");
+  $TEMPLATE = new Template("crackers/new");
   $MENU->setActive("hashcat_new");
   $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
   $releases = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => $oF));
