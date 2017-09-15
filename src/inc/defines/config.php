@@ -7,6 +7,13 @@ class DConfigType {
   const EMAIL        = "email";
 }
 
+class DConfigAction {
+  const UPDATE_CONFIG = "updateConfig";
+  const REBUILD_CACHE = "rebuildCache";
+  const RESCAN_FILES  = "rescanFiles";
+  const CLEAR_ALL     = "clearAll";
+}
+
 // used config values
 class DConfig {
   // Section: Cracking/Tasks
