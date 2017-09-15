@@ -43,6 +43,15 @@ if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   }
   $OBJECTS['rootDir'] = htmlentities($rootDir, ENT_QUOTES, "UTF-8");
 }
+else if (isset($_GET['id'])) {
+  $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
+  if ($binaryType !== null) {
+    $OBJECTS['binaryType'] = $binaryType;
+    $TEMPLATE = new Template("crackers/detail");
+    $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
+    $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+  }
+}
 else {
   $oF = new OrderFilter(CrackerBinaryType::TYPE_NAME, "ASC");
   $OBJECTS['binaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array($FACTORIES::ORDER => $oF));

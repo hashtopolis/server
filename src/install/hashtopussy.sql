@@ -300,6 +300,10 @@ CREATE TABLE `CrackerBinary` (
   `version`             VARCHAR(20)
                         COLLATE utf8_unicode_ci NOT NULL,
   `platform`            VARCHAR(50)
+                        COLLATE utf8_unicode_ci NOT NULL,
+  `downloadUrl`         VARCHAR(150)
+                        COLLATE utf8_unicode_ci NOT NULL,
+  `binaryName`          VARCHAR(50)
                         COLLATE utf8_unicode_ci NOT NULL
 )
   ENGINE = InnoDB

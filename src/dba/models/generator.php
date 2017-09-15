@@ -84,7 +84,9 @@ $CONF['CrackerBinary'] = array(
   'crackerBinaryId',
   'crackerBinaryTypeId',
   'version',
-  'platform'
+  'platform',
+  'downloadUrl',
+  'binaryName'
 );
 $CONF['CrackerBinaryType'] = array(
   'crackerBinaryTypeId',
