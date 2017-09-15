@@ -58,6 +58,14 @@ else {
   
   
   $OBJECTS['groups'] = $FACTORIES::getAccessGroupFactory()->filter(array());
+  foreach ($OBJECTS['groups'] as $group) {
+    if ($users->getVal($group->getId()) === false) {
+      $users->addValue($group->getId(), 0);
+    }
+    if ($agents->getVal($group->getId()) === false) {
+      $agents->addValue($group->getId(), 0);
+    }
+  }
 }
 
 echo $TEMPLATE->render($OBJECTS);
