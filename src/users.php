@@ -2,6 +2,7 @@
 
 use DBA\QueryFilter;
 use DBA\AccessGroupUser;
+use DBA\AccessGroup;
 use DBA\JoinFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
