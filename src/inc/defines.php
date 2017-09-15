@@ -53,13 +53,6 @@ class DAgentAction {
   const SET_CPU        = "setCpu";
 }
 
-class DConfigAction {
-  const UPDATE_CONFIG = "updateConfig";
-  const REBUILD_CACHE = "rebuildCache";
-  const RESCAN_FILES  = "rescanFiles";
-  const CLEAR_ALL     = "clearAll";
-}
-
 class DFileAction {
   const DELETE_FILE = "deleteFile";
   const SET_SECRET  = "setSecret";
