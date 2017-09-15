@@ -58,6 +58,9 @@ class AccessGroupHandler implements Handler {
     // delete all associations to agents
     $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=");
     $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    
+    // delete access group
+    $FACTORIES::getAccessGroupFactory()->delete($group);
   }
   
   private function removeUser($userId, $groupId) {
