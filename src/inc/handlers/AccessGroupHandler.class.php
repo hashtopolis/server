@@ -2,6 +2,7 @@
 
 use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
+use DBA\AccessGroupUser;
 use DBA\QueryFilter;
 
 class AccessGroupHandler implements Handler {
@@ -33,6 +34,31 @@ class AccessGroupHandler implements Handler {
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function addUser($userId, $groupId) {
+    global $FACTORIES;
+    
+    $group = $FACTORIES::getAccessGroupFactory()->get($groupId);
+    if ($group === null) {
+      UI::addMessage(UI::ERROR, "Invalid access group!");
+      return;
+    }
+    $user = $FACTORIES::getUserFactory()->get($userId);
+    if ($user === null) {
+      UI::addMessage(UI::ERROR, "Invalid user!");
+      return;
+    }
+    $qF1 = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=");
+    $qF2 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=");
+    $check = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    if (sizeof($check) > 0) {
+      UI::addMessage(UI::ERROR, "User is already member of this group!");
+      return;
+    }
+    
+    $accessGroupUser = new AccessGroupUser(0, $group->getId(), $user->getId());
+    $FACTORIES::getAccessGroupUserFactory()->save($accessGroupUser);
   }
   
   private function addAgent($agentId, $groupId) {
