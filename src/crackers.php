@@ -20,7 +20,7 @@ else if ($LOGIN->getLevel() < DAccessLevel::USER) {
 }
 
 $TEMPLATE = new Template("crackers/index");
-$MENU->setActive("binaries_list");
+$MENU->setActive("crackers_list");
 
 //catch actions here...
 if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
