@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AbstractModel;
 use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
@@ -1251,10 +1252,14 @@ class Util {
     return true;
   }
   
-  public static function arrayOfIds($array, $fieldName) {
+  /**
+   * @param $array AbstractModel[]
+   * @return array
+   */
+  public static function arrayOfIds($array) {
     $arr = array();
     foreach ($array as $entry) {
-      $arr[] = $entry[$fieldName];
+      $arr[] = $entry->getId();
     }
     return $arr;
   }
