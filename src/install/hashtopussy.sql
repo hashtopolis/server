@@ -26,7 +26,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `AccessGroup` (
   `accessGroupId` INT(11) NOT NULL,
-  `groupName`     INT(11) NOT NULL
+  `groupName`     VARCHAR(50) NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
