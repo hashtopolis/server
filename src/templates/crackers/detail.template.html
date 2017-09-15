@@ -29,7 +29,7 @@
 							<a class='btn btn-primary' href="crackers.php?id=[[binaryType.getId()]]" disabled>Edit</a>
 						</div>
 						<form style="float: left;" action="crackers.php?id=[[binaryType.getId()]]" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getVersion()]]?')) return false;">
-							<input type="hidden" name="action" value="[[$CrackerBinaryAction::DELETE_BINARY]]">
+							<input type="hidden" name="action" value="[[$DCrackerBinaryAction::DELETE_BINARY]]">
 							<input type="hidden" name="binaryId" value="[[binary.getId()]]">
 							<input type="hidden" name="csrf" value="[[csrf]]">
 							<input type="submit" class='btn btn-danger' value="Delete">
