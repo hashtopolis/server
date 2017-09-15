@@ -31,7 +31,14 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+if (isset($_GET['new']) && isset($_GET['id']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+  $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
+  if ($binaryType !== null) {
+    $OBJECTS['binaryType'] = $binaryType;
+    $TEMPLATE = new Template("crackers/newVersion");
+  }
+}
+else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $TEMPLATE = new Template("crackers/new");
   $MENU->setActive("crackers_new");
 }
