@@ -13,4 +13,8 @@ class DAccessLevel {
 class DAccessGroupAction {
   const CREATE_GROUP = "createGroup";
   const DELETE_GROUP = "deleteGroup";
+  const REMOVE_USER  = "removeUser";
+  const REMOVE_AGENT = "removeAgent";
+  const ADD_USER     = "addUser";
+  const ADD_AGENT    = "addAgent";
 }
