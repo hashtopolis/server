@@ -15,10 +15,10 @@
 		{{FOREACH task;[[tasks]]}}
 			<tr>
 				<td{{IF [[strlen([[task.getVal('Task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('Task').getColor()]]"{{ENDIF}}>
-					<a href="tasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getId()]]</a>
+					<a href="pretasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getId()]]</a>
 				</td>
 				<td>
-					<a href="tasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getTaskName()]]</a>
+					<a href="pretasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getTaskName()]]</a>
 				</td>
         <td>[[task.getVal('Task').getAttackCmd()]]</td>
         <td>
