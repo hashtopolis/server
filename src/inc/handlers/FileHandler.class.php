@@ -1,7 +1,10 @@
 <?php
 
 use DBA\File;
+use DBA\FilePretask;
+use DBA\FileTask;
 use DBA\JoinFilter;
+use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskFile;
@@ -66,13 +69,23 @@ class FileHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     
     //check where the file is used and replace the filename in all the tasks
-    $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=", $FACTORIES::getTaskFileFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), Task::TASK_ID, TaskFile::TASK_ID);
+    $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=", $FACTORIES::getFileTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), Task::TASK_ID, FileTask::TASK_ID);
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
       /** @var $task Task */
       $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
       $FACTORIES::getTaskFactory()->update($task);
+    }
+    
+    //check where the file is used and replace the filename in all the preconfigured tasks
+    $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=", $FACTORIES::getFilePretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), Pretask::PRETASK_ID, FilePretask::PRETASK_ID);
+    $joined = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $pretask) {
+      /** @var $pretask Pretask */
+      $pretask->setAttackCmd(str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
+      $FACTORIES::getPretaskFactory()->update($pretask);
     }
     
     $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
@@ -182,7 +195,7 @@ class FileHandler implements Handler {
     // switch global file secret state
     $file = $FACTORIES::getFileFactory()->get($_POST['file']);
     $secret = intval($_POST["secret"]);
-    $file->setSecret($secret);
+    $file->setIsSecret($secret);
     $FACTORIES::getFileFactory()->update($file);
   }
   
@@ -193,10 +206,15 @@ class FileHandler implements Handler {
     if ($file == null) {
       UI::printError("ERROR", "File does not exist!");
     }
-    $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=");
-    $tasks = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=");
+    $tasks = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=");
+    $pretasks = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($tasks) > 0) {
       UI::addMessage(UI::ERROR, "This file is currently used in a task!");
+    }
+    else if(sizeof($pretasks) > 0){
+      UI::addMessage(UI::ERROR, "This file is currently used in a preconfigured task!");
     }
     else {
       $FACTORIES::getFileFactory()->delete($file);
