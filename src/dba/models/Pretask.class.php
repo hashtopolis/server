@@ -14,8 +14,9 @@ class Pretask extends AbstractModel {
   private $useNewBench;
   private $priority;
   private $isMaskImport;
+  private $isHidden;
   
-  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $isMaskImport) {
+  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $isMaskImport, $isHidden) {
     $this->pretaskId = $pretaskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -27,6 +28,7 @@ class Pretask extends AbstractModel {
     $this->useNewBench = $useNewBench;
     $this->priority = $priority;
     $this->isMaskImport = $isMaskImport;
+    $this->isHidden = $isHidden;
   }
   
   function getKeyValueDict() {
@@ -42,6 +44,7 @@ class Pretask extends AbstractModel {
     $dict['useNewBench'] = $this->useNewBench;
     $dict['priority'] = $this->priority;
     $dict['isMaskImport'] = $this->isMaskImport;
+    $dict['isHidden'] = $this->isHidden;
     
     return $dict;
   }
@@ -141,6 +144,14 @@ class Pretask extends AbstractModel {
   function setIsMaskImport($isMaskImport){
     $this->isMaskImport = $isMaskImport;
   }
+  
+  function getIsHidden(){
+    return $this->isHidden;
+  }
+  
+  function setIsHidden($isHidden){
+    $this->isHidden = $isHidden;
+  }
 
   const PRETASK_ID = "pretaskId";
   const TASK_NAME = "taskName";
@@ -153,4 +164,5 @@ class Pretask extends AbstractModel {
   const USE_NEW_BENCH = "useNewBench";
   const PRIORITY = "priority";
   const IS_MASK_IMPORT = "isMaskImport";
+  const IS_HIDDEN = "isHidden";
 }
