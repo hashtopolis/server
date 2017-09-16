@@ -62,7 +62,7 @@ class PretaskHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall']);
+        $this->createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchmarkType']);
         break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
@@ -70,7 +70,7 @@ class PretaskHandler implements Handler {
     }
   }
   
-  private function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall) {
+  private function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
@@ -97,13 +97,16 @@ class PretaskHandler implements Handler {
     else if ($isSmall < 0 || $isSmall > 1) {
       $isSmall = 0;
     }
+    else if ($benchmarkType < 0 || $benchmarkType > 1) {
+      $benchmarkType = 0;
+    }
     else if ($chunkTime <= 0) {
       $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     }
     else if ($statusTimer <= 0) {
       $statusTimer = $CONFIG->getVal(DConfig::STATUS_TIMER);
     }
-    $pretask = new Pretask(0, htmlentities($name, ENT_QUOTES, "UTF-8"), $cmdLine, $chunkTime, $statusTimer, $color, $isSmall, $cpuOnly, 0, 0, 0);
+    $pretask = new Pretask(0, htmlentities($name, ENT_QUOTES, "UTF-8"), $cmdLine, $chunkTime, $statusTimer, $color, $isSmall, $cpuOnly, $benchmarkType, 0, 0);
     $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
     
     // handle files
