@@ -58,6 +58,15 @@ if (isset($_GET['id'])) {
   }
   $OBJECTS['isUsed'] = $isUsed;
 }
+else if (isset($_GET['new'])) {
+  $TEMPLATE = new Template("pretasks/new");
+  
+  $qF = new QueryFilter(File::FILE_TYPE, DFileType::RULE, "=");
+  $OBJECTS['rules'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+  
+  $qF = new QueryFilter(File::FILE_TYPE, DFileType::WORDLIST, "=");
+  $OBJECTS['wordlists'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+}
 else {
   $queryFilters = array();
   if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
