@@ -33,13 +33,13 @@
       			<tr>
       				<td>Chunk size:</td>
       				<td>
-      					<input type="text" class='form-control' name="chunk" title="Chunk Size"> seconds
+      					<input type="text" class='form-control' name="chunk" title="Chunk Size" value="[[config.getVal([[$DConfig::CHUNK_DURATION]])]]"> seconds
       				</td>
       			</tr>
       			<tr>
       				<td>Status timer:</td>
       				<td>
-      					<input type="text" class='form-control' name="status" title="Status Timer"> seconds
+      					<input type="text" class='form-control' name="status" title="Status Timer" value="[[config.getVal([[$DConfig::STATUS_TIMER]])]]"> seconds
       				</td>
       			</tr>
 						<tr>
