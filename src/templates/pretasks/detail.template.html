@@ -172,7 +172,7 @@
               {{ELSE}}
                 [[file.getFilename()]]
               {{ENDIF}}
-              {{IF [[file.getSecret()]] == 1}}
+              {{IF [[file.getIsSecret()]] == 1}}
                 <img src="static/lock.gif" alt="Secret">
               {{ENDIF}}
             </td>
