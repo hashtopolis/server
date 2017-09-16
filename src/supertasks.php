@@ -38,7 +38,7 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
 if (isset($_GET['create']) && $_GET['create'] == "new") {
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
-  $qF1 = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+  $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import") {
