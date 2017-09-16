@@ -30,12 +30,14 @@
             <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="submit" class='btn btn-default' value="Apply to Hashlist">
           </form>
-          <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
-            <input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
-            <input type="hidden" name="supertask" value="[[supertask.getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="submit" class='btn btn-danger' value="X">
-          </form>
+          {{IF [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
+            <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
+              <input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
+              <input type="hidden" name="supertask" value="[[supertask.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="submit" class='btn btn-danger' value="X">
+            </form>
+          {{ENDIF}}
         </td>
 			</tr>
 		</table>
