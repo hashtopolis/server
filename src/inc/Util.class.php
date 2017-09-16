@@ -127,9 +127,9 @@ class Util {
   public static function insertFile($path, $name, $type) {
     global $FACTORIES;
     
-    $fileType = 0;
+    $fileType = DFileType::WORDLIST;
     if ($type == 'rule') {
-      $fileType = 1;
+      $fileType = DFileType::RULE;
     }
     $file = new File(0, $name, Util::filesize($path), 1, $fileType);
     $file = $FACTORIES::getFileFactory()->save($file);
