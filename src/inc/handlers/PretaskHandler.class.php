@@ -104,7 +104,19 @@ class PretaskHandler implements Handler {
       $statusTimer = $CONFIG->getVal(DConfig::STATUS_TIMER);
     }
     $pretask = new Pretask(0, htmlentities($name, ENT_QUOTES, "UTF-8"), $cmdLine, $chunkTime, $statusTimer, $color, $isSmall, $cpuOnly, 0, 0, 0);
-    $FACTORIES::getPretaskFactory()->save($pretask);
+    $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
+    
+    // handle files
+    if (isset($_POST["adfile"])) {
+      foreach ($_POST["adfile"] as $fileId) {
+        $file = $FACTORIES::getFileFactory()->get($fileId);
+        if ($file !== null) {
+          $filePretask = new FilePretask(0, $file->getId(), $pretask->getId());
+          $FACTORIES::getFilePretaskFactory()->save($filePretask);
+        }
+      }
+    }
+    
     header("Location: pretasks.php");
     die();
   }
