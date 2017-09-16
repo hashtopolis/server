@@ -905,7 +905,8 @@ CREATE TABLE `Task` (
   `isCpuTask`        INT(11)                 NOT NULL,
   `useNewBench`      INT(11)                 NOT NULL,
   `skipKeyspace`     INT(11)                 NOT NULL,
-  `crackerBinaryId`  INT(11) DEFAULT NULL
+  `crackerBinaryId`  INT(11) DEFAULT NULL,
+  `taskWrapperId`    INT(11)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
