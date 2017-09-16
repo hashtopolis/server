@@ -208,7 +208,8 @@ $CONF['Task'] = array(
   'isCpuTask',
   'useNewBench',
   'skipKeyspace',
-  'crackerBinaryId'
+  'crackerBinaryId',
+  'taskWrapperId'
 );
 $CONF['TaskWrapper'] = array(
   'taskWrapperId',

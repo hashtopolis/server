@@ -1,12 +1,17 @@
 <?php
 
+use DBA\FilePretask;
+use DBA\FileTask;
 use DBA\JoinFilter;
+use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\Supertask;
+use DBA\SupertaskPretask;
 use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
 use DBA\TaskTask;
+use DBA\TaskWrapper;
 
 class SupertaskHandler implements Handler {
   public function __construct($supertaskId = null) {
@@ -92,21 +97,22 @@ class SupertaskHandler implements Handler {
       }
       $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
       $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
-      $preTaskName = "HIDDEN: " . implode(",", $mask);
+      $preTaskName = implode(",", $mask);
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       
       //TODO: make configurable if cpu only task etc.
-      $preTask = new Task(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, $priority, "", $isSmall, 0, 0, 0, 0);
-      $preTask = $FACTORIES::getTaskFactory()->save($preTask);
-      $preTasks[] = $preTask;
+      $pretask = new Pretask(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), "", $isSmall, 0, 0, $priority, 1);
+      $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
+      $preTasks[] = $pretask;
       $priority--;
     }
+    
     $supertask = new Supertask(0, $name);
     $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
     foreach ($preTasks as $preTask) {
-      $relation = new SupertaskTask(0, $preTask->getId(), $supertask->getId());
-      $FACTORIES::getSupertaskTaskFactory()->save($relation);
+      $relation = new SupertaskPretask(0, $supertask->getId(), $preTask->getId());
+      $FACTORIES::getSupertaskPretaskFactory()->save($relation);
     }
     header("Location: supertasks.php");
     die();
@@ -125,52 +131,52 @@ class SupertaskHandler implements Handler {
       UI::printError("ERROR", "Invalid hashlist ID!");
     }
     
+    //TODO: read binaryId and accessGroupId
+    $crackerBinaryId = 0;
+    $accessGroupId = 0;
+    
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     
     $subTasks = array();
-    
     $isCpuTask = 0;
     
-    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $tasks = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()];
-    $supertaskPriority = 0;
-    foreach ($tasks as $task) {
-      /** @var $task Task */
-      if (strpos($task->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
+    $joinedTasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $tasks = $joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()];
+    $wrapperPriority = 0;
+    foreach ($tasks as $pretask) {
+      /** @var $pretask Pretask */
+      if (strpos($pretask->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
         UI::addMessage(UI::WARN, "Task must contain the hashlist alias for cracking!");
         continue;
       }
-      $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
-      $taskFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $task->setId(0);
+      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, 0);
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
       }
-      if ($supertaskPriority == 0 || $supertaskPriority > $task->getPriority()) {
-        $supertaskPriority = $task->getPriority();
+      if ($wrapperPriority == 0 || $wrapperPriority > $task->getPriority()) {
+        $wrapperPriority = $task->getPriority();
       }
-      $task->setHashlistId($hashlist->getId());
-      $task->setTaskType(DTaskTypes::SUBTASK);
       $task = $FACTORIES::getTaskFactory()->save($task);
       if ($task->getIsCpuTask() == 1) {
         $isCpuTask = 1;
       }
+      
+      $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=");
+      $pretaskFiles = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
       $subTasks[] = $task;
-      foreach ($taskFiles as $taskFile) {
-        $taskFile->setId(0);
-        $taskFile->setTaskId($task->getId());
-        $FACTORIES::getTaskFileFactory()->save($taskFile);
+      foreach ($pretaskFiles as $pretaskFile) {
+        $fileTask = new FileTask(0, $pretaskFile->getFileId(), $task->getId());
+        $FACTORIES::getFileTaskFactory()->save($fileTask);
       }
     }
-    $supTask = new Task(0, $supertask->getSupertaskName(), "SUPER", $hashlist->getId(), 0, 0, 0, 0, $supertaskPriority, "", 0, $isCpuTask, 0, 0, DTaskTypes::SUPERTASK);
-    $supTask = $FACTORIES::getTaskFactory()->save($supTask);
+    $wrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $accessGroupId);
+    $wrapper = $FACTORIES::getTaskWrapperFactory()->save($wrapper);
     foreach ($subTasks as $task) {
       $task->setIsCpuTask($isCpuTask); // we need to enforce that all tasks have either cpu task or not cpu task setting
+      $task->setTaskWrapperId($wrapper->getId());
       $FACTORIES::getTaskFactory()->update($task);
-      $taskTask = new TaskTask(0, $supTask->getId(), $task->getId());
-      $FACTORIES::getTaskTaskFactory()->save($taskTask);
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
@@ -186,15 +192,12 @@ class SupertaskHandler implements Handler {
     $supertask = new Supertask(0, $name);
     $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
     foreach ($tasks as $t) {
-      $task = $FACTORIES::getTaskFactory()->get($t);
-      if ($task == null) {
+      $pretask = $FACTORIES::getPretaskFactory()->get($t);
+      if ($pretask === null) {
         continue;
       }
-      else if ($task->getHashlistId() != null) {
-        continue;
-      }
-      $supertaskTask = new SupertaskTask(0, $task->getId(), $supertask->getId());
-      $FACTORIES::getSupertaskTaskFactory()->save($supertaskTask);
+      $supertaskPretask = new SupertaskPretask(0, $supertask->getId(), $pretask->getId());
+      $FACTORIES::getSupertaskPretaskFactory()->save($supertaskPretask);
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     UI::addMessage(UI::SUCCESS, "New supertask created successfully!");
@@ -208,17 +211,17 @@ class SupertaskHandler implements Handler {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), Task::TASK_ID, SupertaskTask::TASK_ID);
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
     $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     
-    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $FACTORIES::getSupertaskPretaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
-    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
-      /** @var $task Task */
-      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
-      if (strpos($task->getTaskName(), "HIDDEN:") === 0) {
-        $FACTORIES::getTaskFactory()->delete($task);
+    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()]); $i++) {
+      /** @var $task Pretask */
+      $task = $joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()][$i];
+      if ($task->getIsMaskImport() == 1) {
+        $FACTORIES::getPretaskFactory()->delete($task);
       }
     }
     
