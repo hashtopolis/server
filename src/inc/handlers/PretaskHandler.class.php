@@ -82,6 +82,10 @@ class PretaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "The attack command does not contain the hashlist alias!");
       return;
     }
+    else if (Util::containsBlacklistedChars($cmdLine)) {
+      UI::addMessage(UI::ERROR, "The command must contain no blacklisted characters!");
+      return;
+    }
     $chunkTime = intval($chunkTime);
     $statusTimer = intval($statusTimer);
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
