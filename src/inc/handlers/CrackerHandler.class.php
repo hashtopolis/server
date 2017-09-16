@@ -106,6 +106,8 @@ class CrackerHandler implements Handler {
     $binary = new CrackerBinary(0, $binaryType->getId(), $version, $platform, $url, $name);
     $FACTORIES::getCrackerBinaryFactory()->save($binary);
     UI::addMessage(UI::SUCCESS, "Version was created successfully!");
+    header("Location: crackers.php?id=" . $binaryType->getId());
+    die();
   }
   
   private function createBinaryType($typeName) {
