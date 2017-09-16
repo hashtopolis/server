@@ -60,6 +60,7 @@ if (isset($_GET['id'])) {
 }
 else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("pretasks/new");
+  $MENU->setActive("tasks_prenew");
   
   $qF = new QueryFilter(File::FILE_TYPE, DFileType::RULE, "=");
   $OBJECTS['rules'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
