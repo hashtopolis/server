@@ -1,9 +1,13 @@
 <?php
 
 use DBA\File;
+use DBA\FilePretask;
+use DBA\FilePretaskFactory;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
+use DBA\Pretask;
 use DBA\QueryFilter;
+use DBA\SupertaskPretask;
 use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
@@ -25,40 +29,38 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
 $TEMPLATE = new Template("pretasks");
 $MENU->setActive("tasks_pre");
 
-$oF1 = new OrderFilter(Task::PRIORITY, "DESC");
-$qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
-$oF2 = new OrderFilter(Task::TASK_ID, "ASC");
+$qF = new QueryFilter(Pretask::IS_HIDDEN, 0, "=");
+$oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");
+$oF2 = new OrderFilter(Pretask::PRETASK_ID, "ASC");
 $taskList = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
 $tasks = array();
 for ($z = 0; $z < sizeof($taskList); $z++) {
   $set = new DataSet();
-  $task = $taskList[$z];
-  if (strpos($task->getTaskName(), "HIDDEN:") === 0) {
-    continue;
-  }
+  $pretask = $taskList[$z];
   $set->addValue('Task', $taskList[$z]);
   
-  $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
+  $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
+  $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  /** @var $files File[] */
+  $files = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
   $sizes = 0;
   $secret = false;
-  for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
-    $file = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class);
+  foreach ($files as $file) {
     $sizes += $file->getSize();
-    if ($file->getSecret() == '1') {
+    if ($file->getIsSecret() == 1) {
       $secret = true;
     }
   }
   
   $isUsed = false;
-  $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
-  $supertaskTasks = $FACTORIES::getSupertaskTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
+  $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
   if (sizeof($supertaskTasks) > 0) {
     $isUsed = true;
   }
   
-  $set->addValue('numFiles', sizeof($joinedFiles['File']));
+  $set->addValue('numFiles', sizeof($files));
   $set->addValue('filesSize', $sizes);
   $set->addValue('fileSecret', $secret);
   $set->addValue('isUsed', $isUsed);
