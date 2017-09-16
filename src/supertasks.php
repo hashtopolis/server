@@ -38,10 +38,8 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
 if (isset($_GET['create']) && $_GET['create'] == "new") {
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
-  $qF1 = new QueryFilter(Task::HASHLIST_ID, null, "=");
-  $qF2 = new LikeFilter(Task::TASK_NAME, "HIDDEN:%");
-  $qF2->setMatch(false);
-  $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+  $qF1 = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+  $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import") {
   $MENU->setActive("tasks_superimport");
