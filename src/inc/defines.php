@@ -60,11 +60,6 @@ class DFileAction {
   const EDIT_FILE   = "editFile";
 }
 
-class DHashcatAction {
-  const DELETE_RELEASE = "deleteRelease";
-  const CREATE_RELEASE = "createRelease";
-}
-
 class DHashlistAction {
   const APPLY_PRECONFIGURED_TASKS = "applyPreconfiguredTasks";
   const CREATE_WORDLIST           = "createWordlist";

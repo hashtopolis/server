@@ -27,6 +27,16 @@
 				</td>
 			</tr>
 			<tr>
+				<td>Platform:</td>
+				<td>
+					<select name="platform" class="form-control" title="Platform">
+						<option value="[[$DPlatforms::LINUX]]">[[$DPlatforms::getName([[$DPlatforms::LINUX]])]]</option>
+						<option value="[[$DPlatforms::MAC_OSX]]">[[$DPlatforms::getName([[$DPlatforms::MAC_OSX]])]]</option>
+						<option value="[[$DPlatforms::WINDOWS]]">[[$DPlatforms::getName([[$DPlatforms::WINDOWS]])]]</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
 				<td colspan="2" class="text-center">
 					<input type="submit" class='btn btn-success' value="Create binary">
 				</td>

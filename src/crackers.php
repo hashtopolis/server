@@ -24,8 +24,8 @@ $MENU->setActive("crackers_list");
 
 //catch actions here...
 if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
-  $hashcatHandler = new HashcatHandler();
-  $hashcatHandler->handle($_POST['action']);
+  $crackerHandler = new CrackerHandler();
+  $crackerHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
