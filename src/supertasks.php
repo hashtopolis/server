@@ -1,9 +1,11 @@
 <?php
 
 use DBA\JoinFilter;
+use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\LikeFilter;
 use DBA\OrderFilter;
+use DBA\SupertaskPretask;
 use DBA\SupertaskTask;
 use DBA\Task;
 
@@ -67,9 +69,11 @@ else {
   $supertasks = $FACTORIES::getSupertaskFactory()->filter(array());
   $supertaskTasks = new DataSet();
   foreach ($supertasks as $supertask) {
-    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $supertask->getId(), "=");
-    $oF = new OrderFilter(Task::PRIORITY, "DESC");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
+    $oF = new OrderFilter(Pretask::PRIORITY, "DESC");
+    $joinedTasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF, $FACTORIES::ORDER => $oF));
+    $tasks = $joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()];
     $supertaskTasks->addValue($supertask->getId(), $tasks);
   }
   $OBJECTS['tasks'] = $supertaskTasks;
