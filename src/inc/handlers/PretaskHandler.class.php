@@ -211,6 +211,9 @@ class PretaskHandler implements Handler {
     }
     $pretask->setPriority($priority);
     $FACTORIES::getPretaskFactory()->update($pretask);
+    if (isset($_GET['super'])) {
+      header("Location: supertasks.php");
+    }
   }
   
   private function setSmallTask($isSmall, $pretaskId) {
