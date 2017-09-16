@@ -33,7 +33,7 @@
 					<td>[[file.getId()]]</td>
 					<td>
 						<a name="[[file.getId()]]" href="get.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
-						{{IF [[file.getSecret()]] == '1'}}
+						{{IF [[file.getIsSecret()]] == '1'}}
 							<img src="static/lock.gif" alt="Secret">
 						{{ENDIF}}
 					</td>
@@ -43,11 +43,11 @@
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
 								<input type="hidden" name="csrf" value="[[csrf]]">
-								<input type='hidden' name="secret" value="{{IF [[file.getSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
-								<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getSecret()]] == '1'}} checked{{ENDIF}}>
+								<input type='hidden' name="secret" value="{{IF [[file.getIsSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
+								<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getIsSecret()]] == '1'}} checked{{ENDIF}}>
 							</form>
 						{{ELSE}}
-							<input type='checkbox'{{IF [[file.getSecret()]] == 1}} checked{{ENDIF}} disabled>
+							<input type='checkbox'{{IF [[file.getIsSecret()]] == 1}} checked{{ENDIF}} disabled>
 						{{ENDIF}}
 					</td>
 					<td class='num'>
