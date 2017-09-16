@@ -82,7 +82,7 @@ class FileHandler implements Handler {
     $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=", $FACTORIES::getFilePretaskFactory());
     $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), Pretask::PRETASK_ID, FilePretask::PRETASK_ID);
     $joined = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $pretask) {
+    foreach ($joined[$FACTORIES::getPretaskFactory()->getModelName()] as $pretask) {
       /** @var $pretask Pretask */
       $pretask->setAttackCmd(str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
       $FACTORIES::getPretaskFactory()->update($pretask);
