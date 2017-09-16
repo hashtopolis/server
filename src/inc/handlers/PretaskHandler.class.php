@@ -149,7 +149,7 @@ class PretaskHandler implements Handler {
       $priority = 0;
     }
     $pretask->setPriority($priority);
-    $FACTORIES::getPretaskFactory()->save($pretask);
+    $FACTORIES::getPretaskFactory()->update($pretask);
   }
   
   private function setSmallTask($isSmall, $pretaskId) {
