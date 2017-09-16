@@ -101,7 +101,7 @@
                 <td>
                   <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'rule');" title="Rule">
                   [[file.getFilename()]]
-                  {{IF [[file.getSecret()]] == 1}}
+                  {{IF [[file.getIsSecret()]] == 1}}
                     <img src="static/lock.gif" alt="Secret">
                   {{ENDIF}}
                 </td>
@@ -126,7 +126,7 @@
               <td>
                 <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'wordlist');" title="Wordlist">
                 [[file.getFilename()]]
-                {{IF [[file.getSecret()]] == 1}}
+                {{IF [[file.getIsSecret()]] == 1}}
                   <img src="static/lock.gif" alt="Secret">
                 {{ENDIF}}
               </td>
