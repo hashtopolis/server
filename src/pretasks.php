@@ -16,6 +16,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
+/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -29,10 +30,13 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
 $TEMPLATE = new Template("pretasks");
 $MENU->setActive("tasks_pre");
 
-$qF = new QueryFilter(Pretask::IS_HIDDEN, 0, "=");
+$queryFilters = array();
+if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
+  $queryFilters[] = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+}
 $oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");
 $oF2 = new OrderFilter(Pretask::PRETASK_ID, "ASC");
-$taskList = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
+$taskList = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => array($oF1, $oF2)));
 $tasks = array();
 for ($z = 0; $z < sizeof($taskList); $z++) {
   $set = new DataSet();
