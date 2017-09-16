@@ -165,8 +165,7 @@ $CONF['Pretask'] = array(
   'isCpuTask',
   'useNewBench',
   'priority',
-  'isMaskImport',
-  'isHidden'
+  'isMaskImport'
 );
 $CONF['RegVoucher'] = array(
   'regVoucherId',
