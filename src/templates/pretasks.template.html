@@ -44,7 +44,7 @@
           </form>
 					{{IF [[login.getLevel()]] >= 30}}
 						<form style='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?') || ({{IF [[task.getVal('isUsed')]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
-							<input type="hidden" name="action" value="[[$DPretaskAction::DELETE_TASK]]">
+							<input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
 							<input type='hidden' name='refer' value='pretask'>
 							<input type="hidden" name="pretaskId" value="[[task.getVal('Task').getId()]]">
 							<input type="hidden" name="csrf" value="[[csrf]]">
