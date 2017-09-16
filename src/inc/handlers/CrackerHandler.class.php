@@ -121,7 +121,7 @@ class CrackerHandler implements Handler {
     }
     $binaryType = new CrackerBinaryType(0, $typeName, 1);
     $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->save($binaryType);
-    header("Location: crackers.php?id=" . $binaryType->getId());
+    header("Location: crackers.php");
     die();
   }
 }
