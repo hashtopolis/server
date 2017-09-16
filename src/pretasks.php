@@ -25,51 +25,63 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   die($TEMPLATE->render($OBJECTS));
 }
 
-$TEMPLATE = new Template("pretasks");
+$TEMPLATE = new Template("pretasks/index");
 $MENU->setActive("tasks_pre");
 
-$queryFilters = array();
-if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
-  $queryFilters[] = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+
+if (isset($_GET['id'])) {
+  $pretask = $FACTORIES::getPretaskFactory()->get($_GET['id']);
+  if ($pretask === null) {
+    UI::printError(UI::ERROR, "Invalid preconfigured task!");
+  }
+  $TEMPLATE = new Template("pretasks/detail");
+  $OBJECTS['pretask'] = $pretask;
+  // TODO: load required information here
 }
-$oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");
-$oF2 = new OrderFilter(Pretask::PRETASK_ID, "ASC");
-$taskList = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => array($oF1, $oF2)));
-$tasks = array();
-for ($z = 0; $z < sizeof($taskList); $z++) {
-  $set = new DataSet();
-  $pretask = $taskList[$z];
-  $set->addValue('Task', $taskList[$z]);
-  
-  $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
-  $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
-  $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-  /** @var $files File[] */
-  $files = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
-  $sizes = 0;
-  $secret = false;
-  foreach ($files as $file) {
-    $sizes += $file->getSize();
-    if ($file->getIsSecret() == 1) {
-      $secret = true;
+else {
+  $queryFilters = array();
+  if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
+    $queryFilters[] = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+  }
+  $oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");
+  $oF2 = new OrderFilter(Pretask::PRETASK_ID, "ASC");
+  $taskList = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => array($oF1, $oF2)));
+  $tasks = array();
+  for ($z = 0; $z < sizeof($taskList); $z++) {
+    $set = new DataSet();
+    $pretask = $taskList[$z];
+    $set->addValue('Task', $taskList[$z]);
+    
+    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
+    $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $files File[] */
+    $files = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
+    $sizes = 0;
+    $secret = false;
+    foreach ($files as $file) {
+      $sizes += $file->getSize();
+      if ($file->getIsSecret() == 1) {
+        $secret = true;
+      }
     }
+    
+    $isUsed = false;
+    $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
+    $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    if (sizeof($supertaskTasks) > 0) {
+      $isUsed = true;
+    }
+    
+    $set->addValue('numFiles', sizeof($files));
+    $set->addValue('filesSize', $sizes);
+    $set->addValue('fileSecret', $secret);
+    $set->addValue('isUsed', $isUsed);
+    
+    $tasks[] = $set;
   }
-  
-  $isUsed = false;
-  $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
-  $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-  if (sizeof($supertaskTasks) > 0) {
-    $isUsed = true;
-  }
-  
-  $set->addValue('numFiles', sizeof($files));
-  $set->addValue('filesSize', $sizes);
-  $set->addValue('fileSecret', $secret);
-  $set->addValue('isUsed', $isUsed);
-  
-  $tasks[] = $set;
+  $OBJECTS['tasks'] = $tasks;
 }
-$OBJECTS['tasks'] = $tasks;
 
 echo $TEMPLATE->render($OBJECTS);
 
