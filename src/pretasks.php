@@ -36,7 +36,10 @@ if (isset($_GET['id'])) {
   }
   $TEMPLATE = new Template("pretasks/detail");
   $OBJECTS['pretask'] = $pretask;
-  // TODO: load required information here
+  $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
+  $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
+  $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
 }
 else {
   $queryFilters = array();
