@@ -2,14 +2,12 @@
 
 use DBA\File;
 use DBA\FilePretask;
-use DBA\FilePretaskFactory;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\SupertaskPretask;
 use DBA\SupertaskTask;
-use DBA\Task;
 use DBA\TaskFile;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
@@ -36,7 +34,7 @@ if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
 }
 $oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");
 $oF2 = new OrderFilter(Pretask::PRETASK_ID, "ASC");
-$taskList = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => array($oF1, $oF2)));
+$taskList = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => array($oF1, $oF2)));
 $tasks = array();
 for ($z = 0; $z < sizeof($taskList); $z++) {
   $set = new DataSet();
