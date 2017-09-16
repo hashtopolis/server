@@ -67,11 +67,9 @@ else {
   $supertasks = $FACTORIES::getSupertaskFactory()->filter(array());
   $supertaskTasks = new DataSet();
   foreach ($supertasks as $supertask) {
-    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $supertask->getId(), "=");
     $oF = new OrderFilter(Task::PRIORITY, "DESC");
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF, $FACTORIES::ORDER => $oF));
-    $tasks = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()];
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
     $supertaskTasks->addValue($supertask->getId(), $tasks);
   }
   $OBJECTS['tasks'] = $supertaskTasks;
