@@ -59,10 +59,10 @@ else if (isset($_GET['id'])) {
   if ($supertask == null) {
     UI::printError("ERROR", "Invalid supertask ID!");
   }
-  $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-  $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
-  $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-  $OBJECTS['tasks'] = $tasks[$FACTORIES::getTaskFactory()->getModelName()];
+  $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+  $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
+  $tasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  $OBJECTS['tasks'] = $tasks[$FACTORIES::getPretaskFactory()->getModelName()];
   $OBJECTS['supertask'] = $supertask;
 }
 else {
