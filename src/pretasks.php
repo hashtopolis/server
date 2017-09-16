@@ -28,6 +28,14 @@ else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
 $TEMPLATE = new Template("pretasks/index");
 $MENU->setActive("tasks_pre");
 
+//catch actions here...
+if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+  $pretaskHandler = new PretaskHandler();
+  $pretaskHandler->handle($_POST['action']);
+  if (UI::getNumMessages() == 0) {
+    Util::refresh();
+  }
+}
 
 if (isset($_GET['id'])) {
   $pretask = $FACTORIES::getPretaskFactory()->get($_GET['id']);
@@ -36,10 +44,19 @@ if (isset($_GET['id'])) {
   }
   $TEMPLATE = new Template("pretasks/detail");
   $OBJECTS['pretask'] = $pretask;
+  
   $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
   $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
+  
+  $isUsed = false;
+  $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
+  $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+  if (sizeof($supertaskTasks) > 0) {
+    $isUsed = true;
+  }
+  $OBJECTS['isUsed'] = $isUsed;
 }
 else {
   $queryFilters = array();

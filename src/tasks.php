@@ -24,7 +24,7 @@ if (!$LOGIN->isLoggedin()) {
 $TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");
 
-//catch agents actions here...
+//catch actions here...
 if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   $taskHandler = new TaskHandler();
   $taskHandler->handle($_POST['action']);
