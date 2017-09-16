@@ -17,8 +17,9 @@ class Task extends AbstractModel {
   private $useNewBench;
   private $skipKeyspace;
   private $crackerBinaryId;
+  private $taskWrapperId;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $taskWrapperId) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -33,6 +34,7 @@ class Task extends AbstractModel {
     $this->useNewBench = $useNewBench;
     $this->skipKeyspace = $skipKeyspace;
     $this->crackerBinaryId = $crackerBinaryId;
+    $this->taskWrapperId = $taskWrapperId;
   }
   
   function getKeyValueDict() {
@@ -51,6 +53,7 @@ class Task extends AbstractModel {
     $dict['useNewBench'] = $this->useNewBench;
     $dict['skipKeyspace'] = $this->skipKeyspace;
     $dict['crackerBinaryId'] = $this->crackerBinaryId;
+    $dict['taskWrapperId'] = $this->taskWrapperId;
     
     return $dict;
   }
@@ -174,6 +177,14 @@ class Task extends AbstractModel {
   function setCrackerBinaryId($crackerBinaryId){
     $this->crackerBinaryId = $crackerBinaryId;
   }
+  
+  function getTaskWrapperId(){
+    return $this->taskWrapperId;
+  }
+  
+  function setTaskWrapperId($taskWrapperId){
+    $this->taskWrapperId = $taskWrapperId;
+  }
 
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
@@ -189,4 +200,5 @@ class Task extends AbstractModel {
   const USE_NEW_BENCH = "useNewBench";
   const SKIP_KEYSPACE = "skipKeyspace";
   const CRACKER_BINARY_ID = "crackerBinaryId";
+  const TASK_WRAPPER_ID = "taskWrapperId";
 }
