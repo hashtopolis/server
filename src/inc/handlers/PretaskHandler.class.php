@@ -213,6 +213,7 @@ class PretaskHandler implements Handler {
     $FACTORIES::getPretaskFactory()->update($pretask);
     if (isset($_GET['super'])) {
       header("Location: supertasks.php");
+      die();
     }
   }
   
