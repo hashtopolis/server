@@ -282,7 +282,6 @@ class Template {
           case 'PUT':
             $endPos = strpos($content, "}}", $loopPos);
             $setting = explode(";", substr($content, $loopPos + 6, $endPos - $loopPos - 6));
-            echo print_r($setting);
             $pos = $endPos + 2;
             break;
           default:
