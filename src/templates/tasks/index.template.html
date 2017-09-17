@@ -1,6 +1,6 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Tasks ([[sizeof([[taskWrappers]])]])</h2>
+<h2>Tasks ([[sizeof([[taskList]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <div style='overflow: auto;'>
 	{{IF [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
@@ -33,7 +33,7 @@
 			{{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
 				<!-- normal task -->
 				<tr>
-          <td {{IF [[strlen([[task.getVal('color')]])]] > 0}}style="background-color: #[[task.getVal('color')]]"{{ENDIF}}>
+          <td {{IF [[task.getVal('hasColor')]]}}style="background-color: #[[task.getVal('color')]]"{{ENDIF}}>
             {{IF [[login.getLevel()]] >= 5}}
               <a href="tasks.php?id=[[set.getVal('taskId')]]">[[set.getVal('taskId')]]</a>
             {{ELSE}}
