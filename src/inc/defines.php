@@ -97,19 +97,21 @@ class DSupertaskAction {
 }
 
 class DTaskAction {
-  const SET_BENCHMARK   = "setBenchmark";
-  const SET_SMALL_TASK  = "setSmallTask";
-  const SET_CPU_TASK    = "setCpuTask";
-  const ABORT_CHUNK     = "abortChunk";
-  const RESET_CHUNK     = "resetChunk";
-  const PURGE_TASK      = "purgeTask";
-  const SET_COLOR       = "setColor";
-  const SET_TIME        = "setTime";
-  const RENAME_TASK     = "renameTask";
-  const DELETE_FINISHED = "deleteFinished";
-  const DELETE_TASK     = "deleteTask";
-  const SET_PRIORITY    = "setPriority";
-  const CREATE_TASK     = "createTask";
+  const SET_BENCHMARK          = "setBenchmark";
+  const SET_SMALL_TASK         = "setSmallTask";
+  const SET_CPU_TASK           = "setCpuTask";
+  const ABORT_CHUNK            = "abortChunk";
+  const RESET_CHUNK            = "resetChunk";
+  const PURGE_TASK             = "purgeTask";
+  const SET_COLOR              = "setColor";
+  const SET_TIME               = "setTime";
+  const RENAME_TASK            = "renameTask";
+  const DELETE_FINISHED        = "deleteFinished";
+  const DELETE_TASK            = "deleteTask";
+  const SET_PRIORITY           = "setPriority";
+  const CREATE_TASK            = "createTask";
+  const DELETE_SUPERTASK       = "deleteSupertask";
+  const SET_SUPERTASK_PRIORITY = "setSupertaskPriority";
 }
 
 class DUserAction {
