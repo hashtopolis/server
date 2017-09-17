@@ -3,7 +3,7 @@
 <h2>Tasks ([[sizeof([[tasks]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <div style='overflow: auto;'>
-	{{IF [[login.getLevel()]] >= 30}}
+	{{IF [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
 		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
 			<input type='hidden' name='action' value='[[$DTaskAction::DELETE_FINISHED]]'>
 			<input type="hidden" name="csrf" value="[[csrf]]">
@@ -16,20 +16,153 @@
 <br>
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
-    	<tr>
-    		<th>ID</th>
-    		<th>Name</th>
-    		<th>Hashlist</th>
-    		<th>Chunks</th>
-    		<th>Dispatched</th>
-    		<th>Searched</th>
-    		<th>Cracked</th>
-    		<th>Agents</th>
-    		<th>Files</th>
-    		<th>Task Priority</th>
-    		<th>Action</th>
-    	</tr>
-    	{{FOREACH task;[[tasks]]}}
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Hashlist</th>
+			<th>Chunks</th>
+			<th>Dispatched</th>
+			<th>Searched</th>
+			<th>Cracked</th>
+			<th>Agents</th>
+			<th>Files</th>
+			<th>Task Priority</th>
+			<th>Action</th>
+		</tr>
+		{{FOREACH taskWrapper;[[taskWrappers]]}}
+			{{IF [[taskWrapper.getTaskType()]] == [[$DTaskTypes::NORMAL]]}}
+				<!-- normal task -->
+				<tr>
+				<td {{IF [[strlen([[allTasks.getVal([[taskWrapper.getId()]]).getColor()]])]] > 0}}style="background-color: #[[allTasks.getVal([[taskWrapper.getId()]]).getColor()]]"{{ENDIF}}>
+					{{IF [[login.getLevel()]] >= 5}}
+						<a href="tasks.php?id=[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]">[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]</a>
+					{{ELSE}}
+						[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]
+					{{ENDIF}}
+				</td>
+				<td title="[[htmlentities([[allTasks.getVal([[taskWrapper.getId()]]).getAttackCmd()]], ENT_QUOTES, 'UTF-8')]]">
+					{{IF [[login.getLevel()]] >= 5}}
+						<a href="tasks.php?id=[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]">[[allTasks.getVal([[taskWrapper.getId()]]).getTaskName()]]</a>
+					{{ELSE}}
+						[[allTasks.getVal([[taskWrapper.getId()]]).getTaskName()]]
+					{{ENDIF}}
+					[[Util::tickdone([[keyspaceProgresses.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]
+					{{IF [[activeTasks.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] == 1}}
+						<img src="static/active.gif" alt="Active">
+					{{ENDIF}}
+					{{IF [[allTasks.getVal([[taskWrapper.getId()]]).getIsCpuTask()]] == 1}}
+						<br>CPU only
+					{{ENDIF}}
+					{{IF [[allTasks.getVal([[taskWrapper.getId()]]).getIsSmall()]] == 1}}
+						<br>Small Task
+					{{ENDIF}}
+				</td>
+				<td>
+					{{IF [[login.getLevel()]] >= 5}}
+						<a href="hashlists.php?id=[[task.getVal('Hashlist')->getId()]]">[[task.getVal('Hashlist')->getHashlistName()]]</a>
+					{{ELSE}}
+						[[task.getVal('Hashlist')->getHashlistName()]]
+					{{ENDIF}}
+					{{IF [[task.getVal('Hashlist')->getSecret()]] == 1}}
+						<img src="static/lock.gif" alt="Secret">
+					{{ENDIF}}
+					{{IF [[task.getVal('Hashlist')->getHashcount()]] == [[task.getVal('Hashlist')->getCracked()]]}}
+						[[Util::tickdone(1, 1)]]
+					{{ENDIF}}
+					{{IF [[task.getVal('Hashlist')->getHashcount()]] != [[task.getVal('Hashlist')->getCracked()]]}}
+						[[Util::tickdone(0, 1)]]
+					{{ENDIF}}
+				</td>
+				<td class="num">[[task.getVal('numChunks')]]@[[allTasks.getVal([[taskWrapper.getId()]]).getChunkTime()]]s</td>
+				{{IF [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]] > 0}}
+					<td class='num'>
+						[[Util::showperc([[allTasks.getVal([[taskWrapper.getId()]]).getProgress()]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]%
+					</td>
+					<td class='num'>
+						[[Util::showperc([[task.getVal('sumprog')]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]%
+					</td>
+				{{ELSE}}
+					<td colspan='2'>Keyspace unknown</td>
+				{{ENDIF}}
+				<td class='num'>
+					{{IF [[task.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5 && [[task.getVal('Task').getTaskType()]] != 1}}
+					<a href="hashes.php?task=[[task.getVal('Task')->getId()]]&filter=cracked">[[task.getVal('cracked')]]</a>
+					{{ENDIF}}
+					{{IF [[task.getVal('cracked')]] > 0 && [[login.getLevel()]] < 5 || [[task.getVal('Task').getTaskType()]] == 1}}
+					[[task.getVal('cracked')]]
+					{{ENDIF}}
+				</td>
+				<td class='num'>
+					{{IF [[task.getVal('numAssignments')]] > 0}}
+					[[task.getVal('numAssignments')]]
+					{{ENDIF}}
+				</td>
+				<td style='min-width: 95px'>
+					{{IF [[task.getVal('numFiles')]] > 0}}
+					[[task.getVal('numFiles')]]
+					{{ENDIF}}
+					{{IF [[task.getVal('fileSecret')]]}}
+					<img src="static/lock.gif" alt="Secret">
+					{{ENDIF}}
+					{{IF [[task.getVal('numFiles')]] > 0}}
+					<br>([[Util::nicenum([[task.getVal('filesSize')]])]]B)
+					{{ENDIF}}
+				</td>
+				<td style='min-width: 130px'>
+					{{IF [[login.getLevel()]] >= 20}}
+					<form class="form-inline" action="tasks.php" method="POST">
+						<input type='hidden' name='action' value='[[$DTaskAction::SET_PRIORITY]]'>
+						<input type="hidden" name="task" value="[[task.getVal('Task')->getId()]]">
+						<input type="hidden" name="csrf" value="[[csrf]]">
+						<input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getVal('Task')->getPriority()]]">
+						<input type="submit" class='btn btn-default' value="Set">
+					</form>
+					{{ELSE}}
+					[[task.getVal('Task')->getPriority()]]
+					{{ENDIF}}
+				</td>
+				<td style='min-width: 120px'>
+
+					{{IF [[task.getVal('Task').getTaskType()]] == 1}}
+					<form style ='float: left; padding-right: 5px;'>
+						<a class="btn btn-primary accordion-toggle" onclick="expansionCheck('#task[[task.getVal('Task').getId()]]')" role="button" href="#" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]">Show/Hide</a>
+					</form>
+					<script type="text/javascript">
+							$( document ).ready(function() {
+									checkOnLoading("#task[[task.getVal('Task').getId()]]");
+							});
+					</script>
+					{{ENDIF}}
+					{{IF [[login.getLevel()]] >= 30}}
+					{{IF [[task.getVal('Task').getTaskType()]] != 1}}
+					<form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[task.getVal('Task')->getId()]]" method="post">
+						<input type="submit" class='btn btn-default' value="Copy">
+					</form>
+					{{ENDIF}}
+
+					<form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task')->getId()]]?')) return false;">
+						<input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
+						<input type="hidden" name="task" value="[[task.getVal('Task')->getId()]]">
+						<input type="hidden" name="csrf" value="[[csrf]]">
+						<input type="submit" class='btn btn-danger' value="X">
+					</form>
+					{{ENDIF}}
+				</td>
+				</tr>
+				{{IF [[task.getVal('sumprog')]] < [[task.getVal('Task')->getKeyspace()]] || [[task.getVal('Task').getTaskType()]] == 1}}
+				<tr{{IF [[task.getVal('Task').getTaskType()]] == 1}} style="background-color: rgba(0,0,0,0.1);" data-toggle="collapse" data-target="#task[[task.getVal('Task').getId()]]" class="accordion-toggle"{{ENDIF}}>
+				<td colspan="11" style="padding: 0px 1px;">
+					<img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[task.getVal('Task')->getId()]]&x=1200&y=6">
+				</td>
+				</tr>
+				{{ENDIF}}
+			{{ELSE}}
+				<!-- supertask -->
+			{{ENDIF}}
+
+
+
+
     		<tr{{IF [[task.getVal('Task').getTaskType()]] == 1}} style="background-color: rgba(0,0,0,0.1);"{{ENDIF}}>
     			<td
 	    			{{IF [[strlen([[task.getVal('Task')->getColor()]])]] > 0}}
