@@ -303,7 +303,9 @@ class TaskHandler implements Handler {
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
     
     $this->deleteTask($task);
-    $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+    if($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
+      $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+    }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     header("Location: tasks.php");
   }
