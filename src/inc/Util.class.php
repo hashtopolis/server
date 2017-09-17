@@ -1,6 +1,7 @@
 <?php
 
 use DBA\AbstractModel;
+use DBA\AccessGroup;
 use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\Assignment;
@@ -296,8 +297,11 @@ class Util {
     /** @var $LOGIN Login */
     global $FACTORIES, $CONFIG, $OBJECTS, $LOGIN;
     
-    $qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
-    $accessGroups = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=", $FACTORIES::getAccessGroupUserFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $accessGroups AccessGroup[] */
+    $accessGroups = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
     $accessGroupIds = Util::arrayOfIds($accessGroups);
     
     $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
