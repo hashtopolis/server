@@ -33,7 +33,7 @@
 			{{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
 				<!-- normal task -->
 				<tr>
-          <td {{IF [[task.getVal('hasColor')]]}}style="background-color: #[[task.getVal('color')]]"{{ENDIF}}>
+          <td {{IF [[set.getVal('hasColor')]]}}style="background-color: #[[set.getVal('color')]]"{{ENDIF}}>
             {{IF [[login.getLevel()]] >= 5}}
               <a href="tasks.php?id=[[set.getVal('taskId')]]">[[set.getVal('taskId')]]</a>
             {{ELSE}}
