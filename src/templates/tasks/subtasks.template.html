@@ -1,4 +1,4 @@
-{{FOREACH subTask;[[set.getVal('subTaskList')]]}}
+{{FOREACH subTask;[[set.getVal('subtaskList')]]}}
   <tr>
     <td{{IF [[strlen([[subTask.getVal('color')]])]] > 0}} style="background-color: #[[subTask.getVal('color')]]"{{ENDIF}}>
       {{IF [[login.getLevel()]] >= 5}}
