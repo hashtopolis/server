@@ -71,12 +71,10 @@ if (isset($_GET['id'])) {
   }
   $OBJECTS['task'] = $task;
   
-  if ($task->getHashlistId() != null) {
-    $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-    $OBJECTS['hashlist'] = $hashlist;
-    $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
-    $OBJECTS['hashtype'] = $hashtype;
-  }
+  $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
+  $OBJECTS['hashlist'] = $hashlist;
+  $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
+  $OBJECTS['hashtype'] = $hashtype;
   
   $isActive = 0;
   $activeChunks = array();
