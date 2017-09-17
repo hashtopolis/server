@@ -58,7 +58,7 @@
     {{ENDIF}}
   </td>
   <td style='min-width: 120px'>
-    {{IF [[task.getVal('Task').getTaskType()]] == 1}}
+    {{IF [[set.getVal('taskType')]] == 1}}
       <form style ='float: left; padding-right: 5px;'>
         <a class="btn btn-primary accordion-toggle" onclick="expansionCheck('#task[[set.getVal('taskWrapperId')]]')" role="button" href="#" data-toggle="collapse" data-target="#task[[set.getVal('taskWrapperId')]]">Show/Hide</a>
       </form>
