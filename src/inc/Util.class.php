@@ -313,25 +313,16 @@ class Util {
     $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
     $oF = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
-    $OBJECTS['taskWrappers'] = $taskWrappers;
     
-    $allTasks = new DataSet();
-    $activeTasks = new DataSet();
-    $activeTaskWrappers = new DataSet();
-    $allHashlists = new DataSet();
-    $sumProgress = new DataSet();
-    $numFiles = new DataSet();
-    $fileSizes = new DataSet();
-    $fileSecret = new DataSet();
-    $numAssignments = new DataSet();
-    $cracked = new DataSet();
-    $numChunks = new DataSet();
+    $taskList = array();
     foreach ($taskWrappers as $taskWrapper) {
+      $set = new DataSet();
+      $set->addValue('taskType', $taskWrapper->getTaskType());
+      
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
-      $isActive = false;
       if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
         // supertask
-        $oF = new OrderFilter(Task::PRIORITY, "DESC");
+        /*$oF = new OrderFilter(Task::PRIORITY, "DESC");
         $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
         $allTasks->addValue($taskWrapper->getId(), $tasks);
         foreach ($tasks as $task) {
@@ -349,41 +340,42 @@ class Util {
           $numAssignments->addValue($task->getId(), $chunkInfo[2]);
           $cracked->addValue($task->getId(), $chunkInfo[1]);
           $numChunks->addValue($task->getId(), $chunkInfo[0]);
-        }
+        }*/
       }
       else {
         // normal task
         $task = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-        $allTasks->addValue($taskWrapper->getId(), $task);
         $taskInfo = Util::getTaskInfo($task);
-        if ($taskInfo[2]) {
-          $isActive = true;
-          $activeTasks->addValue($task->getId(), true);
-        }
-        $sumProgress->addValue($task->getId(), $taskInfo[0]);
         $fileInfo = Util::getFileInfo($task);
-        $numFiles->addValue($task->getId(), $fileInfo[0]);
-        $fileSecret->addValue($task->getId(), $fileInfo[1]);
-        $fileSizes->addValue($task->getId(), $fileInfo[2]);
         $chunkInfo = Util::getChunkInfo($task);
-        $numAssignments->addValue($task->getId(), $chunkInfo[2]);
-        $cracked->addValue($task->getId(), $chunkInfo[1]);
-        $numChunks->addValue($task->getId(), $chunkInfo[0]);
+        $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
+        $set->addValue('taskId', $task->getId());
+        $set->addValue('color', $task->getColor());
+        $set->addValue('attackCmd', $task->getAttackCmd());
+        $set->addValue('taskName', $task->getTaskName());
+        $set->addValue('isCpu', $task->getIsCpuTask());
+        $set->addValue('isSmall', $task->getIsSmall());
+        $set->addValue('hashlistId', $taskWrapper->getHashlistId());
+        $set->addValue('hashlistName', $hashlist->getHashlistName());
+        $set->addValue('hashCount', $hashlist->getHashCount());
+        $set->addValue('hashlistCracked', $hashlist->getCracked());
+        $set->addValue('chunkTime', $task->getChunkTime());
+        $set->addValue('isSecret', $hashlist->getIsSecret());
+        $set->addValue('priority', $task->getPriority());
+        $set->addValue('keyspace', $task->getKeyspace());
+        $set->addValue('isActive', $taskInfo[2]);
+        $set->addValue('sumProgress', $taskInfo[0]);
+        $set->addValue('numFiles', $fileInfo[0]);
+        $set->addValue('taskProgress', $task->getKeyspaceProgress());
+        $set->addValue('fileSecret', $fileInfo[1]);
+        $set->addValue('fileSizes', $fileInfo[2]);
+        $set->addValue('numAssignments', $chunkInfo[2]);
+        $set->addValue('crackedCount', $chunkInfo[1]);
+        $set->addValue('numChunks', $chunkInfo[0]);
+        $taskList[] = $set;
       }
-      $allHashlists->addValue($taskWrapper->getId(), $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId()));
-      $activeTaskWrappers->addValue($taskWrapper->getId(), $isActive);
     }
-    $OBJECTS['allTasks'] = $allTasks;
-    $OBJECTS['activeTasks'] = $activeTasks;
-    $OBJECTS['activeTaskWrappers'] = $activeTaskWrappers;
-    $OBJECTS['allHashlists'] = $allHashlists;
-    $OBJECTS['sumProgress'] = $sumProgress;
-    $OBJECTS['numFiles'] = $numFiles;
-    $OBJECTS['fileSecret'] = $fileSecret;
-    $OBJECTS['fileSizes'] = $fileSizes;
-    $OBJECTS['numAssignments'] = $numAssignments;
-    $OBJECTS['cracked'] = $cracked;
-    $OBJECTS['numChunks'] = $numChunks;
+    $OBJECTS['taskList'] = $taskList;
     
     
     /////////// CUT
