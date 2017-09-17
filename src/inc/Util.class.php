@@ -398,6 +398,7 @@ class Util {
         $set->addValue('filesSize', $filesSize);
         $set->addValue('numTasks', sizeof($tasks));
         $set->addValue('subtaskList', $subtaskList);
+        $taskList[] = $set;
       }
       else {
         // normal task
