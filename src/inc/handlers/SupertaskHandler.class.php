@@ -171,7 +171,7 @@ class SupertaskHandler implements Handler {
         $FACTORIES::getFileTaskFactory()->save($fileTask);
       }
     }
-    $wrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $accessGroupId);
+    $wrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $accessGroupId, $supertask->getSupertaskName());
     $wrapper = $FACTORIES::getTaskWrapperFactory()->save($wrapper);
     foreach ($subTasks as $task) {
       $task->setIsCpuTask($isCpuTask); // we need to enforce that all tasks have either cpu task or not cpu task setting

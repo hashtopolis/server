@@ -292,6 +292,10 @@ class Util {
     return array(sizeof($chunks), $cracked, $numAssignments);
   }
   
+  /**
+   * @param $userId int
+   * @return array
+   */
   public static function getAccessGroupIds($userId) {
     global $FACTORIES;
     
