@@ -46,7 +46,7 @@
             {{ELSE}}
               [[allTasks.getVal([[taskWrapper.getId()]]).getTaskName()]]
             {{ENDIF}}
-            [[Util::tickdone([[keyspaceProgresses.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]
+            [[Util::tickdone([[sumProgress.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]
             {{IF [[activeTasks.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] == 1}}
               <img src="static/active.gif" alt="Active">
             {{ENDIF}}
@@ -63,7 +63,7 @@
             {{ELSE}}
               [[allHashlists.getVal([[taskWrapper.getId()]]).getHashlistName()]]
             {{ENDIF}}
-            {{IF [[allHashlists.getVal([[taskWrapper.getId()]]).getSecret()]] == 1}}
+            {{IF [[allHashlists.getVal([[taskWrapper.getId()]]).getIsSecret()]] == 1}}
               <img src="static/lock.gif" alt="Secret">
             {{ENDIF}}
             {{IF [[allHashlists.getVal([[taskWrapper.getId()]]).getHashcount()]] == [[allHashlists.getVal([[taskWrapper.getId()]]).getCracked()]]}}
