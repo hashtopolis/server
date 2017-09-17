@@ -123,12 +123,9 @@
           </td>
           <td style='min-width: 120px'>
             {{IF [[login.getLevel()]] >= 30}}
-              {{IF [[allTasks.getVal([[taskWrapper.getId()]]).getTaskType()]] != 1}}
-                <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]" method="post">
-                  <input type="submit" class='btn btn-default' value="Copy">
-                </form>
-              {{ENDIF}}
-
+              <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]" method="post">
+                <input type="submit" class='btn btn-default' value="Copy">
+              </form>
               <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[allTasks.getVal([[taskWrapper.getId()]]).getId()]]?')) return false;">
                 <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
                 <input type="hidden" name="task" value="[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]">
