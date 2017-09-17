@@ -241,7 +241,7 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
-  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0, 0, DTaskTypes::NORMAL);
+  $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0,0,0,0,0);
   if (isset($_GET["copy"])) {
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
@@ -269,8 +269,6 @@ else if (isset($_GET['new'])) {
   
   $lists = array();
   $set = new DataSet();
-  $set->addValue('id', null);
-  $set->addValue("name", "(pre-configured task)");
   $lists[] = $set;
   $res = $FACTORIES::getHashlistFactory()->filter(array());
   foreach ($res as $list) {
@@ -284,7 +282,7 @@ else if (isset($_GET['new'])) {
   $origFiles = array();
   if ($orig > 0) {
     $qF = new QueryFilter(TaskFile::TASK_ID, $orig, "=");
-    $ff = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $ff = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($ff as $f) {
       $origFiles[] = $f->getFileId();
     }

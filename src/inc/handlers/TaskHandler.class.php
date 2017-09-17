@@ -141,6 +141,7 @@ class TaskHandler implements Handler {
       return;
     }
     //TODO: delete supertask
+    die("Not implemented yet!");
   }
   
   private function setSupertaskPriority($supertaskId, $priority) {
@@ -284,7 +285,9 @@ class TaskHandler implements Handler {
     $task->setPriority($priority);
     $taskWrapper->setPriority($priority);
     $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
+    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
+      $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
+    }
   }
   
   private function delete() {
@@ -303,7 +306,7 @@ class TaskHandler implements Handler {
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
     
     $this->deleteTask($task);
-    if($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
+    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
       $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
