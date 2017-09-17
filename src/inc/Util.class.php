@@ -321,25 +321,79 @@ class Util {
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
       if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
         // supertask
-        /*$oF = new OrderFilter(Task::PRIORITY, "DESC");
+        $set->addValue('supertaskName', $taskWrapper->getTaskWrapperName());
+        
+        $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
+        
+        $set->addValue('hashlistId', $hashlist->getId());
+        $set->addValue('taskWrapperId', $taskWrapper->getId());
+        $set->addValue('hashlistName', $hashlist->getHashlistName());
+        $set->addValue('hashlistSecret', $hashlist->getIsSecret());
+        $set->addValue('hashCount', $hashlist->getHashCount());
+        $set->addValue('hashlistCracked', $hashlist->getCracked());
+        $set->addValue('priority', $taskWrapper->getPriority());
+        
+        $oF = new OrderFilter(Task::PRIORITY, "DESC");
         $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
-        $allTasks->addValue($taskWrapper->getId(), $tasks);
+        $subtaskList = array();
+        
+        $tasksDone = 0;
+        $isActive = false;
+        $cracked = 0;
+        $numAssignments = 0;
+        $numFiles = 0;
+        $fileSecret = false;
+        $filesSize = 0;
+        
         foreach ($tasks as $task) {
+          $subSet = new DataSet();
+          $subSet->addValue('color', $task->getColor());
+          $subSet->addValue('taskId', $task->getId());
+          $subSet->addValue('attackCmd', $task->getAttackCmd());
+          $subSet->addValue('taskName', $task->getTaskName());
+          $subSet->addValue('keyspace', $task->getKeyspace());
+          $subSet->addValue('cpuOnly', $task->getIsCpuTask());
+          $subSet->addValue('isSmall', $task->getIsSmall());
+          $subSet->addValue('chunkTime', $task->getChunkTime());
+          $subSet->addValue('taskProgress', $task->getKeyspaceProgress());
+          $subSet->addValue('priority', $task->getPriority());
+          
+          
           $taskInfo = Util::getTaskInfo($task);
-          if ($taskInfo[2]) {
-            $isActive = true;
-            $activeTasks->addValue($task->getId(), true);
-          }
-          $sumProgress->addValue($task->getId(), $taskInfo[0]);
           $fileInfo = Util::getFileInfo($task);
-          $numFiles->addValue($task->getId(), $fileInfo[0]);
-          $fileSecret->addValue($task->getId(), $fileInfo[1]);
-          $fileSizes->addValue($task->getId(), $fileInfo[2]);
           $chunkInfo = Util::getChunkInfo($task);
-          $numAssignments->addValue($task->getId(), $chunkInfo[2]);
-          $cracked->addValue($task->getId(), $chunkInfo[1]);
-          $numChunks->addValue($task->getId(), $chunkInfo[0]);
-        }*/
+          
+          $subSet->addValue('sumProgress', $taskInfo[0]);
+          $subSet->addValue('numFiles', $fileInfo[0]);
+          $subSet->addValue('fileSecret', $fileInfo[1]);
+          $subSet->addValue('filesSize', $fileInfo[2]);
+          $subSet->addValue('numChunks', $chunkInfo[0]);
+          $subSet->addValue('isActive', $taskInfo[2]);
+          $subSet->addValue('cracked', $taskInfo[1]);
+          $subSet->addValue('numAssignments', $chunkInfo[2]);
+          
+          if ($taskInfo[0] >= $task->getKeyspace()) {
+            $tasksDone++;
+          }
+          $isActive = $isActive || $taskInfo[2];
+          $cracked += $taskInfo[1];
+          $numAssignments += $chunkInfo[2];
+          $numFiles += $fileInfo[0];
+          $fileSecret = $fileSecret || $fileInfo[1];
+          $filesSize += $fileInfo[2];
+          
+          $subtaskList[] = $subSet;
+        }
+        
+        $set->addValue('tasksDone', $tasksDone);
+        $set->addValue('isActive', $isActive);
+        $set->addValue('cracked', $cracked);
+        $set->addValue('numAssignments', $numAssignments);
+        $set->addValue('numFiles', $numFiles);
+        $set->addValue('fileSecret', $fileSecret);
+        $set->addValue('filesSize', $filesSize);
+        $set->addValue('numTasks', sizeof($tasks));
+        $set->addValue('subtaskList', $subtaskList);
       }
       else {
         // normal task
@@ -376,113 +430,6 @@ class Util {
       }
     }
     $OBJECTS['taskList'] = $taskList;
-    
-    
-    /////////// CUT
-    
-    /*$jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
-    $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
-    $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
-    $options = array($FACTORIES::JOIN => array($jF), $FACTORIES::ORDER => array($oF1, $oF2));
-    if ($supertask > 0) {
-      $options[$FACTORIES::JOIN][] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-      $options[$FACTORIES::FILTER] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
-    }
-    else {
-      $options[$FACTORIES::FILTER] = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "<");
-    }
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter($options);
-    $tasks = array();
-    for ($z = 0; $z < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $z++) {
-      $set = new DataSet();
-      $set->addValue('Task', $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z]);
-      $set->addValue('Hashlist', $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$z]);
-      
-      /** @var $task Task
-      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z];
-      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $progress = 0;
-      $cracked = 0;
-      $maxTime = 0;
-      foreach ($chunks as $chunk) {
-        $progress += $chunk->getProgress();
-        $cracked += $chunk->getCracked();
-        if ($chunk->getDispatchTime() > $maxTime) {
-          $maxTime = $chunk->getDispatchTime();
-        }
-        if ($chunk->getSolveTime() > $maxTime) {
-          $maxTime = $chunk->getSolveTime();
-        }
-      }
-      
-      $isActive = false;
-      if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-        $isActive = true;
-      }
-      
-      $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-      $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
-      
-      $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-      $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
-      $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-      $sizes = 0;
-      $secret = false;
-      for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
-        $file = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class);
-        $sizes += $file->getSize();
-        if ($file->getSecret() == '1') {
-          $secret = true;
-        }
-      }
-      
-      $numFiles = sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]);
-      $numAssignments = sizeof($assignments);
-      if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
-        Util::loadTasks($task->getId());
-        /** @var $subTasks DataSet
-        $subTasks = $OBJECTS['subTasks'];
-        foreach ($subTasks->getVal($task->getId()) as $subTask) {
-          /** @var $subTask DataSet
-          $numFiles += $subTask->getVal('numFiles');
-          $sizes += $subTask->getVal('filesSize');
-          if ($subTask->getVal('fileSecret')) {
-            $secret = true;
-          }
-          $numAssignments += $subTask->getVal('numAssignments');
-          if ($subTask->getVal('isActive')) {
-            $isActive = true;
-          }
-          $cracked += $subTask->getVal('cracked');
-        }
-      }
-      
-      $set->addValue('numFiles', $numFiles);
-      $set->addValue('filesSize', $sizes);
-      $set->addValue('fileSecret', $secret);
-      $set->addValue('numAssignments', $numAssignments);
-      $set->addValue('isActive', $isActive);
-      $set->addValue('sumprog', $progress);
-      $set->addValue('cracked', $cracked);
-      $set->addValue('numChunks', sizeof($chunks));
-      
-      $tasks[] = $set;
-    }
-    if ($supertask > 0) {
-      /** @var $subTasks DataSet
-      if (isset($OBJECTS['subTasks'])) {
-        $subTasks = $OBJECTS['subTasks'];
-      }
-      else {
-        $subTasks = new DataSet();
-      }
-      $subTasks->addValue($supertask, $tasks);
-      $OBJECTS['subTasks'] = $subTasks;
-    }
-    else {
-      $OBJECTS['tasks'] = $tasks;
-    }*/
   }
   
   /**

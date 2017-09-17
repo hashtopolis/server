@@ -919,11 +919,12 @@ CREATE TABLE `Task` (
 --
 
 CREATE TABLE `TaskWrapper` (
-  `taskWrapperId` INT(11) NOT NULL,
-  `priority`      INT(11) NOT NULL,
-  `taskType`      INT(11) NOT NULL,
-  `hashlistId`    INT(11) NOT NULL,
-  `accessGroupId` INT(11) DEFAULT NULL
+  `taskWrapperId`   INT(11) NOT NULL,
+  `priority`        INT(11) NOT NULL,
+  `taskType`        INT(11) NOT NULL,
+  `hashlistId`      INT(11) NOT NULL,
+  `accessGroupId`   INT(11) DEFAULT NULL,
+  `taskWrapperName` VARCHAR(100) NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

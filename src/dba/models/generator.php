@@ -216,7 +216,8 @@ $CONF['TaskWrapper'] = array(
   'priority',
   'taskType',
   'hashlistId',
-  'accessGroupId'
+  'accessGroupId',
+  'taskWrapperName'
 );
 $CONF['User'] = array(
   'userId',
