@@ -132,15 +132,15 @@ class SupertaskHandler implements Handler {
     }
     
     //TODO: read binaryId and accessGroupId
-    $crackerBinaryId = 0;
-    $accessGroupId = 0;
+    $crackerBinaryId = 1;
+    $accessGroupId = 1;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     
     $subTasks = array();
     $isCpuTask = 0;
     
-    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
     $joinedTasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $tasks = $joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()];
