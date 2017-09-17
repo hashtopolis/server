@@ -135,7 +135,7 @@
             {{ENDIF}}
           </td>
         </tr>
-        {{IF [[sumProgress.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] < [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]]}}
+        {{IF [[sumProgress.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]] < [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]]}}
           <tr{{IF [[allTasks.getVal([[taskWrapper.getId()]]).getTaskType()]] == 1}} style="background-color: rgba(0,0,0,0.1);" data-toggle="collapse" data-target="#task[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]" class="accordion-toggle"{{ENDIF}}>
             <td colspan="11" style="padding: 0px 1px;">
               <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]&x=1200&y=6">
