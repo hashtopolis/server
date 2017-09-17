@@ -46,8 +46,8 @@
             {{ELSE}}
               [[allTasks.getVal([[taskWrapper.getId()]]).getTaskName()]]
             {{ENDIF}}
-            [[Util::tickdone([[sumProgress.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]
-            {{IF [[activeTasks.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] == 1}}
+            [[Util::tickdone([[sumProgress.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]
+            {{IF [[activeTasks.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]] == 1}}
               <img src="static/active.gif" alt="Active">
             {{ENDIF}}
             {{IF [[allTasks.getVal([[taskWrapper.getId()]]).getIsCpuTask()]] == 1}}
@@ -73,39 +73,39 @@
               [[Util::tickdone(0, 1)]]
             {{ENDIF}}
           </td>
-          <td class="num">[[numChunks.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]]@[[allTasks.getVal([[taskWrapper.getId()]]).getChunkTime()]]s</td>
+          <td class="num">[[numChunks.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]]@[[allTasks.getVal([[taskWrapper.getId()]]).getChunkTime()]]s</td>
           {{IF [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]] > 0}}
             <td class='num'>
               [[Util::showperc([[allTasks.getVal([[taskWrapper.getId()]]).getProgress()]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]%
             </td>
             <td class='num'>
-              [[Util::showperc([[sumProgress.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]%
+              [[Util::showperc([[sumProgress.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]], [[allTasks.getVal([[taskWrapper.getId()]]).getKeyspace()]])]]%
             </td>
           {{ELSE}}
             <td colspan='2'>Keyspace unknown</td>
           {{ENDIF}}
           <td class='num'>
-            {{IF [[cracked.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] > 0 && [[login.getLevel()]] >= 5}}
+            {{IF [[cracked.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]] > 0 && [[login.getLevel()]] >= 5}}
               <a href="hashes.php?task=[[allTasks.getVal([[taskWrapper.getId()]]).getId()]]&filter=cracked">[[cracked.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]]</a>
             {{ENDIF}}
-            {{IF [[cracked.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] > 0 && [[login.getLevel()]] < 5}}
-              [[cracked.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]]
+            {{IF [[cracked.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]] > 0 && [[login.getLevel()]] < 5}}
+              [[cracked.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]]
             {{ENDIF}}
           </td>
           <td class='num'>
-            {{IF [[numAssignments.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] > 0}}
-              [[numAssignments.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]]
+            {{IF [[numAssignments.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]] > 0}}
+              [[numAssignments.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]]
             {{ENDIF}}
           </td>
           <td style='min-width: 95px'>
-            {{IF [[numFiles.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] > 0}}
-              [[numFiles.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]]
+            {{IF [[numFiles.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]] > 0}}
+              [[numFiles.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]]
             {{ENDIF}}
-            {{IF [[fileSecret.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]]}}
+            {{IF [[fileSecret.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]]}}
               <img src="static/lock.gif" alt="Secret">
             {{ENDIF}}
-            {{IF [[numFiles.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]] > 0}}
-              <br>([[Util::nicenum([[fileSizes.getVal([[allTasks.getVal([[taskWrapper.getId()]])]])]])]]B)
+            {{IF [[numFiles.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]] > 0}}
+              <br>([[Util::nicenum([[fileSizes.getVal([[allTasks.getVal([[taskWrapper.getId()]]).getId()]])]])]]B)
             {{ENDIF}}
           </td>
           <td style='min-width: 130px'>

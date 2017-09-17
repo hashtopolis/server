@@ -292,17 +292,23 @@ class Util {
     return array(sizeof($chunks), $cracked, $numAssignments);
   }
   
+  public static function getAccessGroupIds($userId) {
+    global $FACTORIES;
+    
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $userId, "=", $FACTORIES::getAccessGroupUserFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $accessGroups AccessGroup[] */
+    $accessGroups = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+    return Util::arrayOfIds($accessGroups);
+  }
+  
   public static function loadTasks() {
     /** @var $CONFIG DataSet */
     /** @var $LOGIN Login */
     global $FACTORIES, $CONFIG, $OBJECTS, $LOGIN;
     
-    $qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=", $FACTORIES::getAccessGroupUserFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    /** @var $accessGroups AccessGroup[] */
-    $accessGroups = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
-    $accessGroupIds = Util::arrayOfIds($accessGroups);
+    $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
     
     $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
     $oF = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
