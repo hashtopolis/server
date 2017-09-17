@@ -350,6 +350,7 @@ class Util {
         $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
         $set->addValue('taskId', $task->getId());
         $set->addValue('color', $task->getColor());
+        $set->addValue('hasColor', (strlen($task->getColor()) == 0) ? false : true);
         $set->addValue('attackCmd', $task->getAttackCmd());
         $set->addValue('taskName', $task->getTaskName());
         $set->addValue('isCpu', $task->getIsCpuTask());
