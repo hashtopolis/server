@@ -1,6 +1,6 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Tasks ([[sizeof([[tasks]])]])</h2>
+<h2>Tasks ([[sizeof([[taskWrappers]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <div style='overflow: auto;'>
 	{{IF [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
