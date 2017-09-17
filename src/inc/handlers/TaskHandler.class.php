@@ -317,18 +317,7 @@ class TaskHandler implements Handler {
     global $FACTORIES;
     
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    if ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getKeyspaceProgress()) {
-      return; // task is not finished yet
-    }
-    
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $chunkIds = array();
-    foreach ($chunks as $chunk) {
-      if ($chunk->getProgress() < 10000) {
-        return; //if at least one chunk is not finished, we should not delete this task
-      }
-      $chunkIds[] = $chunk->getId();
-    }
+    $chunkIds = Util::arrayOfIds($FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF)));
     
     // delete subtasks if it's a supertask
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
