@@ -5,6 +5,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\ContainFilter;
+use DBA\FileTask;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
@@ -14,6 +15,7 @@ use DBA\SupertaskTask;
 use DBA\Task;
 use DBA\TaskFile;
 use DBA\TaskTask;
+use DBA\TaskWrapper;
 
 class TaskHandler implements Handler {
   private $task;
@@ -130,11 +132,11 @@ class TaskHandler implements Handler {
     }
   }
   
-  private function deleteSupertask($supertaskId){
+  private function deleteSupertask($supertaskId) {
     global $FACTORIES;
     
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
-    if($taskWrapper === null){
+    if ($taskWrapper === null) {
       UI::addMessage(UI::ERROR, "Invalid supertask!");
       return;
     }
@@ -242,13 +244,20 @@ class TaskHandler implements Handler {
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
+    
+    //TODO: crackerbinaryId and accessgroupid need to be set
+    $crackerBinaryId = null;
+    $accessGroupId = 1;
+    
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $task = new Task(0, $name, $cmdline, $hashlistId, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, DTaskTypes::NORMAL);
+    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::SUPERTASK, $hashlistId, $accessGroupId, "");
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
+    $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $taskWrapper->getId());
     $task = $FACTORIES::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
-        $taskFile = new TaskFile(0, $task->getId(), $fileId);
-        $FACTORIES::getTaskFileFactory()->save($taskFile);
+        $taskFile = new FileTask(0, $fileId, $task->getId());
+        $FACTORIES::getFileTaskFactory()->save($taskFile);
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
@@ -269,23 +278,13 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
-    $pretask = false;
-    if (isset($_GET['pre'])) {
-      $pretask = true;
-    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     $priority = intval($_POST["priority"]);
+    $priority = ($priority < 0) ? 0 : $priority;
     $task->setPriority($priority);
+    $taskWrapper->setPriority($priority);
     $FACTORIES::getTaskFactory()->update($task);
-    if ($pretask) {
-      header("Location: pretasks.php");
-    }
-    else if (isset($_GET['super'])) {
-      header("Location: supertasks.php");
-    }
-    else {
-      header("Location: " . $_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']);
-    }
-    die();
+    $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
   }
   
   private function delete() {
@@ -297,68 +296,39 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
     
     $this->deleteTask($task);
+    $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-    
-    if (isset($_GET['super'])) {
-      header("Location: supertasks.php");
-      die();
-    }
-    else if ($task->getHashlistId() == null) {
-      header("Location: pretasks.php");
-      die();
-    }
+    header("Location: tasks.php");
   }
   
   /**
    * @param $task Task
-   * @param bool $onlyFinished set to true if deletion only should be applied if the task is completely finished
    */
-  private function deleteTask($task, $onlyFinished = false) {
+  private function deleteTask($task) {
     global $FACTORIES;
     
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    
-    if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
-      // if it's a supertask we have to test all the chunks of the subtasks and not of the task itself
-      $tasks = Util::getSubTasks($task);
-      $taskIds = array();
-      foreach ($tasks as $t) {
-        $taskIds[] = $t->getId();
-        if ($onlyFinished && ($t->getKeyspace() == 0 || $t->getKeyspace() > $t->getProgress())) {
-          return; // subtask(s) is/are not finished yet
-        }
-      }
-      $qF = new ContainFilter(Chunk::TASK_ID, $taskIds);
-    }
-    else if ($onlyFinished && ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getProgress())) {
+    if ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getKeyspaceProgress()) {
       return; // task is not finished yet
     }
     
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
-      if ($chunk->getRprogress() != 10000 && $onlyFinished) {
+      if ($chunk->getProgress() < 10000) {
         return; //if at least one chunk is not finished, we should not delete this task
       }
       $chunkIds[] = $chunk->getId();
     }
     
     // delete subtasks if it's a supertask
-    if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
-      $tasks = Util::getSubTasks($task);
-      foreach ($tasks as $t) {
-        $this->deleteTask($t);
-      }
-    }
-    
-    $qF = new QueryFilter(SupertaskTask::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getSupertaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($notifications as $notification) {
@@ -367,14 +337,12 @@ class TaskHandler implements Handler {
       }
     }
     
-    $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=");
-    $FACTORIES::getTaskTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=");
+    $FACTORIES::getFileTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $uS = new UpdateSet(Hash::CHUNK_ID, null);
     if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
@@ -387,6 +355,9 @@ class TaskHandler implements Handler {
   
   private function deleteFinished() {
     global $FACTORIES;
+    
+    //TODO: finish this
+    die("Not updated yet!");
     
     // delete finished supertasks
     $qF = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUPERTASK, "=");
@@ -502,7 +473,7 @@ class TaskHandler implements Handler {
     }
     $chunk->setState(0);
     $chunk->setProgress(0);
-    $chunk->setRprogress(0);
+    $chunk->setCheckpoint(0);
     $chunk->setDispatchTime(0);
     $chunk->setSolveTime(0);
     $FACTORIES::getChunkFactory()->update($chunk);
@@ -534,7 +505,7 @@ class TaskHandler implements Handler {
     }
     $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $task->setKeyspace(0);
-    $task->setProgress(0);
+    $task->setKeyspaceProgress(0);
     $FACTORIES::getTaskFactory()->update($task);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
