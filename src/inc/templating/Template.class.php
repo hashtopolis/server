@@ -282,7 +282,8 @@ class Template {
           case 'PUT':
             $endPos = strpos($content, "}}", $loopPos);
             $setting = explode(";", substr($content, $loopPos + 6, $endPos - $loopPos - 6));
-            echo $setting;
+            echo print_r($setting);
+            $pos = $endPos + 2;
             break;
           default:
             UI::printFatalError("Unknown loop type: $loopType");
