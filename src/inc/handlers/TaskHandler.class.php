@@ -112,10 +112,46 @@ class TaskHandler implements Handler {
       case DTaskAction::CREATE_TASK:
         $this->create();
         break;
+      case DTaskAction::DELETE_SUPERTASK:
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->deleteSupertask($_POST['supertaskId']);
+        break;
+      case DTaskAction::SET_SUPERTASK_PRIORITY:
+        if ($LOGIN->getLevel() < DAccessLevel::USER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->setSupertaskPriority($_POST['supertaskId'], $_POST['priority']);
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function deleteSupertask($supertaskId){
+    global $FACTORIES;
+    
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
+    if($taskWrapper === null){
+      UI::addMessage(UI::ERROR, "Invalid supertask!");
+      return;
+    }
+    //TODO: delete supertask
+  }
+  
+  private function setSupertaskPriority($supertaskId, $priority) {
+    global $FACTORIES;
+    
+    $supertask = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
+    if ($supertask === null) {
+      UI::addMessage(UI::ERROR, "Invalid supertask!");
+      return;
+    }
+    $priority = ($priority < 0) ? 0 : $priority;
+    $supertask->setPriority($priority);
+    $FACTORIES::getTaskWrapperFactory()->update($supertask);
   }
   
   private function setSmallTask() {
