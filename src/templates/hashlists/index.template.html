@@ -23,7 +23,7 @@
 				</td>
 				<td>
 					<a href="hashlists.php?id=[[entry.getVal('hashlist').getId()]]">[[entry.getVal('hashlist').getHashlistName()]]</a>
-					{{IF [[entry.getVal('hashlist').getSecret()]] == 1}}
+					{{IF [[entry.getVal('hashlist').getIsSecret()]] == 1}}
 						<img src="static/lock.gif" alt="Secret">
 					{{ENDIF}}
 					[[Util::tickdone([[entry.getVal('hashlist').getCracked()]], [[entry.getVal('hashlist').getHashCount()]])]]
