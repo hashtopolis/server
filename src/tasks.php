@@ -314,6 +314,8 @@ else if (isset($_GET['new'])) {
   }
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
+  
+  $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
 }
 else {
   Util::loadTasks();

@@ -17,9 +17,10 @@ class Task extends AbstractModel {
   private $useNewBench;
   private $skipKeyspace;
   private $crackerBinaryId;
+  private $crackerBinaryTypeId;
   private $taskWrapperId;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $taskWrapperId) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -34,6 +35,7 @@ class Task extends AbstractModel {
     $this->useNewBench = $useNewBench;
     $this->skipKeyspace = $skipKeyspace;
     $this->crackerBinaryId = $crackerBinaryId;
+    $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->taskWrapperId = $taskWrapperId;
   }
   
@@ -53,6 +55,7 @@ class Task extends AbstractModel {
     $dict['useNewBench'] = $this->useNewBench;
     $dict['skipKeyspace'] = $this->skipKeyspace;
     $dict['crackerBinaryId'] = $this->crackerBinaryId;
+    $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     $dict['taskWrapperId'] = $this->taskWrapperId;
     
     return $dict;
@@ -178,6 +181,14 @@ class Task extends AbstractModel {
     $this->crackerBinaryId = $crackerBinaryId;
   }
   
+  function getCrackerBinaryTypeId(){
+    return $this->crackerBinaryTypeId;
+  }
+  
+  function setCrackerBinaryTypeId($crackerBinaryTypeId){
+    $this->crackerBinaryTypeId = $crackerBinaryTypeId;
+  }
+  
   function getTaskWrapperId(){
     return $this->taskWrapperId;
   }
@@ -200,5 +211,6 @@ class Task extends AbstractModel {
   const USE_NEW_BENCH = "useNewBench";
   const SKIP_KEYSPACE = "skipKeyspace";
   const CRACKER_BINARY_ID = "crackerBinaryId";
+  const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const TASK_WRAPPER_ID = "taskWrapperId";
 }
