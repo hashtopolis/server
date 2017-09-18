@@ -115,7 +115,7 @@
 
                       var versions = [];
                       {{FOREACH version;[[versions]]}}
-                        if (versions[ [[version.getCrackerBinaryTypeId()]] ].hasOwnProperty([[version.getCrackerBinaryTypeId()]])) {
+                        if (versions.hasOwnProperty([[version.getCrackerBinaryTypeId()]])) {
                             var arr = versions[ [[version.getCrackerBinaryTypeId()]] ];
                             arr.push("[[version.getVersion()]]");
                         }
