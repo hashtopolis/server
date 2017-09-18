@@ -115,7 +115,8 @@
 
                       var versions = [];
                       {{FOREACH version;[[versions]]}}
-                        versions[ [[version.getCrackerBinaryTypeId()]] ].push("[[version.getVersion()]]");
+                        var arr = versions[ [[version.getCrackerBinaryTypeId()]] ];
+                        arr.push("[[version.getVersion()]]");
                       {{ENDFOREACH}}
 
                       var opt = document.createElement('option');
