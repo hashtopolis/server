@@ -263,7 +263,7 @@ else if (isset($_GET['new'])) {
     }
   }
   if ($copy === null) {
-    $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0, 0, 0, 0, 0);
+    $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0);
   }
   if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
     $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
@@ -316,6 +316,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['rules'] = $rules;
   
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
+  $OBJECTS['versions'] = $FACTORIES::getCrackerBinaryFactory()->filter(array());
 }
 else {
   Util::loadTasks();
