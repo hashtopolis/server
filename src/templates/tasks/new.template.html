@@ -93,6 +93,16 @@
                 <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace">
               </td>
             </tr>
+            <tr>
+              <td>Binary type to run task:</td>
+              <td>
+                <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+                  {{FOREACH binary;[[binaries]]}}
+                    <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+              </td>
+            </tr>
       			<tr>
       				<td colspan="2">
       					<input type="submit" class='btn btn-default' value="Create task">

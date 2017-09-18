@@ -906,6 +906,7 @@ CREATE TABLE `Task` (
   `useNewBench`      INT(11)                 NOT NULL,
   `skipKeyspace`     INT(11)                 NOT NULL,
   `crackerBinaryId`  INT(11) DEFAULT NULL,
+  `crackerBinaryTypeId` INT(11)  NULL,
   `taskWrapperId`    INT(11)                 NOT NULL
 )
   ENGINE = InnoDB
