@@ -23,7 +23,7 @@
 					<td>
 						<select class='form-control' name="hashlist">
 							{{FOREACH list;[[lists]]}}
-								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[copy.getHashlistId()]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
 							{{ENDFOREACH}}
 						</select> (hashlist needs to be created before task)
 					</td>
@@ -31,7 +31,7 @@
 				<tr>
 					<td>Command line:</td>
 					<td>
-						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine">[[copy.getAttackCmd()]]</textarea>
+						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line">[[copy.getAttackCmd()]]</textarea>
 						<br>
       					Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
       					If you have Linux agents, please mind the filename case sensitivity!<br>
@@ -43,21 +43,21 @@
       			<tr>
       				<td>Chunk size:</td>
       				<td>
-      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]">
+      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time">
       					seconds
       				</td>
       			</tr>
       			<tr>
       				<td>Status timer:</td>
       				<td>
-      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]">
+      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer">
       					seconds
       				</td>
       			</tr>
 						<tr>
 							<td>Benchmark Type: </td>
 							<td>
-                <select name="benchType" class="form-control">
+                <select name="benchType" class="form-control" title="Benchmark Type">
                   <option value="0" {{IF [[copy.getUseNewBench()]] == 0}}selected{{ENDIF}}>Runtime Benchmark</option>
                   <option value="1" {{IF [[copy.getUseNewBench()]] == 1}}selected{{ENDIF}}>Speed Test</option>
                 </select>
@@ -66,13 +66,13 @@
       			<tr>
       				<td>Color:</td>
       				<td>
-      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]">
+      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color">
       				</td>
       			</tr>
             <tr>
               <td>Task is CPU only (gets only CPU agents assigned):</td>
               <td>
-                <select name="cpuOnly" class="form-control">
+                <select name="cpuOnly" class="form-control" title="CPU only">
                   <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}}selected{{ENDIF}}>No</option>
                   <option value="1" {{IF [[copy.getIsCpuTask()]] == 1}}selected{{ENDIF}}>Yes</option>
                 </select>
@@ -81,7 +81,7 @@
             <tr>
               <td>Task is small (only one agent gets assigned to it):</td>
               <td>
-                <select name="isSmall" class="form-control">
+                <select name="isSmall" class="form-control" title="Is small">
                   <option value="0" {{IF [[copy.getIsSmall()]] == 0}}selected{{ENDIF}}>No</option>
                   <option value="1" {{IF [[copy.getIsSmall()]] == 1}}selected{{ENDIF}}>Yes</option>
                 </select>
@@ -90,7 +90,7 @@
             <tr>
               <td>Skip a given keyspace at the beginning of the task:</td>
               <td>
-                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]">
+                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace">
               </td>
             </tr>
       			<tr>
@@ -120,14 +120,14 @@
                   <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getSecret()]] == 1}}
-                  <img src="static/lock.gif" alt="Secret">
+                    <img src="static/lock.gif" alt="Secret">
                   {{ENDIF}}
                 </td>
                 <td>
                   [[Util::nicenum([[file.getVal('file').getSize()]])]]B
                 </td>
               </tr>
-          {{ENDFOREACH}}
+            {{ENDFOREACH}}
           </tr>
         </table>
       </div>

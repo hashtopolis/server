@@ -241,12 +241,14 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
-  $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0,0,0,0,0);
+  $hashlistId = 0;
+  $copy = null;
   if (isset($_GET["copy"])) {
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
+      $hashlistId = $FACTORIES::getTaskWrapperFactory()->get($copy->getTaskWrapperId())->getHashlistId();
       $copy->setId(0);
       $match = array();
       if (preg_match('/\(copy([0-9]+)\)/i', $copy->getTaskName(), $match)) {
@@ -259,13 +261,16 @@ else if (isset($_GET['new'])) {
       }
     }
   }
-  
+  if ($copy === null) {
+    $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0, 0, 0, 0, 0);
+  }
   if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
     $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
   
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
+  $OBJECTS['hashlistId'] = $hashlistId;
   
   $lists = array();
   $set = new DataSet();
