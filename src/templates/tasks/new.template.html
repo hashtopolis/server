@@ -96,11 +96,45 @@
             <tr>
               <td>Binary type to run task:</td>
               <td>
-                <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinary" class="form-control" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
                 </select>
+                <select name="crackerBinaryId" id="crackerVersions" class="form-control" title="Binary Version">
+                  <option value="">&nbsp;</option>
+                </select>
+                <script type="text/javascript">
+                  updateVersionDropdown();
+
+                  function updateVersionDropdown(){
+                      var select = document.getElementById('crackerVersions');
+                      select.childNodes.forEach(function(entry) {
+                          select.removeChild(entry);
+                      });
+
+                      var versions = [];
+                      {{FOREACH version;[[versions]]}}
+                        versions[ [[version.getCrackerBinaryTypeId()]] ].push("[[version.getVersion()]]");
+                      {{ENDFOREACH}}
+
+                      var opt = document.createElement('option');
+                      opt.value = "";
+                      opt.innerHTML = "&nbsp;";
+                      select.appendChild(opt);
+
+                      var binary = document.getElementById('crackerBinary');
+                      var selectedValue = binary.options[binary.selectedIndex].value;
+                      versions.each(function(entry){
+                          entry.each(function(version){
+                              var opt = document.createElement('option');
+                              opt.value = "";
+                              opt.innerHTML = version;
+                              select.appendChild(opt);
+                          });
+                      });
+                  }
+                </script>
               </td>
             </tr>
       			<tr>
