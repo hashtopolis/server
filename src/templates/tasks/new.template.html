@@ -131,8 +131,8 @@
 
                       var binary = document.getElementById('crackerBinary');
                       var selectedValue = binary.options[binary.selectedIndex].value;
-                      versions.each(function(entry){
-                          entry.each(function(version){
+                      versions.forEach(function(entry){
+                          entry.forEach(function(version){
                               var opt = document.createElement('option');
                               opt.value = "";
                               opt.innerHTML = version;
