@@ -4,6 +4,7 @@ use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\File;
+use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -286,7 +287,7 @@ else if (isset($_GET['new'])) {
   
   $origFiles = array();
   if ($orig > 0) {
-    $qF = new QueryFilter(TaskFile::TASK_ID, $orig, "=");
+    $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
     $ff = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($ff as $f) {
       $origFiles[] = $f->getFileId();
