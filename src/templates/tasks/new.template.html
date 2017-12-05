@@ -101,9 +101,11 @@
                     <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
                 </select>
-                <select name="crackerBinaryId" id="crackerVersions" class="form-control" title="Binary Version">
-                  <option value="">&nbsp;</option>
-                </select>
+                {{FOREACH binary;[[binaries]]}}
+                  <select name="crackerBinaryId" id="crackerVersions" class="form-control" title="Binary Version">
+                    <option value="">&nbsp;</option>
+                  </select>
+                {{ENDFOREACH}}
                 <script type="text/javascript">
                   updateVersionDropdown();
 
