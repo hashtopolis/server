@@ -1,3 +1,9 @@
+# v0.4.3 -> vx.x.x
+
+## Bugfixes
+
+- Error message which was always shown when adding new hash types fixed
+
 # v0.4.2 -> v0.4.3
 
 ## New Features
