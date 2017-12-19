@@ -259,7 +259,7 @@ class DConfig {
       case DConfig::HASHES_PAGE_SIZE:
         return "How many hashes to display at once in the hashes view (page size)";
       case DConfig::FIELD_SEPARATOR:
-        return "Separator to use to separate the hash and plaintext (or salt)";
+        return "Separator used to separate the hash and plaintext (or salt)";
       case DConfig::HASHLIST_ALIAS:
         return "String to use as hashlist alias when creating a task";
       case DConfig::STATUS_TIMER:
