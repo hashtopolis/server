@@ -249,29 +249,29 @@ class DConfig {
   public static function getConfigDescription($config) {
     switch ($config) {
       case DConfig::BENCHMARK_TIME:
-        return "Time in seconds an agent should benchmark a task";
+        return "How long an agent should benchmark a task (in seconds)";
       case DConfig::CHUNK_DURATION:
-        return "How long an agent approximately should need for completing one chunk";
+        return "Estimate of the time it will take for an agent to complete one chunk of work (in seconds)";
       case DConfig::CHUNK_TIMEOUT:
-        return "How long an agent must not respond until it is treated as timed out and the chunk will get shipped to other agents";
+        return "How long an agent must not respond until it is treated as timed out and the chunk will get shipped to other agents (in seconds)";
       case DConfig::AGENT_TIMEOUT:
-        return "How long an agent must not respond until he is treated as not active anymore";
+        return "How long an agent must not respond until it is treated as no longer active (in seconds)";
       case DConfig::HASHES_PAGE_SIZE:
-        return "How many hashes are showed at once in the hashes view (Page size)";
+        return "How many hashes to display at once in the hashes view (page size)";
       case DConfig::FIELD_SEPARATOR:
-        return "What separator should be used to separate hash and plain (or salt)";
+        return "Separator used to separate the hash and plaintext (or salt)";
       case DConfig::HASHLIST_ALIAS:
-        return "What string is used as hashlist alias when creating a task";
+        return "String to use as hashlist alias when creating a task";
       case DConfig::STATUS_TIMER:
-        return "After how many seconds the agent should send it's progress and cracks to the server";
+        return "Interval in which the agent sends its progress to the server (in seconds)";
       case DConfig::BLACKLIST_CHARS:
-        return "Chars which are not allowed to be used in attack command inputs";
+        return "Disallowed characters in attack command inputs";
       case DConfig::NUMBER_LOGENTRIES:
-        return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
+        return "Number of log entries to save. When this number is exceeded by 120%, the oldest ones will be deleted";
       case DConfig::TIME_FORMAT:
-        return "Set the formatting of time displaying. Use syntax for PHPs date() method";
+        return "The date/time format. Use syntax for PHP's date() method";
       case DConfig::BASE_URL:
-        return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
+        return "Base URL for the webpage (this does not include hostname and is normally determined automatically on the installation)";
       case DConfig::DISP_TOLERANCE:
         return "How many percent a chunk can be longer than normal to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
       case DConfig::BATCH_SIZE:
