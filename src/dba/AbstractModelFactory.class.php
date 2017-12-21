@@ -118,6 +118,9 @@ abstract class AbstractModelFactory {
       $model->setId($id);
       return $model;
     }
+    else if ($model->getId() != 0) {
+      return $model;
+    }
     else {
       return null;
     }
