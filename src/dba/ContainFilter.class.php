@@ -5,12 +5,10 @@ namespace DBA;
 class ContainFilter extends Filter {
   private $key;
   private $values;
-  private $inverted;
   
-  function __construct($key, $values, $inverted = false) {
+  function __construct($key, $values) {
     $this->key = $key;
     $this->values = $values;
-    $this->inverted = $inverted;
   }
   
   function getQueryString($table = "") {
@@ -22,9 +20,9 @@ class ContainFilter extends Filter {
       $app[] = "?";
     }
     if (sizeof($app) == 0) {
-      return ($this->inverted) ? "TRUE" : "FALSE";
+      return "FALSE";
     }
-    return $table . $this->key . (($this->inverted) ? " NOT" : "") . " IN (" . implode(",", $app) . ")";
+    return $table . $this->key . " IN (" . implode(",", $app) . ")";
   }
   
   function getValue() {
