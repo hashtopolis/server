@@ -26,13 +26,13 @@
 	To test the connection to the server or to test if an URL is valid, you can issue a test action where the server just should respond with success.
 	\begin{verbatim}
 	{
-	  "action":"test"
+	  "action":"testConnection"
 	}
 	\end{verbatim}
 	Response:
 	\begin{verbatim}
 	{
-	  "action":"test",
+	  "action":"testConnection",
 	  "response":"SUCCESS"
 	} 
 	\end{verbatim}
@@ -172,7 +172,7 @@
 	\begin{verbatim}
 	{
 	  "action":"clientError",
-	  "task":45,
+	  "taskId":45,
 	  "token":"GHhgdf(/&",
 	  "message":"This is a sample error message!"
 	}
@@ -191,7 +191,7 @@
 	{
 	  "action":"getFile",
 	  "token":"GHhgdf(/&",
-	  "task":56,
+	  "taskId":56,
 	  "file":"rockyou.txt"
 	}
 	\end{verbatim}
@@ -210,7 +210,7 @@
 	{
 	  "action":"getHashlist",
 	  "token":"GHhgdf(/&",
-	  "hashlist":23
+	  "hashlistId":23
 	}
 	\end{verbatim}
 	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send the url for the raw download of the hashes.\\\\
@@ -236,10 +236,10 @@
 	{
 	  "action":"getTask",
 	  "response":"SUCCESS",
-	  "task": 25,
+	  "taskId": 25,
 	  "attackcmd": "#HL# -a 3 ?a?a?a?a",
 	  "cmdpars": "--hash-type=0",
-	  "hashlist": 13,
+	  "hashlistId": 13,
 	  "bench": 30,
 	  "statustimer": 5,
 	  "benchType":"speed",
@@ -363,7 +363,7 @@
 	The server should reply following on success:
 	\begin{verbatim}
 	{
-	  "action":"setBenchmark",
+	  "action":"sendBenchmark",
 	  "response":"SUCCESS",
 	  "benchmark": "OK"
 	}
@@ -376,7 +376,7 @@
 	{
 	  "action":"sendProgress",
 	  "token":"GHhgdf(/&",
-	  "chunk":35,
+	  "chunkId":35,
 	  "keyspaceProgress":568000,
 	  "relativeProgress":"45.45"
 	  "speed":570000,
