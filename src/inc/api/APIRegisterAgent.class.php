@@ -1,6 +1,7 @@
 <?php
 
 use DBA\Agent;
+use DBA\QueryFilter;
 
 class APIRegisterAgent extends APIBasic {
   public function execute($QUERY = array()) {
