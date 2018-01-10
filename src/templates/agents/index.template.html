@@ -69,9 +69,9 @@
             <select class="form-control" name='task' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
               <option value="">(unassigned)</option>
               TODO:
-              {{OREACH task;[[allTasks]]}}
+              {FOREACH task;[[allTasks]]}
                 <option value='[[task.getId()]]' {{IF [[task.getId()]]== [[set.getVal('taskId')]]}} selected{{ENDIF}}>[[task.getTaskName()]]</option>
-              {{ENDOREACH}}
+              {ENDOREACH}
             </select>
           </form>
         </td>
