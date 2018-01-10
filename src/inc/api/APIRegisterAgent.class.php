@@ -2,6 +2,7 @@
 
 use DBA\Agent;
 use DBA\QueryFilter;
+use DBA\RegVoucher;
 
 class APIRegisterAgent extends APIBasic {
   public function execute($QUERY = array()) {
