@@ -10,7 +10,6 @@
       <th>Name / Owner</th>
       <th>GPUs/CPUs</th>
       <th>CPU only</th>
-      <th>Hashcat</th>
       <th>Last activity</th>
       <th>Assignment</th>
       <th>Action</th>
@@ -46,8 +45,8 @@
           {{ENDIF}}
         </td>
         <td>
-          {{FOREACH gpu;[[set.getVal('agent').getGpus()]]}}
-            [[Util::shortenstring([[gpu]], 20)]]<br>
+          {{FOREACH device;[[set.getVal('agent').getDevices()]]}}
+            [[Util::shortenstring([[device]], 20)]]<br>
           {{ENDFOREACH}}
         </td>
         <td>
@@ -57,7 +56,6 @@
             Yes
           {{ENDIF}}
         </td>
-        <td>[[set.getVal('agent').getHcVersion()]]</td>
         <td>
           [[set.getVal('agent').getLastAct()]] at <br>
           [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[set.getVal('agent').getLastTime()]])]]<br>
@@ -70,9 +68,10 @@
             <input type="hidden" name="csrf" value="[[csrf]]">
             <select class="form-control" name='task' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
               <option value="">(unassigned)</option>
-              {{FOREACH task;[[allTasks]]}}
+              TODO:
+              {{OREACH task;[[allTasks]]}}
                 <option value='[[task.getId()]]' {{IF [[task.getId()]]== [[set.getVal('taskId')]]}} selected{{ENDIF}}>[[task.getTaskName()]]</option>
-              {{ENDFOREACH}}
+              {{ENDOREACH}}
             </select>
           </form>
         </td>

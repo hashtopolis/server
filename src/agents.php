@@ -7,6 +7,7 @@ use DBA\Chunk;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\TaskWrapper;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -42,8 +43,8 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-$qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-$allTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+/*$qF = new QueryFilter(TaskWrapper::HASHLIST_ID, null, "<>");
+$allTasks = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF));*/
 
 if (isset($_GET['id'])) {
   //show agent detail
@@ -97,7 +98,7 @@ else {
   $allAgents = array();
   foreach ($agents as $agent) {
     $set = new DataSet();
-    $agent->setGpus(explode("\n", $agent->getGpus()));
+    $agent->setDevices(explode("\n", $agent->getDevices()));
     $set->addValue("agent", $agent);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
@@ -124,7 +125,7 @@ else {
   $OBJECTS['sets'] = $allAgents;
 }
 
-$OBJECTS['allTasks'] = $allTasks;
+//$OBJECTS['allTasks'] = $allTasks;
 
 echo $TEMPLATE->render($OBJECTS);
 
