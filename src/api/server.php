@@ -115,6 +115,6 @@ if ($api == null) {
   $api->sendErrorResponse("INV", "Invalid query!");
 }
 else {
-  $api->execute();
+  $api->execute($QUERY);
 }
 
