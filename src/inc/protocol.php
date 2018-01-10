@@ -226,7 +226,7 @@ abstract class PResponse {
   const RESPONSE = "response";
 }
 
-class PResponseClientErrorMessage extends PResponse {
+class PResponseErrorMessage extends PResponse {
   const MESSAGE = "message";
 }
 
