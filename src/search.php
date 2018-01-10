@@ -20,7 +20,7 @@ $MENU->setActive("lists_search");
 $OBJECTS['result'] = false;
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $searchHandler = new SearchHandler();
   $searchHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

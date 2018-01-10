@@ -1,6 +1,7 @@
 <?php
 
 class CSRF {
+  // TODO: this secret must be generated on installation
   const CSRF_SECRET = "csrfSecret";
   
   public static function init() {

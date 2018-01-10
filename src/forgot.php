@@ -11,10 +11,9 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 $TEMPLATE = new Template("forgot");
 $message = "";
 
-// TODO: add forgot handler
-
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   switch ($_POST['action']) {
+    // TODO: put this into handler
     case 'resetpassword':
       $username = htmlentities(@$_POST['username'], ENT_QUOTES, "UTF-8");
       $email = @$_POST['email'];

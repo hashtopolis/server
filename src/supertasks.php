@@ -27,7 +27,7 @@ $TEMPLATE = new Template("supertasks/index");
 $MENU->setActive("tasks_super");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $supertaskHandler = new SupertaskHandler();
   $supertaskHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

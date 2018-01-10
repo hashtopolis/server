@@ -27,7 +27,7 @@ $TEMPLATE = new Template("notifications");
 $MENU->setActive("account_notifications");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $notificationHandler = new NotificationHandler();
   $notificationHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

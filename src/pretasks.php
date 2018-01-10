@@ -29,7 +29,7 @@ $TEMPLATE = new Template("pretasks/index");
 $MENU->setActive("tasks_pre");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $pretaskHandler = new PretaskHandler();
   $pretaskHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
