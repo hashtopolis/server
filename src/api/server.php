@@ -48,70 +48,71 @@ switch ($QUERY[PQuery::ACTION]) {
   /**
    * The client requests a download for hashcat binary, 7z binary or similar.
    */
-  case PActions::DOWNLOAD:
+  case PActions::DOWNLOAD_BINARy:
     API::checkToken(PActions::DOWNLOAD, $QUERY);
     API::downloadApp($QUERY);
     break;
   /**
    * An error occured on the client and he sends the error information to the server
    */
-  case PActions::ERROR:
+  case PActions::CLIENT_ERROR:
     API::checkToken(PActions::ERROR, $QUERY);
     API::agentError($QUERY);
     break;
   /**
    * The client wants to download a file he needs for executing a task
    */
-  case PActions::FILE:
+  case PActions::GET_FILE:
     API::checkToken(PActions::FILE, $QUERY);
     API::getFile($QUERY);
     break;
   /**
    * The client wants to download a hashlist for his task
    */
-  case PActions::HASHES:
+  case PActions::GET_HASHLIST:
     API::checkToken(PActions::HASHES, $QUERY);
     API::getHashes($QUERY);
     break;
   /**
    * The client requests to get a task he should work on
    */
-  case PActions::TASK:
+  case PActions::GET_TASK:
     API::checkToken(PActions::TASK, $QUERY);
     API::getTask($QUERY);
     break;
   /**
    * The client requests a chunk on the task he is assigned
    */
-  case PActions::CHUNK:
+  case PActions::GET_CHUNK:
     API::checkToken(PActions::CHUNK, $QUERY);
     API::getChunk($QUERY);
     break;
   /**
    * The client measured the keyspace for a task and sends the resulting number
    */
-  case PActions::KEYSPACE:
+  case PActions::SEND_KEYSPACE:
     API::checkToken(PActions::KEYSPACE, $QUERY);
     API::setKeyspace($QUERY);
     break;
   /**
    * The client did a benchmark on his assigned task and sends the benchmark result
    */
-  case PActions::BENCHMARK:
+  case PActions::SEND_BENCHMARK:
     API::checkToken(PActions::BENCHMARK, $QUERY);
     API::setBenchmark($QUERY);
     break;
   /**
    * The client is currently working and he sends an update about the progress, cracked hashes and gets zapped hashes
    */
-  case PActions::SOLVE:
+  case PActions::SEND_PROGRESS:
     API::checkToken(PActions::SOLVE, $QUERY);
     API::solve($QUERY);
     break;
 }
 
 if ($api == null) {
-  APIBasic::sendErrorResponse("INV", "Invalid query!");
+  $api = new APIBasic();
+  $api->sendErrorResponse("INV", "Invalid query!");
 }
 else {
   $api->execute();
