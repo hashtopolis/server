@@ -159,7 +159,7 @@ class PQueryUpdateInformation extends PQuery {
     return true;
   }
   
-  const GPUS             = "gpus";
+  const DEVICES          = "devices";
   const UID              = "uid";
   const OPERATING_SYSTEM = "os";
 }

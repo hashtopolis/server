@@ -40,6 +40,15 @@ foreach ($dir as $entry) {
   }
 }
 
+// API
+$dir = scandir(dirname(__FILE__) . "/api/");
+foreach ($dir as $entry) {
+  if ($entry[0] == '.') {
+    continue;
+  }
+  require_once(dirname(__FILE__) . "/api/" . $entry);
+}
+
 // DEFINES
 // include all defines
 $dir = scandir(dirname(__FILE__) . "/defines/");

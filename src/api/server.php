@@ -4,7 +4,7 @@
  * This is the basic entry point for the client API.
  * It should be entered as URL for the client.
  *
- * The input is sent as JSON encoded data and the response will also be in JSON (with some exceptions).
+ * The input is sent as JSON encoded data and the response will also be in JSON
  */
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
@@ -13,30 +13,37 @@ set_time_limit(0);
 header("Content-Type: application/json");
 $QUERY = json_decode(file_get_contents('php://input'), true);
 
+$api = null;
 switch ($QUERY[PQuery::ACTION]) {
   /**
    * Used to test the connection between the client and the server
    */
-  case PActions::TEST:
-    API::test();
+  case PActions::TEST_CONNECTION:
+    $api = new APIBasic();
     break;
   /**
-   * Registers a new agent to the server. The client sends all the required informations about the agent.
+   * Registers a new agent to the server.
    */
   case PActions::REGISTER:
-    API::registerAgent($QUERY);
+    $api = new APIRegisterAgent();
+    break;
+  /**
+   * The client sends it hardware specs.
+   */
+  case PActions::UPDATE_CLIENT_INFORMATION:
+    $api = new APIUpdateClientInformation();
     break;
   /**
    * A client logs in. Basically not much happens here, it's mainly to validate the token.
    */
   case PActions::LOGIN:
-    API::loginAgent($QUERY);
+    $api = new APILogin();
     break;
   /**
    * The client asks if a new client binary is available.
    */
-  case PActions::UPDATE:
-    API::checkClientUpdate($QUERY);
+  case PActions::CHECK_CLIENT_VERSION:
+    $api = new APICheckClientVersion();
     break;
   /**
    * The client requests a download for hashcat binary, 7z binary or similar.
@@ -101,7 +108,12 @@ switch ($QUERY[PQuery::ACTION]) {
     API::checkToken(PActions::SOLVE, $QUERY);
     API::solve($QUERY);
     break;
-  default:
-    API::sendErrorResponse("INV", "Invalid query!");
+}
+
+if ($api == null) {
+  APIBasic::sendErrorResponse("INV", "Invalid query!");
+}
+else {
+  $api->execute();
 }
 
