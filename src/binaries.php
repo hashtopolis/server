@@ -21,7 +21,7 @@ $TEMPLATE = new Template("binaries");
 $MENU->setActive("config_binaries");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $binaryHandler = new AgentBinaryHandler();
   $binaryHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {

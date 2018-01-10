@@ -44,7 +44,7 @@ foreach ($dir as $entry) {
 // include all defines
 $dir = scandir(dirname(__FILE__) . "/defines/");
 foreach ($dir as $entry) {
-  if($entry[0] == '.'){
+  if ($entry[0] == '.') {
     continue;
   }
   require_once(dirname(__FILE__) . "/defines/" . $entry);
@@ -101,11 +101,7 @@ if ($INSTALL) {
 }
 
 // CSRF setup
-if (!isset($_SESSION['csrf'])) {
-  $_SESSION['csrf'] = Util::randomString(30);
-}
-$OBJECTS['csrf'] = $_SESSION['csrf'];
-
+CSRF::init();
 
 
 

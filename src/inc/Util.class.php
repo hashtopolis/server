@@ -1302,21 +1302,6 @@ class Util {
     return "<div class='alert alert-$type'>$msg</div>";
   }
   
-  public static function checkCSRF($csrf) {
-    global $OBJECTS;
-    
-    if (!isset($_SESSION['csrf']) || $csrf !== $_SESSION['csrf']) {
-      unset($_SESSION['csrf']);
-      UI::addMessage(UI::ERROR, "Invalid form submission!");
-      $_SESSION['csrf'] = Util::randomString(30);
-      $OBJECTS['csrf'] = $_SESSION['csrf'];
-      return false;
-    }
-    $_SESSION['csrf'] = Util::randomString(30);
-    $OBJECTS['csrf'] = $_SESSION['csrf'];
-    return true;
-  }
-  
   /**
    * @note dev
    * Sets the max length of hashes in the database

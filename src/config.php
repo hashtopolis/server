@@ -21,7 +21,7 @@ $TEMPLATE = new Template("config");
 $MENU->setActive("config_server");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $configHandler = new ConfigHandler();
   $configHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
