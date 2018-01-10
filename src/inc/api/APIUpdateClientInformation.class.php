@@ -2,8 +2,6 @@
 
 class APIUpdateClientInformation extends APIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-    
     // check required values and token
     if (!PQueryUpdateInformation::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::UPDATE_CLIENT_INFORMATION, "Invalid update query!");
