@@ -1,11 +1,11 @@
 \documentclass{article}
-\author{seinlc}
+\author{s3in!c $\langle$s3inlc@hashes.org$\rangle$ }
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[left=10mm, right=10mm]{geometry}
 \usepackage[english]{babel}
 \begin{document}
-	\title{Hashtopussy Communication Protocol}
+	\title{Hashtopussy Communication Protocol (V2)}
 	\maketitle
 	\section*{Introduction}
 	The communication between Hashtopussy Clients and Server is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
@@ -23,7 +23,7 @@
 	\section*{Commands}
 	
 	\subsection*{Connection Check}
-	To test the connection to the server or to test if an url is valid, you can issue a test action where the server just should respons with success.
+	To test the connection to the server or to test if an URL is valid, you can issue a test action where the server just should respond with success.
 	\begin{verbatim}
 	{
 	  "action":"test"
@@ -39,21 +39,13 @@
 
 	\subsection*{Register}
 	When registering a new client to the server, following query should be used:
-	(Important: To make sure an agent will be recognized as GPU agent, you have to get some info in the 'gpus' field. The server searches for keywords like 'ati', 'nvidia' etc.)
 	\begin{verbatim}
 	{
 	  "action":"register",
 	  "voucher":"89GD78tf",
-	  "uid":"230-34-345-345",
-	  "name":"client name",
-	  "os":0,
-	  "gpus":[
-	    "ATI HD7970",
-	    "ATI HD7970"
-	  ]
+	  "name":"client name"
 	}
 	\end{verbatim}
-	All values are required and must not be empty. The operating system should be set as following: 0 => Linux, 1 => Windows, 2 => Mac OS X.\\
 	As response the server will send following on success:
 	\begin{verbatim}
 	{
@@ -63,6 +55,32 @@
 	} 
 	\end{verbatim}
 	The token will be the one, the client should use for his following connections on this server.
+	
+	\subsection*{Send Client Information}
+	To send information about the client operating system and the available hardware. (Important: To make sure an agent will be recognized as GPU agent, you have to get some info in the 'gpus' field. The server searches for keywords like 'ati', 'nvidia' etc.)\\ \\
+	All values are required and must not be empty. The operating system should be set as following: 0 => Linux, 1 => Windows, 2 => Mac OS X.\\
+	This command should be issued on client startup to update if any hardware changes occurred since the last connect.
+	\begin{verbatim}
+	{
+	  "action":"updateInformation",
+	  "token":"GHhgdf(/&",
+	  "uid":"230-34-345-345",
+	  "os":0,
+	  "gpus":[
+	    "ATI HD7970",
+	    "ATI HD7970"
+	  ]
+	}
+	\end{verbatim}
+	
+	\noindent The response says if the update was successful.
+	\begin{verbatim}
+	{
+	  "action":"updateInformation",
+	  "response":"SUCCESS",
+	  "token":"GHhgdf(/&"
+	} 
+	\end{verbatim}
 	
 	\subsection*{Login}
 	The client logs in to the server.
@@ -82,19 +100,19 @@
 	}
 	\end{verbatim}
 	
-	\subsection*{Update}
-	This is used by the client to check if there is an update available for the client script. Type specifies the type of the client, currently only 'csharp'.
+	\subsection*{Check Client Version}
+	This is used by the client to check if there is an update available for the client script. Type specifies the type of the client.
 	\begin{verbatim}
 	{
-	  "action":"update",
-	  "version":"0.1.0 ALPHA",
+	  "action":"checkClientVersion",
+	  "version":"0.43.5",
 	  "type":"csharp"
 	}
 	\end{verbatim}
 	The server responds either with
 	\begin{verbatim}
 	{
-	  "action":"update",
+	  "action":"checkClientVersion",
 	  "response":"SUCCESS",
 	  "version":"OK"
 	}
@@ -110,11 +128,11 @@
 	\end{verbatim}
 	with 'url' providing the download url for the new version.
 	
-	\subsection*{Download}
-	This command is used to either download the 7z binary to extract Hashcat, or to get information where to download the newest Hashcat version and some additional informations about it.
+	\subsection*{Download Binary}
+	This command is used to either download the 7z binary to extract Hashcat, or to get information where to download the newest Hashcat/Cracker version and some additional informations about it.
 	\begin{verbatim}
 	{
-	  "action":"download",
+	  "action":"downloadBinary",
 	  "type":"7zr",
 	  "token":"GHhgdf(/&"
 	}
@@ -122,7 +140,7 @@
 	The server then will send a url where to downooad the binary:
 	\begin{verbatim}
 	{
-	  "action":"download",
+	  "action":"downloadBinary",
 	  "response":"SUCCESS",
 	  "url":"https://example.com/getapp.php"
 	}
@@ -130,7 +148,7 @@
 	To check if a new Hashcat binary is available, following command is used.
 	\begin{verbatim}
 	{
-	  "action":"download",
+	  "action":"downloadBinary",
 	  "type":"hashcat",
 	  "token":"GHhgdf(/&",
 	  "force":1
@@ -140,7 +158,7 @@
 	The server will respond with following information:
 	\begin{verbatim}
 	{
-	  "action":"download",
+	  "action":"downloadBinary",
 	  "response":"SUCCESS",
 	  "version":"NEW",
 	  "url":"https://hashcat.net/files/hashcat-3.01.7z",
@@ -149,11 +167,11 @@
 	}
 	\end{verbatim}
 	
-	\subsection*{Error}
+	\subsection*{Client Error}
 	In case there happens an error with Hashcat on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page.
 	\begin{verbatim}
 	{
-	  "action":"error",
+	  "action":"clientError",
 	  "task":45,
 	  "token":"GHhgdf(/&",
 	  "message":"This is a sample error message!"
@@ -162,7 +180,7 @@
 	The server will confirm the error messages:
 	\begin{verbatim}
 	{
-	  "action":"error",
+	  "action":"clientError",
 	  "response":"SUCCESS"
 	}
 	\end{verbatim}
@@ -171,7 +189,7 @@
 	If the client needs a file for running a task (Wordlist or Rule File) he needs to request the url for downloading it.
 	\begin{verbatim}
 	{
-	  "action":"file",
+	  "action":"getFile",
 	  "token":"GHhgdf(/&",
 	  "task":56,
 	  "file":"rockyou.txt"
@@ -180,7 +198,7 @@
 	The server sends then the url, where the client can download the file from.
 	\begin{verbatim}
 	{
-	  "action":"file",
+	  "action":"getFile",
 	  "response":"SUCCESS",
 	  "url":"get.php?file=5&token=GHhgdf(/&"
 	}
@@ -190,35 +208,33 @@
 	The client can download a Hashlist/Superhashlist.
 	\begin{verbatim}
 	{
-	  "action":"hashes",
+	  "action":"getHashlist",
 	  "token":"GHhgdf(/&",
 	  "hashlist":23
 	}
 	\end{verbatim}
-	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send a list of hashes which were requested.\\\\
-	The server then will send the whole hashlist as plain-text download on success, otherwise he will send an error.\\\\
-	The special case appears on Binary Hashes and WPAs, there the server will respond with a JSON response:
+	If there occurs any error with this request, the server will respond in JSON format with error information. If everything is correct, it will send the url for the raw download of the hashes.\\\\
 	\begin{verbatim}
 	{
-	  "action":"hashes",
+	  "action":"getHashlist",
 	  "response":"SUCCESS",
-	  "data":"dGVzdCBzdHJpbmcgOik="
+	  "url":"get.php?hashlist=5&token=GHhgdf(/&"
 	}
 	\end{verbatim}
-	where 'data' contains the binary hash data.
+	where 'url' contains the download link for the raw data.
 	
 	\subsection*{Get Task}
 	The client requests the current task he should work on.
 	\begin{verbatim}
 	{
-	  "action":"task",
+	  "action":"getTask",
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
 	The server will send then a task to do (benchType can be 'speed' or 'run'):
 	\begin{verbatim}
 	{
-	  "action":"task",
+	  "action":"getTask",
 	  "response":"SUCCESS",
 	  "task": 25,
 	  "attackcmd": "#HL# -a 3 ?a?a?a?a",
@@ -227,6 +243,7 @@
 	  "bench": 30,
 	  "statustimer": 5,
 	  "benchType":"speed",
+	  "crackerType":"..."
 	  "hashlistAlias":"#HL#",
 	  "files": [
 	    "rockyou.txt",
@@ -237,7 +254,7 @@
 	or send this if there is no task available:
 	\begin{verbatim}
 	{
-	  "action":"task",
+	  "action":"getTask",
 	  "response":"SUCCESS",
 	  "task":"NONE"
 	}
@@ -247,7 +264,7 @@
 	The client requests the current task he should work on.
 	\begin{verbatim}
 	{
-	  "action":"chunk", 
+	  "action":"getChunk", 
 	  "token":"GHhgdf(/&",
 	  "taskId": 5
 	}
@@ -255,7 +272,7 @@
 	The server will send then a chunk to work on:
 	\begin{verbatim}
 	{
-	  "action":"chunk",
+	  "action":"getChunk",
 	  "response":"SUCCESS",
 	  "status":"OK",
 	  "chunk": 13,
@@ -268,7 +285,7 @@
 	In case it is required to measure the keyspace of the corresponding task.
 	\begin{verbatim}
 	{
-	  "action":"chunk",
+	  "action":"getChunk",
 	  "response":"SUCCESS",
 	  "status":"keyspace_required"
 	}
@@ -277,25 +294,25 @@
 	In case the current task is already fully dispatched and the agent should request for a new task.
 	\begin{verbatim}
 	{
-	  "action":"chunk",
+	  "action":"getChunk",
 	  "response":"SUCCESS",
 	  "status":"fully_dispatched"
 	}
 	\end{verbatim}
 	
-	In case there is an update of hashcat available, the server sends this:
+	In case there is an update of the cracker binary available, the server sends this:
 	\begin{verbatim}
 	{
-	  "action":"chunk",
+	  "action":"getChunk",
 	  "response":"SUCCESS",
-	  "status":"hashcat_update"
+	  "status":"cracker_update"
 	}
 	\end{verbatim}
 	
 	In case there is no benchmark for this task on the current agent. So it should start benchmarking then.
 	\begin{verbatim}
 	{
-	  "action":"chunk",
+	  "action":"getChunk",
 	  "response":"SUCCESS",
 	  "status":"benchmark"
 	}
@@ -306,7 +323,7 @@
 	The client sends the calculated keyspace of a task.
 	\begin{verbatim}
 	{
-	  "action":"keyspace",
+	  "action":"sendKeyspace",
 	  "token":"GHhgdf(/&",
 	  "taskId":35,
 	  "keyspace":568000
@@ -315,7 +332,7 @@
 	The server should reply following on success:
 	\begin{verbatim}
 	{
-	  "action":"keyspace",
+	  "action":"sendKeyspace",
 	  "response":"SUCCESS",
 	  "keyspace": "OK"
 	}
@@ -327,7 +344,7 @@
 	The 'run' benchmark type uses the old method of hashtopussy to benchmark a task in running the given task for some time.
 	\begin{verbatim}
 	{
-	  "action":"bench",
+	  "action":"sendBenchmark",
 	  "token":"GHhgdf(/&",
 	  "taskId":35,
 	  "type": "run",
@@ -336,7 +353,7 @@
 	\end{verbatim}
 	\begin{verbatim}
 	{
-	  "action":"bench",
+	  "action":"sendBenchmark",
 	  "token":"GHhgdf(/&",
 	  "taskId":35,
 	  "type": "speed",
@@ -346,23 +363,22 @@
 	The server should reply following on success:
 	\begin{verbatim}
 	{
-	  "action":"bench",
+	  "action":"setBenchmark",
 	  "response":"SUCCESS",
 	  "benchmark": "OK"
 	}
 	\end{verbatim}
 	
 	
-	\subsection*{Send Solve}
+	\subsection*{Send Progress}
 	In the given interval of the task, the client is working on, it should report the progress in following way:
 	\begin{verbatim}
 	{
-	  "action":"solve",
+	  "action":"sendProgress",
 	  "token":"GHhgdf(/&",
 	  "chunk":35,
 	  "keyspaceProgress":568000,
-	  "progress":500,
-	  "total":600,
+	  "relativeProgress":"45.45"
 	  "speed":570000,
 	  "state": 3,
 	  "cracks": [
@@ -374,7 +390,7 @@
 	The server will reply with following:
 	\begin{verbatim}
 	{
-	  "action":"solve",
+	  "action":"sendProgress",
 	  "response":"SUCCESS",
 	  "cracked": 2,
 	  "skipped": 0
@@ -383,7 +399,7 @@
 	If there were cracks on the same hashlist from some other clients or view the web-interface, the server will send the hashes which should be zapped from the hashlist
 	\begin{verbatim}
 	{
-	  "action":"solve",
+	  "action":"sendProgress",
 	  "response":"SUCCESS",
 	  "cracked": 2,
 	  "skipped": 0,
