@@ -126,7 +126,6 @@ class DUserAction {
 class DTaskTypes {
   const NORMAL    = 0;
   const SUPERTASK = 1;
-  const SUBTASK   = 2;
 }
 
 class DStats {

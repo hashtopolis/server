@@ -52,60 +52,52 @@ switch ($QUERY[PQuery::ACTION]) {
     $api = new APIDownloadBinary();
     break;
   /**
-   * An error occured on the client and he sends the error information to the server
+   * An error occurred on the client and he sends the error information to the server
    */
   case PActions::CLIENT_ERROR:
-    API::checkToken(PActions::ERROR, $QUERY);
-    API::agentError($QUERY);
+    $api = new APIClientError();
     break;
   /**
    * The client wants to download a file he needs for executing a task
    */
   case PActions::GET_FILE:
-    API::checkToken(PActions::FILE, $QUERY);
-    API::getFile($QUERY);
+    $api = new APIGetFile();
     break;
   /**
    * The client wants to download a hashlist for his task
    */
   case PActions::GET_HASHLIST:
-    API::checkToken(PActions::HASHES, $QUERY);
-    API::getHashes($QUERY);
+    $api = new APIGetHashlist();
     break;
   /**
    * The client requests to get a task he should work on
    */
   case PActions::GET_TASK:
-    API::checkToken(PActions::TASK, $QUERY);
-    API::getTask($QUERY);
+    $api = new APIGetTask();
     break;
   /**
    * The client requests a chunk on the task he is assigned
    */
   case PActions::GET_CHUNK:
-    API::checkToken(PActions::CHUNK, $QUERY);
-    API::getChunk($QUERY);
+    $api = new APIGetChunk();
     break;
   /**
    * The client measured the keyspace for a task and sends the resulting number
    */
   case PActions::SEND_KEYSPACE:
-    API::checkToken(PActions::KEYSPACE, $QUERY);
-    API::setKeyspace($QUERY);
+    $api = new APISendKeyspace();
     break;
   /**
    * The client did a benchmark on his assigned task and sends the benchmark result
    */
   case PActions::SEND_BENCHMARK:
-    API::checkToken(PActions::BENCHMARK, $QUERY);
-    API::setBenchmark($QUERY);
+    $api = new APISendBenchmark();
     break;
   /**
    * The client is currently working and he sends an update about the progress, cracked hashes and gets zapped hashes
    */
   case PActions::SEND_PROGRESS:
-    API::checkToken(PActions::SOLVE, $QUERY);
-    API::solve($QUERY);
+    $api = new APISendProgress();
     break;
 }
 

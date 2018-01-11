@@ -183,7 +183,7 @@ class PQueryRegister extends PQuery {
 abstract class PValues {
   const SUCCESS = "SUCCESS";
   const OK      = "OK";
-  const NONE    = "NONE";
+  const NONE    = null;
   const ERROR   = "ERROR";
 }
 
@@ -266,6 +266,7 @@ class PResponseGetFile extends PResponse {
 
 class PResponseGetTask extends PResponse {
   const TASK_ID        = "task";
+  const CRACKER_TYPE   = "crackerType";
   const ATTACK_COMMAND = "attackcmd";
   const CMD_PARAMETERS = "cmdpars";
   const HASHLIST_ID    = "hashlist";

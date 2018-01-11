@@ -12,6 +12,7 @@ use DBA\File;
 use DBA\FileTask;
 use DBA\Hash;
 use DBA\Hashlist;
+use DBA\HashlistHashlist;
 use DBA\JoinFilter;
 use DBA\LogEntry;
 use DBA\OrderFilter;
@@ -439,17 +440,15 @@ class Util {
   }
   
   /**
-   * @param $supertask Task
+   * @param $taskWrapper TaskWrapper
    * @return bool
    */
-  public static function checkSupertaskCompleted($supertask) {
+  public static function checkTaskWrapperCompleted($taskWrapper) {
     global $FACTORIES;
     
-    $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-    $qF = new QueryFilter(TaskTask::TASK_ID, $supertask->getId(), "=", $FACTORIES::getTaskTaskFactory());
-    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
-      /** @var $task Task */
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach ($tasks as $task) {
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
       $sumProg = 0;
@@ -716,20 +715,21 @@ class Util {
   /**
    * Checks if the given list is a superhashlist and returns an array containing all hashlists belonging to this superhashlist.
    * If the hashlist is not a superhashlist it just returns an array containing the list itself.
-   * @param $list hashlist-object
+   *
+   * @param $hashlist Hashlist
    * @return Hashlist[] of all superhashlists belonging to the $list
    */
-  public static function checkSuperHashlist($list) {
+  public static function checkSuperHashlist($hashlist) {
     global $FACTORIES;
     
-    if ($list->getFormat() == 3) {
-      $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
-      $superHashListFilter = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=");
-      $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::JOIN => $hashlistJoinFilter, $FACTORIES::FILTER => $superHashListFilter));
+    if ($hashlist->getFormat() == 3) {
+      $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
+      $superHashListFilter = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
+      $joined = $FACTORIES::getHashlistHashlistFactory()->filter(array($FACTORIES::JOIN => $hashlistJoinFilter, $FACTORIES::FILTER => $superHashListFilter));
       $lists = $joined[$FACTORIES::getHashlistFactory()->getModelName()];
       return $lists;
     }
-    return array($list);
+    return array($hashlist);
   }
   
   /**
