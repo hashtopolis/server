@@ -43,52 +43,50 @@ if ($agent->getOs() == DOperatingSystem::WINDOWS) {
 
 $format = $hashlists[0]->getFormat();
 $count = 0;
-foreach ($hashlists as $hashlist) {
-  switch ($format) {
-    case DHashlistFormat::PLAIN:
-      header_remove("Content-Type");
-      header('Content-Type: text/plain');
-      foreach ($hashlists as $list) {
-        $limit = 0;
-        $size = $CONFIG->getVal(DConfig::BATCH_SIZE);
-        do {
-          $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
-          $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list, "=");
-          $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
-          $current = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
-          
-          $output = "";
-          $count += sizeof($current);
-          foreach ($current as $entry) {
-            $output .= $entry->getHash();
-            if (strlen($entry->getSalt()) > 0) {
-              $output .= $hashlist->getSaltSeparator() . $entry->getSalt();
-            }
-            $output .= $lineDelimiter;
-          }
-          echo $output;
-          
-          $limit += $size;
-        } while (sizeof($current) > 0);
-      }
-      break;
-    case DHashlistFormat::BINARY:
-    case DHashlistFormat::WPA:
-      header_remove("Content-Type");
-      header('Content-Type: application/octet-stream');
-      $output = "";
-      foreach ($hashlists as $list) {
-        $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $list, "=");
-        $qF2 = new QueryFilter(HashBinary::IS_CRACKED, "0", "=");
-        $current = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+switch ($format) {
+  case DHashlistFormat::PLAIN:
+    header_remove("Content-Type");
+    header('Content-Type: text/plain');
+    foreach ($hashlists as $hashlist) {
+      $limit = 0;
+      $size = $CONFIG->getVal(DConfig::BATCH_SIZE);
+      do {
+        $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
+        $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
+        $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
+        $current = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
+        
+        $output = "";
         $count += sizeof($current);
         foreach ($current as $entry) {
-          $output .= Util::hextobin($entry->getHash());
+          $output .= $entry->getHash();
+          if (strlen($entry->getSalt()) > 0) {
+            $output .= $hashlist->getSaltSeparator() . $entry->getSalt();
+          }
+          $output .= $lineDelimiter;
         }
+        echo $output;
+        
+        $limit += $size;
+      } while (sizeof($current) > 0);
+    }
+    break;
+  case DHashlistFormat::BINARY:
+  case DHashlistFormat::WPA:
+    header_remove("Content-Type");
+    header('Content-Type: application/octet-stream');
+    $output = "";
+    foreach ($hashlists as $hashlist) {
+      $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $hashlist->getId(), "=");
+      $qF2 = new QueryFilter(HashBinary::IS_CRACKED, "0", "=");
+      $current = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+      $count += sizeof($current);
+      foreach ($current as $entry) {
+        $output .= Util::hextobin($entry->getHash());
       }
-      echo $output;
-      break;
-  }
+    }
+    echo $output;
+    break;
 }
 
 if ($count == 0) {
