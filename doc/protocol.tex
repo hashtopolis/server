@@ -145,7 +145,7 @@
 	  "url":"https://example.com/getapp.php"
 	}
 	\end{verbatim}
-	To check if a new Hashcat binary is available, following command is used.
+	To check if a new Hashcat/Cracker binary is available, following command is used.
 	\begin{verbatim}
 	{
 	  "action":"downloadBinary",
@@ -168,7 +168,7 @@
 	\end{verbatim}
 	
 	\subsection*{Client Error}
-	In case there happens an error with Hashcat on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page.
+	In case there happens an error with Hashcat/Cracker on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page.
 	\begin{verbatim}
 	{
 	  "action":"clientError",
@@ -237,13 +237,12 @@
 	  "action":"getTask",
 	  "response":"SUCCESS",
 	  "taskId": 25,
-	  "attackcmd": "#HL# -a 3 ?a?a?a?a",
-	  "cmdpars": "--hash-type=0",
+	  "attackcmd": "#HL# -a 3 ?a?a?a?a --hash-type=0",
 	  "hashlistId": 13,
 	  "bench": 30,
 	  "statustimer": 5,
 	  "benchType":"speed",
-	  "crackerType":"..."
+	  "crackerType":"hashcat"
 	  "hashlistAlias":"#HL#",
 	  "files": [
 	    "rockyou.txt",
@@ -378,7 +377,7 @@
 	  "token":"GHhgdf(/&",
 	  "chunkId":35,
 	  "keyspaceProgress":568000,
-	  "relativeProgress":"45.45"
+	  "relativeProgress":"4545"
 	  "speed":570000,
 	  "state": 3,
 	  "cracks": [
@@ -387,6 +386,8 @@
 	  ]
 	}
 	\end{verbatim}
+	RelativeProgress is the progress of the current chunk between 0 and 10'000 (in percent * 100).
+	
 	The server will reply with following:
 	\begin{verbatim}
 	{
