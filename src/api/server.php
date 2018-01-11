@@ -48,9 +48,8 @@ switch ($QUERY[PQuery::ACTION]) {
   /**
    * The client requests a download for hashcat binary, 7z binary or similar.
    */
-  case PActions::DOWNLOAD_BINARy:
-    API::checkToken(PActions::DOWNLOAD, $QUERY);
-    API::downloadApp($QUERY);
+  case PActions::DOWNLOAD_BINARY:
+    $api = new APIDownloadBinary();
     break;
   /**
    * An error occured on the client and he sends the error information to the server

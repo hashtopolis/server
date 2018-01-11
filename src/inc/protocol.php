@@ -190,7 +190,7 @@ abstract class PValues {
 // TODO: this must be in db for the cracker types
 class PValuesDownloadBinaryType extends PValues {
   const EXTRACTOR = "7zr";
-  const HASHCAT   = "hashcat";
+  const CRACKER   = "cracker";
 }
 
 // TODO: this must be modeled otherwise to reflect other benchmark types for new crackers
@@ -307,7 +307,7 @@ class PActions {
   const LOGIN                     = "login";
   const UPDATE_CLIENT_INFORMATION = "updateInformation";
   const CHECK_CLIENT_VERSION      = "checkClientVersion";
-  const DOWNLOAD_BINARy           = "downloadBinary";
+  const DOWNLOAD_BINARY           = "downloadBinary";
   const CLIENT_ERROR              = "clientError";
   const GET_FILE                  = "getFile";
   const GET_HASHLIST              = "getHashlist";
