@@ -3,17 +3,14 @@
 use DBA\Agent;
 use DBA\QueryFilter;
 
-class APIBasic {
+abstract class APIBasic {
   /** @var Agent */
   protected $agent = null;
   
-  public function execute($QUERY = array()) {
-    $this->sendResponse(array(
-        PResponse::ACTION => PActions::TEST_CONNECTION,
-        PResponse::RESPONSE => PValues::SUCCESS
-      )
-    );
-  }
+  /**
+   * @param array $QUERY input query sent to the API
+   */
+  public abstract function execute($QUERY = array());
   
   protected function sendResponse($RESPONSE) {
     header("Content-Type: application/json");

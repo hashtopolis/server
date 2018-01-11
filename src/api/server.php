@@ -19,7 +19,7 @@ switch ($QUERY[PQuery::ACTION]) {
    * Used to test the connection between the client and the server
    */
   case PActions::TEST_CONNECTION:
-    $api = new APIBasic();
+    $api = new APITestConnection();
     break;
   /**
    * Registers a new agent to the server.
@@ -111,7 +111,7 @@ switch ($QUERY[PQuery::ACTION]) {
 }
 
 if ($api == null) {
-  $api = new APIBasic();
+  $api = new APITestConnection();
   $api->sendErrorResponse("INV", "Invalid query!");
 }
 else {
