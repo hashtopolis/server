@@ -85,7 +85,7 @@ class APIGetTask extends APIBasic {
     global $FACTORIES, $CONFIG;
     
     // check if the assignment is up-to-date and correct if needed
-    if ($assignment != null) {
+    if ($assignment == null) {
       $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
     }

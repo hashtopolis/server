@@ -265,7 +265,7 @@ class PResponseGetFile extends PResponse {
 }
 
 class PResponseGetTask extends PResponse {
-  const TASK_ID        = "task";
+  const TASK_ID        = "taskId";
   const CRACKER_TYPE   = "crackerType";
   const ATTACK_COMMAND = "attackcmd";
   const CMD_PARAMETERS = "cmdpars";
