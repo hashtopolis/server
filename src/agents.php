@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
 use DBA\Agent;
@@ -109,7 +110,19 @@ else {
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());
   $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
   $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF));
+  /** @var $agents Agent[] */
   $agents = $joined[$FACTORIES::getAgentFactory()->getModelName()];
+  /** @var $accessGroups AccessGroupAgent[] */
+  $accessGroups = $joined[$FACTORIES::getAccessGroupAgentFactory()->getModelName()];
+  $accessGroupAgents = new DataSet();
+  foreach ($agents as $agent) {
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $accessGroupAgents->addValue($agent->getId(), $joined[$FACTORIES::getAccessGroupFactory()->getModelName()]);
+  }
+  
+  $OBJECTS['accessGroupAgents'] = $accessGroupAgents;
   $OBJECTS['agents'] = $agents;
   $OBJECTS['numAgents'] = sizeof($agents);
 }

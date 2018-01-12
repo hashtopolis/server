@@ -57,6 +57,11 @@
           [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
           IP: <code>[[agent.getLastIp()]]</code>
         </td>
+        <td>
+          {{FOREACH accessGroup;[[accessGroupAgents.getVal([[agent.getId()])]]}}
+            [[accessGroups.getGroupName()]]<br>
+          {{ENDFOREACH}}
+        </td>
         {{IF [[login.getLevel()]] >= 30}}
           <td>
             <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[agent.getId()]]?')) return false;">
