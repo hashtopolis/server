@@ -91,7 +91,8 @@ class APIGetTask extends APIBasic {
     }
     else {
       if ($assignment->getTaskId() != $task->getId()) {
-        $FACTORIES::getAssignmentFactory()->delete($assignment);
+        $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
+        $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
         $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
         $FACTORIES::getAssignmentFactory()->save($assignment);
       }
