@@ -116,7 +116,7 @@
                   {{ENDFOREACH}}
 
                   configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
-                  $("#crackerBinaryType").on('change', function() {
+                  $("#crackerBinaryType").change(function() {
                       configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
                   });
 
@@ -125,8 +125,8 @@
                     if (ddl1.value.length === 0) {
                         return;
                     }
-                    for (i = 0; i < versions[ddl1.value]; i++){
-                        createOption(ddl2, versions[ddl1.value][0], versions[ddl1.value][1]);
+                    for (i = 0; i < versions[ddl1.value].size; i++){
+                        createOption(ddl2, versions[ddl1.value][i][0], versions[ddl1.value][i][1]);
                     }
                   }
 
