@@ -116,7 +116,7 @@
                   {{ENDFOREACH}}
 
                   configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
-                  $("#crackerBinaryType").onchange(function() {
+                  $("#crackerBinaryType").on('change', function() {
                       configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
                   });
 
