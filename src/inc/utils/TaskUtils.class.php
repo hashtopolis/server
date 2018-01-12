@@ -2,15 +2,19 @@
 
 use DBA\Agent;
 use DBA\Chunk;
+use DBA\ContainFilter;
 use DBA\File;
 use DBA\Hashlist;
+use DBA\JoinFilter;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
 
 class TaskUtils {
   /**
    * @param $agent Agent
-   * @return Task
+   * @return Task|Task[]
    */
   public static function getBestTask($agent, $all = false) {
     global $FACTORIES;
