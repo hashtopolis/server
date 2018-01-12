@@ -96,7 +96,7 @@
             <tr>
               <td>Binary type to run task:</td>
               <td>
-                <select name="crackerBinaryTypeId" id="crackerBinaryType" onchange="configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'))" class="form-control" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
@@ -116,6 +116,9 @@
                   {{ENDFOREACH}}
 
                   configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                  $("#crackerBinaryType").onchange(function() {
+                      configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                  });
 
                   function configureDropDownLists(ddl1, ddl2) {
                     ddl2.options.length = 0;
