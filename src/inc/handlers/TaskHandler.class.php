@@ -251,13 +251,12 @@ class TaskHandler implements Handler {
     }
     
     //TODO: accessgroupid need to be set
-    $crackerBinaryId = $crackerBinary->getId();
     $accessGroupId = 1;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::SUPERTASK, $hashlistId, $accessGroupId, "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
-    $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $taskWrapper->getId());
+    $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
     $task = $FACTORIES::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
