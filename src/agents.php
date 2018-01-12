@@ -49,7 +49,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 // load groups for user
 $qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
 $userGroups = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => $qF));
-$accessGroupIds = array(null);
+$accessGroupIds = array();
 foreach ($userGroups as $userGroup) {
   $accessGroupIds[] = $userGroup->getAccessGroupId();
 }
@@ -104,11 +104,15 @@ else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
 }
 else {
+  // load all agents which are in an access group
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());
   $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
   $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF));
+  /** @var $agents Agent[] */
   $agents = $joined[$FACTORIES::getAgentFactory()->getModelName()];
+  
+  // load all agents which don't have any access group
   $allAgents = array();
   foreach ($agents as $agent) {
     $set = new DataSet();

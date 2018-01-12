@@ -1,5 +1,7 @@
 <?php
 
+use DBA\AccessGroup;
+use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
@@ -25,9 +27,15 @@ class APIRegisterAgent extends APIBasic {
     $token = Util::randomString(10);
     $agent = new Agent(0, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, 0);
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
-    if ($FACTORIES::getAgentFactory()->save($agent)) {
+    $agent = $FACTORIES::getAgentFactory()->save($agent);
+    if ($agent != null) {
       $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
       NotificationHandler::checkNotifications(DNotificationType::NEW_AGENT, $payload);
+      
+      // assign agent to default group
+      $accessGroup = Util::getOrCreateDefaultAccessGroup();
+      $accessGroupAgent = new AccessGroupAgent(0, $accessGroup->getId(), $agent->getId());
+      $FACTORIES::getAccessGroupAgentFactory()->save($accessGroupAgent);
       
       $this->sendResponse(array(
           PQueryRegister::ACTION => PActions::REGISTER,
