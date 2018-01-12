@@ -12,8 +12,10 @@ class TaskUtils {
    * @param $agent Agent
    * @return Task
    */
-  public static function getBestTask($agent) {
+  public static function getBestTask($agent, $all = false) {
     global $FACTORIES;
+    
+    $allTasks = array();
     
     // load all groups where this agent has access to
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
@@ -82,8 +84,15 @@ class TaskUtils {
         }
         
         // this task is available for this user regarding permissions
+        if ($all) {
+          $allTasks[] = $task;
+          continue;
+        }
         return $task;
       }
+    }
+    if ($all) {
+      return $allTasks;
     }
     return null;
   }
@@ -187,7 +196,7 @@ class TaskUtils {
   /**
    * @param $hashlists Hashlist[]
    */
-  public static function depriorizeAllTasks($hashlists){
+  public static function depriorizeAllTasks($hashlists) {
     global $FACTORIES;
     
     $qF = new ContainFilter(TaskWrapper::HASHLIST_ID, Util::arrayOfIds($hashlists));

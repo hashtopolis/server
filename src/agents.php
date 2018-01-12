@@ -65,10 +65,15 @@ if (isset($_GET['id'])) {
   if (!$agent) {
     UI::printError("ERROR", "Agent not found!");
   }
+  else if (!AccessUtils::userCanAccessAgent($agent, $LOGIN->getUser())) {
+    UI::printError("ERROR", "No access to this agent!");
+  }
   else {
     $OBJECTS['agent'] = $agent;
     $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array());
-    $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array());
+    
+    // load all tasks which are valid for this agent
+    $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent->getId(), true);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
