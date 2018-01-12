@@ -64,6 +64,9 @@ class APIGetTask extends APIBasic {
           $this->sendTask(TaskUtils::getImportantTask($task, $currentTask), $assignment);
         }
       }
+      else{
+        $this->sendTask($task, $assignment);
+      }
     }
   }
   
