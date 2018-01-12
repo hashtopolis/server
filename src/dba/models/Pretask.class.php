@@ -14,8 +14,9 @@ class Pretask extends AbstractModel {
   private $useNewBench;
   private $priority;
   private $isMaskImport;
+  private $crackerBinaryTypeId;
   
-  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $isMaskImport) {
+  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $isMaskImport, $crackerBinaryTypeId) {
     $this->pretaskId = $pretaskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -27,6 +28,7 @@ class Pretask extends AbstractModel {
     $this->useNewBench = $useNewBench;
     $this->priority = $priority;
     $this->isMaskImport = $isMaskImport;
+    $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
   
   function getKeyValueDict() {
@@ -42,6 +44,7 @@ class Pretask extends AbstractModel {
     $dict['useNewBench'] = $this->useNewBench;
     $dict['priority'] = $this->priority;
     $dict['isMaskImport'] = $this->isMaskImport;
+    $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     
     return $dict;
   }
@@ -141,6 +144,14 @@ class Pretask extends AbstractModel {
   function setIsMaskImport($isMaskImport){
     $this->isMaskImport = $isMaskImport;
   }
+  
+  function getCrackerBinaryTypeId(){
+    return $this->crackerBinaryTypeId;
+  }
+  
+  function setCrackerBinaryTypeId($crackerBinaryTypeId){
+    $this->crackerBinaryTypeId = $crackerBinaryTypeId;
+  }
 
   const PRETASK_ID = "pretaskId";
   const TASK_NAME = "taskName";
@@ -153,4 +164,5 @@ class Pretask extends AbstractModel {
   const USE_NEW_BENCH = "useNewBench";
   const PRIORITY = "priority";
   const IS_MASK_IMPORT = "isMaskImport";
+  const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
 }

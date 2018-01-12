@@ -768,7 +768,8 @@ CREATE TABLE `Pretask` (
   `isCpuTask`    INT(11)                 NOT NULL,
   `useNewBench`  INT(11)                 NOT NULL,
   `priority`     INT(11)                 NOT NULL,
-  `isMaskImport` INT(11)                 NOT NULL
+  `isMaskImport` INT(11)                 NOT NULL,
+  `crackerBinaryTypeId` INT(11)          NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
