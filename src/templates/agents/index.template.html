@@ -59,7 +59,7 @@
         </td>
         <td>
           {{FOREACH accessGroup;[[accessGroupAgents.getVal([[agent.getId()]])]]}}
-            [[accessGroups.getGroupName()]]<br>
+            [[accessGroup.getGroupName()]]<br>
           {{ENDFOREACH}}
         </td>
         {{IF [[login.getLevel()]] >= 30}}
