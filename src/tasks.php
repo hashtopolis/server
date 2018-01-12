@@ -274,8 +274,6 @@ else if (isset($_GET['new'])) {
   $OBJECTS['hashlistId'] = $hashlistId;
   
   $lists = array();
-  $set = new DataSet();
-  $lists[] = $set;
   $res = $FACTORIES::getHashlistFactory()->filter(array());
   foreach ($res as $list) {
     $set = new DataSet();

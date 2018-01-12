@@ -202,10 +202,14 @@ class TaskHandler implements Handler {
     $isCpuTask = intval($_POST['cpuOnly']);
     $isSmall = intval($_POST['isSmall']);
     $skipKeyspace = intval($_POST['skipKeyspace']);
+    $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
+    $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
     $color = $_POST["color"];
-    if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
-      $color = null;
-    }
+    
+    $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
+    $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
+    $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
+    
     if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
@@ -214,40 +218,40 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "The command must contain no blacklisted characters!");
       return;
     }
-    else if ($skipKeyspace < 0) {
-      $skipKeyspace = 0;
+    else if ($crackerBinary == null || $crackerBinaryType == null) {
+      UI::addMessage(UI::ERROR, "Invalid cracker binary selection!");
+      return;
     }
-    $hashlist = null;
-    if ($_POST["hashlist"] == null) {
-      // it will be a preconfigured task
-      $hashlistId = null;
-      if (strlen($name) == 0) {
-        $name = "PC_" . date("Ymd_Hi");
-      }
-      $forward = "pretasks.php";
+    else if ($crackerBinary->getCrackerBinaryTypeId() != $crackerBinaryType->getId()) {
+      UI::addMessage(UI::ERROR, "Non-matching cracker binary selection!");
+      return;
     }
-    else {
-      $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
-      if ($hashlist <= 0) {
-        UI::addMessage(UI::ERROR, "Invalid hashlist!");
-        return;
-      }
-      $hashlistId = $hashlist->getId();
-      if (strlen($name) == 0) {
-        $name = "HL" . $hashlistId . "_" . date("Ymd_Hi");
-      }
-      $forward = "tasks.php";
+    else if ($hashlist == null) {
+      UI::addMessage(UI::ERROR, "Invalid hashlist selected!");
+      return;
     }
-    if ($chunk < 0 || $status < 0 || $chunk < $status) {
+    else if ($chunk < 0 || $status < 0 || $chunk < $status) {
       UI::addMessage(UI::ERROR, "Chunk time must be higher than status timer!");
       return;
     }
+    
+    if ($skipKeyspace < 0) {
+      $skipKeyspace = 0;
+    }
+    if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
+      $color = null;
+    }
+    $hashlistId = $hashlist->getId();
+    if (strlen($name) == 0) {
+      $name = "HL" . $hashlistId . "_" . date("Ymd_Hi");
+    }
+    $forward = "tasks.php";
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     
-    //TODO: crackerbinaryId and accessgroupid need to be set
-    $crackerBinaryId = null;
+    //TODO: accessgroupid need to be set
+    $crackerBinaryId = $crackerBinary->getId();
     $accessGroupId = 1;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
