@@ -96,51 +96,41 @@
             <tr>
               <td>Binary type to run task:</td>
               <td>
-                <select name="crackerBinaryTypeId" id="crackerBinary" onchange="updateVersionDropdown()" class="form-control" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinary" onchange="configureDropDownLists()" class="form-control" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
                 </select>
-                {{FOREACH binary;[[binaries]]}}
-                  <select name="crackerBinaryId" id="crackerVersions" class="form-control" title="Binary Version">
-                    <option value="">&nbsp;</option>
-                  </select>
-                {{ENDFOREACH}}
+                <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control hidden" title="Binary Version">
+                </select>
                 <script type="text/javascript">
-                  updateVersionDropdown();
+                  var versions = [];
+                  {{FOREACH version;[[versions]]}}
+                    if (versions.hasOwnProperty([[version.getCrackerBinaryTypeId()]])) {
+                        versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]]]);
+                    }
+                    else{
+                      versions [ [[version.getCrackerBinaryTypeId()]] ] = ["[[version.getVersion()]]"];
+                    }
+                  {{ENDFOREACH}}
 
-                  function updateVersionDropdown(){
-                      var select = document.getElementById('crackerVersions');
-                      select.childNodes.forEach(function(entry) {
-                          select.removeChild(entry);
-                      });
+                  configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
 
-                      var versions = [];
-                      {{FOREACH version;[[versions]]}}
-                        if (versions.hasOwnProperty([[version.getCrackerBinaryTypeId()]])) {
-                            var arr = versions[ [[version.getCrackerBinaryTypeId()]] ];
-                            arr.push("[[version.getVersion()]]");
-                        }
-                        else{
-                            versions [ [[version.getCrackerBinaryTypeId()]] ] = ["[[version.getVersion()]]"];
-                        }
-                      {{ENDFOREACH}}
+                  function configureDropDownLists(ddl1,ddl2) {
+                    ddl2.options.length = 0;
+                    if (ddl1.value.length === 0) {
+                        return;
+                    }
+                    for (i = 0; i < versions[ddl1.value]; i++){
+                        createOption(ddl2, versions[ddl1.value][0], versions[ddl1.value][1]);
+                    }
+                  }
 
-                      var opt = document.createElement('option');
-                      opt.value = "";
-                      opt.innerHTML = "&nbsp;";
-                      select.appendChild(opt);
-
-                      var binary = document.getElementById('crackerBinary');
-                      var selectedValue = binary.options[binary.selectedIndex].value;
-                      versions.forEach(function(entry){
-                          entry.forEach(function(version){
-                              var opt = document.createElement('option');
-                              opt.value = "";
-                              opt.innerHTML = version;
-                              select.appendChild(opt);
-                          });
-                      });
+                  function createOption(ddl, text, value) {
+                    var opt = document.createElement('option');
+                    opt.value = value;
+                    opt.text = text;
+                    ddl.options.add(opt);
                   }
                 </script>
               </td>
