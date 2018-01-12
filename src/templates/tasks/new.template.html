@@ -107,7 +107,7 @@
                   var versions = [];
                   {{FOREACH version;[[versions]]}}
                     if ([[version.getCrackerBinaryTypeId()]] in versions) {
-                        versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]]]);
+                        versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]] ]);
                     }
                     else{
                       versions [ [[version.getCrackerBinaryTypeId()]] ] = ["[[version.getVersion()]]", [[version.getId()]] ];
