@@ -32,6 +32,7 @@ require_once(dirname(__FILE__) . "/templating/Statement.class.php");
 require_once(dirname(__FILE__) . "/templating/Template.class.php");
 
 // include all required files
+$NOTIFICATIONS = array();
 require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
 require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
 $directories = array('handlers', 'api', 'defines', 'utils', 'notifications');
