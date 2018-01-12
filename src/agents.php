@@ -73,7 +73,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array());
     
     // load all tasks which are valid for this agent
-    $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent->getId(), true);
+    $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent, true);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);

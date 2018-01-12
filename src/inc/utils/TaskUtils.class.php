@@ -15,6 +15,7 @@ use DBA\TaskWrapper;
 class TaskUtils {
   /**
    * @param $agent Agent
+   * @param bool $all set true to get all matching tasks for this agent
    * @return Task|Task[]
    */
   public static function getBestTask($agent, $all = false) {
@@ -31,6 +32,10 @@ class TaskUtils {
     // get all TaskWrappers which we have access to
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroups);
     $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, ">");
+    if ($all) {
+      // if we want to retrieve all tasks which are accessible, we also show the ones with 0 priority
+      $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, ">=");
+    }
     $oF = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
     
