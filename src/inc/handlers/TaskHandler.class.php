@@ -254,7 +254,7 @@ class TaskHandler implements Handler {
     $accessGroupId = 1;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::SUPERTASK, $hashlistId, $accessGroupId, "");
+    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroupId, "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
     $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
     $task = $FACTORIES::getTaskFactory()->save($task);
