@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\Chunk;
 use DBA\ContainFilter;
