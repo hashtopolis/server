@@ -1,13 +1,15 @@
 <?php
 
+use DBA\AccessGroupAgent;
+use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\ContainFilter;
+use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
-use DBA\Task;
-use DBA\TaskWrapper;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -41,6 +43,15 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
+}
+
+
+// load groups for user
+$qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
+$userGroups = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => $qF));
+$accessGroupIds = array(null);
+foreach ($userGroups as $userGroup) {
+  $accessGroupIds[] = $userGroup->getAccessGroupId();
 }
 
 /*$qF = new QueryFilter(TaskWrapper::HASHLIST_ID, null, "<>");
@@ -93,8 +104,11 @@ else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
 }
 else {
-  $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
-  $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::ORDER => array($oF)));
+  $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
+  $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());
+  $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
+  $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN = $jF));
+  $agents = $joined[$FACTORIES::getAgentFactory()->getModelName()];
   $allAgents = array();
   foreach ($agents as $agent) {
     $set = new DataSet();
