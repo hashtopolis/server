@@ -33,11 +33,12 @@ require_once(dirname(__FILE__) . "/templating/Template.class.php");
 
 // include all required files
 require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
-$directories = array('handlers', 'api', 'defines', 'utils');
+require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
+$directories = array('handlers', 'api', 'defines', 'utils', 'notifications');
 foreach ($directories as $directory) {
   $dir = scandir(dirname(__FILE__) . "/$directory/");
   foreach ($dir as $entry) {
-    if (strpos($entry, ".class.php") !== false) {
+    if (strpos($entry, ".php") !== false) {
       require_once(dirname(__FILE__) . "/$directory/" . $entry);
     }
   }
@@ -45,16 +46,6 @@ foreach ($directories as $directory) {
 
 include(dirname(__FILE__) . "/defines.php"); // TODO: remove this when all defines were split into the subdirectory
 include(dirname(__FILE__) . "/protocol.php");
-
-// include notifications
-$NOTIFICATIONS = array();
-require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
-$dir = scandir(dirname(__FILE__) . "/notifications/");
-foreach ($dir as $entry) {
-  if (strpos($entry, ".class.php") !== false) {
-    require_once(dirname(__FILE__) . "/notifications/" . $entry);
-  }
-}
 
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");
