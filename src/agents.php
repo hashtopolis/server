@@ -104,46 +104,15 @@ else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
 }
 else {
-  // load all agents which are in an access group
+  // load all agents which are in an access group the user has access to
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());
   $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
   $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF));
-  /** @var $agents Agent[] */
   $agents = $joined[$FACTORIES::getAgentFactory()->getModelName()];
-  
-  // load all agents which don't have any access group
-  $allAgents = array();
-  foreach ($agents as $agent) {
-    $set = new DataSet();
-    $agent->setDevices(explode("\n", $agent->getDevices()));
-    $set->addValue("agent", $agent);
-    
-    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-    $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
-    $isWorking = 0;
-    $taskId = 0;
-    if (sizeof($assignments) > 0) {
-      $assignment = $assignments[0];
-      $qF = new QueryFilter(Chunk::TASK_ID, $assignment->getTaskId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array());
-      foreach ($chunks as $chunk) {
-        if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getAgentId() == $agent->getId()) {
-          $isWorking = 1;
-          $set->addValue("speed", $chunk->getSpeed());
-        }
-      }
-      $taskId = $assignment->getTaskId();
-    }
-    $set->addValue("isWorking", $isWorking);
-    $set->addValue("taskId", $taskId);
-    $allAgents[] = $set;
-  }
-  $OBJECTS['numAgents'] = sizeof($allAgents);
-  $OBJECTS['sets'] = $allAgents;
+  $OBJECTS['agents'] = $agents;
+  $OBJECTS['numAgents'] = sizeof($agents);
 }
-
-//$OBJECTS['allTasks'] = $allTasks;
 
 echo $TEMPLATE->render($OBJECTS);
 

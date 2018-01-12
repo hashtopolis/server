@@ -1,6 +1,5 @@
 <?php
 
-use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\QueryFilter;
