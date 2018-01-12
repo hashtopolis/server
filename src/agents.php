@@ -107,7 +107,7 @@ else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());
   $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
-  $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN = $jF));
+  $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF));
   $agents = $joined[$FACTORIES::getAgentFactory()->getModelName()];
   $allAgents = array();
   foreach ($agents as $agent) {
