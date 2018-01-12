@@ -39,6 +39,9 @@
           {{ELSE}}
             ---
           {{ENDIF}}
+          {{IF strlen([[agent.getClientSignature()]]) > 0}}
+            Running: [[agent.getClientSignature()]]
+          {{ENDIF}}
         </td>
         <td>
           {{FOREACH device;[[agent.getDevices()]]}}
