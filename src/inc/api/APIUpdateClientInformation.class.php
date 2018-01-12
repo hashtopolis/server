@@ -22,7 +22,9 @@ class APIUpdateClientInformation extends APIBasic {
     }
     
     // save agent details
-    $this->agent->setCpuOnly($cpuOnly);
+    if (strlen($this->agent->getUid()) == 0) {
+      $this->agent->setCpuOnly($cpuOnly); // we only update this variable on the first time, otherwise we would overwrite manual changes
+    }
     $this->agent->setDevices(htmlentities(implode("\n", $devices), ENT_QUOTES, "UTF-8"));
     $this->agent->setLastAct(PActions::UPDATE_CLIENT_INFORMATION);
     $this->agent->setUid($uid);
