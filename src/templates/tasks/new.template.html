@@ -106,7 +106,7 @@
                 <script type="text/javascript">
                   var versions = [];
                   {{FOREACH version;[[versions]]}}
-                    if (versions.hasOwnProperty([[version.getCrackerBinaryTypeId()]])) {
+                    if ([[version.getCrackerBinaryTypeId()]] in versions) {
                         versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]]]);
                     }
                     else{
