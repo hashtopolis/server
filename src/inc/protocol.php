@@ -22,11 +22,13 @@ abstract class PQuery { // include only generalized query values
 
 class PQueryLogin extends PQuery {
   static function isValid($QUERY) {
-    if (!isset($QUERY[self::TOKEN])) {
+    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CLIENT_SIGNATURE])) {
       return false;
     }
     return true;
   }
+  
+  const CLIENT_SIGNATURE = "clientSignature";
 }
 
 class PQuerySendProgress extends PQuery {

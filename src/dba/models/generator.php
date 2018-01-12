@@ -22,7 +22,8 @@ $CONF['Agent'] = array(
   'lastTime',
   'lastIp',
   'userId',
-  'cpuOnly'
+  'cpuOnly',
+  'clientSignature'
 );
 $CONF['AgentBinary'] = array(
   'agentBinaryId',

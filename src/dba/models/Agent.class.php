@@ -18,8 +18,9 @@ class Agent extends AbstractModel {
   private $lastIp;
   private $userId;
   private $cpuOnly;
+  private $clientSignature;
   
-  function __construct($agentId, $agentName, $uid, $os, $devices, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly) {
+  function __construct($agentId, $agentName, $uid, $os, $devices, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly, $clientSignature) {
     $this->agentId = $agentId;
     $this->agentName = $agentName;
     $this->uid = $uid;
@@ -35,6 +36,7 @@ class Agent extends AbstractModel {
     $this->lastIp = $lastIp;
     $this->userId = $userId;
     $this->cpuOnly = $cpuOnly;
+    $this->clientSignature = $clientSignature;
   }
   
   function getKeyValueDict() {
@@ -54,6 +56,7 @@ class Agent extends AbstractModel {
     $dict['lastIp'] = $this->lastIp;
     $dict['userId'] = $this->userId;
     $dict['cpuOnly'] = $this->cpuOnly;
+    $dict['clientSignature'] = $this->clientSignature;
     
     return $dict;
   }
@@ -185,6 +188,14 @@ class Agent extends AbstractModel {
   function setCpuOnly($cpuOnly){
     $this->cpuOnly = $cpuOnly;
   }
+  
+  function getClientSignature(){
+    return $this->clientSignature;
+  }
+  
+  function setClientSignature($clientSignature){
+    $this->clientSignature = $clientSignature;
+  }
 
   const AGENT_ID = "agentId";
   const AGENT_NAME = "agentName";
@@ -201,4 +212,5 @@ class Agent extends AbstractModel {
   const LAST_IP = "lastIp";
   const USER_ID = "userId";
   const CPU_ONLY = "cpuOnly";
+  const CLIENT_SIGNATURE = "clientSignature";
 }

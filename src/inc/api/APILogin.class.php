@@ -9,6 +9,7 @@ class APILogin extends APIBasic {
       $this->sendErrorResponse(PActions::LOGIN, "Invalid login query!");
     }
     $this->checkToken(PActions::LOGIN, $QUERY);
+    $this->agent->setClientSignature(htmlentities($QUERY[PQueryLogin::CLIENT_SIGNATURE], ENT_QUOTES, "UTF-8"));
     $this->updateAgent(PActions::LOGIN);
     
     $this->sendResponse(array(

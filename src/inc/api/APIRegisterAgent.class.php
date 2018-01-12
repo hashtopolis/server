@@ -24,7 +24,7 @@ class APIRegisterAgent extends APIBasic {
     
     //create access token & save agent details
     $token = Util::randomString(10);
-    $agent = new Agent(0, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, 0);
+    $agent = new Agent(0, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, 0, "");
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
     $agent = $FACTORIES::getAgentFactory()->save($agent);
     if ($agent != null) {

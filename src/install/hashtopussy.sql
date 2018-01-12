@@ -89,7 +89,8 @@ CREATE TABLE `Agent` (
   `lastIp`       VARCHAR(50)
                  COLLATE utf8_unicode_ci      NOT NULL,
   `userId`       INT(11) DEFAULT NULL,
-  `cpuOnly`      INT(11)                      NOT NULL
+  `cpuOnly`      INT(11)                      NOT NULL,
+  `clientSignature` VARCHAR(50)               NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
