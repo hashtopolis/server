@@ -31,33 +31,18 @@ foreach ($dir as $entry) {
 require_once(dirname(__FILE__) . "/templating/Statement.class.php");
 require_once(dirname(__FILE__) . "/templating/Template.class.php");
 
-// include all handlers
+// include all required files
 require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
-$dir = scandir(dirname(__FILE__) . "/handlers/");
-foreach ($dir as $entry) {
-  if (strpos($entry, ".class.php") !== false) {
-    require_once(dirname(__FILE__) . "/handlers/" . $entry);
+$directories = array('handlers', 'api', 'defines', 'utils');
+foreach ($directories as $directory) {
+  $dir = scandir(dirname(__FILE__) . "/$directory/");
+  foreach ($dir as $entry) {
+    if (strpos($entry, ".class.php") !== false) {
+      require_once(dirname(__FILE__) . "/$directory/" . $entry);
+    }
   }
 }
 
-// API
-$dir = scandir(dirname(__FILE__) . "/api/");
-foreach ($dir as $entry) {
-  if ($entry[0] == '.') {
-    continue;
-  }
-  require_once(dirname(__FILE__) . "/api/" . $entry);
-}
-
-// DEFINES
-// include all defines
-$dir = scandir(dirname(__FILE__) . "/defines/");
-foreach ($dir as $entry) {
-  if ($entry[0] == '.') {
-    continue;
-  }
-  require_once(dirname(__FILE__) . "/defines/" . $entry);
-}
 include(dirname(__FILE__) . "/defines.php"); // TODO: remove this when all defines were split into the subdirectory
 include(dirname(__FILE__) . "/protocol.php");
 
