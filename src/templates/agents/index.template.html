@@ -20,7 +20,7 @@
         <td>
           <form id="active[[agent.getId()]]" action="agents.php" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
-            <input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
+            <input type="hidden" name="agent" value="[[agent.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getId()]]').submit();">
           </form>
@@ -58,7 +58,7 @@
           IP: <code>[[agent.getLastIp()]]</code>
         </td>
         <td>
-          {{FOREACH accessGroup;[[accessGroupAgents.getVal([[agent.getId()])]]}}
+          {{FOREACH accessGroup;[[accessGroupAgents.getVal([[agent.getId()]])]]}}
             [[accessGroups.getGroupName()]]<br>
           {{ENDFOREACH}}
         </td>
