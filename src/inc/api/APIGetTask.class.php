@@ -109,7 +109,7 @@ class APIGetTask extends APIBasic {
     $taskFiles = array();
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
     $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
-    $joined = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     /** @var $files File[] */
     $files = $joined[$FACTORIES::getFileFactory()->getModelName()];
     foreach ($files as $file) {
