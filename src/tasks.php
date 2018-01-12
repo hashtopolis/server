@@ -315,8 +315,20 @@ else if (isset($_GET['new'])) {
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
   
-  $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
-  $OBJECTS['versions'] = $FACTORIES::getCrackerBinaryFactory()->filter(array());
+  $binaries = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
+  $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array());
+  /*$versionArray = array();
+  foreach ($versions as $version) {
+    if (isset($versionArray[$version->getCrackerBinaryTypeId()])) {
+      $versionArray[$version->getCrackerBinaryTypeId()][] = array($version->getVersion(), $version->getId());
+    }
+    else {
+      $versionArray[$version->getCrackerBinaryTypeId()] = array(array($version->getVersion(), $version->getId()));
+    }
+  }
+  $OBJECTS['versionArray'] = */
+  $OBJECTS['versions'] = $versions;
+  $OBJECTS['binaries'] = $binaries;
 }
 else {
   Util::loadTasks();
