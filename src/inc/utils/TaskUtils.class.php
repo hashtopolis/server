@@ -2,9 +2,11 @@
 
 use DBA\AccessGroupAgent;
 use DBA\Agent;
+use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
 use DBA\File;
+use DBA\FileTask;
 use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
