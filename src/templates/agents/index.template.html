@@ -7,7 +7,7 @@
     <tr>
       <th>Id</th>
       <th>Act</th>
-      <th>Name / Owner</th>
+      <th>Name / Owner / Client</th>
       <th>GPUs/CPUs</th>
       <th>CPU only</th>
       <th>Last activity</th>
@@ -41,6 +41,8 @@
           {{ENDIF}}
           {{IF strlen([[agent.getClientSignature()]]) > 0}}
             <br>Running: [[agent.getClientSignature()]]
+          {{ELSE}}
+            <br>Running: unknown
           {{ENDIF}}
         </td>
         <td>
