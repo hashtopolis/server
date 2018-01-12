@@ -96,7 +96,7 @@
             <tr>
               <td>Binary type to run task:</td>
               <td>
-                <select name="crackerBinaryTypeId" id="crackerBinary" onchange="configureDropDownLists()" class="form-control" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinaryType" onchange="configureDropDownLists()" class="form-control" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
