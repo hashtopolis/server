@@ -65,7 +65,7 @@ class APIGetChunk extends APIBasic {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $task = $this->checkTask($task);
+    $task = TaskUtils::checkTask($task);
     if ($task == null) { // agent needs a new task
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
@@ -75,7 +75,7 @@ class APIGetChunk extends APIBasic {
       );
     }
     
-    $bestTask = $this->getBestTask();
+    $bestTask = TaskUtils::getBestTask($this->agent);
     if ($bestTask == null) {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
       if (!Util::agentHasAccessToTask($task, $this->agent)) {
@@ -84,7 +84,7 @@ class APIGetChunk extends APIBasic {
     }
     
     // if the best task is not the one we are working on, we should switch
-    $bestTask = $this->getImportantTask($bestTask, $task);
+    $bestTask = TaskUtils::getImportantTask($bestTask, $task);
     if ($bestTask->getId() != $task->getId()) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
     }

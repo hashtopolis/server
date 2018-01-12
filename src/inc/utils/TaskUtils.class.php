@@ -5,13 +5,14 @@ use DBA\Chunk;
 use DBA\File;
 use DBA\Hashlist;
 use DBA\Task;
+use DBA\TaskWrapper;
 
 class TaskUtils {
   /**
    * @param $agent Agent
    * @return Task
    */
-  public function getBestTask($agent) {
+  public static function getBestTask($agent) {
     global $FACTORIES;
     
     // load all groups where this agent has access to
@@ -61,7 +62,7 @@ class TaskUtils {
         }
         
         // we need to check now if the task is already completed or fully dispatched
-        $task = $this->checkTask($task);
+        $task = TaskUtils::checkTask($task);
         if ($task == null) {
           continue; // if it is completed we go to the next
         }
@@ -93,7 +94,7 @@ class TaskUtils {
    * @param $task Task
    * @return Task null if the task is completed or fully dispatched
    */
-  private function checkTask($task) {
+  public static function checkTask($task) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
@@ -121,7 +122,7 @@ class TaskUtils {
       }
       else if (time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT)) {
         // this chunk timed out, so we remove the agent from it and therefore this task is not complete yet
-        $this->checkChunkSplit($chunk);
+        TaskUtils::checkChunkSplit($chunk);
         return $task;
       }
       else {
@@ -138,7 +139,7 @@ class TaskUtils {
    * @param $chunk Chunk
    * @return Chunk chunk which still needs to be completed
    */
-  private function checkChunkSplit($chunk) {
+  private static function checkChunkSplit($chunk) {
     global $FACTORIES;
     
     if ($chunk->getCheckpoint() == 0) {
@@ -165,7 +166,7 @@ class TaskUtils {
    * @param $task2 Task
    * @return Task task which should be worked on
    */
-  private function getImportantTask($task1, $task2) {
+  public static function getImportantTask($task1, $task2) {
     global $FACTORIES;
     
     if ($task1 == null) {
@@ -184,10 +185,9 @@ class TaskUtils {
   }
   
   /**
-   * @param $taskWrapper TaskWrapper
    * @param $hashlists Hashlist[]
    */
-  private function depriorizeAllTasks($taskWrapper, $hashlists){
+  public static function depriorizeAllTasks($hashlists){
     global $FACTORIES;
     
     $qF = new ContainFilter(TaskWrapper::HASHLIST_ID, Util::arrayOfIds($hashlists));

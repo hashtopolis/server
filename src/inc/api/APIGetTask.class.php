@@ -28,7 +28,7 @@ class APIGetTask extends APIBasic {
   
     $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
-    $task = $this->getBestTask();
+    $task = TaskUtils::getBestTask($this->agent);
     if ($task == null) {
       if ($assignment == null) {
         // there is no best task available and nothing is assigned currently -> no task to assign
@@ -36,7 +36,7 @@ class APIGetTask extends APIBasic {
       }
       else {
         // check if the current assignment is fulfilled
-        $task = $this->checkTask($task);
+        $task = TaskUtils::checkTask($task);
         if ($task == null) {
           // we checked the task and it is completed
           $this->noTask();
@@ -54,13 +54,13 @@ class APIGetTask extends APIBasic {
           $this->sendTask($task, $assignment);
         }
         // check if this task is fulfilled, or we still have the permission on it
-        $currentTask = $this->checkTask($currentTask);
+        $currentTask = TaskUtils::checkTask($currentTask);
         if ($currentTask == null) {
           // it got filtered out, just send new task
           $this->sendTask($task, $assignment);
         }
         else {
-          $this->sendTask($this->getImportantTask($task, $currentTask), $assignment);
+          $this->sendTask(TaskUtils::getImportantTask($task, $currentTask), $assignment);
         }
       }
     }

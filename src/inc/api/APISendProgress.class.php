@@ -298,7 +298,7 @@ class APISendProgress extends APIBasic {
         $chunk->setSpeed(0);
         $FACTORIES::getChunkFactory()->update($chunk);
         
-        $this->depriorizeAllTasks($taskWrapper, $hashlists);
+        TaskUtils::depriorizeAllTasks($hashlists);
         
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $totalHashlist));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
@@ -324,7 +324,7 @@ class APISendProgress extends APIBasic {
           $chunk->setProgress($chunk->getLength());
           $chunk->setProgress(10000);
           
-          $this->depriorizeAllTasks($taskWrapper, $hashlists);
+          TaskUtils::depriorizeAllTasks($hashlists);
           
           $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
           $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
