@@ -25,7 +25,7 @@ class APIGetTask extends APIBasic {
         )
       );
     }
-  
+    
     $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
     $task = TaskUtils::getBestTask($this->agent);
@@ -36,13 +36,14 @@ class APIGetTask extends APIBasic {
       }
       else {
         // check if the current assignment is fulfilled
-        $task = TaskUtils::checkTask($task);
-        if ($task == null) {
+        $currentTask = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+        $currentTask = TaskUtils::checkTask($currentTask);
+        if ($currentTask == null) {
           // we checked the task and it is completed
           $this->noTask();
         }
         // assignment is still good -> send this task
-        $this->sendTask($task, $assignment);
+        $this->sendTask($currentTask, $assignment);
       }
     }
     else {
@@ -84,12 +85,12 @@ class APIGetTask extends APIBasic {
     global $FACTORIES, $CONFIG;
     
     // check if the assignment is up-to-date and correct if needed
-    if($assignment != null){
+    if ($assignment != null) {
       $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
       $FACTORIES::getAssignmentFactory()->save($assignment);
     }
-    else{
-      if($assignment->getTaskId() != $task->getId()){
+    else {
+      if ($assignment->getTaskId() != $task->getId()) {
         $FACTORIES::getAssignmentFactory()->delete($assignment);
         $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
         $FACTORIES::getAssignmentFactory()->save($assignment);
