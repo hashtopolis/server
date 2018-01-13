@@ -1,5 +1,8 @@
 <?php
 
+use DBA\AgentBinary;
+use DBA\QueryFilter;
+
 class APICheckClientVersion extends APIBasic {
   public function execute($QUERY = array()) {
     global $FACTORIES;
@@ -10,8 +13,8 @@ class APICheckClientVersion extends APIBasic {
     }
     $this->checkToken(PActions::CHECK_CLIENT_VERSION, $QUERY);
     
-    $version = $QUERY[PQueryUpdate::VERSION];
-    $type = $QUERY[PQueryUpdate::TYPE];
+    $version = $QUERY[PQueryCheckClientVersion::VERSION];
+    $type = $QUERY[PQueryCheckClientVersion::TYPE];
     
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $result = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
@@ -28,18 +31,18 @@ class APICheckClientVersion extends APIBasic {
     $this->updateAgent(PActions::CHECK_CLIENT_VERSION);
     if (Util::versionComparison($result->getVersion(), $version) == -1) {
       $this->sendResponse(array(
-          PResponseUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
-          PResponseUpdate::RESPONSE => PValues::SUCCESS,
-          PResponseUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-          PResponseUpdate::URL => Util::buildServerUrl() . $base . "/agents.php?download=" . $result->getId()
+          PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
+          PResponseClientUpdate::RESPONSE => PValues::SUCCESS,
+          PResponseClientUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
+          PResponseClientUpdate::URL => Util::buildServerUrl() . $base . "/agents.php?download=" . $result->getId()
         )
       );
     }
     else {
       $this->sendResponse(array(
-          PResponseUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
-          PResponseUpdate::RESPONSE => PValues::SUCCESS,
-          PResponseUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
+          PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
+          PResponseClientUpdate::RESPONSE => PValues::SUCCESS,
+          PResponseClientUpdate::VERSION => PValuesUpdateVersion::UP_TO_DATE
         )
       );
     }
