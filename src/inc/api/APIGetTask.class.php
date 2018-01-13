@@ -130,7 +130,7 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
         PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),
         PResponseGetTask::FILES => $taskFiles,
-        PResponseGetTask::CRACKER_TYPE => $task->getCrackerBinaryId(),
+        PResponseGetTask::CRACKER_ID => $task->getCrackerBinaryId(),
         PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run", // TODO: this need to be adapted also for generic
         PResponseGetTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS)
       )
