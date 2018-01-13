@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\Assignment;
@@ -26,10 +27,12 @@ class TaskUtils {
     $allTasks = array();
     
     // load all groups where this agent has access to
-    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
-    $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $accessGroups = Util::arrayOfIds($accessGroupAgents);
-    $accessGroups[] = null;
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $accessGroupAgent AccessGroup[] */
+    $accessGroupAgent = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+    $accessGroups = Util::arrayOfIds($accessGroupAgent);
     
     // get all TaskWrappers which we have access to
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroups);
