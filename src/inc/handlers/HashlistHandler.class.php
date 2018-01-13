@@ -182,7 +182,7 @@ class HashlistHandler implements Handler {
       $hashcount += $list->getHashCount();
       $cracked += $list->getCracked();
     }
-    $superhashlist = new Hashlist(0, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), AccessUtils::getOrCreateDefaultAccessGroup());
+    $superhashlist = new Hashlist(0, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), AccessUtils::getOrCreateDefaultAccessGroup()->getId());
     $superhashlist = $FACTORIES::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {
