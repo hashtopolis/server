@@ -150,20 +150,27 @@ class SupertaskHandler implements Handler {
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
     $joinedTasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $tasks Pretask[] */
     $tasks = $joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()];
+  
     $wrapperPriority = 0;
+    foreach($tasks as $pretask){
+      if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
+        $wrapperPriority = $pretask->getPriority();
+      }
+    }
+    
+    $taskWrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $accessGroupId, $supertask->getSupertaskName());
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
+    
     foreach ($tasks as $pretask) {
-      /** @var $pretask Pretask */
       if (strpos($pretask->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
         UI::addMessage(UI::WARN, "Task must contain the hashlist alias for cracking!");
         continue;
       }
-      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $crackerBinaryType->getId(), null);
+      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $crackerBinaryType->getId(), $taskWrapper->getId());
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
-      }
-      if ($wrapperPriority == 0 || $wrapperPriority > $task->getPriority()) {
-        $wrapperPriority = $task->getPriority();
       }
       $task = $FACTORIES::getTaskFactory()->save($task);
       if ($task->getIsCpuTask() == 1) {
@@ -178,11 +185,10 @@ class SupertaskHandler implements Handler {
         $FACTORIES::getFileTaskFactory()->save($fileTask);
       }
     }
-    $wrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $accessGroupId, $supertask->getSupertaskName());
-    $wrapper = $FACTORIES::getTaskWrapperFactory()->save($wrapper);
+    
     foreach ($subTasks as $task) {
       $task->setIsCpuTask($isCpuTask); // we need to enforce that all tasks have either cpu task or not cpu task setting
-      $task->setTaskWrapperId($wrapper->getId());
+      $task->setTaskWrapperId($taskWrapper->getId());
       $FACTORIES::getTaskFactory()->update($task);
     }
     
