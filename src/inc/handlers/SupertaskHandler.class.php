@@ -206,6 +206,7 @@ class SupertaskHandler implements Handler {
       if ($pretask === null) {
         continue;
       }
+      // TODO: check if all pretasks have the same cracker binary type
       $supertaskPretask = new SupertaskPretask(0, $supertask->getId(), $pretask->getId());
       $FACTORIES::getSupertaskPretaskFactory()->save($supertaskPretask);
     }
