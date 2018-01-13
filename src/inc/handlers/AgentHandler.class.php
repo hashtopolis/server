@@ -8,7 +8,6 @@ use DBA\Chunk;
 use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\HashBinary;
-use DBA\HashlistAgent;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
