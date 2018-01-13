@@ -161,7 +161,7 @@ class SupertaskHandler implements Handler {
         UI::addMessage(UI::WARN, "Task must contain the hashlist alias for cracking!");
         continue;
       }
-      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $crackerBinaryType->getId());
+      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $crackerBinaryType->getId(), null);
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
       }
