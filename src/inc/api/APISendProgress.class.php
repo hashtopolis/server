@@ -234,7 +234,7 @@ class APISendProgress extends APIBasic {
       // the chunk was manually interrupted
       $chunk->setState(DHashcatStatus::ABORTED);
       $FACTORIES::getChunkFactory()->update($chunk);
-      API::sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was manually interrupted.");
+      $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was manually interrupted.");
     }
     /** Check if the task is done */
     $taskdone = false;
@@ -308,7 +308,7 @@ class APISendProgress extends APIBasic {
         // the chunk was aborted or quit
         $chunk->setSpeed(0);
         $FACTORIES::getChunkFactory()->update($chunk);
-        API::sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was aborted!");
+        $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was aborted!");
         break;
       case DHashcatStatus::RUNNING:
       default:
