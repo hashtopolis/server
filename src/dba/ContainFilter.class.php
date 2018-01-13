@@ -31,6 +31,9 @@ class ContainFilter extends Filter {
       $app[] = "?";
     }
     if (sizeof($app) == 0) {
+      if ($this->inverse) {
+        return "TRUE";
+      }
       return "FALSE";
     }
     return $table . $this->key . (($this->inverse) ? " NOT" : "") . " IN (" . implode(",", $app) . ")";
