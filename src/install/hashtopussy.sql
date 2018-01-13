@@ -436,7 +436,8 @@ CREATE TABLE `Hashlist` (
   `cracked`       INT(11)                 NOT NULL,
   `isSecret`      INT(11)                 NOT NULL,
   `hexSalt`       INT(11)                 NOT NULL,
-  `isSalted`      INT(11)                 NOT NULL
+  `isSalted`      INT(11)                 NOT NULL,
+  `accessGroupId` INT(11)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
