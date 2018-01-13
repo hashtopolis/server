@@ -254,7 +254,6 @@ class PResponseBinaryDownload extends PResponse {
   const VERSION    = "version";
   const EXECUTABLE = "executable";
   const URL        = "url";
-  const ROOT_DIR   = "rootdir";
 }
 
 class PResponseError extends PResponse {
