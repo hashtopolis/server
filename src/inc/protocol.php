@@ -270,7 +270,7 @@ class PResponseGetTask extends PResponse {
   const CRACKER_ID     = "crackerId";
   const ATTACK_COMMAND = "attackcmd";
   const CMD_PARAMETERS = "cmdpars";
-  const HASHLIST_ID    = "hashlist";
+  const HASHLIST_ID    = "hashlistId";
   const BENCHMARK      = "bench";
   const STATUS_TIMER   = "statustimer";
   const FILES          = "files";
