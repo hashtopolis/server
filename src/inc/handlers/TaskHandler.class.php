@@ -145,6 +145,7 @@ class TaskHandler implements Handler {
     foreach ($tasks as $task) {
       $this->deleteTask($task);
     }
+    $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
