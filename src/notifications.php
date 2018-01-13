@@ -103,7 +103,6 @@ sort($allowedActions);
 $OBJECTS['allowedActions'] = $allowedActions;
 $OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
 
-$qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
 $oF = new OrderFilter(Task::TASK_NAME, "ASC");
 $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
 $oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
