@@ -104,7 +104,7 @@ $OBJECTS['allowedActions'] = $allowedActions;
 $OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
 
 $oF = new OrderFilter(Task::TASK_NAME, "ASC");
-$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::ORDER => $oF));
 $oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
 $OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::ORDER => $oF));
 if ($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR) {
