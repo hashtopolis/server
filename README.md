@@ -21,7 +21,7 @@ There are parts of the documentation and wiki which are not up-to-date. If you d
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
 
-**Important Note:** The name "Hashtopussy" is based on the name of Hashtopus and in connection with Hashcat and is NOT built from the words "Hash" and "Pussy".
+**Note:** "Hashtopussy" is based on the original project Hashtopus and utilizes the popular program Hashcat. The name Hashtopussy is derived from both of these projects. 
 
 ## Features
 
