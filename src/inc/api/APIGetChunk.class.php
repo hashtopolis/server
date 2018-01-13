@@ -52,7 +52,7 @@ class APIGetChunk extends APIBasic {
         )
       );
     }
-    else if ($assignment->getBenchmark() == 0) {
+    else if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0) { // benchmark only required on non-small tasks
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
@@ -221,6 +221,11 @@ class APIGetChunk extends APIBasic {
     }
     if (strpos($benchmark, ":") === false) {
       // old benchmarking method
+      if (strlen($benchmark) == 0) {
+        // special case on small tasks, so we just create a chunk with the size of the keyspace
+        return $keyspace;
+      }
+      
       $size = floor($keyspace * $benchmark * $chunkTime / 100);
     }
     else {
