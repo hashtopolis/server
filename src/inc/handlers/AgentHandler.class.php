@@ -11,6 +11,7 @@ use DBA\HashlistAgent;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
+use DBA\Zap;
 
 class AgentHandler implements Handler {
   private $agent;
@@ -259,9 +260,9 @@ class AgentHandler implements Handler {
     }
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(HashlistAgent::AGENT_ID, $agent->getId(), "=");
-    $FACTORIES::getHashlistAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    //TODO: delete from Zap
+    $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
+    $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    
     $uS = new UpdateSet(Chunk::CHUNK_ID, null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
