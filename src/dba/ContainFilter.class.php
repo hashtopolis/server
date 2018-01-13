@@ -33,7 +33,7 @@ class ContainFilter extends Filter {
     if (sizeof($app) == 0) {
       return "FALSE";
     }
-    return $table . $this->key . (($this->inverse) ? "NOT" : "") . " IN (" . implode(",", $app) . ")";
+    return $table . $this->key . (($this->inverse) ? " NOT" : "") . " IN (" . implode(",", $app) . ")";
   }
   
   function getValue() {
