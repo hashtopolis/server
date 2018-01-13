@@ -2,6 +2,7 @@
 
 <img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
 
+**This is the current development of version 0.5.0 with a large number of changes, there is no warranty that it will work until released!**
 
 Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks among multiple computers. It is strongly based on Hashtopus.
 Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
@@ -19,6 +20,8 @@ The web admin interface is the single point of access across all client agents. 
 There are parts of the documentation and wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
+
+**Important Note:** The name "Hashtopussy" is based on the name of Hashtopus and in connection with Hashcat and is NOT built from the words "Hash" and "Pussy".
 
 ## Features
 
