@@ -3,7 +3,6 @@
 use DBA\Chunk;
 use DBA\ContainFilter;
 use DBA\Hash;
-use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;

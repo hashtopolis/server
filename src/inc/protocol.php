@@ -138,6 +138,7 @@ class PQueryDownloadBinary extends PQuery {
   }
   
   const BINARY_TYPE  = "type";
+  const BINARY_VERSION_ID = "binaryVersionId";
   const FORCE_UPDATE = "force"; // optional
 }
 

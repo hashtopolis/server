@@ -41,44 +41,36 @@ class APIDownloadBinary extends APIBasic {
         );
         break;
       case PValuesDownloadBinaryType::CRACKER:
-        // TODO: this needs to be updated for generic cracker binaries
-        $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Crackers not available yet!");
-        $oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
-        $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
-        if ($hashcat == null) {
-          API::sendErrorResponse(PQueryDownload::ACTION, "No Hashcat release available!");
+        $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[PQueryDownloadBinary::BINARY_VERSION_ID]);
+        if ($crackerBinary == null) {
+          $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid cracker binary type id!");
         }
+        //$crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
         
-        $postfix = array("hashcat64.bin", "hashcat64.exe", "hashcat");
-        $executable = $postfix[$this->agent->getOs()];
-        
-        if ($this->agent->getHcVersion() == $hashcat->getVersion() && (!isset($QUERY[PQueryDownload::FORCE_UPDATE]) || $QUERY[PQueryDownload::FORCE_UPDATE] != '1')) {
-          $this->sendResponse(array(
-              PResponseDownload::ACTION => PActions::DOWNLOAD,
-              PResponseDownload::RESPONSE => PValues::SUCCESS,
-              PResponseDownload::VERSION => PValuesDownloadVersion::UP_TO_DATE,
-              PResponseDownload::EXECUTABLE => $executable
-            )
-          );
+        // TODO: extension building should be somewhere in utils
+        switch ($this->agent->getOs()) {
+          case DOperatingSystem::LINUX:
+            $ext = ".unix";
+            break;
+          case DOperatingSystem::WINDOWS:
+            $ext = ".exe";
+            break;
+          case DOperatingSystem::OSX:
+            $ext = ".osx";
+            break;
+          default:
+            $ext = "";
         }
-        
-        $url = $hashcat->getUrl();
-        $rootdir = $hashcat->getRootdir();
-        
-        $this->agent->setHcVersion($hashcat->getVersion());
-        $FACTORIES::getAgentFactory()->update($this->agent);
         $this->sendResponse(array(
-            PResponseDownload::ACTION => PActions::DOWNLOAD,
-            PResponseDownload::RESPONSE => PValues::SUCCESS,
-            PResponseDownload::VERSION => PValuesDownloadVersion::NEW_VERSION,
-            PResponseDownload::URL => $url,
-            PResponseDownload::ROOT_DIR => $rootdir,
-            PResponseDownload::EXECUTABLE => $executable
+            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponseBinaryDownload::EXECUTABLE => $crackerBinary->getDownloadUrl(),
+            PResponseBinaryDownload::EXECUTABLE => $crackerBinary->getBinaryName() . $ext
           )
         );
         break;
       default:
-        API::sendErrorResponse(PActions::DOWNLOAD, "Unknown download type!");
+        $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Unknown download type!");
     }
   }
 }
