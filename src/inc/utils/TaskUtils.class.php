@@ -29,7 +29,7 @@ class TaskUtils {
     // load all groups where this agent has access to
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
     $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     /** @var $accessGroupAgent AccessGroup[] */
     $accessGroupAgent = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
     $accessGroups = Util::arrayOfIds($accessGroupAgent);
