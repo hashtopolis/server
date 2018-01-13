@@ -12,10 +12,7 @@ use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
-use DBA\SupertaskTask;
 use DBA\Task;
-use DBA\TaskFile;
-use DBA\TaskTask;
 use DBA\TaskWrapper;
 
 class TaskHandler implements Handler {
@@ -141,8 +138,14 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Invalid supertask!");
       return;
     }
-    //TODO: delete supertask
-    die("Not implemented yet!");
+    
+    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach ($tasks as $task) {
+      $this->deleteTask($task);
+    }
+    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
   }
   
   private function setSupertaskPriority($supertaskId, $priority) {
@@ -337,7 +340,6 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunkIds = Util::arrayOfIds($FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF)));
     
-    // delete subtasks if it's a supertask
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($notifications as $notification) {
