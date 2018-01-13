@@ -7,10 +7,7 @@ use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
-use DBA\SupertaskTask;
 use DBA\Task;
-use DBA\TaskFile;
-use DBA\TaskTask;
 use DBA\TaskWrapper;
 
 class SupertaskHandler implements Handler {
