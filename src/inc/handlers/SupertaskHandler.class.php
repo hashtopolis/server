@@ -124,16 +124,26 @@ class SupertaskHandler implements Handler {
     
     $supertask = $FACTORIES::getSupertaskFactory()->get($_POST['supertask']);
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST['hashlist']);
+    $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
+    $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
+    $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
+    $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
+    
     if ($supertask == null) {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
     else if ($hashlist == null) {
       UI::printError("ERROR", "Invalid hashlist ID!");
     }
+    else if ($crackerBinary == null || $crackerBinaryType == null) {
+      UI::printError("ERROR", "Invalid cracker binary selection!");
+    }
+    else if ($crackerBinary->getCrackerBinaryTypeId() != $crackerBinaryType->getId()) {
+      UI::printError("ERROR", "Non-matching cracker binary selection!");
+    }
     
-    //TODO: read binaryId and accessGroupId
-    $crackerBinaryId = 1;
-    $accessGroupId = 1;
+    $crackerBinaryId = $crackerBinary->getId();
+    $accessGroupId = $hashlist->getAccessGroupId();
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     
@@ -151,7 +161,7 @@ class SupertaskHandler implements Handler {
         UI::addMessage(UI::WARN, "Task must contain the hashlist alias for cracking!");
         continue;
       }
-      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, 0);
+      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $crackerBinaryType->getId());
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
       }

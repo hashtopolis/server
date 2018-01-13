@@ -6,15 +6,13 @@ class CrackerBinary extends AbstractModel {
   private $crackerBinaryId;
   private $crackerBinaryTypeId;
   private $version;
-  private $platform;
   private $downloadUrl;
   private $binaryName;
   
-  function __construct($crackerBinaryId, $crackerBinaryTypeId, $version, $platform, $downloadUrl, $binaryName) {
+  function __construct($crackerBinaryId, $crackerBinaryTypeId, $version, $downloadUrl, $binaryName) {
     $this->crackerBinaryId = $crackerBinaryId;
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->version = $version;
-    $this->platform = $platform;
     $this->downloadUrl = $downloadUrl;
     $this->binaryName = $binaryName;
   }
@@ -24,7 +22,6 @@ class CrackerBinary extends AbstractModel {
     $dict['crackerBinaryId'] = $this->crackerBinaryId;
     $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     $dict['version'] = $this->version;
-    $dict['platform'] = $this->platform;
     $dict['downloadUrl'] = $this->downloadUrl;
     $dict['binaryName'] = $this->binaryName;
     
@@ -63,14 +60,6 @@ class CrackerBinary extends AbstractModel {
     $this->version = $version;
   }
   
-  function getPlatform(){
-    return $this->platform;
-  }
-  
-  function setPlatform($platform){
-    $this->platform = $platform;
-  }
-  
   function getDownloadUrl(){
     return $this->downloadUrl;
   }
@@ -90,7 +79,6 @@ class CrackerBinary extends AbstractModel {
   const CRACKER_BINARY_ID = "crackerBinaryId";
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const VERSION = "version";
-  const PLATFORM = "platform";
   const DOWNLOAD_URL = "downloadUrl";
   const BINARY_NAME = "binaryName";
 }

@@ -207,12 +207,11 @@ class TaskHandler implements Handler {
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
     $color = $_POST["color"];
-    $accessGroupId = $_POST['accessGroupId'];
     
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
-    $accessGroup = $FACTORIES::getAccessGroupFactory()->get($accessGroupId);
+    $accessGroup = $FACTORIES::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
     
     if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");

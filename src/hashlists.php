@@ -48,6 +48,7 @@ if (isset($_GET['new'])) {
   $allHashtypes = "{" . implode(",", $list) . "}";
   $OBJECTS['allHashtypes'] = $allHashtypes;
   $OBJECTS['hashtypes'] = $hashtypes;
+  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
   $TEMPLATE = new Template("hashlists/new");
 }
 else if (isset($_GET['id'])) {

@@ -15,25 +15,15 @@
 				</td>
 			</tr>
 			<tr>
-				<td>Binary Name (which needs to be called on the client):</td>
+				<td>Binary Base Name (which needs to be called on the client without os-dependent extension):</td>
 				<td>
-					<input type="text" class='form-control' name="name" title="Name" placeholder="cracker.exe">
+					<input type="text" class='form-control' name="name" title="Name" placeholder="cracker">
 				</td>
 			</tr>
 			<tr>
-				<td>Download URL (where the client can download a zip with the binary):</td>
+				<td>Download URL (where the client can download a 7zip with the binary):</td>
 				<td>
 					<input type="text" class='form-control' name="url" title="URL" placeholder="https://example.org/download.7z">
-				</td>
-			</tr>
-			<tr>
-				<td>Platform:</td>
-				<td>
-					<select name="platform" class="form-control" title="Platform">
-						<option value="[[$DPlatforms::LINUX]]">[[$DPlatforms::getName([[$DPlatforms::LINUX]])]]</option>
-						<option value="[[$DPlatforms::MAC_OSX]]">[[$DPlatforms::getName([[$DPlatforms::MAC_OSX]])]]</option>
-						<option value="[[$DPlatforms::WINDOWS]]">[[$DPlatforms::getName([[$DPlatforms::WINDOWS]])]]</option>
-					</select>
 				</td>
 			</tr>
 			<tr>

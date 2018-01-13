@@ -85,7 +85,6 @@ $CONF['CrackerBinary'] = array(
   'crackerBinaryId',
   'crackerBinaryTypeId',
   'version',
-  'platform',
   'downloadUrl',
   'binaryName'
 );
@@ -131,7 +130,8 @@ $CONF['Hashlist'] = array(
   'cracked',
   'isSecret',
   'hexSalt',
-  'isSalted'
+  'isSalted',
+  'accessGroupId'
 );
 $CONF['HashType'] = array(
   'hashTypeId',

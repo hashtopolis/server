@@ -39,7 +39,7 @@ class CrackerHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->createBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryTypeId'], $_POST['platform']);
+        $this->createBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryTypeId']);
         break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
@@ -91,7 +91,7 @@ class CrackerHandler implements Handler {
     $FACTORIES::getCrackerBinaryFactory()->delete($binary);
   }
   
-  private function createBinary($version, $name, $url, $binaryTypeId, $platform) {
+  private function createBinary($version, $name, $url, $binaryTypeId) {
     global $FACTORIES;
     
     $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($binaryTypeId);
@@ -103,7 +103,7 @@ class CrackerHandler implements Handler {
       UI::addMessage(UI::ERROR, "Please provide all information!");
       return;
     }
-    $binary = new CrackerBinary(0, $binaryType->getId(), $version, $platform, $url, $name);
+    $binary = new CrackerBinary(0, $binaryType->getId(), $version, $url, $name);
     $FACTORIES::getCrackerBinaryFactory()->save($binary);
     UI::addMessage(UI::SUCCESS, "Version was created successfully!");
     header("Location: crackers.php?id=" . $binaryType->getId());

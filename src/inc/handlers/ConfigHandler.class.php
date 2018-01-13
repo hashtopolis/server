@@ -46,18 +46,10 @@ class ConfigHandler implements Handler {
     $FACTORIES::getAgentErrorFactory()->massDeletion(array());
     $FACTORIES::getChunkFactory()->massDeletion(array());
     $FACTORIES::getZapFactory()->massDeletion(array());
-    $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $taskIds = array();
-    foreach ($tasks as $task) {
-      $taskIds[] = $task->getId();
-    }
-    if (sizeof($taskIds) > 0) {
-      $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
-      $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $containFilter));
-      $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    }
-    $FACTORIES::getHashlistAgentFactory()->massDeletion(array());
+    $FACTORIES::getFileTaskFactory()->massDeletion(array());
+    $FACTORIES::getTaskFactory()->massDeletion(array());
+    $FACTORIES::getTaskWrapperFactory()->massDeletion(array());
+    $FACTORIES::getHashlistHashlistFactory()->massDeletion(array());
     $FACTORIES::getHashlistFactory()->massDeletion(array());
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::WARN, "Complete clear was executed!");
@@ -100,28 +92,26 @@ class ConfigHandler implements Handler {
     
     //check chunks
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
-    $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
-    $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => array($jF1, $jF2)));
-    for ($i = 0; $i < sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]); $i++) {
-      /** @var $chunk Chunk */
-      $chunk = $joined[$FACTORIES::getChunkFactory()->getModelName()][$i];
-      /** @var $hashlist Hashlist */
-      $hashlist = $joined[$FACTORIES::getHashlistFactory()->getModelName()][$i];
-      $hashFactory = $FACTORIES::getHashFactory();
-      if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
-        $hashlists = Util::checkSuperHashlist($hashlist);
-        if ($hashlists[0]->getFormat() != DHashlistFormat::PLAIN) {
-          $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
+    foreach ($taskWrappers as $taskWrapper) {
+      $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId()));
+      
+      $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
+      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=", $FACTORIES::getTaskFactory());
+      $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
+      /** @var $chunks Chunk[] */
+      $chunks = $joined[$FACTORIES::getChunkFactory()->getModelName()];
+      
+      foreach ($chunks as $chunk) {
+        $hashFactory = ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) ? $FACTORIES::getHashFactory() : $FACTORIES::getHashBinaryFactory();
+        $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
+        $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
+        $count = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+        if ($count != $chunk->getCracked()) {
+          $correctedChunks++;
+          $chunk->setCracked($count);
+          $FACTORIES::getChunkFactory()->update($chunk);
         }
-      }
-      $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
-      $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
-      $count = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
-      if ($count != $chunk->getCracked()) {
-        $correctedChunks++;
-        $chunk->setCracked($count);
-        $FACTORIES::getChunkFactory()->update($chunk);
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
@@ -149,17 +139,17 @@ class ConfigHandler implements Handler {
     //check superhashlists
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
-    $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($hashlists as $hashlist) {
-      $children = Util::checkSuperHashlist($hashlist);
+    $superHashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach ($superHashlists as $superHashlist) {
+      $hashlists = Util::checkSuperHashlist($superHashlist);
       $cracked = 0;
-      foreach ($children as $child) {
-        $cracked += $child->getCracked();
+      foreach ($hashlists as $hashlist) {
+        $cracked += $hashlist->getCracked();
       }
-      if ($cracked != $hashlist->getCracked()) {
+      if ($cracked != $superHashlist->getCracked()) {
         $correctedHashlists++;
-        $hashlist->setCracked($cracked);
-        $FACTORIES::getHashlistFactory()->update($hashlist);
+        $superHashlist->setCracked($cracked);
+        $FACTORIES::getHashlistFactory()->update($superHashlist);
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");

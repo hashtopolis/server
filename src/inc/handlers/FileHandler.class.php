@@ -23,13 +23,13 @@ class FileHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->delete();
+        $this->delete($_POST['file']);
         break;
       case DFileAction::SET_SECRET:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->switchSecret();
+        $this->switchSecret($_POST['file'], $_POST["secret"]);
         break;
       case DFileAction::ADD_FILE:
         $this->add();
@@ -38,7 +38,7 @@ class FileHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->saveChanges();
+        $this->saveChanges($_POST['fileId'], $_POST['filename']);
         break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
@@ -46,15 +46,15 @@ class FileHandler implements Handler {
     }
   }
   
-  private function saveChanges() {
+  private function saveChanges($fileId, $filename) {
     global $FACTORIES;
     
-    $file = $FACTORIES::getFileFactory()->get($_POST['fileId']);
+    $file = $FACTORIES::getFileFactory()->get($fileId);
     if ($file == null) {
       UI::addMessage(UI::ERROR, "Invalid file ID!");
       return;
     }
-    $newName = str_replace(" ", "_", htmlentities($_POST['filename'], ENT_QUOTES, "UTF-8"));
+    $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
     if (strlen($newName) == 0) {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
       return;
@@ -189,20 +189,20 @@ class FileHandler implements Handler {
     UI::addMessage(UI::SUCCESS, "Successfully added $fileCount files!");
   }
   
-  private function switchSecret() {
+  private function switchSecret($fileId, $isSecret) {
     global $FACTORIES;
     
     // switch global file secret state
-    $file = $FACTORIES::getFileFactory()->get($_POST['file']);
-    $secret = intval($_POST["secret"]);
+    $file = $FACTORIES::getFileFactory()->get($fileId);
+    $secret = intval($isSecret);
     $file->setIsSecret($secret);
     $FACTORIES::getFileFactory()->update($file);
   }
   
-  private function delete() {
+  private function delete($fileId) {
     global $FACTORIES;
     
-    $file = $FACTORIES::getFileFactory()->get($_POST['file']);
+    $file = $FACTORIES::getFileFactory()->get($fileId);
     if ($file == null) {
       UI::printError("ERROR", "File does not exist!");
     }
@@ -213,7 +213,7 @@ class FileHandler implements Handler {
     if (sizeof($tasks) > 0) {
       UI::addMessage(UI::ERROR, "This file is currently used in a task!");
     }
-    else if(sizeof($pretasks) > 0){
+    else if (sizeof($pretasks) > 0) {
       UI::addMessage(UI::ERROR, "This file is currently used in a preconfigured task!");
     }
     else {

@@ -52,6 +52,9 @@ class TaskUtils {
         if ($hashlist->getIsSecret() > $agent->getIsTrusted()) {
           $permitted = false;
         }
+        else if (!in_array($hashlist->getAccessGroupId(), $accessGroups)) {
+          $permitted = false;
+        }
       }
       if (!$permitted) {
         continue; // if at least one of the hashlists is secret and the agent not, this taskWrapper cannot be used
@@ -63,11 +66,7 @@ class TaskUtils {
       $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
       foreach ($tasks as $task) {
         // check if a task suits to this agent
-        $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
-        $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
-        $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-        /** @var $files File[] */
-        $files = $joined[$FACTORIES::getFileFactory()->getModelName()];
+        $files = TaskUtils::getFilesOfTask($task);
         $permitted = true;
         foreach ($files as $file) {
           if ($file->getIsSecret() > $agent->getIsTrusted()) {
@@ -224,5 +223,19 @@ class TaskUtils {
       $uS = new UpdateSet(Task::PRIORITY, 0);
       $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
     }
+  }
+  
+  /**
+   * @param $task Task
+   * @return File[]
+   */
+  public static function getFilesOfTask($task) {
+    global $FACTORIES;
+  
+    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
+    $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $files File[] */
+    return $joined[$FACTORIES::getFileFactory()->getModelName()];
   }
 }

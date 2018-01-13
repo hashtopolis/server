@@ -13,8 +13,9 @@ class Hashlist extends AbstractModel {
   private $isSecret;
   private $hexSalt;
   private $isSalted;
+  private $accessGroupId;
   
-  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted) {
+  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted, $accessGroupId) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -25,6 +26,7 @@ class Hashlist extends AbstractModel {
     $this->isSecret = $isSecret;
     $this->hexSalt = $hexSalt;
     $this->isSalted = $isSalted;
+    $this->accessGroupId = $accessGroupId;
   }
   
   function getKeyValueDict() {
@@ -39,6 +41,7 @@ class Hashlist extends AbstractModel {
     $dict['isSecret'] = $this->isSecret;
     $dict['hexSalt'] = $this->hexSalt;
     $dict['isSalted'] = $this->isSalted;
+    $dict['accessGroupId'] = $this->accessGroupId;
     
     return $dict;
   }
@@ -130,6 +133,14 @@ class Hashlist extends AbstractModel {
   function setIsSalted($isSalted){
     $this->isSalted = $isSalted;
   }
+  
+  function getAccessGroupId(){
+    return $this->accessGroupId;
+  }
+  
+  function setAccessGroupId($accessGroupId){
+    $this->accessGroupId = $accessGroupId;
+  }
 
   const HASHLIST_ID = "hashlistId";
   const HASHLIST_NAME = "hashlistName";
@@ -141,4 +152,5 @@ class Hashlist extends AbstractModel {
   const IS_SECRET = "isSecret";
   const HEX_SALT = "hexSalt";
   const IS_SALTED = "isSalted";
+  const ACCESS_GROUP_ID = "accessGroupId";
 }

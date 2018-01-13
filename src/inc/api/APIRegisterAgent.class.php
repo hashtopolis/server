@@ -32,7 +32,7 @@ class APIRegisterAgent extends APIBasic {
       NotificationHandler::checkNotifications(DNotificationType::NEW_AGENT, $payload);
       
       // assign agent to default group
-      $accessGroup = Util::getOrCreateDefaultAccessGroup();
+      $accessGroup = AccessUtils::getOrCreateDefaultAccessGroup();
       $accessGroupAgent = new AccessGroupAgent(0, $accessGroup->getId(), $agent->getId());
       $FACTORIES::getAccessGroupAgentFactory()->save($accessGroupAgent);
       

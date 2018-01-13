@@ -1367,15 +1367,4 @@ class Util {
     }
     return $arr;
   }
-  
-  public static function getOrCreateDefaultAccessGroup() {
-    global $FACTORIES;
-    
-    $accessGroup = $FACTORIES::getAccessGroupFactory()->get(1);
-    if ($accessGroup == null) {
-      $accessGroup = new AccessGroup(1, "Default Group");
-      $accessGroup = $FACTORIES::getAccessGroupFactory()->save($accessGroup);
-    }
-    return $accessGroup;
-  }
 }

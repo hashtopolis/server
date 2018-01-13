@@ -45,31 +45,31 @@ class AgentHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->rename();
+        $this->rename($_POST['name']);
         break;
       case DAgentAction::SET_OWNER:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->changeOwner();
+        $this->changeOwner($_POST['owner']);
         break;
       case DAgentAction::SET_TRUSTED:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->changeTrusted();
+        $this->changeTrusted($_POST["trusted"]);
         break;
       case DAgentAction::SET_IGNORE:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->changeIgnoreErrors();
+        $this->changeIgnoreErrors($_POST["ignore"]);
         break;
       case DAgentAction::SET_PARAMETERS:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->changeCmdParameters();
+        $this->changeCmdParameters($_POST["cmdpars"]);
         break;
       case DAgentAction::SET_ACTIVE:
         $this->toggleActive();
@@ -78,7 +78,7 @@ class AgentHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->delete();
+        $this->delete($_POST['agent']);
         break;
       case DAgentAction::ASSIGN_AGENT:
         $this->assign();
@@ -87,7 +87,7 @@ class AgentHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->createVoucher();
+        $this->createVoucher($_POST["newvoucher"]);
         break;
       case DAgentAction::DELETE_VOUCHER:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
@@ -96,13 +96,13 @@ class AgentHandler implements Handler {
         $this->deleteVoucher();
         break;
       case DAgentAction::DOWNLOAD_AGENT:
-        $this->downloadAgent();
+        $this->downloadAgent($_POST['binary']);
         break;
       case DAgentAction::SET_CPU:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->setAgentCpu();
+        $this->setAgentCpu($_POST['cpuOnly']);
         break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
@@ -110,19 +110,16 @@ class AgentHandler implements Handler {
     }
   }
   
-  private function setAgentCpu() {
+  private function setAgentCpu($cpuOnly) {
     global $FACTORIES;
     
-    $cpuOnly = 0;
-    if ($_POST['cpuOnly'] == 1) {
-      $cpuOnly = 1;
-    }
+    $cpuOnly = ($cpuOnly == 1) ? 1 : 0;
     $this->agent->setCpuOnly($cpuOnly);
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
-  private function downloadAgent() {
-    global $FACTORIES, $binaryId;
+  public function downloadAgent($binaryId) {
+    global $FACTORIES;
     
     $agentBinary = $FACTORIES::getAgentBinaryFactory()->get($binaryId);
     if ($agentBinary == null) {
@@ -158,16 +155,18 @@ class AgentHandler implements Handler {
     }
     
     $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
+    $task = $FACTORIES::getTaskFactory()->get(intval($_POST['task']));
     if ($this->agent == null) {
       $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
     }
-    if ($this->agent == null) {
+    else if ($this->agent == null) {
       UI::printError("FATAL", "Agent with ID " . $_POST['agentId'] . " not found!");
     }
-    
-    $task = $FACTORIES::getTaskFactory()->get(intval($_POST['task']));
-    if (!$task) {
+    else if ($task == null) {
       UI::printError("ERROR", "Invalid task!");
+    }
+    else if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
+      UI::printERror("ERROR", "Task cannot be accessed by this agent!");
     }
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
@@ -199,14 +198,14 @@ class AgentHandler implements Handler {
     }
   }
   
-  private function delete() {
+  private function delete($agentId) {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
     
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+    $this->agent = $FACTORIES::getAgentFactory()->get($agentId);
     if ($this->agent == null) {
-      UI::printError("FATAL", "Agent with ID " . $_POST['agent'] . " not found!");
+      UI::printError("FATAL", "Agent with ID " . $agentId . " not found!");
     }
     $name = $this->agent->getAgentName();
     $agent = $this->agent;
@@ -231,10 +230,10 @@ class AgentHandler implements Handler {
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
   }
   
-  private function createVoucher() {
+  private function createVoucher($newVoucher) {
     global $FACTORIES;
     
-    $key = htmlentities($_POST["newvoucher"], ENT_QUOTES, "UTF-8");
+    $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(0, $key, time());
     $FACTORIES::getRegVoucherFactory()->save($voucher);
   }
@@ -302,10 +301,10 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
-  private function changeCmdParameters() {
+  private function changeCmdParameters($cmdParameters) {
     global $FACTORIES;
     
-    $pars = htmlentities($_POST["cmdpars"], ENT_QUOTES, "UTF-8");
+    $pars = htmlentities($cmdParameters, ENT_QUOTES, "UTF-8");
     
     if (Util::containsBlacklistedChars($pars)) {
       UI::addMessage(UI::ERROR, "Parameters must contain no blacklisted characters!");
@@ -315,10 +314,10 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
-  private function changeIgnoreErrors() {
+  private function changeIgnoreErrors($ignoreErrors) {
     global $FACTORIES;
     
-    $ignore = intval($_POST["ignore"]);
+    $ignore = intval($ignoreErrors);
     if ($ignore != 0 && $ignore != 1) {
       UI::printError("ERROR", "Invalid Ignore state!");
     }
@@ -326,11 +325,11 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
-  private function changeTrusted() {
+  private function changeTrusted($isTrusted) {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
     
-    $trusted = intval($_POST["trusted"]);
+    $trusted = intval($isTrusted);
     if ($trusted != 0 && $trusted != 1) {
       UI::printError("ERROR", "Invalid trusted state!");
     }
@@ -339,17 +338,17 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
   
-  private function changeOwner() {
+  private function changeOwner($owner) {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
     
-    if ($_POST['owner'] == 0) {
+    if ($owner == 0) {
       $this->agent->setUserId(null);
       $username = "NONE";
       $FACTORIES::getAgentFactory()->update($this->agent);
     }
     else {
-      $user = $FACTORIES::getUserFactory()->get(intval($_POST["owner"]));
+      $user = $FACTORIES::getUserFactory()->get(intval($owner));
       if (!$user) {
         UI::printError("ERROR", "Invalid user selected!");
       }
@@ -367,10 +366,10 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
   }
   
-  private function rename() {
+  private function rename($newname) {
     global $FACTORIES;
     
-    $name = htmlentities($_POST['name'], ENT_QUOTES, "UTF-8");
+    $name = htmlentities($newname, ENT_QUOTES, "UTF-8");
     if (strlen($name) > 0) {
       $this->agent->setAgentName($name);
       $FACTORIES::getAgentFactory()->update($this->agent);

@@ -84,6 +84,16 @@
           <input type="radio" name="source" onChange="sourceChange(this.value);" value="url"> URL download
 				</td>
 			</tr>
+			<tr>
+				<td>Access group where the task belongs to:</td>
+				<td>
+					<select name="accessGroupId" class="form-control" title="accessGroupId">
+						{{FOREACH accessGroup;[[accessGroups]]}}
+						<option value="[[accessGroup.getId()]]">[[accessGroup.getGroupName()]]</option>
+						{{ENDFOREACH}}
+					</select>
+				</td>
+			</tr>
 			<tr id="pasteLine" style="display: none;">
 				<td>Input field:</td>
 				<td>

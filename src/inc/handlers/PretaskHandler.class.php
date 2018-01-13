@@ -4,7 +4,6 @@ use DBA\FilePretask;
 use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\SupertaskPretask;
-use DBA\TaskFile;
 
 class PretaskHandler implements Handler {
   public function __construct($fileId = null) {
