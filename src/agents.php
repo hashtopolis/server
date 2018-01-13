@@ -8,6 +8,7 @@ use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
+use DBA\GroupFilter;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -114,7 +115,8 @@ else {
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());
   $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
-  $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF));
+  $gF = new GroupFilter(Agent::AGENT_ID, $FACTORIES::getAgentFactory());
+  $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF, $FACTORIES::GROUP => $gF));
   /** @var $agents Agent[] */
   $agents = $joined[$FACTORIES::getAgentFactory()->getModelName()];
   /** @var $accessGroups AccessGroupAgent[] */
