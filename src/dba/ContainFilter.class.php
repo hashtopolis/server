@@ -9,11 +9,13 @@ class ContainFilter extends Filter {
    * @var AbstractModelFactory
    */
   private $factory;
+  private $inverse;
   
-  function __construct($key, $values, $factory = null) {
+  function __construct($key, $values, $factory = null, $inverse = false) {
     $this->key = $key;
     $this->values = $values;
     $this->factory = $factory;
+    $this->inverse = $inverse;
   }
   
   function getQueryString($table = "") {
@@ -31,7 +33,7 @@ class ContainFilter extends Filter {
     if (sizeof($app) == 0) {
       return "FALSE";
     }
-    return $table . $this->key . " IN (" . implode(",", $app) . ")";
+    return $table . $this->key . (($this->inverse) ? "NOT" : "") . " IN (" . implode(",", $app) . ")";
   }
   
   function getValue() {

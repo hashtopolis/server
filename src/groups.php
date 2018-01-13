@@ -59,9 +59,9 @@ else if (isset($_GET['id'])) {
     $agents = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
     $excludedAgents = Util::arrayOfIds($agents);
     
-    $qF = new ContainFilter(User::USER_ID, $excludedUsers, true);
+    $qF = new ContainFilter(User::USER_ID, $excludedUsers, $FACTORIES::getUserFactory(), true);
     $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $qF = new ContainFilter(Agent::AGENT_ID, $excludedAgents, true);
+    $qF = new ContainFilter(Agent::AGENT_ID, $excludedAgents, $FACTORIES::getAgentFactory(), true);
     $OBJECTS['allAgents'] = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
     $TEMPLATE = new Template("groups/detail");
   }
