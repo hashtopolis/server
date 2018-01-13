@@ -269,6 +269,8 @@ else if (isset($_GET['new'])) {
     $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
   
+  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
   $OBJECTS['hashlistId'] = $hashlistId;
@@ -313,20 +315,8 @@ else if (isset($_GET['new'])) {
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
   
-  $binaries = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
-  $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array());
-  /*$versionArray = array();
-  foreach ($versions as $version) {
-    if (isset($versionArray[$version->getCrackerBinaryTypeId()])) {
-      $versionArray[$version->getCrackerBinaryTypeId()][] = array($version->getVersion(), $version->getId());
-    }
-    else {
-      $versionArray[$version->getCrackerBinaryTypeId()] = array(array($version->getVersion(), $version->getId()));
-    }
-  }
-  $OBJECTS['versionArray'] = */
-  $OBJECTS['versions'] = $versions;
-  $OBJECTS['binaries'] = $binaries;
+  $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
+  $OBJECTS['versions'] = $FACTORIES::getCrackerBinaryFactory()->filter(array());
 }
 else {
   Util::loadTasks();

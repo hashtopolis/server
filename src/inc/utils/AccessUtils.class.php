@@ -52,4 +52,18 @@ class AccessUtils {
     }
     return $intersect;
   }
+  
+  /**
+   * @param $user User
+   * @return AccessGroup[]
+   */
+  public static function getAccessGroupsOfUser($user) {
+    global $FACTORIES;
+    
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $accessGroupsUser AccessGroup[] */
+    return $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+  }
 }
