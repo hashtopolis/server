@@ -64,7 +64,7 @@ class APIDownloadBinary extends APIBasic {
         $this->sendResponse(array(
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
-            PResponseBinaryDownload::EXECUTABLE => $crackerBinary->getDownloadUrl(),
+            PResponseBinaryDownload::URL => $crackerBinary->getDownloadUrl(),
             PResponseBinaryDownload::EXECUTABLE => $crackerBinary->getBinaryName() . $ext
           )
         );
