@@ -48,14 +48,16 @@ else if (isset($_GET['id'])) {
     $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
     $joinedUsers = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $OBJECTS['users'] = $joinedUsers[$FACTORIES::getUserFactory()->getModelName()];
-    $excludedUsers = Util::arrayOfIds($joinedUsers[$FACTORIES::getUserFactory()->getModelName()], User::USER_ID);
+    /** @var $users User[] */
+    $users = $joinedUsers[$FACTORIES::getUserFactory()->getModelName()];
+    $excludedUsers = Util::arrayOfIds($users);
     
     $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
     $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
     $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $OBJECTS['agents'] = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
-    $excludedAgents = Util::arrayOfIds($joinedAgents[$FACTORIES::getAgentFactory()->getModelName()], Agent::AGENT_ID);
+    /** @var $agents Agent[] */
+    $agents = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
+    $excludedAgents = Util::arrayOfIds($agents);
     
     $qF = new ContainFilter(User::USER_ID, $excludedUsers, true);
     $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
