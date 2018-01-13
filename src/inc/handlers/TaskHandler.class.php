@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupUser;
 use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
@@ -191,7 +192,8 @@ class TaskHandler implements Handler {
   
   private function create() {
     /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    /** @var $LOGIN Login */
+    global $FACTORIES, $CONFIG, $LOGIN;
     
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
@@ -205,13 +207,19 @@ class TaskHandler implements Handler {
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
     $color = $_POST["color"];
+    $accessGroupId = $_POST['accessGroupId'];
     
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
+    $accessGroup = $FACTORIES::getAccessGroupFactory()->get($accessGroupId);
     
     if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
+      return;
+    }
+    else if ($accessGroup == null) {
+      UI::addMessage(UI::ERROR, "Invalid access group!");
       return;
     }
     else if (Util::containsBlacklistedChars($cmdline)) {
@@ -235,6 +243,14 @@ class TaskHandler implements Handler {
       return;
     }
     
+    $qF1 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
+    $qF2 = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
+    $accessGroupUser = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+    if ($accessGroupUser == null) {
+      UI::addMessage(UI::ERROR, "No access to this access group!");
+      return;
+    }
+    
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
@@ -250,11 +266,8 @@ class TaskHandler implements Handler {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     
-    //TODO: accessgroupid need to be set
-    $accessGroupId = 1;
-    
     $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroupId, "");
+    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
     $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
     $task = $FACTORIES::getTaskFactory()->save($task);
