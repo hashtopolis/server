@@ -2,11 +2,12 @@
 
 use DBA\Chunk;
 use DBA\Hashlist;
+use DBA\HashlistHashlist;
 use DBA\HashType;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
-use DBA\SuperHashlistHashlist;
 use DBA\Task;
+use DBA\TaskWrapper;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -64,26 +65,29 @@ else if (isset($_GET['id'])) {
   
   //check if the list is a superhashlist
   $OBJECTS['sublists'] = array();
-  if ($list->getVal('hashlist')->getFormat() == 3) {
-    $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), SuperHashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
-    $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
+  if ($list->getVal('hashlist')->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+    $jF = new JoinFilter($FACTORIES::getHashlistHashlistFactory(), HashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", $FACTORIES::getHashlistHashlistFactory());
     $joined = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::JOIN => array($jF), $FACTORIES::FILTER => array($qF)));
     $sublists = array();
     for ($x = 0; $x < sizeof($joined[$FACTORIES::getHashlistFactory()->getModelName()]); $x++) {
-      $sublists[] = new DataSet(array('hashlist' => $joined[$FACTORIES::getHashlistFactory()->getModelName()][$x], 'superhashlist' => $joined[$FACTORIES::getSuperHashlistHashlistFactory()->getModelName()][$x]));
+      $sublists[] = new DataSet(array('hashlist' => $joined[$FACTORIES::getHashlistFactory()->getModelName()][$x], 'superhashlist' => $joined[$FACTORIES::getHashlistHashlistFactory()->getModelName()][$x]));
     }
     $OBJECTS['sublists'] = $sublists;
   }
   
   //load tasks assigned to hashlist
-  $qF = new QueryFilter(Task::HASHLIST_ID, $list->getVal('hashlist')->getId(), "=");
-  $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+  $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", $FACTORIES::getTaskWrapperFactory());
+  $jF = new JoinFilter($FACTORIES::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+  $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  /** @var $tasks Task[] */
+  $tasks = $joined[$FACTORIES::getTaskFactory()->getModelName()];
   $hashlistTasks = array();
   foreach ($tasks as $task) {
     $isActive = false;
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF)));
-    $sum = array('dispatched' => $task->getProgress(), 'searched' => 0, 'cracked' => 0);
+    $sum = array('dispatched' => $task->getKeyspaceProgress(), 'searched' => 0, 'cracked' => 0);
     foreach ($chunks as $chunk) {
       $sum['searched'] += $chunk->getProgress();
       $sum['cracked'] += $chunk->getCracked();
@@ -97,10 +101,9 @@ else if (isset($_GET['id'])) {
   $OBJECTS['tasks'] = $hashlistTasks;
   
   //load list of available preconfigured tasks
-  $qF = new QueryFilter(Task::HASHLIST_ID, null, "=");
-  $preTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+  $preTasks = $FACTORIES::getPretaskFactory()->filter(array());
   for ($i = 0; $i < sizeof($preTasks); $i++) {
-    if (strpos($preTasks[$i]->getTaskName(), "HIDDEN:") === 0) {
+    if ($preTasks[$i]->getIsMaskImport() == 1) {
       unset($preTasks[$i]);
     }
   }
