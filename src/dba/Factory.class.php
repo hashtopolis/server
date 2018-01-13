@@ -393,4 +393,5 @@ class Factory {
   const JOIN = "join";
   const ORDER = "order";
   const UPDATE = "update";
+  const GROUP = "group";
 }

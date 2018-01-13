@@ -156,6 +156,20 @@ abstract class AbstractModelFactory {
   
   /**
    * @param $arr array
+   * @return Group[]
+   */
+  private function getGroups($arr) {
+    if (!is_array($arr['group'])) {
+      $arr['group'] = array($arr['group']);
+    }
+    if (isset($arr['group'])) {
+      return $arr['group'];
+    }
+    return array();
+  }
+  
+  /**
+   * @param $arr array
    * @return Join[]
    */
   private function getJoins($arr) {
@@ -430,6 +444,10 @@ abstract class AbstractModelFactory {
       $query .= $this->applyFilters($vals, $options['filter']);
     }
     
+    if (array_key_exists("group", $options)) {
+      $query .= $this->applyGroups($this->getGroups($options));
+    }
+    
     // Apply order filter
     if (!array_key_exists("order", $options)) {
       // Add a asc order on the primary keys as a standard
@@ -484,6 +502,10 @@ abstract class AbstractModelFactory {
     
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
+    }
+  
+    if (array_key_exists("group", $options)) {
+      $query .= $this->applyGroups($this->getGroups($options));
     }
     
     if (!array_key_exists("order", $options)) {
@@ -554,6 +576,17 @@ abstract class AbstractModelFactory {
       $orderQueries[] = $order->getQueryString($this->getModelTable());
     }
     return " ORDER BY " . implode(", ", $orderQueries);
+  }
+  
+  private function applyGroups($groups) {
+    $groupsQueries = array();
+    if (!is_array($groups)) {
+      $groups = array($groups);
+    }
+    foreach ($groups as $group) {
+      $groupsQueries[] = $group->getQueryString($this->getModelTable());
+    }
+    return " GROUP BY " . implode(", ", $groupsQueries);
   }
   
   /**
