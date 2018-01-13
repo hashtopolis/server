@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\AgentError;
 use DBA\Assignment;
@@ -262,6 +263,8 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
+    $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
     $uS = new UpdateSet(Chunk::CHUNK_ID, null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
