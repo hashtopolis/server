@@ -1,9 +1,9 @@
 <?php
 
 use DBA\Hashlist;
+use DBA\HashlistHashlist;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
-use DBA\SuperHashlistHashlist;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -34,8 +34,8 @@ else {
   $OBJECTS['lists'] = $lists;
   $subLists = new DataSet();
   foreach ($lists as $list) {
-    $qF = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=", $FACTORIES::getSuperHashlistHashlistFactory());
-    $jF = new JoinFilter($FACTORIES::getSuperHashlistHashlistFactory(), SuperHashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $list->getId(), "=", $FACTORIES::getHashlistHashlistFactory());
+    $jF = new JoinFilter($FACTORIES::getHashlistHashlistFactory(), HashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
     $ll = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $subLists->addValue($list->getId(), $ll[$FACTORIES::getHashlistFactory()->getModelName()]);
   }
