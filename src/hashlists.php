@@ -62,6 +62,7 @@ else if (isset($_GET['id'])) {
   }
   $list = new DataSet(array('hashlist' => $joined[$FACTORIES::getHashlistFactory()->getModelName()][0], 'hashtype' => $joined[$FACTORIES::getHashTypeFactory()->getModelName()][0]));
   $OBJECTS['list'] = $list;
+  $OBJECTS['accessGroup'] = $FACTORIES::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId());
   
   //check if the list is a superhashlist
   $OBJECTS['sublists'] = array();
