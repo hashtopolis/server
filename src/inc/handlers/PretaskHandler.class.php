@@ -61,7 +61,7 @@ class PretaskHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::USER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType']);
+        $this->createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType'], $_POST['crackerBinaryTypeId']);
         break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
@@ -69,9 +69,11 @@ class PretaskHandler implements Handler {
     }
   }
   
-  private function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType) {
+  private function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $crackerBinaryTypeId) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
+    
+    $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     
     if (strlen($name) == 0) {
       UI::addMessage(UI::ERROR, "Name cannot be empty!");
@@ -84,6 +86,9 @@ class PretaskHandler implements Handler {
     else if (Util::containsBlacklistedChars($cmdLine)) {
       UI::addMessage(UI::ERROR, "The command must contain no blacklisted characters!");
       return;
+    }
+    else if ($crackerBinaryType == null) {
+      UI::addMessage(UI::ERROR, "Invalid cracker binary type!");
     }
     $chunkTime = intval($chunkTime);
     $statusTimer = intval($statusTimer);
@@ -105,7 +110,7 @@ class PretaskHandler implements Handler {
     else if ($statusTimer <= 0) {
       $statusTimer = $CONFIG->getVal(DConfig::STATUS_TIMER);
     }
-    $pretask = new Pretask(0, htmlentities($name, ENT_QUOTES, "UTF-8"), $cmdLine, $chunkTime, $statusTimer, $color, $isSmall, $cpuOnly, $benchmarkType, 0, 0);
+    $pretask = new Pretask(0, htmlentities($name, ENT_QUOTES, "UTF-8"), $cmdLine, $chunkTime, $statusTimer, $color, $isSmall, $cpuOnly, $benchmarkType, 0, 0, $crackerBinaryType->getId());
     $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
     
     // handle files
