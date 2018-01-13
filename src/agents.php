@@ -56,9 +56,6 @@ foreach ($userGroups as $userGroup) {
   $accessGroupIds[] = $userGroup->getAccessGroupId();
 }
 
-/*$qF = new QueryFilter(TaskWrapper::HASHLIST_ID, null, "<>");
-$allTasks = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF));*/
-
 if (isset($_GET['id'])) {
   //show agent detail
   $TEMPLATE = new Template("agents/detail");
@@ -75,6 +72,11 @@ if (isset($_GET['id'])) {
     
     // load all tasks which are valid for this agent
     $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent, true);
+    
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $OBJECTS['accessGroups'] = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
