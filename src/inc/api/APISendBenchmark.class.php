@@ -9,7 +9,7 @@ class APISendBenchmark extends APIBasic {
     global $FACTORIES, $CONFIG;
     
     if (!PQuerySendBenchmark::isValid($QUERY)) {
-      API::sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
+      $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
     }
     $this->checkToken(PActions::SEND_BENCHMARK, $QUERY);
     $this->updateAgent(PActions::SEND_BENCHMARK);
@@ -35,14 +35,14 @@ class APISendBenchmark extends APIBasic {
         if (sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <= 0 || $split[1] <= 0) {
           $this->agent->setIsActive(0);
           $FACTORIES::getAgentFactory()->update($this->agent);
-          API::sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
+          $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
         break;
       case PValuesBenchmarkType::RUN_TIME:
         if (!is_numeric($benchmark) || $benchmark <= 0) {
           $this->agent->setIsActive(0);
           $FACTORIES::getAgentFactory()->update($this->agent);
-          API::sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
+          $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
         $benchmark = $benchmark / $CONFIG->getVal(DConfig::BENCHMARK_TIME) * 100;
@@ -50,7 +50,7 @@ class APISendBenchmark extends APIBasic {
       default:
         $this->agent->setIsActive(0);
         $FACTORIES::getAgentFactory()->update($this->agent);
-        API::sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
+        $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
     }
     
     $assignment->setBenchmark($benchmark);
