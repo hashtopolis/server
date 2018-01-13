@@ -3,6 +3,7 @@
 use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\CrackerBinary;
 use DBA\File;
 use DBA\FileTask;
 use DBA\JoinFilter;
@@ -315,8 +316,9 @@ else if (isset($_GET['new'])) {
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
   
+  $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
-  $OBJECTS['versions'] = $FACTORIES::getCrackerBinaryFactory()->filter(array());
+  $OBJECTS['versions'] = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::ORDER => $oF));
 }
 else {
   Util::loadTasks();
