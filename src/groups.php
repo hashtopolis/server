@@ -50,6 +50,7 @@ else if (isset($_GET['id'])) {
     $joinedUsers = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     /** @var $users User[] */
     $users = $joinedUsers[$FACTORIES::getUserFactory()->getModelName()];
+    $OBJECTS['users'] = $users;
     $excludedUsers = Util::arrayOfIds($users);
     
     $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
@@ -57,6 +58,7 @@ else if (isset($_GET['id'])) {
     $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     /** @var $agents Agent[] */
     $agents = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
+    $OBJECTS['agents'] = $agents;
     $excludedAgents = Util::arrayOfIds($agents);
     
     $qF = new ContainFilter(User::USER_ID, $excludedUsers, $FACTORIES::getUserFactory(), true);
