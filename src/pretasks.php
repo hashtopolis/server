@@ -67,6 +67,8 @@ else if (isset($_GET['new'])) {
   
   $qF = new QueryFilter(File::FILE_TYPE, DFileType::WORDLIST, "=");
   $OBJECTS['wordlists'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+  
+  $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
 }
 else {
   $queryFilters = array();

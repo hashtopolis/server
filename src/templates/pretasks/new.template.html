@@ -75,6 +75,16 @@
                 </select>
               </td>
             </tr>
+            <tr>
+              <td>Cracker Binary which is used to run this task:</td>
+              <td>
+                <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+                  {{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
+                    <option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+              </td>
+            </tr>
       			<tr>
       				<td colspan="2" class="text-center">
       					<input type="submit" class='btn btn-success' value="Create preconfigured task">
