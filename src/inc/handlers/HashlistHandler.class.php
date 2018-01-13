@@ -182,7 +182,20 @@ class HashlistHandler implements Handler {
       $hashcount += $list->getHashCount();
       $cracked += $list->getCracked();
     }
-    $superhashlist = new Hashlist(0, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), AccessUtils::getOrCreateDefaultAccessGroup()->getId());
+    // check if all have the same access group
+    $accessGroupId = null;
+    foreach($lists as $list){
+      if($accessGroupId == null){
+        $accessGroupId = $list->getAccessGroupId();
+        continue;
+      }
+      else if($accessGroupId != $list->getAccessGroupId()){
+        UI::printError("ERROR", "You cannot create superhashlists from hashlists which belong to different access groups");
+        //TODO: maybe here create a new generic access group which then the user can decide which agents/users he would like to assign. But this creates problems when the usere itself cannot manage groups
+      }
+    }
+    
+    $superhashlist = new Hashlist(0, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId);
     $superhashlist = $FACTORIES::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {
