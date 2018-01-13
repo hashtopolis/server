@@ -137,9 +137,8 @@ class PQueryDownloadBinary extends PQuery {
     return true;
   }
   
-  const BINARY_TYPE  = "type";
+  const BINARY_TYPE       = "type";
   const BINARY_VERSION_ID = "binaryVersionId";
-  const FORCE_UPDATE = "force"; // optional
 }
 
 class PQueryCheckClientVersion extends PQuery {
@@ -251,9 +250,9 @@ class PResponseClientUpdate extends PResponse {
 }
 
 class PResponseBinaryDownload extends PResponse {
-  const VERSION    = "version";
   const EXECUTABLE = "executable";
   const URL        = "url";
+  const NAME       = "name";
 }
 
 class PResponseError extends PResponse {

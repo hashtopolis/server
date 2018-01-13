@@ -316,6 +316,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
   
+  // TODO: maybe make sure that versions are ordered by numbers and not IDs
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
   $OBJECTS['versions'] = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::ORDER => $oF));

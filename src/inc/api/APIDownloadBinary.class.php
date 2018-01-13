@@ -45,7 +45,7 @@ class APIDownloadBinary extends APIBasic {
         if ($crackerBinary == null) {
           $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid cracker binary type id!");
         }
-        //$crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
+        $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
         
         // TODO: extension building should be somewhere in utils
         switch ($this->agent->getOs()) {
@@ -65,6 +65,7 @@ class APIDownloadBinary extends APIBasic {
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::URL => $crackerBinary->getDownloadUrl(),
+            PResponseBinaryDownload::NAME => $crackerBinaryType->getTypeName(),
             PResponseBinaryDownload::EXECUTABLE => $crackerBinary->getBinaryName() . $ext
           )
         );
