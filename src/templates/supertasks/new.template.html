@@ -27,7 +27,7 @@
 				<td>
 					<select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
 						{{FOREACH binary;[[binaries]]}}
-						<option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
+							<option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
 						{{ENDFOREACH}}
 					</select>
 					<select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
