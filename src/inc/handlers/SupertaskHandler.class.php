@@ -41,9 +41,14 @@ class SupertaskHandler implements Handler {
     
     $name = htmlentities($_POST['name'], ENT_QUOTES, "UTF-8");
     $masks = $_POST['masks'];
+    $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_POST['crackerBinaryTypeId']);
     $isSmall = intval($_POST['isSmall']);
     if (strlen($name) == 0 || strlen($masks) == 0) {
       UI::addMessage(UI::ERROR, "Name or masks is empty!");
+      return;
+    }
+    else if ($crackerBinaryType == null) {
+      UI::addMessage(UI::ERROR, "Invalid cracker binary type!");
       return;
     }
     if ($isSmall != 0 && $isSmall != 1) {
@@ -99,7 +104,7 @@ class SupertaskHandler implements Handler {
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       
       //TODO: make configurable if cpu only task etc.
-      $pretask = new Pretask(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), "", $isSmall, 0, 0, $priority, 1);
+      $pretask = new Pretask(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), "", $isSmall, 0, 0, $priority, 1, $crackerBinaryType->getId());
       $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
       $preTasks[] = $pretask;
       $priority--;
@@ -152,11 +157,11 @@ class SupertaskHandler implements Handler {
     $joinedTasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     /** @var $tasks Pretask[] */
     $tasks = $joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()];
-  
+    
     $wrapperPriority = 0;
-    foreach($tasks as $pretask){
+    foreach ($tasks as $pretask) {
       if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
-        $wrapperPriority = $pretask->getPriority();
+        $wrapperPriority = $pretask->getPriority(); // TODO: is this the right way to take the lowest pretask prio?
       }
     }
     

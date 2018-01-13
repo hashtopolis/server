@@ -27,6 +27,16 @@
 				</td>
 			</tr>
 			<tr>
+				<td>Cracker Binary which is used to run this task:</td>
+				<td>
+					<select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+						{{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
+						<option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+						{{ENDFOREACH}}
+					</select>
+				</td>
+			</tr>
+			<tr>
 				<td>Insert masks</td>
 				<td>
 					<textarea name="masks" class="form-control" cols="100" rows="20" placeholder="Paste your Hashcat mask lines here. Format should be according to .hcmask files..."></textarea>

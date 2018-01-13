@@ -44,6 +44,8 @@ if (isset($_GET['create']) && $_GET['create'] == "new") {
 else if (isset($_GET['create']) && $_GET['create'] == "import") {
   $MENU->setActive("tasks_superimport");
   $TEMPLATE = new Template("supertasks/import");
+  
+  $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
 }
 else if (isset($_GET['id']) && isset($_GET['new'])) {
   $TEMPLATE = new Template("supertasks/new");
