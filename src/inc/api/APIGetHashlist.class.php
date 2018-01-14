@@ -56,7 +56,7 @@ class APIGetHashlist extends APIBasic {
     }
     $this->sendResponse(array(
         PQueryGetFile::ACTION => PActions::GET_HASHLIST,
-        PResponseGetHashlist::URL => "get.php?hashlists=" . implode(",", $hashlists) . "&token=" . $this->agent->getToken()
+        PResponseGetHashlist::URL => "get.php?hashlists=" . implode(",", Util::arrayOfIds($hashlists)) . "&token=" . $this->agent->getToken()
       )
     );
   }
