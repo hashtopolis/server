@@ -10,7 +10,6 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
-use DBA\TaskFile;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -72,8 +71,9 @@ if (isset($_GET['id'])) {
     UI::printError("ERROR", "Invalid task ID!");
   }
   $OBJECTS['task'] = $task;
+  $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
   
-  $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
+  $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
   $OBJECTS['hashlist'] = $hashlist;
   $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
   $OBJECTS['hashtype'] = $hashtype;
@@ -87,7 +87,7 @@ if (isset($_GET['id'])) {
   $agentsSpeed = new DataSet();
   $currentSpeed = 0;
   foreach ($chunks as $chunk) {
-    if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getRprogress() < 10000) {
+    if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
       $isActive = 1;
       $activeChunks[] = $chunk;
       $activeChunksIds->addValue($chunk->getId(), true);
@@ -157,8 +157,8 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeLeft'] = -1;
   }
   
-  $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
+  $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
+  $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
   
