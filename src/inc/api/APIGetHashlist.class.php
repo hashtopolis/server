@@ -55,7 +55,8 @@ class APIGetHashlist extends APIBasic {
       $this->sendErrorResponse(PActions::GET_HASHLIST, "No hashlists selected/available!");
     }
     $this->sendResponse(array(
-        PQueryGetFile::ACTION => PActions::GET_HASHLIST,
+        PResponseGetHashlist::ACTION => PActions::GET_HASHLIST,
+        PResponseGetHashlist::RESPONSE => PValues::SUCCESS,
         PResponseGetHashlist::URL => "get.php?hashlists=" . implode(",", Util::arrayOfIds($hashlists)) . "&token=" . $this->agent->getToken()
       )
     );
