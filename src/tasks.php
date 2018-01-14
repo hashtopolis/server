@@ -72,6 +72,7 @@ if (isset($_GET['id'])) {
   }
   $OBJECTS['task'] = $task;
   $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+  $OBJECTS['taskWrapper'] = $taskWrapper;
   
   $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
   $OBJECTS['hashlist'] = $hashlist;
