@@ -184,12 +184,12 @@ class HashlistHandler implements Handler {
     }
     // check if all have the same access group
     $accessGroupId = null;
-    foreach($lists as $list){
-      if($accessGroupId == null){
+    foreach ($lists as $list) {
+      if ($accessGroupId == null) {
         $accessGroupId = $list->getAccessGroupId();
         continue;
       }
-      else if($accessGroupId != $list->getAccessGroupId()){
+      else if ($accessGroupId != $list->getAccessGroupId()) {
         UI::printError("ERROR", "You cannot create superhashlists from hashlists which belong to different access groups");
         //TODO: maybe here create a new generic access group which then the user can decide which agents/users he would like to assign. But this creates problems when the usere itself cannot manage groups
       }
@@ -502,19 +502,23 @@ class HashlistHandler implements Handler {
     $joined = $FACTORIES::getHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
     /** @var $superHashlists Hashlist[] */
     $superHashlists = $joined[$FACTORIES::getHashlistFactory()->getModelName()];
+    $toDelete = array();
+    $toUpdate = array();
     foreach ($superHashlists as $superHashlist) {
       $superHashlist->setHashCount($superHashlist->getHashCount() - $this->hashlist->getHashCount());
       $superHashlist->setCracked($superHashlist->getCracked() - $this->hashlist->getCracked());
       
       if ($superHashlist->getHashCount() <= 0) {
-        // this superlist has no hashlist which belongs to it anymore -> delete it
-        $FACTORIES::getHashlistFactory()->delete($superHashlist);
+        // this superhashlist has no hashlist which belongs to it anymore -> delete it
+        $toDelete = $superHashlist;
       }
       else {
-        $FACTORIES::getHashlistFactory()->update($superHashlist);
+        $toUpdate = $superHashlist;
       }
     }
     $FACTORIES::getHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+    $FACTORIES::getHashlistFactory()->massDeletion($toDelete);
+    $FACTORIES::getHashlistFactory()->massUpdate($toUpdate);
     
     $qF = new QueryFilter(Zap::HASHLIST_ID, $this->hashlist->getId(), "=");
     $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
