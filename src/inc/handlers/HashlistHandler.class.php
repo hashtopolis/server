@@ -495,7 +495,7 @@ class HashlistHandler implements Handler {
       UI::printError("ERROR", "Invalid hashlist!");
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     
     $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getHashlistHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), HashlistHashlist::PARENT_HASHLIST_ID, Hashlist::HASHLIST_ID, $FACTORIES::getHashlistHashlistFactory());
@@ -551,8 +551,8 @@ class HashlistHandler implements Handler {
           while ($deleted > 0) {
             $result = $FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)));
             $deleted = $result->rowCount();
-            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+            $FACTORIES::getAgentFactory()->getDB()->commit();
+            $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
           }
         }
         else {
@@ -582,7 +582,7 @@ class HashlistHandler implements Handler {
       $FACTORIES::getTaskFactory()->delete($task);
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
     
