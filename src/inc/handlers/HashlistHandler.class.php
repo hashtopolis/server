@@ -497,18 +497,11 @@ class HashlistHandler implements Handler {
     
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     
-    $hashlistFilter = new QueryFilter(HashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getHashlistHashlistFactory());
+    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $this->hashlist->getId(), "=", $FACTORIES::getHashlistHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getHashlistFactory(), HashlistHashlist::PARENT_HASHLIST_ID, Hashlist::HASHLIST_ID, $FACTORIES::getHashlistHashlistFactory());
-    $joined = $FACTORIES::getHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($hashlistFilter), $FACTORIES::JOIN => array($jF)));
-    $superHashlistIds = array();
-    /** @var $hashlistHashlists HashlistHashlist[] */
-    $hashlistHashlists = $joined[$FACTORIES::getHashlistHashlistFactory()->getModelName()];
-    foreach ($hashlistHashlists as $hashlistHashlist) {
-      $superHashlistIds[] = $hashlistHashlist->getParentHashlistId();
-    }
-    
-    $qF = new ContainFilter(Hashlist::HASHLIST_ID, $superHashlistIds);
-    $superHashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $joined = $FACTORIES::getHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
+    /** @var $superHashlists Hashlist[] */
+    $superHashlists = $joined[$FACTORIES::getHashlistFactory()->getModelName()];
     $toDelete = array();
     $toUpdate = array();
     foreach ($superHashlists as $superHashlist) {
@@ -523,7 +516,7 @@ class HashlistHandler implements Handler {
         $toUpdate = $superHashlist;
       }
     }
-    $FACTORIES::getHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($hashlistFilter)));
+    $FACTORIES::getHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
     
     $qF = new QueryFilter(Zap::HASHLIST_ID, $this->hashlist->getId(), "=");
     $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
@@ -590,13 +583,17 @@ class HashlistHandler implements Handler {
     foreach ($taskList as $task) {
       $FACTORIES::getTaskFactory()->delete($task);
     }
-    
+  
     // update/delete superhashlists (this must wait until here because of constraints
-    $FACTORIES::getHashlistFactory()->massDeletion($toDelete);
-    $FACTORIES::getHashlistFactory()->massUpdate($toUpdate);
+    foreach($toDelete as $hl){
+      $FACTORIES::getHashlistFactory()->delete($hl);
+    }
+    foreacH($toUpdate as $hl){
+      $FACTORIES::getHashlistFactory()->update($hl);
+    }
     
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
-    
+  
     $FACTORIES::getAgentFactory()->getDB()->commit();
     
     switch ($this->hashlist->getFormat()) {
