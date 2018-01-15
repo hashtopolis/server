@@ -583,14 +583,14 @@ class HashlistHandler implements Handler {
     foreach ($taskList as $task) {
       $FACTORIES::getTaskFactory()->delete($task);
     }
-    
-    $FACTORIES::getAgentFactory()->getDB()->commit();
   
     // update/delete superhashlists (this must wait until here because of constraints
     $FACTORIES::getHashlistFactory()->massDeletion($toDelete);
     $FACTORIES::getHashlistFactory()->massUpdate($toUpdate);
     
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
+  
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     switch ($this->hashlist->getFormat()) {
       case 0:
