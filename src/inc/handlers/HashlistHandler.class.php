@@ -517,8 +517,6 @@ class HashlistHandler implements Handler {
       }
     }
     $FACTORIES::getHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
-    $FACTORIES::getHashlistFactory()->massDeletion($toDelete);
-    $FACTORIES::getHashlistFactory()->massUpdate($toUpdate);
     
     $qF = new QueryFilter(Zap::HASHLIST_ID, $this->hashlist->getId(), "=");
     $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
@@ -587,6 +585,10 @@ class HashlistHandler implements Handler {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->commit();
+  
+    // update/delete superhashlists (this must wait until here because of constraints
+    $FACTORIES::getHashlistFactory()->massDeletion($toDelete);
+    $FACTORIES::getHashlistFactory()->massUpdate($toUpdate);
     
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
     
