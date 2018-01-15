@@ -40,7 +40,7 @@ class APIClientError extends APIBasic {
       //deactivate agent
       $this->agent->setIsActive(0);
     }
-    $this->updateAgent($QUERY);
+    $this->updateAgent(PActions::CLIENT_ERROR);
     $this->sendResponse(array(
         PQueryClientError::ACTION => PActions::CLIENT_ERROR,
         PResponseError::RESPONSE => PValues::SUCCESS
