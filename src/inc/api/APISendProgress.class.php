@@ -84,7 +84,7 @@ class APISendProgress extends APIBasic {
      * Save chunk updates
      */
     $chunk->setProgress($combinationProgress);
-    $chunk->setProgress($keyspaceProgress);
+    $chunk->setCheckpoint($keyspaceProgress);
     $chunk->setSolveTime(time());
     $aborting = false;
     if ($chunk->getState() == DHashcatStatus::ABORTED) {
