@@ -202,6 +202,11 @@ class APIGetChunk extends APIBasic {
       $this->sendChunk($firstPart);
     }
     else {
+      if ($chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint() == 0) {
+        // special case when chunk length gets 0
+        $this->createNewChunk($task, $assignment);
+        return;
+      }
       $newChunk = new Chunk(0, $task->getId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $this->agent->getId(), time(), 0, $chunk->getCheckpoint(), DHashcatStatus::INIT, 0, 0, 0);
       $chunk->setLength($chunk->getCheckpoint() - $chunk->getSkip());
       $chunk->setProgress(10000);
