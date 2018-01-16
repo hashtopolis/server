@@ -167,7 +167,7 @@ CREATE TABLE `AgentStat` (
 CREATE TABLE `AgentZap` (
   `agentZapId` INT(11) NOT NULL,
   `agentId`    INT(11) NOT NULL,
-  `lastZapId`  INT(11) NOT NULL
+  `lastZapId`  INT(11) NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

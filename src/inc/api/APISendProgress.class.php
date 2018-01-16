@@ -348,7 +348,7 @@ class APISendProgress extends APIBasic {
         $qF = new QueryFilter(AgentZap::AGENT_ID, $this->agent->getId(), "=");
         $agentZap = $FACTORIES::getAgentZapFactory()->filter(array($FACTORIES::FILTER => $qF), true);
         if ($agentZap == null) {
-          $agentZap = new AgentZap(0, $this->agent->getId(), 0);
+          $agentZap = new AgentZap(0, $this->agent->getId(), null);
           $FACTORIES::getAgentZapFactory()->save($agentZap);
         }
         
