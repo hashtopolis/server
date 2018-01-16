@@ -25,7 +25,7 @@ class APISendProgress extends APIBasic {
     
     // upload cracked hashes to server
     $keyspaceProgress = $QUERY[PQuerySendProgress::KEYSPACE_PROGRESS];
-    $combinationProgress = intval($QUERY[PQuerySendProgress::RELATIVE_PROGRESS]);//Normalized between 1-10k
+    $relativeProgress = intval($QUERY[PQuerySendProgress::RELATIVE_PROGRESS]);//Normalized between 1-10k
     $speed = floatval($QUERY[PQuerySendProgress::SPEED]);
     $state = intval($QUERY[PQuerySendProgress::HASHCAT_STATE]);
     
@@ -73,8 +73,8 @@ class APISendProgress extends APIBasic {
     $keyspaceProgress -= $skip;
     
     //if by accident the number of the combinationProgress overshoots the limit
-    if ($combinationProgress > 10000) {
-      $combinationProgress = 10000;
+    if ($relativeProgress > 10000) {
+      $relativeProgress = 10000;
     }
     if ($keyspaceProgress > $length) {
       $keyspaceProgress = $length;
@@ -83,7 +83,7 @@ class APISendProgress extends APIBasic {
     /*
      * Save chunk updates
      */
-    $chunk->setProgress($combinationProgress);
+    $chunk->setProgress($relativeProgress);
     $chunk->setCheckpoint($keyspaceProgress);
     $chunk->setSolveTime(time());
     $aborting = false;
@@ -238,7 +238,7 @@ class APISendProgress extends APIBasic {
     }
     /** Check if the task is done */
     $taskdone = false;
-    if ($combinationProgress == 10000 && $task->getKeyspaceProgress() == $task->getKeyspace()) {
+    if ($relativeProgress == 10000 && $task->getKeyspaceProgress() == $task->getKeyspace()) {
       // chunk is done and the task has been fully dispatched
       $incompleteFilter = new QueryFilter(Chunk::PROGRESS, 10000, "<");
       $taskFilter = new QueryFilter(Chunk::TASK_ID, $taskID, "=");
@@ -321,8 +321,9 @@ class APISendProgress extends APIBasic {
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
           
           $task->setPriority(0);
-          $chunk->setProgress($chunk->getLength());
+          $chunk->setCheckpoint($chunk->getLength());
           $chunk->setProgress(10000);
+          $chunk->setSpeed(0);
           
           TaskUtils::depriorizeAllTasks($hashlists);
           
