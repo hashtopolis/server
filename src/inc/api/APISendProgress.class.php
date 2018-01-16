@@ -67,11 +67,6 @@ class APISendProgress extends APIBasic {
     $length = $chunk->getLength();
     $taskID = $task->getId();
     
-    /*
-     * Calculate the relative progress inside of the chunk
-     */
-    $keyspaceProgress -= $skip;
-    
     //if by accident the number of the combinationProgress overshoots the limit
     if ($relativeProgress > 10000) {
       $relativeProgress = 10000;
