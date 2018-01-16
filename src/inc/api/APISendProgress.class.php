@@ -76,8 +76,8 @@ class APISendProgress extends APIBasic {
     if ($relativeProgress > 10000) {
       $relativeProgress = 10000;
     }
-    if ($keyspaceProgress > $length) {
-      $keyspaceProgress = $length;
+    if ($keyspaceProgress > $length + $skip) {
+      $keyspaceProgress = $length + $skip;
     }
     
     /*
