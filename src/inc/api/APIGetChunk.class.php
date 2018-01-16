@@ -140,7 +140,7 @@ class APIGetChunk extends APIBasic {
     $newProgress = $task->getKeyspaceProgress() + $length;
     $task->setKeyspaceProgress($newProgress);
     $FACTORIES::getTaskFactory()->update($task);
-    $chunk = new Chunk(0, $task->getId(), $start, $length, $this->agent->getId(), time(), 0, 0, 0, DHashcatStatus::INIT, 0, 0);
+    $chunk = new Chunk(0, $task->getId(), $start, $length, $this->agent->getId(), time(), 0, $start, 0, DHashcatStatus::INIT, 0, 0);
     $FACTORIES::getChunkFactory()->save($chunk);
     $this->sendChunk($chunk);
   }
@@ -197,12 +197,12 @@ class APIGetChunk extends APIBasic {
       $firstPart->setState(DHashcatStatus::INIT);
       $firstPart->setProgress(0);
       $FACTORIES::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, 0, 0, DHashcatStatus::INIT, 0, 0);
+      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), 0, DHashcatStatus::INIT, 0, 0);
       $FACTORIES::getChunkFactory()->save($secondPart);
       $this->sendChunk($firstPart);
     }
     else {
-      $newChunk = new Chunk(0, $task->getId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $this->agent->getId(), time(), 0, 0, DHashcatStatus::INIT, 0, 0, 0);
+      $newChunk = new Chunk(0, $task->getId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $this->agent->getId(), time(), 0, $chunk->getCheckpoint(), DHashcatStatus::INIT, 0, 0, 0);
       $chunk->setLength($chunk->getCheckpoint() - $chunk->getSkip());
       $chunk->setProgress(10000);
       $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
