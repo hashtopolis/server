@@ -489,8 +489,8 @@
         <td class="num">[[chunk.getLength()]]</td>
         <td class="num">
           [[chunk.getCheckpoint()]]
-          {{IF [[chunk.getCheckpoint()]] > 0 && [[chunk.getCheckpoint()]] != [[chunk.getLength()]]}}
-            ([[Util::showperc([[chunk.getCheckpoint()]], [[chunk.getLength()]])]]%)
+          {{IF [[chunk.getLength()]] > 0}}
+            ([[Util::showperc([[chunk.getCheckpoint()]] - [[chunk.getSkip()]], [[chunk.getLength()]])]]%)
           {{ENDIF}}
         </td>
         <td class="num">
