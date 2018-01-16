@@ -322,7 +322,7 @@ class APISendProgress extends APIBasic {
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
           
           $task->setPriority(0);
-          $chunk->setCheckpoint($chunk->getLength());
+          $chunk->setCheckpoint($chunk->getSkip() + $chunk->getLength());
           $chunk->setProgress(10000);
           $chunk->setSpeed(0);
           

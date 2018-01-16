@@ -485,7 +485,7 @@ class TaskHandler implements Handler {
     }
     $chunk->setState(0);
     $chunk->setProgress(0);
-    $chunk->setCheckpoint(0);
+    $chunk->setCheckpoint($chunk->getSkip());
     $chunk->setDispatchTime(0);
     $chunk->setSolveTime(0);
     $FACTORIES::getChunkFactory()->update($chunk);

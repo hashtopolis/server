@@ -173,7 +173,6 @@ class TaskUtils {
     $completedChunk = new Chunk(0, $chunk->getTaskId(), $chunk->getCheckpoint(), $chunk->getLength() - $chunk->getCheckpoint(), $chunk->getAgentId(), $chunk->getDispatchTime(), $chunk->getSolveTime(), $chunk->getCheckpoint(), 10000, DHashcatStatus::EXHAUSTED, $chunk->getCracked(), 0);
     $FACTORIES::getChunkFactory()->save($completedChunk);
     $chunk->setCracked(0);
-    $chunk->setCheckpoint(0);
     $chunk->setLength($chunk->getLength() - $completedChunk->getLength());
     $chunk->setDispatchTime(0);
     $chunk->setAgentId(null);
@@ -181,6 +180,7 @@ class TaskUtils {
     $chunk->setSolveTime(0);
     $chunk->setSpeed(0);
     $chunk->setSkip($chunk->getSkip() + $completedChunk->getLength());
+    $chunk->setCheckpoint($chunk->getSkip());
     $FACTORIES::getChunkFactory()->update($chunk);
     return $chunk;
   }
