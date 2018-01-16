@@ -39,11 +39,9 @@ class PQuerySendProgress extends PQuery {
     return true;
   }
   
-  // TODO: update sendProgress query
-  const CHUNK_ID             = "chunk";
+  const CHUNK_ID             = "chunkId";
   const KEYSPACE_PROGRESS    = "keyspaceProgress"; // aka curku
-  const COMBINATION_PROGRESS = "progress";
-  const COMBINATION_TOTAL    = "total";
+  const RELATIVE_PROGRESS    = "relativeProgress";
   const SPEED                = "speed";
   const HASHCAT_STATE        = "state";
   const CRACKED_HASHES       = "cracks";

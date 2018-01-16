@@ -25,7 +25,7 @@ class APISendProgress extends APIBasic {
     
     // upload cracked hashes to server
     $keyspaceProgress = $QUERY[PQuerySendProgress::KEYSPACE_PROGRESS];
-    $combinationProgress = floatval($QUERY[PQuerySendProgress::COMBINATION_PROGRESS]);//Normalized between 1-10k
+    $combinationProgress = intval($QUERY[PQuerySendProgress::RELATIVE_PROGRESS]);//Normalized between 1-10k
     $speed = floatval($QUERY[PQuerySendProgress::SPEED]);
     $state = intval($QUERY[PQuerySendProgress::HASHCAT_STATE]);
     
