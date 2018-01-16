@@ -176,7 +176,7 @@ class APIGetChunk extends APIBasic {
     
     $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $agentChunkSizeMax = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance);
-    if ($chunk->getProgress() == 0 && $agentChunkSizeMax > $chunk->getLength()) {
+    if ($chunk->getCheckpoint() == $chunk->getSkip() && $agentChunkSizeMax > $chunk->getLength()) {
       //chunk has not started yet
       $chunk->setProgress(0);
       $chunk->setDispatchTime(time());
@@ -186,7 +186,7 @@ class APIGetChunk extends APIBasic {
       $FACTORIES::getChunkFactory()->update($chunk);
       $this->sendChunk($chunk);
     }
-    else if ($chunk->getProgress() == 0) {
+    else if ($chunk->getCheckpoint() == $chunk->getSkip()) {
       //split chunk into two parts
       $originalLength = $chunk->getLength();
       $firstPart = $chunk;
