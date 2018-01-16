@@ -314,7 +314,7 @@ class APISendProgress extends APIBasic {
       default:
         // the chunk isn't finished yet, we will send zaps
         $qF1 = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<");
-        $qF2 = new ContainFilter(Hashlist::HASHLIST_ID, $hashlists);
+        $qF2 = new ContainFilter(Hashlist::HASHLIST_ID, Util::arrayOfIds($hashlists));
         $count = $FACTORIES::getHashlistFactory()->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
         if ($count == 0) {
           $payload = new DataSet(array(DPayloadKeys::HASHLIST => $totalHashlist));
