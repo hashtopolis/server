@@ -201,7 +201,7 @@ CREATE TABLE `Chunk` (
   `taskId`       INT(11) NOT NULL,
   `skip`         INT(11) NOT NULL,
   `length`       INT(11) NOT NULL,
-  `agentId`      INT(11) NOT NULL,
+  `agentId`      INT(11) NULL,
   `dispatchTime` INT(11) NOT NULL,
   `solveTime`    INT(11) NOT NULL,
   `checkpoint`   INT(11) NOT NULL,
