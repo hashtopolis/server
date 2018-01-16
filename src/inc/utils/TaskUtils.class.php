@@ -166,11 +166,11 @@ class TaskUtils {
   private static function checkChunkSplit($chunk) {
     global $FACTORIES;
     
-    if ($chunk->getCheckpoint() == 0) {
+    if ($chunk->getCheckpoint() == $chunk->getSkip()) {
       // no checkpoint reached so far, we cannot split
       return $chunk;
     }
-    $completedChunk = new Chunk(0, $chunk->getTaskId(), $chunk->getCheckpoint(), $chunk->getLength() - $chunk->getCheckpoint(), $chunk->getAgentId(), $chunk->getDispatchTime(), $chunk->getSolveTime(), $chunk->getCheckpoint(), 10000, DHashcatStatus::EXHAUSTED, $chunk->getCracked(), 0);
+    $completedChunk = new Chunk(0, $chunk->getTaskId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $chunk->getAgentId(), $chunk->getDispatchTime(), $chunk->getSolveTime(), $chunk->getCheckpoint(), 10000, DHashcatStatus::EXHAUSTED, $chunk->getCracked(), 0);
     $FACTORIES::getChunkFactory()->save($completedChunk);
     $chunk->setCracked(0);
     $chunk->setLength($chunk->getLength() - $completedChunk->getLength());

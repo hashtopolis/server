@@ -121,14 +121,14 @@ if (isset($_GET['id'])) {
     if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
       $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime());
     }
-    $cProgress += $chunk->getCheckpoint();
+    $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
     if (!$agentsProgress->getVal($chunk->getAgentId())) {
-      $agentsProgress->addValue($chunk->getAgentId(), $chunk->getCheckpoint());
+      $agentsProgress->addValue($chunk->getAgentId(), $chunk->getCheckpoint() - $chunk->getSkip());
       $agentsCracked->addValue($chunk->getAgentId(), $chunk->getCracked());
       $agentsSpent->addValue($chunk->getAgentId(), max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
     }
     else {
-      $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getCheckpoint());
+      $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getCheckpoint() - $chunk->getSkip());
       $agentsCracked->addValue($chunk->getAgentId(), $agentsCracked->getVal($chunk->getAgentId()) + $chunk->getCracked());
       $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
     }
