@@ -215,7 +215,7 @@ class TaskUtils {
     
     $qF = new ContainFilter(TaskWrapper::HASHLIST_ID, Util::arrayOfIds($hashlists));
     $uS = new UpdateSet(TaskWrapper::PRIORITY, 0);
-    $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+    $FACTORIES::getTaskWrapperFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
     $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($taskWrappers as $tW) {
       $tW->setPriority(0);
