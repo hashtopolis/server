@@ -288,6 +288,7 @@ class APISendProgress extends APIBasic {
       case DHashcatStatus::EXHAUSTED:
         // the chunk has finished (exhausted)
         $chunk->setSpeed(0);
+        $chunk->setCheckpoint($chunk->getSkip() + $chunk->getLength());
         $FACTORIES::getChunkFactory()->update($chunk);
         break;
       case DHashcatStatus::CRACKED:
