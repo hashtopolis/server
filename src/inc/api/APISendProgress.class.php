@@ -345,7 +345,8 @@ class APISendProgress extends APIBasic {
         $chunk->setSpeed($speed);
         $FACTORIES::getChunkFactory()->update($chunk);
         
-        $agentZap = $FACTORIES::getAgentZapFactory()->get($this->agent->getId());
+        $qF = new QueryFilter(AgentZap::AGENT_ID, $this->agent->getId(), "=");
+        $agentZap = $FACTORIES::getAgentZapFactory()->filter(array($FACTORIES::FILTER => $qF), true);
         if ($agentZap == null) {
           $agentZap = new AgentZap(0, $this->agent->getId(), 0);
           $FACTORIES::getAgentZapFactory()->save($agentZap);
