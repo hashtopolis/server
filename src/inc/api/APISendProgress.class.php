@@ -347,7 +347,7 @@ class APISendProgress extends APIBasic {
         
         $agentZap = $FACTORIES::getAgentZapFactory()->get($this->agent->getId());
         if ($agentZap == null) {
-          $agentZap = new AgentZap($this->agent->getId(), 0, 0);
+          $agentZap = new AgentZap(0, $this->agent->getId(), 0);
           $FACTORIES::getAgentZapFactory()->save($agentZap);
         }
         
