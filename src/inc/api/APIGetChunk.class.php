@@ -140,7 +140,7 @@ class APIGetChunk extends APIBasic {
     $newProgress = $task->getKeyspaceProgress() + $length;
     $task->setKeyspaceProgress($newProgress);
     $FACTORIES::getTaskFactory()->update($task);
-    $chunk = new Chunk(0, $task->getId(), $start, $length, $this->agent->getId(), time(), 0, 0, DHashcatStatus::INIT, 0, 0, 0);
+    $chunk = new Chunk(0, $task->getId(), $start, $length, $this->agent->getId(), time(), 0, 0, 0, DHashcatStatus::INIT, 0, 0);
     $FACTORIES::getChunkFactory()->save($chunk);
     $this->sendChunk($chunk);
   }
