@@ -1119,7 +1119,8 @@ ALTER TABLE `FileTask`
 ALTER TABLE `Hash`
   ADD PRIMARY KEY (`hashId`),
   ADD KEY `hashlistId` (`hashlistId`),
-  ADD KEY `chunkId` (`chunkId`);
+  ADD KEY `chunkId` (`chunkId`),
+  ADD KEY `hash` (`hash`);
 
 --
 -- Indizes für die Tabelle `HashBinary`
