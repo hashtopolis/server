@@ -125,13 +125,6 @@ class TaskUtils {
       return $task;
     }
     
-    if ($task->getKeyspace() == $task->getKeyspaceProgress()) {
-      // task is completed, set priority to 0
-      $task->setPriority(0);
-      $FACTORIES::getTaskFactory()->update($task);
-      return null;
-    }
-    
     // check chunks
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
