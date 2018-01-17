@@ -28,6 +28,10 @@ $task = $FACTORIES::getTaskFactory()->get($_GET['task']);
 if ($task == null) {
   die("Not a valid task!");
 }
+$taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+if ($taskWrapper == null) {
+  die("Inconsistency on task!");
+}
 
 //create image
 $image = imagecreatetruecolor($size[0], $size[1]);
@@ -44,12 +48,13 @@ $blue = imagecolorallocate($image, 60, 60, 245);
 //prepare image
 imagefill($image, 0, 0, $transparency);
 
-$progress = $task->getProgress();
+$progress = $task->getKeyspaceProgress();
 $keyspace = max($task->getKeyspace(), 1);
 $taskid = $task->getId();
 
-if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
+if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
   // handle supertask progress drawing here
+  // TODO: adjust this
   $subTasks = Util::getSubTasks($task);
   $numTasks = sizeof($subTasks);
   for ($i = 0; $i < sizeof($subTasks); $i++) {
@@ -87,7 +92,7 @@ else {
     $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);
     $end = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength()) / $keyspace) - 1;
     //division by 10000 is required because rprogress is saved in percents with two decimals
-    $current = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength() * $chunk->getRprogress() / 10000) / $keyspace) - 1;
+    $current = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength() * $chunk->getProgress() / 10000) / $keyspace) - 1;
     
     if ($current > $end) {
       $current = $end;
