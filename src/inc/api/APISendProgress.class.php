@@ -118,6 +118,7 @@ class APISendProgress extends APIBasic {
           $hashes = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
           if (sizeof($hashes) == 0) {
             $skipped++;
+            continue;
           }
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
