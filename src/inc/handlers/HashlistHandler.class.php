@@ -293,7 +293,7 @@ class HashlistHandler implements Handler {
           $saltSeparator = "";
         }
         rewind($file);
-        $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
         $values = array();
         $bufferCount = 0;
         while (!feof($file)) {
@@ -318,8 +318,8 @@ class HashlistHandler implements Handler {
           if ($bufferCount >= 10000) {
             $result = $FACTORIES::getHashFactory()->massSave($values);
             $added += $result->rowCount();
-            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+            $FACTORIES::getAgentFactory()->getDB()->commit();
+            $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
             $values = array();
             $bufferCount = 0;
           }
@@ -332,7 +332,7 @@ class HashlistHandler implements Handler {
         unlink($tmpfile);
         $this->hashlist->setHashCount($added);
         $FACTORIES::getHashlistFactory()->update($this->hashlist);
-        $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+        $FACTORIES::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New Hashlist created: " . $this->hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $this->hashlist)));
