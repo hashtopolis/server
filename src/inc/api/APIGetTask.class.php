@@ -64,7 +64,7 @@ class APIGetTask extends APIBasic {
           $this->sendTask(TaskUtils::getImportantTask($task, $currentTask), $assignment);
         }
       }
-      else{
+      else {
         $this->sendTask($task, $assignment);
       }
     }
@@ -124,7 +124,7 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::ACTION => PActions::GET_TASK,
         PResponseGetTask::RESPONSE => PValues::SUCCESS,
         PResponseGetTask::TASK_ID => (int)$task->getId(),
-        PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd() . " --hash-type=" . $hashlist->getHashTypeId(),
+        PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd() . " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
         PResponseGetTask::CMD_PARAMETERS => "",
         PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
         PResponseGetTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
