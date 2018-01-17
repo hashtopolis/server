@@ -980,7 +980,7 @@ CREATE TABLE `Zap` (
   `hash`       VARCHAR(1024)
                COLLATE utf8_unicode_ci NOT NULL,
   `solveTime`  INT(11)                 NOT NULL,
-  `agentId`    INT(11)                 NOT NULL,
+  `agentId`    INT(11)                 NULL,
   `hashlistId` INT(11)                 NOT NULL
 )
   ENGINE = InnoDB

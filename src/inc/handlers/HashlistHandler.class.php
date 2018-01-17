@@ -669,7 +669,7 @@ class HashlistHandler implements Handler {
       }
     }
     rewind($file);
-    $FACTORIES::getAgentFactory()->getDB()->exec("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $hashlists = Util::checkSuperHashlist($this->hashlist);
     $inSuperHashlists = array();
     $hashlist = $hashlists[0];
@@ -719,7 +719,7 @@ class HashlistHandler implements Handler {
           $notFound++;
           continue;
         }
-        else if ($hashEntry->getIsCracked() == '1') {
+        else if ($hashEntry->getIsCracked() == 1) {
           $alreadyCracked++;
           continue;
         }
@@ -786,8 +786,8 @@ class HashlistHandler implements Handler {
           $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
           $FACTORIES::getHashlistFactory()->update($ll);
         }
-        $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-        $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+        $FACTORIES::getAgentFactory()->getDB()->commit();
+        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
         $crackedIn = array();
         $bufferCount = 0;
         if (sizeof($zaps) > 0) {
@@ -826,7 +826,7 @@ class HashlistHandler implements Handler {
         $FACTORIES::getHashlistFactory()->update($superHashlist);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: $totalLines total lines, $newCracked new cracked hashes, $alreadyCracked were already cracked, $invalid invalid lines, $notFound not matching entries (" . ($endTime - $startTime) . "s)!");
     if ($tooLong > 0) {
       UI::addMessage(UI::WARN, "$tooLong entries with too long plaintext");
