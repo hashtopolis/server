@@ -75,7 +75,7 @@ else if (isset($_GET['chunk'])) {
   }
   /** @var $chunk Chunk */
   $chunk = $joined[$FACTORIES::getChunkFactory()->getModelName()][0];
-  $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($FACTORIES::getTaskWrapperFactory()->get($chunk->getTaskId())->getHashlistId()));
+  $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($FACTORIES::getTaskWrapperFactory()->get($FACTORIES::getTaskFactory()->get($chunk->getTaskId())->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
     $hashFactory = $FACTORIES::getHashFactory();
     $hashClass = \DBA\Hash::class;
