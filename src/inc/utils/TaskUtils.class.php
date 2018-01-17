@@ -140,8 +140,8 @@ class TaskUtils {
       }
       else if (time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT)) {
         // this chunk timed out, so we remove the agent from it and therefore this task is not complete yet
-        $chunk->setAgentId(null);
-        $FACTORIES::getChunkFactory()->update($chunk);
+        //$chunk->setAgentId(null);
+        //$FACTORIES::getChunkFactory()->update($chunk);
         return $task;
       }
       else {
