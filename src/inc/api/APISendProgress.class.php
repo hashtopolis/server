@@ -112,7 +112,7 @@ class APISendProgress extends APIBasic {
       $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
       switch ($format) {
         case DHashlistFormat::PLAIN:
-          $qF1 = new QueryFilterNoCase(Hash::HASH, $splitLine[0], "=");
+          $qF1 = new QueryFilter(Hash::HASH, $splitLine[0], "=");
           $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($hashlists));
           $qF3 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
@@ -161,8 +161,8 @@ class APISendProgress extends APIBasic {
           $mac_cli = $splitLine[2];
           $essid = $splitLine[3];
           $plain = array();
-          for ($i = 4; $i < sizeof($splitLine); $i++) {
-            $plain[] = $splitLine[$i];
+          for ($t = 4; $t < sizeof($splitLine); $t++) {
+            $plain[] = $splitLine[$t];
           }
           $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $plain);
           //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
