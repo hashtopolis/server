@@ -136,12 +136,14 @@ class TaskUtils {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $dispatched = 0;
+    $completed = 0;
     foreach ($chunks as $chunk) {
       if ($chunk->getAgentId() == null) {
         return $task; // at least one chunk is not assigned
       }
       else if ($chunk->getProgress() >= 10000) {
         $dispatched += $chunk->getLength();
+        $completed += $chunk->getLength();
       }
       else if (time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT)) {
         // this chunk timed out, so we remove the agent from it and therefore this task is not complete yet
@@ -153,7 +155,13 @@ class TaskUtils {
         $dispatched += $chunk->getLength();
       }
     }
-    if ($dispatched == $task->getKeyspace()) {
+    if ($completed == $task->getKeyspace()) {
+      // task is completed, set priority to 0
+      $task->setPriority(0);
+      $FACTORIES::getTaskFactory()->update($task);
+      return null;
+    }
+    else if ($dispatched == $task->getKeyspace()) {
       return null;
     }
     return $task;
@@ -232,7 +240,7 @@ class TaskUtils {
    */
   public static function getFilesOfTask($task) {
     global $FACTORIES;
-  
+    
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
     $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
     $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
