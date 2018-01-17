@@ -98,7 +98,7 @@ class APISendProgress extends APIBasic {
     
     // process solved hashes, should there be any
     $crackedHashes = $QUERY[PQuerySendProgress::CRACKED_HASHES];
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     
     $plainUpdates = array();
     $crackHashes = array();
@@ -147,8 +147,8 @@ class APISendProgress extends APIBasic {
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS1, $FACTORIES::FILTER => $qF));
             $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
             $FACTORIES::getZapFactory()->massSave($zaps);
-            $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
-            $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+            $FACTORIES::getAgentFactory()->getDB()->commit();
+            $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
             $zaps = array();
             $plainUpdates = array();
             $crackHashes = array();
@@ -209,10 +209,10 @@ class APISendProgress extends APIBasic {
       $FACTORIES::getZapFactory()->massSave($zaps);
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     //insert #Cracked hashes and update in hashlist how many hashes were cracked
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $sumCracked = 0;
     foreach ($cracked as $listId => $cracks) {
       $list = $FACTORIES::getHashlistFactory()->get($listId);
@@ -223,7 +223,7 @@ class APISendProgress extends APIBasic {
     $chunk = $FACTORIES::getChunkFactory()->get($chunk->getId());
     $chunk->setCracked($chunk->getCracked() + $sumCracked);
     $FACTORIES::getChunkFactory()->update($chunk);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     if ($chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME) {
       // the chunk was manually interrupted
