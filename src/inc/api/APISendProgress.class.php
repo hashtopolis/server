@@ -117,7 +117,7 @@ class APISendProgress extends APIBasic {
           $qF3 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
           if (sizeof($hashes) == 0) {
-            continue;
+            $skipped++;
           }
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
@@ -127,9 +127,6 @@ class APISendProgress extends APIBasic {
           else {
             // salted hashes
             $plain = str_ireplace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $crackedHash);
-          }
-          if (sizeof($hashes) == 0) {
-            $skipped++;
           }
           
           foreach ($hashes as $hash) {
