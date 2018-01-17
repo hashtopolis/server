@@ -272,6 +272,8 @@ class HashlistHandler implements Handler {
     
     switch ($format) {
       case DHashlistFormat::PLAIN:
+        //TODO: this line separation stuff reading is good, but it doesn't work when the separators are mixed in the file
+        // Use fgets and then trim to get rid of the delimiters, this is cleaner
         $buf = fread($file, 1024);
         $lineSeparators = array("\r\n", "\n", "\r");
         $lineSeparator = "";
