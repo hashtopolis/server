@@ -122,7 +122,8 @@ CREATE TABLE `AgentBinary` (
 --
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
-  (1, 'csharp', '0.45.8', 'Windows,Linux(mono),OSX(mono)', 'hashtopussy.exe');
+  (1, 'csharp', '0.45.8', 'Windows, Linux(mono), OS X(mono)', 'hashtopussy.exe'),
+  (2, 'python', '0.1.0', 'Windows, Linux, OS X', 'hashtopussy.zip');
 
 -- --------------------------------------------------------
 
@@ -1269,7 +1270,7 @@ ALTER TABLE `Agent`
 --
 ALTER TABLE `AgentBinary`
   MODIFY `agentBinaryId` INT(11) NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 2;
+  AUTO_INCREMENT = 3;
 --
 -- AUTO_INCREMENT für Tabelle `AgentError`
 --
