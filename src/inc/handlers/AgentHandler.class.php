@@ -203,7 +203,7 @@ class AgentHandler implements Handler {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $this->agent = $FACTORIES::getAgentFactory()->get($agentId);
     if ($this->agent == null) {
       UI::printError("FATAL", "Agent with ID " . $agentId . " not found!");
@@ -215,11 +215,11 @@ class AgentHandler implements Handler {
     NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
     
     if ($this->deleteDependencies($this->agent)) {
-      $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+      $FACTORIES::getAgentFactory()->getDB()->commit();
       Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
     }
     else {
-      $FACTORIES::getAgentFactory()->getDB()->query("ROLLBACK");
+      $FACTORIES::getAgentFactory()->getDB()->rollBack();
       UI::printError("FATAL", "Error occured on deletion of agent!");
     }
   }
