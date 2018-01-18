@@ -5,6 +5,7 @@
 {{IF [[newBinary]]}}
   <form action="" method="post">
     <input type="hidden" name="action" value="[[$DAgentBinaryAction::NEW_BINARY]]">
+    <input type="hidden" name="csrf" value="[[csrf]]">
     <div class="panel panel-default">
       <table class="table table-bordered table-nonfluid">
         <tr>
@@ -16,7 +17,7 @@
           <td><input type="text" name="os" class="form-control" value=""></td>
         </tr>
         <tr>
-          <th>Filename (placed in 'static' folder)</th>
+          <th>Filename (placed in 'bin' folder)</th>
           <td><input type="text" name="filename" class="form-control" value=""></td>
         </tr>
         <tr>
