@@ -165,7 +165,7 @@ class ConfigHandler implements Handler {
     foreach ($_POST as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
-        if ($CONFIG->getVal($item) == $val) {
+        if ($CONFIG->getVal($name) == $val) {
           continue; // the value was not changed, so we don't need to update it
         }
         
