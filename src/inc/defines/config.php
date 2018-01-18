@@ -172,7 +172,7 @@ class DConfig {
       case DConfig::TELEGRAM_BOT_TOKEN:
         return "Telegram bot token to use to send telegram notifications.";
       case DConfig::CONTACT_EMAIL:
-        return "Email address which will be displayed on the footer as admin contact.";
+        return "Email address which will be displayed on the footer as admin contact. (Leave empty to hide)";
     }
     return $config;
   }
