@@ -39,10 +39,10 @@
             <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[agent.getId()]]').submit();">
+            <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="document.getElementById('active[[agent.getId()]]').submit();" title="Is Active">
           </form>
         {{ELSE}}
-          <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} disabled>
+          <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} disabled title="Is Active">
         {{ENDIF}}
       </td>
     </tr>
@@ -55,11 +55,11 @@
             <input type='hidden' name='action' value='[[$DAgentAction::RENAME_AGENT]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" name='name' value="[[agent.getAgentName()]]" class='form-control'>&nbsp;&nbsp;
+            <input type="text" name='name' value="[[agent.getAgentName()]]" class='form-control' title="Machine Name">&nbsp;&nbsp;
             <input type='submit' class='btn btn-default' value='Change'>
           </form>
         {{ELSE}}
-          <input type="text" name='name' value="[[agent.getAgentName()]]" class='form-control' readonly>
+          <input type="text" name='name' value="[[agent.getAgentName()]]" class='form-control' readonly title="Machine Name">
         {{ENDIF}}
       </td>
     </tr>
@@ -115,11 +115,11 @@
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="hidden" name="action" value="[[$DAgentAction::SET_PARAMETERS]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30">
+            <input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30" title="Command Line Parameters">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
-          <input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30" readonly>
+          <input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30" readonly title="Command Line Parameters">
         {{ENDIF}}
       </td>
     </tr>
@@ -131,11 +131,11 @@
             <input type='hidden' name='action' value='[[$DAgentAction::SET_IGNORE]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="checkbox" name='ignore' value='1'{{IF [[agent.getIgnoreErrors()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agentignore').submit();">
+            <input type="checkbox" name='ignore' value='1'{{IF [[agent.getIgnoreErrors()]] == 1}} checked{{ENDIF}} onChange="document.getElementById('agentignore').submit();" title="Ignore Errors">
             Ignore <br><i>(Be careful, this might lead to endless loops!)</i>
           </form>
         {{ELSE}}
-          <input type="checkbox" name='ignore' value='1'{{IF [[agent.getIgnoreErrors()]] == 1}} checked{{ENDIF}} disabled>
+          <input type="checkbox" name='ignore' value='1'{{IF [[agent.getIgnoreErrors()]] == 1}} checked{{ENDIF}} disabled title="Ignore Errors">
         {{ENDIF}}
       </td>
     </tr>
@@ -147,11 +147,11 @@
             <input type='hidden' name='action' value='[[$DAgentAction::SET_TRUSTED]]'>
             <input type="hidden" name="agentId" value="[[agent.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="checkbox" name='trusted' value='1'{{IF [[agent.getIsTrusted()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('agenttrusted').submit();">
+            <input type="checkbox" name='trusted' value='1'{{IF [[agent.getIsTrusted()]] == 1}} checked{{ENDIF}} onChange="document.getElementById('agenttrusted').submit();" title="Trust Agent">
             Trust agent with secret data
           </form>
         {{ELSE}}
-          <input type="checkbox" name='trusted' value='1'{{IF [[agent.getIsTrusted()]] == 1}} checked{{ENDIF}} disabled>
+          <input type="checkbox" name='trusted' value='1'{{IF [[agent.getIsTrusted()]] == 1}} checked{{ENDIF}} disabled title="Trust Agent">
           Trust agent with secret data
         {{ENDIF}}
       </td>
@@ -163,7 +163,7 @@
           <input type='hidden' name='action' value='[[$DAgentAction::ASSIGN_AGENT]]'>
           <input type='hidden' name='agent' value='[[agent.getId()]]'>
           <input type="hidden" name="csrf" value="[[csrf]]">
-          <select class='form-control' name='task'>
+          <select class='form-control' name='task' title="Assignment">
             <option value="">(unassigned)</option>
             {{FOREACH task;[[allTasks]]}}
               <option value='[[task.getId()]]'{{IF [[task.getId()]] == [[currentTask]]}} selected{{ENDIF}}>[[task.getTaskName()]]</option>

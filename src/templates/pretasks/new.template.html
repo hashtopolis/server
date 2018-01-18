@@ -109,7 +109,7 @@
             {{FOREACH file;[[rules]]}}
               <tr>
                 <td>
-                  <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'rule');" title="Rule">
+                  <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'rule');" title="Rule">
                   [[file.getFilename()]]
                   {{IF [[file.getIsSecret()]] == 1}}
                     <img src="static/lock.gif" alt="Secret">
@@ -134,7 +134,7 @@
           {{FOREACH file;[[wordlists]]}}
             <tr>
               <td>
-                <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'wordlist');" title="Wordlist">
+                <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'wordlist');" title="Wordlist">
                 [[file.getFilename()]]
                 {{IF [[file.getIsSecret()]] == 1}}
                   <img src="static/lock.gif" alt="Secret">

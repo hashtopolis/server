@@ -10,19 +10,19 @@
       <table class="table table-bordered table-nonfluid">
         <tr>
           <th>Type</th>
-          <td><input type="text" name="type" class="form-control" value=""></td>
+          <td><input type="text" name="type" class="form-control" value="" title="Type"></td>
         </tr>
         <tr>
           <th>Operating Systems</th>
-          <td><input type="text" name="os" class="form-control" value=""></td>
+          <td><input type="text" name="os" class="form-control" value="" title="Operating Systems"></td>
         </tr>
         <tr>
           <th>Filename (placed in 'bin' folder)</th>
-          <td><input type="text" name="filename" class="form-control" value=""></td>
+          <td><input type="text" name="filename" class="form-control" value="" title="Filename"></td>
         </tr>
         <tr>
           <th>Version</th>
-          <td><input type="text" name="version" class="form-control" value=""></td>
+          <td><input type="text" name="version" class="form-control" value="" title="Version"></td>
         </tr>
         <tr>
           <td colspan="2">
@@ -42,19 +42,19 @@
       <table class="table table-bordered table-nonfluid">
         <tr>
           <th>Type</th>
-          <td><input type="text" name="type" class="form-control" value="[[bin.getType()]]"></td>
+          <td><input type="text" name="type" class="form-control" value="[[bin.getType()]]" title="Type"></td>
         </tr>
         <tr>
           <th>Operating Systems</th>
-          <td><input type="text" name="os" class="form-control" value="[[bin.getOperatingSystems()]]"></td>
+          <td><input type="text" name="os" class="form-control" value="[[bin.getOperatingSystems()]]" title="Operating Systems"></td>
         </tr>
         <tr>
           <th>Filename (placed in 'static' folder)</th>
-          <td><input type="text" name="filename" class="form-control" value="[[bin.getFilename()]]"></td>
+          <td><input type="text" name="filename" class="form-control" value="[[bin.getFilename()]]" title="Filename"></td>
         </tr>
         <tr>
-          <th>Current Version (update here if you place a new binary)</th>
-          <td><input type="text" name="version" class="form-control" value="[[bin.getVersion()]]"></td>
+          <th>Current Version (update here if you placed a new binary)</th>
+          <td><input type="text" name="version" class="form-control" value="[[bin.getVersion()]]" title="Current Version"></td>
         </tr>
         <tr>
           <td colspan="2">

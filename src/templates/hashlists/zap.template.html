@@ -31,7 +31,7 @@
 				<td>Hashlist format:</td>
 				<td>
 					[[Util::getStaticArray([[list.getVal('hashlist').getFormat()]], 'formats')]]<br>
-					Field separator: <input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1"><br>
+					Field separator: <input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1" title="Separator"><br>
 					(Accepted format is
 					{{IF [[list.getVal('hashlist').getFormat()]] == 0}}
 						hash[:salt]:plaintext
@@ -48,10 +48,10 @@
 			<tr>
 				<td>Hash source</td>
 				<td>
-					<input type="radio" name="source" onChange="sourceChange(this.value);" value="paste"> Paste<br>
-					<input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked> Upload<br>
-					<input type="radio" name="source" onChange="sourceChange(this.value);" value="import"> Import<br>
-					<input type="radio" name="source" onChange="sourceChange(this.value);" value="url"> URL download
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="paste" title="Pasting"> Paste<br>
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked title="Upload"> Upload<br>
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="import" title="Import"> Import<br>
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="url" title="Download"> URL download
 				</td>
       </tr>
       <tr id="pasteLine" style="display: none;">
@@ -69,7 +69,7 @@
       <tr id="importLine" style="display: none;">
         <td>File to import:</td>
         <td>
-          <select class='form-control' name="importfile">
+          <select class='form-control' name="importfile" title="Import File">
             {{FOREACH impfile;[[impfiles]]}}
               <option value="[[impfile.getVal('file')]]">[[impfile.getVal('file')]]</option>
             {{ENDFOREACH}}
@@ -82,13 +82,13 @@
 			<tr id="downloadLine" style="display: none;">
 				<td>File URL:</td>
 				<td>
-					<input type="text" class='form-control' name="url" size="35">
+					<input type="text" class='form-control' name="url" size="35" title="Download URL">
 				</td>
 			</tr>
         	<tr>
         		<td>Conflict resolution:</td>
         		<td>
-        			<input type="checkbox" name="overwrite" value="1"> Overwrite already cracked hashes
+        			<input type="checkbox" name="overwrite" value="1" title="Overwrite"> Overwrite already cracked hashes
         		</td>
         	</tr>
         	<tr>

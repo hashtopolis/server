@@ -61,11 +61,11 @@
 			}
 
 			function checkAll(formname, checktoggle) {
-				var checkboxes = new Array();
+				var checkboxes = [];
 				checkboxes = document.getElementById(formname)
 						.getElementsByTagName('input');
 				for (var i = 0; i < checkboxes.length; i++) {
-					if (checkboxes[i].type == 'checkbox') {
+					if (checkboxes[i].type === 'checkbox') {
 						checkboxes[i].checked = checktoggle;
 					}
 				}

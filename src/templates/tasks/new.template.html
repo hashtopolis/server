@@ -163,7 +163,7 @@
             {{FOREACH file;[[rules]]}}
               <tr>
                 <td>
-                  <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                     <img src="static/lock.gif" alt="Secret">
@@ -188,7 +188,7 @@
           {{FOREACH file;[[wordlists]]}}
             <tr>
               <td>
-                <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
                 [[file.getVal('file').getFilename()]]
                 {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                   <img src="static/lock.gif" alt="Secret">

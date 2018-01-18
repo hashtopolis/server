@@ -29,7 +29,7 @@
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::RENAME_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
-            <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]">
+            <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]" title="Task Name">
             <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="submit" class='btn btn-default' value="Change">
           </form>
@@ -52,7 +52,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_TIME]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getChunkTime()]]">
+            <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getChunkTime()]]" title="Chunk Length">
             seconds
             <input type="submit" class='btn btn-default' value="Set">
           </form>
@@ -68,7 +68,7 @@
           <input type="hidden" name="action" value="[[$DTaskAction::SET_COLOR]]">
           <input type="hidden" name="task" value="[[task.getId()]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
-          #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]">
+          #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]" title="Color">
           {{IF [[login.getLevel()]] >= 20}}
             <input type="submit" class='btn btn-default' value="Set">
           {{ENDIF}}
@@ -97,7 +97,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_PRIORITY]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="priority" size="4" value="[[task.getPriority()]]">
+            <input type="text" class='form-control' name="priority" size="4" value="[[task.getPriority()]]" title="Priority">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
@@ -113,7 +113,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_CPU_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <select name="isCpu" class="form-control">
+            <select name="isCpu" class="form-control" title="CPU Only">
               <option value="0"{{IF [[task.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
               <option value="1"{{IF [[task.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
             </select>
@@ -136,7 +136,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_SMALL_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <select name="isSmall" class="form-control">
+            <select name="isSmall" class="form-control" title="Small Task">
               <option value="0"{{IF [[task.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
               <option value="1"{{IF [[task.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
             </select>
@@ -322,7 +322,7 @@
               <input type="hidden" name="action" value="[[$DTaskAction::SET_BENCHMARK]]">
               <input type="hidden" name="agent" value="[[agent.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8">
+              <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8" title="Benchmark">
               <input type="submit" class='btn btn-default' value="Set">
             </form>
           {{ELSE}}
@@ -381,7 +381,7 @@
               <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <select class='form-control' name="agent">
+              <select class='form-control' name="agent" title="Assign">
                 {{FOREACH agent;[[assignAgents]]}}
                   <option value='[[agent.getId()]]'>[[agent.getId()]]
                   {{IF [[agent.getAgentName()]] != ""}}
