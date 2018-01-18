@@ -1,7 +1,5 @@
 <?php
 
-use DBA\OrderFilter;
-
 class APIDownloadBinary extends APIBasic {
   public function execute($QUERY = array()) {
     global $FACTORIES;

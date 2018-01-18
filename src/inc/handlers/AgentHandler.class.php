@@ -127,13 +127,13 @@ class AgentHandler implements Handler {
       UI::printError("ERROR", "Invalid Agent Binary!");
     }
     $filename = $agentBinary->getFilename();
-    if (!file_exists(dirname(__FILE__) . "/../../static/" . $filename)) {
+    if (!file_exists(dirname(__FILE__) . "/../../bin/" . $filename)) {
       UI::printError("ERROR", "Agent Binary not present on server!");
     }
     header("Content-Type: application/force-download");
     header("Content-Description: " . $filename);
     header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
-    echo file_get_contents(dirname(__FILE__) . "/../../static/" . $filename);
+    echo file_get_contents(dirname(__FILE__) . "/../../bin/" . $filename);
     die();
   }
   
