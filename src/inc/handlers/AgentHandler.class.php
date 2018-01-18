@@ -3,6 +3,7 @@
 use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\AgentError;
+use DBA\AgentZap;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
@@ -261,6 +262,8 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
+    $FACTORIES::getAgentZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
