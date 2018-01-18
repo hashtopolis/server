@@ -90,7 +90,7 @@ class APIGetChunk extends APIBasic {
     }
     
     // find a chunk to assign
-    $qF1 = new ComparisonFilter(Chunk::PROGRESS, Chunk::LENGTH, "<");
+    $qF1 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $qF2 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SKIP, "ASC");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
