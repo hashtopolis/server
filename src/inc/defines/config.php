@@ -52,6 +52,7 @@ class DConfig {
   const EMAIL_SENDER       = "emailSender";
   const TELEGRAM_BOT_TOKEN = "telegramBotToken";
   const CONTACT_EMAIL      = "contactEmail";
+  const VOUCHER_DELETION   = "voucherDeletion";
   
   
   /**
@@ -109,6 +110,8 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::CONTACT_EMAIL:
         return DConfigType::EMAIL;
+      case DConfig::VOUCHER_DELETION:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -173,6 +176,8 @@ class DConfig {
         return "Telegram bot token to use to send telegram notifications.";
       case DConfig::CONTACT_EMAIL:
         return "Email address which will be displayed on the footer as admin contact. (Leave empty to hide)";
+      case DConfig::VOUCHER_DELETION:
+        return "Vouchers can be used multiple times and don't get deleted automatically.";
     }
     return $config;
   }

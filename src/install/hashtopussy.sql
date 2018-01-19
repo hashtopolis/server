@@ -262,7 +262,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (28, 3, 'maxHashlistSize', '5000000'),
   (29, 4, 'hideImportMasks', '1'),
   (30, 5, 'telegramBotToken', ''),
-  (31, 5, 'contactEmail', '');
+  (31, 5, 'contactEmail', ''),
+  (32, 5, 'voucherDeletion', '0');
 
 -- --------------------------------------------------------
 
