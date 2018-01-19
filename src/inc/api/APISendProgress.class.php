@@ -348,7 +348,7 @@ class APISendProgress extends APIBasic {
         }
         
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, Util::arrayOfIds($hashlists));
-        $qF2 = new QueryFilter(Zap::ZAP_ID, $agentZap->getLastZapId(), ">");
+        $qF2 = new QueryFilter(Zap::ZAP_ID, ($agentZap->getLastZapId() == null) ? 0 : $agentZap->getLastZapId(), ">");
         $qF3 = new QueryFilter(Zap::AGENT_ID, $this->agent->getId(), "<>");
         $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
         foreach ($zaps as $zap) {
