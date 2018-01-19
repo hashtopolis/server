@@ -46,6 +46,7 @@ class DConfig {
   const DONATE_OFF        = "donateOff";
   const HIDE_IMPORT_MASKS = "hideImportMasks";
   const HASHES_PER_PAGE   = "hashesPerPage";
+  const HIDE_IP_INFO      = "hideIpInfo";
   
   // Section: Server
   const BASE_URL           = "baseUrl";
@@ -115,6 +116,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::HASHES_PER_PAGE:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::HIDE_IP_INFO:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -183,6 +186,8 @@ class DConfig {
         return "Vouchers can be used multiple times and don't get deleted automatically.";
       case DConfig::HASHES_PER_PAGE:
         return "Number of hashes per page on hashes view.";
+      case DConfig::HIDE_IP_INFO:
+        return "Hide IP information of agents.";
     }
     return $config;
   }

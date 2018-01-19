@@ -264,7 +264,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (30, 5, 'telegramBotToken', ''),
   (31, 5, 'contactEmail', ''),
   (32, 5, 'voucherDeletion', '0'),
-  (33, 4, 'hashesPerPage', '1000');
+  (33, 4, 'hashesPerPage', '1000'),
+  (34, 4, 'hideIpInfo', '0');
 
 -- --------------------------------------------------------
 

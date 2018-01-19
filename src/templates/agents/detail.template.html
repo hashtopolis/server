@@ -178,7 +178,12 @@
       <td>
         Action: [[agent.getLastAct()]]<br>
         Time: [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
-        IP: <code>[[agent.getLastIp()]]</code>
+        IP:
+        {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
+          <code>[[agent.getLastIp()]]</code>
+        {{ELSE}}
+          <code>Hidden</code>
+        {{ENDIF}}
       </td>
     </tr>
     <tr>
