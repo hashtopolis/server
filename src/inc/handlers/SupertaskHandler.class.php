@@ -43,6 +43,7 @@ class SupertaskHandler implements Handler {
     $masks = $_POST['masks'];
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_POST['crackerBinaryTypeId']);
     $isSmall = intval($_POST['isSmall']);
+    $isCpu = intval($_POST['isCpu']);
     if (strlen($name) == 0 || strlen($masks) == 0) {
       UI::addMessage(UI::ERROR, "Name or masks is empty!");
       return;
@@ -53,6 +54,9 @@ class SupertaskHandler implements Handler {
     }
     if ($isSmall != 0 && $isSmall != 1) {
       $isSmall = 0;
+    }
+    else if ($isCpu != 0 && $isCpu != 1) {
+      $isCpu = 0;
     }
     
     $masks = explode("\n", str_replace("\r\n", "\n", $masks));
@@ -103,8 +107,7 @@ class SupertaskHandler implements Handler {
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
       
-      //TODO: make configurable if cpu only task etc.
-      $pretask = new Pretask(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), "", $isSmall, 0, 0, $priority, 1, $crackerBinaryType->getId());
+      $pretask = new Pretask(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), "", $isSmall, $isCpu, 0, $priority, 1, $crackerBinaryType->getId());
       $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
       $preTasks[] = $pretask;
       $priority--;
@@ -206,7 +209,7 @@ class SupertaskHandler implements Handler {
     
     $name = htmlentities($_POST['name'], ENT_QUOTES, "UTF-8");
     $tasks = $_POST['task'];
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $supertask = new Supertask(0, $name);
     $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
     foreach ($tasks as $t) {
@@ -214,11 +217,10 @@ class SupertaskHandler implements Handler {
       if ($pretask === null) {
         continue;
       }
-      // TODO: check if all pretasks have the same cracker binary type
       $supertaskPretask = new SupertaskPretask(0, $supertask->getId(), $pretask->getId());
       $FACTORIES::getSupertaskPretaskFactory()->save($supertaskPretask);
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     UI::addMessage(UI::SUCCESS, "New supertask created successfully!");
   }
   

@@ -2,7 +2,8 @@
 
 class APIDownloadBinary extends APIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
     
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
@@ -14,23 +15,8 @@ class APIDownloadBinary extends APIBasic {
     switch ($QUERY[PQueryDownloadBinary::BINARY_TYPE]) {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
-        $filename = "7zr";
-        switch ($this->agent->getOs()) {
-          case DOperatingSystem::LINUX:
-            $filename .= ".unix";
-            break;
-          case DOperatingSystem::WINDOWS:
-            $filename .= ".exe";
-            break;
-          case DOperatingSystem::OSX:
-            $filename .= ".osx";
-            break;
-        }
-        //TODO: build url based on config value
-        $url = explode("/", $_SERVER['REQUEST_URI']);
-        unset($url[sizeof($url) - 1]);
-        unset($url[sizeof($url) - 1]);
-        $path = Util::buildServerUrl() . implode("/", $url) . "/static/" . $filename;
+        $filename = "7zr" . Util::getFileExtension($this->agent->getOs());
+        $path = Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
@@ -45,20 +31,7 @@ class APIDownloadBinary extends APIBasic {
         }
         $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
         
-        // TODO: extension building should be somewhere in utils
-        switch ($this->agent->getOs()) {
-          case DOperatingSystem::LINUX:
-            $ext = ".unix";
-            break;
-          case DOperatingSystem::WINDOWS:
-            $ext = ".exe";
-            break;
-          case DOperatingSystem::OSX:
-            $ext = ".osx";
-            break;
-          default:
-            $ext = "";
-        }
+        $ext = Util::getFileExtension($this->agent->getOs());
         $this->sendResponse(array(
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,

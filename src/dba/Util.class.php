@@ -4,7 +4,8 @@ namespace DBA;
 
 class Util {
   /**
-   * TODO: document me
+   * Used to cast database objects into their corresponding type
+   *
    * @param $obj
    * @param $to_class
    * @return mixed|null
@@ -28,7 +29,7 @@ class Util {
   }
   
   /**
-   * TODO: Document me
+   * Used to create the full select string of a table query
    * @param $table string
    * @param $dict array
    * @return string

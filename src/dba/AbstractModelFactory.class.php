@@ -345,7 +345,7 @@ abstract class AbstractModelFactory {
       return $this->getFromDB($pk);
     }
     else {
-      // ToDo: Implement some memecached magic shit
+      // TODO: Implement caching
       return $this->getFromDB($pk);
     }
   }

@@ -191,7 +191,6 @@ class HashlistHandler implements Handler {
       }
       else if ($accessGroupId != $list->getAccessGroupId()) {
         UI::printError("ERROR", "You cannot create superhashlists from hashlists which belong to different access groups");
-        //TODO: maybe here create a new generic access group which then the user can decide which agents/users he would like to assign. But this creates problems when the usere itself cannot manage groups
       }
     }
     
@@ -242,23 +241,23 @@ class HashlistHandler implements Handler {
     $this->hashlist = $FACTORIES::getHashlistFactory()->save($this->hashlist);
     
     $source = $_POST["source"];
-    $sourcedata = "";
+    $dataSource = "";
     switch ($source) {
       case "paste":
-        $sourcedata = $_POST["hashfield"];
+        $dataSource = $_POST["hashfield"];
         break;
       case "upload":
-        $sourcedata = $_FILES["hashfile"];
+        $dataSource = $_FILES["hashfile"];
         break;
       case "import":
-        $sourcedata = $_POST["importfile"];
+        $dataSource = $_POST["importfile"];
         break;
       case "url":
-        $sourcedata = $_POST["url"];
+        $dataSource = $_POST["url"];
         break;
     }
     $tmpfile = dirname(__FILE__) . "/../../tmp/hashlist_" . $this->hashlist->getId();
-    if (!Util::uploadFile($tmpfile, $source, $sourcedata) && file_exists($tmpfile)) {
+    if (!Util::uploadFile($tmpfile, $source, $dataSource) && file_exists($tmpfile)) {
       UI::printError("ERROR", "Failed to process file!");
     }
     else if (!file_exists($tmpfile)) {
@@ -272,22 +271,11 @@ class HashlistHandler implements Handler {
     
     switch ($format) {
       case DHashlistFormat::PLAIN:
-        //TODO: this line separation stuff reading is good, but it doesn't work when the separators are mixed in the file
-        // Use fgets and then trim to get rid of the delimiters, this is cleaner
-        $buf = fread($file, 1024);
-        $lineSeparators = array("\r\n", "\n", "\r");
-        $lineSeparator = "";
-        foreach ($lineSeparators as $sep) {
-          if (strpos($buf, $sep) !== false) {
-            $lineSeparator = $sep;
-            break;
-          }
-        }
         if ($salted) {
           // find out if the first line contains field separator
           rewind($file);
-          $bufline = stream_get_line($file, 1024, $lineSeparator);
-          if (strpos($bufline, $saltSeparator) === false && $lineSeparator != "") {
+          $bufline = stream_get_line($file, 1024);
+          if (strpos($bufline, $saltSeparator) === false) {
             UI::printError("ERROR", "Salted hashes separator not found in file!");
           }
         }
@@ -299,7 +287,7 @@ class HashlistHandler implements Handler {
         $values = array();
         $bufferCount = 0;
         while (!feof($file)) {
-          $line = stream_get_line($file, 1024, $lineSeparator);
+          $line = stream_get_line($file, 1024);
           if (strlen($line) == 0) {
             continue;
           }

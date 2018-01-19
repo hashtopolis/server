@@ -39,7 +39,8 @@ class UsersHandler implements Handler {
   
   private function create() {
     /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $LOGIN, $CONFIG;
     
     $username = htmlentities($_POST['username'], ENT_QUOTES, "UTF-8");
     $email = $_POST['email'];
@@ -67,10 +68,10 @@ class UsersHandler implements Handler {
     $newHash = Encryption::passwordHash($newPass, $newSalt);
     $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
     $FACTORIES::getUserFactory()->save($user);
-    //$tmpl = new Template("email.creation");
-    //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
-    //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
-    //TODO: send proper email for created user
+    
+    $tmpl = new Template("email/creation");
+    $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL));
+    Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
     
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New User created: " . $user->getUsername());
     $payload = new DataSet(array(DPayloadKeys::USER => $user));

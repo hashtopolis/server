@@ -187,13 +187,11 @@ abstract class PValues {
   const ERROR   = "ERROR";
 }
 
-// TODO: this must be in db for the cracker types
 class PValuesDownloadBinaryType extends PValues {
   const EXTRACTOR = "7zr";
   const CRACKER   = "cracker";
 }
 
-// TODO: this must be modeled otherwise to reflect other benchmark types for new crackers
 class PValuesBenchmarkType extends PValues {
   const SPEED_TEST = "speed";
   const RUN_TIME   = "run";

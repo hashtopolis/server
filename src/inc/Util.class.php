@@ -32,16 +32,6 @@ use DBA\Zap;
  *         Bunch of useful static functions.
  */
 class Util {
-  /**
-   * TODO: document me
-   * @param $obj
-   * @param $to_class
-   * @return mixed|null
-   */
-  public static function cast($obj, $to_class) {
-    return DBA\Util::cast($obj, $to_class);
-  }
-  
   public static function isYubikeyEnabled() {
     /** @var $CONFIG DataSet */
     global $CONFIG;
@@ -853,6 +843,23 @@ class Util {
       $msg = "File already exists!";
     }
     return array($success, $msg);
+  }
+  
+  public static function getFileExtension($os) {
+    switch ($os) {
+      case DOperatingSystem::LINUX:
+        $ext = ".unix";
+        break;
+      case DOperatingSystem::WINDOWS:
+        $ext = ".exe";
+        break;
+      case DOperatingSystem::OSX:
+        $ext = ".osx";
+        break;
+      default:
+        $ext = "";
+    }
+    return $ext;
   }
   
   /**
