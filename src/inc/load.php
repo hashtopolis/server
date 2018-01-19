@@ -45,7 +45,6 @@ foreach ($directories as $directory) {
   }
 }
 
-include(dirname(__FILE__) . "/defines.php"); // TODO: remove this when all defines were split into the subdirectory
 include(dirname(__FILE__) . "/protocol.php");
 
 // include DBA
