@@ -353,8 +353,8 @@
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[agent.getLastAct()]] > 0}}
-            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastAct()]])]]
+          {{IF [[agent.getLastTime()]] > 0}}
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]
           {{ELSE}}
             ---
           {{ENDIF}}
