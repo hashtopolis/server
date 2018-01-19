@@ -858,7 +858,7 @@ class Util {
   public static function getFileExtension($os) {
     switch ($os) {
       case DOperatingSystem::LINUX:
-        $ext = ".unix";
+        $ext = ".bin";
         break;
       case DOperatingSystem::WINDOWS:
         $ext = ".exe";
