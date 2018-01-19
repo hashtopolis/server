@@ -46,7 +46,7 @@ else if (isset($_GET['edit']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) 
   $binary = $FACTORIES::getCrackerBinaryFactory()->get($_GET['id']);
   if ($binary !== null) {
     $OBJECTS['binary'] = $binary;
-    $TEMPLATE = new Template("crackers/edit");
+    $TEMPLATE = new Template("crackers/editVersion");
     $MENU->setActive("crackers_edit");
     $OBJECTS['binaryType'] = $FACTORIES::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
