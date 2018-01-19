@@ -147,6 +147,7 @@ if (isset($_GET['id'])) {
     $timeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
   }
   $OBJECTS['timeSpent'] = $timeSpent;
+  // TODO: maybe make this more accurate by going over the last few chunks in case agents were added later
   if ($task->getKeyspace() != 0 && ($cProgress / $task->getKeyspace()) != 0) {
     $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
   }
