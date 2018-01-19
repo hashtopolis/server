@@ -23,21 +23,6 @@ class APIGetChunk extends APIBasic {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid task ID!");
     }
     
-    // TODO: check for cracker update here
-    // check if the agent should be notified about a hashcat update
-    /*$oF = new OrderFilter(HashcatRelease::TIME, "DESC LIMIT 1");
-    $hashcat = $FACTORIES::getHashcatReleaseFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
-    if ($hashcat != null) {
-      if ($agent->getHcVersion() != $hashcat->getVersion()) {
-        API::sendResponse(array(
-            PResponseChunk::ACTION => PActions::CHUNK,
-            PResponseChunk::RESPONSE => PValues::SUCCESS,
-            PResponseChunk::CHUNK_STATUS => PValuesChunkType::HASHCAT_UPDATE
-          )
-        );
-      }
-    }*/
-    
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -78,7 +63,7 @@ class APIGetChunk extends APIBasic {
     $bestTask = TaskUtils::getBestTask($this->agent);
     if ($bestTask == null) {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
-      if (!Util::agentHasAccessToTask($task, $this->agent)) {
+      if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
     }

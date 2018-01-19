@@ -5,6 +5,7 @@
  */
 
 use DBA\Chunk;
+use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 
@@ -17,7 +18,7 @@ if (!$LOGIN->isLoggedin()) {
   die("No access!");
 }
 
-//get image dimenstions
+//get image dimensions
 $size = array(intval($_GET["x"]), intval($_GET["y"]));
 if ($size[0] == 0 || $size[0] == 0) {
   die("INV size!");
@@ -32,6 +33,8 @@ $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId(
 if ($taskWrapper == null) {
   die("Inconsistency on task!");
 }
+
+//TODO: check if taskwrapper needs also to be check separately when accessing a supertask image
 
 //create image
 $image = imagecreatetruecolor($size[0], $size[1]);
@@ -54,17 +57,18 @@ $taskid = $task->getId();
 
 if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
   // handle supertask progress drawing here
-  // TODO: adjust this
-  $subTasks = Util::getSubTasks($task);
-  $numTasks = sizeof($subTasks);
-  for ($i = 0; $i < sizeof($subTasks); $i++) {
-    $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
+  $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+  $oF = new OrderFilter(Task::PRIORITY, "DESC");
+  $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+  $numTasks = sizeof($tasks);
+  for ($i = 0; $i < sizeof($tasks); $i++) {
+    $qF = new QueryFilter(Chunk::TASK_ID, $tasks[$i]->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $progress = 0;
     foreach ($chunks as $chunk) {
       $progress += $chunk->getProgress();
     }
-    $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
+    $qF = new QueryFilter(Chunk::TASK_ID, $tasks[$i]->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $cracked = 0;
     foreach ($chunks as $chunk) {
@@ -73,10 +77,10 @@ if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
     if ($cracked > 0) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
     }
-    else if ($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
+    else if ($tasks[$i]->getKeyspace() > 0 && $progress >= $tasks[$i]->getKeyspace()) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $blue);
     }
-    else if ($subTasks[$i]->getKeyspace() > 0 && $progress > 0) {
+    else if ($tasks[$i]->getKeyspace() > 0 && $progress > 0) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $yellow);
     }
     else {

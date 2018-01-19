@@ -147,79 +147,6 @@ class Util {
   }
   
   /**
-   * Searches for the best task which can be assigned to a given agent. It respects all configuration for cpuOnly tasks,
-   * trusted states, etc.
-   * @param $agent Agent
-   * @param $priority int
-   * @param int $supertask sets if a the task where it should be searched for the best task is a supertask
-   * @return Task current best task or null if there is no optimal task (priority bigger than the given limit) available
-   */
-  public static function getBestTask($agent, $priority = 0, $supertask = 0) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
-    
-    $priorityFilter = new QueryFilter(Task::PRIORITY, $priority, ">");
-    $typeFilter = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "<"); // task has to be either a supertask or a normal task
-    if ($supertask > 0) {
-      // this is the case when we want to find the best subtask for a given supertask
-      $typeFilter = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "=");
-    }
-    $trustedFilter = new QueryFilter(Hashlist::SECRET, $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
-    $cpuFilter = new QueryFilter(Task::IS_CPU_TASK, $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
-    $crackedFilter = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<", $FACTORIES::getHashlistFactory());
-    $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
-    $descOrder = new OrderFilter(Task::PRIORITY, "DESC");
-    
-    $joinFilter = array($hashlistIDJoin);
-    $queryFilter = array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter, $typeFilter);
-    if ($supertask > 0) {
-      $joinFilter[] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-      $queryFilter[] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
-    }
-    
-    // we first load all tasks and go down by priority and take the first one which matches completely
-    
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $queryFilter, $FACTORIES::JOIN => $joinFilter, $FACTORIES::ORDER => array($descOrder)));
-    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
-      /** @var $task Task */
-      /** @var $hashlist Hashlist */
-      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
-      $hashlist = $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$i];
-      
-      if (!Util::agentHasAccessToTask($task, $agent)) {
-        continue; // the client has not enough access to all required files
-      }
-      else if (Util::taskIsFullyDispatched($task, $agent, $hashlist)) {
-        continue; // task is fully dispatched
-      }
-      
-      // if we want to check single assignments we should make sure that the assigned one is not blocking when he becomes inactive.
-      // so if an agent is inactive on a small task we unassign him that we can assign another one to it
-      if ($task->getIsSmall()) {
-        $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-        $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
-        $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-        $removed = 0;
-        for ($z = 0; $z < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()]); $z++) {
-          /** @var Agent $ag */
-          $ag = $joined[$FACTORIES::getAgentFactory()->getModelName()][$z];
-          if (time() - $ag->getLastTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
-            $FACTORIES::getAssignmentFactory()->delete($joined[$FACTORIES::getAssignmentFactory()->getModelName()][$z]); // delete timed out
-            $removed++;
-          }
-        }
-        if ($removed < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()])) {
-          continue; // still some assigned
-        }
-      }
-      
-      // if one matches now, it's the best choice (hopefully)
-      return $task;
-    }
-    return null;
-  }
-  
-  /**
    * @param $task Task
    * @return array
    */
@@ -460,186 +387,6 @@ class Util {
       }
     }
     return true;
-  }
-  
-  /**
-   * @param $task Task
-   * @return Task
-   */
-  public static function getSupertaskOfTask($task) {
-    global $FACTORIES;
-    
-    $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::TASK_ID);
-    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    if (sizeof($joined[$FACTORIES::getTaskFactory()->getModelName()]) == 0) {
-      return null;
-    }
-    return $joined[$FACTORIES::getTaskFactory()->getModelName()][0];
-  }
-  
-  /**
-   * @param $task Task
-   * @param $agent Agent
-   * @param $hashlist Hashlist
-   * @return bool
-   */
-  public static function taskIsFullyDispatched($task, $agent, $hashlist) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
-    
-    $testTasks = Util::getSubTasks($task);
-    
-    $fullCount = 0;
-    foreach ($testTasks as $t) {
-      // now check if the task is fully dispatched
-      $qF = new QueryFilter(Chunk::TASK_ID, $t->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $dispatched = 0;
-      $sumProgress = 0;
-      foreach ($chunks as $chunk) {
-        $sumProgress += $chunk->getProgress();
-        $isTimeout = false;
-        // if the chunk times out, we need to remove the agent from it, so it can be done by others
-        if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-          $isTimeout = true;
-        }
-        
-        // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
-        if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId() || $chunk->getAgentId() == null)) {
-          // nothing as it does not count to the dispatched sum
-        }
-        else {
-          $dispatched += $chunk->getLength();
-        }
-      }
-      if ($t->getKeyspace() != 0 && $dispatched >= $t->getKeyspace()) {
-        // task is fully dispatched
-        $fullCount++;
-        continue;
-      }
-      
-      if (($t->getKeyspace() <= $sumProgress && $t->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
-        //task is finished
-        $t->setPriority(0);
-        //TODO: make massUpdate
-        foreach ($chunks as $chunk) {
-          $chunk->setProgress($chunk->getLength());
-          $chunk->setRprogress(10000);
-          $FACTORIES::getChunkFactory()->update($chunk);
-        }
-        $t->setProgress($t->getKeyspace());
-        $FACTORIES::getTaskFactory()->update($t);
-        $fullCount++;
-        continue;
-      }
-    }
-    if ($fullCount >= sizeof($testTasks)) {
-      return true;
-    }
-    return false;
-  }
-  
-  /**
-   * Determines if an agent can be granted access to the given task, so if the agent has trusted if at least one file
-   * of the task or the hashlist requires it.
-   * @param $task Task
-   * @param $agent Agent
-   * @return bool true if access to task can be given to agent
-   */
-  public static function agentHasAccessToTask($task, $agent) {
-    global $FACTORIES;
-    
-    // check if the agent has rights to get this
-    $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($task->getHashlistId()));
-    foreach ($hashlists as $hashlist) {
-      if ($hashlist->getSecret() > $agent->getIsTrusted()) {
-        return false;
-      }
-    }
-    
-    $testTasks = Util::getSubTasks($task);
-    foreach ($testTasks as $t) {
-      $qF = new QueryFilter(TaskFile::TASK_ID, $t->getId(), "=");
-      $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
-      $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-      foreach ($joinedFiles[$FACTORIES::getFileFactory()->getModelName()] as $file) {
-        /** @var $file File */
-        if ($file->getSecret() > $agent->getIsTrusted()) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-  
-  /**
-   * @param $task Task
-   * @return Task[]
-   */
-  public static function getSubTasks($task) {
-    global $FACTORIES;
-    
-    $testTasks = array($task);
-    if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
-      $qF = new QueryFilter(TaskTask::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
-      $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-      $oF = new OrderFilter(Task::PRIORITY, "DESC");
-      $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF, $FACTORIES::ORDER => $oF));
-      $testTasks = array();
-      foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $t) {
-        $testTasks[] = $t;
-      }
-    }
-    return $testTasks;
-  }
-  
-  /**
-   * Tests if this task can be used to run for this agent. It checks if there are incomplete chunks available which are currently
-   * not worked on, or if there is keyspace left which needs to be dispatched.
-   * @param $task Task
-   * @param $agent Agent
-   * @return bool true if task has at least one chunk left to give to the agent
-   */
-  public static function taskCanBeUsed($task, $agent) {
-    global $FACTORIES;
-    
-    if (!self::agentHasAccessToTask($task, $agent)) {
-      return false;
-    }
-    
-    // check if the task is not needed anymore because all hashes already got cracked
-    $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-    if ($hashlist->getCracked() >= $hashlist->getHashCount()) {
-      if ($task->getPriority() > 0) {
-        $task->setPriority(0);
-        $FACTORIES::getTaskFactory()->update($task);
-      }
-      return false;
-    }
-    
-    if ($task->getKeyspace() == 0) {
-      return true;
-    }
-    
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $dispatched = 0;
-    $uncompletedChunk = null;
-    foreach ($chunks as $chunk) {
-      $dispatched += $chunk->getLength();
-      if ($uncompletedChunk == null && 10000 != $chunk->getRprogress() && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())) {
-        $uncompletedChunk = $chunk;
-      }
-    }
-    if ($task->getKeyspace() > $dispatched) {
-      return true; // task is not fully dispatched
-    }
-    else if ($uncompletedChunk != null) {
-      return true; // there is at least one chunk with no agent or the agent which is requesting
-    }
-    
-    return false;
   }
   
   /**
@@ -1214,9 +961,11 @@ class Util {
    * @return true on success, false on failure
    */
   public static function sendMail($address, $subject, $text) {
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+    
     $header = "Content-type: text/html; charset=utf8\r\n";
-    // TODO: make sender email configurable
-    $header .= "From: Hashtopussy <noreply@hashtopussy>\r\n";
+    $header .= "From: Hashtopussy <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
     if (!mail($address, $subject, $text, $header)) {
       return false;
     }
@@ -1237,21 +986,6 @@ class Util {
       $result .= $charset[mt_rand(0, strlen($charset) - 1)];
     }
     return $result;
-  }
-  
-  /**
-   * Is used by DBA
-   * TODO: this function is not used anymore, can be removed after checking that DBA\Util::createPrefixedString() is used.
-   * @param $table
-   * @param $dict
-   * @return string
-   */
-  public static function createPrefixedString($table, $dict) {
-    $arr = array();
-    foreach ($dict as $key => $val) {
-      $arr[] = "`" . $table . "`" . "." . "`" . $key . "`" . " AS `" . $table . "." . $key . "`";
-    }
-    return implode(", ", $arr);
   }
   
   /**
