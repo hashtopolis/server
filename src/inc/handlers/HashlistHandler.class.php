@@ -288,7 +288,7 @@ class HashlistHandler implements Handler {
         $values = array();
         $bufferCount = 0;
         while (!feof($file)) {
-          $line = stream_get_line($file, 1024);
+          $line = rtrim(fgets($file));
           if (strlen($line) == 0) {
             continue;
           }
