@@ -146,7 +146,7 @@ class Util {
     $cracked = 0;
     $maxTime = 0;
     foreach ($chunks as $chunk) {
-      $progress += $chunk->getProgress();
+      $progress += $chunk->getCheckpoint() - $chunk->getSkip();
       $cracked += $chunk->getCracked();
       if ($chunk->getDispatchTime() > $maxTime) {
         $maxTime = $chunk->getDispatchTime();
