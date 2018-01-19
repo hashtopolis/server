@@ -8,6 +8,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ComparisonFilter;
 use DBA\ContainFilter;
+use DBA\CrackerBinary;
 use DBA\File;
 use DBA\FileTask;
 use DBA\Hash;
@@ -673,6 +674,15 @@ class Util {
         break;
     }
     return "";
+  }
+  
+  /**
+   * @param $binary1 CrackerBinary
+   * @param $binary2 CrackerBinary
+   * @return int
+   */
+  public static function versionComparisonBinary($binary1, $binary2) {
+    return Util::versionComparison($binary1->getVersion(), $binary2->getVersion());
   }
   
   /**
