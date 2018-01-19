@@ -50,7 +50,7 @@ else if (isset($_GET['id']) && isset($_GET['new'])) {
   $OBJECTS['orig'] = $supertask->getId();
   $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array());
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
-  $OBJECTS['versions'] = usort($FACTORIES::getCrackerBinaryFactory()->filter(array()), array("Util", "versionComparisonCracker"));
+  $OBJECTS['versions'] = usort($FACTORIES::getCrackerBinaryFactory()->filter(array()), array("Util", "versionComparisonBinary"));
 }
 else if (isset($_GET['id'])) {
   $TEMPLATE = new Template("supertasks/detail");
