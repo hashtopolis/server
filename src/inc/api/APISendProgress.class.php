@@ -9,7 +9,6 @@ use DBA\Hash;
 use DBA\HashBinary;
 use DBA\Hashlist;
 use DBA\QueryFilter;
-use DBA\QueryFilterNoCase;
 use DBA\Zap;
 
 class APISendProgress extends APIBasic {
