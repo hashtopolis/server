@@ -51,7 +51,7 @@ else if (isset($_GET['id']) && isset($_GET['new'])) {
   $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array());
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
   $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array());
-  usort($versions, array("Util", "versionComparisonBinary"))
+  usort($versions, array("Util", "versionComparisonBinary"));
   $OBJECTS['versions'] = $versions;
 }
 else if (isset($_GET['id'])) {
