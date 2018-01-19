@@ -59,6 +59,7 @@ else {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
     $binaries = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
     $arr = array();
+    usort($binaries, array("Util", "versionComparisonBinary"));
     foreach ($binaries as $binary) {
       if (!isset($arr[$binary->getVersion()])) {
         $arr[$binary->getVersion()] = $binary->getVersion();
