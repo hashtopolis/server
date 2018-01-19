@@ -264,6 +264,13 @@ else if (isset($_GET['new'])) {
       }
     }
   }
+  else if (isset($_GET["copyPre"])) {
+    //copied from a task
+    $copy = $FACTORIES::getPretaskFactory()->get($_GET['copyPre']);
+    if ($copy != null) {
+      $copy = new Task(0, $copy->getTaskName(), $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, $copy->getPriority(), $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, 0, $copy->getCrackerBinaryTypeId(), 0);
+    }
+  }
   if ($copy === null) {
     $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0, 0, 0, 0, 0, 0);
   }

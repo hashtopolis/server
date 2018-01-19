@@ -39,7 +39,7 @@
           </form>
         </td>
         <td>
-          <form style='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[task.getVal('Task').getId()]]" method="POST">
+          <form style='float: left; padding-right: 5px;' action="tasks.php?new=true&copyPre=[[task.getVal('Task').getId()]]" method="POST">
             <input type="submit" class='btn btn-default' value="Copy">
           </form>
 					{{IF [[login.getLevel()]] >= 30}}
