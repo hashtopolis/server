@@ -363,10 +363,17 @@ class Util {
     foreach ($tasks as $task) {
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $sumProg = 0;
       foreach ($chunks as $chunk) {
         if ($chunk->getProgress() < 10000) {
           return false;
         }
+        else {
+          $sumProg += $chunk->getLength();
+        }
+      }
+      if ($sumProg < $task->getKeyspace()) {
+        return false;
       }
     }
     return true;
