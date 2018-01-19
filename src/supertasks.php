@@ -3,11 +3,8 @@
 use DBA\JoinFilter;
 use DBA\Pretask;
 use DBA\QueryFilter;
-use DBA\LikeFilter;
 use DBA\OrderFilter;
 use DBA\SupertaskPretask;
-use DBA\SupertaskTask;
-use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
