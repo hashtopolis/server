@@ -20,7 +20,7 @@
 				<td>
 					{{IF [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
 						<div style='float: left; padding-right: 5px;'>
-							<a class='btn btn-primary' href="crackers.php?id=[[binaryType.getId()]]" disabled>Edit</a>
+							<a class='btn btn-primary' href="crackers.php?edit=true&id=[[binary.getId()]]">Edit</a>
 						</div>
 						<form style="float: left;" action="crackers.php?id=[[binaryType.getId()]]" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getVersion()]]?')) return false;">
 							<input type="hidden" name="action" value="[[$DCrackerBinaryAction::DELETE_BINARY]]">

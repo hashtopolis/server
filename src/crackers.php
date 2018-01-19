@@ -42,6 +42,15 @@ else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $TEMPLATE = new Template("crackers/new");
   $MENU->setActive("crackers_new");
 }
+else if (isset($_GET['edit']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+  $binary = $FACTORIES::getCrackerBinaryFactory()->get($_GET['id']);
+  if ($binary !== null) {
+    $OBJECTS['binary'] = $binary;
+    $TEMPLATE = new Template("crackers/edit");
+    $MENU->setActive("crackers_edit");
+    $OBJECTS['binaryType'] = $FACTORIES::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
+  }
+}
 else if (isset($_GET['id'])) {
   $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {

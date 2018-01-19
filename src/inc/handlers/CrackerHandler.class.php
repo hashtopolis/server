@@ -41,10 +41,38 @@ class CrackerHandler implements Handler {
         }
         $this->createBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryTypeId']);
         break;
+      case DCrackerBinaryAction::EDIT_BINARY:
+        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
+          UI::printError("ERROR", "You have no rights to execute this action!");
+        }
+        $this->updateBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryId']);
+        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function updateBinary($version, $name, $url, $binaryId) {
+    global $FACTORIES;
+    
+    $binary = $FACTORIES::getCrackerBinaryFactory()->get($binaryId);
+    if ($binary === null) {
+      UI::addMessage(UI::ERROR, "Invalid cracker binary!");
+      return;
+    }
+    else if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
+      UI::addMessage(UI::ERROR, "Please provide all information!");
+      return;
+    }
+    $binary->setBinaryName(htmlentities($name, ENT_QUOTES, "UTF-8"));
+    $binary->setDownloadUrl($url);
+    $binary->setVersion($version);
+    $FACTORIES::getCrackerBinaryFactory()->update($binary);
+    UI::addMessage(UI::SUCCESS, "Version was updated successfully!");
+    $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
+    header("Location: crackers.php?id=" . $binaryType->getId());
+    die();
   }
   
   private function deleteBinaryType($binaryTypeId) {

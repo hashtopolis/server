@@ -1,0 +1,37 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Edit binary version of [[htmlentities([[binaryType.getTypeName()]], ENT_QUOTES, "UTF-8")]]</h2>
+{%TEMPLATE->struct/messages%}
+<form action='' method='post'>
+	<input type='hidden' name='action' value='[[$DCrackerBinaryAction::EDIT_BINARY]]'>
+	<input type="hidden" name="csrf" value="[[csrf]]">
+	<input type="hidden" name="binaryId" value="[[binary.getId()]]">
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<td>Binary Version:</td>
+				<td>
+					<input type="text" class='form-control' name="version" title="Version" value="[[binary.getVersion()]]" placeholder="x.x.x">
+				</td>
+			</tr>
+			<tr>
+				<td>Binary Base Name (which needs to be called on the client without os-dependent extension):</td>
+				<td>
+					<input type="text" class='form-control' name="name" title="Name" placeholder="cracker" value="[[binary.getBinaryName()]]">
+				</td>
+			</tr>
+			<tr>
+				<td>Download URL (where the client can download a 7zip with the binary):</td>
+				<td>
+					<input type="text" class='form-control' name="url" title="URL" placeholder="https://example.org/download.7z" value="[[binary.getDownloadUrl()]]">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="text-center">
+					<input type="submit" class='btn btn-success' value="Update binary">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+{%TEMPLATE->struct/foot%}

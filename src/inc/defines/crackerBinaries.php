@@ -5,6 +5,7 @@ class DCrackerBinaryAction {
   const DELETE_BINARY      = "deleteBinary";
   const CREATE_BINARY_TYPE = "createBinaryType";
   const CREATE_BINARY      = "createBinary";
+  const EDIT_BINARY        = "editBinary";
 }
 
 class DPlatforms {
