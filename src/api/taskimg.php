@@ -68,7 +68,7 @@ if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK && isset($_GET['superta
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $progress = 0;
     foreach ($chunks as $chunk) {
-      $progress += $chunk->getProgress();
+      $progress += $chunk->getCheckpoint();
     }
     $qF = new QueryFilter(Chunk::TASK_ID, $tasks[$i]->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
