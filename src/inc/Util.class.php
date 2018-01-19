@@ -3,6 +3,7 @@
 use DBA\AbstractModel;
 use DBA\AccessGroup;
 use DBA\AccessGroupUser;
+use DBA\AgentZap;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
@@ -392,9 +393,16 @@ class Util {
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
+      $zapFilter = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
       
-      $qF = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
-      $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      // delete dependencies on AgentZap
+      $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => $zapFilter));
+      $zapIds = Util::arrayOfIds($zaps);
+      $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
+      $qF = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
+      $FACTORIES::getAgentZapFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+      
+      $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $zapFilter));
       
       $entry->setVal(time());
       $FACTORIES::getStoredValueFactory()->update($entry);
