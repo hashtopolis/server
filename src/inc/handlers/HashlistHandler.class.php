@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
@@ -569,21 +570,23 @@ class HashlistHandler implements Handler {
       $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
       $qF = new ContainFilter(Chunk::TASK_ID, Util::arrayOfIds($taskList));
       $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      $qF = new ContainFilter(AgentError::TASK_ID, Util::arrayOfIds($taskList));
+      $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     }
     foreach ($taskList as $task) {
       $FACTORIES::getTaskFactory()->delete($task);
     }
-  
+    
     // update/delete superhashlists (this must wait until here because of constraints
-    foreach($toDelete as $hl){
+    foreach ($toDelete as $hl) {
       $FACTORIES::getHashlistFactory()->delete($hl);
     }
-    foreacH($toUpdate as $hl){
+    foreacH ($toUpdate as $hl) {
       $FACTORIES::getHashlistFactory()->update($hl);
     }
     
     $FACTORIES::getHashlistFactory()->delete($this->hashlist);
-  
+    
     $FACTORIES::getAgentFactory()->getDB()->commit();
     
     switch ($this->hashlist->getFormat()) {
