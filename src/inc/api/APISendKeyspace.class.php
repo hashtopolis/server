@@ -29,6 +29,10 @@ class APISendKeyspace extends APIBasic {
     
     if ($task->getKeyspace() == 0) {
       // keyspace is still required
+      if ($keyspace < 0) {
+        $this->sendErrorResponse(PActions::SEND_KEYSPACE, "Server parsed a negative keyspace, it's very likely that the number was too big to be handled by the server system!");
+      }
+      
       $task->setKeyspace($keyspace);
       $FACTORIES::getTaskFactory()->update($task);
     }
