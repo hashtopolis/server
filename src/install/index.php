@@ -34,7 +34,7 @@ switch ($STEP) {
     }
     
     $OBJECTS = array();
-    $OBJECTS['32bit'] = (PHP_INT_SIZE == 4)?true:false;
+    $OBJECTS['32bit'] = (PHP_INT_SIZE == 4) ? true : false;
     if (isset($_GET['type'])) {
       $type = $_GET['type'];
       if ($type == 'install') {
@@ -132,11 +132,17 @@ switch ($STEP) {
     echo $TEMPLATE->render(array('failed' => $fail));
     break;
   case 52: //database is filled with initial data now we create the user now
-    //create pepper (this is required here that when we create the user, the included file already contains the right peppers
+    // create pepper (this is required here that when we create the user, the included file already contains the right peppers
     $pepper = array(Util::randomString(50), Util::randomString(50), Util::randomString(50));
     $crypt = file_get_contents(dirname(__FILE__) . "/../inc/Encryption.class.php");
     $crypt = str_replace("__PEPPER1__", $pepper[0], str_replace("__PEPPER2__", $pepper[1], str_replace("__PEPPER3__", $pepper[2], $crypt)));
     file_put_contents(dirname(__FILE__) . "/../inc/Encryption.class.php", $crypt);
+    
+    // set CSRF private key
+    $key = Util::randomString(20);
+    $csrf = file_get_contents(dirname(__FILE__) . "/../inc/CSRF.class.php");
+    $csrf = str_replace("__CSRF__", $key, $csrf);
+    file_put_contents(dirname(__FILE__) . "/../inc/CSRF.class.php", $key);
     
     $message = "";
     if (isset($_POST['create'])) {

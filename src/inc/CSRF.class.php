@@ -2,7 +2,7 @@
 
 class CSRF {
   // TODO: this secret must be generated on installation
-  const CSRF_SECRET = "csrfSecret";
+  const CSRF_SECRET = "__CSRF__";
   
   public static function init() {
     global $OBJECTS;
