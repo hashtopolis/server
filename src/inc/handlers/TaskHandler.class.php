@@ -368,42 +368,37 @@ class TaskHandler implements Handler {
   private function deleteFinished() {
     global $FACTORIES;
     
-    //TODO: finish this
-    die("Not updated yet!");
-    
-    // delete finished supertasks
-    $qF = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUPERTASK, "=");
-    $supertasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($FACTORIES::FILTER => $qF)));
-    
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    foreach ($supertasks as $supertask) {
-      $this->deleteTask($supertask, true);
+    // check every task wrapper
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
+    foreach ($taskWrappers as $taskWrapper) {
+      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+      $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $isComplete = true;
+      foreach ($tasks as $task) {
+        if ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getKeyspaceProgress()) {
+          $isComplete = false;
+          break;
+        }
+        $sumProg = 0;
+        $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+        $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+        foreach ($chunks as $chunk) {
+          $sumProg += $chunk->getCheckpoint() - $chunk->getSkip();
+        }
+        if ($sumProg < $task->getKeyspace()) {
+          $isComplete = false;
+          break;
+        }
+      }
+      if ($isComplete) {
+        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+        foreach ($tasks as $task) {
+          $this->deleteTask($task);
+        }
+        $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+        $FACTORIES::getAgentFactory()->getDB()->commit();
+      }
     }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-    
-    // delete finished tasks
-    $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
-    $qF2 = new ComparisonFilter(Task::KEYSPACE, Task::PROGRESS, "<=");
-    $qF3 = new QueryFilter(Task::TASK_TYPE, DTaskTypes::NORMAL, "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
-    
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    foreach ($tasks as $task) {
-      $this->deleteTask($task, true);
-    }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-    
-    // delete tasks which are not completed but where the hashlist is fully cracked
-    $qF = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "=", $FACTORIES::getHashlistFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::HASHLIST_ID, Hashlist::HASHLIST_ID);
-    $joinedTasks = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    foreach ($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
-      /** @var $task Task */
-      $this->deleteTask($task);
-    }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
   
   private function rename() {
