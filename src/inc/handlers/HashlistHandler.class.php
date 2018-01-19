@@ -577,6 +577,10 @@ class HashlistHandler implements Handler {
       $FACTORIES::getTaskFactory()->delete($task);
     }
     
+    foreach ($taskWrappers as $taskWrapper) {
+      $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+    }
+    
     // update/delete superhashlists (this must wait until here because of constraints
     foreach ($toDelete as $hl) {
       $FACTORIES::getHashlistFactory()->delete($hl);
