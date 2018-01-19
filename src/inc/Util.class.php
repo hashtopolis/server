@@ -3,10 +3,8 @@
 use DBA\AbstractModel;
 use DBA\AccessGroup;
 use DBA\AccessGroupUser;
-use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
-use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\CrackerBinary;
 use DBA\File;
@@ -19,10 +17,7 @@ use DBA\LogEntry;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\StoredValue;
-use DBA\SuperHashlistHashlist;
 use DBA\Task;
-use DBA\TaskFile;
-use DBA\TaskTask;
 use DBA\TaskWrapper;
 use DBA\Zap;
 
@@ -227,9 +222,8 @@ class Util {
   }
   
   public static function loadTasks() {
-    /** @var $CONFIG DataSet */
     /** @var $LOGIN Login */
-    global $FACTORIES, $CONFIG, $OBJECTS, $LOGIN;
+    global $FACTORIES, $OBJECTS, $LOGIN;
     
     $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
     
