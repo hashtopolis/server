@@ -25,16 +25,22 @@ if ($size[0] == 0 || $size[0] == 0) {
 }
 
 //check if task exists and get information
-$task = $FACTORIES::getTaskFactory()->get($_GET['task']);
-if ($task == null) {
-  die("Not a valid task!");
+if (isset($_GET['task'])) {
+  $task = $FACTORIES::getTaskFactory()->get($_GET['task']);
+  if ($task == null) {
+    die("Not a valid task!");
+  }
+  $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+  if ($taskWrapper == null) {
+    die("Inconsistency on task!");
+  }
 }
-$taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-if ($taskWrapper == null) {
-  die("Inconsistency on task!");
+else if (isset($_GET['supertask'])) {
+  $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($_GET['supertask']);
+  if ($taskWrapper == null) {
+    die("Invalid task wrapper!");
+  }
 }
-
-//TODO: check if taskwrapper needs also to be check separately when accessing a supertask image
 
 //create image
 $image = imagecreatetruecolor($size[0], $size[1]);
@@ -50,10 +56,6 @@ $blue = imagecolorallocate($image, 60, 60, 245);
 
 //prepare image
 imagefill($image, 0, 0, $transparency);
-
-$progress = $task->getKeyspaceProgress();
-$keyspace = max($task->getKeyspace(), 1);
-$taskid = $task->getId();
 
 if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
   // handle supertask progress drawing here
@@ -89,6 +91,10 @@ if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
   }
 }
 else {
+  $progress = $task->getKeyspaceProgress();
+  $keyspace = max($task->getKeyspace(), 1);
+  $taskId = $task->getId();
+  
   //load chunks
   $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
