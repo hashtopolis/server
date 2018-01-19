@@ -33,6 +33,8 @@ switch ($STEP) {
       die();
     }
     
+    $OBJECTS = array();
+    $OBJECTS['32bit'] = (PHP_INT_SIZE == 4)?true:false;
     if (isset($_GET['type'])) {
       $type = $_GET['type'];
       if ($type == 'install') {
@@ -44,7 +46,7 @@ switch ($STEP) {
       die();
     }
     $TEMPLATE = new Template("install/0");
-    echo $TEMPLATE->render(array());
+    echo $TEMPLATE->render($OBJECTS);
     break;
   case 1: //clean installation was selected
     if (isset($_GET['next'])) {

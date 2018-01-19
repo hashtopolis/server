@@ -6,6 +6,12 @@
 	To run Hashtopussy you need a running MySQL server. You will be prompted for details during installation,
 	keep informations ready to enter.
 </p>
+{{IF [[32bit]]}}
+	<p style="color: #af0000">
+		WARNING: It appears that you are running on a 32bit OS only or the PHP installation is 32bit only. This can often
+		cause problems with larger keyspaces on tasks.
+	</p>
+{{ENDIF}}
 <p>
 	<a href='index.php?type=install'><button>Start Installation of Hashtopussy</button></a>
 </p>
