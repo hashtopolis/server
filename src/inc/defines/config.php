@@ -45,6 +45,7 @@ class DConfig {
   const TIME_FORMAT       = "timefmt";
   const DONATE_OFF        = "donateOff";
   const HIDE_IMPORT_MASKS = "hideImportMasks";
+  const HASHES_PER_PAGE   = "hashesPerPage";
   
   // Section: Server
   const BASE_URL           = "baseUrl";
@@ -112,6 +113,8 @@ class DConfig {
         return DConfigType::EMAIL;
       case DConfig::VOUCHER_DELETION:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::HASHES_PER_PAGE:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -178,6 +181,8 @@ class DConfig {
         return "Email address which will be displayed on the footer as admin contact. (Leave empty to hide)";
       case DConfig::VOUCHER_DELETION:
         return "Vouchers can be used multiple times and don't get deleted automatically.";
+      case DConfig::HASHES_PER_PAGE:
+        return "Number of hashes per page on hashes view.";
     }
     return $config;
   }
