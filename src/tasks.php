@@ -146,17 +146,6 @@ if (isset($_GET['id'])) {
     }
     $timeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
   }
-  /*for ($i = 1; $i <= sizeof($chunkIntervals); $i++) {
-    if (isset($chunkIntervals[$i]) && $chunkIntervals[$i]["start"] <= $chunkIntervals[$i - 1]["stop"]) {
-      $chunkIntervals[$i]["start"] = $chunkIntervals[$i - 1]["start"];
-      if ($chunkIntervals[$i]["stop"] < $chunkIntervals[$i - 1]["stop"]) {
-        $chunkIntervals[$i]["stop"] = $chunkIntervals[$i - 1]["stop"];
-      }
-    }
-    else {
-      $timeSpent += ($chunkIntervals[$i - 1]["stop"] - $chunkIntervals[$i - 1]["start"]);
-    }
-  }*/
   $OBJECTS['timeSpent'] = $timeSpent;
   if ($task->getKeyspace() != 0 && ($cProgress / $task->getKeyspace()) != 0) {
     $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
