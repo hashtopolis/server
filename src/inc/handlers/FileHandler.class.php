@@ -66,7 +66,7 @@ class FileHandler implements Handler {
       return;
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     
     //check where the file is used and replace the filename in all the tasks
     $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=", $FACTORIES::getFileTaskFactory());
@@ -95,7 +95,7 @@ class FileHandler implements Handler {
     }
     $file->setFilename($newName);
     $FACTORIES::getFileFactory()->update($file);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
   
   private function add() {

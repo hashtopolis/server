@@ -49,7 +49,7 @@ class APIGetChunk extends APIBasic {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Agent is inactive!");
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $task = TaskUtils::checkTask($task);
     if ($task == null) { // agent needs a new task
       $this->sendResponse(array(
@@ -136,7 +136,7 @@ class APIGetChunk extends APIBasic {
   protected function sendChunk($chunk) {
     global $FACTORIES;
     
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     $this->sendResponse(array(
         PResponseGetChunk::ACTION => PActions::GET_CHUNK,
         PResponseGetChunk::RESPONSE => PValues::SUCCESS,

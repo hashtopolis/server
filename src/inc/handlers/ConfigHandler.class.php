@@ -39,7 +39,7 @@ class ConfigHandler implements Handler {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $FACTORIES::getHashFactory()->massDeletion(array());
     $FACTORIES::getHashBinaryFactory()->massDeletion(array());
     $FACTORIES::getAssignmentFactory()->massDeletion(array());
@@ -51,7 +51,7 @@ class ConfigHandler implements Handler {
     $FACTORIES::getTaskWrapperFactory()->massDeletion(array());
     $FACTORIES::getHashlistHashlistFactory()->massDeletion(array());
     $FACTORIES::getHashlistFactory()->massDeletion(array());
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::WARN, "Complete clear was executed!");
   }
   
@@ -91,7 +91,7 @@ class ConfigHandler implements Handler {
     $correctedHashlists = 0;
     
     //check chunks
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
     foreach ($taskWrappers as $taskWrapper) {
       $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId()));
@@ -114,10 +114,10 @@ class ConfigHandler implements Handler {
         }
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     //check hashlists
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($hashlists as $hashlist) {
@@ -134,10 +134,10 @@ class ConfigHandler implements Handler {
         $FACTORIES::getHashlistFactory()->update($hashlist);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     //check superhashlists
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
     $superHashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($superHashlists as $superHashlist) {
@@ -152,7 +152,7 @@ class ConfigHandler implements Handler {
         $FACTORIES::getHashlistFactory()->update($superHashlist);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     UI::addMessage(UI::SUCCESS, "Updated all chunks and hashlists. Corrected $correctedChunks chunks and $correctedHashlists hashlists.");
   }

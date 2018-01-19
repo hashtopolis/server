@@ -150,7 +150,7 @@ class SupertaskHandler implements Handler {
     $crackerBinaryId = $crackerBinary->getId();
     $accessGroupId = $hashlist->getAccessGroupId();
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     
     $subTasks = array();
     $isCpuTask = 0;
@@ -200,7 +200,7 @@ class SupertaskHandler implements Handler {
       $FACTORIES::getTaskFactory()->update($task);
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     UI::addMessage(UI::SUCCESS, "New supertask applied successfully!");
   }
   
@@ -231,7 +231,7 @@ class SupertaskHandler implements Handler {
     if ($supertask == null) {
       UI::printError("ERROR", "Invalid supertask ID!");
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
     $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
     $joinedTasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -247,7 +247,7 @@ class SupertaskHandler implements Handler {
     }
     
     $FACTORIES::getSupertaskFactory()->delete($supertask);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     UI::addMessage(UI::SUCCESS, "Supertask deleted successfully!");
   }
 }

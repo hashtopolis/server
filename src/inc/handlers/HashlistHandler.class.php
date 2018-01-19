@@ -171,7 +171,7 @@ class HashlistHandler implements Handler {
     }
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $qF = new ContainFilter(Hashlist::HASHLIST_ID, $hashlists);
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $lists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (strlen($name) == 0) {
       $name = "SHL_" . $lists[0]->getHashtypeId();
@@ -201,7 +201,7 @@ class HashlistHandler implements Handler {
       $relations[] = new HashlistHashlist(0, $superhashlist->getId(), $list->getId());
     }
     $FACTORIES::getHashlistHashlistFactory()->massSave($relations);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     header("Location: superhashlists.php");
     die();
   }

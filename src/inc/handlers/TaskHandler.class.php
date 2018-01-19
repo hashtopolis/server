@@ -139,14 +139,14 @@ class TaskHandler implements Handler {
       return;
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($tasks as $task) {
       $this->deleteTask($task);
     }
     $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
   
   private function setSupertaskPriority($supertaskId, $priority) {
@@ -269,7 +269,7 @@ class TaskHandler implements Handler {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
     $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
@@ -280,7 +280,7 @@ class TaskHandler implements Handler {
         $FACTORIES::getFileTaskFactory()->save($taskFile);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
@@ -319,7 +319,7 @@ class TaskHandler implements Handler {
       return;
     }
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
@@ -328,7 +328,7 @@ class TaskHandler implements Handler {
     if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
       $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     header("Location: tasks.php");
   }
   
@@ -375,11 +375,11 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUPERTASK, "=");
     $supertasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($FACTORIES::FILTER => $qF)));
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     foreach ($supertasks as $supertask) {
       $this->deleteTask($supertask, true);
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     // delete finished tasks
     $qF1 = new QueryFilter(Task::PROGRESS, 0, ">");
@@ -387,23 +387,23 @@ class TaskHandler implements Handler {
     $qF3 = new QueryFilter(Task::TASK_TYPE, DTaskTypes::NORMAL, "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     foreach ($tasks as $task) {
       $this->deleteTask($task, true);
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     // delete tasks which are not completed but where the hashlist is fully cracked
     $qF = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "=", $FACTORIES::getHashlistFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::HASHLIST_ID, Hashlist::HASHLIST_ID);
     $joinedTasks = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     foreach ($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
       /** @var $task Task */
       $this->deleteTask($task);
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
   
   private function rename() {
@@ -430,7 +430,7 @@ class TaskHandler implements Handler {
       return;
     }
     $chunktime = intval($_POST["chunktime"]);
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFactory());
     $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
     $join = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -441,7 +441,7 @@ class TaskHandler implements Handler {
     }
     $task->setChunkTime($chunktime);
     $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
   
   private function updateColor() {
@@ -500,7 +500,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No such task!");
       return;
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $uS = new UpdateSet(Assignment::BENCHMARK, 0);
     $FACTORIES::getAssignmentFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
@@ -519,7 +519,7 @@ class TaskHandler implements Handler {
     $task->setKeyspace(0);
     $task->setKeyspaceProgress(0);
     $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
   
   private function adjustBenchmark() {
