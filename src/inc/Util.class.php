@@ -372,7 +372,7 @@ class Util {
           $sumProg += $chunk->getLength();
         }
       }
-      if ($sumProg < $task->getKeyspace()) {
+      if ($task->getKeyspace() == 0 || $sumProg < $task->getKeyspace()) {
         return false;
       }
     }
