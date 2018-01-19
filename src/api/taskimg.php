@@ -57,7 +57,7 @@ $blue = imagecolorallocate($image, 60, 60, 245);
 //prepare image
 imagefill($image, 0, 0, $transparency);
 
-if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
+if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK && isset($_GET['supertask'])) {
   // handle supertask progress drawing here
   $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
   $oF = new OrderFilter(Task::PRIORITY, "DESC");
