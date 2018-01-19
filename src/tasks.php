@@ -5,6 +5,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\CrackerBinary;
 use DBA\File;
+use DBA\FilePretask;
 use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
@@ -244,6 +245,7 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
+  $origType = 0;
   $hashlistId = 0;
   $copy = null;
   if (isset($_GET["copy"])) {
@@ -251,6 +253,7 @@ else if (isset($_GET['new'])) {
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
+      $origType = 1;
       $hashlistId = $FACTORIES::getTaskWrapperFactory()->get($copy->getTaskWrapperId())->getHashlistId();
       $copy->setId(0);
       $match = array();
@@ -268,6 +271,8 @@ else if (isset($_GET['new'])) {
     //copied from a task
     $copy = $FACTORIES::getPretaskFactory()->get($_GET['copyPre']);
     if ($copy != null) {
+      $orig = $copy->getId();
+      $origType = 2;
       $copy = new Task(0, $copy->getTaskName(), $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, $copy->getPriority(), $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, 0, $copy->getCrackerBinaryTypeId(), 0);
     }
   }
@@ -296,10 +301,19 @@ else if (isset($_GET['new'])) {
   
   $origFiles = array();
   if ($orig > 0) {
-    $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
-    $ff = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($ff as $f) {
-      $origFiles[] = $f->getFileId();
+    if ($origType == 1) {
+      $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
+      $ff = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+      foreach ($ff as $f) {
+        $origFiles[] = $f->getFileId();
+      }
+    }
+    else {
+      $qF = new QueryFilter(FilePretask::PRETASK_ID, $orig, "=");
+      $ff = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+      foreach ($ff as $f) {
+        $origFiles[] = $f->getFileId();
+      }
     }
   }
   $oF = new OrderFilter(File::FILENAME, "ASC");
