@@ -142,7 +142,7 @@ switch ($STEP) {
     $key = Util::randomString(20);
     $csrf = file_get_contents(dirname(__FILE__) . "/../inc/CSRF.class.php");
     $csrf = str_replace("__CSRF__", $key, $csrf);
-    file_put_contents(dirname(__FILE__) . "/../inc/CSRF.class.php", $key);
+    file_put_contents(dirname(__FILE__) . "/../inc/CSRF.class.php", $csrf);
     
     $message = "";
     if (isset($_POST['create'])) {
