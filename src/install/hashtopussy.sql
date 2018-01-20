@@ -738,7 +738,7 @@ CREATE TABLE `NotificationSetting` (
   `notificationSettingId` INT(11)                 NOT NULL,
   `action`                VARCHAR(50)
                           COLLATE utf8_unicode_ci NOT NULL,
-  `objectId`              INT(11)                 NOT NULL,
+  `objectId`              INT(11)                 NULL,
   `notification`          VARCHAR(50)
                           COLLATE utf8_unicode_ci NOT NULL,
   `userId`                INT(11)                 NOT NULL,
