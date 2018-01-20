@@ -18,6 +18,8 @@ SET time_zone = "+00:00";
 -- Datenbank: `hashtopussy`
 --
 
+START TRANSACTION;
+
 -- --------------------------------------------------------
 
 --
@@ -1572,6 +1574,8 @@ ALTER TABLE `User`
 ALTER TABLE `Zap`
   ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Zap_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
+
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
