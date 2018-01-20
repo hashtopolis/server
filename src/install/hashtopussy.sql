@@ -200,16 +200,16 @@ CREATE TABLE `Assignment` (
 CREATE TABLE `Chunk` (
   `chunkId`      INT(11) NOT NULL,
   `taskId`       INT(11) NOT NULL,
-  `skip`         INT(11) NOT NULL,
-  `length`       INT(11) NOT NULL,
+  `skip`         BIGINT(20) NOT NULL,
+  `length`       BIGINT(20) NOT NULL,
   `agentId`      INT(11) NULL,
   `dispatchTime` INT(11) NOT NULL,
   `solveTime`    INT(11) NOT NULL,
-  `checkpoint`   INT(11) NOT NULL,
+  `checkpoint`   BIGINT(20) NOT NULL,
   `progress`     INT(11) NOT NULL,
   `state`        INT(11) NOT NULL,
   `cracked`      INT(11) NOT NULL,
-  `speed`        INT(11) NOT NULL
+  `speed`        BIGINT(20) NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -339,7 +339,7 @@ CREATE TABLE `File` (
   `fileId`   INT(11)                 NOT NULL,
   `filename` VARCHAR(100)
              COLLATE utf8_unicode_ci NOT NULL,
-  `size`     INT(11)                 NOT NULL,
+  `size`     BIGINT(20)                 NOT NULL,
   `isSecret` INT(11)                 NOT NULL,
   `fileType` INT(11)                 NOT NULL
 )
@@ -901,15 +901,15 @@ CREATE TABLE `Task` (
                      COLLATE utf8_unicode_ci NOT NULL,
   `chunkTime`        INT(11)                 NOT NULL,
   `statusTimer`      INT(11)                 NOT NULL,
-  `keyspace`         INT(11)                 NOT NULL,
-  `keyspaceProgress` INT(11)                 NOT NULL,
+  `keyspace`         BIGINT(20)                 NOT NULL,
+  `keyspaceProgress` BIGINT(20)                 NOT NULL,
   `priority`         INT(11)                 NOT NULL,
   `color`            VARCHAR(20)
                      COLLATE utf8_unicode_ci NULL,
   `isSmall`          INT(11)                 NOT NULL,
   `isCpuTask`        INT(11)                 NOT NULL,
   `useNewBench`      INT(11)                 NOT NULL,
-  `skipKeyspace`     INT(11)                 NOT NULL,
+  `skipKeyspace`     BIGINT(20)                 NOT NULL,
   `crackerBinaryId`  INT(11) DEFAULT NULL,
   `crackerBinaryTypeId` INT(11)  NULL,
   `taskWrapperId`    INT(11)                 NOT NULL
