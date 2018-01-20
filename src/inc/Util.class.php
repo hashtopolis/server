@@ -1125,4 +1125,16 @@ class Util {
     }
     return $arr;
   }
+  
+  public static function checkSqlMode() {
+    global $FACTORIES;
+    
+    $db = $FACTORIES::getAgentFactory()->getDB(true);
+    $result = $db->query("SHOW GLOBAL VARIABLES LIKE 'sql_mode'");
+    $line = $result->fetch();
+    if (strpos(strtolower($line['Value']), "only_full_group_by") !== false) {
+      return false;
+    }
+    return true;
+  }
 }

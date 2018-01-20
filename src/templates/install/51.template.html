@@ -8,6 +8,15 @@
 		<b>Test connection failed, please try again!</b>
 	</p>
 {{ENDIF}}
+{{IF [[mode]]}}
+	<p>
+		Global variable sql_mode contains `ONLY_FULL_GROUP_BY` which will cause problems with some functionality of
+		Hashtopussy. Please update sql_mode with the following command:<br>
+		<code>
+			SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+		</code>
+	</p>
+{{ENDIF}}
 <form action='index.php' method='post'>
 	<table border='1'>
 		<tr>

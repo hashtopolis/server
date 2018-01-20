@@ -51,9 +51,7 @@ switch ($STEP) {
   case 1: //clean installation was selected
     if (isset($_GET['next'])) {
       $query = file_get_contents(dirname(__FILE__) . "/hashtopussy.sql");
-      $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
       $FACTORIES::getAgentFactory()->getDB()->query($query);
-      $FACTORIES::getAgentFactory()->getDB()->commit();
       $baseUrl = explode("/", $_SERVER['REQUEST_URI']);
       unset($baseUrl[sizeof($baseUrl) - 1]);
       if ($baseUrl[sizeof($baseUrl) - 1] == "install") {
@@ -115,8 +113,12 @@ switch ($STEP) {
         //connection not valid
         $fail = true;
       }
+      else if(!Util::checkSqlMode()){
+        $mode = true;
+      }
       else {
         //save database details
+        
         $file = file_get_contents(dirname(__FILE__) . "/../inc/db.template.php");
         $file = str_replace("__DBUSER__", $_POST['user'], $file);
         $file = str_replace("__DBPASS__", $_POST['pass'], $file);
@@ -131,7 +133,7 @@ switch ($STEP) {
       }
     }
     $TEMPLATE = new Template("install/51");
-    echo $TEMPLATE->render(array('failed' => $fail));
+    echo $TEMPLATE->render(array('failed' => $fail, 'mode' => $mode));
     break;
   case 52: //database is filled with initial data now we create the user now
     // create pepper (this is required here that when we create the user, the included file already contains the right peppers
