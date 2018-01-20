@@ -36,7 +36,6 @@ class DConfig {
   const HASHES_PAGE_SIZE             = "pagingSize";
   const NUMBER_LOGENTRIES            = "numLogEntries";
   const BATCH_SIZE                   = "batchSize";
-  const HASHLIST_DOWNLOAD_CHUNK_SIZE = "hashlistDownloadChunkSize";
   const PLAINTEXT_MAX_LENGTH         = "plainTextMaxLength";
   const HASH_MAX_LENGTH              = "hashMaxLength";
   const MAX_HASHLIST_SIZE            = "maxHashlistSize";
@@ -95,8 +94,6 @@ class DConfig {
       case DConfig::BASE_HOST:
         return DConfigType::STRING_INPUT;
       case DConfig::DONATE_OFF:
-        return DConfigType::NUMBER_INPUT;
-      case DConfig::HASHLIST_DOWNLOAD_CHUNK_SIZE:
         return DConfigType::NUMBER_INPUT;
       case DConfig::PLAINTEXT_MAX_LENGTH:
         return DConfigType::NUMBER_INPUT;
@@ -166,8 +163,6 @@ class DConfig {
         return "Base hostname/port/protocol to use. Only fill in to override the self-determined value.";
       case DConfig::DONATE_OFF:
         return "Hide donate information (insert '1' to hide)";
-      case DConfig::HASHLIST_DOWNLOAD_CHUNK_SIZE:
-        return "Size of blocks in hashes which will be sent to the client when downloading a hashlist.";
       case DConfig::PLAINTEXT_MAX_LENGTH:
         return "Max length of a plaintext. (WARNING: changing this might take longer depending on your DB size!)";
       case DConfig::HASH_MAX_LENGTH:

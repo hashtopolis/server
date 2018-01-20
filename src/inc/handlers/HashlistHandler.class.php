@@ -264,6 +264,9 @@ class HashlistHandler implements Handler {
     else if (!file_exists($tmpfile)) {
       UI::printError("ERROR", "Required file does not exist!");
     }
+    else if(Util::countLines($tmpfile) > $CONFIG->getVal(DConfig::MAX_HASHLIST_SIZE)){
+      UI::printError("ERROR", "Hashlist has too many lines!");
+    }
     $file = fopen($tmpfile, "rb");
     if (!$file) {
       UI::printError("ERROR", "Failed to open file!");

@@ -1137,4 +1137,8 @@ class Util {
     }
     return true;
   }
+  
+  public static function countLines($tmpfile) {
+    return intval(exec("wc -l '$tmpfile'"));
+  }
 }
