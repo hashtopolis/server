@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupUser;
 use DBA\Config;
 use DBA\QueryFilter;
 use DBA\RightGroup;
@@ -113,7 +114,7 @@ switch ($STEP) {
         //connection not valid
         $fail = true;
       }
-      else if(!Util::checkSqlMode()){
+      else if (!Util::checkSqlMode()) {
         $mode = true;
       }
       else {
@@ -163,6 +164,8 @@ switch ($STEP) {
         $message = Util::getMessage('danger', "Your entered passwords do not match!");
       }
       else {
+        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+        
         $qF = new QueryFilter(RightGroup::GROUP_NAME, "Administrator", "=");
         $group = $FACTORIES::getRightGroupFactory()->filter(array($FACTORIES::FILTER => array($qF)));
         $group = $group[0];
@@ -170,6 +173,13 @@ switch ($STEP) {
         $newHash = Encryption::passwordHash($password, $newSalt);
         $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
         $FACTORIES::getUserFactory()->save($user);
+        
+        // create default group
+        $group = AccessUtils::getOrCreateDefaultAccessGroup();
+        $groupUser = new AccessGroupUser(0, $group->getId(), $user->getId());
+        $FACTORIES::getAccessGroupUserFactory()->save($groupUser);
+        
+        $FACTORIES::getAgentFactory()->getDB()->commit();
         setcookie("step", "$PREV", time() + 3600);
         header("Location: index.php");
         die();
