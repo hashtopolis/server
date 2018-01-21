@@ -3,7 +3,7 @@
 class APILogin extends APIBasic {
   public function execute($QUERY = array()) {
     /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $CONFIG;
     
     if (!PQueryLogin::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::LOGIN, "Invalid login query!");

@@ -3,8 +3,6 @@
 /**
  * Handles the languages, you can get all available languages and get the replacements
  * for the template files.
- *
- * @author Sein
  */
 class Lang {
   private $language;

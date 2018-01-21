@@ -3,8 +3,6 @@
 /**
  * This class is a small workaround to make it possible for the menu to request which page
  * is active through a object passed to the template system.
- *
- * @author Sein
  */
 class Menu {
   private $active;
