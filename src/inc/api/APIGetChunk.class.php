@@ -2,7 +2,6 @@
 
 use DBA\Assignment;
 use DBA\Chunk;
-use DBA\ComparisonFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
