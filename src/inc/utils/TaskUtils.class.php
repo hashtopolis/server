@@ -78,7 +78,7 @@ class TaskUtils {
         }
         
         // we need to check now if the task is already completed or fully dispatched
-        $task = TaskUtils::checkTask($task);
+        $task = TaskUtils::checkTask($task, $agent);
         if ($task == null) {
           continue; // if it is completed we go to the next
         }
@@ -115,9 +115,10 @@ class TaskUtils {
    * Checks if a task is completed or fully dispatched.
    *
    * @param $task Task
+   * @param $agent Agent
    * @return Task null if the task is completed or fully dispatched
    */
-  public static function checkTask($task) {
+  public static function checkTask($task, $agent = null) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
@@ -142,6 +143,9 @@ class TaskUtils {
         // this chunk timed out, so we remove the agent from it and therefore this task is not complete yet
         //$chunk->setAgentId(null);
         //$FACTORIES::getChunkFactory()->update($chunk);
+        return $task;
+      }
+      else if($agent != null && $chunk->getAgentId() == $agent->getId()){
         return $task;
       }
       else {
