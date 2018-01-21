@@ -114,7 +114,7 @@ class DConfig {
       case DConfig::HASHES_PER_PAGE:
         return DConfigType::NUMBER_INPUT;
       case DConfig::HIDE_IP_INFO:
-        return DConfigType::NUMBER_INPUT;
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
