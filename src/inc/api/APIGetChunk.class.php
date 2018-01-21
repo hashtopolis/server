@@ -50,7 +50,7 @@ class APIGetChunk extends APIBasic {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $task = TaskUtils::checkTask($task);
+    $task = TaskUtils::checkTask($task, $this->agent);
     if ($task == null) { // agent needs a new task
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
