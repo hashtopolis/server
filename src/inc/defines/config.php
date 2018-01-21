@@ -94,7 +94,7 @@ class DConfig {
       case DConfig::BASE_HOST:
         return DConfigType::STRING_INPUT;
       case DConfig::DONATE_OFF:
-        return DConfigType::NUMBER_INPUT;
+        return DConfigType::TICKBOX;
       case DConfig::PLAINTEXT_MAX_LENGTH:
         return DConfigType::NUMBER_INPUT;
       case DConfig::HASH_MAX_LENGTH:
@@ -104,13 +104,13 @@ class DConfig {
       case DConfig::MAX_HASHLIST_SIZE:
         return DConfigType::NUMBER_INPUT;
       case DConfig::HIDE_IMPORT_MASKS:
-        return DConfigType::NUMBER_INPUT;
+        return DConfigType::TICKBOX;
       case DConfig::TELEGRAM_BOT_TOKEN:
         return DConfigType::STRING_INPUT;
       case DConfig::CONTACT_EMAIL:
         return DConfigType::EMAIL;
       case DConfig::VOUCHER_DELETION:
-        return DConfigType::NUMBER_INPUT;
+        return DConfigType::TICKBOX;
       case DConfig::HASHES_PER_PAGE:
         return DConfigType::NUMBER_INPUT;
       case DConfig::HIDE_IP_INFO:
