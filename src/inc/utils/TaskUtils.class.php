@@ -145,7 +145,7 @@ class TaskUtils {
         //$FACTORIES::getChunkFactory()->update($chunk);
         return $task;
       }
-      else if($agent != null && $chunk->getAgentId() == $agent->getId()){
+      else if ($agent != null && $chunk->getAgentId() == $agent->getId()) {
         return $task;
       }
       else {
@@ -167,6 +167,24 @@ class TaskUtils {
       return null;
     }
     return $task;
+  }
+  
+  /**
+   * @param $hashlists Hashlist[]
+   */
+  public static function unassignAllAgents($hashlists) {
+    global $FACTORIES;
+    
+    $twFilter = new ContainFilter(TaskWrapper::HASHLIST_ID, Util::arrayOfIds($hashlists));
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $twFilter));
+    foreach ($taskWrappers as $taskWrapper) {
+      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+      $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $qF = new ContainFilter(Assignment::TASK_ID, Util::arrayOfIds($tasks));
+      $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    }
+    $uS = new UpdateSet(TaskWrapper::PRIORITY, 0);
+    $FACTORIES::getTaskWrapperFactory()->massUpdate(array($FACTORIES::FILTER => $twFilter, $FACTORIES::UPDATE => $uS));
   }
   
   /**

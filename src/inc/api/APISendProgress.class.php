@@ -292,6 +292,7 @@ class APISendProgress extends APIBasic {
         $FACTORIES::getChunkFactory()->update($chunk);
         
         TaskUtils::depriorizeAllTasks($hashlists);
+        TaskUtils::unassignAllAgents($hashlists);
         
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $totalHashlist));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
