@@ -33,12 +33,12 @@ class DConfig {
   const YUBIKEY_URL = "yubikey_url";
   
   // Section: Finetuning
-  const HASHES_PAGE_SIZE             = "pagingSize";
-  const NUMBER_LOGENTRIES            = "numLogEntries";
-  const BATCH_SIZE                   = "batchSize";
-  const PLAINTEXT_MAX_LENGTH         = "plainTextMaxLength";
-  const HASH_MAX_LENGTH              = "hashMaxLength";
-  const MAX_HASHLIST_SIZE            = "maxHashlistSize";
+  const HASHES_PAGE_SIZE     = "pagingSize";
+  const NUMBER_LOGENTRIES    = "numLogEntries";
+  const BATCH_SIZE           = "batchSize";
+  const PLAINTEXT_MAX_LENGTH = "plainTextMaxLength";
+  const HASH_MAX_LENGTH      = "hashMaxLength";
+  const MAX_HASHLIST_SIZE    = "maxHashlistSize";
   
   // Section: UI
   const TIME_FORMAT       = "timefmt";
@@ -51,6 +51,7 @@ class DConfig {
   const BASE_URL           = "baseUrl";
   const BASE_HOST          = "baseHost";
   const EMAIL_SENDER       = "emailSender";
+  const EMAIL_SENDER_NAME  = "emailSenderName";
   const TELEGRAM_BOT_TOKEN = "telegramBotToken";
   const CONTACT_EMAIL      = "contactEmail";
   const VOUCHER_DELETION   = "voucherDeletion";
@@ -115,6 +116,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::HIDE_IP_INFO:
         return DConfigType::TICKBOX;
+      case DConfig::EMAIL_SENDER_NAME:
+        return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -183,6 +186,8 @@ class DConfig {
         return "Number of hashes per page on hashes view.";
       case DConfig::HIDE_IP_INFO:
         return "Hide IP information of agents.";
+      case DConfig::EMAIL_SENDER_NAME:
+        return "Name of the sender of emails sent from Hashtopussy.";
     }
     return $config;
   }

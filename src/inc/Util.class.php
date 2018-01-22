@@ -989,7 +989,7 @@ class Util {
     global $CONFIG;
     
     $header = "Content-type: text/html; charset=utf8\r\n";
-    $header .= "From: Hashtopussy <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
+    $header .= "From: " . $CONFIG->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
     if (!mail($address, $subject, $text, $header)) {
       return false;
     }

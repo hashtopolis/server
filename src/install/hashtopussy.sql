@@ -257,14 +257,15 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (23, 3, 'plainTextMaxLength', '200'),
   (24, 3, 'hashMaxLength', '1024'),
   (25, 5, 'emailSender', 'hashtopussy@example.org'),
-  (26, 5, 'baseHost', ''),
-  (27, 3, 'maxHashlistSize', '5000000'),
-  (28, 4, 'hideImportMasks', '1'),
-  (29, 5, 'telegramBotToken', ''),
-  (30, 5, 'contactEmail', ''),
-  (31, 5, 'voucherDeletion', '0'),
-  (32, 4, 'hashesPerPage', '1000'),
-  (33, 4, 'hideIpInfo', '0');
+  (26, 5, 'emailSenderName', 'Hashtopussy'),
+  (27, 5, 'baseHost', ''),
+  (28, 3, 'maxHashlistSize', '5000000'),
+  (29, 4, 'hideImportMasks', '1'),
+  (30, 5, 'telegramBotToken', ''),
+  (31, 5, 'contactEmail', ''),
+  (32, 5, 'voucherDeletion', '0'),
+  (33, 4, 'hashesPerPage', '1000'),
+  (34, 4, 'hideIpInfo', '0');
 
 -- --------------------------------------------------------
 
