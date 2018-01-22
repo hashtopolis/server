@@ -2,7 +2,13 @@
 
 ## Large Update
 
-- TODO
+- Complete task management backend rewritten
+- Improved performance when handling cracked hashes
+- Added Groups for more detailed access control
+- Including new python client
+- Compatibility with generic crackers
+- More configuration options added
+- Cracker version management changed
 
 ## Bugfixes
 
