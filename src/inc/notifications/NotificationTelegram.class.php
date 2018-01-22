@@ -1,4 +1,5 @@
 <?php
+
 class HashtopussyNotificationTelegram extends HashtopussyNotification {
   protected     $receiver;
   public static $name = "Telegram";
@@ -11,7 +12,7 @@ class HashtopussyNotificationTelegram extends HashtopussyNotification {
     return array();
   }
   
-  function sendMessage($message) {
+  function sendMessage($message, $subject = "") {
     $botToken = "XX"; // ENTER BOT TOKEN here
     $data = array(
       "chat_id" => $this->receiver,

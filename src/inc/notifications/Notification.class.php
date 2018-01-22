@@ -22,48 +22,56 @@ abstract class HashtopussyNotification {
     $this->notification = $notification;
     $template = new Template($this->getTemplateName());
     $obj = $this->getObjects();
+    $subject = "Hashtopussy - ";
     switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         $task = $payload->getVal(DPayloadKeys::TASK);
         $obj['message'] = "Task '" . $task->getTaskName() . "' (" . $task->getId() . ") is completed!";
         $obj['html'] = "Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> is completed!";
         $obj['simplified'] = "Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> is completed!";
+        $subject .= "Task completed";
         break;
       case DNotificationType::AGENT_ERROR:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
         $obj['message'] = "Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
         $obj['html'] = "Agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
         $obj['simplified'] = "Agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . "> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
+        $subject .= "Error occurred on Agent";
         break;
       case DNotificationType::OWN_AGENT_ERROR:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
         $obj['message'] = "Your owned Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
         $obj['html'] = "Your owned Agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
         $obj['simplified'] = "Your owned Agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . "> errored: " . $payload->getVal(DPayloadKeys::AGENT_ERROR);
+        $subject .= "Error occurred on your own Agent";
         break;
       case DNotificationType::LOG_ERROR:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
         $obj['message'] = "Log level ERROR occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
+        $subject .= "Log Entry with error-level occurred";
         break;
       case DNotificationType::NEW_TASK:
         $task = $payload->getVal(DPayloadKeys::TASK);
         $obj['message'] = "New Task '" . $task->getTaskName() . "' (" . $task->getId() . ") was created";
         $obj['html'] = "New Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> was created";
         $obj['simplified'] = "New Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> was created";
+        $subject .= "New Task got created";
         break;
       case DNotificationType::NEW_HASHLIST:
         $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
         $obj['message'] = "New Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") was created";
         $obj['html'] = "New Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> was created";
         $obj['simplified'] = "New Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> was created";
+        $subject .= "New Hashlist got added";
         break;
       case DNotificationType::HASHLIST_ALL_CRACKED:
         $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
         $obj['message'] = "Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") was cracked completely";
         $obj['html'] = "Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> was cracked completely";
         $obj['simplified'] = "Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> was cracked completely";
+        $subject .= "Hashlist got fully cracked";
         break;
       case DNotificationType::HASHLIST_CRACKED_HASH:
         $numCracked = $payload->getVal(DPayloadKeys::NUM_CRACKED);
@@ -73,74 +81,84 @@ abstract class HashtopussyNotification {
         $obj['message'] = "$numCracked Hashes from Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") were cracked on Task '" . $task->getTaskName() . "' (" . $task->getId() . ") by agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ")";
         $obj['html'] = "$numCracked Hashes from Hashlist <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "'>" . $hashlist->getHashlistName() . "</a> were cracked on Task <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "'>" . $task->getTaskName() . "</a> by agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a>";
         $obj['simplified'] = "$numCracked Hashes from Hashlist <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/hashlists.php?id=" . $hashlist->getId() . "|" . $hashlist->getHashlistName() . "> were cracked on Task <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/tasks.php?id=" . $task->getId() . "|" . $task->getTaskName() . "> by agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . ">";
+        $subject .= "Hashes got cracked on hashlist";
         break;
       case DNotificationType::USER_CREATED:
         $user = $payload->getVal(DPayloadKeys::USER);
         $obj['message'] = "New User '" . $user->getUsername() . "' (" . $user->getId() . ") was created";
         $obj['html'] = "New User <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> was created";
         $obj['simplified'] = "New User <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "|" . $user->getUsername() . "> was created";
-        break;
+        $subject .= "User got created";
         break;
       case DNotificationType::USER_DELETED:
         $user = $payload->getVal(DPayloadKeys::USER);
         $obj['message'] = "User '" . $user->getUsername() . "' (" . $user->getId() . ") got deleted";
         $obj['html'] = "User <a href='#'>" . $user->getUsername() . "</a> got deleted";
         $obj['simplified'] = "User '" . $user->getUsername() . "' got deleted";
+        $subject .= "User got deleted";
         break;
       case DNotificationType::USER_LOGIN_FAILED:
         $user = $payload->getVal(DPayloadKeys::USER);
         $obj['message'] = "User '" . $user->getUsername() . "' (" . $user->getId() . ") failed to login due to wrong password";
         $obj['html'] = "User <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "'>" . $user->getUsername() . "</a> failed to login due to wrong password";
         $obj['simplified'] = "User <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/users.php?id=" . $user->getId() . "|" . $user->getUsername() . "> failed to login due to wrong password";
+        $subject .= "User failed to log in";
         break;
       case DNotificationType::NEW_AGENT:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
         $obj['message'] = "New Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") was registered";
         $obj['html'] = "New Agent <a href='" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "'>" . $agent->getAgentName() . "</a> was registered";
         $obj['simplified'] = "New Agent <" . Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?id=" . $agent->getId() . "|" . $agent->getAgentName() . "> was registered";
+        $subject .= "New Agent registered";
         break;
       case DNotificationType::DELETE_TASK:
         $task = $payload->getVal(DPayloadKeys::TASK);
         $obj['message'] = "Task '" . $task->getTaskName() . "' (" . $task->getId() . ") got deleted";
         $obj['html'] = "Task <a href='#'>" . $task->getTaskName() . "</a> got deleted";
         $obj['simplified'] = "Task '" . $task->getTaskName() . "' got deleted";
+        $subject .= "Task got deleted";
         break;
       case DNotificationType::DELETE_HASHLIST:
         $hashlist = $payload->getVal(DPayloadKeys::HASHLIST);
         $obj['message'] = "Hashlist '" . $hashlist->getHashlistName() . "' (" . $hashlist->getId() . ") got deleted";
         $obj['html'] = "Hashlist <a href='#'>" . $hashlist->getHashlistName() . "</a> got deleted";
         $obj['simplified'] = "Hashlist '" . $hashlist->getHashlistName() . "' got deleted";
+        $subject .= "Hashlist got deleted";
         break;
       case DNotificationType::DELETE_AGENT:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
         $obj['message'] = "Agent '" . $agent->getAgentName() . "' (" . $agent->getId() . ") got deleted";
         $obj['html'] = "Agent <a href='#'>" . $agent->getAgentName() . "</a> got deleted";
         $obj['simplified'] = "Agent '" . $agent->getAgentName() . "' got deleted";
+        $subject .= "Agent got deleted";
         break;
       case DNotificationType::LOG_WARN:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
         $obj['message'] = "Log level WARN occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
+        $subject .= "Log Entry with warning-level occurred";
         break;
       case DNotificationType::LOG_FATAL:
         $logEntry = $payload->getVal(DPayloadKeys::LOG_ENTRY);
         $obj['message'] = "Log level FATAL occured by '" . $logEntry->getIssuer() . "-" . $logEntry->getIssuerId() . "': " . $logEntry->getMessage() . "!";
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
+        $subject .= "Log Entry with fatal-level occurred";
         break;
       default:
         $obj['message'] = "Notification for unknown type: " . print_r($payload->getAllValues(), true);
         $obj['html'] = $obj['message'];
         $obj['simplified'] = $obj['message'];
+        $subject .= "Unknown Notification";
         break;
     }
-    $this->sendMessage($template->render($obj));
+    $this->sendMessage($template->render($obj), $subject);
   }
   
   abstract function getTemplateName();
   
   abstract function getObjects();
   
-  abstract function sendMessage($message);
+  abstract function sendMessage($message, $subject);
 }

@@ -12,7 +12,7 @@ class HashtopussyNotificationExample extends HashtopussyNotification {
     return array();
   }
   
-  function sendMessage($message) {
+  function sendMessage($message, $subject = "") {
     file_put_contents(dirname(__FILE__) . "/notification.log", "MSG TO " . $this->receiver . ": " . $message . "\n", FILE_APPEND);
   }
 }

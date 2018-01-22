@@ -14,8 +14,8 @@ class HashtopussyNotificationEmail extends HashtopussyNotification {
     return $obj;
   }
   
-  function sendMessage($message) {
-    Util::sendMail($this->receiver, "Hashtopussy Notification", $message);
+  function sendMessage($message, $subject) {
+    Util::sendMail($this->receiver, $subject, $message);
   }
 }
 
