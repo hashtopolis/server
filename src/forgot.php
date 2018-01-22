@@ -35,7 +35,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
       $user->setPasswordSalt($newSalt);
       $user->setIsComputedPassword(1);
       $FACTORIES::getUserFactory()->update($user);
-      $tmpl = new Template("email.forgot");
+      $tmpl = new Template("email/forgot");
       $obj = array('username' => $user->getUsername(), 'password' => $newPass);
       Util::sendMail($user->getEmail(), "Password reset", $tmpl->render($obj));
       $message = "<div class='alert alert-success'>Password resetted! You should receive an email soon.</div>";
