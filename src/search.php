@@ -11,10 +11,12 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
 $TEMPLATE = new Template("search");
+$OBJECTS['pageTitle'] = "Hashtopussy - Search Hashes";
 $MENU->setActive("lists_search");
 
 $OBJECTS['result'] = false;

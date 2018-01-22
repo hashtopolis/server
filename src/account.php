@@ -12,6 +12,7 @@ if (!$LOGIN->isLoggedin()) {
 
 $TEMPLATE = new Template("account");
 $MENU->setActive("account_settings");
+$OBJECTS['pageTitle'] = "Hashtopussy - Account Settings";
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {

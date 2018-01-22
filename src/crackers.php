@@ -16,6 +16,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 

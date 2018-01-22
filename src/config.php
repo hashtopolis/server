@@ -14,6 +14,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -41,6 +42,8 @@ foreach ($entries as $entry) {
   $configuration[] = $set;
   $OBJECTS['configSectionId'] = $configSectionId;
 }
+
+$OBJECTS['pageTitle'] = "Hashtopussy - Configuration";
 
 $OBJECTS['configuration'] = $configuration;
 

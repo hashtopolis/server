@@ -15,6 +15,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -44,6 +45,7 @@ if (isset($_GET['edit'])) {
   else {
     $OBJECTS['file'] = $file;
     $TEMPLATE = new Template("files/edit");
+    $OBJECTS['pageTitle'] = "Hashtopussy - Edit File " . $file->getFilename();
   }
 }
 else {
@@ -52,6 +54,7 @@ else {
   $OBJECTS['fileType'] = ($view == "dict") ? "Wordlists" : "Rules";
   $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));;
   $OBJECTS['impfiles'] = Util::scanImportDirectory();
+  $OBJECTS['pageTitle'] = "Hashtopussy - Files";
 }
 $OBJECTS['view'] = $view;
 

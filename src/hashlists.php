@@ -21,6 +21,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -51,6 +52,7 @@ if (isset($_GET['new'])) {
   $OBJECTS['hashtypes'] = $hashtypes;
   $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
   $TEMPLATE = new Template("hashlists/new");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Add new Hashlist";
 }
 else if (isset($_GET['id'])) {
   //show hashlist detail page
@@ -114,6 +116,7 @@ else if (isset($_GET['id'])) {
   $OBJECTS['superTasks'] = $FACTORIES::getSupertaskFactory()->filter(array());
   
   $TEMPLATE = new Template("hashlists/detail");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Hashlist details for " . $list->getVal('hashlist')->getHashlistName();
 }
 else {
   //load all hashlists
@@ -126,6 +129,7 @@ else {
   }
   $OBJECTS['hashlists'] = $hashlists;
   $OBJECTS['numHashlists'] = sizeof($hashlists);
+  $OBJECTS['pageTitle'] = "Hashtopussy - Hashlists";
 }
 
 echo $TEMPLATE->render($OBJECTS);

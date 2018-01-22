@@ -15,10 +15,12 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
 $TEMPLATE = new Template("log");
+$OBJECTS['pageTitle'] = "Hashtopussy - Log";
 $MENU->setActive("config_log");
 
 $level = "0";

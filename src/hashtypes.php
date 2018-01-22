@@ -11,6 +11,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -31,6 +32,7 @@ $hashtypes = $FACTORIES::getHashTypeFactory()->filter(array());
 
 $OBJECTS['hashtypes'] = $hashtypes;
 $OBJECTS['message'] = $message;
+$OBJECTS['pageTitle'] = "Hashtopussy - Hashtypes";
 
 echo $TEMPLATE->render($OBJECTS);
 

@@ -20,6 +20,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -36,6 +37,7 @@ $binaryFormat = false;
 $hashFactory = null;
 $hashClass = null;
 $queryFilters = array();
+$OBJECTS['pageTitle'] = "Hashtopussy - Hashes";
 if (isset($_GET['hashlist'])) {
   $list = $FACTORIES::getHashlistFactory()->get($_GET["hashlist"]);
   if ($list == null) {
@@ -66,6 +68,7 @@ if (isset($_GET['hashlist'])) {
   }
   $src = "hashlist";
   $srcId = $list->getId();
+  $OBJECTS['pageTitle'] = "Hashtopussy - Hashes of Hashlist " . $list->getHashlistName();
 }
 else if (isset($_GET['chunk'])) {
   $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
@@ -90,6 +93,7 @@ else if (isset($_GET['chunk'])) {
   $src = "chunk";
   $OBJECTS['chunk'] = $chunk;
   $srcId = $chunk->getId();
+  $OBJECTS['pageTitle'] = "Hashtopussy - Hashes of Chunk " . $chunk->getId();
 }
 else if (isset($_GET['task'])) {
   $task = $FACTORIES::getTaskFactory()->get($_GET['task']);
@@ -116,6 +120,7 @@ else if (isset($_GET['task'])) {
   $src = "task";
   $OBJECTS['task'] = $task;
   $srcId = $task->getId();
+  $OBJECTS['pageTitle'] = "Hashtopussy - Hashes of Task " . $task->getId();
 }
 
 $OBJECTS['src'] = $src;

@@ -67,6 +67,7 @@ $LOGIN = null;
 $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
 $OBJECTS['messages'] = array();
+$OBJECTS['pageTitle'] = "";
 if ($INSTALL) {
   $LOGIN = new Login();
   $OBJECTS['login'] = $LOGIN;

@@ -30,6 +30,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -44,7 +45,6 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
     Util::refresh();
   }
 }
-
 
 // load groups for user
 $qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
@@ -67,6 +67,7 @@ if (isset($_GET['id'])) {
   else {
     $OBJECTS['agent'] = $agent;
     $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array());
+    $OBJECTS['pageTitle'] .= "Agent details for " . $agent->getAgentName();
     
     // load all tasks which are valid for this agent
     $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent, true);
@@ -100,6 +101,7 @@ if (isset($_GET['id'])) {
 else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
+  $OBJECTS['pageTitle'] = "Hashtopussy - New Agent";
   $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
   $OBJECTS['vouchers'] = $vouchers;
   $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
@@ -111,6 +113,8 @@ else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
 }
 else {
+  $OBJECTS['pageTitle'] = "Hashtopussy - Agents";
+  
   // load all agents which are in an access group the user has access to
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());

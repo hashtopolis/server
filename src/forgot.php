@@ -42,6 +42,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
+$OBJECTS['pageTitle'] = "Hashtopussy - Forgot Password";
 $OBJECTS['message'] = $message;
 
 echo $TEMPLATE->render($OBJECTS);

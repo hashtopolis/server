@@ -232,6 +232,7 @@ if (isset($_GET['id'])) {
     $fullAgents->addValue($agent->getId(), $agent);
   }
   $OBJECTS['fullAgents'] = $fullAgents;
+  $OBJECTS['pageTitle'] = "Hashtopussy - Task details for " . $task->getTaskName();
 }
 else if (isset($_GET['new'])) {
   if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
@@ -339,9 +340,11 @@ else if (isset($_GET['new'])) {
   $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::ORDER => $oF));
   usort($versions, array("Util", "versionComparisonBinary"));
   $OBJECTS['versions'] = $versions;
+  $OBJECTS['pageTitle'] = "Hashtopussy - Create Task";
 }
 else {
   Util::loadTasks();
+  $OBJECTS['pageTitle'] = "Hashtopussy - Tasks";
 }
 
 echo $TEMPLATE->render($OBJECTS);
