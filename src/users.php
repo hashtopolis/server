@@ -16,7 +16,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("errors/restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -36,7 +36,7 @@ if (isset($_GET['new'])) {
   $TEMPLATE = new Template("users/new");
   $MENU->setActive("users_new");
   $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
-  $OBJECTS['pageTitle'] = "Hashtopussy - Create User";
+  $OBJECTS['pageTitle'] = "Create User";
 }
 else if (isset($_GET['id'])) {
   $user = $FACTORIES::getUserFactory()->get($_GET['id']);
@@ -53,7 +53,7 @@ else if (isset($_GET['id'])) {
     $OBJECTS['accessGroups'] = $joinedGroups[$FACTORIES::getAccessGroupFactory()->getModelName()];
     
     $TEMPLATE = new Template("users/detail");
-    $OBJECTS['pageTitle'] = "Hashtopussy - User details for " . $user->getUsername();
+    $OBJECTS['pageTitle'] = "User details for " . $user->getUsername();
   }
 }
 else {
@@ -68,7 +68,7 @@ else {
   
   $OBJECTS['allUsers'] = $users;
   $OBJECTS['numUsers'] = sizeof($users);
-  $OBJECTS['pageTitle'] = "Hashtopussy - Users";
+  $OBJECTS['pageTitle'] = "Users";
 }
 
 echo $TEMPLATE->render($OBJECTS);

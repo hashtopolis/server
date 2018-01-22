@@ -11,7 +11,7 @@ if (!$INSTALL) {
 }
 
 $TEMPLATE = new Template("static/index");
-$OBJECTS['pageTitle'] = "Hashtopussy - Welcome";
+$OBJECTS['pageTitle'] = "Welcome";
 $message = "";
 
 if (isset($_GET['err'])) {

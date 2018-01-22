@@ -20,7 +20,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -56,7 +56,7 @@ if (isset($_GET['id'])) {
     $isUsed = true;
   }
   $OBJECTS['isUsed'] = $isUsed;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Preconfigured task details for " . $pretask->getTaskName();
+  $OBJECTS['pageTitle'] = "Preconfigured task details for " . $pretask->getTaskName();
 }
 else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("pretasks/new");
@@ -69,7 +69,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['wordlists'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
   
   $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
-  $OBJECTS['pageTitle'] = "Hashtopussy - Create preconfigured Task";
+  $OBJECTS['pageTitle'] = "Create preconfigured Task";
 }
 else {
   $queryFilters = array();
@@ -114,7 +114,7 @@ else {
     $tasks[] = $set;
   }
   $OBJECTS['tasks'] = $tasks;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Preconfigured Tasks";
+  $OBJECTS['pageTitle'] = "Preconfigured Tasks";
 }
 
 echo $TEMPLATE->render($OBJECTS);

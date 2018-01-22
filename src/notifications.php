@@ -20,12 +20,12 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
 $TEMPLATE = new Template("notifications");
-$OBJECTS['pageTitle'] = "Hashtopussy - Notifications";
+$OBJECTS['pageTitle'] = "Notifications";
 $MENU->setActive("account_notifications");
 
 //catch actions here...

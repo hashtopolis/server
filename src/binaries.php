@@ -11,7 +11,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -29,17 +29,17 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
     Util::refresh();
   }
 }
-$OBJECTS['pageTitle'] = "Hashtopussy - Agent Binaries";
+$OBJECTS['pageTitle'] = "Agent Binaries";
 if (isset($_GET['new'])) {
   $OBJECTS['newBinary'] = true;
-  $OBJECTS['pageTitle'] = "Hashtopussy - New Agent Binary";
+  $OBJECTS['pageTitle'] = "New Agent Binary";
 }
 else if (isset($_GET['edit'])) {
   $bin = $FACTORIES::getAgentBinaryFactory()->get($_GET['edit']);
   if ($bin == null) {
     UI::printError("ERROR", "Invalid agent binary ID!");
   }
-  $OBJECTS['pageTitle'] = "Hashtopussy - Edit Agent Binary of type " . $bin->getType();
+  $OBJECTS['pageTitle'] = "Edit Agent Binary of type " . $bin->getType();
   $OBJECTS['editBinary'] = true;
   $OBJECTS['bin'] = $bin;
 }

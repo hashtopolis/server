@@ -16,7 +16,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -37,11 +37,13 @@ if (isset($_GET['new']) && isset($_GET['id']) && $LOGIN->getLevel() >= DAccessLe
   if ($binaryType !== null) {
     $OBJECTS['binaryType'] = $binaryType;
     $TEMPLATE = new Template("crackers/newVersion");
+    $OBJECTS['pageTitle'] = "Add new Cracker Binary Version";
   }
 }
 else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $TEMPLATE = new Template("crackers/new");
   $MENU->setActive("crackers_new");
+  $OBJECTS['pageTitle'] = "Add Cracker Binary";
 }
 else if (isset($_GET['edit']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $binary = $FACTORIES::getCrackerBinaryFactory()->get($_GET['id']);
@@ -50,6 +52,7 @@ else if (isset($_GET['edit']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) 
     $TEMPLATE = new Template("crackers/editVersion");
     $MENU->setActive("crackers_edit");
     $OBJECTS['binaryType'] = $FACTORIES::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
+    $OBJECTS['pageTitle'] = "Edit Cracker Binary Version for " . $OBJECTS['binaryType']->getTypeName();
   }
 }
 else if (isset($_GET['id'])) {
@@ -59,6 +62,7 @@ else if (isset($_GET['id'])) {
     $TEMPLATE = new Template("crackers/detail");
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
     $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $OBJECTS['pageTitle'] = "Cracker Binary details for " . $binaryType->getTypeName();
   }
 }
 else {
@@ -78,6 +82,7 @@ else {
     $binariesVersions->addValue($binaryType->getId(), implode("<br>", $arr));
   }
   $OBJECTS['versions'] = $binariesVersions;
+  $OBJECTS['pageTitle'] = "Cracker Binaries";
 }
 
 echo $TEMPLATE->render($OBJECTS);

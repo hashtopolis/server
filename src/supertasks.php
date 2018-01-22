@@ -17,7 +17,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -38,14 +38,14 @@ if (isset($_GET['create']) && $_GET['create'] == "new") {
   $TEMPLATE = new Template("supertasks/create");
   $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   $OBJECTS['preTasks'] = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-  $OBJECTS['pageTitle'] = "Hashtopussy - Create Supertask";
+  $OBJECTS['pageTitle'] = "Create Supertask";
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import") {
   $MENU->setActive("tasks_superimport");
   $TEMPLATE = new Template("supertasks/import");
   
   $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
-  $OBJECTS['pageTitle'] = "Hashtopussy - Import Supertask from Masks";
+  $OBJECTS['pageTitle'] = "Import Supertask from Masks";
 }
 else if (isset($_GET['id']) && isset($_GET['new'])) {
   $TEMPLATE = new Template("supertasks/new");
@@ -56,7 +56,7 @@ else if (isset($_GET['id']) && isset($_GET['new'])) {
   $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array());
   usort($versions, array("Util", "versionComparisonBinary"));
   $OBJECTS['versions'] = $versions;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Issue Supertask";
+  $OBJECTS['pageTitle'] = "Issue Supertask";
 }
 else if (isset($_GET['id'])) {
   $TEMPLATE = new Template("supertasks/detail");
@@ -69,7 +69,7 @@ else if (isset($_GET['id'])) {
   $tasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $OBJECTS['tasks'] = $tasks[$FACTORIES::getPretaskFactory()->getModelName()];
   $OBJECTS['supertask'] = $supertask;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Supertask details for " . $supertask->getSupertaskName();
+  $OBJECTS['pageTitle'] = "Supertask details for " . $supertask->getSupertaskName();
 }
 else {
   $supertasks = $FACTORIES::getSupertaskFactory()->filter(array());
@@ -84,7 +84,7 @@ else {
   }
   $OBJECTS['tasks'] = $supertaskTasks;
   $OBJECTS['supertasks'] = $supertasks;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Supertasks";
+  $OBJECTS['pageTitle'] = "Supertasks";
 }
 
 echo $TEMPLATE->render($OBJECTS);

@@ -19,7 +19,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("errors/restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -37,7 +37,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 if (isset($_GET['new'])) {
   $TEMPLATE = new Template("groups/new");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Create Group";
+  $OBJECTS['pageTitle'] = "Create Group";
 }
 else if (isset($_GET['id'])) {
   $group = $FACTORIES::getAccessGroupFactory()->get($_GET['id']);
@@ -68,7 +68,7 @@ else if (isset($_GET['id'])) {
     $qF = new ContainFilter(Agent::AGENT_ID, $excludedAgents, $FACTORIES::getAgentFactory(), true);
     $OBJECTS['allAgents'] = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
     $TEMPLATE = new Template("groups/detail");
-    $OBJECTS['pageTitle'] = "Hashtopussy - Details of Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
+    $OBJECTS['pageTitle'] = "Details of Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
   }
 }
 else {
@@ -97,7 +97,7 @@ else {
   
   $OBJECTS['agents'] = $agents;
   $OBJECTS['users'] = $users;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Groups";
+  $OBJECTS['pageTitle'] = "Groups";
 }
 
 echo $TEMPLATE->render($OBJECTS);

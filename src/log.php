@@ -20,7 +20,7 @@ else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
 }
 
 $TEMPLATE = new Template("log");
-$OBJECTS['pageTitle'] = "Hashtopussy - Log";
+$OBJECTS['pageTitle'] = "Log";
 $MENU->setActive("config_log");
 
 $level = "0";

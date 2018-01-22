@@ -16,7 +16,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Hashtopussy - Restricted";
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -28,7 +28,7 @@ if (isset($_GET['new'])) {
   $MENU->setActive("lists_snew");
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
   $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
-  $OBJECTS['pageTitle'] = "Hashtopussy - Create Superhashlist";
+  $OBJECTS['pageTitle'] = "Create Superhashlist";
 }
 else {
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
@@ -42,7 +42,7 @@ else {
     $subLists->addValue($list->getId(), $ll[$FACTORIES::getHashlistFactory()->getModelName()]);
   }
   $OBJECTS['subLists'] = $subLists;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Superhashlists";
+  $OBJECTS['pageTitle'] = "Superhashlists";
 }
 
 $hashtypes = new DataSet();

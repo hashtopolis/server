@@ -63,6 +63,7 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 if (isset($_GET['id'])) {
   if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
     $TEMPLATE = new Template("restricted");
+    $OBJECTS['pageTitle'] = "Restricted";
     die($TEMPLATE->render($OBJECTS));
   }
   
@@ -232,7 +233,7 @@ if (isset($_GET['id'])) {
     $fullAgents->addValue($agent->getId(), $agent);
   }
   $OBJECTS['fullAgents'] = $fullAgents;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Task details for " . $task->getTaskName();
+  $OBJECTS['pageTitle'] = "Task details for " . $task->getTaskName();
 }
 else if (isset($_GET['new'])) {
   if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
@@ -340,11 +341,11 @@ else if (isset($_GET['new'])) {
   $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::ORDER => $oF));
   usort($versions, array("Util", "versionComparisonBinary"));
   $OBJECTS['versions'] = $versions;
-  $OBJECTS['pageTitle'] = "Hashtopussy - Create Task";
+  $OBJECTS['pageTitle'] = "Create Task";
 }
 else {
   Util::loadTasks();
-  $OBJECTS['pageTitle'] = "Hashtopussy - Tasks";
+  $OBJECTS['pageTitle'] = "Tasks";
 }
 
 echo $TEMPLATE->render($OBJECTS);
