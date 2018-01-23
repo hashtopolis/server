@@ -32,7 +32,7 @@ class QueryFilterNoCase extends Filter {
       }
       return $table . $this->key . " IS NULL ";
     }
-    return "(LOWER(" . $table . $this->key . ") " . $this->operator . "? OR " . $table . $this->key . $this->operator . "?)";
+    return "($table . $this->key . $this->operator . "?)";
   }
   
   function getValue() {
