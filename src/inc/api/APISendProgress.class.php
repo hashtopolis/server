@@ -25,7 +25,7 @@ class APISendProgress extends APIBasic {
     // upload cracked hashes to server
     $keyspaceProgress = $QUERY[PQuerySendProgress::KEYSPACE_PROGRESS];
     $relativeProgress = intval($QUERY[PQuerySendProgress::RELATIVE_PROGRESS]);//Normalized between 1-10k
-    $speed = floatval($QUERY[PQuerySendProgress::SPEED]);
+    $speed = intval($QUERY[PQuerySendProgress::SPEED]);
     $state = intval($QUERY[PQuerySendProgress::HASHCAT_STATE]);
     
     $chunk = $FACTORIES::getChunkFactory()->get(intval($QUERY[PQuerySendProgress::CHUNK_ID]));
