@@ -136,7 +136,7 @@ $DB->exec("UPDATE `HashBinary` SET `chunkId`=NULL WHERE 1");
 echo "OK\n";
 
 echo "Clear chunk table... ";
-$DB->exec("TRUNCATE `Chunk`");
+$DB->exec("DELETE FROM `Chunk` WHERE 1;");
 echo "OK\n";
 
 echo "Update Chunk table... ";
@@ -212,7 +212,7 @@ echo "OK\n";
 echo "Cache all Task entries... ";
 $stmt = $DB->query("SELECT * FROM `Task` WHERE 1");
 $tasks = $stmt->fetchAll();
-$DB->exec("TRUNCATE `Task`;");
+$DB->exec("DELETE FROM `Task` WHERE 1;");
 echo "OK\n";
 
 echo "Cache all TaskFile entries... ";
