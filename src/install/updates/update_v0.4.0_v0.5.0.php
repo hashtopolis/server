@@ -13,6 +13,8 @@ use DBA\Supertask;
 use DBA\SupertaskPretask;
 use DBA\User;
 
+ini_set("memory_limit", "2G");
+
 @include(dirname(__FILE__) . "/../../inc/db.php");
 include(dirname(__FILE__) . "/../../dba/init.php");
 
