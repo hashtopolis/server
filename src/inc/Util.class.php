@@ -1148,7 +1148,6 @@ class Util {
       foreach (DDeviceCompress::COMPRESSION as $pattern => $replacement) {
         if (strpos($device, $pattern) !== false) {
           $device = str_replace($pattern, $replacement, $device);
-          break;
         }
       }
       $compressed[] = $device;
