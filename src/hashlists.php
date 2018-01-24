@@ -1,6 +1,7 @@
 <?php
 
 use DBA\Chunk;
+use DBA\ContainFilter;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\HashType;
@@ -121,8 +122,9 @@ else if (isset($_GET['id'])) {
 else {
   //load all hashlists
   $jF = new JoinFilter($FACTORIES::getHashTypeFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
-  $qF = new QueryFilter(Hashlist::FORMAT, "" . DHashlistFormat::SUPERHASHLIST, "<>", $FACTORIES::getHashlistFactory());
-  $joinedHashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
+  $qF1 = new QueryFilter(Hashlist::FORMAT, "" . DHashlistFormat::SUPERHASHLIST, "<>", $FACTORIES::getHashlistFactory());
+  $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($LOGIN->getUser())));
+  $joinedHashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => array($qF1, $qF2)));
   $hashlists = array();
   for ($x = 0; $x < sizeof($joinedHashlists[$FACTORIES::getHashlistFactory()->getModelName()]); $x++) {
     $hashlists[] = new DataSet(array('hashlist' => $joinedHashlists[$FACTORIES::getHashlistFactory()->getModelName()][$x], 'hashtype' => $joinedHashlists[$FACTORIES::getHashTypeFactory()->getModelName()][$x]));
