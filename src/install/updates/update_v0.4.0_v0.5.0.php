@@ -180,6 +180,7 @@ echo "OK\n";
 echo "Update Hashlist table... ";
 $DB->exec("ALTER TABLE `Hashlist` CHANGE `secret` `isSecret` INT(11) NOT NULL;");
 $DB->exec("ALTER TABLE `Hashlist` ADD `accessGroupId` INT(11) NOT NULL");
+$DB->exec("UPDATE `Hashlist` SET `accessGroupId`=1 WHERE 1");
 $DB->exec("ALTER TABLE `Hashlist` ADD CONSTRAINT `Hashlist_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);");
 echo "OK\n";
 
