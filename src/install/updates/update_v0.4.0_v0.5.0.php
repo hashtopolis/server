@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AgentFactory;
 use DBA\FilePretask;
 use DBA\Pretask;
 
@@ -15,7 +16,8 @@ if ($confirm != 'AGREE') {
   die("Aborted!\n");
 }
 
-$DB = $FACTORIES::getAgentFactory()->getDB();
+$aF = new AgentFactory();
+$DB = $aF->getDB();
 $DB->beginTransaction();
 
 echo "Apply updates...\n";
