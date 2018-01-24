@@ -264,7 +264,7 @@ foreach ($supertasks as $supertask) {
   $s[] = new Supertask($supertask['supertaskId'], $supertask['supertaskName']);
 }
 if (sizeof($s) > 0) {
-  $FACTORIES::getSupertaskFactory()->massSave($supertask);
+  $FACTORIES::getSupertaskFactory()->massSave($s);
 }
 echo "OK\n";
 
