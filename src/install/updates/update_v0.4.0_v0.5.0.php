@@ -117,12 +117,12 @@ DEALLOCATE PREPARE stmt;"
 );
 echo "OK\n";
 
-echo "Reload full include... ";
-require_once(dirname(__FILE__) . "/../../inc/load.php");
-echo "OK\n";
-
 echo "Importing new scheme... ";
 $DB->exec(file_get_contents(dirname(__FILE__) . "/../hashtopussy.sql"));
+echo "OK\n";
+
+echo "Reload full include... ";
+require_once(dirname(__FILE__) . "/../../inc/load.php");
 echo "OK\n";
 
 echo "Starting with refilling data...\n";
