@@ -251,7 +251,7 @@ foreach ($taskFiles as $taskFile) {
   if (!in_array($taskFile['taskId'], $taskIds) || !in_array($taskFile['fileId'], $fileIds)) {
     continue; // file is not from a pretask
   }
-  $f[] = new FilePretask($taskFile['taskFileId'], $taskFile['taskId'], $taskFile['fileId']);
+  $f[] = new FilePretask($taskFile['taskFileId'], $taskFile['fileId'], $taskFile['taskId']);
 }
 if (sizeof($f) > 0) {
   $FACTORIES::getFilePretaskFactory()->massSave($f);
