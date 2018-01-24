@@ -3,7 +3,8 @@
 use DBA\FilePretask;
 use DBA\Pretask;
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+@include(dirname(__FILE__) . "/../../inc/db.php");
+include(dirname(__FILE__) . "/../../dba/init.php");
 
 echo "WARNING!!!!\n";
 echo "This update contains some drastic changes and running tasks and chunks will be removed!\n";
@@ -15,6 +16,26 @@ if ($confirm != 'AGREE') {
 }
 
 echo "Apply updates...\n";
+
+echo "Add ConfigSection table... ";
+$DB->exec("CREATE TABLE `ConfigSection` ( `configSectionId` INT(11) NOT NULL, `sectionName` VARCHAR(100) COLLATE utf8_unicode_ci NOT NULL) ENGINE=InnoDB");
+$DB->exec("ALTER TABLE `ConfigSection` ADD PRIMARY KEY (`configSectionId`);");
+$DB->exec("ALTER TABLE `ConfigSection` MODIFY `configSectionId` INT(11) NOT NULL AUTO_INCREMENT;");
+echo "OK\n";
+
+echo "Fill ConfigSection table... ";
+$DB->exec("INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES (1, 'Cracking/Tasks'), (2, 'Yubikey'), (3, 'Finetuning'), (4, 'UI'), (5, 'Server');");
+echo "OK\n";
+
+echo "Update Config table... ";
+$DB->exec("ALTER TABLE `Config` ADD `configSectionId` INT(11) NOT NULL;");
+$DB->exec("ALTER TABLE `Config` ADD KEY `configSectionId` (`configSectionId`);");
+$DB->exec("ALTER TABLE `Config` ADD CONSTRAINT `Config_ibfk_1` FOREIGN KEY (`configSectionId`) REFERENCES `ConfigSection` (`configSectionId`);");
+echo "OK\n";
+
+echo "Reload full include... ";
+require_once(dirname(__FILE__) . "/../../inc/load.php");
+echo "OK\n";
 
 $DB = $FACTORIES::getAgentFactory()->getDB();
 $DB->beginTransaction();
@@ -68,22 +89,6 @@ echo "OK\n";
 echo "Update Chunk table... ";
 $DB->exec("ALTER TABLE `Chunk` CHANGE `progress` `checkpoint` BIGINT(20) NOT NULL;");
 $DB->exec("ALTER TABLE `Chunk` CHANGE `rprogress` `progress` INT(11) NOT NULL;");
-echo "OK\n";
-
-echo "Add ConfigSection table... ";
-$DB->exec("CREATE TABLE `ConfigSection` ( `configSectionId` INT(11) NOT NULL, `sectionName` VARCHAR(100) COLLATE utf8_unicode_ci NOT NULL) ENGINE=InnoDB");
-$DB->exec("ALTER TABLE `ConfigSection` ADD PRIMARY KEY (`configSectionId`);");
-$DB->exec("ALTER TABLE `ConfigSection` MODIFY `configSectionId` INT(11) NOT NULL AUTO_INCREMENT;");
-echo "OK\n";
-
-echo "Fill ConfigSection table... ";
-$DB->exec("INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES (1, 'Cracking/Tasks'), (2, 'Yubikey'), (3, 'Finetuning'), (4, 'UI'), (5, 'Server');");
-echo "OK\n";
-
-echo "Update Config table... ";
-$DB->exec("ALTER TABLE `Config` ADD `configSectionId` INT(11) NOT NULL;");
-$DB->exec("ALTER TABLE `Config` ADD KEY `configSectionId` (`configSectionId`);");
-$DB->exec("ALTER TABLE `Config` ADD CONSTRAINT `Config_ibfk_1` FOREIGN KEY (`configSectionId`) REFERENCES `ConfigSection` (`configSectionId`);");
 echo "OK\n";
 
 echo "Add CrackerBinaryType table... ";
