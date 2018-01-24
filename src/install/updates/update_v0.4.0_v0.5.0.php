@@ -37,7 +37,7 @@ $stmt = $DB->query("SELECT * FROM `Config` WHERE 1");
 $configs = $stmt->fetchAll();
 // read some important values
 $saved = array();
-foreach($configs as $config){
+foreach ($configs as $config) {
   $saved[$config['item']] = $config['value'];
 }
 echo "OK\n";
@@ -80,7 +80,8 @@ $DB->exec("INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`)
 (32, 5, 'voucherDeletion', '0'),
 (33, 4, 'hashesPerPage', '1000'),
 (34, 4, 'hideIpInfo', '1'),
-(35, 5, 'baseUrl', '{$saved['baseUrl']}');");
+(35, 5, 'baseUrl', '{$saved['baseUrl']}');"
+);
 echo "OK\n";
 
 echo "Reload full include... ";
@@ -127,6 +128,11 @@ $DB->exec("CREATE TABLE `AgentZap` ( `agentZapId` INT(11) NOT NULL, `agentId` IN
 $DB->exec("ALTER TABLE `AgentZap` ADD PRIMARY KEY (`agentZapId`), ADD KEY `agentId` (`agentId`), ADD KEY `lastZapId` (`lastZapId`);");
 $DB->exec("ALTER TABLE `AgentZap` MODIFY `agentZapId` INT(11) NOT NULL AUTO_INCREMENT;");
 $DB->exec("ALTER TABLE `AgentZap` ADD CONSTRAINT `AgentZap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`), ADD CONSTRAINT `AgentZap_ibfk_2` FOREIGN KEY (`lastZapId`) REFERENCES `Zap` (`zapId`);");
+echo "OK\n";
+
+echo "Update Hash and HashBinary table... ";
+$DB->exec("UPDATE `Hash` SET `chunkId`=NULL WHERE 1");
+$DB->exec("UPDATE `HashBinary` SET `chunkId`=NULL WHERE 1");
 echo "OK\n";
 
 echo "Clear chunk table... ";
