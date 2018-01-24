@@ -176,7 +176,9 @@ echo "OK\n";
 
 echo "Save files... ";
 $f = [];
+$fileIds = [];
 foreach ($files as $file) {
+  $fileIds[] = $file['fileId'];
   $f[] = new File($file['fileId'], $file['filename'], $file['size'], $file['secret'], $file['fileType']);
 }
 if (sizeof($f) > 0) {
@@ -246,7 +248,7 @@ echo "OK\n";
 echo "Save task files... ";
 $f = [];
 foreach ($taskFiles as $taskFile) {
-  if (!in_array($taskFile['taskId'], $taskIds)) {
+  if (!in_array($taskFile['taskId'], $taskIds) || !in_array($taskFile['fileId'], $fileIds)) {
     continue; // file is not from a pretask
   }
   $f[] = new FilePretask($taskFile['taskFileId'], $taskFile['taskId'], $taskFile['fileId']);
