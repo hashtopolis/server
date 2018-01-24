@@ -984,13 +984,27 @@ class Util {
    *          html content of the email
    * @return true on success, false on failure
    */
-  public static function sendMail($address, $subject, $text) {
+  public static function sendMail($address, $subject, $text, $plaintext) {
     /** @var $CONFIG DataSet */
     global $CONFIG;
     
-    $header = "Content-type: text/html; charset=utf8\r\n";
-    $header .= "From: " . $CONFIG->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
-    if (!mail($address, $subject, $text, $header)) {
+    $boundary = uniqid('np');
+
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "From: " . $CONFIG->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
+    $headers .= "To: " . $address . "\r\n";
+    $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
+    
+    $plainMessage = "\r\n\r\n--" . $boundary . "\r\n";
+    $plainMessage .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
+    $plainMessage .= $plaintext;
+    
+    $htmlMessage = "\r\n\r\n--" . $boundary . "\r\n";
+    $htmlMessage .= "Content-type: text/html;charset=utf-8\r\n\r\n";
+    $htmlMessage .= $text;
+    $htmlMessage .= "\r\n\r\n--" . $boundary . "--";
+    
+    if (!mail($address, $subject, $plainMessage . $htmlMessage, $headers)) {
       return false;
     }
     return true;
