@@ -230,10 +230,12 @@ echo "OK\n";
 
 echo "Save pretasks... ";
 $t = [];
+$taskIds = [];
 foreach ($tasks as $task) {
   if ($task['taskType'] != 0 || $task['hashlistId'] != null) {
     continue; // we only transfer pretasks
   }
+  $taskIds[] = $task['taskId'];
   $t[] = new Pretask($task['taskId'], $task['taskName'], $task['attackCmd'], $task['chunkTime'], $task['statusTimer'], $task['color'], $task['isSmall'], $task['isCpuTask'], $task['useNewBench'], $task['priority'], 0, 1);
 }
 if (sizeof($t) > 0) {
@@ -244,6 +246,9 @@ echo "OK\n";
 echo "Save task files... ";
 $f = [];
 foreach ($taskFiles as $taskFile) {
+  if (!in_array($taskFile['taskId'], $taskIds)) {
+    continue; // file is not from a pretask
+  }
   $f[] = new FilePretask($taskFile['taskFileId'], $taskFile['taskId'], $taskFile['fileId']);
 }
 if (sizeof($f) > 0) {
