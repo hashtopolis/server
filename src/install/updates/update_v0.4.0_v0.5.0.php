@@ -23,6 +23,10 @@ $DB->beginTransaction();
 
 echo "Apply updates...\n";
 
+echo "Disable checks... ";
+$DB->exec("SET foreign_key_checks = 0;");
+echo "OK\n";
+
 echo "Add ConfigSection table... ";
 $DB->exec("CREATE TABLE `ConfigSection` ( `configSectionId` INT(11) NOT NULL, `sectionName` VARCHAR(100) COLLATE utf8_unicode_ci NOT NULL) ENGINE=InnoDB");
 $DB->exec("ALTER TABLE `ConfigSection` ADD PRIMARY KEY (`configSectionId`);");
@@ -287,6 +291,10 @@ foreach ($taskFiles as $taskFile) {
   $fileTask = new FilePretask($taskFile['taskFileId'], $taskFile['fileId'], $taskFile['taskId']);
   $FACTORIES::getFilePretaskFactory()->save($fileTask);
 }
+echo "OK\n";
+
+echo "Re-enable checks... ";
+$DB->exec("SET foreign_key_checks = 1;");
 echo "OK\n";
 
 $DB->commit();
