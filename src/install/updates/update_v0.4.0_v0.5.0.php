@@ -233,7 +233,7 @@ echo "OK\n";
 echo "Cache all Task entries... ";
 $stmt = $DB->query("SELECT * FROM `Task` WHERE 1");
 $tasks = $stmt->fetchAll();
-$DB->exec("DELETE FROM `Task` WHERE 1;");
+$DB->exec("DROP TABLE `Task`;");
 echo "OK\n";
 
 echo "Add FileTask table... ";
@@ -258,15 +258,10 @@ $DB->exec("ALTER TABLE `TaskWrapper` ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN
 echo "OK\n";
 
 echo "Update Task table... ";
-$DB->exec("ALTER TABLE `Task` DROP `hashlistId`");
-$DB->exec("ALTER TABLE `Task` DROP `taskType`");
-$DB->exec("ALTER TABLE `Task` CHANGE `keyspaceProgress` `progress` BIGINT(20) NOT NULL;");
-$DB->exec("ALTER TABLE `Task` ADD `crackerBinaryId` INT(11) NOT NULL");
-$DB->exec("ALTER TABLE `Task` ADD `crackerBinaryTypeId` INT(11) NOT NULL");
-$DB->exec("ALTER TABLE `Task` ADD `taskWrapperId` INT(11) NOT NULL");
+$DB->exec("CREATE TABLE `Task` (`taskId` INT(11) NOT NULL, `taskName` VARCHAR(100) COLLATE utf8_unicode_ci NOT NULL, `attackCmd` VARCHAR(256) COLLATE utf8_unicode_ci NOT NULL, `chunkTime` INT(11) NOT NULL, `statusTimer` INT(11) NOT NULL, `keyspace` BIGINT(20) NOT NULL, `keyspaceProgress` BIGINT(20) NOT NULL, `priority` INT(11) NOT NULL, `color` VARCHAR(20) COLLATE utf8_unicode_ci NULL, `isSmall` INT(11) NOT NULL, `isCpuTask` INT(11) NOT NULL, `useNewBench` INT(11) NOT NULL, `skipKeyspace` BIGINT(20) NOT NULL, `crackerBinaryId` INT(11) DEFAULT NULL, `crackerBinaryTypeId` INT(11)  NULL, `taskWrapperId` INT(11) NOT NULL) ENGINE = InnoDB;");
+$DB->exec("ALTER TABLE `Task` ADD PRIMARY KEY (`taskId`), ADD KEY `crackerBinaryId` (`crackerBinaryId`);");
+$DB->exec("ALTER TABLE `Task` MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;");
 $DB->exec("ALTER TABLE `Task` ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);");
-$DB->exec("ALTER TABLE `Task` ADD CONSTRAINT `Task_ibfk_2` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`);");
-$DB->exec("ALTER TABLE `Task` ADD CONSTRAINT `Task_ibfk_3` FOREIGN KEY (`taskWrapperId`) REFERENCES `TaskWrapper` (`taskWrapperId`);");
 echo "OK\n";
 
 echo "Update Zap table... ";
