@@ -3,6 +3,7 @@
 use DBA\AgentFactory;
 use DBA\FilePretask;
 use DBA\Pretask;
+use DBA\SupertaskPretask;
 
 @include(dirname(__FILE__) . "/../../inc/db.php");
 include(dirname(__FILE__) . "/../../dba/init.php");
@@ -200,11 +201,23 @@ $DB->exec("ALTER TABLE `HashlistHashlist` CHANGE `superHashlistId` `parentHashli
 $DB->exec("ALTER TABLE `HashlistHashlist` CHANGE `superHashlistHashlistId` `hashlistHashlistId` INT(11) NOT NULL;");
 echo "OK\n";
 
+echo "Extract SupertaskTask table... ";
+$stmt = $DB->query("SELECT * FROM SupertaskTask WHERE 1;");
+$supertaskTasks = $stmt->fetchAll();
+echo "OK\n";
+
 echo "Update SupertaskPretask table... ";
 $DB->exec("ALTER TABLE `SupertaskTask` RENAME `SupertaskPretask`;");
+$DB->exec("TRUNCATE `SupertaskPretask`");
 $DB->exec("ALTER TABLE `SupertaskPretask` CHANGE `taskId` `pretaskId` INT(11) NOT NULL;");
 $DB->exec("ALTER TABLE `SupertaskPretask` CHANGE `supertaskTaskId` `supertaskPretaskId` INT(11) NOT NULL;");
 $DB->exec("ALTER TABLE `SupertaskPretask` ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);");
+echo "OK\n";
+
+echo "Refill SupertaskPretask table... ";
+foreach ($supertaskTasks as $supertaskTask) {
+  $supertaskPretask = new SupertaskPretask(0, $supertaskTask['supertaskId'], $supertaskTask['taskId']);
+}
 echo "OK\n";
 
 echo "Cache all Task entries... ";
