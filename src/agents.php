@@ -131,7 +131,7 @@ else {
     $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $accessGroupAgents->addValue($agent->getId(), $joined[$FACTORIES::getAccessGroupFactory()->getModelName()]);
-    $agent->setDevices(explode("\n", $agent->getDevices()));
+    $agent->setDevices(Util::compressDevices(explode("\n", $agent->getDevices())));
   }
   
   $OBJECTS['accessGroupAgents'] = $accessGroupAgents;

@@ -1141,4 +1141,25 @@ class Util {
   public static function countLines($tmpfile) {
     return intval(exec("wc -l '$tmpfile'"));
   }
+  
+  public static function compressDevices($deviceArray) {
+    $compressed = array();
+    foreach ($deviceArray as $device) {
+      foreach (DDeviceCompress::COMPRESSION as $pattern => $replacement) {
+        if (strpos($device, $pattern) !== false) {
+          $device = str_replace($pattern, $replacement, $device);
+          break;
+        }
+      }
+      $compressed[] = $device;
+    }
+    return $compressed;
+  }
 }
+
+
+
+
+
+
+
