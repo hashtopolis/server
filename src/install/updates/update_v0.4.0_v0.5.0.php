@@ -201,23 +201,8 @@ $DB->exec("ALTER TABLE `HashlistHashlist` CHANGE `superHashlistId` `parentHashli
 $DB->exec("ALTER TABLE `HashlistHashlist` CHANGE `superHashlistHashlistId` `hashlistHashlistId` INT(11) NOT NULL;");
 echo "OK\n";
 
-echo "Extract SupertaskTask table... ";
-$stmt = $DB->query("SELECT * FROM SupertaskTask WHERE 1;");
-$supertaskTasks = $stmt->fetchAll();
-echo "OK\n";
-
-echo "Update SupertaskPretask table... ";
-$DB->exec("DROP TABLE SupertaskTask;");
-$DB->exec("CREATE TABLE `SupertaskPretask` (`supertaskPretaskId` INT(11) NOT NULL, `supertaskId` INT(11) NOT NULL, `pretaskId` INT(11) NOT NULL) ENGINE=InnoDB;");
-$DB->exec("ALTER TABLE `SupertaskPretask` ADD PRIMARY KEY (`supertaskPretaskId`), ADD KEY `supertaskId` (`supertaskId`), ADD KEY `pretaskId` (`pretaskId`);");
-$DB->exec("ALTER TABLE `SupertaskPretask` MODIFY `supertaskPretaskId` INT(11) NOT NULL AUTO_INCREMENT");
-$DB->exec("ALTER TABLE `SupertaskPretask` ADD CONSTRAINT `SupertaskPretask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`), ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);");
-echo "OK\n";
-
-echo "Refill SupertaskPretask table... ";
-foreach ($supertaskTasks as $supertaskTask) {
-  $supertaskPretask = new SupertaskPretask(0, $supertaskTask['supertaskId'], $supertaskTask['taskId']);
-}
+echo "Truncate Assignment table... ";
+$DB->exec("TRUNCATE `Assignment`;");
 echo "OK\n";
 
 echo "Cache all TaskFile entries... ";
@@ -262,6 +247,25 @@ $DB->exec("CREATE TABLE `Task` (`taskId` INT(11) NOT NULL, `taskName` VARCHAR(10
 $DB->exec("ALTER TABLE `Task` ADD PRIMARY KEY (`taskId`), ADD KEY `crackerBinaryId` (`crackerBinaryId`);");
 $DB->exec("ALTER TABLE `Task` MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;");
 $DB->exec("ALTER TABLE `Task` ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);");
+echo "OK\n";
+
+echo "Extract SupertaskTask table... ";
+$stmt = $DB->query("SELECT * FROM SupertaskTask WHERE 1;");
+$supertaskTasks = $stmt->fetchAll();
+echo "OK\n";
+
+echo "Update SupertaskPretask table... ";
+$DB->exec("DROP TABLE SupertaskTask;");
+$DB->exec("CREATE TABLE `SupertaskPretask` (`supertaskPretaskId` INT(11) NOT NULL, `supertaskId` INT(11) NOT NULL, `pretaskId` INT(11) NOT NULL) ENGINE=InnoDB;");
+$DB->exec("ALTER TABLE `SupertaskPretask` ADD PRIMARY KEY (`supertaskPretaskId`), ADD KEY `supertaskId` (`supertaskId`), ADD KEY `pretaskId` (`pretaskId`);");
+$DB->exec("ALTER TABLE `SupertaskPretask` MODIFY `supertaskPretaskId` INT(11) NOT NULL AUTO_INCREMENT");
+$DB->exec("ALTER TABLE `SupertaskPretask` ADD CONSTRAINT `SupertaskPretask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`), ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);");
+echo "OK\n";
+
+echo "Refill SupertaskPretask table... ";
+foreach ($supertaskTasks as $supertaskTask) {
+  $supertaskPretask = new SupertaskPretask(0, $supertaskTask['supertaskId'], $supertaskTask['taskId']);
+}
 echo "OK\n";
 
 echo "Update Zap table... ";
