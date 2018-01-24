@@ -131,7 +131,7 @@ switch ($STEP) {
       }
     }
     $TEMPLATE = new Template("install/51");
-    echo $TEMPLATE->render(array('failed' => $fail, 'mode' => $mode));
+    echo $TEMPLATE->render(array('failed' => $fail));
     break;
   case 52: //database is filled with initial data now we create the user now
     // create pepper (this is required here that when we create the user, the included file already contains the right peppers
