@@ -114,9 +114,6 @@ switch ($STEP) {
         //connection not valid
         $fail = true;
       }
-      else if (!Util::checkSqlMode()) {
-        $mode = true;
-      }
       else {
         //save database details
         
