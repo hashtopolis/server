@@ -78,9 +78,9 @@ CREATE TABLE `Agent` (
   `devices`      TEXT COLLATE utf8_unicode_ci NOT NULL,
   `cmdPars`      VARCHAR(256)
                  COLLATE utf8_unicode_ci      NOT NULL,
-  `ignoreErrors` INT(11)                      NOT NULL,
-  `isActive`     INT(11)                      NOT NULL,
-  `isTrusted`    INT(11)                      NOT NULL,
+  `ignoreErrors` TINYINT(4)                      NOT NULL,
+  `isActive`     TINYINT(4)                      NOT NULL,
+  `isTrusted`    TINYINT(4)                      NOT NULL,
   `token`        VARCHAR(30)
                  COLLATE utf8_unicode_ci      NOT NULL,
   `lastAct`      VARCHAR(50)
@@ -89,7 +89,7 @@ CREATE TABLE `Agent` (
   `lastIp`       VARCHAR(50)
                  COLLATE utf8_unicode_ci      NOT NULL,
   `userId`       INT(11) DEFAULT NULL,
-  `cpuOnly`      INT(11)                      NOT NULL,
+  `cpuOnly`      TINYINT(4)                      NOT NULL,
   `clientSignature` VARCHAR(50)               NOT NULL
 )
   ENGINE = InnoDB
@@ -394,7 +394,7 @@ CREATE TABLE `Hash` (
                 COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeCracked` INT(11)                 DEFAULT NULL,
   `chunkId`     INT(11)                 DEFAULT NULL,
-  `isCracked`   INT(11)                 NOT NULL
+  `isCracked`   TINYINT(4)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -416,7 +416,7 @@ CREATE TABLE `HashBinary` (
                  COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeCracked`  INT(11)                 DEFAULT NULL,
   `chunkId`      INT(11)                 DEFAULT NULL,
-  `isCracked`    INT(11)                            NOT NULL
+  `isCracked`    TINYINT(4)                            NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -440,7 +440,7 @@ CREATE TABLE `Hashlist` (
   `cracked`       INT(11)                 NOT NULL,
   `isSecret`      INT(11)                 NOT NULL,
   `hexSalt`       INT(11)                 NOT NULL,
-  `isSalted`      INT(11)                 NOT NULL,
+  `isSalted`      TINYINT(4)                 NOT NULL,
   `accessGroupId` INT(11)                 NOT NULL
 )
   ENGINE = InnoDB
@@ -472,7 +472,7 @@ CREATE TABLE `HashType` (
   `hashTypeId`  INT(11)                 NOT NULL,
   `description` VARCHAR(256)
                 COLLATE utf8_unicode_ci NOT NULL,
-  `isSalted`    INT(11)                 NOT NULL
+  `isSalted`    TINYINT(4)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -745,7 +745,7 @@ CREATE TABLE `NotificationSetting` (
   `userId`                INT(11)                 NOT NULL,
   `receiver`              VARCHAR(256)
                           COLLATE utf8_unicode_ci NOT NULL,
-  `isActive`              INT(11)                 NOT NULL
+  `isActive`              TINYINT(4)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
