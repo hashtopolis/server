@@ -1142,6 +1142,12 @@ class Util {
     return intval(exec("wc -l '$tmpfile'"));
   }
   
+  /**
+   * Checks a given array of device names to see if they can be shortened with the defined patterns and replacements.
+   *
+   * @param $deviceArray string[]
+   * @return string[]
+   */
   public static function compressDevices($deviceArray) {
     $compressed = array();
     foreach ($deviceArray as $device) {
