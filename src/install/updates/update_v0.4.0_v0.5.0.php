@@ -224,7 +224,7 @@ foreach ($binaryHashes as $binaryHash) {
   $h[] = new HashBinary($binaryHash['hashBinaryId'], $binaryHash['hashlistId'], $binaryHash['essid'], $binaryHash['hash'], $binaryHash['plaintext'], $binaryHash['time'], null, $binaryHash['isCracked']);
 }
 if (sizeof($h) > 0) {
-  $FACTORIES::getHashFactory()->massSave($h);
+  $FACTORIES::getHashBinaryFactory()->massSave($h);
 }
 echo "OK\n";
 
