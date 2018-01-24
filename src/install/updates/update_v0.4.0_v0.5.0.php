@@ -15,6 +15,9 @@ if ($confirm != 'AGREE') {
   die("Aborted!\n");
 }
 
+$DB = $FACTORIES::getAgentFactory()->getDB();
+$DB->beginTransaction();
+
 echo "Apply updates...\n";
 
 echo "Add ConfigSection table... ";
@@ -36,9 +39,6 @@ echo "OK\n";
 echo "Reload full include... ";
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 echo "OK\n";
-
-$DB = $FACTORIES::getAgentFactory()->getDB();
-$DB->beginTransaction();
 
 echo "Create AccessGroup tables... ";
 $DB->exec("CREATE TABLE `AccessGroup` (`accessGroupId` INT(11) NOT NULL, `groupName` VARCHAR(50) COLLATE utf8_unicode_ci NOT NULL) ENGINE=InnoDB;");
