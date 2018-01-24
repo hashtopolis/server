@@ -8,7 +8,7 @@ use DBA\Pretask;
 include(dirname(__FILE__) . "/../../dba/init.php");
 
 echo "WARNING!!!!\n";
-echo "This update contains some drastic changes and running tasks and chunks will be removed!\n";
+echo "This update contains some drastic changes and running tasks and chunks will be removed, the config section will be reset to default!\n";
 echo "Backup the database before applying this update, in case something does not run as expected!\n";
 echo "Enter 'AGREE' to continue... \n";
 $confirm = trim(fgets(STDIN));
@@ -32,10 +32,55 @@ echo "Fill ConfigSection table... ";
 $DB->exec("INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES (1, 'Cracking/Tasks'), (2, 'Yubikey'), (3, 'Finetuning'), (4, 'UI'), (5, 'Server');");
 echo "OK\n";
 
-echo "Update Config table... ";
+echo "Read Config table... ";
+$stmt = $DB->query("SELECT * FROM `Config` WHERE 1");
+$configs = $stmt->fetchAll();
+// read some important values
+$saved = array();
+foreach($configs as $config){
+  $saved[$config['item']] = $config['value'];
+}
+echo "OK\n";
+
+echo "Clear and Update Config table... ";
+$DB->exec("TRUNCATE `Config`;");
 $DB->exec("ALTER TABLE `Config` ADD `configSectionId` INT(11) NOT NULL;");
 $DB->exec("ALTER TABLE `Config` ADD KEY `configSectionId` (`configSectionId`);");
 $DB->exec("ALTER TABLE `Config` ADD CONSTRAINT `Config_ibfk_1` FOREIGN KEY (`configSectionId`) REFERENCES `ConfigSection` (`configSectionId`);");
+echo "OK\n";
+
+echo "Refill Config table... ";
+$DB->exec("INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
+(1, 1, 'agenttimeout', '30'),
+(2, 1, 'benchtime', '30'),
+(3, 1, 'chunktime', '600'),
+(4, 1, 'chunktimeout', '30'),
+(9, 1, 'fieldseparator', ':'),
+(10, 1, 'hashlistAlias', '#HL#'),
+(11, 1, 'statustimer', '5'),
+(12, 4, 'timefmt', 'd.m.Y, H:i:s'),
+(13, 1, 'blacklistChars', '&|`\"\''),
+(14, 3, 'numLogEntries', '5000'),
+(15, 1, 'disptolerance', '20'),
+(16, 3, 'batchSize', '10000'),
+(18, 2, 'yubikey_id', '{$saved['yubikey_id']}'),
+(19, 2, 'yubikey_key', '{$saved['yubikey_key']}'),
+(20, 2, 'yubikey_url', '{$saved['yubikey_url']}'),
+(21, 4, 'donateOff', '0'),
+(22, 3, 'pagingSize', '5000'),
+(23, 3, 'hashlistDownloadChunkSize', '5000'),
+(24, 3, 'plainTextMaxLength', '200'),
+(25, 3, 'hashMaxLength', '1024'),
+(26, 5, 'emailSender', 'hashtopussy@example.org'),
+(27, 5, 'baseHost', '{$saved['baseHost']}'),
+(28, 3, 'maxHashlistSize', '5000000'),
+(29, 4, 'hideImportMasks', '1'),
+(30, 5, 'telegramBotToken', '{$saved['telegramBotToken']}'),
+(31, 5, 'contactEmail', 's3inlc@hashes.org'),
+(32, 5, 'voucherDeletion', '0'),
+(33, 4, 'hashesPerPage', '1000'),
+(34, 4, 'hideIpInfo', '1'),
+(35, 5, 'baseUrl', '{$saved['baseUrl']}');");
 echo "OK\n";
 
 echo "Reload full include... ";
