@@ -8,7 +8,6 @@ use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
-use DBA\GroupFilter;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -116,15 +115,16 @@ else {
   $OBJECTS['pageTitle'] = "Agents";
   
   // load all agents which are in an access group the user has access to
+  $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds);
+  $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $agentIds = array();
+  foreach ($accessGroupAgents as $accessGroupAgent) {
+    $agentIds[] = $accessGroupAgent->getAgentId();
+  }
+  
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
-  $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds, $FACTORIES::getAccessGroupAgentFactory());
-  $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
-  $gF = new GroupFilter(Agent::AGENT_ID, $FACTORIES::getAgentFactory());
-  $joined = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF, $FACTORIES::GROUP => $gF));
-  /** @var $agents Agent[] */
-  $agents = $joined[$FACTORIES::getAgentFactory()->getModelName()];
-  /** @var $accessGroups AccessGroupAgent[] */
-  $accessGroups = $joined[$FACTORIES::getAccessGroupAgentFactory()->getModelName()];
+  $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
+  $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
   $accessGroupAgents = new DataSet();
   foreach ($agents as $agent) {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
