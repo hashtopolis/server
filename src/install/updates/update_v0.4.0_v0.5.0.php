@@ -204,7 +204,6 @@ echo "Update SupertaskPretask table... ";
 $DB->exec("ALTER TABLE `SupertaskTask` RENAME `SupertaskPretask`;");
 $DB->exec("ALTER TABLE `SupertaskPretask` CHANGE `taskId` `pretaskId` INT(11) NOT NULL;");
 $DB->exec("ALTER TABLE `SupertaskPretask` CHANGE `supertaskTaskId` `supertaskPretaskId` INT(11) NOT NULL;");
-$DB->exec("ALTER TABLE `SupertaskPretask` DROP INDEX `pretaskId`;");
 $DB->exec("ALTER TABLE `SupertaskPretask` ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);");
 echo "OK\n";
 
