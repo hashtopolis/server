@@ -1,5 +1,7 @@
 <?php
 
+use DBA\AccessGroupAgent;
+use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\AgentFactory;
 use DBA\File;
@@ -156,21 +158,27 @@ echo "OK\n";
 
 echo "Save users... ";
 $u = [];
+$ug = [];
 foreach ($users as $user) {
   $u[] = new User($user['userId'], $user['username'], $user['email'], $user['passwordHash'], $user['passwordSalt'], $user['isValid'], $user['isComputedPassword'], $user['lastLoginDate'], $user['registeredSince'], $user['sessionLifetime'], $user['rightGroupId'], $user['yubikey'], $user['otp1'], $user['otp2'], $user['otp3'], $user['otp4']);
+  $ug[] = new AccessGroupUser(0, 1, $user['userId']);
 }
 if (sizeof($u) > 0) {
   $FACTORIES::getUserFactory()->massSave($u);
+  $FACTORIES::getAccessGroupUserFactory()->massSave($ug);
 }
 echo "OK\n";
 
 echo "Save agents... ";
 $a = [];
+$ag = [];
 foreach ($agents as $agent) {
   $a[] = new Agent($agent['agentId'], $agent['agentName'], $agent['uid'], $agent['os'], $agent['devices'], $agent['cmdPars'], $agent['ignoreErrors'], $agent['isActive'], $agent['isTrusted'], $agent['token'], $agent['lastAct'], $agent['lastTime'], $agent['lastIp'], $agent['userId'], $agent['cpuOnly'], "");
+  $ag[] = new AccessGroupAgent(0, 1, $agent['agentId']);
 }
 if (sizeof($a) > 0) {
   $FACTORIES::getAgentFactory()->massSave($a);
+  $FACTORIES::getAccessGroupAgentFactory()->massSave($ag);
 }
 echo "OK\n";
 
