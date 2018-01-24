@@ -167,12 +167,10 @@ echo "OK\n";
 
 echo "Update Hash table... ";
 $DB->exec("ALTER TABLE `Hash` CHANGE `time` `timeCracked` INT(11) NOT NULL;");
-$DB->exec("ALTER TABLE `Hash` ADD KEY `isCracked` (`isCracked`);");
 echo "OK\n";
 
 echo "Update HashBinary table... ";
 $DB->exec("ALTER TABLE `HashBinary` CHANGE `time` `timeCracked` INT(11) NOT NULL;");
-$DB->exec("ALTER TABLE `HashBinary` ADD KEY `isCracked` (`isCracked`);");
 echo "OK\n";
 
 echo "Drop HashcatRelease table... ";
