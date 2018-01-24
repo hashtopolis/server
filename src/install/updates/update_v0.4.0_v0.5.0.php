@@ -207,11 +207,11 @@ $supertaskTasks = $stmt->fetchAll();
 echo "OK\n";
 
 echo "Update SupertaskPretask table... ";
-$DB->exec("ALTER TABLE `SupertaskTask` RENAME `SupertaskPretask`;");
-$DB->exec("TRUNCATE `SupertaskPretask`");
-$DB->exec("ALTER TABLE `SupertaskPretask` CHANGE `taskId` `pretaskId` INT(11) NOT NULL;");
-$DB->exec("ALTER TABLE `SupertaskPretask` CHANGE `supertaskTaskId` `supertaskPretaskId` INT(11) NOT NULL;");
-$DB->exec("ALTER TABLE `SupertaskPretask` ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);");
+$DB->exec("DROP TABLE SupertaskTask;");
+$DB->exec("CREATE TABLE `SupertaskPretask` (`supertaskPretaskId` INT(11) NOT NULL, `supertaskId` INT(11) NOT NULL, `pretaskId` INT(11) NOT NULL) ENGINE=InnoDB;");
+$DB->exec("ALTER TABLE `SupertaskPretask` ADD PRIMARY KEY (`supertaskPretaskId`), ADD KEY `supertaskId` (`supertaskId`), ADD KEY `pretaskId` (`pretaskId`);");
+$DB->exec("ALTER TABLE `SupertaskPretask` MODIFY `supertaskPretaskId` INT(11) NOT NULL AUTO_INCREMENT");
+$DB->exec("ALTER TABLE `SupertaskPretask` ADD CONSTRAINT `SupertaskPretask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`), ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);");
 echo "OK\n";
 
 echo "Refill SupertaskPretask table... ";
