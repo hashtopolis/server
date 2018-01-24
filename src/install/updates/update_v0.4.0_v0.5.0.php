@@ -284,4 +284,4 @@ echo "OK\n";
 
 $DB->commit();
 
-echo "Update complete!";
+echo "Update complete!\n";
