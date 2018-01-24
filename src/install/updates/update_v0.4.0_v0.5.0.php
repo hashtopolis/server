@@ -220,12 +220,6 @@ foreach ($supertaskTasks as $supertaskTask) {
 }
 echo "OK\n";
 
-echo "Cache all Task entries... ";
-$stmt = $DB->query("SELECT * FROM `Task` WHERE 1");
-$tasks = $stmt->fetchAll();
-$DB->exec("DELETE FROM `Task` WHERE 1;");
-echo "OK\n";
-
 echo "Cache all TaskFile entries... ";
 $stmt = $DB->query("SELECT * FROM `TaskFile` WHERE 1");
 $taskFiles = $stmt->fetchAll();
@@ -234,6 +228,12 @@ echo "OK\n";
 
 echo "Drop TaskTask table... ";
 $DB->exec("DROP TABLE `TaskTask`");
+echo "OK\n";
+
+echo "Cache all Task entries... ";
+$stmt = $DB->query("SELECT * FROM `Task` WHERE 1");
+$tasks = $stmt->fetchAll();
+$DB->exec("DELETE FROM `Task` WHERE 1;");
 echo "OK\n";
 
 echo "Add FileTask table... ";
