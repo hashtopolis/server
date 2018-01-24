@@ -100,7 +100,7 @@ if (isset($_GET['id'])) {
 else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
-  $OBJECTS['pageTitle'] = "Hashtopussy - New Agent";
+  $OBJECTS['pageTitle'] = "New Agent";
   $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
   $OBJECTS['vouchers'] = $vouchers;
   $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
