@@ -4,7 +4,6 @@ use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\LikeFilter;
-use DBA\LikeFilterInsensitive;
 use DBA\QueryFilter;
 
 class SearchHandler implements Handler {
