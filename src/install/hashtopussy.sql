@@ -122,7 +122,7 @@ CREATE TABLE `AgentBinary` (
 --
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
-  (1, 'csharp', '0.46.2', 'Windows, Linux(mono), OS X(mono)', 'hashtopussy.exe'),
+  (1, 'csharp', '0.50.2', 'Windows, Linux(mono), OS X(mono)', 'hashtopussy.exe'),
   (2, 'python', '0.1.0', 'Windows, Linux, OS X', 'hashtopussy.zip');
 
 -- --------------------------------------------------------
