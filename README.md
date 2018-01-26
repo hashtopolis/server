@@ -8,7 +8,7 @@ Hashtopussy is a multi-platform client-server tool for distributing hashcat task
 Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
 The application has two parts:
 
-- **Agent** Multiple clients (C#, Python, PHP), easily customizable to suite any need.
+- **Agent** Multiple clients (C#, Python), easily customizable to suite any need.
 - **Server** several PHP/CSS files operating on two endpoints: an Admin GUI and an Agent Connection Point
 
 Aiming for high usability even on restricted networks, Hashtopussy communicates over HTTP(S) using a human-readable, hashing-specific dialect of JSON.
@@ -17,7 +17,7 @@ The server part runs on PHP using MySQL as the database back end. It is vital th
 
 The web admin interface is the single point of access across all client agents. New agent deployments require a one-time password generated in the New Agent tab. This reduces the risk of leaking hashes or files to rogue or fake agents.
 
-There are parts of the documentation and wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
+There are parts of the documentation and wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to contact us on Twitter (@s3inlc, @winxp5421).
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
 
@@ -32,7 +32,7 @@ To report a bug, please create an issue and try to describe the problem as accur
 - File management for word lists, rules, ...
 - Self-updating of both Hashtopussy and hashcat
 - Cracking multiple hashlists of the same hash type as though they were a single hashlist
-- Running the same binary on Windows and Linux
+- Running the same client on Windows, Linux and OS X
 - Files and hashes marked as "secret" are only distributed to agents marked as "trusted"
 - Many data import and export options
 - Rich statistics on hashes and running tasks
@@ -41,16 +41,10 @@ To report a bug, please create an issue and try to describe the problem as accur
 - User permission levels
 - Various notification types
 - Small and/or CPU-only tasks
+- Group assignment for agents and users for fine-grained access-control
+- Compatible with crackers supporting certain flags
 
-## Hashtopus or Hashtopussy?
-
-Hashtopus is a great program but is lacking in some areas. Major differences between the two are:
-
-- Drastically improved security
-- Multi-user support
-- Improved look and layout
-- Super Tasks
-- --hex-salt support
+## Setup and Usage
 
 Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) for more information on setup and upgrade.
 
@@ -76,9 +70,9 @@ ETH: 0x06B3Ae7561AD763eF58Df9C37deB6757bDA2BC0c
 
 ## Thanks
 
-* winxp for testing, writing help texts and a lot of input ideas
-* blazer for working on the agent
+* winxp5421 for testing, writing help texts and a lot of input ideas
+* blazer for working on the csharp agent, hops for working on the python agent
 * CynoSure Prime for testing
 * atom for [hashcat](https://github.com/hashcat/hashcat)
 * curlyboi for the original [Hashtopus](https://github.com/curlyboi/hashtopus) code
-* 7zip binaries are compiled from https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/
+* 7zip binaries are compiled from [here](https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/)
