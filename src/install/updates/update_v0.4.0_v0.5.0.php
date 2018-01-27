@@ -246,7 +246,8 @@ foreach ($tasks as $task) {
     continue; // we only transfer pretasks
   }
   $taskIds[] = $task['taskId'];
-  $t[] = new Pretask($task['taskId'], $task['taskName'], $task['attackCmd'], $task['chunkTime'], $task['statusTimer'], $task['color'], $task['isSmall'], $task['isCpuTask'], $task['useNewBench'], $task['priority'], 0, 1);
+  $isMask = (strpos($task['taskName'], "HIDDEN: ") === 0) ? 1 : 0;
+  $t[] = new Pretask($task['taskId'], $task['taskName'], $task['attackCmd'], $task['chunkTime'], $task['statusTimer'], $task['color'], $task['isSmall'], $task['isCpuTask'], $task['useNewBench'], $task['priority'], $isMask, 1);
 }
 if (sizeof($t) > 0) {
   $FACTORIES::getPretaskFactory()->massSave($t);
