@@ -4,7 +4,6 @@ use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
 use DBA\LikeFilter;
-use DBA\LikeFilterInsensitive;
 use DBA\QueryFilter;
 
 class SearchHandler implements Handler {
@@ -55,7 +54,7 @@ class SearchHandler implements Handler {
       // TODO: add option to select if exact match or like match
       
       $filters = array();
-      $filters[] = new LikeFilterInsensitive(Hash::HASH, "%" . $hash . "%");
+      $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
       if (strlen($salt) > 0) {
         $filters[] = new QueryFilter(Hash::SALT, $salt, "=");
       }

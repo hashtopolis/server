@@ -173,7 +173,7 @@ echo "Save agents... ";
 $a = [];
 $ag = [];
 foreach ($agents as $agent) {
-  $a[] = new Agent($agent['agentId'], $agent['agentName'], $agent['uid'], $agent['os'], $agent['devices'], $agent['cmdPars'], $agent['ignoreErrors'], $agent['isActive'], $agent['isTrusted'], $agent['token'], $agent['lastAct'], $agent['lastTime'], $agent['lastIp'], $agent['userId'], $agent['cpuOnly'], "");
+  $a[] = new Agent($agent['agentId'], $agent['agentName'], $agent['uid'], $agent['os'], $agent['gpus'], $agent['cmdPars'], $agent['ignoreErrors'], $agent['isActive'], $agent['isTrusted'], $agent['token'], $agent['lastAct'], $agent['lastTime'], $agent['lastIp'], $agent['userId'], $agent['cpuOnly'], "");
   $ag[] = new AccessGroupAgent(0, 1, $agent['agentId']);
 }
 if (sizeof($a) > 0) {
