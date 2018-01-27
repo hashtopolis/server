@@ -131,29 +131,29 @@ class DConfig {
       case DConfig::BENCHMARK_TIME:
         return "Time in seconds an agent should benchmark a task";
       case DConfig::CHUNK_DURATION:
-        return "How long an agent approximately should need for completing one chunk";
+        return "Time in seconds a client should be working on a single chunk";
       case DConfig::CHUNK_TIMEOUT:
-        return "How long an agent must not respond until it is treated as timed out and the chunk will get shipped to other agents";
+        return "Time in seconds the server will consider an issued chunk as inactive or timed out and will reallocate to another client.";
       case DConfig::AGENT_TIMEOUT:
-        return "How long an agent must not respond until he is treated as not active anymore";
+        return "Time in seconds the server will consider a client inactive or timed out.";
       case DConfig::HASHES_PAGE_SIZE:
-        return "How many hashes are showed at once in the hashes view (Page size)";
+        return "Number of hashes shown on each page of the hashes view.";
       case DConfig::FIELD_SEPARATOR:
-        return "What separator should be used to separate hash and plain (or salt)";
+        return "The separator character used to separate hash and plain (or salt)";
       case DConfig::HASHLIST_ALIAS:
-        return "What string is used as hashlist alias when creating a task";
+        return "The string used as hashlist alias when creating a task";
       case DConfig::STATUS_TIMER:
-        return "After how many seconds the agent should send its progress and cracks to the server";
+        return "Interval in seconds clients should report back to the server. (cracks, status, and progress)";
       case DConfig::BLACKLIST_CHARS:
-        return "Chars which are not allowed to be used in attack command inputs";
+        return "Characters that are not allowed to be used in attack command inputs";
       case DConfig::NUMBER_LOGENTRIES:
-        return "How many log entries should be saved. When this number is exceeded by 120%, the oldest ones will get deleted";
+        return "Number of log entries that should be saved. When this number is exceeded by 120%, the oldest will be overwritten";
       case DConfig::TIME_FORMAT:
-        return "Set the formatting of time displaying. Use syntax for PHPs date() method";
+        return "Set the time format. Use syntax for PHPs date() method";
       case DConfig::BASE_URL:
         return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
       case DConfig::DISP_TOLERANCE:
-        return "How many percent a chunk can be longer than normal to finish a task (this avoids small chunks if the remaining part is slightly bigger than the normal chunk)";
+        return "Allowable deviation in the final chunk of a task in percent. (avoids issuing small chunks when the remaining part of a task is slightly bigger than the normal chunk size)";
       case DConfig::BATCH_SIZE:
         return "Batch size of SQL query when hashlist is sent to the agent";
       case DConfig::YUBIKEY_ID:
@@ -163,31 +163,31 @@ class DConfig {
       case DConfig::YUBIKEY_URL:
         return "Yubikey API Url";
       case DConfig::BASE_HOST:
-        return "Base hostname/port/protocol to use. Only fill in to override the self-determined value.";
+        return "Base hostname/port/protocol to use. Only fill this in to override the auto-determined value.";
       case DConfig::DONATE_OFF:
-        return "Hide donate information (insert '1' to hide)";
+        return "Hide donation information";
       case DConfig::PLAINTEXT_MAX_LENGTH:
-        return "Max length of a plaintext. (WARNING: changing this might take longer depending on your DB size!)";
+        return "Max length of a plaintext. (WARNING: This change may take a long time depending on DB size!)";
       case DConfig::HASH_MAX_LENGTH:
-        return "Max length of a hash. (WARNING: changing this might take longer depending on your DB size!)";
+        return "Max length of a hash. (WARNING: This change may take a long time depending on DB size!)";
       case DConfig::EMAIL_SENDER:
-        return "Email which is used as sender on notification emails.";
+        return "Email address used as sender on notification emails.";
       case DConfig::MAX_HASHLIST_SIZE:
-        return "Max size of a hashlist (this is to prevent people blocking the server with uploading very large stuff).";
+        return "Max size of a hashlist in lines. (Prevents uploading very large lists).";
       case DConfig::HIDE_IMPORT_MASKS:
-        return "Hide pretasks which were imported through a mask lines import.";
+        return "Hide pre configured tasks that were imported through a mask import.";
       case DConfig::TELEGRAM_BOT_TOKEN:
-        return "Telegram bot token to use to send telegram notifications.";
+        return "Telegram bot token used to send telegram notifications.";
       case DConfig::CONTACT_EMAIL:
-        return "Email address which will be displayed on the footer as admin contact. (Leave empty to hide)";
+        return "Admin email address that will be displayed on the webpage footer. (Leave empty to hide)";
       case DConfig::VOUCHER_DELETION:
-        return "Vouchers can be used multiple times and don't get deleted automatically.";
+        return "Vouchers can be used multiple times and will not be deleted automatically.";
       case DConfig::HASHES_PER_PAGE:
         return "Number of hashes per page on hashes view.";
       case DConfig::HIDE_IP_INFO:
-        return "Hide IP information of agents.";
+        return "Hide agent's IP information.";
       case DConfig::EMAIL_SENDER_NAME:
-        return "Name of the sender of emails sent from Hashtopussy.";
+        return "Sender's name on emails sent from Hashtopussy.";
     }
     return $config;
   }
