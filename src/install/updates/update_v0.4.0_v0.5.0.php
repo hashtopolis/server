@@ -247,6 +247,9 @@ foreach ($tasks as $task) {
   }
   $taskIds[] = $task['taskId'];
   $isMask = (strpos($task['taskName'], "HIDDEN: ") === 0) ? 1 : 0;
+  if ($isMask == 1) {
+    $task['taskName'] = str_replace("HIDDEN: ", "", $task['taskName']);
+  }
   $t[] = new Pretask($task['taskId'], $task['taskName'], $task['attackCmd'], $task['chunkTime'], $task['statusTimer'], $task['color'], $task['isSmall'], $task['isCpuTask'], $task['useNewBench'], $task['priority'], $isMask, 1);
 }
 if (sizeof($t) > 0) {
