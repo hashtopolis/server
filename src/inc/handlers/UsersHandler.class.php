@@ -66,7 +66,7 @@ class UsersHandler implements Handler {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
+    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
     $FACTORIES::getUserFactory()->save($user);
     
     $tmpl = new Template("email/creation");
