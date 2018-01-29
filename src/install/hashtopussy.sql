@@ -245,7 +245,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (10, 1, 'hashlistAlias', '#HL#'),
   (11, 1, 'statustimer', '5'),
   (12, 4, 'timefmt', 'd.m.Y, H:i:s'),
-  (13, 1, 'blacklistChars', '&|`\"\''),
+  (13, 1, 'blacklistChars', '&|`\"\'{}()[]$<>'),
   (14, 3, 'numLogEntries', '5000'),
   (15, 1, 'disptolerance', '20'),
   (16, 3, 'batchSize', '10000'),

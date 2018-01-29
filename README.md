@@ -4,20 +4,20 @@
 
 **This is the current development of version 0.5.0 with a large number of changes, there is no warranty that it will work until released!**
 
-Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks among multiple computers. It is strongly based on Hashtopus.
+Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. It is strongly based on Hashtopus.
 Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
 The application has two parts:
 
-- **Agent** Multiple clients (C#, Python), easily customizable to suite any need.
+- **Agent** Multiple clients (C#, Python), easily customizable to suit any need.
 - **Server** several PHP/CSS files operating on two endpoints: an Admin GUI and an Agent Connection Point
 
 Aiming for high usability even on restricted networks, Hashtopussy communicates over HTTP(S) using a human-readable, hashing-specific dialect of JSON.
 
-The server part runs on PHP using MySQL as the database back end. It is vital that your MySQL server be configured with performance in mind. Queries can be very expensive and proper configuration makes the difference between a few milliseconds of waiting and disastrous multi-second lags. The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so.
+The server part runs on PHP using MySQL as the database back end. It is vital that your MySQL server is configured with performance in mind. Queries can be very expensive and proper configuration makes the difference between a few milliseconds of waiting and disastrous multi-second lags. The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so.
 
-The web admin interface is the single point of access across all client agents. New agent deployments require a one-time password generated in the New Agent tab. This reduces the risk of leaking hashes or files to rogue or fake agents.
+The web admin interface is the single point of access for all client agents. New agent deployments require a one-time password generated in the New Agent tab. This reduces the risk of leaking hashes or files to rogue or fake agents.
 
-There are parts of the documentation and wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to contact us on Twitter (@s3inlc, @winxp5421).
+There are parts of the documentation and wiki which are not up-to-date. If you see anything wrong or have questions on understanding descriptions, feel free to contact us on Twitter (@s3inlc, @winxp5421).
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
 
@@ -27,7 +27,7 @@ To report a bug, please create an issue and try to describe the problem as accur
 
 - Easy and comfortable to use
 - Accessible from anywhere via web interface
-- Server component highly compatible with common webhosting setups
+- Server component highly compatible with common web hosting setups
 - Unattended agents
 - File management for word lists, rules, ...
 - Self-updating of both Hashtopussy and hashcat
@@ -55,7 +55,7 @@ Some screenshots of Hashtopussy (by winxp5421 and s3in!c): [Imgur1](http://imgur
 We are open to all kinds of contributions. If it's a bug fix or a new feature, feel free to create a pull request. Please consider some points:
 
 * Just include one feature or one bugfix in one pull request. In case you have two new features please also create two pull requests.
-* Try to stick with the code style used (especially in the PHP parts). IntelliJ/PHPStorm users can get a code style xml [here](https://gist.github.com/s3inlc/226ed78b05eb6dc8f60f18d6fd310d74).
+* Try to stick with the code style used (especially in the PHP parts). IntelliJ/PHPStorm users can get a code style XML [here](https://gist.github.com/s3inlc/226ed78b05eb6dc8f60f18d6fd310d74).
 
 The pull request will then be reviewed by at least one member and merged after approval. Don't be discouraged just because the first review is not approved, often these are just small changes.
 
@@ -71,8 +71,8 @@ ETH: 0x06B3Ae7561AD763eF58Df9C37deB6757bDA2BC0c
 ## Thanks
 
 * winxp5421 for testing, writing help texts and a lot of input ideas
-* blazer for working on the csharp agent, hops for working on the python agent
-* CynoSure Prime for testing
+* blazer for working on the csharp agent and hops for working on the python agent
+* Cynosure Prime for testing
 * atom for [hashcat](https://github.com/hashcat/hashcat)
 * curlyboi for the original [Hashtopus](https://github.com/curlyboi/hashtopus) code
 * 7zip binaries are compiled from [here](https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/)
