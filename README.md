@@ -4,8 +4,7 @@
 
 **This is the current development of version 0.5.0 with a large number of changes, there is no warranty that it will work until released!**
 
-Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. It is strongly based on Hashtopus.
-Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
+Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. The main goals for Hashtopussy's development are portability, robustness, multi-user support, and multiple groups management.
 The application has two parts:
 
 - **Agent** Multiple clients (C#, Python), easily customizable to suit any need.
