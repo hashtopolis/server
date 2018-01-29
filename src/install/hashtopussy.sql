@@ -706,6 +706,14 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`) VALUES
   (15500,'JKS Java Key Store Private Keys (SHA1)',0),
   (15600,'Ethereum Wallet, PBKDF2-HMAC-SHA256',0),
   (15700,'Ethereum Wallet, SCRYPT',0),
+  (15900,'DPAPI master key file version 2 + Active Directory domain context', 0),
+  (16000,'Tripcode', 0),
+  (16100,'TACACS+', 0),
+  (16200,'Apple Secure Notes', 0),
+  (16300,'Ethereum Pre-Sale Wallet, PBKDF2-HMAC-SHA256', 0),
+  (16400,'CRAM-MD5 Dovecot', 0),
+  (16500,'JWT (JSON Web Token)', 0),
+  (16600,'Electrum Wallet (Salt-Type 1-3)', 0),
   (99999,'Plaintext',0);
 
 -- --------------------------------------------------------
