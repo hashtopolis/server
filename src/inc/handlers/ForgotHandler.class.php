@@ -1,0 +1,61 @@
+<?php
+
+use DBA\Chunk;
+use DBA\Config;
+use DBA\ContainFilter;
+use DBA\Hash;
+use DBA\Hashlist;
+use DBA\JoinFilter;
+use DBA\QueryFilter;
+use DBA\Task;
+use DBA\TaskFile;
+
+class ForgotHandler implements Handler {
+  public function __construct($configId = null) {
+    //we need nothing to load
+  }
+  
+  public function handle($action) {
+    switch ($action) {
+      case DForgotAction::RESET:
+        $this->forgot($_POST['username'], $_POST['email']);
+        break;
+      default:
+        UI::addMessage(UI::ERROR, "Invalid action!");
+        break;
+    }
+  }
+  
+  private function forgot($username, $email) {
+    global $FACTORIES;
+    
+    $username = htmlentities($username, ENT_QUOTES, "UTF-8");
+    $qF = new QueryFilter(User::USERNAME, $username, "=");
+    $res = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+    if ($res == null || sizeof($res) == 0) {
+      UI::addMessage(UI::ERROR, "No such user!");
+      return;
+    }
+    $user = $res[0];
+    if ($user->getEmail() != $email) {
+      UI::addMessage(UI::ERROR, "No such user!");
+      return;
+    }
+    $newSalt = Util::randomString(20);
+    $newPass = Util::randomString(10);
+    $newHash = Encryption::passwordHash($newPass, $newSalt);
+    $user->setPasswordHash($newHash);
+    $user->setPasswordSalt($newSalt);
+    $user->setIsComputedPassword(1);
+    $tmpl = new Template("email/forgot");
+    $tmplPlain = new Template("email/forgot.plain");
+    $obj = array('username' => $user->getUsername(), 'password' => $newPass);
+    if (Util::sendMail($user->getEmail(), "Password reset", $tmpl->render($obj), $tmplPlain->render($obj))) {
+      $FACTORIES::getUserFactory()->update($user);
+      UI::addMessage(UI::SUCCESS, "Password reset! You should receive an email soon.");
+    }
+    else {
+      UI::addMessage(UI::ERROR, "Password reset failed because of an error when sending the email! Please check if PHP is able to send emails.");
+    }
+  }
+}

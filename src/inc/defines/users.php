@@ -20,3 +20,7 @@ class DUserAction {
   const SET_PASSWORD = "setPassword";
   const CREATE_USER  = "createUser";
 }
+
+class DForgotAction {
+  const RESET = "reset";
+}

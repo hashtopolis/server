@@ -1,13 +1,13 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
 <h2>Forgot password</h2>
-[[message]]
+{%TEMPLATE->struct/messages%}
 <div class='alert alert-neutral'>
 	<div class='col-md-3'></div>
 	<div class='col-md-6'>
 		<br>
 		<form action='forgot.php' method='post' class="form-horizontal">
-			<input type='hidden' name='action' value='resetpassword'>
+			<input type='hidden' name='action' value='[[$DForgotAction::RESET]]'>
 			<input type="hidden" name="csrf" value="[[csrf]]">
 			<div class="form-group">
 				<label for="inputUsername" class="col-sm-2 control-label">Username</label>
