@@ -1,13 +1,6 @@
 <?php
 
-use DBA\Chunk;
-use DBA\Config;
-use DBA\ContainFilter;
-use DBA\Hash;
-use DBA\Hashlist;
-use DBA\JoinFilter;
 use DBA\QueryFilter;
-use DBA\Task;
 use DBA\TaskFile;
 
 class ForgotHandler implements Handler {
