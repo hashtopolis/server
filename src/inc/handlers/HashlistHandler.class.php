@@ -307,6 +307,7 @@ class HashlistHandler implements Handler {
           if (strlen($hash) == 0) {
             continue;
           }
+          //TODO: check hash length here
           $values[] = new Hash(0, $this->hashlist->getId(), $hash, $salt, "", 0, null, 0);
           $bufferCount++;
           if ($bufferCount >= 10000) {
