@@ -982,6 +982,7 @@ class Util {
    *          subject of the email
    * @param string $text
    *          html content of the email
+   * @param string $plaintext plaintext version of the email content
    * @return true on success, false on failure
    */
   public static function sendMail($address, $subject, $text, $plaintext) {
