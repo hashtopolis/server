@@ -122,11 +122,11 @@ class APISendProgress extends APIBasic {
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
             // unsalted hashes
-            $plain = str_ireplace($hashes[0]->getHash() . ':', "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
           }
           else {
             // salted hashes
-            $plain = str_ireplace($hashes[0]->getHash() . ':' . $hashes[0]->getSalt() . ':', "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $hashes[0]->getSalt() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
           }
           
           foreach ($hashes as $hash) {
