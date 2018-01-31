@@ -989,7 +989,7 @@ class Util {
     global $CONFIG;
     
     $boundary = uniqid('np');
-
+    
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "From: " . $CONFIG->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
     $headers .= "To: " . $address . "\r\n";
@@ -1088,16 +1088,21 @@ class Util {
     }
     
     $DB = $FACTORIES::getAgentFactory()->getDB();
+    $DB->beginTransaction();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
     if ($limit >= $maxLength) {
       if ($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit) NOT NULL;") === false) {
         return false;
       }
+      else if ($DB->query("ALTER TABLE " . $FACTORIES::getZapFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit) NOT NULL;") === false) {
+        return false;
+      }
     }
     else {
       return false;
     }
+    $DB->commit();
     return true;
   }
   
