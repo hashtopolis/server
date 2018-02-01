@@ -26,6 +26,7 @@ class DConfig {
   const STATUS_TIMER    = "statustimer";
   const BLACKLIST_CHARS = "blacklistChars";
   const DISP_TOLERANCE  = "disptolerance";
+  const DEFAULT_BENCH   = "defaultBenchmark";
   
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -118,6 +119,8 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::EMAIL_SENDER_NAME:
         return DConfigType::STRING_INPUT;
+      case DConfig::DEFAULT_BENCH:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -188,6 +191,8 @@ class DConfig {
         return "Hide agent's IP information.";
       case DConfig::EMAIL_SENDER_NAME:
         return "Sender's name on emails sent from Hashtopussy.";
+      case DConfig::DEFAULT_BENCH:
+        return "Use speed benchmark as default.";
     }
     return $config;
   }
