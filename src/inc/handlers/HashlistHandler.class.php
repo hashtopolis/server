@@ -264,7 +264,7 @@ class HashlistHandler implements Handler {
     else if (!file_exists($tmpfile)) {
       UI::printError("ERROR", "Required file does not exist!");
     }
-    else if(Util::countLines($tmpfile) > $CONFIG->getVal(DConfig::MAX_HASHLIST_SIZE)){
+    else if (Util::countLines($tmpfile) > $CONFIG->getVal(DConfig::MAX_HASHLIST_SIZE)) {
       UI::printError("ERROR", "Hashlist has too many lines!");
     }
     $file = fopen($tmpfile, "rb");
@@ -943,6 +943,7 @@ class HashlistHandler implements Handler {
     
     $addCount = 0;
     $fileCount = 0;
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     if (isset($_POST['task'])) {
       $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
       $highest = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
@@ -981,6 +982,7 @@ class HashlistHandler implements Handler {
           NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
         }
       }
+      $FACTORIES::getAgentFactory()->getDB()->commit();
       if ($addCount > 0) {
         UI::addMessage(UI::SUCCESS, "Successfully created $addCount new tasks with $fileCount files! You will be forward to the tasks page in 5 seconds.");
         UI::setForward("tasks.php", 5);
