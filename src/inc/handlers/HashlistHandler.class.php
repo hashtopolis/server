@@ -964,7 +964,7 @@ class HashlistHandler implements Handler {
           $taskWrapper = new TaskWrapper(0, $taskPriority, DTaskTypes::NORMAL, $this->hashlist->getId(), $this->hashlist->getAccessGroupId(), "");
           $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
           
-          $newTask = new Task(0, $task->getTaskName(), $task->getAttackCmd(), $task->getChunkTime(), $task->getStatusTimer(), 0, 0, $taskPriority, $task->getColor(), $task->getIsSmall(), $task->getIsCpuTask(), $task->getUseNewBench(), 0, $task->getCrackerBinaryTypeId(), CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(), $taskWrapper->getId());
+          $newTask = new Task(0, $task->getTaskName(), $task->getAttackCmd(), $task->getChunkTime(), $task->getStatusTimer(), 0, 0, $taskPriority, $task->getColor(), $task->getIsSmall(), $task->getIsCpuTask(), $task->getUseNewBench(), 0, CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(), $task->getCrackerBinaryTypeId(), $taskWrapper->getId());
           $newTask = $FACTORIES::getTaskFactory()->save($newTask);
           $addCount++;
           
