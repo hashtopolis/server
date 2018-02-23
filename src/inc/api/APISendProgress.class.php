@@ -50,7 +50,7 @@ class APISendProgress extends APIBasic {
     
     $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
     if ($hashlist == null) {
-      $this->sendErrorResponse(PActions::SEND_PROGRESS, "The given task does not have a corresponding hashList!");
+      $this->sendErrorResponse(PActions::SEND_PROGRESS, "The given task does not have a corresponding hashlist!");
     }
     $totalHashlist = $hashlist;
     $hashlists = Util::checkSuperHashlist($hashlist);
