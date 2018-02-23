@@ -188,32 +188,6 @@ class TaskUtils {
   }
   
   /**
-   * @param $chunk Chunk
-   * @return Chunk chunk which still needs to be completed
-   */
-  private static function checkChunkSplit($chunk) {
-    global $FACTORIES;
-    
-    if ($chunk->getCheckpoint() == $chunk->getSkip()) {
-      // no checkpoint reached so far, we cannot split
-      return $chunk;
-    }
-    $completedChunk = new Chunk(0, $chunk->getTaskId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $chunk->getAgentId(), $chunk->getDispatchTime(), $chunk->getSolveTime(), $chunk->getCheckpoint(), 10000, DHashcatStatus::EXHAUSTED, $chunk->getCracked(), 0);
-    $FACTORIES::getChunkFactory()->save($completedChunk);
-    $chunk->setCracked(0);
-    $chunk->setLength($chunk->getLength() - $completedChunk->getLength());
-    $chunk->setDispatchTime(0);
-    $chunk->setAgentId(null);
-    $chunk->setProgress(0);
-    $chunk->setSolveTime(0);
-    $chunk->setSpeed(0);
-    $chunk->setSkip($chunk->getSkip() + $completedChunk->getLength());
-    $chunk->setCheckpoint($chunk->getSkip());
-    $FACTORIES::getChunkFactory()->update($chunk);
-    return $chunk;
-  }
-  
-  /**
    * @param $task1 Task
    * @param $task2 Task
    * @return Task task which should be worked on
