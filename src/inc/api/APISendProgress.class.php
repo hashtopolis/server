@@ -280,13 +280,14 @@ class APISendProgress extends APIBasic {
       case DHashcatStatus::EXHAUSTED:
         // the chunk has finished (exhausted)
         $chunk->setSpeed(0);
+        $chunk->setProgress(10000);
         $chunk->setCheckpoint($chunk->getSkip() + $chunk->getLength());
         $FACTORIES::getChunkFactory()->update($chunk);
         break;
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
         // de-prioritize all tasks and un-assign all agents
-        $chunk->setProgress($chunk->getLength());
+        $chunk->setCheckpoint($chunk->getLength());
         $chunk->setProgress(10000);
         $chunk->setSpeed(0);
         $FACTORIES::getChunkFactory()->update($chunk);
