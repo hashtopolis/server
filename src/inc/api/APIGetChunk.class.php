@@ -51,6 +51,7 @@ class APIGetChunk extends APIBasic {
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $task = TaskUtils::checkTask($task, $this->agent);
     if ($task == null) { // agent needs a new task
+      $FACTORIES::getAgentFactory()->getDB()->commit();
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
@@ -63,6 +64,7 @@ class APIGetChunk extends APIBasic {
     if ($bestTask == null) {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
       if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
+        $FACTORIES::getAgentFactory()->getDB()->commit();
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
     }
@@ -70,6 +72,7 @@ class APIGetChunk extends APIBasic {
     // if the best task is not the one we are working on, we should switch
     $bestTask = TaskUtils::getImportantTask($bestTask, $task);
     if ($bestTask->getId() != $task->getId()) {
+      $FACTORIES::getAgentFactory()->getDB()->commit();
       $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
     }
     
@@ -108,6 +111,7 @@ class APIGetChunk extends APIBasic {
     
     $remaining = $task->getKeyspace() - $task->getKeyspaceProgress();
     if ($remaining == 0) {
+      $FACTORIES::getAgentFactory()->getDB()->commit();
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
