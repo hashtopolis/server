@@ -318,6 +318,10 @@ class Util {
       else {
         // normal task
         $task = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+        if ($task == null) {
+          Util::createLogEntry(DLogEntryIssuer::USER, $LOGIN->getUserID(), DLogEntry::WARN, "TaskWrapper for normal task existing with containing no task!");
+          continue;
+        }
         $taskInfo = Util::getTaskInfo($task);
         $fileInfo = Util::getFileInfo($task);
         $chunkInfo = Util::getChunkInfo($task);
