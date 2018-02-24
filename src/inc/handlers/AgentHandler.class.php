@@ -167,7 +167,7 @@ class AgentHandler implements Handler {
       UI::printError("ERROR", "Invalid task!");
     }
     else if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
-      UI::printERror("ERROR", "Task cannot be accessed by this agent!");
+      UI::printError("ERROR", "Task cannot be accessed by this agent!");
     }
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
