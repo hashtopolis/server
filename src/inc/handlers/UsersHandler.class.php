@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
@@ -68,6 +69,11 @@ class UsersHandler implements Handler {
     $newHash = Encryption::passwordHash($newPass, $newSalt);
     $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
     $FACTORIES::getUserFactory()->save($user);
+    
+    // add user to default group
+    $group = AccessUtils::getOrCreateDefaultAccessGroup();
+    $groupMember = new AccessGroupUser(0, $group->getId(), $user->getId());
+    $FACTORIES::getAccessGroupUserFactory()->save($groupMember);
     
     $tmpl = new Template("email/creation");
     $tmplPlain = new Template("email/creation.plain");
