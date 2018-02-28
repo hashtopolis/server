@@ -210,7 +210,7 @@
       </tr>
       <tr>
         <td>Speed:</td>
-        <td>[[Util::nicenum([[currentSpeed]], 100000, 1000)]]H/s</td>
+        <td>[[Util::nicenum([[currentSpeed]], 10000, 1024)]]H/s</td>
       </tr>
       <tr>
         <td>
@@ -331,7 +331,7 @@
         </td>
         <td class="num">
           {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
-            [[Util::nicenum([[agentsSpeed.getVal([[agent.getId()]])]], 100000, 1000)]]H/s
+            [[Util::nicenum([[agentsSpeed.getVal([[agent.getId()]])]], 10000, 1024)]]H/s
           {{ELSE}}
             ---
           {{ENDIF}}
