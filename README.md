@@ -2,8 +2,6 @@
 
 <img src="https://github.com/s3inlc/hashtopolis/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
 
-**This is the current development of version 0.5.0 with a large number of changes, there is no warranty that it will work until released!**
-
 Hashtopolis is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. The main goals for Hashtopolis's development are portability, robustness, multi-user support, and multiple groups management.
 The application has two parts:
 
