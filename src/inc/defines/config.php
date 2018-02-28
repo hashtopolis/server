@@ -56,6 +56,7 @@ class DConfig {
   const TELEGRAM_BOT_TOKEN = "telegramBotToken";
   const CONTACT_EMAIL      = "contactEmail";
   const VOUCHER_DELETION   = "voucherDeletion";
+  const S_NAME             = "jeSuisHashtopussy";
   
   
   /**
@@ -190,7 +191,7 @@ class DConfig {
       case DConfig::HIDE_IP_INFO:
         return "Hide agent's IP information.";
       case DConfig::EMAIL_SENDER_NAME:
-        return "Sender's name on emails sent from Hashtopolis.";
+        return "Sender's name on emails sent from " . APP_NAME . ".";
       case DConfig::DEFAULT_BENCH:
         return "Use speed benchmark as default.";
     }

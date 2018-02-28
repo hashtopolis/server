@@ -82,6 +82,8 @@ if ($INSTALL) {
   }
   $OBJECTS['config'] = $CONFIG;
   
+  define("APP_NAME", ($CONFIG->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
+  
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
 }

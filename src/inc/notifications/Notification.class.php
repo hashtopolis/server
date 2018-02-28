@@ -22,7 +22,7 @@ abstract class HashtopolisNotification {
     $this->notification = $notification;
     $template = new Template($this->getTemplateName());
     $obj = $this->getObjects();
-    $subject = "Hashtopolis on [" . $OBJECTS['host'] . "] - ";
+    $subject = APP_NAME . " on [" . $OBJECTS['host'] . "] - ";
     switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         $task = $payload->getVal(DPayloadKeys::TASK);

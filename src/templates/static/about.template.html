@@ -1,22 +1,22 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>About Hashtopolis</h2>
+<h2>About [[$APP_NAME]]</h2>
 <div class='alert alert-info'>
-	Hashtopolis version <code>[[version]]</code> running on <code>[[host]]</code>.<br>
+	[[$APP_NAME]] version <code>[[version]]</code> running on <code>[[host]]</code>.<br>
 	{{IF [[gitcommit]] != "not versioned"}}
-		Hashtopolis is running versioned, updates can be retreived with <code>git pull</code>. Latest commit:
+	[[$APP_NAME]] is running versioned, updates can be retreived with <code>git pull</code>. Latest commit:
 		<code>[[gitcommit]]</code>.
 	{{ENDIF}}
 </div>
 <div class='alert alert-neutral'>
-	Some of the features of Hashtopolis:<br>
+	Some of the features of [[$APP_NAME]]:<br>
 	<ul>
 		<li>Easy and comfortable to use</li>
 		<li>Accessible from anywhere via web interface</li>
 		<li>Server component highly compatible with common web hosting setups</li>
 		<li>Unattended agents</li>
 		<li>File management for word lists, rules, ...</li>
-		<li>Self-updating of both Hashtopolis and hashcat</li>
+		<li>Self-updating of both [[$APP_NAME]] and hashcat</li>
 		<li>Cracking multiple hashlists of the same hash type as though they were a single hashlist</li>
 		<li>Running the same client on Windows, Linux and OS X</li>
 		<li>Files and hashes marked as "secret" are only distributed to agents marked as "trusted"</li>
@@ -32,7 +32,7 @@
 	</ul>
 </div>
 <div class='alert alert-neutral'>
-	Thanks to following people for helping in various way to make Hashtopolis work:<br>
+	Thanks to following people for helping in various way to make [[$APP_NAME]] work:<br>
 	winxp5421<br>
 	blazer<br>
 	CynoSure Prime<br>

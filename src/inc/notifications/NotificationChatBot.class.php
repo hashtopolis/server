@@ -13,7 +13,7 @@ class HashtopolisNotificationChatBot extends HashtopolisNotification {
   }
   
   function sendMessage($message, $subject = "") {
-    $username = "Hashtopolis";
+    $username = APP_NAME;
     $data = "payload=" . json_encode(array(
           "username" => $username,
           "text" => $message
