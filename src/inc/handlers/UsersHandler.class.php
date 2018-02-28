@@ -78,7 +78,7 @@ class UsersHandler implements Handler {
     $tmpl = new Template("email/creation");
     $tmplPlain = new Template("email/creation.plain");
     $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL));
-    Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj), $tmplPlain->render($obj));
+    Util::sendMail($email, "Account at Hashtopolis", $tmpl->render($obj), $tmplPlain->render($obj));
     
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New User created: " . $user->getUsername());
     $payload = new DataSet(array(DPayloadKeys::USER => $user));

@@ -15,7 +15,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Datenbank: `hashtopussy`
+-- Datenbank: `hashtopolis`
 --
 
 -- --------------------------------------------------------
@@ -122,8 +122,8 @@ CREATE TABLE `AgentBinary` (
 --
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
-  (1, 'csharp', '0.50.3', 'Windows, Linux(mono), OS X(mono)', 'hashtopussy.exe'),
-  (2, 'python', '0.1.1', 'Windows, Linux, OS X', 'hashtopussy.zip');
+  (1, 'csharp', '0.50.3', 'Windows, Linux(mono), OS X(mono)', 'hashtopolis.exe'),
+  (2, 'python', '0.1.1', 'Windows, Linux, OS X', 'hashtopolis.zip');
 
 -- --------------------------------------------------------
 
@@ -256,8 +256,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (22, 3, 'pagingSize', '5000'),
   (23, 3, 'plainTextMaxLength', '200'),
   (24, 3, 'hashMaxLength', '1024'),
-  (25, 5, 'emailSender', 'hashtopussy@example.org'),
-  (26, 5, 'emailSenderName', 'Hashtopussy'),
+  (25, 5, 'emailSender', 'hashtopolis@example.org'),
+  (26, 5, 'emailSenderName', 'Hashtopolis'),
   (27, 5, 'baseHost', ''),
   (28, 3, 'maxHashlistSize', '5000000'),
   (29, 4, 'hideImportMasks', '1'),

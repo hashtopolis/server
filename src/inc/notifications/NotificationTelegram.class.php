@@ -1,6 +1,6 @@
 <?php
 
-class HashtopussyNotificationTelegram extends HashtopussyNotification {
+class HashtopolisNotificationTelegram extends HashtopolisNotification {
   protected     $receiver;
   public static $name = "Telegram";
   
@@ -30,5 +30,5 @@ class HashtopussyNotificationTelegram extends HashtopussyNotification {
   }
 }
 
-$NOTIFICATIONS['Telegram'] = new HashtopussyNotificationTelegram();
+$NOTIFICATIONS['Telegram'] = new HashtopolisNotificationTelegram();
 

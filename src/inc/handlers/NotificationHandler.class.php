@@ -31,7 +31,7 @@ class NotificationHandler implements Handler {
    * @param $payload DataSet
    */
   public static function checkNotifications($action, $payload) {
-    /** @var $NOTIFICATIONS HashtopussyNotification[] */
+    /** @var $NOTIFICATIONS HashtopolisNotification[] */
     global $FACTORIES, $NOTIFICATIONS;
     
     $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");

@@ -190,7 +190,7 @@ class DConfig {
       case DConfig::HIDE_IP_INFO:
         return "Hide agent's IP information.";
       case DConfig::EMAIL_SENDER_NAME:
-        return "Sender's name on emails sent from Hashtopussy.";
+        return "Sender's name on emails sent from Hashtopolis.";
       case DConfig::DEFAULT_BENCH:
         return "Use speed benchmark as default.";
     }

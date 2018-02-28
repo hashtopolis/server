@@ -57,7 +57,7 @@
 
 ## Bugfixes
 
-- Various vulnerabilities (CVE-2017-11680, CVE-2017-11681, CVE-2017-11682) fixed, see [issue #241](https://github.com/s3inlc/hashtopussy/issues/241)
+- Various vulnerabilities (CVE-2017-11680, CVE-2017-11681, CVE-2017-11682) fixed, see [issue #241](https://github.com/s3inlc/hashtopolis/issues/241)
 
 ## Technical
 
@@ -116,6 +116,6 @@
 
 ## Technical
 
-- removed old installation code which was used to upgrade Hashtopus to Hashtopussy 0.1.0
+- removed old installation code which was used to upgrade Hashtopus to Hashtopolis 0.1.0
 - reduced size of task progress image
 

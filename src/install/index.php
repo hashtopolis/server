@@ -51,7 +51,7 @@ switch ($STEP) {
     break;
   case 1: //clean installation was selected
     if (isset($_GET['next'])) {
-      $query = file_get_contents(dirname(__FILE__) . "/hashtopussy.sql");
+      $query = file_get_contents(dirname(__FILE__) . "/hashtopolis.sql");
       $FACTORIES::getAgentFactory()->getDB()->query($query);
       $baseUrl = explode("/", $_SERVER['REQUEST_URI']);
       unset($baseUrl[sizeof($baseUrl) - 1]);

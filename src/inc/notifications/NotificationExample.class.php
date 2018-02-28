@@ -1,6 +1,6 @@
 <?php
 
-class HashtopussyNotificationExample extends HashtopussyNotification {
+class HashtopolisNotificationExample extends HashtopolisNotification {
   protected     $receiver;
   public static $name = "Example";
   
@@ -17,5 +17,5 @@ class HashtopussyNotificationExample extends HashtopussyNotification {
   }
 }
 
-$NOTIFICATIONS['Example'] = new HashtopussyNotificationExample();
+$NOTIFICATIONS['Example'] = new HashtopolisNotificationExample();
 

@@ -126,7 +126,7 @@ DEALLOCATE PREPARE stmt;"
 echo "OK\n";
 
 echo "Importing new scheme... ";
-$DB->exec(file_get_contents(dirname(__FILE__) . "/../hashtopussy.sql"));
+$DB->exec(file_get_contents(dirname(__FILE__) . "/../hashtopolis.sql"));
 echo "OK\n";
 
 echo "Reload full include... ";

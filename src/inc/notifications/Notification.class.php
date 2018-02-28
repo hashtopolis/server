@@ -2,7 +2,7 @@
 
 use DBA\NotificationSetting;
 
-abstract class HashtopussyNotification {
+abstract class HashtopolisNotification {
   public static $name;
   protected     $receiver;
   
@@ -22,7 +22,7 @@ abstract class HashtopussyNotification {
     $this->notification = $notification;
     $template = new Template($this->getTemplateName());
     $obj = $this->getObjects();
-    $subject = "Hashtopussy on [" . $OBJECTS['host'] . "] - ";
+    $subject = "Hashtopolis on [" . $OBJECTS['host'] . "] - ";
     switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         $task = $payload->getVal(DPayloadKeys::TASK);

@@ -1,6 +1,6 @@
 <?php
 
-class HashtopussyNotificationEmail extends HashtopussyNotification {
+class HashtopolisNotificationEmail extends HashtopolisNotification {
   protected     $receiver;
   public static $name = "Email";
   
@@ -20,5 +20,5 @@ class HashtopussyNotificationEmail extends HashtopussyNotification {
   }
 }
 
-$NOTIFICATIONS['Email'] = new HashtopussyNotificationEmail();
+$NOTIFICATIONS['Email'] = new HashtopolisNotificationEmail();
 
