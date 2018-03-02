@@ -1,12 +1,16 @@
 <?php
 
+use DBA\AccessGroup;
+use DBA\AccessGroupAgent;
+use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\AgentError;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\ContainFilter;
+use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
-use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -15,9 +19,8 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var DataSet $CONFIG */
 
 if (isset($_GET['download'])) {
-  $binaryId = $_GET['download'];
   $agentHandler = new AgentHandler();
-  $agentHandler->handle(DAgentAction::DOWNLOAD_AGENT);
+  $agentHandler->downloadAgent($_GET['download']);
 }
 
 if (!$LOGIN->isLoggedin()) {
@@ -26,6 +29,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -33,8 +37,7 @@ $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
-  $binaryId = @$_POST['binary'];
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $agentHandler = new AgentHandler($_POST['agentId']);
   $agentHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
@@ -42,8 +45,13 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
   }
 }
 
-$qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-$allTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+// load groups for user
+$qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
+$userGroups = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => $qF));
+$accessGroupIds = array();
+foreach ($userGroups as $userGroup) {
+  $accessGroupIds[] = $userGroup->getAccessGroupId();
+}
 
 if (isset($_GET['id'])) {
   //show agent detail
@@ -52,10 +60,21 @@ if (isset($_GET['id'])) {
   if (!$agent) {
     UI::printError("ERROR", "Agent not found!");
   }
+  else if (!AccessUtils::userCanAccessAgent($agent, $LOGIN->getUser())) {
+    UI::printError("ERROR", "No access to this agent!");
+  }
   else {
     $OBJECTS['agent'] = $agent;
     $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array());
-    $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array());
+    $OBJECTS['pageTitle'] .= "Agent details for " . $agent->getAgentName();
+    
+    // load all tasks which are valid for this agent
+    $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent, true);
+    
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $OBJECTS['accessGroups'] = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
@@ -81,6 +100,7 @@ if (isset($_GET['id'])) {
 else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
+  $OBJECTS['pageTitle'] = "New Agent";
   $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
   $OBJECTS['vouchers'] = $vouchers;
   $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
@@ -92,39 +112,32 @@ else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
   $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
 }
 else {
-  $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
-  $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::ORDER => array($oF)));
-  $allAgents = array();
-  foreach ($agents as $agent) {
-    $set = new DataSet();
-    $agent->setGpus(explode("\n", $agent->getGpus()));
-    $set->addValue("agent", $agent);
-    
-    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-    $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
-    $isWorking = 0;
-    $taskId = 0;
-    if (sizeof($assignments) > 0) {
-      $assignment = $assignments[0];
-      $qF = new QueryFilter(Chunk::TASK_ID, $assignment->getTaskId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array());
-      foreach ($chunks as $chunk) {
-        if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getAgentId() == $agent->getId()) {
-          $isWorking = 1;
-          $set->addValue("speed", $chunk->getSpeed());
-        }
-      }
-      $taskId = $assignment->getTaskId();
-    }
-    $set->addValue("isWorking", $isWorking);
-    $set->addValue("taskId", $taskId);
-    $allAgents[] = $set;
+  $OBJECTS['pageTitle'] = "Agents";
+  
+  // load all agents which are in an access group the user has access to
+  $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds);
+  $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $agentIds = array();
+  foreach ($accessGroupAgents as $accessGroupAgent) {
+    $agentIds[] = $accessGroupAgent->getAgentId();
   }
-  $OBJECTS['numAgents'] = sizeof($allAgents);
-  $OBJECTS['sets'] = $allAgents;
+  
+  $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
+  $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
+  $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+  $accessGroupAgents = new DataSet();
+  foreach ($agents as $agent) {
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $accessGroupAgents->addValue($agent->getId(), $joined[$FACTORIES::getAccessGroupFactory()->getModelName()]);
+    $agent->setDevices(Util::compressDevices(explode("\n", $agent->getDevices())));
+  }
+  
+  $OBJECTS['accessGroupAgents'] = $accessGroupAgents;
+  $OBJECTS['agents'] = $agents;
+  $OBJECTS['numAgents'] = sizeof($agents);
 }
-
-$OBJECTS['allTasks'] = $allTasks;
 
 echo $TEMPLATE->render($OBJECTS);
 

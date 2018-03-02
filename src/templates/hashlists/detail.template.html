@@ -16,6 +16,10 @@
       <td>[[list.getVal('hashlist')->getId()]]</td>
     </tr>
     <tr>
+      <td>Member of Access Group:</td>
+      <td>[[accessGroup.getGroupName()]]</td>
+    </tr>
+    <tr>
       <td>Name:</td>
       <td>
         {{IF [[login.getLevel()]] >= 20}}
@@ -23,7 +27,7 @@
             <input type="hidden" name="action" value="[[$DHashlistAction::RENAME_HASHLIST]]">
             <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('hashlist')->getHashlistName()]]">
+            <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('hashlist')->getHashlistName()]]" title="Hashlist Name">
             <input type="submit" class='btn btn-default' value="Change">
           </form>
         {{ELSE}}
@@ -74,12 +78,12 @@
             <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
             <input type="hidden" name="action" value="[[$DHashlistAction::SET_SECRET]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="checkbox" name="secret" value="1"{{IF [[list.getVal('hashlist')->getSecret()]] == 1}} checked{{ENDIF}}
+            <input title="Is Secret" type="checkbox" name="secret" value="1"{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}}
             onChange="javascript:document.getElementById('hashlistsecret').submit();"> Hashlist contains secret data
           </form>
         {{ENDIF}}
         {{IF [[login.getLevel()]] < 30}}
-          <input type='checkbox'{{IF [[list.getVal('hashlist')->getSecret()]] == 1}} checked{{ENDIF}} disabled> Hashlist contains secret data
+          <input title="Is Secret" type='checkbox'{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}} disabled> Hashlist contains secret data
         {{ENDIF}}
       </td>
     </tr>

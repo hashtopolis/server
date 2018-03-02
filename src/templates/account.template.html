@@ -21,7 +21,7 @@
 			<td>
 				<form class='form-inline' action="account.php" method="post">
 					<input type='hidden' name='action' value='[[$DAccountAction::SET_EMAIL]]'>
-					<input type='email' name='email' class='form-control' value='[[user.getEmail()]]'>
+					<input type='email' name='email' class='form-control' value='[[user.getEmail()]]' title="Email">
 					<input type="hidden" name="csrf" value="[[csrf]]">
 					<input type="submit" class='btn btn-default' value="Update">
 				</form>
@@ -32,7 +32,7 @@
 			<td>
 				<form class='form-inline' action="account.php" method="post">
 					<input type='hidden' name='action' value='[[$DAccountAction::UPDATE_LIFETIME]]'>
-					<input type='text' name='lifetime' class='form-control' value='[[user.getSessionLifetime()]]'> seconds
+					<input type='text' name='lifetime' class='form-control' value='[[user.getSessionLifetime()]]' title="Session Length"> seconds
 					<input type="hidden" name="csrf" value="[[csrf]]">
 					<input type="submit" class='btn btn-default' value="Update">
 				</form>
@@ -96,7 +96,7 @@
 				<td>
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP1]]'>
-						<input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]'>
+						<input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]' title="OTP Key">
 						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
@@ -107,7 +107,7 @@
 				<td>
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP2]]'>
-						<input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]'>
+						<input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]' title="OTP Key">
 						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
@@ -118,7 +118,7 @@
 				<td>
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP3]]'>
-						<input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]'>
+						<input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]' title="OTP Key">
 						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>
@@ -129,7 +129,7 @@
 				<td>
 					<form class='form-inline' action="account.php" method="post">
 						<input type='hidden' name='action' value='[[$DAccountAction::SET_OTP4]]'>
-						<input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]'>
+						<input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]' title="OTP Key">
 						<input type="hidden" name="csrf" value="[[csrf]]">
 						<input type="submit" class='btn btn-default' value="Update">
 					</form>

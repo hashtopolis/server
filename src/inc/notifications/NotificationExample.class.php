@@ -1,6 +1,6 @@
 <?php
 
-class HashtopussyNotificationExample extends HashtopussyNotification {
+class HashtopolisNotificationExample extends HashtopolisNotification {
   protected     $receiver;
   public static $name = "Example";
   
@@ -12,10 +12,10 @@ class HashtopussyNotificationExample extends HashtopussyNotification {
     return array();
   }
   
-  function sendMessage($message) {
+  function sendMessage($message, $subject = "") {
     file_put_contents(dirname(__FILE__) . "/notification.log", "MSG TO " . $this->receiver . ": " . $message . "\n", FILE_APPEND);
   }
 }
 
-$NOTIFICATIONS['Example'] = new HashtopussyNotificationExample();
+$NOTIFICATIONS['Example'] = new HashtopolisNotificationExample();
 

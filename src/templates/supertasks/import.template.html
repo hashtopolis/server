@@ -14,15 +14,34 @@
 			<tr>
 				<td style="width: 150px;">Name:</td>
 				<td>
-					<input type='text' name='name' class='form-control'>
+					<input type='text' name='name' class='form-control' title="Name">
 				</td>
 			</tr>
 			<tr>
 				<td>Is Small Task:</td>
 				<td>
-					<select name="isSmall" class="form-control">
+					<select name="isSmall" class="form-control" title="Small Task">
 						<option value="0">No</option>
 						<option value="1">Yes</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Is CPU Task:</td>
+				<td>
+					<select name="isCpu" class="form-control" title="CPU Task">
+						<option value="0">No</option>
+						<option value="1">Yes</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Cracker Binary which is used to run this task:</td>
+				<td>
+					<select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+						{{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
+						<option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+						{{ENDFOREACH}}
 					</select>
 				</td>
 			</tr>

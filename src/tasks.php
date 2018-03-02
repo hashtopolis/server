@@ -3,12 +3,14 @@
 use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\CrackerBinary;
 use DBA\File;
+use DBA\FilePretask;
+use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
-use DBA\TaskFile;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -24,8 +26,8 @@ if (!$LOGIN->isLoggedin()) {
 $TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");
 
-//catch agents actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+//catch actions here...
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $taskHandler = new TaskHandler();
   $taskHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
@@ -61,6 +63,7 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 if (isset($_GET['id'])) {
   if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
     $TEMPLATE = new Template("restricted");
+    $OBJECTS['pageTitle'] = "Restricted";
     die($TEMPLATE->render($OBJECTS));
   }
   
@@ -70,13 +73,13 @@ if (isset($_GET['id'])) {
     UI::printError("ERROR", "Invalid task ID!");
   }
   $OBJECTS['task'] = $task;
+  $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+  $OBJECTS['taskWrapper'] = $taskWrapper;
   
-  if ($task->getHashlistId() != null) {
-    $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-    $OBJECTS['hashlist'] = $hashlist;
-    $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
-    $OBJECTS['hashtype'] = $hashtype;
-  }
+  $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
+  $OBJECTS['hashlist'] = $hashlist;
+  $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
+  $OBJECTS['hashtype'] = $hashtype;
   
   $isActive = 0;
   $activeChunks = array();
@@ -87,7 +90,7 @@ if (isset($_GET['id'])) {
   $agentsSpeed = new DataSet();
   $currentSpeed = 0;
   foreach ($chunks as $chunk) {
-    if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getRprogress() < 10000) {
+    if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
       $isActive = 1;
       $activeChunks[] = $chunk;
       $activeChunksIds->addValue($chunk->getId(), true);
@@ -120,14 +123,14 @@ if (isset($_GET['id'])) {
     if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
       $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime());
     }
-    $cProgress += $chunk->getProgress();
+    $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
     if (!$agentsProgress->getVal($chunk->getAgentId())) {
-      $agentsProgress->addValue($chunk->getAgentId(), $chunk->getProgress());
+      $agentsProgress->addValue($chunk->getAgentId(), $chunk->getCheckpoint() - $chunk->getSkip());
       $agentsCracked->addValue($chunk->getAgentId(), $chunk->getCracked());
       $agentsSpent->addValue($chunk->getAgentId(), max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
     }
     else {
-      $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getProgress());
+      $agentsProgress->addValue($chunk->getAgentId(), $agentsProgress->getVal($chunk->getAgentId()) + $chunk->getCheckpoint() - $chunk->getSkip());
       $agentsCracked->addValue($chunk->getAgentId(), $agentsCracked->getVal($chunk->getAgentId()) + $chunk->getCracked());
       $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
     }
@@ -138,18 +141,14 @@ if (isset($_GET['id'])) {
   $OBJECTS['cProgress'] = $cProgress;
   
   $timeSpent = 0;
-  for ($i = 1; $i <= sizeof($chunkIntervals); $i++) {
-    if (isset($chunkIntervals[$i]) && $chunkIntervals[$i]["start"] <= $chunkIntervals[$i - 1]["stop"]) {
-      $chunkIntervals[$i]["start"] = $chunkIntervals[$i - 1]["start"];
-      if ($chunkIntervals[$i]["stop"] < $chunkIntervals[$i - 1]["stop"]) {
-        $chunkIntervals[$i]["stop"] = $chunkIntervals[$i - 1]["stop"];
-      }
+  foreach ($chunks as $chunk) {
+    if ($chunk->getDispatchTime() == 0 || $chunk->getSolveTime() == 0) {
+      continue;
     }
-    else {
-      $timeSpent += ($chunkIntervals[$i - 1]["stop"] - $chunkIntervals[$i - 1]["start"]);
-    }
+    $timeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
   }
   $OBJECTS['timeSpent'] = $timeSpent;
+  // TODO: maybe make this more accurate by going over the last few chunks in case agents were added later
   if ($task->getKeyspace() != 0 && ($cProgress / $task->getKeyspace()) != 0) {
     $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
   }
@@ -157,8 +156,8 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeLeft'] = -1;
   }
   
-  $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-  $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
+  $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
+  $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
   
@@ -234,6 +233,7 @@ if (isset($_GET['id'])) {
     $fullAgents->addValue($agent->getId(), $agent);
   }
   $OBJECTS['fullAgents'] = $fullAgents;
+  $OBJECTS['pageTitle'] = "Task details for " . $task->getTaskName();
 }
 else if (isset($_GET['new'])) {
   if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
@@ -243,12 +243,16 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
-  $copy = new Task(0, "", "", null, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, 0, "", 0, 0, 0, DTaskTypes::NORMAL);
+  $origType = 0;
+  $hashlistId = 0;
+  $copy = null;
   if (isset($_GET["copy"])) {
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
+      $origType = 1;
+      $hashlistId = $FACTORIES::getTaskWrapperFactory()->get($copy->getTaskWrapperId())->getHashlistId();
       $copy->setId(0);
       $match = array();
       if (preg_match('/\(copy([0-9]+)\)/i', $copy->getTaskName(), $match)) {
@@ -261,19 +265,29 @@ else if (isset($_GET['new'])) {
       }
     }
   }
-  
+  else if (isset($_GET["copyPre"])) {
+    //copied from a task
+    $copy = $FACTORIES::getPretaskFactory()->get($_GET['copyPre']);
+    if ($copy != null) {
+      $orig = $copy->getId();
+      $origType = 2;
+      $copy = new Task(0, $copy->getTaskName(), $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, $copy->getPriority(), $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, 0, $copy->getCrackerBinaryTypeId(), 0);
+    }
+  }
+  if ($copy === null) {
+    $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0, $CONFIG->getVal(DConfig::DEFAULT_BENCH), 0, 0, 0, 0);
+  }
   if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
     $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
   
+  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
+  $OBJECTS['hashlistId'] = $hashlistId;
   
   $lists = array();
-  $set = new DataSet();
-  $set->addValue('id', null);
-  $set->addValue("name", "(pre-configured task)");
-  $lists[] = $set;
   $res = $FACTORIES::getHashlistFactory()->filter(array());
   foreach ($res as $list) {
     $set = new DataSet();
@@ -285,10 +299,19 @@ else if (isset($_GET['new'])) {
   
   $origFiles = array();
   if ($orig > 0) {
-    $qF = new QueryFilter(TaskFile::TASK_ID, $orig, "=");
-    $ff = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($ff as $f) {
-      $origFiles[] = $f->getFileId();
+    if ($origType == 1) {
+      $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
+      $ff = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+      foreach ($ff as $f) {
+        $origFiles[] = $f->getFileId();
+      }
+    }
+    else {
+      $qF = new QueryFilter(FilePretask::PRETASK_ID, $orig, "=");
+      $ff = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+      foreach ($ff as $f) {
+        $origFiles[] = $f->getFileId();
+      }
     }
   }
   $oF = new OrderFilter(File::FILENAME, "ASC");
@@ -312,9 +335,17 @@ else if (isset($_GET['new'])) {
   }
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
+  
+  $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
+  $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
+  $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::ORDER => $oF));
+  usort($versions, array("Util", "versionComparisonBinary"));
+  $OBJECTS['versions'] = $versions;
+  $OBJECTS['pageTitle'] = "Create Task";
 }
 else {
   Util::loadTasks();
+  $OBJECTS['pageTitle'] = "Tasks";
 }
 
 echo $TEMPLATE->render($OBJECTS);

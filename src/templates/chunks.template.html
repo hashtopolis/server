@@ -40,12 +40,12 @@
 				<td class="num">[[chunk.getSkip()]]</td>
 				<td class="num">[[chunk.getLength()]]</td>
 				<td class="num">
-					[[chunk.getProgress()]]
-					{{IF [[chunk.getProgress()]] > 0 && [[chunk.getProgress()]] != [[chunk.getLength()]]}}
-						<br>([[Util::showperc([[chunk.getProgress()]], [[chunk.getLength()]])]]%)
+					[[chunk.getCheckpoint()]]
+					{{IF [[chunk.getLength()]] > 0}}
+						([[Util::showperc([[chunk.getCheckpoint()]] - [[chunk.getSkip()]], [[chunk.getLength()]])]]%)
 					{{ENDIF}}
 				</td>
-				<td class="num">[[Util::showperc([[chunk.getRprogress()]], 10000)]]%</td>
+				<td class="num">[[Util::showperc([[chunk.getProgress()]], 10000)]]%</td>
 				<td>
 					{{IF [[chunk.getTaskId()]] == null}}
 						N/A

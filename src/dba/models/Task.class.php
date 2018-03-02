@@ -6,35 +6,37 @@ class Task extends AbstractModel {
   private $taskId;
   private $taskName;
   private $attackCmd;
-  private $hashlistId;
   private $chunkTime;
   private $statusTimer;
   private $keyspace;
-  private $progress;
+  private $keyspaceProgress;
   private $priority;
   private $color;
   private $isSmall;
   private $isCpuTask;
   private $useNewBench;
   private $skipKeyspace;
-  private $taskType;
+  private $crackerBinaryId;
+  private $crackerBinaryTypeId;
+  private $taskWrapperId;
   
-  function __construct($taskId, $taskName, $attackCmd, $hashlistId, $chunkTime, $statusTimer, $keyspace, $progress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $taskType) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
-    $this->hashlistId = $hashlistId;
     $this->chunkTime = $chunkTime;
     $this->statusTimer = $statusTimer;
     $this->keyspace = $keyspace;
-    $this->progress = $progress;
+    $this->keyspaceProgress = $keyspaceProgress;
     $this->priority = $priority;
     $this->color = $color;
     $this->isSmall = $isSmall;
     $this->isCpuTask = $isCpuTask;
     $this->useNewBench = $useNewBench;
     $this->skipKeyspace = $skipKeyspace;
-    $this->taskType = $taskType;
+    $this->crackerBinaryId = $crackerBinaryId;
+    $this->crackerBinaryTypeId = $crackerBinaryTypeId;
+    $this->taskWrapperId = $taskWrapperId;
   }
   
   function getKeyValueDict() {
@@ -42,18 +44,19 @@ class Task extends AbstractModel {
     $dict['taskId'] = $this->taskId;
     $dict['taskName'] = $this->taskName;
     $dict['attackCmd'] = $this->attackCmd;
-    $dict['hashlistId'] = $this->hashlistId;
     $dict['chunkTime'] = $this->chunkTime;
     $dict['statusTimer'] = $this->statusTimer;
     $dict['keyspace'] = $this->keyspace;
-    $dict['progress'] = $this->progress;
+    $dict['keyspaceProgress'] = $this->keyspaceProgress;
     $dict['priority'] = $this->priority;
     $dict['color'] = $this->color;
     $dict['isSmall'] = $this->isSmall;
     $dict['isCpuTask'] = $this->isCpuTask;
     $dict['useNewBench'] = $this->useNewBench;
     $dict['skipKeyspace'] = $this->skipKeyspace;
-    $dict['taskType'] = $this->taskType;
+    $dict['crackerBinaryId'] = $this->crackerBinaryId;
+    $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
+    $dict['taskWrapperId'] = $this->taskWrapperId;
     
     return $dict;
   }
@@ -90,14 +93,6 @@ class Task extends AbstractModel {
     $this->attackCmd = $attackCmd;
   }
   
-  function getHashlistId(){
-    return $this->hashlistId;
-  }
-  
-  function setHashlistId($hashlistId){
-    $this->hashlistId = $hashlistId;
-  }
-  
   function getChunkTime(){
     return $this->chunkTime;
   }
@@ -122,12 +117,12 @@ class Task extends AbstractModel {
     $this->keyspace = $keyspace;
   }
   
-  function getProgress(){
-    return $this->progress;
+  function getKeyspaceProgress(){
+    return $this->keyspaceProgress;
   }
   
-  function setProgress($progress){
-    $this->progress = $progress;
+  function setKeyspaceProgress($keyspaceProgress){
+    $this->keyspaceProgress = $keyspaceProgress;
   }
   
   function getPriority(){
@@ -178,27 +173,44 @@ class Task extends AbstractModel {
     $this->skipKeyspace = $skipKeyspace;
   }
   
-  function getTaskType(){
-    return $this->taskType;
+  function getCrackerBinaryId(){
+    return $this->crackerBinaryId;
   }
   
-  function setTaskType($taskType){
-    $this->taskType = $taskType;
+  function setCrackerBinaryId($crackerBinaryId){
+    $this->crackerBinaryId = $crackerBinaryId;
+  }
+  
+  function getCrackerBinaryTypeId(){
+    return $this->crackerBinaryTypeId;
+  }
+  
+  function setCrackerBinaryTypeId($crackerBinaryTypeId){
+    $this->crackerBinaryTypeId = $crackerBinaryTypeId;
+  }
+  
+  function getTaskWrapperId(){
+    return $this->taskWrapperId;
+  }
+  
+  function setTaskWrapperId($taskWrapperId){
+    $this->taskWrapperId = $taskWrapperId;
   }
 
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
   const ATTACK_CMD = "attackCmd";
-  const HASHLIST_ID = "hashlistId";
   const CHUNK_TIME = "chunkTime";
   const STATUS_TIMER = "statusTimer";
   const KEYSPACE = "keyspace";
-  const PROGRESS = "progress";
+  const KEYSPACE_PROGRESS = "keyspaceProgress";
   const PRIORITY = "priority";
   const COLOR = "color";
   const IS_SMALL = "isSmall";
   const IS_CPU_TASK = "isCpuTask";
   const USE_NEW_BENCH = "useNewBench";
   const SKIP_KEYSPACE = "skipKeyspace";
-  const TASK_TYPE = "taskType";
+  const CRACKER_BINARY_ID = "crackerBinaryId";
+  const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
+  const TASK_WRAPPER_ID = "taskWrapperId";
 }

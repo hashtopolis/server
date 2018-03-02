@@ -32,8 +32,8 @@
 				<tr>
 					<td>[[file.getId()]]</td>
 					<td>
-						<a name="[[file.getId()]]" href="get.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
-						{{IF [[file.getSecret()]] == '1'}}
+						<a name="[[file.getId()]]" href="getFile.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
+						{{IF [[file.getIsSecret()]] == '1'}}
 							<img src="static/lock.gif" alt="Secret">
 						{{ENDIF}}
 					</td>
@@ -43,11 +43,11 @@
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
 								<input type="hidden" name="csrf" value="[[csrf]]">
-								<input type='hidden' name="secret" value="{{IF [[file.getSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
-								<input type="checkbox" onChange="javascript:document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getSecret()]] == '1'}} checked{{ENDIF}}>
+								<input type='hidden' name="secret" value="{{IF [[file.getIsSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
+								<input title="Is Secret" type="checkbox" onChange="document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getIsSecret()]] == '1'}} checked{{ENDIF}}>
 							</form>
 						{{ELSE}}
-							<input type='checkbox'{{IF [[file.getSecret()]] == 1}} checked{{ENDIF}} disabled>
+							<input type='checkbox'{{IF [[file.getIsSecret()]] == 1}} checked{{ENDIF}} disabled title="Is Secret">
 						{{ENDIF}}
 					</td>
 					<td class='num'>
@@ -82,7 +82,7 @@
 				<tr>
 					<th>
 						Upload files 
-						<button type="button" class='btn btn-default' onclick="javascript:addLine('upfiles');">Add file</button>
+						<button type="button" class='btn btn-default' onclick="addLine('upfiles');">Add file</button>
 					</th>
 				</tr>
 				<tr>
@@ -105,7 +105,7 @@
 				{{FOREACH impfile;[[impfiles]]}}
 					<tr>
 						<td>
-							<input type="checkbox" name="imfile[]" value="[[impfile.getVal('file')]]">
+							<input type="checkbox" name="imfile[]" value="[[impfile.getVal('file')]]" title="Import File">
 							[[impfile.getVal('file')]] ([[Util::nicenum([[impfile.getVal('size')]])]]B)
 						</td>
 					</tr>
@@ -118,7 +118,7 @@
 					<tr>
 						<td>
 							<input type="submit" class='btn btn-default' value="Import files"> 
-							<input type="checkbox" onChange="javascript:checkAll('impfiles',this.checked);"> Select All
+							<input type="checkbox" onChange="checkAll('impfiles',this.checked);" title="Select All"> Select All
 						</td>
 					</tr>
 				{{ENDIF}}
@@ -137,7 +137,7 @@
 				<tr>
 					<td>URL:</td>
 					<td>
-						<input type="text" class='form-control' name="url">
+						<input type="text" class='form-control' name="url" title="URL">
 					</td>
 				</tr>
 				<tr>

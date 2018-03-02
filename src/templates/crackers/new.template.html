@@ -1,0 +1,27 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Create new binary type</h2>
+{%TEMPLATE->struct/messages%}
+<form action='' method='post'>
+	<input type='hidden' name='action' value='[[$DCrackerBinaryAction::CREATE_BINARY_TYPE]]'>
+	<input type="hidden" name="csrf" value="[[csrf]]">
+	<div class="panel panel-default">
+		<table class="table table-bordered table-nonfluid">
+			<tr>
+				<td>Binary Type Name:</td>
+				<td>
+					<select name="name" title="Name" class="form-control">
+						<option value="hashcat">Hashcat</option>
+						<option value="generic">Generic Cracker</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" class="text-center">
+					<input type="submit" class='btn btn-success' value="Create binary type">
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+{%TEMPLATE->struct/foot%}

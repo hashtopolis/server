@@ -1,38 +1,35 @@
-# Hashtopussy
+# Hashtopolis
 
-<img src="https://github.com/s3inlc/hashtopussy/blob/master/src/static/logo.png" alt='Hashtopussy' width="100">
+<img src="https://github.com/s3inlc/hashtopolis/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
 
-**Please Note:** We are currently focusing on building version 0.5.0 (which contains many new features with a lot of changes in the code base), we will check issues with the current version after we finish the development on the new version. Thanks for your patience.
-
-Hashtopussy is a multi-platform client-server tool for distributing hashcat tasks among multiple computers. It is strongly based on Hashtopus.
-Like Hashtopus, the main goals for Hashtopussy's development are portability, robustness, multi-user support, and to bring Hashtopus to the next level.
+Hashtopolis is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. The main goals for Hashtopolis's development are portability, robustness, multi-user support, and multiple groups management.
 The application has two parts:
 
-- **Agent** Multiple clients (C#, Python, PHP), easily customizable to suite any need.
+- **Agent** Multiple clients (C#, Python), easily customizable to suit any need.
 - **Server** several PHP/CSS files operating on two endpoints: an Admin GUI and an Agent Connection Point
 
-Aiming for high usability even on restricted networks, Hashtopussy communicates over HTTP(S) using a human-readable, hashing-specific dialect of JSON.
+Aiming for high usability even on restricted networks, Hashtopolis communicates over HTTP(S) using a human-readable, hashing-specific dialect of JSON.
 
-The server part runs on PHP using MySQL as the database back end. It is vital that your MySQL server be configured with performance in mind. Queries can be very expensive and proper configuration makes the difference between a few milliseconds of waiting and disastrous multi-second lags. The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so.
+The server part runs on PHP using MySQL as the database back end. It is vital that your MySQL server is configured with performance in mind. Queries can be very expensive and proper configuration makes the difference between a few milliseconds of waiting and disastrous multi-second lags. The database schema heavily profits from indexing. Therefore, if you see a hint about pre-sorting your hashlist, please do so.
 
-The web admin interface is the single point of access across all client agents. New agent deployments require a one-time password generated in the New Agent tab. This reduces the risk of leaking hashes or files to rogue or fake agents.
+The web admin interface is the single point of access for all client agents. New agent deployments require a one-time password generated in the New Agent tab. This reduces the risk of leaking hashes or files to rogue or fake agents.
 
-There are parts of the documentation and wiki which are not up-to-date. If you detect anything or have questions on understanding descriptions, feel free to ask us.
+There are parts of the documentation and wiki which are not up-to-date. If you see anything wrong or have questions on understanding descriptions, feel free to contact us on Twitter (@s3inlc, @winxp5421).
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
 
-**Note:** "Hashtopussy" is based on the original project Hashtopus and utilizes the popular program Hashcat. The name Hashtopussy is derived from both of these projects. 
+In an effort to make the Hashtopussy project conform to a more politically neutral name it was rebranded to "Hashtopolis" in March 2018.
 
 ## Features
 
 - Easy and comfortable to use
 - Accessible from anywhere via web interface
-- Server component highly compatible with common webhosting setups
+- Server component highly compatible with common web hosting setups
 - Unattended agents
 - File management for word lists, rules, ...
-- Self-updating of both Hashtopussy and hashcat
+- Self-updating of both Hashtopolis and Hashcat
 - Cracking multiple hashlists of the same hash type as though they were a single hashlist
-- Running the same binary on Windows and Linux
+- Running the same client on Windows, Linux and OS X
 - Files and hashes marked as "secret" are only distributed to agents marked as "trusted"
 - Many data import and export options
 - Rich statistics on hashes and running tasks
@@ -41,27 +38,21 @@ To report a bug, please create an issue and try to describe the problem as accur
 - User permission levels
 - Various notification types
 - Small and/or CPU-only tasks
+- Group assignment for agents and users for fine-grained access-control
+- Compatible with crackers supporting certain flags
 
-## Hashtopus or Hashtopussy?
+## Setup and Usage
 
-Hashtopus is a great program but is lacking in some areas. Major differences between the two are:
+Please visit the [wiki](https://github.com/s3inlc/hashtopolis/wiki) for more information on setup and upgrade.
 
-- Drastically improved security
-- Multi-user support
-- Improved look and layout
-- Super Tasks
-- --hex-salt support
-
-Please visit the [wiki](https://github.com/s3inlc/hashtopussy/wiki) for more information on setup and upgrade.
-
-Some screenshots of Hashtopussy (by winxp5421 and s3in!c): [Imgur1](http://imgur.com/gallery/Fj0s0) [Imgur2](http://imgur.com/gallery/LzTsI)
+Some screenshots of Hashtopolis (by winxp5421 and s3in!c): [Imgur1](http://imgur.com/gallery/Fj0s0) [Imgur2](http://imgur.com/gallery/LzTsI)
 
 ## Contribution Guidelines
 
 We are open to all kinds of contributions. If it's a bug fix or a new feature, feel free to create a pull request. Please consider some points:
 
 * Just include one feature or one bugfix in one pull request. In case you have two new features please also create two pull requests.
-* Try to stick with the code style used (especially in the PHP parts). IntelliJ/PHPStorm users can get a code style xml [here](https://gist.github.com/s3inlc/226ed78b05eb6dc8f60f18d6fd310d74).
+* Try to stick with the code style used (especially in the PHP parts). IntelliJ/PHPStorm users can get a code style XML [here](https://gist.github.com/s3inlc/226ed78b05eb6dc8f60f18d6fd310d74).
 
 The pull request will then be reviewed by at least one member and merged after approval. Don't be discouraged just because the first review is not approved, often these are just small changes.
 
@@ -76,9 +67,9 @@ ETH: 0x06B3Ae7561AD763eF58Df9C37deB6757bDA2BC0c
 
 ## Thanks
 
-* winxp for testing, writing help texts and a lot of input ideas
-* blazer for working on the agent
-* CynoSure Prime for testing
+* winxp5421 for testing, writing help texts and a lot of input ideas
+* blazer for working on the csharp agent and hops for working on the python agent
+* Cynosure Prime for testing
 * atom for [hashcat](https://github.com/hashcat/hashcat)
 * curlyboi for the original [Hashtopus](https://github.com/curlyboi/hashtopus) code
-* 7zip binaries are compiled from https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/
+* 7zip binaries are compiled from [here](https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/)

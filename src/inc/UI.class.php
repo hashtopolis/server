@@ -7,6 +7,7 @@ class UI {
     $TEMPLATE = new Template("errors/error");
     $OBJECTS['message'] = $message;
     $OBJECTS['level'] = $level;
+    $OBJECTS['pageTitle'] = "Error";
     echo $TEMPLATE->render($OBJECTS);
     die();
   }

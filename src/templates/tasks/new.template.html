@@ -23,7 +23,7 @@
 					<td>
 						<select class='form-control' name="hashlist">
 							{{FOREACH list;[[lists]]}}
-								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[copy.getHashlistId()]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
 							{{ENDFOREACH}}
 						</select> (hashlist needs to be created before task)
 					</td>
@@ -31,7 +31,7 @@
 				<tr>
 					<td>Command line:</td>
 					<td>
-						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine">[[copy.getAttackCmd()]]</textarea>
+						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line">[[copy.getAttackCmd()]]</textarea>
 						<br>
       					Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
       					If you have Linux agents, please mind the filename case sensitivity!<br>
@@ -43,21 +43,21 @@
       			<tr>
       				<td>Chunk size:</td>
       				<td>
-      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]">
+      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time">
       					seconds
       				</td>
       			</tr>
       			<tr>
       				<td>Status timer:</td>
       				<td>
-      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]">
+      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer">
       					seconds
       				</td>
       			</tr>
 						<tr>
-							<td>Benchmark Type: </td>
+							<td>Benchmark Type (Hashcat only): </td>
 							<td>
-                <select name="benchType" class="form-control">
+                <select name="benchType" class="form-control" title="Benchmark Type">
                   <option value="0" {{IF [[copy.getUseNewBench()]] == 0}}selected{{ENDIF}}>Runtime Benchmark</option>
                   <option value="1" {{IF [[copy.getUseNewBench()]] == 1}}selected{{ENDIF}}>Speed Test</option>
                 </select>
@@ -66,13 +66,13 @@
       			<tr>
       				<td>Color:</td>
       				<td>
-      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]">
+      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color">
       				</td>
       			</tr>
             <tr>
               <td>Task is CPU only (gets only CPU agents assigned):</td>
               <td>
-                <select name="cpuOnly" class="form-control">
+                <select name="cpuOnly" class="form-control" title="CPU only">
                   <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}}selected{{ENDIF}}>No</option>
                   <option value="1" {{IF [[copy.getIsCpuTask()]] == 1}}selected{{ENDIF}}>Yes</option>
                 </select>
@@ -81,7 +81,7 @@
             <tr>
               <td>Task is small (only one agent gets assigned to it):</td>
               <td>
-                <select name="isSmall" class="form-control">
+                <select name="isSmall" class="form-control" title="Is small">
                   <option value="0" {{IF [[copy.getIsSmall()]] == 0}}selected{{ENDIF}}>No</option>
                   <option value="1" {{IF [[copy.getIsSmall()]] == 1}}selected{{ENDIF}}>Yes</option>
                 </select>
@@ -90,7 +90,53 @@
             <tr>
               <td>Skip a given keyspace at the beginning of the task:</td>
               <td>
-                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]">
+                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace">
+              </td>
+            </tr>
+            <tr>
+              <td>Binary type to run task:</td>
+              <td>
+                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
+                  {{FOREACH binary;[[binaries]]}}
+                    <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+                <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
+                  <option value="0">&nbsp;</option>
+                </select>
+                <script type="text/javascript">
+                  var versions = [];
+                  {{FOREACH version;[[versions]]}}
+                    if ([[version.getCrackerBinaryTypeId()]] in versions) {
+                        versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]] ]);
+                    }
+                    else{
+                      versions [ [[version.getCrackerBinaryTypeId()]] ] = [ ["[[version.getVersion()]]", [[version.getId()]] ] ];
+                    }
+                  {{ENDFOREACH}}
+
+                  configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                  $("#crackerBinaryType").change(function() {
+                      configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                  });
+
+                  function configureDropDownLists(ddl1, ddl2) {
+                    ddl2.options.length = 0;
+                    if (ddl1.value.length === 0) {
+                        return;
+                    }
+                    for (i = 0; i < versions[ddl1.value].length; i++){
+                        createOption(ddl2, versions[ddl1.value][i][0], versions[ddl1.value][i][1]);
+                    }
+                  }
+
+                  function createOption(ddl, text, value) {
+                    var opt = document.createElement('option');
+                    opt.value = value;
+                    opt.text = text;
+                    ddl.options.add(opt);
+                  }
+                </script>
               </td>
             </tr>
       			<tr>
@@ -117,17 +163,17 @@
             {{FOREACH file;[[rules]]}}
               <tr>
                 <td>
-                  <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
                   [[file.getVal('file').getFilename()]]
-                  {{IF [[file.getVal('file').getSecret()]] == 1}}
-                  <img src="static/lock.gif" alt="Secret">
+                  {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                    <img src="static/lock.gif" alt="Secret">
                   {{ENDIF}}
                 </td>
                 <td>
                   [[Util::nicenum([[file.getVal('file').getSize()]])]]B
                 </td>
               </tr>
-          {{ENDFOREACH}}
+            {{ENDFOREACH}}
           </tr>
         </table>
       </div>
@@ -142,9 +188,9 @@
           {{FOREACH file;[[wordlists]]}}
             <tr>
               <td>
-                <input type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="javscript:assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
                 [[file.getVal('file').getFilename()]]
-                {{IF [[file.getVal('file').getSecret()]] == 1}}
+                {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                   <img src="static/lock.gif" alt="Secret">
                 {{ENDIF}}
               </td>

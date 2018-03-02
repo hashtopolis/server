@@ -1,0 +1,108 @@
+<tr style="background-color: rgba(0,0,0,0.1);">
+  <td>&nbsp;</td>
+  <td>
+    [[set.getVal('supertaskName')]]
+    [[Util::tickdone([[set.getVal('tasksDone')]], [[set.getVal('numTasks')]])]]
+    {{IF [[set.getVal('isActive')]] == 1 && [[set.getVal('tasksDone')]] < [[set.getVal('numTasks')]]}}
+      <img src="static/active.gif" alt="Active">
+    {{ENDIF}}
+  </td>
+  <td>
+    {{IF [[login.getLevel()]] >= 5}}
+      <a href="hashlists.php?id=[[set.getVal('hashlistId')]]">[[set.getVal('hashlistName')]]</a>
+    {{ELSE}}
+      [[set.getVal('hashlistName')]]
+    {{ENDIF}}
+    {{IF [[set.getVal('hashlistSecret')]] == 1}}
+      <img src="static/lock.gif" alt="Secret">
+    {{ENDIF}}
+    {{IF [[set.getVal('hashCount')]] == [[set.getVal('hashlistCracked')]]}}
+      [[Util::tickdone(1, 1)]]
+    {{ELSE}}
+      [[Util::tickdone(0, 1)]]
+    {{ENDIF}}
+  </td>
+  <td colspan="3">Supertask</td>
+  <td class='num'>
+    {{IF [[set.getVal('cracked')]] > 0 && [[login.getLevel()]] < 5}}
+      [[set.getVal('cracked')]]
+    {{ENDIF}}
+  </td>
+  <td class='num'>
+    {{IF [[set.getVal('numAssignments')]] > 0}}
+      [[set.getVal('numAssignments')]]
+    {{ENDIF}}
+  </td>
+  <td style='min-width: 95px'>
+    {{IF [[set.getVal('numFiles')]] > 0}}
+      [[set.getVal('numFiles')]]
+    {{ENDIF}}
+    {{IF [[set.getVal('fileSecret')]]}}
+      <img src="static/lock.gif" alt="Secret">
+    {{ENDIF}}
+    {{IF [[set.getVal('numFiles')]] > 0}}
+      <br>([[Util::nicenum([[set.getVal('filesSize')]])]]B)
+    {{ENDIF}}
+  </td>
+  <td style='min-width: 130px'>
+    {{IF [[login.getLevel()]] >= 20}}
+      <form class="form-inline" action="tasks.php" method="POST">
+        <input type='hidden' name='action' value='[[$DTaskAction::SET_SUPERTASK_PRIORITY]]'>
+        <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[set.getVal('priority')]]" title="Priority">
+        <input type="submit" class='btn btn-default' value="Set">
+      </form>
+    {{ELSE}}
+      [[set.getVal('priority')]]
+    {{ENDIF}}
+  </td>
+  <td style='min-width: 120px'>
+    {{IF [[set.getVal('taskType')]] == 1}}
+      <form style ='float: left; padding-right: 5px;'>
+        <a class="btn btn-primary accordion-toggle" onclick="expansionCheck('#task[[set.getVal('taskWrapperId')]]')" role="button" href="#" data-toggle="collapse" data-target="#task[[set.getVal('taskWrapperId')]]">Show/Hide</a>
+      </form>
+      <script type="text/javascript">
+          $( document ).ready(function() {
+              checkOnLoading("#task[[set.getVal('taskWrapperId')]]");
+          });
+      </script>
+    {{ENDIF}}
+    {{IF [[login.getLevel()]] >= 30}}
+      <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
+        <input type="hidden" name="action" value="[[$DTaskAction::DELETE_SUPERTASK]]">
+        <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <input type="submit" class='btn btn-danger' value="X">
+      </form>
+    {{ENDIF}}
+  </td>
+</tr>
+<tr style="background-color: rgba(0,0,0,0.1);" data-toggle="collapse" data-target="#task[[set.getVal('taskWrapperId')]]" class="accordion-toggle">
+  <td colspan="11" style="padding: 0px 1px;">
+    <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?supertask=[[set.getVal('taskWrapperId')]]&x=1200&y=6">
+  </td>
+</tr>
+<tr>
+  <td colspan="11" class="hiddenRow">
+    <div id="task[[set.getVal('taskWrapperId')]]" class="accordian-body collapse" style="margin: 10px;" aria-expanded="false">
+      <div class="panel panel-default" style="margin-bottom: 0;">
+        <table class="table table-bordered table-nonfluid table-subtask-border">
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Chunks</th>
+            <th>Dispatched</th>
+            <th>Searched</th>
+            <th>Cracked</th>
+            <th>Agents</th>
+            <th>Files</th>
+            <th>Subtask Priority</th>
+            <th>Action</th>
+          </tr>
+          {%TEMPLATE->tasks/subtasks%}
+        </table>
+      </div>
+    </div>
+  </td>
+</tr>

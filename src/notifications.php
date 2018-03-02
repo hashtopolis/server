@@ -20,14 +20,16 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
 $TEMPLATE = new Template("notifications");
+$OBJECTS['pageTitle'] = "Notifications";
 $MENU->setActive("account_notifications");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $notificationHandler = new NotificationHandler();
   $notificationHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
@@ -103,9 +105,8 @@ sort($allowedActions);
 $OBJECTS['allowedActions'] = $allowedActions;
 $OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
 
-$qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
 $oF = new OrderFilter(Task::TASK_NAME, "ASC");
-$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+$OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::ORDER => $oF));
 $oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
 $OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::ORDER => $oF));
 if ($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR) {

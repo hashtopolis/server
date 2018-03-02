@@ -8,7 +8,7 @@
 			<td colspan="5">
         <form class='form-inline' action="log.php" method="post">
           <input type="hidden" name="show" value="true">
-          <select name="level" class="form-control">
+          <select name="level" class="form-control" title="Loglevel">
             <option value="0"{{IF [[level]] == 0}} selected{{ENDIF}}>ALL</option>
             <option value="information"{{IF [[level]] == 'information'}} selected{{ENDIF}}>information</option>
             <option value="warning"{{IF [[level]] == 'warning'}} selected{{ENDIF}}>warning</option>

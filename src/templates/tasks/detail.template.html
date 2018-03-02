@@ -29,7 +29,7 @@
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::RENAME_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
-            <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]">
+            <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]" title="Task Name">
             <input type="hidden" name="csrf" value="[[csrf]]">
             <input type="submit" class='btn btn-default' value="Change">
           </form>
@@ -52,7 +52,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_TIME]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getChunkTime()]]">
+            <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getChunkTime()]]" title="Chunk Length">
             seconds
             <input type="submit" class='btn btn-default' value="Set">
           </form>
@@ -68,7 +68,7 @@
           <input type="hidden" name="action" value="[[$DTaskAction::SET_COLOR]]">
           <input type="hidden" name="task" value="[[task.getId()]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
-          #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]">
+          #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]" title="Color">
           {{IF [[login.getLevel()]] >= 20}}
             <input type="submit" class='btn btn-default' value="Set">
           {{ENDIF}}
@@ -97,7 +97,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_PRIORITY]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="priority" size="4" value="[[task.getPriority()]]">
+            <input type="text" class='form-control' name="priority" size="4" value="[[task.getPriority()]]" title="Priority">
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
@@ -113,7 +113,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_CPU_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <select name="isCpu" class="form-control">
+            <select name="isCpu" class="form-control" title="CPU Only">
               <option value="0"{{IF [[task.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
               <option value="1"{{IF [[task.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
             </select>
@@ -136,7 +136,7 @@
             <input type="hidden" name="action" value="[[$DTaskAction::SET_SMALL_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <select name="isSmall" class="form-control">
+            <select name="isSmall" class="form-control" title="Small Task">
               <option value="0"{{IF [[task.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
               <option value="1"{{IF [[task.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
             </select>
@@ -157,7 +157,7 @@
         [[task.getSkipKeyspace()]]
       </td>
     </tr>
-    {{IF [[task.getHashlistId()]] != null}}
+    {{IF [[taskWrapper.getHashlistId()]] != null}}
       <tr>
         <td>Keyspace size:</td>
         <td>
@@ -171,7 +171,7 @@
       <tr>
         <td>Keyspace dispatched:</td>
         <td>
-          [[task.getProgress()]] ([[Util::showperc([[task.getProgress()]], [[task.getKeyspace()]])]]%)
+          [[task.getKeyspaceProgress()]] ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%)
           {{IF [[isActive]] == 0 && [[login.getLevel()]] >= 20}}
             <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::PURGE_TASK]]">
@@ -210,7 +210,7 @@
       </tr>
       <tr>
         <td>Speed:</td>
-        <td>[[Util::nicenum([[currentSpeed]], 100000, 1000)]]H/s</td>
+        <td>[[Util::nicenum([[currentSpeed]], 10000, 1000)]]H/s</td>
       </tr>
       <tr>
         <td>
@@ -264,7 +264,7 @@
               {{ELSE}}
                 [[file.getFilename()]]
               {{ENDIF}}
-              {{IF [[file.getSecret()]] == 1}}
+              {{IF [[file.getIsSecret()]] == 1}}
                 <img src="static/lock.gif" alt="Secret">
               {{ENDIF}}
             </td>
@@ -322,7 +322,7 @@
               <input type="hidden" name="action" value="[[$DTaskAction::SET_BENCHMARK]]">
               <input type="hidden" name="agent" value="[[agent.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8">
+              <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8" title="Benchmark">
               <input type="submit" class='btn btn-default' value="Set">
             </form>
           {{ELSE}}
@@ -331,7 +331,7 @@
         </td>
         <td class="num">
           {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
-            [[Util::nicenum([[agentsSpeed.getVal([[agent.getId()]])]], 100000, 1000)]]H/s
+            [[Util::nicenum([[agentsSpeed.getVal([[agent.getId()]])]], 10000, 1000)]]H/s
           {{ELSE}}
             ---
           {{ENDIF}}
@@ -353,8 +353,8 @@
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[agent.getLastAct()]] > 0}}
-            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastAct()]])]]
+          {{IF [[agent.getLastTime()]] > 0}}
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]
           {{ELSE}}
             ---
           {{ENDIF}}
@@ -381,7 +381,7 @@
               <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <select class='form-control' name="agent">
+              <select class='form-control' name="agent" title="Assign">
                 {{FOREACH agent;[[assignAgents]]}}
                   <option value='[[agent.getId()]]'>[[agent.getId()]]
                   {{IF [[agent.getAgentName()]] != ""}}
@@ -488,13 +488,13 @@
         <td class="num">[[chunk.getSkip()]]</td>
         <td class="num">[[chunk.getLength()]]</td>
         <td class="num">
-          [[chunk.getProgress()]]
-          {{IF [[chunk.getProgress()]] > 0 && [[chunk.getProgress()]] != [[chunk.getLength()]]}}
-            ([[Util::showperc([[chunk.getProgress()]], [[chunk.getLength()]])]]%)
+          [[chunk.getCheckpoint()]]
+          {{IF [[chunk.getLength()]] > 0}}
+            ([[Util::showperc([[chunk.getCheckpoint()]] - [[chunk.getSkip()]], [[chunk.getLength()]])]]%)
           {{ENDIF}}
         </td>
         <td class="num">
-          [[Util::showperc([[chunk.getRprogress()]], 10000)]]%
+          [[Util::showperc([[chunk.getProgress()]], 10000)]]%
         </td>
         <td>
           {{IF ![[chunk.getAgentId()]]}}

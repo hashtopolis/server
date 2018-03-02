@@ -8,7 +8,7 @@
 		<meta name="author" content="">
 		<link rel="icon" href="static/logo.png">
 
-		<title>Hashtopussy [[version]] [ [[host]] ]</title>
+		<title>[[$APP_NAME]] [[version]] [ [[host]] ]{{IF strlen([[pageTitle]]) > 0}} - [[pageTitle]]{{ENDIF}}</title>
 
 		<link href="static/bootstrap.min.css" rel="stylesheet">
 		<link href="static/navbar.css" rel="stylesheet">
@@ -61,11 +61,11 @@
 			}
 
 			function checkAll(formname, checktoggle) {
-				var checkboxes = new Array();
+				var checkboxes = [];
 				checkboxes = document.getElementById(formname)
 						.getElementsByTagName('input');
 				for (var i = 0; i < checkboxes.length; i++) {
-					if (checkboxes[i].type == 'checkbox') {
+					if (checkboxes[i].type === 'checkbox') {
 						checkboxes[i].checked = checktoggle;
 					}
 				}

@@ -23,7 +23,7 @@ class ConfigFactory extends AbstractModelFactory {
    * @return Config
    */
   function getNullObject() {
-    $o = new Config(-1, null, null);
+    $o = new Config(-1, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class ConfigFactory extends AbstractModelFactory {
    * @return Config
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Config($dict['configId'], $dict['item'], $dict['value']);
+    $o = new Config($dict['configId'], $dict['configSectionId'], $dict['item'], $dict['value']);
     return $o;
   }
 

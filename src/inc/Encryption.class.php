@@ -3,8 +3,6 @@
 /**
  * Bundle of static functions to generate password hashes, session keys, random strings
  * and other crypt functions
- *
- * @author Sein
  */
 class Encryption {
   /**

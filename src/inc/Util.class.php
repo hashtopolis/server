@@ -1,20 +1,25 @@
 <?php
 
-use DBA\Agent;
+use DBA\AbstractModel;
+use DBA\AccessGroup;
+use DBA\AccessGroupUser;
+use DBA\AgentZap;
 use DBA\Assignment;
 use DBA\Chunk;
-use DBA\ComparisonFilter;
+use DBA\ContainFilter;
+use DBA\CrackerBinary;
 use DBA\File;
+use DBA\FileTask;
+use DBA\Hash;
 use DBA\Hashlist;
+use DBA\HashlistHashlist;
 use DBA\JoinFilter;
 use DBA\LogEntry;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\StoredValue;
-use DBA\SuperHashlistHashlist;
 use DBA\Task;
-use DBA\TaskFile;
-use DBA\TaskTask;
+use DBA\TaskWrapper;
 use DBA\Zap;
 
 /**
@@ -24,16 +29,6 @@ use DBA\Zap;
  *         Bunch of useful static functions.
  */
 class Util {
-  /**
-   * TODO: document me
-   * @param $obj
-   * @param $to_class
-   * @return mixed|null
-   */
-  public static function cast($obj, $to_class) {
-    return DBA\Util::cast($obj, $to_class);
-  }
-  
   public static function isYubikeyEnabled() {
     /** @var $CONFIG DataSet */
     global $CONFIG;
@@ -126,9 +121,9 @@ class Util {
   public static function insertFile($path, $name, $type) {
     global $FACTORIES;
     
-    $fileType = 0;
+    $fileType = DFileType::WORDLIST;
     if ($type == 'rule') {
-      $fileType = 1;
+      $fileType = DFileType::RULE;
     }
     $file = new File(0, $name, Util::filesize($path), 1, $fileType);
     $file = $FACTORIES::getFileFactory()->save($file);
@@ -139,390 +134,254 @@ class Util {
   }
   
   /**
-   * Searches for the best task which can be assigned to a given agent. It respects all configuration for cpuOnly tasks,
-   * trusted states, etc.
-   * @param $agent Agent
-   * @param $priority int
-   * @param int $supertask sets if a the task where it should be searched for the best task is a supertask
-   * @return Task current best task or null if there is no optimal task (priority bigger than the given limit) available
+   * @param $task Task
+   * @return array
    */
-  public static function getBestTask($agent, $priority = 0, $supertask = 0) {
+  public static function getTaskInfo($task) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
-    $priorityFilter = new QueryFilter(Task::PRIORITY, $priority, ">");
-    $typeFilter = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "<"); // task has to be either a supertask or a normal task
-    if ($supertask > 0) {
-      // this is the case when we want to find the best subtask for a given supertask
-      $typeFilter = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "=");
-    }
-    $trustedFilter = new QueryFilter(Hashlist::SECRET, $agent->getIsTrusted(), "<=", $FACTORIES::getHashlistFactory()); //check if the agent is trusted to work on this hashlist
-    $cpuFilter = new QueryFilter(Task::IS_CPU_TASK, $agent->getCpuOnly(), "="); //assign non-cpu tasks only to non-cpu agents and vice versa
-    $crackedFilter = new ComparisonFilter(Hashlist::CRACKED, Hashlist::HASH_COUNT, "<", $FACTORIES::getHashlistFactory());
-    $hashlistIDJoin = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
-    $descOrder = new OrderFilter(Task::PRIORITY, "DESC");
-    
-    $joinFilter = array($hashlistIDJoin);
-    $queryFilter = array($priorityFilter, $trustedFilter, $cpuFilter, $crackedFilter, $typeFilter);
-    if ($supertask > 0) {
-      $joinFilter[] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-      $queryFilter[] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $progress = 0;
+    $cracked = 0;
+    $maxTime = 0;
+    foreach ($chunks as $chunk) {
+      $progress += $chunk->getCheckpoint() - $chunk->getSkip();
+      $cracked += $chunk->getCracked();
+      if ($chunk->getDispatchTime() > $maxTime) {
+        $maxTime = $chunk->getDispatchTime();
+      }
+      if ($chunk->getSolveTime() > $maxTime) {
+        $maxTime = $chunk->getSolveTime();
+      }
     }
     
-    // we first load all tasks and go down by priority and take the first one which matches completely
-    
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $queryFilter, $FACTORIES::JOIN => $joinFilter, $FACTORIES::ORDER => array($descOrder)));
-    for ($i = 0; $i < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
-      /** @var $task Task */
-      /** @var $hashlist Hashlist */
-      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$i];
-      $hashlist = $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$i];
-      
-      if (!Util::agentHasAccessToTask($task, $agent)) {
-        continue; // the client has not enough access to all required files
-      }
-      else if (Util::taskIsFullyDispatched($task, $agent, $hashlist)) {
-        continue; // task is fully dispatched
-      }
-      
-      // if we want to check single assignments we should make sure that the assigned one is not blocking when he becomes inactive.
-      // so if an agent is inactive on a small task we unassign him that we can assign another one to it
-      if ($task->getIsSmall()) {
-        $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-        $jF = new JoinFilter($FACTORIES::getAgentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
-        $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-        $removed = 0;
-        for ($z = 0; $z < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()]); $z++) {
-          /** @var Agent $ag */
-          $ag = $joined[$FACTORIES::getAgentFactory()->getModelName()][$z];
-          if (time() - $ag->getLastTime() > $CONFIG->getVal(DConfig::AGENT_TIMEOUT) || $ag->getIsActive() == 0) {
-            $FACTORIES::getAssignmentFactory()->delete($joined[$FACTORIES::getAssignmentFactory()->getModelName()][$z]); // delete timed out
-            $removed++;
-          }
-        }
-        if ($removed < sizeof($joined[$FACTORIES::getAgentFactory()->getModelName()])) {
-          continue; // still some assigned
-        }
-      }
-      
-      // if one matches now, it's the best choice (hopefully)
-      return $task;
+    $isActive = false;
+    if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $progress < $task->getKeyspace()) {
+      $isActive = true;
     }
-    return null;
-  }
-  
-  public static function loadTasks($supertask = 0) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG, $OBJECTS;
-    
-    $jF = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID);
-    $oF1 = new OrderFilter(Task::PRIORITY, "DESC");
-    $oF2 = new OrderFilter(Task::TASK_ID, "ASC");
-    $options = array($FACTORIES::JOIN => array($jF), $FACTORIES::ORDER => array($oF1, $oF2));
-    if ($supertask > 0) {
-      $options[$FACTORIES::JOIN][] = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-      $options[$FACTORIES::FILTER] = new QueryFilter(TaskTask::TASK_ID, $supertask, "=", $FACTORIES::getTaskTaskFactory());
-    }
-    else {
-      $options[$FACTORIES::FILTER] = new QueryFilter(Task::TASK_TYPE, DTaskTypes::SUBTASK, "<");
-    }
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter($options);
-    $tasks = array();
-    for ($z = 0; $z < sizeof($joinedTasks[$FACTORIES::getTaskFactory()->getModelName()]); $z++) {
-      $set = new DataSet();
-      $set->addValue('Task', $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z]);
-      $set->addValue('Hashlist', $joinedTasks[$FACTORIES::getHashlistFactory()->getModelName()][$z]);
-      
-      /** @var $task Task */
-      $task = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()][$z];
-      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $progress = 0;
-      $cracked = 0;
-      $maxTime = 0;
-      foreach ($chunks as $chunk) {
-        $progress += $chunk->getProgress();
-        $cracked += $chunk->getCracked();
-        if ($chunk->getDispatchTime() > $maxTime) {
-          $maxTime = $chunk->getDispatchTime();
-        }
-        if ($chunk->getSolveTime() > $maxTime) {
-          $maxTime = $chunk->getSolveTime();
-        }
-      }
-      
-      $isActive = false;
-      if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-        $isActive = true;
-      }
-      
-      $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-      $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
-      
-      $qF = new QueryFilter(TaskFile::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFileFactory());
-      $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), TaskFile::FILE_ID, File::FILE_ID);
-      $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-      $sizes = 0;
-      $secret = false;
-      for ($x = 0; $x < sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]); $x++) {
-        $file = \DBA\Util::cast($joinedFiles[$FACTORIES::getFileFactory()->getModelName()][$x], \DBA\File::class);
-        $sizes += $file->getSize();
-        if ($file->getSecret() == '1') {
-          $secret = true;
-        }
-      }
-      
-      $numFiles = sizeof($joinedFiles[$FACTORIES::getFileFactory()->getModelName()]);
-      $numAssignments = sizeof($assignments);
-      if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
-        Util::loadTasks($task->getId());
-        /** @var $subTasks DataSet */
-        $subTasks = $OBJECTS['subTasks'];
-        foreach ($subTasks->getVal($task->getId()) as $subTask) {
-          /** @var $subTask DataSet */
-          $numFiles += $subTask->getVal('numFiles');
-          $sizes += $subTask->getVal('filesSize');
-          if ($subTask->getVal('fileSecret')) {
-            $secret = true;
-          }
-          $numAssignments += $subTask->getVal('numAssignments');
-          if ($subTask->getVal('isActive')) {
-            $isActive = true;
-          }
-          $cracked += $subTask->getVal('cracked');
-        }
-      }
-      
-      $set->addValue('numFiles', $numFiles);
-      $set->addValue('filesSize', $sizes);
-      $set->addValue('fileSecret', $secret);
-      $set->addValue('numAssignments', $numAssignments);
-      $set->addValue('isActive', $isActive);
-      $set->addValue('sumprog', $progress);
-      $set->addValue('cracked', $cracked);
-      $set->addValue('numChunks', sizeof($chunks));
-      
-      $tasks[] = $set;
-    }
-    if ($supertask > 0) {
-      /** @var $subTasks DataSet */
-      if (isset($OBJECTS['subTasks'])) {
-        $subTasks = $OBJECTS['subTasks'];
-      }
-      else {
-        $subTasks = new DataSet();
-      }
-      $subTasks->addValue($supertask, $tasks);
-      $OBJECTS['subTasks'] = $subTasks;
-    }
-    else {
-      $OBJECTS['tasks'] = $tasks;
-    }
+    return array($progress, $cracked, $isActive, sizeof($chunks));
   }
   
   /**
-   * @param $supertask Task
-   * @return bool
+   * @param $task Task
+   * @return array
    */
-  public static function checkSupertaskCompleted($supertask) {
+  public static function getFileInfo($task) {
     global $FACTORIES;
     
-    $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-    $qF = new QueryFilter(TaskTask::TASK_ID, $supertask->getId(), "=", $FACTORIES::getTaskTaskFactory());
-    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
-      /** @var $task Task */
+    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
+    $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $files File[] */
+    $files = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
+    $sizeFiles = 0;
+    $fileSecret = false;
+    foreach ($files as $file) {
+      if ($file->getIsSecret() == 1) {
+        $fileSecret = true;
+      }
+      $sizeFiles += $file->getSize();
+    }
+    return array(sizeof($files), $fileSecret, $sizeFiles);
+  }
+  
+  /**
+   * @param $task Task
+   * @return array
+   */
+  public static function getChunkInfo($task) {
+    global $FACTORIES;
+    
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $cracked = 0;
+    foreach ($chunks as $chunk) {
+      $cracked += $chunk->getCracked();
+    }
+    
+    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $numAssignments = $FACTORIES::getAssignmentFactory()->countFilter(array($FACTORIES::FILTER => $qF));
+    
+    return array(sizeof($chunks), $cracked, $numAssignments);
+  }
+  
+  /**
+   * @param $userId int
+   * @return array
+   */
+  public static function getAccessGroupIds($userId) {
+    global $FACTORIES;
+    
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $userId, "=", $FACTORIES::getAccessGroupUserFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $accessGroups AccessGroup[] */
+    $accessGroups = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+    return Util::arrayOfIds($accessGroups);
+  }
+  
+  public static function loadTasks() {
+    /** @var $LOGIN Login */
+    global $FACTORIES, $OBJECTS, $LOGIN;
+    
+    $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
+    
+    $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
+    $oF = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+    
+    $taskList = array();
+    foreach ($taskWrappers as $taskWrapper) {
+      $set = new DataSet();
+      $set->addValue('taskType', $taskWrapper->getTaskType());
+      
+      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+      if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
+        // supertask
+        $set->addValue('supertaskName', $taskWrapper->getTaskWrapperName());
+        
+        $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
+        
+        $set->addValue('hashlistId', $hashlist->getId());
+        $set->addValue('taskWrapperId', $taskWrapper->getId());
+        $set->addValue('hashlistName', $hashlist->getHashlistName());
+        $set->addValue('hashlistSecret', $hashlist->getIsSecret());
+        $set->addValue('hashCount', $hashlist->getHashCount());
+        $set->addValue('hashlistCracked', $hashlist->getCracked());
+        $set->addValue('priority', $taskWrapper->getPriority());
+        
+        $oF = new OrderFilter(Task::PRIORITY, "DESC");
+        $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+        $subtaskList = array();
+        
+        $tasksDone = 0;
+        $isActive = false;
+        $cracked = 0;
+        $numAssignments = 0;
+        $numFiles = 0;
+        $fileSecret = false;
+        $filesSize = 0;
+        
+        foreach ($tasks as $task) {
+          $subSet = new DataSet();
+          $subSet->addValue('color', $task->getColor());
+          $subSet->addValue('taskId', $task->getId());
+          $subSet->addValue('attackCmd', $task->getAttackCmd());
+          $subSet->addValue('taskName', $task->getTaskName());
+          $subSet->addValue('keyspace', $task->getKeyspace());
+          $subSet->addValue('cpuOnly', $task->getIsCpuTask());
+          $subSet->addValue('isSmall', $task->getIsSmall());
+          $subSet->addValue('chunkTime', $task->getChunkTime());
+          $subSet->addValue('taskProgress', $task->getKeyspaceProgress());
+          $subSet->addValue('priority', $task->getPriority());
+          
+          
+          $taskInfo = Util::getTaskInfo($task);
+          $fileInfo = Util::getFileInfo($task);
+          $chunkInfo = Util::getChunkInfo($task);
+          
+          $subSet->addValue('sumProgress', $taskInfo[0]);
+          $subSet->addValue('numFiles', $fileInfo[0]);
+          $subSet->addValue('fileSecret', $fileInfo[1]);
+          $subSet->addValue('filesSize', $fileInfo[2]);
+          $subSet->addValue('numChunks', $chunkInfo[0]);
+          $subSet->addValue('isActive', $taskInfo[2]);
+          $subSet->addValue('cracked', $taskInfo[1]);
+          $subSet->addValue('numAssignments', $chunkInfo[2]);
+          
+          if ($taskInfo[0] >= $task->getKeyspace() && $task->getKeyspace() > 0) {
+            $tasksDone++;
+          }
+          $isActive = $isActive || $taskInfo[2];
+          $cracked += $taskInfo[1];
+          $numAssignments += $chunkInfo[2];
+          $numFiles += $fileInfo[0];
+          $fileSecret = $fileSecret || $fileInfo[1];
+          $filesSize += $fileInfo[2];
+          
+          $subtaskList[] = $subSet;
+        }
+        
+        $set->addValue('tasksDone', $tasksDone);
+        $set->addValue('isActive', $isActive);
+        $set->addValue('cracked', $cracked);
+        $set->addValue('numAssignments', $numAssignments);
+        $set->addValue('numFiles', $numFiles);
+        $set->addValue('fileSecret', $fileSecret);
+        $set->addValue('filesSize', $filesSize);
+        $set->addValue('numTasks', sizeof($tasks));
+        $set->addValue('subtaskList', $subtaskList);
+        $taskList[] = $set;
+      }
+      else {
+        // normal task
+        $task = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+        if ($task == null) {
+          Util::createLogEntry(DLogEntryIssuer::USER, $LOGIN->getUserID(), DLogEntry::WARN, "TaskWrapper (" . $taskWrapper->getId() . ") for normal task existing with containing no task!");
+          continue;
+        }
+        $taskInfo = Util::getTaskInfo($task);
+        $fileInfo = Util::getFileInfo($task);
+        $chunkInfo = Util::getChunkInfo($task);
+        $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
+        $set->addValue('taskId', $task->getId());
+        $set->addValue('color', $task->getColor());
+        $set->addValue('hasColor', (strlen($task->getColor()) == 0) ? false : true);
+        $set->addValue('attackCmd', $task->getAttackCmd());
+        $set->addValue('taskName', $task->getTaskName());
+        $set->addValue('isCpu', $task->getIsCpuTask());
+        $set->addValue('isSmall', $task->getIsSmall());
+        $set->addValue('hashlistId', $taskWrapper->getHashlistId());
+        $set->addValue('hashlistName', $hashlist->getHashlistName());
+        $set->addValue('hashCount', $hashlist->getHashCount());
+        $set->addValue('hashlistCracked', $hashlist->getCracked());
+        $set->addValue('chunkTime', $task->getChunkTime());
+        $set->addValue('isSecret', $hashlist->getIsSecret());
+        $set->addValue('priority', $task->getPriority());
+        $set->addValue('keyspace', $task->getKeyspace());
+        $set->addValue('isActive', $taskInfo[2]);
+        $set->addValue('sumProgress', $taskInfo[0]);
+        $set->addValue('numFiles', $fileInfo[0]);
+        $set->addValue('taskProgress', $task->getKeyspaceProgress());
+        $set->addValue('fileSecret', $fileInfo[1]);
+        $set->addValue('fileSizes', $fileInfo[2]);
+        $set->addValue('numAssignments', $chunkInfo[2]);
+        $set->addValue('crackedCount', $chunkInfo[1]);
+        $set->addValue('numChunks', $chunkInfo[0]);
+        $taskList[] = $set;
+      }
+    }
+    $OBJECTS['taskList'] = $taskList;
+  }
+  
+  /**
+   * @param $taskWrapper TaskWrapper
+   * @return bool
+   */
+  public static function checkTaskWrapperCompleted($taskWrapper) {
+    global $FACTORIES;
+    
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach ($tasks as $task) {
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
       $sumProg = 0;
       foreach ($chunks as $chunk) {
-        $sumProg += $chunk->getProgress();
-      }
-      if ($sumProg < $task->getKeyspace() || $task->getKeyspace() == 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-  
-  /**
-   * @param $task Task
-   * @return Task
-   */
-  public static function getSupertaskOfTask($task) {
-    global $FACTORIES;
-    
-    $qF = new QueryFilter(TaskTask::SUBTASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::TASK_ID);
-    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    if (sizeof($joined[$FACTORIES::getTaskFactory()->getModelName()]) == 0) {
-      return null;
-    }
-    return $joined[$FACTORIES::getTaskFactory()->getModelName()][0];
-  }
-  
-  /**
-   * @param $task Task
-   * @param $agent Agent
-   * @param $hashlist Hashlist
-   * @return bool
-   */
-  public static function taskIsFullyDispatched($task, $agent, $hashlist) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
-    
-    $testTasks = Util::getSubTasks($task);
-    
-    $fullCount = 0;
-    foreach ($testTasks as $t) {
-      // now check if the task is fully dispatched
-      $qF = new QueryFilter(Chunk::TASK_ID, $t->getId(), "=");
-      $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $dispatched = 0;
-      $sumProgress = 0;
-      foreach ($chunks as $chunk) {
-        $sumProgress += $chunk->getProgress();
-        $isTimeout = false;
-        // if the chunk times out, we need to remove the agent from it, so it can be done by others
-        if ($chunk->getRprogress() < 10000 && time() - $chunk->getSolveTime() > $CONFIG->getVal(DConfig::CHUNK_TIMEOUT)) {
-          $isTimeout = true;
-        }
-        
-        // if the chunk has no agent or it's assigned to the current agent, it's also not completely dispatched yet
-        if ($chunk->getRprogress() < 10000 && ($isTimeout || $chunk->getAgentId() == $agent->getId() || $chunk->getAgentId() == null)) {
-          // nothing as it does not count to the dispatched sum
-        }
-        else {
-          $dispatched += $chunk->getLength();
-        }
-      }
-      if ($t->getKeyspace() != 0 && $dispatched >= $t->getKeyspace()) {
-        // task is fully dispatched
-        $fullCount++;
-        continue;
-      }
-      
-      if (($t->getKeyspace() <= $sumProgress && $t->getKeyspace() != 0) || $hashlist->getCracked() == $hashlist->getHashCount()) {
-        //task is finished
-        $t->setPriority(0);
-        //TODO: make massUpdate
-        foreach ($chunks as $chunk) {
-          $chunk->setProgress($chunk->getLength());
-          $chunk->setRprogress(10000);
-          $FACTORIES::getChunkFactory()->update($chunk);
-        }
-        $t->setProgress($t->getKeyspace());
-        $FACTORIES::getTaskFactory()->update($t);
-        $fullCount++;
-        continue;
-      }
-    }
-    if ($fullCount >= sizeof($testTasks)) {
-      return true;
-    }
-    return false;
-  }
-  
-  /**
-   * Determines if an agent can be granted access to the given task, so if the agent has trusted if at least one file
-   * of the task or the hashlist requires it.
-   * @param $task Task
-   * @param $agent Agent
-   * @return bool true if access to task can be given to agent
-   */
-  public static function agentHasAccessToTask($task, $agent) {
-    global $FACTORIES;
-    
-    // check if the agent has rights to get this
-    $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($task->getHashlistId()));
-    foreach ($hashlists as $hashlist) {
-      if ($hashlist->getSecret() > $agent->getIsTrusted()) {
-        return false;
-      }
-    }
-    
-    $testTasks = Util::getSubTasks($task);
-    foreach ($testTasks as $t) {
-      $qF = new QueryFilter(TaskFile::TASK_ID, $t->getId(), "=");
-      $jF = new JoinFilter($FACTORIES::getFileFactory(), File::FILE_ID, TaskFile::FILE_ID);
-      $joinedFiles = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-      foreach ($joinedFiles[$FACTORIES::getFileFactory()->getModelName()] as $file) {
-        /** @var $file File */
-        if ($file->getSecret() > $agent->getIsTrusted()) {
+        if ($chunk->getProgress() < 10000) {
           return false;
         }
+        else {
+          $sumProg += $chunk->getLength();
+        }
+      }
+      if ($task->getKeyspace() == 0 || $sumProg < $task->getKeyspace()) {
+        return false;
       }
     }
     return true;
-  }
-  
-  /**
-   * @param $task Task
-   * @return Task[]
-   */
-  public static function getSubTasks($task) {
-    global $FACTORIES;
-    
-    $testTasks = array($task);
-    if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
-      $qF = new QueryFilter(TaskTask::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskTaskFactory());
-      $jF = new JoinFilter($FACTORIES::getTaskTaskFactory(), Task::TASK_ID, TaskTask::SUBTASK_ID);
-      $oF = new OrderFilter(Task::PRIORITY, "DESC");
-      $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF, $FACTORIES::ORDER => $oF));
-      $testTasks = array();
-      foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $t) {
-        $testTasks[] = $t;
-      }
-    }
-    return $testTasks;
-  }
-  
-  /**
-   * Tests if this task can be used to run for this agent. It checks if there are incomplete chunks available which are currently
-   * not worked on, or if there is keyspace left which needs to be dispatched.
-   * @param $task Task
-   * @param $agent Agent
-   * @return bool true if task has at least one chunk left to give to the agent
-   */
-  public static function taskCanBeUsed($task, $agent) {
-    global $FACTORIES;
-    
-    if (!self::agentHasAccessToTask($task, $agent)) {
-      return false;
-    }
-    
-    // check if the task is not needed anymore because all hashes already got cracked
-    $hashlist = $FACTORIES::getHashlistFactory()->get($task->getHashlistId());
-    if ($hashlist->getCracked() >= $hashlist->getHashCount()) {
-      if ($task->getPriority() > 0) {
-        $task->setPriority(0);
-        $FACTORIES::getTaskFactory()->update($task);
-      }
-      return false;
-    }
-    
-    if ($task->getKeyspace() == 0) {
-      return true;
-    }
-    
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $dispatched = 0;
-    $uncompletedChunk = null;
-    foreach ($chunks as $chunk) {
-      $dispatched += $chunk->getLength();
-      if ($uncompletedChunk == null && 10000 != $chunk->getRprogress() && ($chunk->getAgentId() == null || $chunk->getAgentId() == $agent->getId())) {
-        $uncompletedChunk = $chunk;
-      }
-    }
-    if ($task->getKeyspace() > $dispatched) {
-      return true; // task is not fully dispatched
-    }
-    else if ($uncompletedChunk != null) {
-      return true; // there is at least one chunk with no agent or the agent which is requesting
-    }
-    
-    return false;
   }
   
   /**
@@ -538,9 +397,16 @@ class Util {
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
+      $zapFilter = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
       
-      $qF = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
-      $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      // delete dependencies on AgentZap
+      $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => $zapFilter));
+      $zapIds = Util::arrayOfIds($zaps);
+      $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
+      $qF = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
+      $FACTORIES::getAgentZapFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+      
+      $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $zapFilter));
       
       $entry->setVal(time());
       $FACTORIES::getStoredValueFactory()->update($entry);
@@ -598,20 +464,21 @@ class Util {
   /**
    * Checks if the given list is a superhashlist and returns an array containing all hashlists belonging to this superhashlist.
    * If the hashlist is not a superhashlist it just returns an array containing the list itself.
-   * @param $list hashlist-object
+   *
+   * @param $hashlist Hashlist
    * @return Hashlist[] of all superhashlists belonging to the $list
    */
-  public static function checkSuperHashlist($list) {
+  public static function checkSuperHashlist($hashlist) {
     global $FACTORIES;
     
-    if ($list->getFormat() == 3) {
-      $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, SuperHashlistHashlist::HASHLIST_ID);
-      $superHashListFilter = new QueryFilter(SuperHashlistHashlist::SUPER_HASHLIST_ID, $list->getId(), "=");
-      $joined = $FACTORIES::getSuperHashlistHashlistFactory()->filter(array($FACTORIES::JOIN => $hashlistJoinFilter, $FACTORIES::FILTER => $superHashListFilter));
+    if ($hashlist->getFormat() == 3) {
+      $hashlistJoinFilter = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
+      $superHashListFilter = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
+      $joined = $FACTORIES::getHashlistHashlistFactory()->filter(array($FACTORIES::JOIN => $hashlistJoinFilter, $FACTORIES::FILTER => $superHashListFilter));
       $lists = $joined[$FACTORIES::getHashlistFactory()->getModelName()];
       return $lists;
     }
-    return array($list);
+    return array($hashlist);
   }
   
   /**
@@ -821,6 +688,15 @@ class Util {
   }
   
   /**
+   * @param $binary1 CrackerBinary
+   * @param $binary2 CrackerBinary
+   * @return int
+   */
+  public static function versionComparisonBinary($binary1, $binary2) {
+    return Util::versionComparison($binary1->getVersion(), $binary2->getVersion());
+  }
+  
+  /**
    * @param $version1
    * @param $version2
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
@@ -990,6 +866,23 @@ class Util {
     return array($success, $msg);
   }
   
+  public static function getFileExtension($os) {
+    switch ($os) {
+      case DOperatingSystem::LINUX:
+        $ext = ".bin";
+        break;
+      case DOperatingSystem::WINDOWS:
+        $ext = ".exe";
+        break;
+      case DOperatingSystem::OSX:
+        $ext = ".osx";
+        break;
+      default:
+        $ext = "";
+    }
+    return $ext;
+  }
+  
   /**
    * This function determines the protocol, domain and port of the webserver and puts it together as baseurl.
    * @return string basic server url
@@ -1093,13 +986,30 @@ class Util {
    *          subject of the email
    * @param string $text
    *          html content of the email
+   * @param string $plaintext plaintext version of the email content
    * @return true on success, false on failure
    */
-  public static function sendMail($address, $subject, $text) {
-    $header = "Content-type: text/html; charset=utf8\r\n";
-    // TODO: make sender email configurable
-    $header .= "From: Hashtopussy <noreply@hashtopussy>\r\n";
-    if (!mail($address, $subject, $text, $header)) {
+  public static function sendMail($address, $subject, $text, $plaintext) {
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+    
+    $boundary = uniqid('np');
+    
+    $headers = "MIME-Version: 1.0\r\n";
+    $headers .= "From: " . $CONFIG->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
+    $headers .= "To: " . $address . "\r\n";
+    $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
+    
+    $plainMessage = "\r\n\r\n--" . $boundary . "\r\n";
+    $plainMessage .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
+    $plainMessage .= $plaintext;
+    
+    $htmlMessage = "\r\n\r\n--" . $boundary . "\r\n";
+    $htmlMessage .= "Content-type: text/html;charset=utf-8\r\n\r\n";
+    $htmlMessage .= $text;
+    $htmlMessage .= "\r\n\r\n--" . $boundary . "--";
+    
+    if (!mail($address, $subject, $plainMessage . $htmlMessage, $headers)) {
       return false;
     }
     return true;
@@ -1119,21 +1029,6 @@ class Util {
       $result .= $charset[mt_rand(0, strlen($charset) - 1)];
     }
     return $result;
-  }
-  
-  /**
-   * Is used by DBA
-   * TODO: this function is not used anymore, can be removed after checking that DBA\Util::createPrefixedString() is used.
-   * @param $table
-   * @param $dict
-   * @return string
-   */
-  public static function createPrefixedString($table, $dict) {
-    $arr = array();
-    foreach ($dict as $key => $val) {
-      $arr[] = "`" . $table . "`" . "." . "`" . $key . "`" . " AS `" . $table . "." . $key . "`";
-    }
-    return implode(", ", $arr);
   }
   
   /**
@@ -1184,18 +1079,104 @@ class Util {
     return "<div class='alert alert-$type'>$msg</div>";
   }
   
-  public static function checkCSRF($csrf) {
-    global $OBJECTS;
+  /**
+   * @note dev
+   * Sets the max length of hashes in the database
+   * @param $limit int limit for hash length
+   * @return bool true on success
+   */
+  public static function setMaxHashLength($limit) {
+    global $FACTORIES;
     
-    if (!isset($_SESSION['csrf']) || $csrf !== $_SESSION['csrf']) {
-      unset($_SESSION['csrf']);
-      UI::addMessage(UI::ERROR, "Invalid form submission!");
-      $_SESSION['csrf'] = Util::randomString(30);
-      $OBJECTS['csrf'] = $_SESSION['csrf'];
+    if ($limit < 1) {
       return false;
     }
-    $_SESSION['csrf'] = Util::randomString(30);
-    $OBJECTS['csrf'] = $_SESSION['csrf'];
+    
+    $DB = $FACTORIES::getAgentFactory()->getDB();
+    $DB->beginTransaction();
+    $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
+    $maxLength = $result->fetch()['maxLength'];
+    if ($limit >= $maxLength) {
+      if ($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit) NOT NULL;") === false) {
+        return false;
+      }
+      else if ($DB->query("ALTER TABLE " . $FACTORIES::getZapFactory()->getModelTable() . " MODIFY " . Hash::HASH . " VARCHAR($limit) NOT NULL;") === false) {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+    $DB->commit();
     return true;
   }
+  
+  /**
+   * @note dev
+   * Sets the max length of plaintexts in the database
+   * @param $limit int limit for hash length
+   * @return bool true on success
+   */
+  public static function setPlaintextMaxLength($limit) {
+    global $FACTORIES;
+    
+    if ($limit < 1) {
+      return false;
+    }
+    
+    $DB = $FACTORIES::getAgentFactory()->getDB();
+    $result = $DB->query("SELECT MAX(LENGTH(" . Hash::PLAINTEXT . ")) as maxLength FROM " . $FACTORIES::getHashFactory()->getModelTable());
+    $maxLength = $result->fetch()['maxLength'];
+    if ($limit >= $maxLength) {
+      if ($DB->query("ALTER TABLE " . $FACTORIES::getHashFactory()->getModelTable() . " MODIFY " . Hash::PLAINTEXT . " VARCHAR($limit);") === false) {
+        return false;
+      }
+    }
+    else {
+      return false;
+    }
+    return true;
+  }
+  
+  /**
+   * @param $array AbstractModel[]
+   * @return array
+   */
+  public static function arrayOfIds($array) {
+    $arr = array();
+    foreach ($array as $entry) {
+      $arr[] = $entry->getId();
+    }
+    return $arr;
+  }
+  
+  public static function countLines($tmpfile) {
+    return intval(exec("wc -l '$tmpfile'"));
+  }
+  
+  /**
+   * Checks a given array of device names to see if they can be shortened with the defined patterns and replacements.
+   *
+   * @param $deviceArray string[]
+   * @return string[]
+   */
+  public static function compressDevices($deviceArray) {
+    $compressed = array();
+    foreach ($deviceArray as $device) {
+      foreach (DDeviceCompress::COMPRESSION as $pattern => $replacement) {
+        if (strpos($device, $pattern) !== false) {
+          $device = str_replace($pattern, $replacement, $device);
+        }
+      }
+      $compressed[] = $device;
+    }
+    return $compressed;
+  }
 }
+
+
+
+
+
+
+

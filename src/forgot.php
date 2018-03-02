@@ -1,8 +1,5 @@
 <?php
 
-use DBA\QueryFilter;
-use DBA\User;
-
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
@@ -11,39 +8,15 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 $TEMPLATE = new Template("forgot");
 $message = "";
 
-// TODO: add forgot handler
-
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
-  switch ($_POST['action']) {
-    case 'resetpassword':
-      $username = htmlentities(@$_POST['username'], ENT_QUOTES, "UTF-8");
-      $email = @$_POST['email'];
-      $qF = new QueryFilter(User::USERNAME, $username, "=");
-      $res = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($qF)));
-      if ($res == null || sizeof($res) == 0) {
-        $message = "<div class='alert alert-danger'>No such user!</div>";
-        break;
-      }
-      $user = $res[0];
-      if ($user->getEmail() != $email) {
-        $message = "<div class='alert alert-danger'>No such user!</div>";
-        break;
-      }
-      $newSalt = Util::randomString(20);
-      $newPass = Util::randomString(10);
-      $newHash = Encryption::passwordHash($newPass, $newSalt);
-      $user->setPasswordHash($newHash);
-      $user->setPasswordSalt($newSalt);
-      $user->setIsComputedPassword(1);
-      $FACTORIES::getUserFactory()->update($user);
-      $tmpl = new Template("email/forgot");
-      $obj = array('username' => $user->getUsername(), 'password' => $newPass);
-      Util::sendMail($user->getEmail(), "Password reset", $tmpl->render($obj));
-      $message = "<div class='alert alert-success'>Password resetted! You should receive an email soon.</div>";
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
+  $forgotHandler = new ForgotHandler();
+  $forgotHandler->handle($_POST['action']);
+  if (UI::getNumMessages() == 0) {
+    Util::refresh();
   }
 }
 
-$OBJECTS['message'] = $message;
+$OBJECTS['pageTitle'] = "Forgot Password";
 
 echo $TEMPLATE->render($OBJECTS);
 

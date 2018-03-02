@@ -1,7 +1,10 @@
 <?php
 
 use DBA\File;
+use DBA\FilePretask;
+use DBA\FileTask;
 use DBA\JoinFilter;
+use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskFile;
@@ -20,13 +23,13 @@ class FileHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->delete();
+        $this->delete($_POST['file']);
         break;
       case DFileAction::SET_SECRET:
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->switchSecret();
+        $this->switchSecret($_POST['file'], $_POST["secret"]);
         break;
       case DFileAction::ADD_FILE:
         $this->add();
@@ -35,7 +38,7 @@ class FileHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->saveChanges();
+        $this->saveChanges($_POST['fileId'], $_POST['filename']);
         break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
@@ -43,15 +46,15 @@ class FileHandler implements Handler {
     }
   }
   
-  private function saveChanges() {
+  private function saveChanges($fileId, $filename) {
     global $FACTORIES;
     
-    $file = $FACTORIES::getFileFactory()->get($_POST['fileId']);
+    $file = $FACTORIES::getFileFactory()->get($fileId);
     if ($file == null) {
       UI::addMessage(UI::ERROR, "Invalid file ID!");
       return;
     }
-    $newName = str_replace(" ", "_", htmlentities($_POST['filename'], ENT_QUOTES, "UTF-8"));
+    $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
     if (strlen($newName) == 0) {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
       return;
@@ -63,16 +66,26 @@ class FileHandler implements Handler {
       return;
     }
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     
     //check where the file is used and replace the filename in all the tasks
-    $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=", $FACTORIES::getTaskFileFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskFileFactory(), Task::TASK_ID, TaskFile::TASK_ID);
+    $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=", $FACTORIES::getFileTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), Task::TASK_ID, FileTask::TASK_ID);
     $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
       /** @var $task Task */
       $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
       $FACTORIES::getTaskFactory()->update($task);
+    }
+    
+    //check where the file is used and replace the filename in all the preconfigured tasks
+    $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=", $FACTORIES::getFilePretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), Pretask::PRETASK_ID, FilePretask::PRETASK_ID);
+    $joined = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    foreach ($joined[$FACTORIES::getPretaskFactory()->getModelName()] as $pretask) {
+      /** @var $pretask Pretask */
+      $pretask->setAttackCmd(str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
+      $FACTORIES::getPretaskFactory()->update($pretask);
     }
     
     $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
@@ -82,7 +95,7 @@ class FileHandler implements Handler {
     }
     $file->setFilename($newName);
     $FACTORIES::getFileFactory()->update($file);
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
   
   private function add() {
@@ -176,27 +189,32 @@ class FileHandler implements Handler {
     UI::addMessage(UI::SUCCESS, "Successfully added $fileCount files!");
   }
   
-  private function switchSecret() {
+  private function switchSecret($fileId, $isSecret) {
     global $FACTORIES;
     
     // switch global file secret state
-    $file = $FACTORIES::getFileFactory()->get($_POST['file']);
-    $secret = intval($_POST["secret"]);
-    $file->setSecret($secret);
+    $file = $FACTORIES::getFileFactory()->get($fileId);
+    $secret = intval($isSecret);
+    $file->setIsSecret($secret);
     $FACTORIES::getFileFactory()->update($file);
   }
   
-  private function delete() {
+  private function delete($fileId) {
     global $FACTORIES;
     
-    $file = $FACTORIES::getFileFactory()->get($_POST['file']);
+    $file = $FACTORIES::getFileFactory()->get($fileId);
     if ($file == null) {
       UI::printError("ERROR", "File does not exist!");
     }
-    $qF = new QueryFilter(TaskFile::FILE_ID, $file->getId(), "=");
-    $tasks = $FACTORIES::getTaskFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=");
+    $tasks = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=");
+    $pretasks = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($tasks) > 0) {
       UI::addMessage(UI::ERROR, "This file is currently used in a task!");
+    }
+    else if (sizeof($pretasks) > 0) {
+      UI::addMessage(UI::ERROR, "This file is currently used in a preconfigured task!");
     }
     else {
       $FACTORIES::getFileFactory()->delete($file);

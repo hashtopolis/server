@@ -9,25 +9,25 @@ class Chunk extends AbstractModel {
   private $length;
   private $agentId;
   private $dispatchTime;
+  private $solveTime;
+  private $checkpoint;
   private $progress;
-  private $rprogress;
   private $state;
   private $cracked;
-  private $solveTime;
   private $speed;
   
-  function __construct($chunkId, $taskId, $skip, $length, $agentId, $dispatchTime, $progress, $rprogress, $state, $cracked, $solveTime, $speed) {
+  function __construct($chunkId, $taskId, $skip, $length, $agentId, $dispatchTime, $solveTime, $checkpoint, $progress, $state, $cracked, $speed) {
     $this->chunkId = $chunkId;
     $this->taskId = $taskId;
     $this->skip = $skip;
     $this->length = $length;
     $this->agentId = $agentId;
     $this->dispatchTime = $dispatchTime;
+    $this->solveTime = $solveTime;
+    $this->checkpoint = $checkpoint;
     $this->progress = $progress;
-    $this->rprogress = $rprogress;
     $this->state = $state;
     $this->cracked = $cracked;
-    $this->solveTime = $solveTime;
     $this->speed = $speed;
   }
   
@@ -39,11 +39,11 @@ class Chunk extends AbstractModel {
     $dict['length'] = $this->length;
     $dict['agentId'] = $this->agentId;
     $dict['dispatchTime'] = $this->dispatchTime;
+    $dict['solveTime'] = $this->solveTime;
+    $dict['checkpoint'] = $this->checkpoint;
     $dict['progress'] = $this->progress;
-    $dict['rprogress'] = $this->rprogress;
     $dict['state'] = $this->state;
     $dict['cracked'] = $this->cracked;
-    $dict['solveTime'] = $this->solveTime;
     $dict['speed'] = $this->speed;
     
     return $dict;
@@ -105,20 +105,28 @@ class Chunk extends AbstractModel {
     $this->dispatchTime = $dispatchTime;
   }
   
+  function getSolveTime(){
+    return $this->solveTime;
+  }
+  
+  function setSolveTime($solveTime){
+    $this->solveTime = $solveTime;
+  }
+  
+  function getCheckpoint(){
+    return $this->checkpoint;
+  }
+  
+  function setCheckpoint($checkpoint){
+    $this->checkpoint = $checkpoint;
+  }
+  
   function getProgress(){
     return $this->progress;
   }
   
   function setProgress($progress){
     $this->progress = $progress;
-  }
-  
-  function getRprogress(){
-    return $this->rprogress;
-  }
-  
-  function setRprogress($rprogress){
-    $this->rprogress = $rprogress;
   }
   
   function getState(){
@@ -137,14 +145,6 @@ class Chunk extends AbstractModel {
     $this->cracked = $cracked;
   }
   
-  function getSolveTime(){
-    return $this->solveTime;
-  }
-  
-  function setSolveTime($solveTime){
-    $this->solveTime = $solveTime;
-  }
-  
   function getSpeed(){
     return $this->speed;
   }
@@ -159,10 +159,10 @@ class Chunk extends AbstractModel {
   const LENGTH = "length";
   const AGENT_ID = "agentId";
   const DISPATCH_TIME = "dispatchTime";
+  const SOLVE_TIME = "solveTime";
+  const CHECKPOINT = "checkpoint";
   const PROGRESS = "progress";
-  const RPROGRESS = "rprogress";
   const STATE = "state";
   const CRACKED = "cracked";
-  const SOLVE_TIME = "solveTime";
   const SPEED = "speed";
 }

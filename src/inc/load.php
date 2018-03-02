@@ -9,7 +9,7 @@ session_start();
 
 $OBJECTS = array();
 
-$VERSION = "0.4.3";
+$VERSION = "0.5.0-rc1";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
@@ -31,28 +31,21 @@ foreach ($dir as $entry) {
 require_once(dirname(__FILE__) . "/templating/Statement.class.php");
 require_once(dirname(__FILE__) . "/templating/Template.class.php");
 
-// include all handlers
-require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
-$dir = scandir(dirname(__FILE__) . "/handlers/");
-foreach ($dir as $entry) {
-  if (strpos($entry, ".class.php") !== false) {
-    require_once(dirname(__FILE__) . "/handlers/" . $entry);
-  }
-}
-
-// DEFINES
-include(dirname(__FILE__) . "/defines.php");
-include(dirname(__FILE__) . "/protocol.php");
-
-// include notifications
+// include all required files
 $NOTIFICATIONS = array();
+require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
 require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
-$dir = scandir(dirname(__FILE__) . "/notifications/");
-foreach ($dir as $entry) {
-  if (strpos($entry, ".class.php") !== false) {
-    require_once(dirname(__FILE__) . "/notifications/" . $entry);
+$directories = array('handlers', 'api', 'defines', 'utils', 'notifications');
+foreach ($directories as $directory) {
+  $dir = scandir(dirname(__FILE__) . "/$directory/");
+  foreach ($dir as $entry) {
+    if (strpos($entry, ".php") !== false) {
+      require_once(dirname(__FILE__) . "/$directory/" . $entry);
+    }
   }
 }
+
+include(dirname(__FILE__) . "/protocol.php");
 
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");
@@ -74,6 +67,7 @@ $LOGIN = null;
 $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
 $OBJECTS['messages'] = array();
+$OBJECTS['pageTitle'] = "";
 if ($INSTALL) {
   $LOGIN = new Login();
   $OBJECTS['login'] = $LOGIN;
@@ -88,16 +82,14 @@ if ($INSTALL) {
   }
   $OBJECTS['config'] = $CONFIG;
   
+  define("APP_NAME", ($CONFIG->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
+  
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
 }
 
 // CSRF setup
-if (!isset($_SESSION['csrf'])) {
-  $_SESSION['csrf'] = Util::randomString(30);
-}
-$OBJECTS['csrf'] = $_SESSION['csrf'];
-
+CSRF::init();
 
 
 

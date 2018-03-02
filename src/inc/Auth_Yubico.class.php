@@ -213,7 +213,7 @@ class Auth_Yubico
 	  $ret['ciphertext'] = $matches[5];
 	  return $ret;
 	}
-	/* TODO? Add functions to get parsed parts of server response? */
+	
 	/**
 	 * Parse parameters from last response
 	 *

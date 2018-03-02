@@ -1,4 +1,14 @@
-# v0.4.3 -> vx.x.x
+# v0.4.3 -> v0.5.0
+
+## Large Update
+
+- Complete task management backend rewritten
+- Improved performance when handling cracked hashes
+- Added Groups for more detailed access control
+- Including new python client
+- Compatibility with generic crackers
+- More configuration options added
+- Cracker version management changed
 
 ## Bugfixes
 
@@ -47,7 +57,7 @@
 
 ## Bugfixes
 
-- Various vulnerabilities (CVE-2017-11680, CVE-2017-11681, CVE-2017-11682) fixed, see [issue #241](https://github.com/s3inlc/hashtopussy/issues/241)
+- Various vulnerabilities (CVE-2017-11680, CVE-2017-11681, CVE-2017-11682) fixed, see [issue #241](https://github.com/s3inlc/hashtopolis/issues/241)
 
 ## Technical
 
@@ -106,6 +116,6 @@
 
 ## Technical
 
-- removed old installation code which was used to upgrade Hashtopus to Hashtopussy 0.1.0
+- removed old installation code which was used to upgrade Hashtopus to Hashtopolis 0.1.0
 - reduced size of task progress image
 

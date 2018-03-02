@@ -7,86 +7,81 @@
     <tr>
       <th>Id</th>
       <th>Act</th>
-      <th>Name / Owner</th>
+      <th>Name / Owner / Client</th>
       <th>GPUs/CPUs</th>
       <th>CPU only</th>
-      <th>Hashcat</th>
       <th>Last activity</th>
-      <th>Assignment</th>
+      <th>Access Groups</th>
       <th>Action</th>
     </tr>
-    {{FOREACH set;[[sets]]}}
+    {{FOREACH agent;[[agents]]}}
       <tr>
-        <td><a href="agents.php?id=[[set.getVal('agent').getId()]]">[[set.getVal('agent').getId()]]</a></td>
+        <td><a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a></td>
         <td>
-          <form id="active[[set.getVal('agent').getId()]]" action="agents.php" method="post">
+          <form id="active[[agent.getId()]]" action="agents.php" method="post">
             <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
-            <input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
+            <input type="hidden" name="agent" value="[[agent.getId()]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="checkbox" {{IF [[set.getVal('agent').getIsActive()]] == 1}} checked{{ENDIF}} onChange="javascript:document.getElementById('active[[set.getVal('agent').getId()]]').submit();">
+            <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="document.getElementById('active[[agent.getId()]]').submit();" title="Is Active">
           </form>
         </td>
         <td>
-          <a href="agents.php?id=[[set.getVal('agent').getId()]]">[[set.getVal('agent').getAgentName()]]</a>
-          {{IF [[set.getVal('agent').getIsTrusted()]] == 1}}
+          <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
+          {{IF [[agent.getIsTrusted()]] == 1}}
             <img src="static/lock.gif" alt="Trusted">
           {{ENDIF}}
-          {{IF [[set.getVal('isWorking')]] == 1}}
-            <img src="static/active.gif" alt="Active" title="[[Util::nicenum([[set.getVal('speed')]], 100000, 1000)]]H/s">
-          {{ENDIF}}
-          {{IF [[set.getVal('agent').getIsActive()]] == 0}}
+          {{IF [[agent.getIsActive()]] == 0}}
             <img src="static/pause.gif" alt="Paused">
           {{ENDIF}}
           <br>
-          {{IF [[set.getVal('agent').getUserId()]] > 0}}
-            [[Util::getUsernameById([[set.getVal('agent').getUserId()]])]]
-          {{ENDIF}}
-          {{IF [[set.getVal('agent').getUserId()]] <= 0}}
+          {{IF [[agent.getUserId()]] > 0}}
+            [[Util::getUsernameById([[agent.getUserId()]])]]
+          {{ELSE}}
             ---
+          {{ENDIF}}
+          {{IF strlen([[agent.getClientSignature()]]) > 0}}
+            <br>Running: [[agent.getClientSignature()]]
+          {{ELSE}}
+            <br>Running: unknown
           {{ENDIF}}
         </td>
         <td>
-          {{FOREACH gpu;[[set.getVal('agent').getGpus()]]}}
-            [[Util::shortenstring([[gpu]], 20)]]<br>
+          {{FOREACH device;[[agent.getDevices()]]}}
+            [[Util::shortenstring([[device]], 20)]]<br>
           {{ENDFOREACH}}
         </td>
         <td>
-          {{IF [[set.getVal('agent').getCpuOnly()]] == 0}}
+          {{IF [[agent.getCpuOnly()]] == 0}}
             No
           {{ELSE}}
             Yes
           {{ENDIF}}
         </td>
-        <td>[[set.getVal('agent').getHcVersion()]]</td>
         <td>
-          [[set.getVal('agent').getLastAct()]] at <br>
-          [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[set.getVal('agent').getLastTime()]])]]<br>
-          IP: <code>[[set.getVal('agent').getLastIp()]]</code>
+          <code>[[agent.getLastAct()]]</code> at <br>
+          [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
+          IP:
+          {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
+            <code>[[agent.getLastIp()]]</code>
+          {{ELSE}}
+            <code>Hidden</code>
+          {{ENDIF}}
         </td>
         <td>
-          <form id="assign[[set.getVal('agent').getId()]]" action="agents.php" method="post">
-            <input type='hidden' name='action' value='[[$DAgentAction::ASSIGN_AGENT]]'>
-            <input type='hidden' name='agentId' value='[[set.getVal('agent').getId()]]'>
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <select class="form-control" name='task' onChange="javascript:document.getElementById('assign[[set.getVal('agent').getId()]]').submit();">
-              <option value="">(unassigned)</option>
-              {{FOREACH task;[[allTasks]]}}
-                <option value='[[task.getId()]]' {{IF [[task.getId()]]== [[set.getVal('taskId')]]}} selected{{ENDIF}}>[[task.getTaskName()]]</option>
-              {{ENDFOREACH}}
-            </select>
-          </form>
+          {{FOREACH accessGroup;[[accessGroupAgents.getVal([[agent.getId()]])]]}}
+            [[accessGroup.getGroupName()]]<br>
+          {{ENDFOREACH}}
         </td>
         {{IF [[login.getLevel()]] >= 30}}
           <td>
-            <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[set.getVal('agent').getId()]]?')) return false;">
+            <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[agent.getId()]]?')) return false;">
               <input type='hidden' name='action' value='[[$DAgentAction::DELETE_AGENT]]'>
-              <input type="hidden" name="agent" value="[[set.getVal('agent').getId()]]">
+              <input type="hidden" name="agent" value="[[agent.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="submit" class='btn btn-danger' value="Delete">
             </form>
           </td>
-        {{ENDIF}}
-        {{IF [[login.getLevel()]] < 30}}
+        {{ELSE}}
           <td>&nbsp;</td>
         {{ENDIF}}
       </tr>

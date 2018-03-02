@@ -9,11 +9,11 @@
 				<span class="icon-bar"></span> 
 				<span class="icon-bar"></span>
 			</button>
-			<a href="#" class="navbar-left"><img src="static/logo.png" alt="logo" style="width: 40px; margin: 5px 5px 5px -5px;"></a><a class="navbar-brand" href="index.php">Hashtopussy</a>
+			<a href="#" class="navbar-left"><img src="static/logo.png" alt="logo" style="width: 40px; margin: 5px 5px 5px -5px;"></a><a class="navbar-brand" href="index.php">[[$APP_NAME]]</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 30}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
 					<li class="dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
@@ -21,25 +21,26 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 20 && [[login.getLevel()]] < 30}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]] && [[login.getLevel()]] < [[$DAccessLevel::SUPERUSER]]}}
 					<li[[menu.isActive('agents_list')]]><a href="agents.php">Agents</a></li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 20}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
 					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
 							<li[[menu.isActive('tasks_new')]]><a href="tasks.php?new=true">New Task</a></li>
-							<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Pre-conf Tasks</a></li>
+							<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Preconfigured Tasks</a></li>
+							<li[[menu.isActive('tasks_prenew')]]><a href="pretasks.php?new=true">New preconfigured Tasks</a></li>
 							<li[[menu.isActive('tasks_super')]]><a href='supertasks.php'>Supertasks</a></li>
 							<li[[menu.isActive('tasks_supernew')]]><a href='supertasks.php?create=new'>New Supertask</a></li>
 							<li[[menu.isActive('tasks_superimport')]]><a href='supertasks.php?create=import'>Import Mask(s)</a></li>
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] > 0 && [[login.getLevel()]] < 5}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] > 0 && [[login.getLevel()]] < [[$DAccessLevel::READ_ONLY]]}}
 					<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 5 && [[login.getLevel()]] < 20}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]] && [[login.getLevel()]] < [[$DAccessLevel::USER]]}}
 					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
@@ -47,7 +48,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 20}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
 					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
@@ -58,7 +59,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 5 && [[login.getLevel()]] < 20}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]] && [[login.getLevel()]] < [[$DAccessLevel::USER]]}}
 					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
@@ -66,28 +67,28 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 20}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
 					<li[[menu.isActive('files')]]><a href="files.php">Files</a></li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 5}}
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]]}}
 					<li[[menu.isActive('chunks')]]><a href="chunks.php">Chunk activity</a></li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 30}}
-					<li class="dropdown[[menu.isActive('hashcat', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Hashcat <span class="caret"></span></a>
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
+					<li class="dropdown[[menu.isActive('crackers', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Crackers <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li[[menu.isActive('hashcat_list')]]><a href="hashcat.php">Hashcat releases</a></li>
-							<li[[menu.isActive('hashcat_new')]]><a href="hashcat.php?new=true">New Hashcat release</a></li>
+							<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Binaries</a></li>
+							<li[[menu.isActive('crackers_new')]]><a href="crackers.php?new=true">New Binary</a></li>
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 10 && [[login.getLevel()]] < 30}}
-					<li[[menu.isActive('hashcat_list')]]><a href="hashcat.php">Hashcat releases</a></li>
+				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 10 && [[login.getLevel()]] < [[$DAccessLevel::SUPERUSER]]}}
+					<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Crackers</a></li>
 				{{ENDIF}}
 				{{IF [[login.isLoggedin()]]}}
 					<li class="dropdown[[menu.isActive('account', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('account_settings')]]><a href="account.php">Settings</a></li>
-              {{IF [[login.getLevel()]] >= 20}}
+              {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
 							  <li[[menu.isActive('account_notifications')]]><a href="notifications.php">Notifications</a></li>
               {{ENDIF}}
 						</ul>
@@ -106,6 +107,7 @@
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('users_list')]]><a href="users.php">All users</a></li>
 							<li[[menu.isActive('users_new')]]><a href="users.php?new=true">New User</a></li>
+							<li[[menu.isActive('users_groups')]]><a href="groups.php">Groups</a></li>
 						</ul>
 					</li>
 				{{ENDIF}}

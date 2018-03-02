@@ -10,19 +10,19 @@
 			<tr>
 				<th>Username</th>
 				<td>
-					<input type='text' class='form-control' name='username'>
+					<input type='text' class='form-control' name='username' title="Username">
 				</td>
 			</tr>
 			<tr>
 				<th>Email address</th>
 				<td>
-					<input type='email' class='form-control' name='email'>
+					<input type='email' class='form-control' name='email' title="Email">
 				</td>
 			</tr>
 			<tr>
 				<th>User group</th>
 				<td>
-					<select name='group' class='form-control'>
+					<select name='group' class='form-control' title="Group">
 						<option value=''>---</option>
 						{{FOREACH group;[[groups]]}}
 							<option value='[[group.getId()]]'>[[group.getGroupName()]] ([[group.getLevel()]])</option>

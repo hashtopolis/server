@@ -5,6 +5,7 @@
  */
 
 use DBA\Chunk;
+use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 
@@ -17,16 +18,28 @@ if (!$LOGIN->isLoggedin()) {
   die("No access!");
 }
 
-//get image dimenstions
+//get image dimensions
 $size = array(intval($_GET["x"]), intval($_GET["y"]));
 if ($size[0] == 0 || $size[0] == 0) {
   die("INV size!");
 }
 
 //check if task exists and get information
-$task = $FACTORIES::getTaskFactory()->get($_GET['task']);
-if ($task == null) {
-  die("Not a valid task!");
+if (isset($_GET['task'])) {
+  $task = $FACTORIES::getTaskFactory()->get($_GET['task']);
+  if ($task == null) {
+    die("Not a valid task!");
+  }
+  $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+  if ($taskWrapper == null) {
+    die("Inconsistency on task!");
+  }
+}
+else if (isset($_GET['supertask'])) {
+  $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($_GET['supertask']);
+  if ($taskWrapper == null) {
+    die("Invalid task wrapper!");
+  }
 }
 
 //create image
@@ -44,22 +57,20 @@ $blue = imagecolorallocate($image, 60, 60, 245);
 //prepare image
 imagefill($image, 0, 0, $transparency);
 
-$progress = $task->getProgress();
-$keyspace = max($task->getKeyspace(), 1);
-$taskid = $task->getId();
-
-if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
+if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK && isset($_GET['supertask'])) {
   // handle supertask progress drawing here
-  $subTasks = Util::getSubTasks($task);
-  $numTasks = sizeof($subTasks);
-  for ($i = 0; $i < sizeof($subTasks); $i++) {
-    $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
+  $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+  $oF = new OrderFilter(Task::PRIORITY, "DESC");
+  $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+  $numTasks = sizeof($tasks);
+  for ($i = 0; $i < sizeof($tasks); $i++) {
+    $qF = new QueryFilter(Chunk::TASK_ID, $tasks[$i]->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $progress = 0;
     foreach ($chunks as $chunk) {
-      $progress += $chunk->getProgress();
+      $progress += $chunk->getCheckpoint();
     }
-    $qF = new QueryFilter(Chunk::TASK_ID, $subTasks[$i]->getId(), "=");
+    $qF = new QueryFilter(Chunk::TASK_ID, $tasks[$i]->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $cracked = 0;
     foreach ($chunks as $chunk) {
@@ -68,10 +79,10 @@ if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
     if ($cracked > 0) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $green);
     }
-    else if ($subTasks[$i]->getKeyspace() > 0 && $progress >= $subTasks[$i]->getKeyspace()) {
+    else if ($tasks[$i]->getKeyspace() > 0 && $progress >= $tasks[$i]->getKeyspace()) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $blue);
     }
-    else if ($subTasks[$i]->getKeyspace() > 0 && $progress > 0) {
+    else if ($tasks[$i]->getKeyspace() > 0 && $progress > 0) {
       imagefilledrectangle($image, $i * $size[0] / $numTasks, 0, ($i + 1) * $size[0] / $numTasks, $size[1] - 1, $yellow);
     }
     else {
@@ -80,6 +91,10 @@ if ($task->getTaskType() == DTaskTypes::SUPERTASK) {
   }
 }
 else {
+  $progress = $task->getKeyspaceProgress();
+  $keyspace = max($task->getKeyspace(), 1);
+  $taskId = $task->getId();
+  
   //load chunks
   $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -87,7 +102,7 @@ else {
     $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);
     $end = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength()) / $keyspace) - 1;
     //division by 10000 is required because rprogress is saved in percents with two decimals
-    $current = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength() * $chunk->getRprogress() / 10000) / $keyspace) - 1;
+    $current = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength() * $chunk->getProgress() / 10000) / $keyspace) - 1;
     
     if ($current > $end) {
       $current = $end;

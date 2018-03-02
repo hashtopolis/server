@@ -4,11 +4,13 @@ namespace DBA;
 
 class Config extends AbstractModel {
   private $configId;
+  private $configSectionId;
   private $item;
   private $value;
   
-  function __construct($configId, $item, $value) {
+  function __construct($configId, $configSectionId, $item, $value) {
     $this->configId = $configId;
+    $this->configSectionId = $configSectionId;
     $this->item = $item;
     $this->value = $value;
   }
@@ -16,6 +18,7 @@ class Config extends AbstractModel {
   function getKeyValueDict() {
     $dict = array();
     $dict['configId'] = $this->configId;
+    $dict['configSectionId'] = $this->configSectionId;
     $dict['item'] = $this->item;
     $dict['value'] = $this->value;
     
@@ -38,6 +41,14 @@ class Config extends AbstractModel {
     $this->configId = $id;
   }
   
+  function getConfigSectionId(){
+    return $this->configSectionId;
+  }
+  
+  function setConfigSectionId($configSectionId){
+    $this->configSectionId = $configSectionId;
+  }
+  
   function getItem(){
     return $this->item;
   }
@@ -55,6 +66,7 @@ class Config extends AbstractModel {
   }
 
   const CONFIG_ID = "configId";
+  const CONFIG_SECTION_ID = "configSectionId";
   const ITEM = "item";
   const VALUE = "value";
 }

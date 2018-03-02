@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
@@ -39,7 +40,8 @@ class UsersHandler implements Handler {
   
   private function create() {
     /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $LOGIN, $CONFIG;
     
     $username = htmlentities($_POST['username'], ENT_QUOTES, "UTF-8");
     $email = $_POST['email'];
@@ -65,12 +67,18 @@ class UsersHandler implements Handler {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
+    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
     $FACTORIES::getUserFactory()->save($user);
-    //$tmpl = new Template("email.creation");
-    //$obj = array('username' => $username, 'password' => $newPass, 'url' => $_SERVER[SERVER_NAME] . "/");
-    //Util::sendMail($email, "Account at Hashtopussy", $tmpl->render($obj));
-    //TODO: send proper email for created user
+    
+    // add user to default group
+    $group = AccessUtils::getOrCreateDefaultAccessGroup();
+    $groupMember = new AccessGroupUser(0, $group->getId(), $user->getId());
+    $FACTORIES::getAccessGroupUserFactory()->save($groupMember);
+    
+    $tmpl = new Template("email/creation");
+    $tmplPlain = new Template("email/creation.plain");
+    $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL));
+    Util::sendMail($email, "Account at " . APP_NAME, $tmpl->render($obj), $tmplPlain->render($obj));
     
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "New User created: " . $user->getUsername());
     $payload = new DataSet(array(DPayloadKeys::USER => $user));

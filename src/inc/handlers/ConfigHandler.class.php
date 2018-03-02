@@ -39,27 +39,19 @@ class ConfigHandler implements Handler {
     /** @var $LOGIN Login */
     global $FACTORIES, $LOGIN;
     
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $FACTORIES::getHashFactory()->massDeletion(array());
     $FACTORIES::getHashBinaryFactory()->massDeletion(array());
     $FACTORIES::getAssignmentFactory()->massDeletion(array());
     $FACTORIES::getAgentErrorFactory()->massDeletion(array());
     $FACTORIES::getChunkFactory()->massDeletion(array());
     $FACTORIES::getZapFactory()->massDeletion(array());
-    $qF = new QueryFilter(Task::HASHLIST_ID, null, "<>");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $taskIds = array();
-    foreach ($tasks as $task) {
-      $taskIds[] = $task->getId();
-    }
-    if (sizeof($taskIds) > 0) {
-      $containFilter = new ContainFilter(TaskFile::TASK_ID, $taskIds);
-      $FACTORIES::getTaskFileFactory()->massDeletion(array($FACTORIES::FILTER => $containFilter));
-      $FACTORIES::getTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    }
-    $FACTORIES::getHashlistAgentFactory()->massDeletion(array());
+    $FACTORIES::getFileTaskFactory()->massDeletion(array());
+    $FACTORIES::getTaskFactory()->massDeletion(array());
+    $FACTORIES::getTaskWrapperFactory()->massDeletion(array());
+    $FACTORIES::getHashlistHashlistFactory()->massDeletion(array());
     $FACTORIES::getHashlistFactory()->massDeletion(array());
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::WARN, "Complete clear was executed!");
   }
   
@@ -99,35 +91,33 @@ class ConfigHandler implements Handler {
     $correctedHashlists = 0;
     
     //check chunks
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
-    $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
-    $jF2 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, Task::HASHLIST_ID, $FACTORIES::getTaskFactory());
-    $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => array($jF1, $jF2)));
-    for ($i = 0; $i < sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]); $i++) {
-      /** @var $chunk Chunk */
-      $chunk = $joined[$FACTORIES::getChunkFactory()->getModelName()][$i];
-      /** @var $hashlist Hashlist */
-      $hashlist = $joined[$FACTORIES::getHashlistFactory()->getModelName()][$i];
-      $hashFactory = $FACTORIES::getHashFactory();
-      if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
-        $hashlists = Util::checkSuperHashlist($hashlist);
-        if ($hashlists[0]->getFormat() != DHashlistFormat::PLAIN) {
-          $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
+    foreach ($taskWrappers as $taskWrapper) {
+      $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId()));
+      
+      $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
+      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=", $FACTORIES::getTaskFactory());
+      $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
+      /** @var $chunks Chunk[] */
+      $chunks = $joined[$FACTORIES::getChunkFactory()->getModelName()];
+      
+      foreach ($chunks as $chunk) {
+        $hashFactory = ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) ? $FACTORIES::getHashFactory() : $FACTORIES::getHashBinaryFactory();
+        $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
+        $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
+        $count = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+        if ($count != $chunk->getCracked()) {
+          $correctedChunks++;
+          $chunk->setCracked($count);
+          $FACTORIES::getChunkFactory()->update($chunk);
         }
       }
-      $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
-      $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
-      $count = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
-      if ($count != $chunk->getCracked()) {
-        $correctedChunks++;
-        $chunk->setCracked($count);
-        $FACTORIES::getChunkFactory()->update($chunk);
-      }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     //check hashlists
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($hashlists as $hashlist) {
@@ -144,25 +134,25 @@ class ConfigHandler implements Handler {
         $FACTORIES::getHashlistFactory()->update($hashlist);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     //check superhashlists
-    $FACTORIES::getAgentFactory()->getDB()->query("START TRANSACTION");
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
-    $hashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($hashlists as $hashlist) {
-      $children = Util::checkSuperHashlist($hashlist);
+    $superHashlists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach ($superHashlists as $superHashlist) {
+      $hashlists = Util::checkSuperHashlist($superHashlist);
       $cracked = 0;
-      foreach ($children as $child) {
-        $cracked += $child->getCracked();
+      foreach ($hashlists as $hashlist) {
+        $cracked += $hashlist->getCracked();
       }
-      if ($cracked != $hashlist->getCracked()) {
+      if ($cracked != $superHashlist->getCracked()) {
         $correctedHashlists++;
-        $hashlist->setCracked($cracked);
-        $FACTORIES::getHashlistFactory()->update($hashlist);
+        $superHashlist->setCracked($cracked);
+        $FACTORIES::getHashlistFactory()->update($superHashlist);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->query("COMMIT");
+    $FACTORIES::getAgentFactory()->getDB()->commit();
     
     UI::addMessage(UI::SUCCESS, "Updated all chunks and hashlists. Corrected $correctedChunks chunks and $correctedHashlists hashlists.");
   }
@@ -175,14 +165,30 @@ class ConfigHandler implements Handler {
     foreach ($_POST as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
-        $CONFIG->addValue($name, $val);
+        if ($CONFIG->getVal($name) == $val) {
+          continue; // the value was not changed, so we don't need to update it
+        }
+        
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
         if ($config == null) {
-          $config = new Config(0, $name, $val);
+          $config = new Config(0, 5, $name, $val);
           $FACTORIES::getConfigFactory()->save($config);
         }
         else {
+          if ($name == DConfig::HASH_MAX_LENGTH) {
+            $limit = intval($val);
+            if (!Util::setMaxHashLength($limit)) {
+              UI::addMessage(UI::ERROR, "Failed to update max hash length!");
+            }
+          }
+          else if ($name == DConfig::PLAINTEXT_MAX_LENGTH) {
+            $limit = intval($val);
+            if (!Util::setPlaintextMaxLength($limit)) {
+              UI::addMessage(UI::ERROR, "Failed to update max plaintext length!");
+            }
+          }
+          $CONFIG->addValue($name, $val);
           $config->setValue($val);
           $FACTORIES::getConfigFactory()->update($config);
         }

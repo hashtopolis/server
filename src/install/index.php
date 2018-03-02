@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupUser;
 use DBA\Config;
 use DBA\QueryFilter;
 use DBA\RightGroup;
@@ -33,6 +34,8 @@ switch ($STEP) {
       die();
     }
     
+    $OBJECTS = array();
+    $OBJECTS['32bit'] = (PHP_INT_SIZE == 4) ? true : false;
     if (isset($_GET['type'])) {
       $type = $_GET['type'];
       if ($type == 'install') {
@@ -44,18 +47,18 @@ switch ($STEP) {
       die();
     }
     $TEMPLATE = new Template("install/0");
-    echo $TEMPLATE->render(array());
+    echo $TEMPLATE->render($OBJECTS);
     break;
   case 1: //clean installation was selected
     if (isset($_GET['next'])) {
-      $query = file_get_contents(dirname(__FILE__) . "/hashtopussy.sql");
+      $query = file_get_contents(dirname(__FILE__) . "/hashtopolis.sql");
       $FACTORIES::getAgentFactory()->getDB()->query($query);
       $baseUrl = explode("/", $_SERVER['REQUEST_URI']);
       unset($baseUrl[sizeof($baseUrl) - 1]);
       if ($baseUrl[sizeof($baseUrl) - 1] == "install") {
         unset($baseUrl[sizeof($baseUrl) - 1]);
       }
-      $urlConfig = new Config(0, DConfig::BASE_URL, implode("/", $baseUrl));
+      $urlConfig = new Config(0, 5, DConfig::BASE_URL, implode("/", $baseUrl));
       $FACTORIES::getConfigFactory()->save($urlConfig);
       setcookie("step", "52", time() + 3600);
       setcookie("prev", "2", time() + 3600);
@@ -113,6 +116,7 @@ switch ($STEP) {
       }
       else {
         //save database details
+        
         $file = file_get_contents(dirname(__FILE__) . "/../inc/db.template.php");
         $file = str_replace("__DBUSER__", $_POST['user'], $file);
         $file = str_replace("__DBPASS__", $_POST['pass'], $file);
@@ -130,11 +134,17 @@ switch ($STEP) {
     echo $TEMPLATE->render(array('failed' => $fail));
     break;
   case 52: //database is filled with initial data now we create the user now
-    //create pepper (this is required here that when we create the user, the included file already contains the right peppers
+    // create pepper (this is required here that when we create the user, the included file already contains the right peppers
     $pepper = array(Util::randomString(50), Util::randomString(50), Util::randomString(50));
     $crypt = file_get_contents(dirname(__FILE__) . "/../inc/Encryption.class.php");
     $crypt = str_replace("__PEPPER1__", $pepper[0], str_replace("__PEPPER2__", $pepper[1], str_replace("__PEPPER3__", $pepper[2], $crypt)));
     file_put_contents(dirname(__FILE__) . "/../inc/Encryption.class.php", $crypt);
+    
+    // set CSRF private key
+    $key = Util::randomString(20);
+    $csrf = file_get_contents(dirname(__FILE__) . "/../inc/CSRF.class.php");
+    $csrf = str_replace("__CSRF__", $key, $csrf);
+    file_put_contents(dirname(__FILE__) . "/../inc/CSRF.class.php", $csrf);
     
     $message = "";
     if (isset($_POST['create'])) {
@@ -151,13 +161,22 @@ switch ($STEP) {
         $message = Util::getMessage('danger', "Your entered passwords do not match!");
       }
       else {
+        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+        
         $qF = new QueryFilter(RightGroup::GROUP_NAME, "Administrator", "=");
         $group = $FACTORIES::getRightGroupFactory()->filter(array($FACTORIES::FILTER => array($qF)));
         $group = $group[0];
         $newSalt = Util::randomString(20);
         $newHash = Encryption::passwordHash($password, $newSalt);
-        $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 600, $group->getId(), 0, "", "", "", "");
+        $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
         $FACTORIES::getUserFactory()->save($user);
+        
+        // create default group
+        $group = AccessUtils::getOrCreateDefaultAccessGroup();
+        $groupUser = new AccessGroupUser(0, $group->getId(), $user->getId());
+        $FACTORIES::getAccessGroupUserFactory()->save($groupUser);
+        
+        $FACTORIES::getAgentFactory()->getDB()->commit();
         setcookie("step", "$PREV", time() + 3600);
         header("Location: index.php");
         die();

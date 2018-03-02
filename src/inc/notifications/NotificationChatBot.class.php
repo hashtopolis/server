@@ -1,6 +1,6 @@
 <?php
 
-class HashtopussyNotificationChatBot extends HashtopussyNotification {
+class HashtopolisNotificationChatBot extends HashtopolisNotification {
   protected     $receiver;
   public static $name = "ChatBot";
   
@@ -12,8 +12,8 @@ class HashtopussyNotificationChatBot extends HashtopussyNotification {
     return array();
   }
   
-  function sendMessage($message) {
-    $username = "Hashtopussy";
+  function sendMessage($message, $subject = "") {
+    $username = APP_NAME;
     $data = "payload=" . json_encode(array(
           "username" => $username,
           "text" => $message
@@ -31,7 +31,7 @@ class HashtopussyNotificationChatBot extends HashtopussyNotification {
   }
 }
 
-$NOTIFICATIONS['ChatBot'] = new HashtopussyNotificationChatBot();
+$NOTIFICATIONS['ChatBot'] = new HashtopolisNotificationChatBot();
 
 
 

@@ -8,17 +8,17 @@ class Hash extends AbstractModel {
   private $hash;
   private $salt;
   private $plaintext;
-  private $time;
+  private $timeCracked;
   private $chunkId;
   private $isCracked;
   
-  function __construct($hashId, $hashlistId, $hash, $salt, $plaintext, $time, $chunkId, $isCracked) {
+  function __construct($hashId, $hashlistId, $hash, $salt, $plaintext, $timeCracked, $chunkId, $isCracked) {
     $this->hashId = $hashId;
     $this->hashlistId = $hashlistId;
     $this->hash = $hash;
     $this->salt = $salt;
     $this->plaintext = $plaintext;
-    $this->time = $time;
+    $this->timeCracked = $timeCracked;
     $this->chunkId = $chunkId;
     $this->isCracked = $isCracked;
   }
@@ -30,7 +30,7 @@ class Hash extends AbstractModel {
     $dict['hash'] = $this->hash;
     $dict['salt'] = $this->salt;
     $dict['plaintext'] = $this->plaintext;
-    $dict['time'] = $this->time;
+    $dict['timeCracked'] = $this->timeCracked;
     $dict['chunkId'] = $this->chunkId;
     $dict['isCracked'] = $this->isCracked;
     
@@ -85,12 +85,12 @@ class Hash extends AbstractModel {
     $this->plaintext = $plaintext;
   }
   
-  function getTime(){
-    return $this->time;
+  function getTimeCracked(){
+    return $this->timeCracked;
   }
   
-  function setTime($time){
-    $this->time = $time;
+  function setTimeCracked($timeCracked){
+    $this->timeCracked = $timeCracked;
   }
   
   function getChunkId(){
@@ -114,7 +114,7 @@ class Hash extends AbstractModel {
   const HASH = "hash";
   const SALT = "salt";
   const PLAINTEXT = "plaintext";
-  const TIME = "time";
+  const TIME_CRACKED = "timeCracked";
   const CHUNK_ID = "chunkId";
   const IS_CRACKED = "isCracked";
 }

@@ -1,11 +1,10 @@
 <?php
 
 use DBA\JoinFilter;
+use DBA\Pretask;
 use DBA\QueryFilter;
-use DBA\LikeFilter;
 use DBA\OrderFilter;
-use DBA\SupertaskTask;
-use DBA\Task;
+use DBA\SupertaskPretask;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -18,6 +17,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -25,7 +25,7 @@ $TEMPLATE = new Template("supertasks/index");
 $MENU->setActive("tasks_super");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $supertaskHandler = new SupertaskHandler();
   $supertaskHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
@@ -36,20 +36,27 @@ if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
 if (isset($_GET['create']) && $_GET['create'] == "new") {
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
-  $qF1 = new QueryFilter(Task::HASHLIST_ID, null, "=");
-  $qF2 = new LikeFilter(Task::TASK_NAME, "HIDDEN:%");
-  $qF2->setMatch(false);
-  $OBJECTS['preTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+  $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+  $OBJECTS['preTasks'] = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $OBJECTS['pageTitle'] = "Create Supertask";
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import") {
   $MENU->setActive("tasks_superimport");
   $TEMPLATE = new Template("supertasks/import");
+  
+  $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
+  $OBJECTS['pageTitle'] = "Import Supertask from Masks";
 }
 else if (isset($_GET['id']) && isset($_GET['new'])) {
   $TEMPLATE = new Template("supertasks/new");
   $supertask = $FACTORIES::getSupertaskFactory()->get($_GET['id']);
   $OBJECTS['orig'] = $supertask->getId();
   $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array());
+  $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
+  $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array());
+  usort($versions, array("Util", "versionComparisonBinary"));
+  $OBJECTS['versions'] = $versions;
+  $OBJECTS['pageTitle'] = "Issue Supertask";
 }
 else if (isset($_GET['id'])) {
   $TEMPLATE = new Template("supertasks/detail");
@@ -57,25 +64,27 @@ else if (isset($_GET['id'])) {
   if ($supertask == null) {
     UI::printError("ERROR", "Invalid supertask ID!");
   }
-  $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-  $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
-  $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-  $OBJECTS['tasks'] = $tasks[$FACTORIES::getTaskFactory()->getModelName()];
+  $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+  $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
+  $tasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  $OBJECTS['tasks'] = $tasks[$FACTORIES::getPretaskFactory()->getModelName()];
   $OBJECTS['supertask'] = $supertask;
+  $OBJECTS['pageTitle'] = "Supertask details for " . $supertask->getSupertaskName();
 }
 else {
   $supertasks = $FACTORIES::getSupertaskFactory()->filter(array());
   $supertaskTasks = new DataSet();
   foreach ($supertasks as $supertask) {
-    $qF = new QueryFilter(SupertaskTask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getSupertaskTaskFactory(), SupertaskTask::TASK_ID, Task::TASK_ID);
-    $oF = new OrderFilter(Task::PRIORITY, "DESC");
-    $joinedTasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF, $FACTORIES::ORDER => $oF));
-    $tasks = $joinedTasks[$FACTORIES::getTaskFactory()->getModelName()];
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
+    $oF = new OrderFilter(Pretask::PRIORITY, "DESC");
+    $joinedTasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF, $FACTORIES::ORDER => $oF));
+    $tasks = $joinedTasks[$FACTORIES::getPretaskFactory()->getModelName()];
     $supertaskTasks->addValue($supertask->getId(), $tasks);
   }
   $OBJECTS['tasks'] = $supertaskTasks;
   $OBJECTS['supertasks'] = $supertasks;
+  $OBJECTS['pageTitle'] = "Supertasks";
 }
 
 echo $TEMPLATE->render($OBJECTS);

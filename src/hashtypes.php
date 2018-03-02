@@ -11,6 +11,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -19,7 +20,7 @@ $MENU->setActive("config_hashtypes");
 $message = "";
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $hashtypeHandler = new HashtypeHandler();
   $hashtypeHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
@@ -31,6 +32,7 @@ $hashtypes = $FACTORIES::getHashTypeFactory()->filter(array());
 
 $OBJECTS['hashtypes'] = $hashtypes;
 $OBJECTS['message'] = $message;
+$OBJECTS['pageTitle'] = "Hashtypes";
 
 echo $TEMPLATE->render($OBJECTS);
 

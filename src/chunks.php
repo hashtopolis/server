@@ -14,6 +14,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -22,6 +23,7 @@ $MENU->setActive("chunks");
 
 $oF = null;
 $OBJECTS['all'] = true;
+$OBJECTS['pageTitle'] = "Chunk Activity";
 if (!isset($_GET['show'])) {
   $page = 0;
   $PAGESIZE = 50;
@@ -34,6 +36,7 @@ if (!isset($_GET['show'])) {
   $limit = $page * $PAGESIZE;
   $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE");
   $OBJECTS['all'] = false;
+  $OBJECTS['pageTitle'] = "Chunks Activity (page " . ($page + 1) . ")";
 }
 
 if ($oF == null) {

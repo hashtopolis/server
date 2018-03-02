@@ -15,6 +15,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::USER) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -23,7 +24,7 @@ $MENU->setActive("files");
 $message = "";
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $fileHandler = new FileHandler();
   $fileHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
@@ -44,6 +45,7 @@ if (isset($_GET['edit'])) {
   else {
     $OBJECTS['file'] = $file;
     $TEMPLATE = new Template("files/edit");
+    $OBJECTS['pageTitle'] = "Edit File " . $file->getFilename();
   }
 }
 else {
@@ -52,6 +54,7 @@ else {
   $OBJECTS['fileType'] = ($view == "dict") ? "Wordlists" : "Rules";
   $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));;
   $OBJECTS['impfiles'] = Util::scanImportDirectory();
+  $OBJECTS['pageTitle'] = "Files";
 }
 $OBJECTS['view'] = $view;
 

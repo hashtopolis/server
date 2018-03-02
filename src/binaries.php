@@ -11,6 +11,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -21,21 +22,24 @@ $TEMPLATE = new Template("binaries");
 $MENU->setActive("config_binaries");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $binaryHandler = new AgentBinaryHandler();
   $binaryHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
 }
+$OBJECTS['pageTitle'] = "Agent Binaries";
 if (isset($_GET['new'])) {
   $OBJECTS['newBinary'] = true;
+  $OBJECTS['pageTitle'] = "New Agent Binary";
 }
 else if (isset($_GET['edit'])) {
   $bin = $FACTORIES::getAgentBinaryFactory()->get($_GET['edit']);
   if ($bin == null) {
     UI::printError("ERROR", "Invalid agent binary ID!");
   }
+  $OBJECTS['pageTitle'] = "Edit Agent Binary of type " . $bin->getType();
   $OBJECTS['editBinary'] = true;
   $OBJECTS['bin'] = $bin;
 }

@@ -1,29 +1,38 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>About Hashtopussy</h2>
+<h2>About [[$APP_NAME]]</h2>
 <div class='alert alert-info'>
-	Hashtopussy version <code>[[version]]</code> running on <code>[[host]]</code>.<br>
+	[[$APP_NAME]] version <code>[[version]]</code> running on <code>[[host]]</code>.<br>
 	{{IF [[gitcommit]] != "not versioned"}}
-		Hashtopussy is running versioned, updates can be retreived with <code>git pull</code>. Latest commit:
+	[[$APP_NAME]] is running versioned, updates can be retreived with <code>git pull</code>. Latest commit:
 		<code>[[gitcommit]]</code>.
 	{{ENDIF}}
 </div>
 <div class='alert alert-neutral'>
-	Hashtopussy is based on Hashtopus with some improvements and additional features included. Some of the
-	differences to Hashtopus:<br>
+	Some of the features of [[$APP_NAME]]:<br>
 	<ul>
-		<li><b>User Management:</b> There is not a single user anymore which can do everything, an admin user
-			can create new users with given rights to view/edit different parts in Hashtopussy</li>
-		<li><b>File protection:</b> Files cannot be downloaded anymore just with the given path, even if the
-			client which is accessing is not logged in and is not a Hashtopus client. This prevents someone
-			just "steal" the files by downloading when he knows the url of Hashtopus.</li>
-		<li><b>Supertasks:</b> Makes it possible to create multiple tasks at once for some basic runs.</li>
-		<li><b>And a lot of other small features:</b> Auto-reload, automatic hex-salt, fixed salted found
-			importing, agent owner, better password hashing, hashtype management, etc..
+		<li>Easy and comfortable to use</li>
+		<li>Accessible from anywhere via web interface</li>
+		<li>Server component highly compatible with common web hosting setups</li>
+		<li>Unattended agents</li>
+		<li>File management for word lists, rules, ...</li>
+		<li>Self-updating of both [[$APP_NAME]] and hashcat</li>
+		<li>Cracking multiple hashlists of the same hash type as though they were a single hashlist</li>
+		<li>Running the same client on Windows, Linux and OS X</li>
+		<li>Files and hashes marked as "secret" are only distributed to agents marked as "trusted"</li>
+		<li>Many data import and export options</li>
+		<li>Rich statistics on hashes and running tasks</li>
+		<li>Visual representation of chunk distribution</li>
+		<li>Multi-user support</li>
+		<li>User permission levels</li>
+		<li>Various notification types</li>
+		<li>Small and/or CPU-only tasks</li>
+		<li>Group assignment for agents and users for fine-grained access-control</li>
+		<li>Compatible with crackers supporting certain flags</li>
 	</ul>
 </div>
 <div class='alert alert-neutral'>
-	Thanks to following people for helping in various way to make Hashtopussy work:<br>
+	Thanks to following people for helping in various way to make [[$APP_NAME]] work:<br>
 	winxp5421<br>
 	blazer<br>
 	CynoSure Prime<br>

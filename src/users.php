@@ -1,5 +1,10 @@
 <?php
 
+use DBA\QueryFilter;
+use DBA\AccessGroupUser;
+use DBA\AccessGroup;
+use DBA\JoinFilter;
+
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
@@ -11,6 +16,7 @@ if (!$LOGIN->isLoggedin()) {
 }
 else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
   $TEMPLATE = new Template("errors/restricted");
+  $OBJECTS['pageTitle'] = "Restricted";
   die($TEMPLATE->render($OBJECTS));
 }
 
@@ -18,7 +24,7 @@ $TEMPLATE = new Template("users/index");
 $MENU->setActive("users_list");
 
 //catch actions here...
-if (isset($_POST['action']) && Util::checkCSRF($_POST['csrf'])) {
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $usersHandler = new UsersHandler();
   $usersHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
@@ -30,6 +36,7 @@ if (isset($_GET['new'])) {
   $TEMPLATE = new Template("users/new");
   $MENU->setActive("users_new");
   $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
+  $OBJECTS['pageTitle'] = "Create User";
 }
 else if (isset($_GET['id'])) {
   $user = $FACTORIES::getUserFactory()->get($_GET['id']);
@@ -39,7 +46,14 @@ else if (isset($_GET['id'])) {
   else {
     $OBJECTS['user'] = $user;
     $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
+    
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
+    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joinedGroups = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $OBJECTS['accessGroups'] = $joinedGroups[$FACTORIES::getAccessGroupFactory()->getModelName()];
+    
     $TEMPLATE = new Template("users/detail");
+    $OBJECTS['pageTitle'] = "User details for " . $user->getUsername();
   }
 }
 else {
@@ -54,6 +68,7 @@ else {
   
   $OBJECTS['allUsers'] = $users;
   $OBJECTS['numUsers'] = sizeof($users);
+  $OBJECTS['pageTitle'] = "Users";
 }
 
 echo $TEMPLATE->render($OBJECTS);

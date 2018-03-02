@@ -44,7 +44,7 @@ $finishedTasks = array();
 $runningTasks = array();
 $queuedTasks = array();
 foreach ($tasks as $task) {
-  if ($task->getKeyspace() > 0 && $task->getKeyspace() == $task->getProgress()) {
+  if ($task->getKeyspace() > 0 && $task->getKeyspace() == $task->getKeyspaceProgress()) {
     $finishedTasks[] = $task;
   }
   else if ($task->getKeyspace() > 0) {

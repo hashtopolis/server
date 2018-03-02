@@ -2,7 +2,18 @@
 {%TEMPLATE->struct/menu%}
 <h2>Server configuration</h2>
 {%TEMPLATE->struct/messages%}
-<form action="config.php" method="POST">
+
+<div class="btn-group" role="group">
+	<button onclick="window.location='config.php?view=1'" type="button" class="btn btn-default{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
+	<button onclick="window.location='config.php?view=2'" type="button" class="btn btn-default{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
+	<button onclick="window.location='config.php?view=3'" type="button" class="btn btn-default{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
+	<button onclick="window.location='config.php?view=4'" type="button" class="btn btn-default{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
+	<button onclick="window.location='config.php?view=5'" type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
+</div>
+
+<br><br>
+
+<form action="" method="POST">
 	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
 	<div class="panel panel-default">
@@ -16,17 +27,24 @@
 					<td>[[DConfig::getConfigDescription([[conf.getVal('item')]])]]</td>
 					<td>
 						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "string"}}
-							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
+							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
 						{{ENDIF}}
 						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
-							<input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]">
+							<input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
+						{{ENDIF}}
+						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "email"}}
+							<input type="email" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
+						{{ENDIF}}
+						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "checkbox"}}
+							<input type="hidden" name="config_[[conf.getVal('item')]]" value="0">
+							<input title="Config Value" type="checkbox" name="config_[[conf.getVal('item')]]" value="1" {{IF [[conf.getVal('value')]] == 1}}checked{{ENDIF}}>
 						{{ENDIF}}
 					</td>
 				</tr>
 			{{ENDFOREACH}}
 			<tr>
 				<td colspan="2">
-					<input type="submit" class='btn btn-default' value="Set">
+					<input type="submit" class='btn btn-success' value="Save Changes">
 				</td>
 			</tr>
 		</table>

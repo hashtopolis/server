@@ -1,6 +1,6 @@
 <?php
 
-class HashtopussyNotificationEmail extends HashtopussyNotification {
+class HashtopolisNotificationEmail extends HashtopolisNotification {
   protected     $receiver;
   public static $name = "Email";
   
@@ -14,10 +14,11 @@ class HashtopussyNotificationEmail extends HashtopussyNotification {
     return $obj;
   }
   
-  function sendMessage($message) {
-    Util::sendMail($this->receiver, "Hashtopussy Notification", $message);
+  function sendMessage($message, $subject) {
+    $message = explode("##########", $message);
+    Util::sendMail($this->receiver, $subject, $message[0], $message[1]);
   }
 }
 
-$NOTIFICATIONS['Email'] = new HashtopussyNotificationEmail();
+$NOTIFICATIONS['Email'] = new HashtopolisNotificationEmail();
 

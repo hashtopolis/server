@@ -7,8 +7,7 @@ class Agent extends AbstractModel {
   private $agentName;
   private $uid;
   private $os;
-  private $gpus;
-  private $hcVersion;
+  private $devices;
   private $cmdPars;
   private $ignoreErrors;
   private $isActive;
@@ -19,14 +18,14 @@ class Agent extends AbstractModel {
   private $lastIp;
   private $userId;
   private $cpuOnly;
+  private $clientSignature;
   
-  function __construct($agentId, $agentName, $uid, $os, $gpus, $hcVersion, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly) {
+  function __construct($agentId, $agentName, $uid, $os, $devices, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly, $clientSignature) {
     $this->agentId = $agentId;
     $this->agentName = $agentName;
     $this->uid = $uid;
     $this->os = $os;
-    $this->gpus = $gpus;
-    $this->hcVersion = $hcVersion;
+    $this->devices = $devices;
     $this->cmdPars = $cmdPars;
     $this->ignoreErrors = $ignoreErrors;
     $this->isActive = $isActive;
@@ -37,6 +36,7 @@ class Agent extends AbstractModel {
     $this->lastIp = $lastIp;
     $this->userId = $userId;
     $this->cpuOnly = $cpuOnly;
+    $this->clientSignature = $clientSignature;
   }
   
   function getKeyValueDict() {
@@ -45,8 +45,7 @@ class Agent extends AbstractModel {
     $dict['agentName'] = $this->agentName;
     $dict['uid'] = $this->uid;
     $dict['os'] = $this->os;
-    $dict['gpus'] = $this->gpus;
-    $dict['hcVersion'] = $this->hcVersion;
+    $dict['devices'] = $this->devices;
     $dict['cmdPars'] = $this->cmdPars;
     $dict['ignoreErrors'] = $this->ignoreErrors;
     $dict['isActive'] = $this->isActive;
@@ -57,6 +56,7 @@ class Agent extends AbstractModel {
     $dict['lastIp'] = $this->lastIp;
     $dict['userId'] = $this->userId;
     $dict['cpuOnly'] = $this->cpuOnly;
+    $dict['clientSignature'] = $this->clientSignature;
     
     return $dict;
   }
@@ -101,20 +101,12 @@ class Agent extends AbstractModel {
     $this->os = $os;
   }
   
-  function getGpus(){
-    return $this->gpus;
+  function getDevices(){
+    return $this->devices;
   }
   
-  function setGpus($gpus){
-    $this->gpus = $gpus;
-  }
-  
-  function getHcVersion(){
-    return $this->hcVersion;
-  }
-  
-  function setHcVersion($hcVersion){
-    $this->hcVersion = $hcVersion;
+  function setDevices($devices){
+    $this->devices = $devices;
   }
   
   function getCmdPars(){
@@ -196,13 +188,20 @@ class Agent extends AbstractModel {
   function setCpuOnly($cpuOnly){
     $this->cpuOnly = $cpuOnly;
   }
+  
+  function getClientSignature(){
+    return $this->clientSignature;
+  }
+  
+  function setClientSignature($clientSignature){
+    $this->clientSignature = $clientSignature;
+  }
 
   const AGENT_ID = "agentId";
   const AGENT_NAME = "agentName";
   const UID = "uid";
   const OS = "os";
-  const GPUS = "gpus";
-  const HC_VERSION = "hcVersion";
+  const DEVICES = "devices";
   const CMD_PARS = "cmdPars";
   const IGNORE_ERRORS = "ignoreErrors";
   const IS_ACTIVE = "isActive";
@@ -213,4 +212,5 @@ class Agent extends AbstractModel {
   const LAST_IP = "lastIp";
   const USER_ID = "userId";
   const CPU_ONLY = "cpuOnly";
+  const CLIENT_SIGNATURE = "clientSignature";
 }

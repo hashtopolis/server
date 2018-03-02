@@ -22,31 +22,32 @@ abstract class PQuery { // include only generalized query values
 
 class PQueryLogin extends PQuery {
   static function isValid($QUERY) {
-    if (!isset($QUERY[self::TOKEN])) {
-      return false;
-    }
-    return true;
-  }
-}
-
-class PQuerySolve extends PQuery {
-  static function isValid($QUERY) {
-    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CHUNK_ID]) || !isset($QUERY[self::KEYSPACE_PROGRESS]) || !isset($QUERY[self::COMBINATION_PROGRESS]) || !isset($QUERY[self::COMBINATION_TOTAL]) || !isset($QUERY[self::SPEED]) || !isset($QUERY[self::HASHCAT_STATE]) || !isset($QUERY[self::CRACKED_HASHES])) {
+    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CLIENT_SIGNATURE])) {
       return false;
     }
     return true;
   }
   
-  const CHUNK_ID             = "chunk";
-  const KEYSPACE_PROGRESS    = "keyspaceProgress"; // aka curku
-  const COMBINATION_PROGRESS = "progress";
-  const COMBINATION_TOTAL    = "total";
-  const SPEED                = "speed";
-  const HASHCAT_STATE        = "state";
-  const CRACKED_HASHES       = "cracks";
+  const CLIENT_SIGNATURE = "clientSignature";
 }
 
-class PQueryBenchmark extends PQuery {
+class PQuerySendProgress extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CHUNK_ID]) || !isset($QUERY[self::KEYSPACE_PROGRESS]) || !isset($QUERY[self::KEYSPACE_PROGRESS]) || !isset($QUERY[self::RELATIVE_PROGRESS]) || !isset($QUERY[self::SPEED]) || !isset($QUERY[self::HASHCAT_STATE]) || !isset($QUERY[self::CRACKED_HASHES])) {
+      return false;
+    }
+    return true;
+  }
+  
+  const CHUNK_ID          = "chunkId";
+  const KEYSPACE_PROGRESS = "keyspaceProgress"; // aka curku
+  const RELATIVE_PROGRESS = "relativeProgress";
+  const SPEED             = "speed";
+  const HASHCAT_STATE     = "state";
+  const CRACKED_HASHES    = "cracks";
+}
+
+class PQuerySendBenchmark extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::TASK_ID]) || !isset($QUERY[self::TYPE]) || !isset($QUERY[self::RESULT])) {
       return false;
@@ -59,7 +60,7 @@ class PQueryBenchmark extends PQuery {
   const RESULT  = "result";
 }
 
-class PQueryKeyspace extends PQuery {
+class PQuerySendKeyspace extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::KEYSPACE]) || !isset($QUERY[self::TASK_ID])) {
       return false;
@@ -71,7 +72,7 @@ class PQueryKeyspace extends PQuery {
   const TASK_ID  = "taskId";
 }
 
-class PQueryChunk extends PQuery {
+class PQueryGetChunk extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::TASK_ID])) {
       return false;
@@ -82,7 +83,7 @@ class PQueryChunk extends PQuery {
   const TASK_ID = "taskId";
 }
 
-class PQueryTask extends PQuery {
+class PQueryGetTask extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN])) {
       return false;
@@ -91,7 +92,7 @@ class PQueryTask extends PQuery {
   }
 }
 
-class PQueryHashes extends PQuery {
+class PQueryGetHashlist extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::HASHLIST_ID])) {
       return false;
@@ -99,10 +100,10 @@ class PQueryHashes extends PQuery {
     return true;
   }
   
-  const HASHLIST_ID = "hashlist";
+  const HASHLIST_ID = "hashlistId";
 }
 
-class PQueryFile extends PQuery {
+class PQueryGetFile extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::TASK_ID]) || !isset($QUERY[self::FILENAME])) {
       return false;
@@ -110,11 +111,11 @@ class PQueryFile extends PQuery {
     return true;
   }
   
-  const TASK_ID  = "task";
+  const TASK_ID  = "taskId";
   const FILENAME = "file";
 }
 
-class PQueryError extends PQuery {
+class PQueryClientError extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::TASK_ID]) || !isset($QUERY[self::MESSAGE])) {
       return false;
@@ -122,11 +123,11 @@ class PQueryError extends PQuery {
     return true;
   }
   
-  const TASK_ID = "task";
+  const TASK_ID = "taskId";
   const MESSAGE = "message";
 }
 
-class PQueryDownload extends PQuery {
+class PQueryDownloadBinary extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::BINARY_TYPE])) {
       return false;
@@ -134,11 +135,11 @@ class PQueryDownload extends PQuery {
     return true;
   }
   
-  const BINARY_TYPE  = "type";
-  const FORCE_UPDATE = "force"; // optional
+  const BINARY_TYPE       = "type";
+  const BINARY_VERSION_ID = "binaryVersionId";
 }
 
-class PQueryUpdate extends PQuery {
+class PQueryCheckClientVersion extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::VERSION]) || !isset($QUERY[self::TYPE])) {
       return false;
@@ -150,19 +151,29 @@ class PQueryUpdate extends PQuery {
   const TYPE    = "type";
 }
 
-class PQueryRegister extends PQuery {
+class PQueryUpdateInformation extends PQuery {
   public static function isValid($QUERY) {
-    if (!isset($QUERY[self::VOUCHER]) || !isset($QUERY[self::GPUS]) || !isset($QUERY[self::USERID]) || !isset($QUERY[self::AGENT_NAME]) || !isset($QUERY[self::OPERATING_SYSTEM])) {
+    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::DEVICES]) || !isset($QUERY[self::UID]) || !isset($QUERY[self::OPERATING_SYSTEM])) {
       return false;
     }
     return true;
   }
   
-  const VOUCHER          = "voucher";
-  const GPUS             = "gpus";
-  const USERID           = "uid";
-  const AGENT_NAME       = "name";
+  const DEVICES          = "devices";
+  const UID              = "uid";
   const OPERATING_SYSTEM = "os";
+}
+
+class PQueryRegister extends PQuery {
+  public static function isValid($QUERY) {
+    if (!isset($QUERY[self::VOUCHER]) || !isset($QUERY[self::AGENT_NAME])) {
+      return false;
+    }
+    return true;
+  }
+  
+  const VOUCHER    = "voucher";
+  const AGENT_NAME = "name";
 }
 
 ######################
@@ -172,13 +183,13 @@ class PQueryRegister extends PQuery {
 abstract class PValues {
   const SUCCESS = "SUCCESS";
   const OK      = "OK";
-  const NONE    = "NONE";
+  const NONE    = null;
   const ERROR   = "ERROR";
 }
 
 class PValuesDownloadBinaryType extends PValues {
   const EXTRACTOR = "7zr";
-  const HASHCAT   = "hashcat";
+  const CRACKER   = "cracker";
 }
 
 class PValuesBenchmarkType extends PValues {
@@ -200,7 +211,7 @@ class PValuesChunkType extends PValues {
   const KEYSPACE_REQUIRED  = "keyspace_required";
   const BENCHMARK_REQUIRED = "benchmark";
   const FULLY_DISPATCHED   = "fully_dispatched";
-  const HASHCAT_UPDATE     = "hashcat_update";
+  const CRACKER_UPDATE     = "cracker_update";
   const OK                 = "OK";
 }
 
@@ -221,64 +232,65 @@ class PResponseRegister extends PResponse {
   const TOKEN = "token";
 }
 
-class PResponseHashes extends PResponse {
-  const DATA = "data";
+class PResponseGetHashlist extends PResponse {
+  const URL = "url";
 }
 
 class PResponseLogin extends PResponse {
   const TIMEOUT = "timeout";
 }
 
-class PResponseUpdate extends PResponse {
+class PResponseClientUpdate extends PResponse {
   const VERSION = "version";
   const URL     = "url";
 }
 
-class PResponseDownload extends PResponse {
-  const VERSION    = "version";
+class PResponseBinaryDownload extends PResponse {
   const EXECUTABLE = "executable";
   const URL        = "url";
-  const ROOT_DIR   = "rootdir";
+  const NAME       = "name";
 }
 
 class PResponseError extends PResponse {
   // not additional values required
 }
 
-class PResponseFile extends PResponse {
+class PResponseGetFile extends PResponse {
   const FILENAME  = "filename";
   const EXTENSION = "extension";
   const URL       = "url";
 }
 
-class PResponseTask extends PResponse {
-  const TASK_ID        = "task";
+class PResponseGetTask extends PResponse {
+  const TASK_ID        = "taskId";
+  const CRACKER_ID     = "crackerId";
   const ATTACK_COMMAND = "attackcmd";
   const CMD_PARAMETERS = "cmdpars";
-  const HASHLIST_ID    = "hashlist";
+  const HASHLIST_ID    = "hashlistId";
   const BENCHMARK      = "bench";
   const STATUS_TIMER   = "statustimer";
   const FILES          = "files";
   const BENCHTYPE      = "benchType";
   const HASHLIST_ALIAS = "hashlistAlias";
+  const KEYSPACE       = "keyspace";
 }
 
-class PResponseChunk extends PResponse {
+class PResponseGetChunk extends PResponse {
   const CHUNK_STATUS    = "status";
-  const CHUNK_ID        = "chunk";
+  const CHUNK_ID        = "chunkId";
   const KEYSPACE_SKIP   = "skip";
   const KEYSPACE_LENGTH = "length";
 }
 
-class PResponseKeyspace extends PResponse {
+class PResponseSendKeyspace extends PResponse {
   const KEYSPACE = "keyspace";
 }
 
-class PResponseBenchmark extends PResponse {
+class PResponseSendBenchmark extends PResponse {
   const BENCHMARK = "benchmark";
 }
 
-class PResponseSolve extends PResponse {
+class PResponseSendProgress extends PResponse {
   const NUM_CRACKED   = "cracked";
   const NUM_SKIPPED   = "skipped";
   const AGENT_COMMAND = "agent";
@@ -290,17 +302,18 @@ class PResponseSolve extends PResponse {
 ######################
 
 class PActions {
-  const REGISTER  = "register";
-  const LOGIN     = "login";
-  const UPDATE    = "update";
-  const DOWNLOAD  = "download";
-  const ERROR     = "error";
-  const FILE      = "file";
-  const HASHES    = "hashes";
-  const TASK      = "task";
-  const CHUNK     = "chunk";
-  const KEYSPACE  = "keyspace";
-  const BENCHMARK = "bench";
-  const SOLVE     = "solve";
-  const TEST      = "test";
+  const REGISTER                  = "register";
+  const LOGIN                     = "login";
+  const UPDATE_CLIENT_INFORMATION = "updateInformation";
+  const CHECK_CLIENT_VERSION      = "checkClientVersion";
+  const DOWNLOAD_BINARY           = "downloadBinary";
+  const CLIENT_ERROR              = "clientError";
+  const GET_FILE                  = "getFile";
+  const GET_HASHLIST              = "getHashlist";
+  const GET_TASK                  = "getTask";
+  const GET_CHUNK                 = "getChunk";
+  const SEND_KEYSPACE             = "sendKeyspace";
+  const SEND_BENCHMARK            = "sendBenchmark";
+  const SEND_PROGRESS             = "sendProgress";
+  const TEST_CONNECTION           = "testConnection";
 }

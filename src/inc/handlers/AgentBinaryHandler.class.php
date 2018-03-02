@@ -36,7 +36,7 @@ class AgentBinaryHandler implements Handler {
       return;
     }
     $FACTORIES::getAgentBinaryFactory()->delete($agentBinary);
-    unlink(dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
+    unlink(dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
     UI::addMessage(UI::SUCCESS, "Binary deleted successfully!");
   }
   
@@ -53,7 +53,7 @@ class AgentBinaryHandler implements Handler {
       UI::addMessage(UI::ERROR, "Version cannot be empty!");
       return;
     }
-    else if (!file_exists(dirname(__FILE__) . "/../../static/$filename")) {
+    else if (!file_exists(dirname(__FILE__) . "/../../bin/$filename")) {
       UI::addMessage(UI::ERROR, "Provided filename does not exist!");
       return;
     }
@@ -93,7 +93,7 @@ class AgentBinaryHandler implements Handler {
       UI::addMessage(UI::ERROR, "Version cannot be empty!");
       return;
     }
-    else if (!file_exists(dirname(__FILE__) . "/../../static/$filename")) {
+    else if (!file_exists(dirname(__FILE__) . "/../../bin/$filename")) {
       UI::addMessage(UI::ERROR, "Provided filename does not exist!");
       return;
     }
