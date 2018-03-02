@@ -18,6 +18,8 @@ There are parts of the documentation and wiki which are not up-to-date. If you s
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
 
+In an effort to make the Hashtopussy project conform to a more politically neutral name it was rebranded to "Hashtopolis" in March 2018.
+
 ## Features
 
 - Easy and comfortable to use
