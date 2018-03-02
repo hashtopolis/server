@@ -8,6 +8,6 @@ Your current Hashcat version
 
 The exact task command you are trying to run.
 
-Debug output from the client by running "hashtopolis.exe -d"
+Debug output from the client by running "hashtopolis.exe -d" or with debug flag set on the python client.
 
 Describe your problem in as much detail as possible " It's broke " is not a description.
