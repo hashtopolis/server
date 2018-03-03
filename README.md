@@ -14,7 +14,7 @@ The server part runs on PHP using MySQL as the database back end. It is vital th
 
 The web admin interface is the single point of access for all client agents. New agent deployments require a one-time password generated in the New Agent tab. This reduces the risk of leaking hashes or files to rogue or fake agents.
 
-There are parts of the documentation and wiki which are not up-to-date. If you see anything wrong or have questions on understanding descriptions, feel free to contact us on Twitter (@s3inlc, @winxp5421).
+There are parts of the documentation and wiki which are not up-to-date. If you see anything wrong or have questions on understanding descriptions, feel free to contact us on Twitter (@s3inlc, @winxp5421) or join our Discord server (https://discord.gg/S2NTxbz)
 
 To report a bug, please create an issue and try to describe the problem as accurately as possible. This helps us to identify the bug and see if it is reproducible.
 
