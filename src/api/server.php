@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This is the basic entry point for the client API.
- * It should be entered as URL for the client.
+ * This is the basic entry point for the agent API.
+ * It should be entered as URL for the agent.
  *
  * The input is sent as JSON encoded data and the response will also be in JSON
  */
