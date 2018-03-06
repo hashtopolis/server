@@ -79,7 +79,7 @@ class AgentHandler implements Handler {
         if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
           UI::printError("ERROR", "You have no rights to execute this action!");
         }
-        $this->delete($_POST['agent']);
+        $this->delete($_POST['agentId']);
         break;
       case DAgentAction::ASSIGN_AGENT:
         $this->assign();
