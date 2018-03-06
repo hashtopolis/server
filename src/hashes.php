@@ -159,10 +159,10 @@ foreach ($filters as $id => $text) {
 $OBJECTS['filters'] = $filtersSet;
 
 if ($filter == "cracked") {
-  $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, "1", "=");
+  $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, 1, "=");
 }
 else if ($filter == "uncracked") {
-  $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, "0", "=");
+  $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, 0, "=");
 }
 
 $count = $hashFactory->countFilter(array($FACTORIES::FILTER => $queryFilters));
