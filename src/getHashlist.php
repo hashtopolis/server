@@ -14,6 +14,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var DataSet $CONFIG */
 /** @var array $OBJECTS */
 
+// TODO: configure max memory usage here
 ini_set("max_execution_time", 100000);
 
 $token = @$_GET['token'];
