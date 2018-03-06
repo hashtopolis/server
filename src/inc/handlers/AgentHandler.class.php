@@ -260,15 +260,10 @@ class AgentHandler implements Handler {
     }
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    
     $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
-    
     $FACTORIES::getAgentZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
-    $uS = new UpdateSet(Zap::AGENT_ID, null);
-    $FACTORIES::getZapFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
-    
+    $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     

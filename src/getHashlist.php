@@ -54,7 +54,7 @@ switch ($format) {
       do {
         $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
         $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
-        $qF2 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
+        $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
         $current = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
         
         $output = "";
@@ -79,7 +79,7 @@ switch ($format) {
     $output = "";
     foreach ($hashlists as $hashlist) {
       $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $hashlist->getId(), "=");
-      $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
+      $qF2 = new QueryFilter(HashBinary::IS_CRACKED, "0", "=");
       $current = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
       $count += sizeof($current);
       foreach ($current as $entry) {
