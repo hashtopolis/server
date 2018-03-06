@@ -214,7 +214,7 @@ class APIGetChunk extends APIBasic {
     }
     if (strpos($benchmark, ":") === false) {
       // old benchmarking method
-      if (strlen($benchmark) == 0) {
+      if ($benchmark == 0) {
         // special case on small tasks, so we just create a chunk with the size of the keyspace
         return $keyspace;
       }
