@@ -320,7 +320,7 @@
           {{IF [[login.getLevel()]] >= 20}}
             <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::SET_BENCHMARK]]">
-              <input type="hidden" name="agent" value="[[agent.getId()]]">
+              <input type="hidden" name="agentId" value="[[agent.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8" title="Benchmark">
               <input type="submit" class='btn btn-default' value="Set">
@@ -363,7 +363,7 @@
           {{IF [[login.getLevel()]] >= 20}}
             <form style='float: left; padding-right: 5px;' action="agents.php?task=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
-              <input type="hidden" name="agent" value="[[agent.getId()]]">
+              <input type="hidden" name="agentId" value="[[agent.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="hidden" name="task" value="">
               <input type="submit" class='btn btn-default' value="Unassign">
