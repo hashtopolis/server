@@ -129,8 +129,8 @@ class TaskUtils {
     // check chunks
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $dispatched = 0;
-    $completed = 0;
+    $dispatched = $task->getSkipKeyspace();
+    $completed = $task->getSkipKeyspace();
     foreach ($chunks as $chunk) {
       if ($chunk->getAgentId() == null) {
         return $task; // at least one chunk is not assigned
