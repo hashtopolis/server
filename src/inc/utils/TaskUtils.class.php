@@ -132,12 +132,12 @@ class TaskUtils {
     $dispatched = $task->getSkipKeyspace();
     $completed = $task->getSkipKeyspace();
     foreach ($chunks as $chunk) {
-      if ($chunk->getAgentId() == null) {
-        return $task; // at least one chunk is not assigned
-      }
-      else if ($chunk->getProgress() >= 10000) {
+      if ($chunk->getProgress() >= 10000) {
         $dispatched += $chunk->getLength();
         $completed += $chunk->getLength();
+      }
+      else if ($chunk->getAgentId() == null) {
+        return $task; // at least one chunk is not assigned
       }
       else if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) > $CONFIG->getVal(DConfig::AGENT_TIMEOUT)) {
         // this chunk timed out, so we remove the agent from it and therefore this task is not complete yet
