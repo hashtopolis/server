@@ -152,7 +152,7 @@ class TaskUtils {
         $dispatched += $chunk->getLength();
       }
     }
-    if ($completed == $task->getKeyspace()) {
+    if ($completed >= $task->getKeyspace()) {
       // task is completed, set priority to 0
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
@@ -163,7 +163,7 @@ class TaskUtils {
       }
       return null;
     }
-    else if ($dispatched == $task->getKeyspace()) {
+    else if ($dispatched >= $task->getKeyspace()) {
       return null;
     }
     return $task;
