@@ -141,7 +141,7 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     if ($this->agent == null) {
-      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
     }
     
     if (intval($_POST['task']) == 0) {
@@ -158,7 +158,7 @@ class AgentHandler implements Handler {
     $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
     $task = $FACTORIES::getTaskFactory()->get(intval($_POST['task']));
     if ($this->agent == null) {
-      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
     }
     else if ($this->agent == null) {
       UI::printError("FATAL", "Agent with ID " . $_POST['agentId'] . " not found!");
@@ -243,7 +243,7 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     if ($agent == null) {
-      $agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+      $agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
       if ($agent == null) {
         UI::printError("ERROR", "Invalid agent!");
       }
@@ -290,7 +290,7 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     if ($this->agent == null) {
-      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agent']);
+      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
       if ($this->agent == null) {
         UI::printError("ERROR", "Invalid agent!");
       }

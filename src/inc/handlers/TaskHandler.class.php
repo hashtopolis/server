@@ -519,7 +519,7 @@ class TaskHandler implements Handler {
     global $FACTORIES;
     
     // adjust agent benchmark
-    $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agent'], "=");
+    $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agentId'], "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($assignment == null) {
       UI::addMessage(UI::ERROR, "No assignment for this agent!");
