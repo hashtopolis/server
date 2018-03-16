@@ -230,7 +230,7 @@ class Util {
     
     $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
     $oF1 = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
-    $oF2 = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "ASC");
+    $oF2 = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
     $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
     
     $taskList = array();
