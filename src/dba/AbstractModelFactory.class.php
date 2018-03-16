@@ -503,7 +503,7 @@ abstract class AbstractModelFactory {
     if (array_key_exists("filter", $options)) {
       $query .= $this->applyFilters($vals, $options['filter']);
     }
-  
+    
     if (array_key_exists("group", $options)) {
       $query .= $this->applyGroups($this->getGroups($options));
     }
@@ -724,6 +724,7 @@ abstract class AbstractModelFactory {
     try {
       $this->dbh = new PDO($dsn, $user, $password);
       $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $this->dbh->setAttribute(PDO::ATTR_AUTOCOMMIT, 0);
       return $this->dbh;
     }
     catch (PDOException $e) {
