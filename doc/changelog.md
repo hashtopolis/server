@@ -14,6 +14,7 @@
 
 - Fixed issue when agents got deleted which had completed at least one chunk
 - Fixed conflicts on $_POST data agent vs. agentId
+- Fixed ETA and spent time for tasks
 - Error message which was always shown when adding new hash types fixed
 
 # v0.4.2 -> v0.4.3

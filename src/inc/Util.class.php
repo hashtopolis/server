@@ -979,6 +979,18 @@ class Util {
   }
   
   /**
+   * @param $a Chunk
+   * @param $b Chunk
+   * @return int
+   */
+  public static function compareChunksTime($a, $b) {
+    if ($a->getDispatchTime() == $b->getDispatchTime()) {
+      return 0;
+    }
+    return ($a->getDispatchTime() < $b->getDispatchTime()) ? -1 : 1;
+  }
+  
+  /**
    * This sends a given email with text and subject to the address.
    *
    * @param string $address

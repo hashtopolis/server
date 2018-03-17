@@ -140,15 +140,22 @@ if (isset($_GET['id'])) {
   $OBJECTS['agentsCracked'] = $agentsCracked;
   $OBJECTS['cProgress'] = $cProgress;
   
+  $timeChunks = $chunks;
+  usort($timeChunks, "Util::compareChunksTime");
   $timeSpent = 0;
-  foreach ($chunks as $chunk) {
-    if ($chunk->getDispatchTime() == 0 || $chunk->getSolveTime() == 0) {
-      continue;
+  $current = 0;
+  foreach ($timeChunks as $c) {
+    if ($c->getDispatchTime() > $current) {
+      $timeSpent += $c->getSolveTime() - $c->getDispatchTime();
+      $current = $c->getSolveTime();
     }
-    $timeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
+    else if ($c->getSolveTime() > $current) {
+      $timeSpent += $c->getSolveTime() - $current;
+      $current = $c->getSolveTime();
+    }
   }
   $OBJECTS['timeSpent'] = $timeSpent;
-  // TODO: maybe make this more accurate by going over the last few chunks in case agents were added later
+  
   if ($task->getKeyspace() != 0 && ($cProgress / $task->getKeyspace()) != 0) {
     $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
   }
