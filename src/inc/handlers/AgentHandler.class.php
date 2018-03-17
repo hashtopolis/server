@@ -6,9 +6,6 @@ use DBA\AgentError;
 use DBA\AgentZap;
 use DBA\Assignment;
 use DBA\Chunk;
-use DBA\ContainFilter;
-use DBA\Hash;
-use DBA\HashBinary;
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
@@ -272,7 +269,6 @@ class AgentHandler implements Handler {
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     
-    $uS = new UpdateSet(Chunk::CHUNK_ID, null);
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {

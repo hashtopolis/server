@@ -2,7 +2,6 @@
 
 use DBA\Chunk;
 use DBA\Config;
-use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;

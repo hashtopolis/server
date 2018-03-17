@@ -5,8 +5,7 @@ use DBA\QueryFilter;
 
 class APIGetHashlist extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     //check required values
     if (!PQueryGetHashlist::isValid($QUERY)) {
