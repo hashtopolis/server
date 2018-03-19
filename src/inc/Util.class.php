@@ -165,7 +165,7 @@ class Util {
     if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $progress < $task->getKeyspace()) {
       $isActive = true;
     }
-    return array($progress, $cracked, $isActive, sizeof($chunks), round($cracked * 60 / $totalTimeSpent, 2));
+    return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
   }
   
   /**
