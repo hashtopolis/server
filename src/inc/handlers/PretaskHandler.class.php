@@ -89,6 +89,7 @@ class PretaskHandler implements Handler {
     }
     else if ($crackerBinaryType == null) {
       UI::addMessage(UI::ERROR, "Invalid cracker binary type!");
+      return;
     }
     $chunkTime = intval($chunkTime);
     $statusTimer = intval($statusTimer);
