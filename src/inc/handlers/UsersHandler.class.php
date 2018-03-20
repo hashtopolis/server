@@ -200,6 +200,8 @@ class UsersHandler implements Handler {
     $FACTORIES::getAgentFactory()->massUpdate(array($FACTORIES::FILTER => array($qF), $FACTORIES::UPDATE => array($uS)));
     $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
     $FACTORIES::getSessionFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=");
+    $FACTORIES::getAccessGroupUserFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
     $FACTORIES::getUserFactory()->delete($user);
     
     header("Location: users.php");

@@ -16,6 +16,7 @@
 
 ## Bugfixes
 
+- Fixed dependency problem on user deletion
 - Fixed issue when agents got deleted which had completed at least one chunk
 - Fixed conflicts on $_POST data agent vs. agentId
 - Fixed ETA and spent time for tasks
