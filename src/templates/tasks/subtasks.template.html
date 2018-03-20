@@ -37,10 +37,10 @@
     {{ENDIF}}
     <td class='num' style="min-width: 50px;">
       {{IF [[subTask.getVal('cracked')]] > 0 && [[login.getLevel()]] >= 5}}
-        <a href="hashes.php?task=[[subTask.getVal('taskId')]]&filter=cracked">[[subTask.getVal('cracked')]]</a>
+        <a href="hashes.php?task=[[subTask.getVal('taskId')]]&filter=cracked">[[subTask.getVal('cracked')]] ([[subTask.getVal('performance')]]c/m)</a>
       {{ENDIF}}
       {{IF [[subTask.getVal('cracked')]] > 0 && [[login.getLevel()]] < 5}}
-        [[subTask.getVal('cracked')]]
+        [[subTask.getVal('cracked')]] ([[subTask.getVal('performance')]]c/m)
       {{ENDIF}}
     </td>
     <td class='num' style="min-width: 50px;">

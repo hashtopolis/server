@@ -295,6 +295,7 @@ class Util {
           $subSet->addValue('isActive', $taskInfo[2]);
           $subSet->addValue('cracked', $taskInfo[1]);
           $subSet->addValue('numAssignments', $chunkInfo[2]);
+          $subSet->addValue('performance', $taskInfo[4]);
           
           if ($taskInfo[0] >= $task->getKeyspace() && $task->getKeyspace() > 0) {
             $tasksDone++;
