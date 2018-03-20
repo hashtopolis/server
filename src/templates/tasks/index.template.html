@@ -27,7 +27,7 @@
 			<th>Agents</th>
 			<th>Files</th>
 			<th>Task Priority</th>
-			<th>Action</th>
+			<th style="min-width: 170px;">Action</th>
 		</tr>
 		{{FOREACH set;[[taskList]]}}
 			{{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
