@@ -1,7 +1,7 @@
 <?php
 
 use DBA\QueryFilter;
-use DBA\TaskFile;
+use DBA\User;
 
 class ForgotHandler implements Handler {
   public function __construct($configId = null) {
