@@ -22,7 +22,7 @@ ini_set("memory_limit", "2G");
 include(dirname(__FILE__) . "/../../dba/init.php");
 
 echo "WARNING!!!!\n";
-echo "This update contains some drastic changes and everything except users, agents, files, hashlists, pretasks and supertasks will be kept!\n";
+echo "This update contains some drastic changes and everything except users, agents, files, hashlists, pretasks and supertasks will not be kept!\n";
 echo "Backup the database before applying this update, in case something does not run as expected!\n";
 echo "Do this upgrade ONLY if you really don't want to do a clean installation instead!\n";
 echo "NOTE: If you have a lot of hashes imported, make sure that this process gets enough ram assigned!\n";
@@ -116,7 +116,7 @@ echo "All data loaded! Removing old tables... ";
 $DB->exec("SET @tables = NULL;
 SELECT GROUP_CONCAT(table_schema, '.', table_name) INTO @tables
   FROM information_schema.tables
-  WHERE table_schema = '" . $CONN['db'] . "'; -- specify DB name here.
+  WHERE table_schema = '" . $CONN['db'] . "';
   
 SET @tables = CONCAT('DROP TABLE ', @tables);
 PREPARE stmt FROM @tables;
@@ -129,7 +129,7 @@ echo "Importing new scheme... ";
 $DB->exec(file_get_contents(dirname(__FILE__) . "/../hashtopolis.sql"));
 echo "OK\n";
 
-echo "Reload full include... ";
+echo "Reload full include... (Warning about sessions might show up, which can be ignored)";
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 echo "OK\n";
 
