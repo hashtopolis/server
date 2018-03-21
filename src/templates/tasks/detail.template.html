@@ -381,7 +381,7 @@
               <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <select class='form-control' name="agent" title="Assign">
+              <select class='form-control' name="agentId" title="Assign">
                 {{FOREACH agent;[[assignAgents]]}}
                   <option value='[[agent.getId()]]'>[[agent.getId()]]
                   {{IF [[agent.getAgentName()]] != ""}}
