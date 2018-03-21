@@ -51,10 +51,10 @@
   {{ENDIF}}
   <td class='num'>
     {{IF [[set.getVal('crackedCount')]] > 0 && [[login.getLevel()]] >= 5}}
-      <a href="hashes.php?task=[[set.getVal('taskId')]]&filter=cracked">[[set.getVal('crackedCount')]]</a>
+      <a href="hashes.php?task=[[set.getVal('taskId')]]&filter=cracked">[[set.getVal('crackedCount')]] {{IF [[config.getVal([[$DConfig::SHOW_TASK_PERFORMANCE]])]] == 1}}([[set.getVal('performance')]]c/m){{ENDIF}}</a>
     {{ENDIF}}
     {{IF [[set.getVal('crackedCount')]] > 0 && [[login.getLevel()]] < 5}}
-      [[set.getVal('crackedCount')]]
+      [[set.getVal('crackedCount')]] {{IF [[config.getVal([[$DConfig::SHOW_TASK_PERFORMANCE]])]] == 1}}([[set.getVal('performance')]]c/m){{ENDIF}}
     {{ENDIF}}
   </td>
   <td class='num'>

@@ -10,6 +10,10 @@
 - More configuration options added
 - Cracker version management changed
 
+## New Features
+
+- Tasks now have a cracks per minute performance based on total spent time
+
 ## Bugfixes
 
 - Fixed dependency problem on user deletion

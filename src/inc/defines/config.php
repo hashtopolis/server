@@ -42,11 +42,12 @@ class DConfig {
   const MAX_HASHLIST_SIZE    = "maxHashlistSize";
   
   // Section: UI
-  const TIME_FORMAT       = "timefmt";
-  const DONATE_OFF        = "donateOff";
-  const HIDE_IMPORT_MASKS = "hideImportMasks";
-  const HASHES_PER_PAGE   = "hashesPerPage";
-  const HIDE_IP_INFO      = "hideIpInfo";
+  const TIME_FORMAT           = "timefmt";
+  const DONATE_OFF            = "donateOff";
+  const HIDE_IMPORT_MASKS     = "hideImportMasks";
+  const HASHES_PER_PAGE       = "hashesPerPage";
+  const HIDE_IP_INFO          = "hideIpInfo";
+  const SHOW_TASK_PERFORMANCE = "showTaskPerformance";
   
   // Section: Server
   const BASE_URL           = "baseUrl";
@@ -122,6 +123,8 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::DEFAULT_BENCH:
         return DConfigType::TICKBOX;
+      case DConfig::SHOW_TASK_PERFORMANCE:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -194,6 +197,8 @@ class DConfig {
         return "Sender's name on emails sent from " . APP_NAME . ".";
       case DConfig::DEFAULT_BENCH:
         return "Use speed benchmark as default.";
+      case DConfig::SHOW_TASK_PERFORMANCE:
+        return "Show cracks/minute for tasks which are running.";
     }
     return $config;
   }

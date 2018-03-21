@@ -146,7 +146,11 @@ class Util {
     $progress = 0;
     $cracked = 0;
     $maxTime = 0;
+    $totalTimeSpent = 0;
     foreach ($chunks as $chunk) {
+      if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
+        $totalTimeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
+      }
       $progress += $chunk->getCheckpoint() - $chunk->getSkip();
       $cracked += $chunk->getCracked();
       if ($chunk->getDispatchTime() > $maxTime) {
@@ -161,7 +165,7 @@ class Util {
     if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $progress < $task->getKeyspace()) {
       $isActive = true;
     }
-    return array($progress, $cracked, $isActive, sizeof($chunks));
+    return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
   }
   
   /**
@@ -291,6 +295,7 @@ class Util {
           $subSet->addValue('isActive', $taskInfo[2]);
           $subSet->addValue('cracked', $taskInfo[1]);
           $subSet->addValue('numAssignments', $chunkInfo[2]);
+          $subSet->addValue('performance', $taskInfo[4]);
           
           if ($taskInfo[0] >= $task->getKeyspace() && $task->getKeyspace() > 0) {
             $tasksDone++;
@@ -351,6 +356,7 @@ class Util {
         $set->addValue('numAssignments', $chunkInfo[2]);
         $set->addValue('crackedCount', $chunkInfo[1]);
         $set->addValue('numChunks', $chunkInfo[0]);
+        $set->addValue('performance', $taskInfo[4]);
         $taskList[] = $set;
       }
     }
