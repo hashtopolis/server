@@ -35,11 +35,13 @@
 					<td>[[constant]]</td>
 					<td>
 						{{IF [[perm]] == 'ALL'}}
-							true
+							<select name="perm[]" class="form-control" title="Permission">
+								<option value="1" selected disabled>Allowed (enforced)</option>
+							</select>
 						{{ELSE}}
-							<select name="perm[]" class="form-control">
+							<select name="perm[]" class="form-control" title="Permission">
 								<option value="0" {{IF [[perm.getVal([[constant]])]] == false}}selected{{ENDIF}}>No Permission{{IF [[perm.getVal([[constant]])]] == false}} (current){{ENDIF}}</option>
-								<option value="1" {{IF [[perm.getVal([[constant]])]] == true}}selected{{ENDIF}}>Allowed{{IF [[perm.getVal([[constant]])]] == true}} current{{ENDIF}}</option>
+								<option value="1" {{IF [[perm.getVal([[constant]])]] == true}}selected{{ENDIF}}>Allowed{{IF [[perm.getVal([[constant]])]] == true}} (current){{ENDIF}}</option>
 							</select>
 						{{ENDIF}}
 					</td>
