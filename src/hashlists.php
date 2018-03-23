@@ -21,7 +21,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::HASHLISTS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::HASHLISTS_VIEW_PERM);
 
 $TEMPLATE = new Template("hashlists/index");
 $MENU->setActive("lists_norm");

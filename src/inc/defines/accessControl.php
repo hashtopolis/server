@@ -5,6 +5,7 @@ class DAccessControl {
   const CREATE_HASHLIST_ACCESS      = "createHashlistAccess";
   const CREATE_SUPERHASHLIST_ACCESS = "createSuperhashlistAccess";
   const VIEW_AGENT_ACCESS           = "viewAgentsAccess";
+  const MANAGE_AGENT_ACCESS         = "manageAgentAccess";
   const CREATE_AGENT_ACCESS         = "viewAgentsAccess";
   const VIEW_TASK_ACCESS            = "viewTaskAccess";
   const RUN_TASK_ACCESS             = "runTaskAccess";
@@ -25,7 +26,7 @@ class DAccessControl {
    * @param $access string
    * @return string description
    */
-  public static function getDescription($access){
+  public static function getDescription($access) {
     //TODO: return description text for this access string
     return "";
   }

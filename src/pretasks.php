@@ -19,7 +19,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::PRETASKS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::PRETASKS_VIEW_PERM);
 
 $TEMPLATE = new Template("pretasks/index");
 $MENU->setActive("tasks_pre");

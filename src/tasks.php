@@ -22,7 +22,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-$ACCESS_CONTROL->checkViewPermission(DViewControl::TASKS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
 
 $TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");

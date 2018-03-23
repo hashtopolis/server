@@ -10,7 +10,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::SEARCH_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::SEARCH_VIEW_PERM);
 
 $TEMPLATE = new Template("search");
 $OBJECTS['pageTitle'] = "Search Hashes";

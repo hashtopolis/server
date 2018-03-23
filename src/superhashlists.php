@@ -15,7 +15,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::SUPERHASHLISTS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::SUPERHASHLISTS_VIEW_PERM);
 
 $TEMPLATE = new Template("superhashlists/index");
 $MENU->setActive("lists_super");

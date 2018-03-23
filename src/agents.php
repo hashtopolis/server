@@ -28,7 +28,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::AGENTS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
 $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");

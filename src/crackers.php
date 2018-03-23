@@ -15,7 +15,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::CRACKERS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::CRACKERS_VIEW_PERM);
 
 $TEMPLATE = new Template("crackers/index");
 $MENU->setActive("crackers_list");

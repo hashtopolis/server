@@ -14,7 +14,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::FILES_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::FILES_VIEW_PERM);
 
 $TEMPLATE = new Template("files/index");
 $MENU->setActive("files");

@@ -19,7 +19,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::NOTIFICATIONS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::NOTIFICATIONS_VIEW_PERM);
 
 $TEMPLATE = new Template("notifications");
 $OBJECTS['pageTitle'] = "Notifications";
