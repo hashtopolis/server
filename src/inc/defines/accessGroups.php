@@ -11,10 +11,21 @@ class DAccessLevel {
 }
 
 class DAccessGroupAction {
-  const CREATE_GROUP = "createGroup";
-  const DELETE_GROUP = "deleteGroup";
-  const REMOVE_USER  = "removeUser";
-  const REMOVE_AGENT = "removeAgent";
-  const ADD_USER     = "addUser";
-  const ADD_AGENT    = "addAgent";
+  const CREATE_GROUP      = "createGroup";
+  const CREATE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const DELETE_GROUP      = "deleteGroup";
+  const DELETE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const REMOVE_USER      = "removeUser";
+  const REMOVE_USER_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const REMOVE_AGENT      = "removeAgent";
+  const REMOVE_AGENT_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const ADD_USER      = "addUser";
+  const ADD_USER_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const ADD_AGENT      = "addAgent";
+  const ADD_AGENT_PERM = DAccessControl::USER_CONFIG_ACCESS;
 }
