@@ -68,3 +68,14 @@ class DViewControl {
   const TASKS_VIEW_PERM          = DAccessControl::VIEW_TASK_ACCESS;
   const USERS_VIEW_PERM          = DAccessControl::USER_CONFIG_ACCESS;
 }
+
+class DAccessControlAction {
+  const CREATE_GROUP      = "createGroup";
+  const CREATE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const DELETE_GROUP      = "deleteGroup";
+  const DELETE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const EDIT      = "edit";
+  const EDIT_PERM = DAccessControl::USER_CONFIG_ACCESS;
+}
