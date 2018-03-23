@@ -29,8 +29,7 @@ class AgentHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN, $ACCESS_CONTROL;
+    global $ACCESS_CONTROL;
     
     switch ($action) {
       case DAgentAction::CLEAR_ERRORS:

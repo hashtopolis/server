@@ -13,6 +13,7 @@ class DAccessControl {
   const CREATE_PRETASK_ACCESS       = "createPretaskAccess";
   const CREATE_SUPERTASK_ACCESS     = "createSupertaskAccess";
   const VIEW_FILE_ACCESS            = "viewFileAccess";
+  const MANAGE_FILE_ACCESS          = "manageFileAccess";
   const ADD_FILE_ACCESS             = "addFileAccess";
   const CRACKER_BINARY_ACCESS       = "crackerBinaryAccess";
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
