@@ -31,95 +31,67 @@ class TaskHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN;
+    global $ACCESS_CONTROL;
     
     switch ($action) {
       case DTaskAction::SET_BENCHMARK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
         $this->adjustBenchmark();
         break;
       case DTaskAction::SET_SMALL_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
         $this->setSmallTask();
         break;
       case DTaskAction::SET_CPU_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_CPU_TASK_PERM);
         $this->setCpuTask();
         break;
       case DTaskAction::ABORT_CHUNK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
         $this->abortChunk();
         break;
       case DTaskAction::RESET_CHUNK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
         $this->resetChunk();
         break;
       case DTaskAction::PURGE_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
         $this->purgeTask();
         break;
       case DTaskAction::SET_COLOR:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
         $this->updateColor();
         break;
       case DTaskAction::SET_TIME:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
         $this->changeChunkTime();
         break;
       case DTaskAction::RENAME_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
         $this->rename();
         break;
       case DTaskAction::DELETE_FINISHED:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
         $this->deleteFinished();
         break;
       case DTaskAction::DELETE_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
         $this->delete();
         break;
       case DTaskAction::SET_PRIORITY:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_PRIORITY_PERM);
         $this->updatePriority();
         break;
       case DTaskAction::CREATE_TASK:
+        $ACCESS_CONTROL->checkPermission(DTaskAction::CREATE_TASK_PERM);
         $this->create();
         break;
       case DTaskAction::DELETE_SUPERTASK:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
         $this->deleteSupertask($_POST['supertaskId']);
         break;
       case DTaskAction::SET_SUPERTASK_PRIORITY:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
         $this->setSupertaskPriority($_POST['supertaskId'], $_POST['priority']);
         break;
       default:
