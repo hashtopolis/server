@@ -41,7 +41,7 @@ $OBJECTS['notifications'] = $notifications;
 
 $allAgents = array();
 $oF = new OrderFilter(Agent::AGENT_NAME, "ASC");
-if ($LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+if ($ACCESS_CONTROL->hasPermission(DAccessControl::SERVER_CONFIG_ACCESS)) {
   $allAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::ORDER => $oF));
 }
 else {
@@ -93,7 +93,7 @@ $OBJECTS['allNotifications'] = $allNotifications;
 $allowedActions = array();
 $actionSettings = array();
 foreach (DNotificationType::getAll() as $notificationType) {
-  if (DNotificationType::getRequiredLevel($notificationType) <= $LOGIN->getLevel()) {
+  if ($ACCESS_CONTROL->hasPermission(DNotificationType::getRequiredPermission($notificationType))) {
     $allowedActions[] = $notificationType;
     $actionSettings[] = "\"" . $notificationType . "\":\"" . DNotificationType::getObjectType($notificationType) . "\"";
   }
@@ -106,7 +106,7 @@ $oF = new OrderFilter(Task::TASK_NAME, "ASC");
 $OBJECTS['allTasks'] = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::ORDER => $oF));
 $oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
 $OBJECTS['allHashlists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::ORDER => $oF));
-if ($LOGIN->getLevel() >= DAccessLevel::ADMINISTRATOR) {
+if ($ACCESS_CONTROL->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
   $oF = new OrderFilter(User::USERNAME, "ASC");
   $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::ORDER => $oF));
 }
