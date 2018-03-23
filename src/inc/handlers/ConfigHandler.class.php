@@ -15,17 +15,23 @@ class ConfigHandler implements Handler {
   }
   
   public function handle($action) {
+    global $ACCESS_CONTROL;
+    
     switch ($action) {
       case DConfigAction::UPDATE_CONFIG:
+        $ACCESS_CONTROL->checkPermission(DConfigAction::UPDATE_CONFIG_PERM);
         $this->updateConfig();
         break;
       case DConfigAction::REBUILD_CACHE:
+        $ACCESS_CONTROL->checkPermission(DConfigAction::REBUILD_CACHE_PERM);
         $this->rebuildCache();
         break;
       case DConfigAction::RESCAN_FILES:
+        $ACCESS_CONTROL->checkPermission(DConfigAction::RESCAN_FILES_PERM);
         $this->scanFiles();
         break;
       case DConfigAction::CLEAR_ALL:
+        $ACCESS_CONTROL->checkPermission(DConfigAction::CLEAR_ALL_PERM);
         $this->clearAll();
         break;
       default:
