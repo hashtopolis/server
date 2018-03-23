@@ -53,7 +53,7 @@ class AccessControl {
     if (!is_array($perm)) {
       $perm = array($perm);
     }
-    $json = json_decode($this->rightGroup->getPermissions(), false);
+    $json = json_decode($this->rightGroup->getPermissions(), true);
     foreach ($perm as $p) {
       if (isset($json[$p]) && $json[$p] == true) {
         return true;
