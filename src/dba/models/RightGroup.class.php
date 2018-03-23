@@ -5,19 +5,19 @@ namespace DBA;
 class RightGroup extends AbstractModel {
   private $rightGroupId;
   private $groupName;
-  private $level;
+  private $permissions;
   
-  function __construct($rightGroupId, $groupName, $level) {
+  function __construct($rightGroupId, $groupName, $permissions) {
     $this->rightGroupId = $rightGroupId;
     $this->groupName = $groupName;
-    $this->level = $level;
+    $this->permissions = $permissions;
   }
   
   function getKeyValueDict() {
     $dict = array();
     $dict['rightGroupId'] = $this->rightGroupId;
     $dict['groupName'] = $this->groupName;
-    $dict['level'] = $this->level;
+    $dict['permissions'] = $this->permissions;
     
     return $dict;
   }
@@ -46,15 +46,15 @@ class RightGroup extends AbstractModel {
     $this->groupName = $groupName;
   }
   
-  function getLevel(){
-    return $this->level;
+  function getPermissions(){
+    return $this->permissions;
   }
   
-  function setLevel($level){
-    $this->level = $level;
+  function setPermissions($permissions){
+    $this->permissions = $permissions;
   }
 
   const RIGHT_GROUP_ID = "rightGroupId";
   const GROUP_NAME = "groupName";
-  const LEVEL = "level";
+  const PERMISSIONS = "permissions";
 }
