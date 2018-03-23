@@ -13,67 +13,71 @@
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
-							<li[[menu.isActive('agents_new')]]><a href="agents.php?new=true">New Agent</a></li>
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+								<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_AGENT_ACCESS]])]]}}
+								<li[[menu.isActive('agents_new')]]><a href="agents.php?new=true">New Agent</a></li>
+							{{ENDIF}}
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]] && [[login.getLevel()]] < [[$DAccessLevel::SUPERUSER]]}}
-					<li[[menu.isActive('agents_list')]]><a href="agents.php">Agents</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
-							<li[[menu.isActive('tasks_new')]]><a href="tasks.php?new=true">New Task</a></li>
-							<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Preconfigured Tasks</a></li>
-							<li[[menu.isActive('tasks_prenew')]]><a href="pretasks.php?new=true">New preconfigured Tasks</a></li>
-							<li[[menu.isActive('tasks_super')]]><a href='supertasks.php'>Supertasks</a></li>
-							<li[[menu.isActive('tasks_supernew')]]><a href='supertasks.php?create=new'>New Supertask</a></li>
-							<li[[menu.isActive('tasks_superimport')]]><a href='supertasks.php?create=import'>Import Mask(s)</a></li>
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+								<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
+								<li[[menu.isActive('tasks_new')]]><a href="tasks.php?new=true">New Task</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+								<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Preconfigured Tasks</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
+								<li[[menu.isActive('tasks_prenew')]]><a href="pretasks.php?new=true">New preconfigured Tasks</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+								<li[[menu.isActive('tasks_super')]]><a href='supertasks.php'>Supertasks</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_SUPERTASK_ACCESS]])]]}}
+								<li[[menu.isActive('tasks_supernew')]]><a href='supertasks.php?create=new'>New Supertask</a></li>
+								<li[[menu.isActive('tasks_superimport')]]><a href='supertasks.php?create=import'>Import Mask(s)</a></li>
+							{{ENDIF}}
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] > 0 && [[login.getLevel()]] < [[$DAccessLevel::READ_ONLY]]}}
-					<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]] && [[login.getLevel()]] < [[$DAccessLevel::USER]]}}
-					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
-							<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Pre-conf Tasks</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
 						<ul class="dropdown-menu">
-							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
-							<li[[menu.isActive('lists_new')]]><a href="hashlists.php?new=true">New hashlist</a></li>
-							<li[[menu.isActive('lists_super')]]><a href="superhashlists.php">Superhashlists</a></li>
-							<li[[menu.isActive('lists_snew')]]><a href="superhashlists.php?new=true">New superhashlist</a></li>
-							<li[[menu.isActive('lists_search')]]><a href="search.php">Search Hash</a></li>
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+								<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_HASHLIST_ACCESS]])]]}}
+								<li[[menu.isActive('lists_new')]]><a href="hashlists.php?new=true">New hashlist</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+								<li[[menu.isActive('lists_super')]]><a href="superhashlists.php">Superhashlists</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_HASHLIST_ACCESS]])]]}}
+								<li[[menu.isActive('lists_snew')]]><a href="superhashlists.php?new=true">New superhashlist</a></li>
+							{{ENDIF}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+								<li[[menu.isActive('lists_search')]]><a href="search.php">Search Hash</a></li>
+							{{ENDIF}}
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]] && [[login.getLevel()]] < [[$DAccessLevel::USER]]}}
-					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
-							<li[[menu.isActive('lists_super')]]><a href="superhashlists.php">Superhashlists</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
 					<li[[menu.isActive('files')]]><a href="files.php">Files</a></li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
 					<li[[menu.isActive('chunks')]]><a href="chunks.php">Chunk activity</a></li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::CRACKER_BINARY_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('crackers', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Crackers <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Binaries</a></li>
@@ -81,20 +85,15 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 10 && [[login.getLevel()]] < [[$DAccessLevel::SUPERUSER]]}}
-					<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Crackers</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::LOGIN_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('account', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('account_settings')]]><a href="account.php">Settings</a></li>
-              {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
-							  <li[[menu.isActive('account_notifications')]]><a href="notifications.php">Notifications</a></li>
-              {{ENDIF}}
+							<li[[menu.isActive('account_notifications')]]><a href="notifications.php">Notifications</a></li>
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 40}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::SERVER_CONFIG_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('config', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Config <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('config_server')]]><a href="config.php">Server</a></li>

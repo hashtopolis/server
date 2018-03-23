@@ -89,6 +89,7 @@ if ($INSTALL) {
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
 }
+$OBJECTS['accessControl'] = $ACCESS_CONTROL;
 
 // CSRF setup
 CSRF::init();
