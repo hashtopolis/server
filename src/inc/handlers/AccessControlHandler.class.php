@@ -27,12 +27,43 @@ class AccessControlHandler implements Handler {
         break;
       case DAccessControlAction::EDIT:
         $ACCESS_CONTROL->checkPermission(DAccessControlAction::EDIT_PERM);
-        $this->saveEdit($_POST['groupId']);
+        $this->saveEdit($_POST['groupId'], $_POST['perm']);
         break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
     }
+  }
+  
+  private function saveEdit($groupId, $perm) {
+    global $FACTORIES;
+    
+    $group = $FACTORIES::getRightGroupFactory()->get($groupId);
+    if ($group === null) {
+      UI::addMessage(UI::ERROR, "Invalid group!");
+      return;
+    }
+    
+    if ($group->getPermissions() == 'ALL') {
+      UI::addMessage(UI::ERROR, "Administrator group cannot be changed!");
+      return;
+    }
+    
+    $newArr = [];
+    foreach ($perm as $p) {
+      $split = explode("-", $p);
+      if (sizeof($split) != 2 || !in_array($split[1], array("0", "1"))) {
+        continue; // ignore invalid submits
+      }
+      $constants = DAccessControl::getConstants();
+      foreach ($constants as $constant) {
+        if ($split[0] == $constant) {
+          $newArr[$constant] = ($p == "1") ? true : false;
+        }
+      }
+    }
+    $group->setPermissions(json_encode($newArr));
+    $FACTORIES::getRightGroupFactory()->update($group);
   }
   
   private function deleteGroup($groupId) {

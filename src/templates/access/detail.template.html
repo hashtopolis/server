@@ -21,10 +21,10 @@
 	</table>
 </div>
 <h3>Permissions</h3>
-<div class="panel panel-default">
-	<form action="access.php?id=[[group.getId()]]" method="post">
-		<input type="hidden" name="csrf" value="[[csrf]]">
-		<input type='hidden' name='action' value='[[$DAccessControlAction::EDIT]]'>
+<form action="access.php?id=[[group.getId()]]" method="post">
+	<input type="hidden" name="csrf" value="[[csrf]]">
+	<input type='hidden' name='action' value='[[$DAccessControlAction::EDIT]]'>
+	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
 			<tr>
 				<th>Permission</th>
@@ -36,23 +36,25 @@
 					<td>
 						{{IF [[perm]] == 'ALL'}}
 							<select name="perm[]" class="form-control" title="Permission">
-								<option value="1" selected disabled>Allowed (enforced)</option>
+								<option selected>Allowed (enforced)</option>
 							</select>
 						{{ELSE}}
 							<select name="perm[]" class="form-control" title="Permission">
-								<option value="0" {{IF [[perm.getVal([[constant]])]] == false}}selected{{ENDIF}}>No Permission{{IF [[perm.getVal([[constant]])]] == false}} (current){{ENDIF}}</option>
-								<option value="1" {{IF [[perm.getVal([[constant]])]] == true}}selected{{ENDIF}}>Allowed{{IF [[perm.getVal([[constant]])]] == true}} (current){{ENDIF}}</option>
+								<option value="[[constant]]-0" {{IF [[perm.getVal([[constant]])]] == false}}selected{{ENDIF}}>No Permission{{IF [[perm.getVal([[constant]])]] == false}} (current){{ENDIF}}</option>
+								<option value="[[constant]]-1" {{IF [[perm.getVal([[constant]])]] == true}}selected{{ENDIF}}>Allowed{{IF [[perm.getVal([[constant]])]] == true}} (current){{ENDIF}}</option>
 							</select>
 						{{ENDIF}}
 					</td>
 				</tr>
 			{{ENDFOREACH}}
-			<tr>
-				<td colspan="2" class="text-center">
-					<button type="submit" class="btn btn-success">Save Permissions</button>
-				</td>
-			</tr>
+			{{IF [[perm]] != 'ALL'}}
+				<tr>
+					<td colspan="2" class="text-center">
+						<button type="submit" class="btn btn-success">Save Permissions</button>
+					</td>
+				</tr>
+			{{ENDIF}}
 		</table>
-	</form>
-</div>
+	</div>
+</form>
 {%TEMPLATE->struct/foot%}
