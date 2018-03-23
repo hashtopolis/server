@@ -10,14 +10,19 @@ class NotificationHandler implements Handler {
   }
   
   public function handle($action) {
+    global $ACCESS_CONTROL;
+    
     switch ($action) {
       case DNotificationAction::CREATE_NOTIFICATION:
+        $ACCESS_CONTROL->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
         $this->create();
         break;
       case DNotificationAction::SET_ACTIVE:
+        $ACCESS_CONTROL->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
         $this->toggleActive();
         break;
       case DNotificationAction::DELETE_NOTIFICATION:
+        $ACCESS_CONTROL->checkPermission(DNotificationAction::DELETE_NOTIFICATION_PERM);
         $this->delete();
         break;
       default:
