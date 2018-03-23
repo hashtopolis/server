@@ -18,17 +18,23 @@ class SupertaskHandler implements Handler {
   }
   
   public function handle($action) {
+    global $ACCESS_CONTROL;
+    
     switch ($action) {
       case DSupertaskAction::DELETE_SUPERTASK:
+        $ACCESS_CONTROL->checkPermission(DSupertaskAction::DELETE_SUPERTASK_PERM);
         $this->delete();
         break;
       case DSupertaskAction::CREATE_SUPERTASK:
+        $ACCESS_CONTROL->checkPermission(DSupertaskAction::CREATE_SUPERTASK_PERM);
         $this->create();
         break;
       case DSupertaskAction::APPLY_SUPERTASK:
+        $ACCESS_CONTROL->checkPermission(DSupertaskAction::APPLY_SUPERTASK_PERM);
         $this->createTasks();
         break;
       case DSupertaskAction::IMPORT_SUPERTASK:
+        $ACCESS_CONTROL->checkPermission(DSupertaskAction::IMPORT_SUPERTASK_PERM);
         $this->importSupertask();
         break;
       default:

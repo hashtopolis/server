@@ -1,14 +1,29 @@
 <?php
 
 class DPretaskAction {
-  const SET_PRIORITY   = "setPriority";
-  const DELETE_PRETASK = "deletePretask";
-  const RENAME_PRETASK = "renamePretask";
-  const SET_TIME       = "setTime";
+  const SET_PRIORITY      = "setPriority";
+  const SET_PRIORITY_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+  
+  const DELETE_PRETASK      = "deletePretask";
+  const DELETE_PRETASK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+  
+  const RENAME_PRETASK      = "renamePretask";
+  const RENAME_PRETASK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+  
+  const SET_TIME      = "setTime";
+  const SET_TIME_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+  
   const SET_COLOR      = "setColor";
-  const SET_CPU_TASK   = "setCpuTask";
-  const SET_SMALL_TASK = "setSmallTask";
-  const CREATE_TASK    = "createTask";
+  const SET_COLOR_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+  
+  const SET_CPU_TASK      = "setCpuTask";
+  const SET_CPU_TASK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+  
+  const SET_SMALL_TASK      = "setSmallTask";
+  const SET_SMALL_TASK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+  
+  const CREATE_TASK      = "createTask";
+  const CREATE_TASK_PERM = DAccessControl::RUN_TASK_ACCESS;
 }
 
 class DTaskTypes {
@@ -17,26 +32,62 @@ class DTaskTypes {
 }
 
 class DSupertaskAction {
-  const DELETE_SUPERTASK = "deleteSupertask";
-  const CREATE_SUPERTASK = "createSupertask";
-  const APPLY_SUPERTASK  = "applySupertask";
-  const IMPORT_SUPERTASK = "importSupertask";
+  const DELETE_SUPERTASK      = "deleteSupertask";
+  const DELETE_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
+  
+  const CREATE_SUPERTASK      = "createSupertask";
+  const CREATE_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
+  
+  const APPLY_SUPERTASK      = "applySupertask";
+  const APPLY_SUPERTASK_PERM = DAccessControl::RUN_TASK_ACCESS;
+  
+  const IMPORT_SUPERTASK      = "importSupertask";
+  const IMPORT_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
 }
 
 class DTaskAction {
-  const SET_BENCHMARK          = "setBenchmark";
-  const SET_SMALL_TASK         = "setSmallTask";
-  const SET_CPU_TASK           = "setCpuTask";
-  const ABORT_CHUNK            = "abortChunk";
-  const RESET_CHUNK            = "resetChunk";
-  const PURGE_TASK             = "purgeTask";
-  const SET_COLOR              = "setColor";
-  const SET_TIME               = "setTime";
-  const RENAME_TASK            = "renameTask";
-  const DELETE_FINISHED        = "deleteFinished";
-  const DELETE_TASK            = "deleteTask";
-  const SET_PRIORITY           = "setPriority";
-  const CREATE_TASK            = "createTask";
-  const DELETE_SUPERTASK       = "deleteSupertask";
-  const SET_SUPERTASK_PRIORITY = "setSupertaskPriority";
+  const SET_BENCHMARK      = "setBenchmark";
+  const SET_BENCHMARK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const SET_SMALL_TASK      = "setSmallTask";
+  const SET_SMALL_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const SET_CPU_TASK      = "setCpuTask";
+  const SET_CPU_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const ABORT_CHUNK      = "abortChunk";
+  const ABORT_CHUNK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const RESET_CHUNK      = "resetChunk";
+  const RESET_CHUNK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const PURGE_TASK      = "purgeTask";
+  const PURGE_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const SET_COLOR      = "setColor";
+  const SET_COLOR_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const SET_TIME      = "setTime";
+  const SET_TIME_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const RENAME_TASK      = "renameTask";
+  const RENAME_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const DELETE_FINISHED      = "deleteFinished";
+  const DELETE_FINISHED_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const DELETE_TASK      = "deleteTask";
+  const DELETE_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const SET_PRIORITY      = "setPriority";
+  const SET_PRIORITY_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const CREATE_TASK      = "createTask";
+  const CREATE_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  
+  const DELETE_SUPERTASK      = "deleteSupertask";
+  const DELETE_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
+  
+  const SET_SUPERTASK_PRIORITY      = "setSupertaskPriority";
+  const SET_SUPERTASK_PRIORITY_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
 }
