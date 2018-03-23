@@ -40,6 +40,7 @@ class DAccessControl {
  */
 class DViewControl {
   const ABOUT_VIEW_PERM          = DAccessControl::PUBLIC_ACCESS;
+  const ACCESS_VIEW_PERM         = DAccessControl::USER_CONFIG_ACCESS;
   const ACCOUNT_VIEW_PERM        = DAccessControl::LOGIN_ACCESS;
   const AGENTS_VIEW_PERM         = DAccessControl::VIEW_AGENT_ACCESS;
   const BINARIES_VIEW_PERM       = DAccessControl::SERVER_CONFIG_ACCESS;
