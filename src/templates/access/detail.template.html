@@ -24,8 +24,21 @@
 <div class="panel panel-default">
 	<table class="table table-bordered table-nonfluid">
 		<tr>
-			<th>TODO</th>
+			<th>Permission</th>
+			<th>Setting</th>
 		</tr>
+		{{FOREACH constant;[[constants]]}}
+			<tr>
+				<td>[[constant]]</td>
+				<td>
+					{{IF [[perm]] == 'ALL'}}
+						true
+					{{ELSE}}
+						[[perm.getVal([[constant]])]]
+					{{ENDIF}}
+				</td>
+			</tr>
+		{{ENDFOREACH}}
 	</table>
 </div>
 {%TEMPLATE->struct/foot%}

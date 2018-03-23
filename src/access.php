@@ -43,9 +43,22 @@ else if (isset($_GET['id'])) {
   }
   else {
     $OBJECTS['group'] = $group;
-  
-    // TODO: load stuff
+    if ($group->getPermissions() == 'ALL'){
+      $OBJECTS['perm'] = 'ALL';
+    }
+    else {
+      $OBJECTS['perm'] = new DataSet(json_decode($group->getPermissions(), true));
+    }
+    
+    $qF = new QueryFilter(User::RIGHT_GROUP_ID, $group->getId(), "=");
+    $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
     $constants = DAccessControl::getConstants();
+    foreach ($constants as &$constant) {
+      if (is_array($constant)) {
+        $constant = $constant[0];
+      }
+    }
+    $OBJECTS['constants'] = $constants;
     
     $TEMPLATE = new Template("access/detail");
     $OBJECTS['pageTitle'] = "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
