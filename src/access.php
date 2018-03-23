@@ -44,26 +44,7 @@ else if (isset($_GET['id'])) {
   else {
     $OBJECTS['group'] = $group;
     
-    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
-    $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
-    $joinedUsers = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    /** @var $users User[] */
-    $users = $joinedUsers[$FACTORIES::getUserFactory()->getModelName()];
-    $OBJECTS['users'] = $users;
-    $excludedUsers = Util::arrayOfIds($users);
-    
-    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
-    $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
-    $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    /** @var $agents Agent[] */
-    $agents = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
-    $OBJECTS['agents'] = $agents;
-    $excludedAgents = Util::arrayOfIds($agents);
-    
-    $qF = new ContainFilter(User::USER_ID, $excludedUsers, $FACTORIES::getUserFactory(), true);
-    $OBJECTS['allUsers'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $qF = new ContainFilter(Agent::AGENT_ID, $excludedAgents, $FACTORIES::getAgentFactory(), true);
-    $OBJECTS['allAgents'] = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+    // TODO: load stuff
     $TEMPLATE = new Template("access/detail");
     $OBJECTS['pageTitle'] = "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
   }
