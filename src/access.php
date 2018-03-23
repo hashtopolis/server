@@ -82,7 +82,7 @@ else {
     $users[$user->getRightGroupId()]++;
   }
   
-  $OBJECTS['users'] = $users;
+  $OBJECTS['users'] = new DataSet($users);
   $OBJECTS['groups'] = $groups;
   $OBJECTS['pageTitle'] = "Permission Groups";
 }
