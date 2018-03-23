@@ -16,7 +16,7 @@
 			</tr>
 		{{ENDFOREACH}}
 		{{IF [[sizeof([[users]])]] == 0}}
-			<tr><td>---</td><td>---</td><td>---</td></tr>
+			<tr><td>---</td><td>---</td></tr>
 		{{ENDIF}}
 	</table>
 </div>
@@ -34,6 +34,7 @@
 					{{IF [[perm]] == 'ALL'}}
 						true
 					{{ELSE}}
+						<!-- TODO: here we should show a nice selection -->
 						[[perm.getVal([[constant]])]]
 					{{ENDIF}}
 				</td>
