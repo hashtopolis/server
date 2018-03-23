@@ -2,6 +2,7 @@
 
 class DAccessControl {
   const VIEW_HASHLIST_ACCESS        = "viewHashlistAccess";
+  const MANAGE_HASHLIST_ACCESS      = "manageHashlistAccess";
   const CREATE_HASHLIST_ACCESS      = "createHashlistAccess";
   const CREATE_SUPERHASHLIST_ACCESS = "createSuperhashlistAccess";
   const VIEW_AGENT_ACCESS           = "viewAgentsAccess";
