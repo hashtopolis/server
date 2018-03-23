@@ -24,6 +24,11 @@ class DAccessControl {
   const PUBLIC_ACCESS = "publicAccess";
   const LOGIN_ACCESS  = "loginAccess";
   
+  static function getConstants() {
+    $oClass = new ReflectionClass(__CLASS__);
+    return $oClass->getConstants();
+  }
+  
   /**
    * @param $access string
    * @return string description

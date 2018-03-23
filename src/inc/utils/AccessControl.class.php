@@ -24,7 +24,10 @@ class AccessControl {
    * @param $perm string
    */
   public function checkPermission($perm) {
-    // TODO: check if the user has the requested permission
+    if (!$this->hasPermission($perm)) {
+      $TEMPLATE = new Template("errors/restricted");
+      die($TEMPLATE->render(array()));
+    }
   }
   
   /**
@@ -32,13 +35,21 @@ class AccessControl {
    * @return bool true if access is granted
    */
   public function hasPermission($perm) {
-    if($this->rightGroup == null){
+    if ($this->rightGroup == null) {
       return false;
     }
-    else if($this->rightGroup->getPermissions() == 'ALL'){
+    else if ($this->rightGroup->getPermissions() == 'ALL') {
       return true; // ALL denotes admin permissions which are independant of which access variables exactly exist
     }
-    // TODO: check if the user has the requested permission
+    if (!is_array($perm)) {
+      $perm = array($perm);
+    }
+    $json = json_decode($this->rightGroup->getPermissions(), false);
+    foreach ($perm as $p) {
+      if (isset($json[$p]) && $json[$p] == true) {
+        return true;
+      }
+    }
     return false;
   }
 }

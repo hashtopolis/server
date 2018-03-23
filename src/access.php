@@ -43,8 +43,10 @@ else if (isset($_GET['id'])) {
   }
   else {
     $OBJECTS['group'] = $group;
-    
+  
     // TODO: load stuff
+    $constants = DAccessControl::getConstants();
+    
     $TEMPLATE = new Template("access/detail");
     $OBJECTS['pageTitle'] = "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
   }
