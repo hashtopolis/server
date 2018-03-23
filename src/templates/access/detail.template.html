@@ -22,24 +22,35 @@
 </div>
 <h3>Permissions</h3>
 <div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>Permission</th>
-			<th>Setting</th>
-		</tr>
-		{{FOREACH constant;[[constants]]}}
+	<form action="access.php?id=[[group.getId()]]" method="post">
+		<input type="hidden" name="csrf" value="[[csrf]]">
+		<input type='hidden' name='action' value='[[$DAccessControlAction::EDIT]]'>
+		<table class="table table-bordered table-nonfluid">
 			<tr>
-				<td>[[constant]]</td>
-				<td>
-					{{IF [[perm]] == 'ALL'}}
-						true
-					{{ELSE}}
-						<!-- TODO: here we should show a nice selection -->
-						[[perm.getVal([[constant]])]]
-					{{ENDIF}}
+				<th>Permission</th>
+				<th>Setting</th>
+			</tr>
+			{{FOREACH constant;[[constants]]}}
+				<tr>
+					<td>[[constant]]</td>
+					<td>
+						{{IF [[perm]] == 'ALL'}}
+							true
+						{{ELSE}}
+							<select name="perm[]" class="form-control">
+								<option value="0" {{IF [[perm.getVal([[constant]])]] == false}}selected{{ENDIF}}>No Permission{{IF [[perm.getVal([[constant]])]] == false}} (current){{ENDIF}}</option>
+								<option value="1" {{IF [[perm.getVal([[constant]])]] == true}}selected{{ENDIF}}>Allowed{{IF [[perm.getVal([[constant]])]] == true}} current{{ENDIF}}</option>
+							</select>
+						{{ENDIF}}
+					</td>
+				</tr>
+			{{ENDFOREACH}}
+			<tr>
+				<td colspan="2" class="text-center">
+					<button type="submit" class="btn btn-success">Save Permissions</button>
 				</td>
 			</tr>
-		{{ENDFOREACH}}
-	</table>
+		</table>
+	</form>
 </div>
 {%TEMPLATE->struct/foot%}

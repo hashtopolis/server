@@ -29,7 +29,6 @@ class AccessControlHandler implements Handler {
         $ACCESS_CONTROL->checkPermission(DAccessControlAction::EDIT_PERM);
         $this->saveEdit($_POST['groupId']);
         break;
-        break;
       default:
         UI::addMessage(UI::ERROR, "Invalid action!");
         break;
