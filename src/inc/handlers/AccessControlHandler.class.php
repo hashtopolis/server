@@ -70,7 +70,7 @@ class AccessControlHandler implements Handler {
       UI::addMessage(UI::ERROR, "There is already an permission group with the same name!");
       return;
     }
-    $group = new RightGroup(0, $groupName, "{}");
+    $group = new RightGroup(0, $groupName, "[]");
     $group = $FACTORIES::getRightGroupFactory()->save($group);
     if ($group !== null) {
       header("Location: access.php?id=" . $group->getId());
