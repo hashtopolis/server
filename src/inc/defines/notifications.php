@@ -73,46 +73,46 @@ class DNotificationType {
   
   /**
    * @param $notificationType string
-   * @return int access level
+   * @return string|array permission required
    */
-  public static function getRequiredLevel($notificationType) {
+  public static function getRequiredPermission($notificationType) {
     switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_TASK_ACCESS;
       case DNotificationType::AGENT_ERROR:
-        return DAccessLevel::SUPERUSER;
+        return DAccessControl::VIEW_AGENT_ACCESS;
       case DNotificationType::OWN_AGENT_ERROR:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_AGENT_ACCESS;
       case DNotificationType::LOG_ERROR:
-        return DAccessLevel::ADMINISTRATOR;
+        return DAccessControl::SERVER_CONFIG_ACCESS;
       case DNotificationType::NEW_TASK:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_TASK_ACCESS;
       case DNotificationType::NEW_HASHLIST:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_HASHLIST_ACCESS;
       case DNotificationType::HASHLIST_ALL_CRACKED:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_HASHLIST_ACCESS;
       case DNotificationType::HASHLIST_CRACKED_HASH:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_HASHLIST_ACCESS;
       case DNotificationType::USER_CREATED:
-        return DAccessLevel::ADMINISTRATOR;
+        return DAccessControl::USER_CONFIG_ACCESS;
       case DNotificationType::USER_DELETED:
-        return DAccessLevel::ADMINISTRATOR;
+        return DAccessControl::USER_CONFIG_ACCESS;
       case DNotificationType::USER_LOGIN_FAILED:
-        return DAccessLevel::ADMINISTRATOR;
+        return DAccessControl::USER_CONFIG_ACCESS;
       case DNotificationType::LOG_WARN:
-        return DAccessLevel::ADMINISTRATOR;
+        return DAccessControl::SERVER_CONFIG_ACCESS;
       case DNotificationType::LOG_FATAL:
-        return DAccessLevel::ADMINISTRATOR;
+        return DAccessControl::SERVER_CONFIG_ACCESS;
       case DNotificationType::NEW_AGENT:
-        return DAccessLevel::SUPERUSER;
+        return DAccessControl::VIEW_AGENT_ACCESS;
       case DNotificationType::DELETE_TASK:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_TASK_ACCESS;
       case DNotificationType::DELETE_HASHLIST:
-        return DAccessLevel::USER;
+        return DAccessControl::VIEW_HASHLIST_ACCESS;
       case DNotificationType::DELETE_AGENT:
-        return DAccessLevel::SUPERUSER;
+        return DAccessControl::VIEW_AGENT_ACCESS;
     }
-    return DAccessLevel::ADMINISTRATOR;
+    return DAccessControl::SERVER_CONFIG_ACCESS;
   }
   
   public static function getObjectType($notificationType) {
