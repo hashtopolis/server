@@ -1,9 +1,9 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>New Access Group</h2>
+<h2>New Permission Group</h2>
 {%TEMPLATE->struct/messages%}
-<form action='groups.php?new=true' method='post'>
-	<input type='hidden' name='action' value='[[$DAccessGroupAction::CREATE_GROUP]]'>
+<form action='access.php?new=true' method='post'>
+	<input type='hidden' name='action' value='[[$DAccessControlAction::CREATE_GROUP]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
 	<div class="panel panel-default">
 		<table class="table table-bordered table-nonfluid">
