@@ -1,11 +1,7 @@
 <?php
 
-use DBA\AccessGroup;
-use DBA\AccessGroupAgent;
-use DBA\AccessGroupUser;
 use DBA\QueryFilter;
 use DBA\RightGroup;
-use DBA\TaskWrapper;
 use DBA\User;
 
 class AccessControlHandler implements Handler {
