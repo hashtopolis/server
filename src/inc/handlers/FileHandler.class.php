@@ -15,29 +15,23 @@ class FileHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN;
+    global $ACCESS_CONTROL;
     
     switch ($action) {
       case DFileAction::DELETE_FILE:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DFileAction::DELETE_FILE_PERM);
         $this->delete($_POST['file']);
         break;
       case DFileAction::SET_SECRET:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DFileAction::SET_SECRET_PERM);
         $this->switchSecret($_POST['file'], $_POST["secret"]);
         break;
       case DFileAction::ADD_FILE:
+        $ACCESS_CONTROL->checkPermission(DFileAction::ADD_FILE_PERM);
         $this->add();
         break;
       case DFileAction::EDIT_FILE:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DFileAction::EDIT_FILE_PERM);
         $this->saveChanges($_POST['fileId'], $_POST['filename']);
         break;
       default:
