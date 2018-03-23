@@ -16,7 +16,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::SUPERTASKS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::SUPERTASKS_VIEW_PERM);
 
 $TEMPLATE = new Template("supertasks/index");
 $MENU->setActive("tasks_super");

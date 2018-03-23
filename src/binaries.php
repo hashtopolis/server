@@ -10,7 +10,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::BINARIES_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::BINARIES_VIEW_PERM);
 
 $OBJECTS['newBinary'] = false;
 $OBJECTS['editBinary'] = false;

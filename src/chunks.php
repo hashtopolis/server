@@ -13,7 +13,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::CHUNKS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::CHUNKS_VIEW_PERM);
 
 $TEMPLATE = new Template("chunks");
 $MENU->setActive("chunks");

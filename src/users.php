@@ -15,7 +15,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::USERS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::USERS_VIEW_PERM);
 
 $TEMPLATE = new Template("users/index");
 $MENU->setActive("users_list");

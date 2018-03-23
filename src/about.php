@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::ABOUT_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::ABOUT_VIEW_PERM);
 
 $TEMPLATE = new Template("static/about");
 $OBJECTS['pageTitle'] = "About";

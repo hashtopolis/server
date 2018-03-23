@@ -10,7 +10,7 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::ACCOUNT_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::ACCOUNT_VIEW_PERM);
 
 $TEMPLATE = new Template("account");
 $MENU->setActive("account_settings");

@@ -8,7 +8,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
-$ACCESS_CONTROL->checkViewPermission(DViewControl::GETFILE_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(DViewControl::GETFILE_VIEW_PERM);
 
 ini_set("max_execution_time", 100000);
 

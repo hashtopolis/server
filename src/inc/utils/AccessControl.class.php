@@ -18,13 +18,15 @@ class AccessControl {
    * @param $perm string
    */
   public function checkPermission($perm) {
+    // TODO: check if the user has the requested permission
   }
   
   /**
-   * If access is not granted, permission denied page will be shown
-   * @param $viewPermission string
+   * @param $perm string
+   * @return bool true if access is granted
    */
-  public function checkViewPermission($viewPermission) {
-    // TODO: check if the user has the requested viewPermission
+  public function hasPermission($perm) {
+    // TODO: check if the user has the requested permission
+    return false;
   }
 }
