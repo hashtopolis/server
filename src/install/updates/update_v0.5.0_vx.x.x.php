@@ -20,4 +20,9 @@ if ($binary != null) {
 }
 echo "\n";
 
+echo "Create new permissions... ";
+// TODO: update columns and create default no-rights group to put all other users there
+// Maybe have some default permissions groups
+echo "OK\n";
+
 echo "Update complete!\n";

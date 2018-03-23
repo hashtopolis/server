@@ -814,7 +814,7 @@ CREATE TABLE `RightGroup` (
   `rightGroupId` INT(11)                 NOT NULL,
   `groupName`    VARCHAR(50)
                  COLLATE utf8_unicode_ci NOT NULL,
-  `level`        INT(11)                 NOT NULL
+  `permissions`  TEXT                    NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -824,12 +824,8 @@ CREATE TABLE `RightGroup` (
 -- Daten für Tabelle `RightGroup`
 --
 
-INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
-  (1, 'View User', 1),
-  (2, 'Read Only User', 5),
-  (3, 'Normal User', 20),
-  (4, 'Superuser', 30),
-  (5, 'Administrator', 50);
+INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `permissions`) VALUES
+  (1, 'Administrator', 'ALL');
 
 -- --------------------------------------------------------
 
