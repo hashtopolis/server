@@ -53,7 +53,7 @@
               <option value="[[hashlist.getId()]]">[[hashlist.getHashlistName()]] ([[hashlist.getId()]])</option>
             {{ENDFOREACH}}
           </select>
-          {{IF [[login.getLevel()]] >= 50}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
             <select id="User" name="users" class="form-control" title="User">
               <option value="ALL">ALL</option>
               {{FOREACH user;[[allUsers]]}}
