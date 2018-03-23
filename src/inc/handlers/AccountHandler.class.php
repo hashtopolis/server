@@ -19,7 +19,7 @@ class AccountHandler implements Handler {
   
   public function handle($action) {
     /** @var Login $LOGIN */
-    global $LOGIN, $OBJECTS;
+    global $LOGIN, $OBJECTS, $ACCESS_CONTROL;
     
     switch ($action) {
       case DAccountAction::SET_EMAIL:

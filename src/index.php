@@ -10,6 +10,8 @@ if (!$INSTALL) {
   die("Forward to <a href='install'>Install</a>");
 }
 
+$ACCESS_CONTROL->checkViewPermission(DViewControl::INDEX_VIEW_PERM);
+
 $TEMPLATE = new Template("static/index");
 $OBJECTS['pageTitle'] = "Welcome";
 $message = "";

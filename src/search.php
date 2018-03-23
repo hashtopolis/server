@@ -9,11 +9,8 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-  $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Restricted";
-  die($TEMPLATE->render($OBJECTS));
-}
+
+$ACCESS_CONTROL->checkViewPermission(DViewControl::SEARCH_VIEW_PERM);
 
 $TEMPLATE = new Template("search");
 $OBJECTS['pageTitle'] = "Search Hashes";

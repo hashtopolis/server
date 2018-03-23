@@ -68,11 +68,13 @@ $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
 $OBJECTS['messages'] = array();
 $OBJECTS['pageTitle'] = "";
+$ACCESS_CONTROL = new AccessControl();
 if ($INSTALL) {
   $LOGIN = new Login();
   $OBJECTS['login'] = $LOGIN;
   if ($LOGIN->isLoggedin()) {
     $OBJECTS['user'] = $LOGIN->getUser();
+    $ACCESS_CONTROL = new AccessControl($LOGIN->getUser());
   }
   
   $res = $FACTORIES::getConfigFactory()->filter(array());
