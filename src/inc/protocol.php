@@ -273,6 +273,7 @@ class PResponseGetTask extends PResponse {
   const BENCHTYPE      = "benchType";
   const HASHLIST_ALIAS = "hashlistAlias";
   const KEYSPACE       = "keyspace";
+  const REASON         = "reason";
 }
 
 class PResponseGetChunk extends PResponse {
