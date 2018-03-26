@@ -1,5 +1,10 @@
 # v0.5.0 -> vx.x.x
 
+## Bugfixes
+
+- Fixed missing file assignments when applying preconfigured tasks from hashlists view (issue #354)
+- Fixed cracker binary relation error when applying supertasks from hashlist view
+
 # v0.4.3 -> v0.5.0
 
 ## Large Update
