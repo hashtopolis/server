@@ -187,7 +187,7 @@ class SupertaskHandler implements Handler {
       
       if ($crackerBinary->getId() == 0) {
         $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($pretask->getCrackerBinaryTypeId());
-        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($crackerBinaryType->getId());
+        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($crackerBinaryType->getId())->getId();
       }
       $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $crackerBinaryType->getId(), $taskWrapper->getId());
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
