@@ -171,6 +171,10 @@ class FileHandler implements Handler {
         // from url
         $realname = str_replace(" ", "_", htmlentities(basename($_POST["url"]), ENT_QUOTES, "UTF-8"));
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
+        if (stripos($_POST["url"], "file://") === 0) {
+          UI::addMessage(UI::ERROR, "Uploads from file:// are not allowed!");
+          break;
+        }
         $resp = Util::uploadFile($tmpfile, $source, $_POST["url"]);
         if ($resp[0]) {
           $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
