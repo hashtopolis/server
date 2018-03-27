@@ -55,6 +55,7 @@ class FileHandler implements Handler {
       return;
     }
     $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
+    $newName = str_replace("/", "_", str_replace("\\", "_", $newName));
     if (strlen($newName) == 0) {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
       return;
