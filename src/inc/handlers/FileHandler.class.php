@@ -184,8 +184,8 @@ class FileHandler implements Handler {
           $realname[0] = "_";
         }
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
-        if (stripos($_POST["url"], "file://") === 0) {
-          UI::addMessage(UI::ERROR, "Uploads from file:// are not allowed!");
+        if (stripos($_POST["url"], "https://") !== 0 && stripos($_POST["url"], "http://") !== 0 && stripos($_POST["url"], "ftp://") !== 0) {
+          UI::addMessage(UI::ERROR, "Only downloads from http://, https:// and ftp:// are allowed!");
           break;
         }
         $resp = Util::uploadFile($tmpfile, $source, $_POST["url"]);

@@ -4,6 +4,11 @@
 
 - Fixed missing file assignments when applying preconfigured tasks from hashlists view (issue #354)
 - Fixed cracker binary relation error when applying supertasks from hashlist view
+- Fixed XSS vulnerability with the login forward variable
+- Session cookies have the httpOnly flag set
+- Fixed file upload which allowed upload of file:// data and reading it
+- Fixed renaming of files which allowed renaming them to other directories and execute them
+- Fixed renaming/uploading of files which allowed to override hidden files (e.g. .htaccess file)
 
 # v0.4.3 -> v0.5.0
 
