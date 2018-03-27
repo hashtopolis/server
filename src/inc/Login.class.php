@@ -59,7 +59,7 @@ class Login {
         $this->session = $s;
         $s->setLastActionDate(time());
         $FACTORIES::getSessionFactory()->update($s);
-        setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime());
+        setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime(), null, null, null, true);
       }
     }
   }
@@ -183,7 +183,7 @@ class Login {
     
     $this->valid = true;
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Successful login!");
-    setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime());
+    setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime(), null, null, null, true);
     return true;
   }
 }
