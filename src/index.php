@@ -49,7 +49,7 @@ $fw = "";
 if (isset($_GET['fw'])) {
   $fw = $_GET['fw'];
 }
-$OBJECTS['fw'] = $fw;
+$OBJECTS['fw'] = htmlentities($fw, ENT_QUOTES, "UTF-8");
 
 echo $TEMPLATE->render($OBJECTS);
 
