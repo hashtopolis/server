@@ -60,6 +60,9 @@ class FileHandler implements Handler {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
       return;
     }
+    if ($newName[0] == '.') {
+      $newName[0] = "_";
+    }
     $qF = new QueryFilter(File::FILENAME, $newName, "=");
     $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($files) > 0) {
@@ -122,6 +125,9 @@ class FileHandler implements Handler {
           foreach ($uploaded as $key => $upload) {
             $toMove[$key] = $upload[$i];
           }
+          if ($realname[0] == '.') {
+            $realname[0] = "_";
+          }
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $toMove);
           if ($resp[0]) {
@@ -151,6 +157,9 @@ class FileHandler implements Handler {
           }
           // copy all uploaded attached files to proper directory
           $realname = str_replace(" ", "_", htmlentities(basename($import), ENT_QUOTES, "UTF-8"));
+          if ($realname[0] == '.') {
+            $realname[0] = "_";
+          }
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $realname);
           if ($resp[0]) {
@@ -171,6 +180,9 @@ class FileHandler implements Handler {
       case "url":
         // from url
         $realname = str_replace(" ", "_", htmlentities(basename($_POST["url"]), ENT_QUOTES, "UTF-8"));
+        if ($realname[0] == '.') {
+          $realname[0] = "_";
+        }
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
         if (stripos($_POST["url"], "file://") === 0) {
           UI::addMessage(UI::ERROR, "Uploads from file:// are not allowed!");
