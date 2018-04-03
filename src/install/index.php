@@ -110,7 +110,7 @@ switch ($STEP) {
         'db' => $_POST['db'],
         'port' => $_POST['port']
       );
-      if ($FACTORIES::getUserFactory()->getDB(true) === false) {
+      if ($FACTORIES::getUserFactory()->getDB(true) === null) {
         //connection not valid
         $fail = true;
       }
