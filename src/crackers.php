@@ -29,7 +29,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new']) && isset($_GET['id']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+if (isset($_GET['new']) && isset($_GET['id']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
   $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
     $OBJECTS['binaryType'] = $binaryType;
@@ -37,12 +37,12 @@ if (isset($_GET['new']) && isset($_GET['id']) && $LOGIN->getLevel() >= DAccessLe
     $OBJECTS['pageTitle'] = "Add new Cracker Binary Version";
   }
 }
-else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
   $TEMPLATE = new Template("crackers/new");
   $MENU->setActive("crackers_new");
   $OBJECTS['pageTitle'] = "Add Cracker Binary";
 }
-else if (isset($_GET['edit']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+else if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
   $binary = $FACTORIES::getCrackerBinaryFactory()->get($_GET['id']);
   if ($binary !== null) {
     $OBJECTS['binary'] = $binary;
