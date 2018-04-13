@@ -33,7 +33,7 @@
 			</tr>
 			{{FOREACH constant;[[constants]]}}
 				<tr>
-					<td>[[constant]]</td>
+					<td>[[DAccessControl::getDescription([[constant]])]]</td>
 					<td>
 						{{IF [[perm]] == 'ALL'}}
 							<select name="perm[]" class="form-control" title="Permission">
