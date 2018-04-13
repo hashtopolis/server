@@ -5,6 +5,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
 use DBA\File;
+use DBA\FilePretask;
 use DBA\FileTask;
 use DBA\Hash;
 use DBA\HashBinary;
@@ -948,13 +949,11 @@ class HashlistHandler implements Handler {
           $newTask = $FACTORIES::getTaskFactory()->save($newTask);
           $addCount++;
           
-          //copy all file associations of the preconf task to the new task
-          $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=");
-          $files = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+          $qF = new QueryFilter(FilePretask::PRETASK_ID, $task->getId(), "=");
+          $files = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
           foreach ($files as $file) {
-            $file->setTaskId($newTask->getId());
-            $file->setId(0);
-            $FACTORIES::getFileTaskFactory()->save($file);
+            $fileTask = new FileTask(0, $file->getFileId(), $newTask->getId());
+            $FACTORIES::getFileTaskFactory()->save($fileTask);
             $fileCount++;
           }
           

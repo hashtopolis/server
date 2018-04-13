@@ -21,7 +21,8 @@ class APIGetTask extends APIBasic {
       $this->sendResponse(array(
           PResponseGetTask::ACTION => PActions::GET_TASK,
           PResponseGetTask::RESPONSE => PValues::SUCCESS,
-          PResponseGetTask::TASK_ID => PValues::NONE
+          PResponseGetTask::TASK_ID => PValues::NONE,
+          PResponseGetTask::REASON => "Agent is inactive!"
         )
       );
     }
@@ -74,7 +75,8 @@ class APIGetTask extends APIBasic {
     $this->sendResponse(array(
         PResponseGetTask::ACTION => PActions::GET_TASK,
         PResponseGetTask::RESPONSE => PValues::SUCCESS,
-        PResponseGetTask::TASK_ID => PValues::NONE
+        PResponseGetTask::TASK_ID => PValues::NONE,
+        PResponseGetTask::REASON => "No suitable task available!"
       )
     );
   }

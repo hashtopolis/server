@@ -3,6 +3,7 @@
 use DBA\Chunk;
 use DBA\ContainFilter;
 use DBA\Hash;
+use DBA\HashBinary;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
@@ -31,6 +32,7 @@ $task = 0;
 $src = "";
 $srcId = 0;
 $binaryFormat = false;
+$isWpa = false;
 $hashFactory = null;
 $hashClass = null;
 $queryFilters = array();
@@ -61,6 +63,9 @@ if (isset($_GET['hashlist'])) {
   else {
     $hashFactory = $FACTORIES::getHashBinaryFactory();
     $binaryFormat = true;
+    if ($hashlist->getFormat() == DHashlistFormat::WPA) {
+      $isWpa = true;
+    }
     $hashClass = \DBA\HashBinary::class;
   }
   $src = "hashlist";
@@ -84,6 +89,9 @@ else if (isset($_GET['chunk'])) {
   else {
     $hashFactory = $FACTORIES::getHashBinaryFactory();
     $hashClass = \DBA\HashBinary::class;
+    if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
+      $isWpa = true;
+    }
     $binaryFormat = true;
   }
   $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
@@ -105,6 +113,9 @@ else if (isset($_GET['task'])) {
   else {
     $hashFactory = $FACTORIES::getHashBinaryFactory();
     $binaryFormat = true;
+    if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
+      $isWpa = true;
+    }
     $hashClass = \DBA\HashBinary::class;
   }
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -195,6 +206,10 @@ foreach ($hashes as $hash) {
   if ($displaying == "") {
     if (!$binaryFormat) {
       $output .= $hash->getHash();
+    }
+    else if ($binaryFormat && $isWpa) {
+      /** @var $hash HashBinary */
+      $output .= $hash->getEssid();
     }
     else {
       $output .= "[...]";

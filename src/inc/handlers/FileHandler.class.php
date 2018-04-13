@@ -49,9 +49,13 @@ class FileHandler implements Handler {
       return;
     }
     $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
+    $newName = str_replace("/", "_", str_replace("\\", "_", $newName));
     if (strlen($newName) == 0) {
       UI::addMessage(UI::ERROR, "Filename cannot be empty!");
       return;
+    }
+    if ($newName[0] == '.') {
+      $newName[0] = "_";
     }
     $qF = new QueryFilter(File::FILENAME, $newName, "=");
     $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -115,6 +119,9 @@ class FileHandler implements Handler {
           foreach ($uploaded as $key => $upload) {
             $toMove[$key] = $upload[$i];
           }
+          if ($realname[0] == '.') {
+            $realname[0] = "_";
+          }
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $toMove);
           if ($resp[0]) {
@@ -144,6 +151,9 @@ class FileHandler implements Handler {
           }
           // copy all uploaded attached files to proper directory
           $realname = str_replace(" ", "_", htmlentities(basename($import), ENT_QUOTES, "UTF-8"));
+          if ($realname[0] == '.') {
+            $realname[0] = "_";
+          }
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $realname);
           if ($resp[0]) {
@@ -164,7 +174,14 @@ class FileHandler implements Handler {
       case "url":
         // from url
         $realname = str_replace(" ", "_", htmlentities(basename($_POST["url"]), ENT_QUOTES, "UTF-8"));
+        if ($realname[0] == '.') {
+          $realname[0] = "_";
+        }
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
+        if (stripos($_POST["url"], "https://") !== 0 && stripos($_POST["url"], "http://") !== 0 && stripos($_POST["url"], "ftp://") !== 0) {
+          UI::addMessage(UI::ERROR, "Only downloads from http://, https:// and ftp:// are allowed!");
+          break;
+        }
         $resp = Util::uploadFile($tmpfile, $source, $_POST["url"]);
         if ($resp[0]) {
           $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
