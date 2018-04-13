@@ -23,7 +23,8 @@ class DAccessControl {
   const MANAGE_TASK_ACCESS          = "manageTaskAccess";
   const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS);
   const MANAGE_PRETASK_ACCESS       = "managePretaskAccess";
-  const VIEW_SUPERTASK_ACCESS       = array("viewSupertaskAccess", DAccessControl::CREATE_SUPERTASK_ACCESS);
+  const VIEW_SUPERTASK_ACCESS       = array("viewSupertaskAccess", DAccessControl::CREATE_SUPERTASK_ACCESS, DAccessControl::MANAGE_SUPERTASK_ACCESS);
+  const MANAGE_SUPERTASK_ACCESS     = "manageSupertaskAccess";
   
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";
@@ -96,6 +97,8 @@ class DAccessControl {
         return "Can manage preconfigured tasks";
       case DAccessControl::VIEW_SUPERTASK_ACCESS[0]:
         return "Can view preconfigured supertasks";
+      case DAccessControl::MANAGE_SUPERTASK_ACCESS:
+        return "Can manage preconfigured supertasks";
     }
     return "__" . $access . "__";
   }
