@@ -25,7 +25,12 @@ class DAccessControl {
   const LOGIN_ACCESS  = "loginAccess";
   
   static function getConstants() {
-    $oClass = new ReflectionClass(__CLASS__);
+    try {
+      $oClass = new ReflectionClass(__CLASS__);
+    }
+    catch (ReflectionException $e) {
+      die("Exception: " . $e->getMessage());
+    }
     return $oClass->getConstants();
   }
   
@@ -34,8 +39,45 @@ class DAccessControl {
    * @return string description
    */
   public static function getDescription($access) {
-    //TODO: return description text for this access string
-    return "";
+    switch ($access) {
+      case DAccessControl::VIEW_HASHLIST_ACCESS:
+        return "Can view Hashlists";
+      case DAccessControl::MANAGE_HASHLIST_ACCESS:
+        return "Can manage hashlists";
+      case DAccessControl::CREATE_HASHLIST_ACCESS:
+        return "Can create hashlists";
+      case DAccessControl::CREATE_SUPERHASHLIST_ACCESS:
+        return "Can create superhashlits";
+      case DAccessControl::VIEW_AGENT_ACCESS:
+        return "Can view agents";
+      case DAccessControl::MANAGE_AGENT_ACCESS:
+        return "Can manage agents";
+      case DAccessControl::CREATE_AGENT_ACCESS:
+        return "Can create agents";
+      case DAccessControl::VIEW_TASK_ACCESS:
+        return "Can view tasks";
+      case DAccessControl::RUN_TASK_ACCESS:
+        return "Can run preconfigured tasks";
+      case DAccessControl::CREATE_TASK_ACCESS:
+        return "Can create tasks";
+      case DAccessControl::CREATE_PRETASK_ACCESS:
+        return "Can create preconfigured tasks";
+      case DAccessControl::CREATE_SUPERTASK_ACCESS:
+        return "Can create supertasks";
+      case DAccessControl::VIEW_FILE_ACCESS:
+        return "Can view files";
+      case DAccessControl::MANAGE_FILE_ACCESS:
+        return "Can manage files";
+      case DAccessControl::ADD_FILE_ACCESS:
+        return "Can add files";
+      case DAccessControl::CRACKER_BINARY_ACCESS:
+        return "Can configure cracker binaries";
+      case DAccessControl::SERVER_CONFIG_ACCESS:
+        return "Can access server configureation";
+      case DAccessControl::USER_CONFIG_ACCESS:
+        return "Can manage users";
+    }
+    return "__" . $access . "__";
   }
 }
 
