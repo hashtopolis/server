@@ -34,7 +34,7 @@ if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))) {
   $view = $_GET['view'];
 }
 
-if (isset($_GET['edit'])) {
+if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::MANAGE_FILE_ACCESS)) {
   $file = $FACTORIES::getFileFactory()->get($_GET['edit']);
   if ($file == null) {
     UI::addMessage(UI::ERROR, "Invalid file ID!");
