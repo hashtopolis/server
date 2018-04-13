@@ -79,6 +79,8 @@ class DAccessControl {
         return "Can access server configureation";
       case DAccessControl::USER_CONFIG_ACCESS:
         return "Can manage users";
+      case DAccessControl::LOGIN_ACCESS:
+        return "Can login and access normal user account features";
     }
     return "__" . $access . "__";
   }

@@ -43,7 +43,7 @@ else if (isset($_GET['id'])) {
   }
   else {
     $OBJECTS['group'] = $group;
-    if ($group->getPermissions() == 'ALL'){
+    if ($group->getPermissions() == 'ALL') {
       $OBJECTS['perm'] = 'ALL';
     }
     else {
@@ -56,6 +56,10 @@ else if (isset($_GET['id'])) {
     foreach ($constants as &$constant) {
       if (is_array($constant)) {
         $constant = $constant[0];
+      }
+      if ($constant == DAccessControl::PUBLIC_ACCESS) {
+        // ignore public access
+        unset($constant);
       }
     }
     $OBJECTS['constants'] = $constants;
