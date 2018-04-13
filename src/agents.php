@@ -94,7 +94,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeSpent'] = $timeSpent;
   }
 }
-else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_AGENT_ACCESS)) {
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
   $OBJECTS['pageTitle'] = "New Agent";
