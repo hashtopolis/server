@@ -19,6 +19,8 @@ class DAccessControl {
   const CRACKER_BINARY_ACCESS       = "crackerBinaryAccess";
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
+  const VIEW_HASHES_ACCESS          = "viewHashesAccess";
+  const MANAGE_TASK_ACCESS          = "manageTaskAccess";
   
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";
@@ -62,11 +64,11 @@ class DAccessControl {
       case DAccessControl::RUN_TASK_ACCESS:
         return "Can run preconfigured tasks";
       case DAccessControl::CREATE_TASK_ACCESS:
-        return "Can create tasks";
+        return "Can create/delete tasks";
       case DAccessControl::CREATE_PRETASK_ACCESS:
-        return "Can create preconfigured tasks";
+        return "Can create/delete preconfigured tasks";
       case DAccessControl::CREATE_SUPERTASK_ACCESS:
-        return "Can create supertasks";
+        return "Can create/delete supertasks";
       case DAccessControl::VIEW_FILE_ACCESS[0]:
         return "Can view files";
       case DAccessControl::MANAGE_FILE_ACCESS:
@@ -81,6 +83,10 @@ class DAccessControl {
         return "Can manage users";
       case DAccessControl::LOGIN_ACCESS:
         return "Can login and access normal user account features";
+      case DAccessControl::VIEW_HASHES_ACCESS:
+        return "User can view cracked/uncracked hashes";
+      case DAccessControl::MANAGE_TASK_ACCESS:
+        return "Can change tasks (set priority, rename, etc.)";
     }
     return "__" . $access . "__";
   }
