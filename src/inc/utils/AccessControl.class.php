@@ -21,7 +21,7 @@ class AccessControl {
   
   /**
    * If access is not granted, permission denied page will be shown
-   * @param $perm string
+   * @param $perm string|string[]
    */
   public function checkPermission($perm) {
     if (!$this->hasPermission($perm)) {

@@ -62,12 +62,6 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 }
 
 if (isset($_GET['id'])) {
-  if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-    $TEMPLATE = new Template("restricted");
-    $OBJECTS['pageTitle'] = "Restricted";
-    die($TEMPLATE->render($OBJECTS));
-  }
-  
   $TEMPLATE = new Template("tasks/detail");
   $task = $FACTORIES::getTaskFactory()->get($_GET['id']);
   if ($task == null) {
@@ -244,10 +238,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['pageTitle'] = "Task details for " . $task->getTaskName();
 }
 else if (isset($_GET['new'])) {
-  if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-    $TEMPLATE = new Template("restricted");
-    die($TEMPLATE->render($OBJECTS));
-  }
+  $ACCESS_CONTROL->checkPermission(DAccessControl::CREATE_TASK_ACCESS);
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
