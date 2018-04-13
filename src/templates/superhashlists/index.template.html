@@ -39,7 +39,7 @@
           {{ENDFOREACH}}
 				</td>
 				<td>
-					{{IF [[login.getLevel()]] >= 20}}
+					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
 						<form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
 							<input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
 							<input type="hidden" name="hashlist" value="[[list.getId()]]">
@@ -55,7 +55,7 @@
 					{{ENDIF}}
 				</td>
 				<td>
-					{{IF [[login.getLevel()]] >= 30}}
+					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
 						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete superhashlist [[list.getId()]]?\n(Included hashes will stay intact in their hashlists)')) return false;">
 							<input type="hidden" name="action" value="[[$DHashlistAction::DELETE_HASHLIST]]">
 							<input type="hidden" name="hashlist" value="[[list.getId()]]">
