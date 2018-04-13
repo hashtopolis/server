@@ -36,7 +36,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new'])) {
+if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_HASHLIST_ACCESS)) {
   //new hashlist
   $MENU->setActive("lists_new");
   $OBJECTS['impfiles'] = Util::scanImportDirectory();

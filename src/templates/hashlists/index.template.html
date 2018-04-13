@@ -2,7 +2,7 @@
 {%TEMPLATE->struct/menu%}
 <h2>Hashlists ([[numHashlists]])</h2>
 {%TEMPLATE->struct/messages%}
-{{IF [[zap]]}}
+{{IF [[zap]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
 	{%TEMPLATE->hashlists/zap%}
 {{ENDIF}}
 <div class="panel panel-default">
@@ -38,21 +38,25 @@
 					<a href="hashes.php?hashlist=[[entry.getVal('hashlist').getId()]]">[[entry.getVal('hashlist').getHashCount()]]</a>)
 				</td>
 				<td>
-					<form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
-						<input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
-						<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
-						<input type="hidden" name="csrf" value="[[csrf]]">
-						<input type="submit" class='btn btn-default' value="Import">
-					</form>
-					<form style ='float: left;' action="hashlists.php" method="POST">
-						<input type="hidden" name="action" value="[[$DHashlistAction::EXPORT_HASHLIST]]">
-						<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
-						<input type="hidden" name="csrf" value="[[csrf]]">
-						<input type="submit" class='btn btn-default' value="Export">
-					</form>
+					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+						<form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
+							<input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
+							<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
+							<input type="hidden" name="csrf" value="[[csrf]]">
+							<input type="submit" class='btn btn-default' value="Import">
+						</form>
+					{{ENDIF}}
+					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]] && [[accessControl.hasPermission([[$DAccessControl::CREATE_FILE_ACCESS]])]]}}
+						<form style ='float: left;' action="hashlists.php" method="POST">
+							<input type="hidden" name="action" value="[[$DHashlistAction::EXPORT_HASHLIST]]">
+							<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
+							<input type="hidden" name="csrf" value="[[csrf]]">
+							<input type="submit" class='btn btn-default' value="Export">
+						</form>
+					{{ENDIF}}
 				</td>
 				<td>
-					{{IF [[login.getLevel()]] >= 30}}
+					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
 						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[entry.getVal('hashlist').getId()]]?')) return false;">
 							<input type="hidden" name="action" value="[[$DHashlistAction::DELETE_HASHLIST]]">
 							<input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">

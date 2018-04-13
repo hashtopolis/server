@@ -1,4 +1,4 @@
-{{IF [[login.getLevel()]] >= 20}}
+{{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
   <h3>Create pre-configured tasks:</h3>
   <form id="preconf" action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
     <input type='hidden' name='action' value='[[$DHashlistAction::APPLY_PRECONFIGURED_TASKS]]'>
