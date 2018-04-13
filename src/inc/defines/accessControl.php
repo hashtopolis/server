@@ -39,6 +39,9 @@ class DAccessControl {
    * @return string description
    */
   public static function getDescription($access) {
+    if (is_array($access)) {
+      $access = $access[0];
+    }
     switch ($access) {
       case DAccessControl::VIEW_HASHLIST_ACCESS:
         return "Can view Hashlists";
