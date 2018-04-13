@@ -25,7 +25,7 @@
     <tr>
       <td>Name:</td>
       <td>
-        {{IF [[login.getLevel()]] >= 20}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::RENAME_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
@@ -47,7 +47,7 @@
     <tr>
       <td>Chunk size:</td>
       <td>
-        {{IF [[login.getLevel()]] >= 20}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_TIME]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
@@ -69,7 +69,7 @@
           <input type="hidden" name="task" value="[[task.getId()]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
           #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]" title="Color">
-          {{IF [[login.getLevel()]] >= 20}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
             <input type="submit" class='btn btn-default' value="Set">
           {{ENDIF}}
         </form>
@@ -92,7 +92,7 @@
     <tr>
       <td>Priority:</td>
       <td>
-        {{IF [[login.getLevel()]] >= 20}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_PRIORITY]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
@@ -108,7 +108,7 @@
     <tr>
       <td>Is CPU only task:</td>
       <td>
-        {{IF [[login.getLevel()]] >= 20}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_CPU_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
@@ -131,7 +131,7 @@
     <tr>
       <td>Is small task:</td>
       <td>
-        {{IF [[login.getLevel()]] >= 20}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
           <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DTaskAction::SET_SMALL_TASK]]">
             <input type="hidden" name="task" value="[[task.getId()]]">
@@ -172,7 +172,7 @@
         <td>Keyspace dispatched:</td>
         <td>
           [[task.getKeyspaceProgress()]] ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%)
-          {{IF [[isActive]] == 0 && [[login.getLevel()]] >= 20}}
+          {{IF [[isActive]] == 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
             <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::PURGE_TASK]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
@@ -246,7 +246,7 @@
   </table>
 </div>
 {{IF [[sizeof([[attachedFiles]])]] > 0}}
-  {{IF [[login.getLevel()]] >= 5}}
+  {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
     <h3>Attached files</h3>
     <div class="panel panel-default">
       <table class="table table-bordered table-nonfluid">
@@ -259,7 +259,7 @@
           <tr>
             <td>[[file.getId()]]</td>
             <td>
-              {{IF [[login.getLevel()]] >= 20}}
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
                 <a href="files.php#[[file.getId()]]">[[file.getFilename()]]</a>
               {{ELSE}}
                 [[file.getFilename()]]
@@ -294,14 +294,14 @@
     {{FOREACH agent;[[agents]]}}
       <tr>
         <td>
-          {{IF [[login.getLevel()]] >= 20}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
             <a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a>
           {{ELSE}}
             [[agent.getId()]]
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[login.getLevel()]] >= 20}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
             <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
           {{ELSE}}
             [[agent.getAgentName()]]
@@ -317,7 +317,7 @@
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[login.getLevel()]] >= 20}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
             <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::SET_BENCHMARK]]">
               <input type="hidden" name="agentId" value="[[agent.getId()]]">
@@ -360,7 +360,7 @@
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[login.getLevel()]] >= 20}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
             <form style='float: left; padding-right: 5px;' action="agents.php?task=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
               <input type="hidden" name="agentId" value="[[agent.getId()]]">
@@ -373,7 +373,7 @@
       </tr>
     {{ENDFOREACH}}
 
-    {{IF [[login.getLevel()]] >= 20}}
+    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
       <tr>
         <td colspan="4">
           <form action="agents.php?task=[[task.getId()]]" method="POST">
@@ -422,14 +422,14 @@
       {{FOREACH agent;[[agentObjects]]}}
         <tr>
           <td>
-            {{IF [[login.getLevel()]] >= 20}}
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
               <a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a>
             {{ELSE}}
               [[agent.getId()]]
             {{ENDIF}}
           </td>
           <td>
-            {{IF [[login.getLevel()]] >= 20}}
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
               <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
             {{ELSE}}
               [[agent.getAgentName()]]
@@ -526,14 +526,14 @@
           [[Util::getStaticArray([[chunk.getState()]], 'states')]]
         </td>
         <td class="num">
-          {{IF [[chunk.getCracked()]] > 0 && [[login.getLevel()]] >= 5}}
+          {{IF [[chunk.getCracked()]] > 0 && [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
             <a href="hashes.php?chunk=[[chunk.getId()]]">[[chunk.getCracked()]]</a>
           {{ELSE}}
             [[chunk.getCracked()]]
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[activeChunks.getVal([[chunk.getId()]])]] == false && [[login.getLevel()]] >= 20}}
+          {{IF [[activeChunks.getVal([[chunk.getId()]])]] == false && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
             <form action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really reset chunk [[chunk.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::RESET_CHUNK]]">
               <input type="hidden" name="chunk" value="[[chunk.getId()]]">
@@ -541,7 +541,7 @@
               <input type="submit" class='btn btn-default' value="Reset">
             </form>
           {{ENDIF}}
-          {{IF [[activeChunks.getVal([[chunk.getId()]])]] && [[login.getLevel()]] >= 20}}
+          {{IF [[activeChunks.getVal([[chunk.getId()]])]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
             <form action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really abort cracking chunk [[chunk.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::ABORT_CHUNK]]">
               <input type="hidden" name="chunk" value="[[chunk.getId()]]">
