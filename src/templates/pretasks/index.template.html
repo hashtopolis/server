@@ -30,19 +30,25 @@
           {{ENDIF}}
         </td>
         <td>
-          <form class='form-inline' action="pretasks.php" method="POST">
-            <input type="hidden" name="action" value="[[$DPretaskAction::SET_PRIORITY]]">
-            <input type="hidden" name="pretaskId" value="[[task.getVal('Task').getId()]]">
-						<input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('Task').getPriority()]]" title="Priority">
-            <input type="submit" class='btn btn-default' value="Set">
-          </form>
+					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
+						<form class='form-inline' action="pretasks.php" method="POST">
+							<input type="hidden" name="action" value="[[$DPretaskAction::SET_PRIORITY]]">
+							<input type="hidden" name="pretaskId" value="[[task.getVal('Task').getId()]]">
+							<input type="hidden" name="csrf" value="[[csrf]]">
+							<input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('Task').getPriority()]]" title="Priority">
+							<input type="submit" class='btn btn-default' value="Set">
+						</form>
+					{{ELSE}}
+						[[task.getVal('Task').getPriority()]]
+					{{ENDIF}}
         </td>
         <td>
-          <form style='float: left; padding-right: 5px;' action="tasks.php?new=true&copyPre=[[task.getVal('Task').getId()]]" method="POST">
-            <input type="submit" class='btn btn-default' value="Copy">
-          </form>
-					{{IF [[login.getLevel()]] >= 30}}
+					{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
+						<form style='float: left; padding-right: 5px;' action="tasks.php?new=true&copyPre=[[task.getVal('Task').getId()]]" method="POST">
+							<input type="submit" class='btn btn-default' value="Copy">
+						</form>
+					{{ENDIF}}
+					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
 						<form style='float: left;' action="pretasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?') || ({{IF [[task.getVal('isUsed')]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
 							<input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
 							<input type='hidden' name='refer' value='pretask'>

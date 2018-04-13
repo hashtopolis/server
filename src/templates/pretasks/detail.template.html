@@ -13,7 +13,7 @@
       <td>ID:</td>
       <td>
         <code>[[pretask.getId()]]</code>
-        {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
           <form style ='float: right;' action="pretasks.php" method="POST" onSubmit="if (!confirm('Really delete preconfigured task [[pretask.getId()]]?')  || ({{IF [[isUsed]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
             <input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
@@ -26,7 +26,7 @@
     <tr>
       <td>Name:</td>
       <td>
-        {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
           <form class='form-inline' action="pretasks.php?id=[[pretask.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DPretaskAction::RENAME_PRETASK]]">
             <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
@@ -48,7 +48,7 @@
     <tr>
       <td>Chunk size:</td>
       <td>
-        {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
           <form class='form-inline' action="pretasks.php?id=[[pretask.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DPretaskAction::SET_TIME]]">
             <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
@@ -69,7 +69,7 @@
           <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
           #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[pretask.getColor()]]" title="Color">
-          {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
             <input type="submit" class='btn btn-default' value="Set">
           {{ENDIF}}
         </form>
@@ -92,7 +92,7 @@
     <tr>
       <td>Priority:</td>
       <td>
-        {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
           <form class='form-inline' action="pretasks.php?id=[[pretask.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DPretaskAction::SET_PRIORITY]]">
             <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
@@ -108,7 +108,7 @@
     <tr>
       <td>Is CPU only task:</td>
       <td>
-        {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
           <form class='form-inline' action="pretasks.php?id=[[pretask.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DPretaskAction::SET_CPU_TASK]]">
             <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
@@ -131,7 +131,7 @@
     <tr>
       <td>Is small task:</td>
       <td>
-        {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
           <form class='form-inline' action="pretasks.php?id=[[pretask.getId()]]" method="POST">
             <input type="hidden" name="action" value="[[$DPretaskAction::SET_SMALL_TASK]]">
             <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
@@ -154,35 +154,33 @@
   </table>
 </div>
 {{IF [[sizeof([[attachedFiles]])]] > 0}}
-  {{IF [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]]}}
-    <h3>Attached files</h3>
-    <div class="panel panel-default">
-      <table class="table table-bordered table-nonfluid">
+  <h3>Attached files</h3>
+  <div class="panel panel-default">
+    <table class="table table-bordered table-nonfluid">
+      <tr>
+        <th>ID</th>
+        <th>Filename</th>
+        <th>Size</th>
+      </tr>
+      {{FOREACH file;[[attachedFiles]]}}
         <tr>
-          <th>ID</th>
-          <th>Filename</th>
-          <th>Size</th>
+          <td>[[file.getId()]]</td>
+          <td>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
+              <a href="files.php#[[file.getId()]]">[[file.getFilename()]]</a>
+            {{ELSE}}
+              [[file.getFilename()]]
+            {{ENDIF}}
+            {{IF [[file.getIsSecret()]] == 1}}
+              <img src="static/lock.gif" alt="Secret">
+            {{ENDIF}}
+          </td>
+          <td class='num'>
+            [[Util::nicenum([[file.getSize()]])]]B
+          </td>
         </tr>
-        {{FOREACH file;[[attachedFiles]]}}
-          <tr>
-            <td>[[file.getId()]]</td>
-            <td>
-              {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
-                <a href="files.php#[[file.getId()]]">[[file.getFilename()]]</a>
-              {{ELSE}}
-                [[file.getFilename()]]
-              {{ENDIF}}
-              {{IF [[file.getIsSecret()]] == 1}}
-                <img src="static/lock.gif" alt="Secret">
-              {{ENDIF}}
-            </td>
-            <td class='num'>
-              [[Util::nicenum([[file.getSize()]])]]B
-            </td>
-          </tr>
-        {{ENDFOREACH}}
-      </table>
-    </div>
-  {{ENDIF}}
+      {{ENDFOREACH}}
+    </table>
+  </div>
 {{ENDIF}}
 {%TEMPLATE->struct/foot%}
