@@ -34,13 +34,13 @@
 							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
 								<li[[menu.isActive('tasks_new')]]><a href="tasks.php?new=true">New Task</a></li>
 							{{ENDIF}}
-							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
 								<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Preconfigured Tasks</a></li>
 							{{ENDIF}}
 							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
 								<li[[menu.isActive('tasks_prenew')]]><a href="pretasks.php?new=true">New preconfigured Tasks</a></li>
 							{{ENDIF}}
-							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_SUPERTASK_ACCESS]])]]}}
 								<li[[menu.isActive('tasks_super')]]><a href='supertasks.php'>Supertasks</a></li>
 							{{ENDIF}}
 							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_SUPERTASK_ACCESS]])]]}}
