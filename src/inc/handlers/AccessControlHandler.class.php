@@ -53,6 +53,9 @@ class AccessControlHandler implements Handler {
       }
       $constants = DAccessControl::getConstants();
       foreach ($constants as $constant) {
+        if (is_array($constant)) {
+          $constant = $constant[0];
+        }
         if ($split[0] == $constant) {
           $newArr[$constant] = ($split[1] == "1") ? true : false;
         }
