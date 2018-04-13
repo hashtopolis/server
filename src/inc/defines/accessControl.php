@@ -51,13 +51,13 @@ class DAccessControl {
         return "Can create hashlists";
       case DAccessControl::CREATE_SUPERHASHLIST_ACCESS:
         return "Can create superhashlits";
-      case DAccessControl::VIEW_AGENT_ACCESS:
+      case DAccessControl::VIEW_AGENT_ACCESS[0]:
         return "Can view agents";
       case DAccessControl::MANAGE_AGENT_ACCESS:
         return "Can manage agents";
       case DAccessControl::CREATE_AGENT_ACCESS:
         return "Can create agents";
-      case DAccessControl::VIEW_TASK_ACCESS:
+      case DAccessControl::VIEW_TASK_ACCESS[0]:
         return "Can view tasks";
       case DAccessControl::RUN_TASK_ACCESS:
         return "Can run preconfigured tasks";
@@ -67,7 +67,7 @@ class DAccessControl {
         return "Can create preconfigured tasks";
       case DAccessControl::CREATE_SUPERTASK_ACCESS:
         return "Can create supertasks";
-      case DAccessControl::VIEW_FILE_ACCESS:
+      case DAccessControl::VIEW_FILE_ACCESS[0]:
         return "Can view files";
       case DAccessControl::MANAGE_FILE_ACCESS:
         return "Can manage files";
