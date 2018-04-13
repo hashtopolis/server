@@ -1,10 +1,5 @@
 <?php
 
-use DBA\AccessGroupAgent;
-use DBA\AccessGroupUser;
-use DBA\Agent;
-use DBA\ContainFilter;
-use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\User;
 
@@ -53,16 +48,19 @@ else if (isset($_GET['id'])) {
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $group->getId(), "=");
     $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
     $constants = DAccessControl::getConstants();
-    foreach ($constants as &$constant) {
+    $constantsChecked = [];
+    foreach ($constants as $constant) {
       if (is_array($constant)) {
         $constant = $constant[0];
       }
       if ($constant == DAccessControl::PUBLIC_ACCESS) {
         // ignore public access
-        unset($constant);
+      }
+      else {
+        $constantsChecked[] = $constant;
       }
     }
-    $OBJECTS['constants'] = $constants;
+    $OBJECTS['constants'] = $constantsChecked;
     
     $TEMPLATE = new Template("access/detail");
     $OBJECTS['pageTitle'] = "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
