@@ -673,6 +673,9 @@ class Util {
     );
     switch ($id) {
       case 'os':
+        if ($val == '-1') {
+          return $platforms[0];
+        }
         return $oses[$val];
         break;
       case 'states':
