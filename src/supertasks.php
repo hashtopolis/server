@@ -30,21 +30,21 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['create']) && $_GET['create'] == "new") {
+if (isset($_GET['create']) && $_GET['create'] == "new" && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
   $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   $OBJECTS['preTasks'] = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
   $OBJECTS['pageTitle'] = "Create Supertask";
 }
-else if (isset($_GET['create']) && $_GET['create'] == "import") {
+else if (isset($_GET['create']) && $_GET['create'] == "import" && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
   $MENU->setActive("tasks_superimport");
   $TEMPLATE = new Template("supertasks/import");
   
   $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
   $OBJECTS['pageTitle'] = "Import Supertask from Masks";
 }
-else if (isset($_GET['id']) && isset($_GET['new'])) {
+else if (isset($_GET['id']) && isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::RUN_TASK_ACCESS)) {
   $TEMPLATE = new Template("supertasks/new");
   $supertask = $FACTORIES::getSupertaskFactory()->get($_GET['id']);
   $OBJECTS['orig'] = $supertask->getId();
