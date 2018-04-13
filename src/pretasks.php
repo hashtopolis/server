@@ -55,7 +55,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['isUsed'] = $isUsed;
   $OBJECTS['pageTitle'] = "Preconfigured task details for " . $pretask->getTaskName();
 }
-else if (isset($_GET['new'])) {
+else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
   $TEMPLATE = new Template("pretasks/new");
   $MENU->setActive("tasks_prenew");
   
