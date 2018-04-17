@@ -31,7 +31,7 @@ class AccessControl {
   }
   
   /**
-   * @param $perm string
+   * @param $perm string|string[]
    * @return bool true if access is granted
    */
   public function hasPermission($perm) {
