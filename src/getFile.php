@@ -8,8 +8,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
-$ACCESS_CONTROL->checkPermission(DViewControl::GETFILE_VIEW_PERM);
-
 ini_set("max_execution_time", 100000);
 
 if (!isset($_GET['file'])) {
@@ -43,7 +41,7 @@ if (!$LOGIN->isLoggedin()) {
     die("No access!");
   }
 }
-else if ($LOGIN->getLevel() < DAccessLevel::USER) {
+else if (!$ACCESS_CONTROL->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
   die("No access!");
 }
 
