@@ -56,7 +56,7 @@ class DAccessControl {
       case DAccessControl::CREATE_HASHLIST_ACCESS:
         return "Can create hashlists";
       case DAccessControl::CREATE_SUPERHASHLIST_ACCESS:
-        return "Can create superhashlits";
+        return "Can create superhashlists";
       case DAccessControl::VIEW_AGENT_ACCESS[0]:
         return "Can view agents";
       case DAccessControl::MANAGE_AGENT_ACCESS:
@@ -82,7 +82,7 @@ class DAccessControl {
       case DAccessControl::CRACKER_BINARY_ACCESS:
         return "Can configure cracker binaries";
       case DAccessControl::SERVER_CONFIG_ACCESS:
-        return "Can access server configureation";
+        return "Can access server configuration";
       case DAccessControl::USER_CONFIG_ACCESS:
         return "Can manage users";
       case DAccessControl::LOGIN_ACCESS:
