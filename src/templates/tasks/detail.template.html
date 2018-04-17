@@ -223,12 +223,16 @@
           {{ENDIF}}
         </td>
         <td>
-          {{IF [[hashlist.getFormat()]] == 3}}
-            <a href="superhashlists.php?id=[[hashlist.getId()]]">[[hashlist.getHashlistName()]]</a>
-            ([[hashtype.getDescription()]])
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+            {{IF [[hashlist.getFormat()]] == 3}}
+              <a href="superhashlists.php?id=[[hashlist.getId()]]">[[hashlist.getHashlistName()]]</a>
+              ([[hashtype.getDescription()]])
+            {{ELSE}}
+              <a href="hashlists.php?id=[[hashlist.getId()]]">[[hashlist.getHashlistName()]]</a>
+              ([[hashtype.getDescription()]])
+            {{ENDIF}}
           {{ELSE}}
-            <a href="hashlists.php?id=[[hashlist.getId()]]">[[hashlist.getHashlistName()]]</a>
-            ([[hashtype.getDescription()]])
+            [[hashlist.getHashlistName()]]
           {{ENDIF}}
         </td>
       </tr>
