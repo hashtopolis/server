@@ -122,7 +122,7 @@ class DViewControl {
   const GETFILE_VIEW_PERM        = DAccessControl::PUBLIC_ACCESS;
   const GETHASHLIST_VIEW_PERM    = DAccessControl::PUBLIC_ACCESS;
   const GROUPS_VIEW_PERM         = DAccessControl::USER_CONFIG_ACCESS;
-  const HASHES_VIEW_PERM         = DAccessControl::VIEW_HASHLIST_ACCESS;
+  const HASHES_VIEW_PERM         = DAccessControl::VIEW_HASHES_ACCESS;
   const HASHLISTS_VIEW_PERM      = DAccessControl::VIEW_HASHLIST_ACCESS;
   const HASHTYPES_VIEW_PERM      = DAccessControl::SERVER_CONFIG_ACCESS;
   const HELP_VIEW_PERM           = DAccessControl::PUBLIC_ACCESS;
