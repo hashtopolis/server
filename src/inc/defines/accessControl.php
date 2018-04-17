@@ -5,26 +5,26 @@ class DAccessControl {
   const MANAGE_HASHLIST_ACCESS      = "manageHashlistAccess";
   const CREATE_HASHLIST_ACCESS      = "createHashlistAccess";
   const CREATE_SUPERHASHLIST_ACCESS = "createSuperhashlistAccess";
+  const VIEW_HASHES_ACCESS          = "viewHashesAccess";
   const VIEW_AGENT_ACCESS           = array("viewAgentsAccess", DAccessControl::MANAGE_AGENT_ACCESS, DAccessControl::CREATE_AGENT_ACCESS);
   const MANAGE_AGENT_ACCESS         = "manageAgentAccess";
   const CREATE_AGENT_ACCESS         = "createAgentAccess";
   const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS, DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::CREATE_SUPERTASK_ACCESS, DAccessControl::MANAGE_TASK_ACCESS);
   const RUN_TASK_ACCESS             = "runTaskAccess";
   const CREATE_TASK_ACCESS          = "createTaskAccess";
+  const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS);
   const CREATE_PRETASK_ACCESS       = "createPretaskAccess";
+  const MANAGE_PRETASK_ACCESS       = "managePretaskAccess";
+  const VIEW_SUPERTASK_ACCESS       = array("viewSupertaskAccess", DAccessControl::CREATE_SUPERTASK_ACCESS, DAccessControl::MANAGE_SUPERTASK_ACCESS);
   const CREATE_SUPERTASK_ACCESS     = "createSupertaskAccess";
+  const MANAGE_SUPERTASK_ACCESS     = "manageSupertaskAccess";
   const VIEW_FILE_ACCESS            = array("viewFileAccess", DAccessControl::MANAGE_FILE_ACCESS, DAccessControl::ADD_FILE_ACCESS);
   const MANAGE_FILE_ACCESS          = "manageFileAccess";
   const ADD_FILE_ACCESS             = "addFileAccess";
   const CRACKER_BINARY_ACCESS       = "crackerBinaryAccess";
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
-  const VIEW_HASHES_ACCESS          = "viewHashesAccess";
   const MANAGE_TASK_ACCESS          = "manageTaskAccess";
-  const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS);
-  const MANAGE_PRETASK_ACCESS       = "managePretaskAccess";
-  const VIEW_SUPERTASK_ACCESS       = array("viewSupertaskAccess", DAccessControl::CREATE_SUPERTASK_ACCESS, DAccessControl::MANAGE_SUPERTASK_ACCESS);
-  const MANAGE_SUPERTASK_ACCESS     = "manageSupertaskAccess";
   
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";
