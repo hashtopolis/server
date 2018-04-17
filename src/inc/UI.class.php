@@ -12,6 +12,15 @@ class UI {
     die();
   }
   
+  public static function permissionError() {
+    global $OBJECTS;
+    
+    $TEMPLATE = new Template("errors/restricted");
+    $OBJECTS['pageTitle'] = "Restricted";
+    echo $TEMPLATE->render($OBJECTS);
+    die();
+  }
+  
   public static function printFatalError($message) {
     echo $message;
     die();

@@ -25,8 +25,7 @@ class AccessControl {
    */
   public function checkPermission($perm) {
     if (!$this->hasPermission($perm)) {
-      $TEMPLATE = new Template("errors/restricted");
-      die($TEMPLATE->render(array()));
+      UI::permissionError();
     }
   }
   
