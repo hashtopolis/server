@@ -53,21 +53,33 @@
     <tr>
       <td>Hashes:</td>
       <td>
-        <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]">[[list.getVal('hashlist')->getHashCount()]]</a>
+        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}}
+          <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]">[[list.getVal('hashlist').getHashCount()]]</a>
+        {{ELSE}}
+          [[list.getVal('hashlist').getHashCount()]]
+        {{ENDIF}}
       </td>
     </tr>
     <tr>
       <td>Cracked:</td>
       <td>
-        <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=cracked">[[list.getVal('hashlist')->getCracked()]]</a>
-        ([[Util::showperc([[list.getVal('hashlist')->getCracked()]], [[list.getVal('hashlist')->getHashCount()]])]]%)
+        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}}
+          <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=cracked">[[list.getVal('hashlist').getCracked()]]</a>
+        {{ELSE}}
+          [[list.getVal('hashlist').getCracked()]]
+        {{ENDIF}}
+        ([[Util::showperc([[list.getVal('hashlist').getCracked()]], [[list.getVal('hashlist').getHashCount()]])]]%)
       </td>
     </tr>
     <tr>
       <td>Remaining:</td>
       <td>
-        <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=uncracked">[[Util::subtract([[list.getVal('hashlist')->getHashCount()]], [[list.getVal('hashlist')->getCracked()]])]]</a>
-        ([[Util::showperc([[list.getVal('hashlist')->getHashCount()]] - [[list.getVal('hashlist')->getCracked()]], [[list.getVal('hashlist')->getHashCount()]])]]%)
+        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}}
+          <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=uncracked">[[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]</a>
+        {{ELSE}}
+          [[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]
+        {{ENDIF}}
+        ([[Util::showperc([[list.getVal('hashlist').getHashCount()]] - [[list.getVal('hashlist').getCracked()]], [[list.getVal('hashlist').getHashCount()]])]]%)
       </td>
     </tr>
     <tr>
