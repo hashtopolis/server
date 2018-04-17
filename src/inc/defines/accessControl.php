@@ -58,13 +58,13 @@ class DAccessControl {
       case DAccessControl::CREATE_SUPERHASHLIST_ACCESS:
         return "Can create superhashlists";
       case DAccessControl::VIEW_AGENT_ACCESS[0]:
-        return "Can view agents";
+        return "Can view agents<br>Also granted with manage/create agents permission.";
       case DAccessControl::MANAGE_AGENT_ACCESS:
         return "Can manage agents";
       case DAccessControl::CREATE_AGENT_ACCESS:
         return "Can create agents";
       case DAccessControl::VIEW_TASK_ACCESS[0]:
-        return "Can view tasks";
+        return "Can view tasks<br>Also granted with manage/create tasks/preconfigured tasks/supertasks permission.";
       case DAccessControl::RUN_TASK_ACCESS:
         return "Can run preconfigured tasks";
       case DAccessControl::CREATE_TASK_ACCESS:
@@ -74,7 +74,7 @@ class DAccessControl {
       case DAccessControl::CREATE_SUPERTASK_ACCESS:
         return "Can create/delete supertasks";
       case DAccessControl::VIEW_FILE_ACCESS[0]:
-        return "Can view files";
+        return "Can view files<br>Also granted with manage/add files permission.";
       case DAccessControl::MANAGE_FILE_ACCESS:
         return "Can manage files";
       case DAccessControl::ADD_FILE_ACCESS:
@@ -92,11 +92,11 @@ class DAccessControl {
       case DAccessControl::MANAGE_TASK_ACCESS:
         return "Can change tasks (set priority, rename, etc.)";
       case DAccessControl::VIEW_PRETASK_ACCESS[0]:
-        return "Can view preconfigured tasks";
+        return "Can view preconfigured tasks<br>Also granted with manage/create preconfigured tasks permission.";
       case DAccessControl::MANAGE_PRETASK_ACCESS:
         return "Can manage preconfigured tasks";
       case DAccessControl::VIEW_SUPERTASK_ACCESS[0]:
-        return "Can view preconfigured supertasks";
+        return "Can view preconfigured supertasks<br>Also granted with manage/create supertasks permission.";
       case DAccessControl::MANAGE_SUPERTASK_ACCESS:
         return "Can manage preconfigured supertasks";
     }
