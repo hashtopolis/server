@@ -53,7 +53,7 @@
     <tr>
       <td>Hashes:</td>
       <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
           <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]">[[list.getVal('hashlist').getHashCount()]]</a>
         {{ELSE}}
           [[list.getVal('hashlist').getHashCount()]]
@@ -63,7 +63,7 @@
     <tr>
       <td>Cracked:</td>
       <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
           <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=cracked">[[list.getVal('hashlist').getCracked()]]</a>
         {{ELSE}}
           [[list.getVal('hashlist').getCracked()]]
@@ -74,7 +74,7 @@
     <tr>
       <td>Remaining:</td>
       <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
           <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=uncracked">[[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]</a>
         {{ELSE}}
           [[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]
