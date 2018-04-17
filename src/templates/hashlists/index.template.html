@@ -34,8 +34,19 @@
 				<td>[[Util::getStaticArray([[entry.getVal('hashlist').getFormat()]], 'formats')]]</td>
 				<td class='num'>
 					[[Util::showperc([[entry.getVal('hashlist').getCracked()]], [[entry.getVal('hashlist').getHashCount()]])]]%
-					(<a href="hashes.php?hashlist=[[entry.getVal('hashlist').getId()]]&filter=cracked">[[entry.getVal('hashlist').getCracked()]]</a> /
-					<a href="hashes.php?hashlist=[[entry.getVal('hashlist').getId()]]">[[entry.getVal('hashlist').getHashCount()]]</a>)
+					(
+					{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+						<a href="hashes.php?hashlist=[[entry.getVal('hashlist').getId()]]&filter=cracked">[[entry.getVal('hashlist').getCracked()]]</a>
+					{{ELSE}}
+						[[entry.getVal('hashlist').getCracked()]]
+					{{ENDIF}}
+					/
+					{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+						<a href="hashes.php?hashlist=[[entry.getVal('hashlist').getId()]]">[[entry.getVal('hashlist').getHashCount()]]</a>
+					{{ELSE}}
+						[[entry.getVal('hashlist').getHashCount()]]
+					{{ENDIF}}
+					)
 				</td>
 				<td>
 					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
