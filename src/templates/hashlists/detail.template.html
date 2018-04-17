@@ -93,8 +93,7 @@
             <input title="Is Secret" type="checkbox" name="secret" value="1"{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}}
             onChange="javascript:document.getElementById('hashlistsecret').submit();"> Hashlist contains secret data
           </form>
-        {{ENDIF}}
-        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+        {{ELSE}}
           <input title="Is Secret" type='checkbox'{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}} disabled> Hashlist contains secret data
         {{ENDIF}}
       </td>
