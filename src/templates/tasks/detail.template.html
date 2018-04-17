@@ -248,36 +248,34 @@
   </table>
 </div>
 {{IF [[sizeof([[attachedFiles]])]] > 0}}
-  {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
-    <h3>Attached files</h3>
-    <div class="panel panel-default">
-      <table class="table table-bordered table-nonfluid">
+  <h3>Attached files</h3>
+  <div class="panel panel-default">
+    <table class="table table-bordered table-nonfluid">
+      <tr>
+        <th>ID</th>
+        <th>Filename</th>
+        <th>Size</th>
+      </tr>
+      {{FOREACH file;[[attachedFiles]]}}
         <tr>
-          <th>ID</th>
-          <th>Filename</th>
-          <th>Size</th>
+          <td>[[file.getId()]]</td>
+          <td>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
+              <a href="files.php#[[file.getId()]]">[[file.getFilename()]]</a>
+            {{ELSE}}
+              [[file.getFilename()]]
+            {{ENDIF}}
+            {{IF [[file.getIsSecret()]] == 1}}
+              <img src="static/lock.gif" alt="Secret">
+            {{ENDIF}}
+          </td>
+          <td class='num'>
+            [[Util::nicenum([[file.getSize()]])]]B
+          </td>
         </tr>
-        {{FOREACH file;[[attachedFiles]]}}
-          <tr>
-            <td>[[file.getId()]]</td>
-            <td>
-              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
-                <a href="files.php#[[file.getId()]]">[[file.getFilename()]]</a>
-              {{ELSE}}
-                [[file.getFilename()]]
-              {{ENDIF}}
-              {{IF [[file.getIsSecret()]] == 1}}
-                <img src="static/lock.gif" alt="Secret">
-              {{ENDIF}}
-            </td>
-            <td class='num'>
-              [[Util::nicenum([[file.getSize()]])]]B
-            </td>
-          </tr>
-        {{ENDFOREACH}}
-      </table>
-    </div>
-  {{ENDIF}}
+      {{ENDFOREACH}}
+    </table>
+  </div>
 {{ENDIF}}
 <h3>Assigned agents</h3>
 <div class="panel panel-default">
