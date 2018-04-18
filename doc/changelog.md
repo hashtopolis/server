@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - Export of founds of binary hashlists fixed
+- DB Connection check during installation is now tested correctly
 
 # v0.5.0 -> v0.5.1
 
