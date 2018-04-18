@@ -25,7 +25,7 @@
 						</ul>
 					</li>
 				{{ENDIF}}
-				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]] || [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]] || [[accessControl.hasPermission([[$DAccessControl::VIEW_SUPERTASK_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}

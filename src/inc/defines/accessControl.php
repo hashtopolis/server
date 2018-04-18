@@ -9,7 +9,7 @@ class DAccessControl {
   const VIEW_AGENT_ACCESS           = array("viewAgentsAccess", DAccessControl::MANAGE_AGENT_ACCESS, DAccessControl::CREATE_AGENT_ACCESS);
   const MANAGE_AGENT_ACCESS         = "manageAgentAccess";
   const CREATE_AGENT_ACCESS         = "createAgentAccess";
-  const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS, DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::CREATE_SUPERTASK_ACCESS, DAccessControl::MANAGE_TASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS, DAccessControl::MANAGE_SUPERTASK_ACCESS);
+  const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS, DAccessControl::MANAGE_TASK_ACCESS);
   const RUN_TASK_ACCESS             = "runTaskAccess";
   const CREATE_TASK_ACCESS          = "createTaskAccess";
   const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS);
@@ -64,7 +64,7 @@ class DAccessControl {
       case DAccessControl::CREATE_AGENT_ACCESS:
         return "Can create agents";
       case DAccessControl::VIEW_TASK_ACCESS[0]:
-        return "Can view tasks<br>Also granted with manage/create tasks/preconfigured tasks/supertasks permission.";
+        return "Can view tasks<br>Also granted with manage/create tasks permission.";
       case DAccessControl::RUN_TASK_ACCESS:
         return "Can run preconfigured tasks";
       case DAccessControl::CREATE_TASK_ACCESS:
