@@ -431,8 +431,10 @@ class HashlistHandler implements Handler {
     $tmpfile = dirname(__FILE__) . "/../../files/$tmpname";
     $factory = $FACTORIES::getHashFactory();
     $format = $FACTORIES::getHashlistFactory()->get($hashlists[0]->getId());
+    $orderObject = Hash::HASH_ID;
     if ($format->getFormat() != 0) {
       $factory = $FACTORIES::getHashBinaryFactory();
+      $orderObject = HashBinary::HASH_BINARY_ID;
     }
     $file = fopen($tmpfile, "wb");
     if (!$file) {
@@ -452,7 +454,7 @@ class HashlistHandler implements Handler {
     }
     $separator = $CONFIG->getVal(DConfig::FIELD_SEPARATOR);
     for ($x = 0; $x * $pagingSize < $count; $x++) {
-      $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
+      $oF = new OrderFilter($orderObject, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
       $entries = $factory->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
       $buffer = "";
       foreach ($entries as $entry) {

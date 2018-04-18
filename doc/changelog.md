@@ -1,3 +1,9 @@
+# v0.5.1 -> x.x.x
+
+## Bugfixes
+
+- Export of founds of binary hashlists fixed
+
 # v0.5.0 -> v0.5.1
 
 ## Bugfixes
