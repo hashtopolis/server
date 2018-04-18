@@ -1,5 +1,9 @@
 # v0.5.1 -> x.x.x
 
+## Features
+
+- Added autofocus for login field
+
 ## Bugfixes
 
 - Export of founds of binary hashlists fixed
