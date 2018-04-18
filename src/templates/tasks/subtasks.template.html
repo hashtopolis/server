@@ -73,7 +73,7 @@
       {{ENDIF}}
     </td>
     <td style='min-width: 120px'>
-      {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+      {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
         <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[subTask.getVal('taskId')]]" method="post">
           <input type="submit" class='btn btn-default' value="Copy">
         </form>
