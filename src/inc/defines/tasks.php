@@ -5,7 +5,7 @@ class DPretaskAction {
   const SET_PRIORITY_PERM = DAccessControl::MANAGE_PRETASK_ACCESS;
   
   const DELETE_PRETASK      = "deletePretask";
-  const DELETE_PRETASK_PERM = DAccessControl::MANAGE_PRETASK_ACCESS;
+  const DELETE_PRETASK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
   
   const RENAME_PRETASK      = "renamePretask";
   const RENAME_PRETASK_PERM = DAccessControl::MANAGE_PRETASK_ACCESS;
