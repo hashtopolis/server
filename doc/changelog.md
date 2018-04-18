@@ -1,5 +1,9 @@
 # v0.5.1 -> x.x.x
 
+## Features
+
+- Added fine grained permission management
+
 ## Bugfixes
 
 - Export of founds of binary hashlists fixed
