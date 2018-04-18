@@ -47,9 +47,13 @@
 								{{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
 									<tr>
 										<td>[[task.getId()]]</td>
-										<td><a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a></td>
 										<td>
-											{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
+											{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+												<a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a>
+											{{ENDIF}}
+										</td>
+										<td>
+											{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
 												<form class="form-inline" action="pretasks.php?super=true" method="POST">
 													<input type='hidden' name='action' value='[[$DPretaskAction::SET_PRIORITY]]'>
 													<input type="hidden" name="pretaskId" value="[[task.getId()]]">
@@ -62,7 +66,7 @@
 											{{ENDIF}}
 										</td>
 										<td class="right">
-											{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
+											{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
 												<form style ='float: right;' action="pretasks.php?super=true" method="POST" onSubmit="if (!confirm('Really delete preconfigured task [[task.getId()]]?')) return false;">
 													<input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
 													<input type="hidden" name="pretaskId" value="[[task.getId()]]">
