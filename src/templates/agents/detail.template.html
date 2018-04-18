@@ -273,7 +273,11 @@
           [[Util::showperc([[chunk.getProgress()]], 10000)]]%
         </td>
         <td>
-          <a href='tasks.php?id=[[chunk.getTaskId()]]'>[[chunk.getTaskId()]]</a> <!-- TODO: put here task name -->
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+            <a href='tasks.php?id=[[chunk.getTaskId()]]'>[[chunk.getTaskId()]]</a> <!-- TODO: put here task name -->
+          {{ELSE}}
+            [[chunk.getTaskId()]]
+          {{ENDIF}}
         </td>
         <td>
           {{IF [[chunk.getDispatchTime()]] == 0}}
