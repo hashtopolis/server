@@ -1,7 +1,7 @@
 <?php
 
 class DAccessControl {
-  const VIEW_HASHLIST_ACCESS        = array("viewHashlistAccess", DAccessControl::CREATE_HASHLIST_ACCESS);
+  const VIEW_HASHLIST_ACCESS        = array("viewHashlistAccess", DAccessControl::CREATE_HASHLIST_ACCESS, DAccessControl::MANAGE_HASHLIST_ACCESS);
   const MANAGE_HASHLIST_ACCESS      = "manageHashlistAccess";
   const CREATE_HASHLIST_ACCESS      = "createHashlistAccess";
   const CREATE_SUPERHASHLIST_ACCESS = "createSuperhashlistAccess";
