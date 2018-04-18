@@ -106,6 +106,7 @@ class Login {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
+    /****** Check password ******/
     if ($this->valid == true) {
       return false;
     }
@@ -128,8 +129,9 @@ class Login {
       return false;
     }
     $this->user = $user;
+    /****** End check password ******/
     
-    /***** YUBIKEY *****/
+    /***** Check Yubikey *****/
     if ($user->getYubikey() == true && Util::isYubikeyEnabled() && sizeof($CONFIG->getVal(DConfig::YUBIKEY_ID)) != 0 && sizeof($CONFIG->getVal(DConfig::YUBIKEY_KEY) != 0)) {
       $keyId = substr($otp, 0, 12);
       
@@ -163,11 +165,14 @@ class Login {
         return false;
       }
     }
-    else if ($user->getYubikey() == true) {
+    else if ($user->getYubikey() == true && Util::isYubikeyEnabled()) {
       return false;
     }
-    /***** FIN YUBIKEY *****/
+    /****** End check Yubikey ******/
+  
+    // At this point the user is authenticated successfully, so the session can be created.
     
+    /****** Create session ******/
     $startTime = time();
     $s = new Session(0, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
     $s = $FACTORIES::getSessionFactory()->save($s);
