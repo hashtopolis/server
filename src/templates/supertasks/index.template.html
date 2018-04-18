@@ -50,6 +50,8 @@
 										<td>
 											{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
 												<a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a>
+											{{ELSE}}
+												[[task.getTaskName()]]
 											{{ENDIF}}
 										</td>
 										<td>
