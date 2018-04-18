@@ -3,6 +3,7 @@
 ## Features
 
 - Added autofocus for login field
+- Added fine grained permission management
 
 ## Bugfixes
 
