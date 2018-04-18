@@ -74,10 +74,10 @@ class DTaskAction {
   const RENAME_TASK_PERM = DAccessControl::MANAGE_TASK_ACCESS;
   
   const DELETE_FINISHED      = "deleteFinished";
-  const DELETE_FINISHED_PERM = DAccessControl::MANAGE_TASK_ACCESS;
+  const DELETE_FINISHED_PERM = DAccessControl::CREATE_TASK_ACCESS;
   
   const DELETE_TASK      = "deleteTask";
-  const DELETE_TASK_PERM = DAccessControl::MANAGE_TASK_ACCESS;
+  const DELETE_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
   
   const SET_PRIORITY      = "setPriority";
   const SET_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
@@ -89,5 +89,5 @@ class DTaskAction {
   const DELETE_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
   
   const SET_SUPERTASK_PRIORITY      = "setSupertaskPriority";
-  const SET_SUPERTASK_PRIORITY_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
+  const SET_SUPERTASK_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
 }
