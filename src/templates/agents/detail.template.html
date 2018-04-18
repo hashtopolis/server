@@ -61,7 +61,7 @@
             <input type='submit' class='btn btn-default' value='Change'>
           </form>
         {{ELSE}}
-          <input type="text" name='name' value="[[agent.getAgentName()]]" class='form-control' readonly title="Machine Name">
+          [[agent.getAgentName()]]
         {{ENDIF}}
       </td>
     </tr>
@@ -99,7 +99,7 @@
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
-          <input type="text" name='name' value="{{IF [[agent.getCpuOnly()]] == 0}}No{{ELSE}}Yes{{ENDIF}}" class='form-control' readonly title="cpuOnly">
+          {{IF [[agent.getCpuOnly()]] == 0}}No{{ELSE}}Yes{{ENDIF}}
         {{ENDIF}}
       </td>
     </tr>
@@ -127,7 +127,7 @@
             <input type="submit" class='btn btn-default' value="Set">
           </form>
         {{ELSE}}
-          <input type="text" class='form-control' name="cmdpars" value="[[agent.getCmdPars()]]" size="30" readonly title="Command Line Parameters">
+          [[agent.getCmdPars()]]
         {{ENDIF}}
       </td>
     </tr>
