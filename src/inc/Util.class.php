@@ -564,7 +564,7 @@ class Util {
     
     $user = $FACTORIES::getUserFactory()->get($id);
     if ($user === null) {
-      return "Unknown-$id";
+      return "Unknown" . (strlen($id) > 0) ? "-$id" : "";
     }
     return $user->getUsername();
   }
