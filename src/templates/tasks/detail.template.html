@@ -379,36 +379,44 @@
       </tr>
     {{ENDFOREACH}}
 
-    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]] || [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
       <tr>
-        <td colspan="4">
-          <form action="agents.php?task=[[task.getId()]]" method="POST">
-            <div class="col-md-8">
-              <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
-              <input type="hidden" name="task" value="[[task.getId()]]">
-              <input type="hidden" name="csrf" value="[[csrf]]">
-              <select class='form-control' name="agentId" title="Assign">
-                {{FOREACH agent;[[assignAgents]]}}
-                  <option value='[[agent.getId()]]'>[[agent.getId()]]
-                  {{IF [[agent.getAgentName()]] != ""}}
-                    ([[agent.getAgentName()]])
-                  {{ENDIF}}
-                  </option>
-                {{ENDFOREACH}}
-              </select>
-            </div>
-            <div class="col-md-4">
-              <input type="submit" class='btn btn-default' value="Assign">
-            </div>
-          </form>
-        </td>
-        <td colspan="6">
-          {{IF [[showAllAgents]]}}
-            <a href="tasks.php?id=[[task.getId()]]" class='btn btn-warning'>Hide all Assignments</a>
-          {{ELSE}}
-            <a href="tasks.php?id=[[task.getId()]]&allagents=true" class='btn btn-success'>Show all Assignments</a>
-          {{ENDIF}}
-        </td>
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}
+          <td colspan="4">
+            <form action="agents.php?task=[[task.getId()]]" method="POST">
+              <div class="col-md-8">
+                <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
+                <input type="hidden" name="task" value="[[task.getId()]]">
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <select class='form-control' name="agentId" title="Assign">
+                  {{FOREACH agent;[[assignAgents]]}}
+                    <option value='[[agent.getId()]]'>[[agent.getId()]]
+                    {{IF [[agent.getAgentName()]] != ""}}
+                      ([[agent.getAgentName()]])
+                    {{ENDIF}}
+                    </option>
+                  {{ENDFOREACH}}
+                </select>
+              </div>
+              <div class="col-md-4">
+                <input type="submit" class='btn btn-default' value="Assign">
+              </div>
+            </form>
+          </td>
+        {{ELSE}}
+          <td colspan="4">&nbsp;</td>
+        {{ENDIF}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+          <td colspan="6">
+            {{IF [[showAllAgents]]}}
+              <a href="tasks.php?id=[[task.getId()]]" class='btn btn-warning'>Hide all Assignments</a>
+            {{ELSE}}
+              <a href="tasks.php?id=[[task.getId()]]&allagents=true" class='btn btn-success'>Show all Assignments</a>
+            {{ENDIF}}
+          </td>
+        {{ELSE}}
+          <td colspan="6">&nbsp;</td>
+        {{ENDIF}}
       </tr>
     {{ENDIF}}
   </table>
