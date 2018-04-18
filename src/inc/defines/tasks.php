@@ -23,7 +23,7 @@ class DPretaskAction {
   const SET_SMALL_TASK_PERM = DAccessControl::MANAGE_PRETASK_ACCESS;
   
   const CREATE_TASK      = "createTask";
-  const CREATE_TASK_PERM = DAccessControl::RUN_TASK_ACCESS;
+  const CREATE_TASK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
 }
 
 class DTaskTypes {
