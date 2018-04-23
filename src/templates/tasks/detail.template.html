@@ -322,7 +322,7 @@
               <input type="hidden" name="action" value="[[$DTaskAction::SET_BENCHMARK]]">
               <input type="hidden" name="agentId" value="[[agent.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="8" title="Benchmark">
+              <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="18" title="Benchmark">
               <input type="submit" class='btn btn-default' value="Set">
             </form>
           {{ELSE}}
