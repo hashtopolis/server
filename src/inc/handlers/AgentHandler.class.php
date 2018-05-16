@@ -164,7 +164,7 @@ class AgentHandler implements Handler {
       UI::printError("ERROR", "Invalid task!");
     }
     else if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
-      UI::printError("ERROR", "Task cannot be accessed by this agent!");
+      UI::printError("ERROR", "This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
     }
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
