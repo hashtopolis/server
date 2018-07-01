@@ -6,6 +6,12 @@ class DAgentBinaryAction {
   const DELETE_BINARY = "deleteBinary";
 }
 
+class DAgentIgnoreErrors {
+  const NO            = 0;
+  const IGNORE_SAVE   = 1;
+  const IGNORE_NOSAVE = 2;
+}
+
 class DAgentAction {
   const CLEAR_ERRORS   = "clearErrors";
   const RENAME_AGENT   = "renameAgent";

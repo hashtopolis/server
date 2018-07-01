@@ -28,18 +28,21 @@ class APIClientError extends APIBasic {
       $this->sendErrorResponse(PActions::CLIENT_ERROR, "Agent is not assigned to this task!");
     }
     
-    //save error message
-    $error = new AgentError(0, $this->agent->getId(), $task->getId(), time(), $QUERY[PQueryClientError::MESSAGE]);
-    $FACTORIES::getAgentErrorFactory()->save($error);
+    if ($this->agent->getIgnoreErrors() < DAgentIgnoreErrors::IGNORE_SAVE) {
+      //save error message
+      $error = new AgentError(0, $this->agent->getId(), $task->getId(), time(), $QUERY[PQueryClientError::MESSAGE]);
+      $FACTORIES::getAgentErrorFactory()->save($error);
+      
+      $payload = new DataSet(array(DPayloadKeys::AGENT => $this->agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryClientError::MESSAGE]));
+      NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
+      NotificationHandler::checkNotifications(DNotificationType::OWN_AGENT_ERROR, $payload);
+    }
     
-    $payload = new DataSet(array(DPayloadKeys::AGENT => $this->agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryClientError::MESSAGE]));
-    NotificationHandler::checkNotifications(DNotificationType::AGENT_ERROR, $payload);
-    NotificationHandler::checkNotifications(DNotificationType::OWN_AGENT_ERROR, $payload);
-    
-    if ($this->agent->getIgnoreErrors() == 0) {
+    if ($this->agent->getIgnoreErrors() == DAgentIgnoreErrors::NO) {
       //deactivate agent
       $this->agent->setIsActive(0);
     }
+    
     $this->updateAgent(PActions::CLIENT_ERROR);
     $this->sendResponse(array(
         PQueryClientError::ACTION => PActions::CLIENT_ERROR,
