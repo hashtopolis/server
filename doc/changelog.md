@@ -3,6 +3,7 @@
 ## Features
 
 - Added autofocus for login field
+- Agent Errors can be handled better
 
 ## Bugfixes
 
