@@ -12,7 +12,7 @@ class DAccessControl {
   const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS, DAccessControl::MANAGE_TASK_ACCESS);
   const RUN_TASK_ACCESS             = array("runTaskAccess", DAccessControl::CREATE_TASK_ACCESS);
   const CREATE_TASK_ACCESS          = "createTaskAccess";
-  const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS);
+  const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS, DAccessControl::RUN_TASK_ACCESS);
   const CREATE_PRETASK_ACCESS       = "createPretaskAccess";
   const MANAGE_PRETASK_ACCESS       = "managePretaskAccess";
   const VIEW_SUPERTASK_ACCESS       = array("viewSupertaskAccess", DAccessControl::CREATE_SUPERTASK_ACCESS, DAccessControl::MANAGE_SUPERTASK_ACCESS);
