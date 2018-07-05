@@ -12,6 +12,7 @@ class DAccessControl {
   const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS[0], DAccessControl::MANAGE_TASK_ACCESS);
   const RUN_TASK_ACCESS             = array("runTaskAccess");
   const CREATE_TASK_ACCESS          = array("createTaskAccess");
+  const MANAGE_TASK_ACCESS          = "manageTaskAccess";
   const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS, DAccessControl::RUN_TASK_ACCESS[0]);
   const CREATE_PRETASK_ACCESS       = "createPretaskAccess";
   const MANAGE_PRETASK_ACCESS       = "managePretaskAccess";
@@ -24,12 +25,11 @@ class DAccessControl {
   const CRACKER_BINARY_ACCESS       = "crackerBinaryAccess";
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
-  const MANAGE_TASK_ACCESS          = "manageTaskAccess";
-  
+
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";
   const LOGIN_ACCESS  = "loginAccess";
-  
+
   static function getConstants() {
     try {
       $oClass = new ReflectionClass(__CLASS__);
@@ -39,7 +39,7 @@ class DAccessControl {
     }
     return $oClass->getConstants();
   }
-  
+
   /**
    * @param $access string
    * @return string description
@@ -142,10 +142,10 @@ class DViewControl {
 class DAccessControlAction {
   const CREATE_GROUP      = "createGroup";
   const CREATE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
-  
+
   const DELETE_GROUP      = "deleteGroup";
   const DELETE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
-  
+
   const EDIT      = "edit";
   const EDIT_PERM = DAccessControl::USER_CONFIG_ACCESS;
 }
