@@ -9,7 +9,7 @@ class DAccessControl {
   const VIEW_AGENT_ACCESS           = array("viewAgentsAccess", DAccessControl::MANAGE_AGENT_ACCESS, DAccessControl::CREATE_AGENT_ACCESS);
   const MANAGE_AGENT_ACCESS         = "manageAgentAccess";
   const CREATE_AGENT_ACCESS         = "createAgentAccess";
-  const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS, DAccessControl::MANAGE_TASK_ACCESS);
+  const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS[0], DAccessControl::MANAGE_TASK_ACCESS);
   const RUN_TASK_ACCESS             = array("runTaskAccess");
   const CREATE_TASK_ACCESS          = array("createTaskAccess");
   const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS, DAccessControl::RUN_TASK_ACCESS[0]);
