@@ -64,7 +64,7 @@ class DAccessControl {
       case DAccessControl::CREATE_AGENT_ACCESS:
         return "Can create agents";
       case DAccessControl::VIEW_TASK_ACCESS[0]:
-        return "Can view tasks<br>Also granted with manage/create tasks permission.";
+        return "Can view tasks<br>Also granted with change/create tasks permission.";
       case DAccessControl::RUN_TASK_ACCESS[0]:
         return "Can run preconfigured tasks";
       case DAccessControl::CREATE_TASK_ACCESS[0]:

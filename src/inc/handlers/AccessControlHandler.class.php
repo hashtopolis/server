@@ -32,7 +32,7 @@ class AccessControlHandler implements Handler {
   }
   
   private function saveEdit($groupId, $perm) {
-    global $FACTORIES;
+    global $FACTORIES, $ACCESS_CONTROL;
     
     $group = $FACTORIES::getRightGroupFactory()->get($groupId);
     if ($group === null) {
@@ -63,6 +63,16 @@ class AccessControlHandler implements Handler {
     }
     $group->setPermissions(json_encode($newArr));
     $FACTORIES::getRightGroupFactory()->update($group);
+
+    $ACCESS_CONTROL->reload();
+    foreach($newArr as $constant => $set){
+      if($set == true){
+        continue;
+      }
+      else if($ACCESS_CONTROL->hasPermission($constant)){
+        $newArr[$constant] = true;
+      }
+    }
   }
   
   private function deleteGroup($groupId) {

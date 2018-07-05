@@ -5,20 +5,31 @@ use DBA\User;
 class AccessControl {
   private $user;
   private $rightGroup;
-  
+
   /**
    * AccessControl constructor.
    * @param $user User
    */
   public function __construct($user = null) {
     global $FACTORIES;
-    
+
     $this->user = $user;
     if ($this->user != null) {
       $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
   }
-  
+
+  /**
+   * Force a reload of the permissions from the database
+   */
+  public function reload(){
+    global $FACTORIES;
+
+    if ($this->user != null) {
+      $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
+    }
+  }
+
   /**
    * If access is not granted, permission denied page will be shown
    * @param $perm string|string[]
@@ -28,7 +39,7 @@ class AccessControl {
       UI::permissionError();
     }
   }
-  
+
   /**
    * @param $perm string|string[]
    * @return bool true if access is granted
@@ -36,7 +47,7 @@ class AccessControl {
   public function hasPermission($perm) {
     /** @var $LOGIN Login */
     global $LOGIN;
-    
+
     if ($perm == DAccessControl::PUBLIC_ACCESS) {
       return true;
     }
