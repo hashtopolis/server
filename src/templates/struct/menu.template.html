@@ -65,7 +65,7 @@
 							{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_SUPERHASHLIST_ACCESS]])]]}}
 								<li[[menu.isActive('lists_snew')]]><a href="superhashlists.php?new=true">New superhashlist</a></li>
 							{{ENDIF}}
-							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
 								<li[[menu.isActive('lists_search')]]><a href="search.php">Search Hash</a></li>
 							{{ENDIF}}
 						</ul>

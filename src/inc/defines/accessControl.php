@@ -132,7 +132,7 @@ class DViewControl {
   const LOGOUT_VIEW_PERM         = DAccessControl::LOGIN_ACCESS;
   const NOTIFICATIONS_VIEW_PERM  = DAccessControl::LOGIN_ACCESS;
   const PRETASKS_VIEW_PERM       = DAccessControl::VIEW_PRETASK_ACCESS;
-  const SEARCH_VIEW_PERM         = DAccessControl::VIEW_HASHLIST_ACCESS;
+  const SEARCH_VIEW_PERM         = DAccessControl::VIEW_HASHES_ACCESS;
   const SUPERHASHLISTS_VIEW_PERM = DAccessControl::VIEW_HASHLIST_ACCESS;
   const SUPERTASKS_VIEW_PERM     = DAccessControl::VIEW_SUPERTASK_ACCESS;
   const TASKS_VIEW_PERM          = DAccessControl::VIEW_TASK_ACCESS;
