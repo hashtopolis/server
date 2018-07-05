@@ -83,7 +83,7 @@ class TaskHandler implements Handler {
         $this->updatePriority();
         break;
       case DTaskAction::CREATE_TASK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::CREATE_TASK_PERM);
+        $ACCESS_CONTROL->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
         $this->create();
         break;
       case DTaskAction::DELETE_SUPERTASK:
