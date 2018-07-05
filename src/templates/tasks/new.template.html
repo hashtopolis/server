@@ -2,7 +2,7 @@
 {%TEMPLATE->struct/menu%}
 <h2>New task</h2>
 {%TEMPLATE->struct/messages%}
-<form class='form-inline' action="tasks.php" method="POST" enctype="multipart/form-data">
+<form class='form-inline' action="tasks.php?new=true{{IF [[orig]] > 0}}&copyPre=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data">
 	<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
 	<input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
     <input type="hidden" name="copy" value="[[orig]]">
