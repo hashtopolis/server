@@ -22,7 +22,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-$ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
+$ACCESS_CONTROL->checkPermission(array(DViewControl::TASKS_VIEW_PERM, DAccessControl::RUN_TASK_ACCESS));
 
 $TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");
@@ -62,6 +62,7 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 }
 
 if (isset($_GET['id'])) {
+  $ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
   $TEMPLATE = new Template("tasks/detail");
   $task = $FACTORIES::getTaskFactory()->get($_GET['id']);
   if ($task == null) {
@@ -345,6 +346,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['pageTitle'] = "Create Task";
 }
 else {
+  $ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
   Util::loadTasks();
   $OBJECTS['pageTitle'] = "Tasks";
 }
