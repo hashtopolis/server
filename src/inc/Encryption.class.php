@@ -19,9 +19,9 @@ class Encryption {
     $KEY = pack('H*', hash("sha256", $startTime));
     $cycles = Encryption::getCount($username . $startTime, 500, 1000);
     $CIPHER = $username . $startTime;
+    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
     for ($x = 0; $x < $cycles; $x++) {
-      $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
-      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER));
+      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER . $KEY));
     }
     return Util::strToHex($KEY);
   }
@@ -113,9 +113,9 @@ class Encryption {
     $KEY = pack('H*', hash("sha256", $id));
     $cycles = Encryption::getCount($username . $PEPPER, 500, 1000);
     $CIPHER = $id . $username;
+    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
     for ($x = 0; $x < $cycles; $x++) {
-      $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
-      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER . $username));
+      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER . $username . $KEY));
     }
     return Util::strToHex($KEY);
   }
