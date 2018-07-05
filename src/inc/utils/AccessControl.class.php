@@ -51,7 +51,7 @@ class AccessControl {
   public function givenByDependency($singlePerm){
     $constants = DAccessControl::getConstants();
     foreach($constants as $constant){
-      if(is_array($constant) && in_array($singlePerm, $constant) && $this->hasPermission($constant)){
+      if(is_array($constant) && $singlePerm == $constant[0] && $this->hasPermission($constant)){
         return true;
       }
       else if(!is_array($constant) && $constant == $singlePerm && $this->hasPermission($constant)){
