@@ -1,6 +1,7 @@
 <?php
 
 use DBA\User;
+use DBA\RightGroup;
 
 class AccessControl {
   private $user;
@@ -9,13 +10,17 @@ class AccessControl {
   /**
    * AccessControl constructor.
    * @param $user User
+   * @param $groupId int
    */
-  public function __construct($user = null) {
+  public function __construct($user = null, $groupId = null) {
     global $FACTORIES;
 
     $this->user = $user;
     if ($this->user != null) {
       $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
+    }
+    else if($groupId != null){
+      $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($groupId);
     }
   }
 
