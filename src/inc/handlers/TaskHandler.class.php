@@ -171,16 +171,16 @@ class TaskHandler implements Handler {
 
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
-    $cmdline = $_POST["cmdline"];
-    $chunk = intval($_POST["chunk"]);
-    $status = intval($_POST["status"]);
-    $useNewBench = intval($_POST['benchType']);
-    $isCpuTask = intval($_POST['cpuOnly']);
-    $isSmall = intval($_POST['isSmall']);
-    $skipKeyspace = intval($_POST['skipKeyspace']);
+    $cmdline = @$_POST["cmdline"];
+    $chunk = intval(@$_POST["chunk"]);
+    $status = intval(@$_POST["status"]);
+    $useNewBench = intval(@$_POST['benchType']);
+    $isCpuTask = intval(@$_POST['cpuOnly']);
+    $isSmall = intval(@$_POST['isSmall']);
+    $skipKeyspace = intval(@$_POST['skipKeyspace']);
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
-    $color = $_POST["color"];
+    $color = @$_POST["color"];
 
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
@@ -254,6 +254,7 @@ class TaskHandler implements Handler {
       }
       // force to copy from pretask to make sure user cannot change anything he is not allowed to
       $task = new Task(0, $name, $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, 0, $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
+      $forward = "pretasks.php";
     }
 
     $task = $FACTORIES::getTaskFactory()->save($task);
