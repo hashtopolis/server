@@ -74,7 +74,7 @@ class AccessControlHandler implements Handler {
         $arr[$constant] = true;
       }
     }
-    $group->setPermissions(json_encode($newArr));
+    $group->setPermissions(json_encode($arr));
     $FACTORIES::getRightGroupFactory()->update($group);
   }
 
