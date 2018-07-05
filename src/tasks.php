@@ -239,7 +239,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['pageTitle'] = "Task details for " . $task->getTaskName();
 }
 else if (isset($_GET['new'])) {
-  $ACCESS_CONTROL->checkPermission(array(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
+  $ACCESS_CONTROL->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
