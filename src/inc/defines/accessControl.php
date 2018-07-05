@@ -10,7 +10,7 @@ class DAccessControl {
   const MANAGE_AGENT_ACCESS         = "manageAgentAccess";
   const CREATE_AGENT_ACCESS         = "createAgentAccess";
   const VIEW_TASK_ACCESS            = array("viewTaskAccess", DAccessControl::CREATE_TASK_ACCESS, DAccessControl::MANAGE_TASK_ACCESS);
-  const RUN_TASK_ACCESS             = array("runTaskAccess", DAccessControl::CREATE_TASK_ACCESS);
+  const RUN_TASK_ACCESS             = array("runTaskAccess");
   const CREATE_TASK_ACCESS          = "createTaskAccess";
   const VIEW_PRETASK_ACCESS         = array("viewPretaskAccess", DAccessControl::CREATE_PRETASK_ACCESS, DAccessControl::MANAGE_PRETASK_ACCESS, DAccessControl::RUN_TASK_ACCESS[0]);
   const CREATE_PRETASK_ACCESS       = "createPretaskAccess";
@@ -66,7 +66,7 @@ class DAccessControl {
       case DAccessControl::VIEW_TASK_ACCESS[0]:
         return "Can view tasks<br>Also granted with manage/create tasks permission.";
       case DAccessControl::RUN_TASK_ACCESS[0]:
-        return "Can run preconfigured tasks<br>Also granted with create tasks permission.";
+        return "Can run preconfigured tasks";
       case DAccessControl::CREATE_TASK_ACCESS:
         return "Can create/delete tasks";
       case DAccessControl::CREATE_PRETASK_ACCESS:
