@@ -4,7 +4,8 @@
 {%TEMPLATE->struct/messages%}
 <form class='form-inline' action="tasks.php" method="POST" enctype="multipart/form-data">
 	<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
-		<input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
+	<input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
+    <input type="hidden" name="copy" value="copy.getId()">
     <input type="hidden" name="csrf" value="[[csrf]]">
 		<div class="panel panel-default">
 			<table class="table table-bordered table-nonfluid">
@@ -31,7 +32,7 @@
 				<tr>
 					<td>Command line:</td>
 					<td>
-						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line">[[copy.getAttackCmd()]]</textarea>
+						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
 						<br>
       					Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
       					If you have Linux agents, please mind the filename case sensitivity!<br>
@@ -43,21 +44,21 @@
       			<tr>
       				<td>Chunk size:</td>
       				<td>
-      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time">
+      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
       					seconds
       				</td>
       			</tr>
       			<tr>
       				<td>Status timer:</td>
       				<td>
-      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer">
+      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
       					seconds
       				</td>
       			</tr>
 						<tr>
 							<td>Benchmark Type (Hashcat only): </td>
 							<td>
-                <select name="benchType" class="form-control" title="Benchmark Type">
+                <select name="benchType" class="form-control" title="Benchmark Type"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
                   <option value="0" {{IF [[copy.getUseNewBench()]] == 0}}selected{{ENDIF}}>Runtime Benchmark</option>
                   <option value="1" {{IF [[copy.getUseNewBench()]] == 1}}selected{{ENDIF}}>Speed Test</option>
                 </select>
@@ -66,13 +67,13 @@
       			<tr>
       				<td>Color:</td>
       				<td>
-      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color">
+      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
       				</td>
       			</tr>
             <tr>
               <td>Task is CPU only (gets only CPU agents assigned):</td>
               <td>
-                <select name="cpuOnly" class="form-control" title="CPU only">
+                <select name="cpuOnly" class="form-control" title="CPU only"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
                   <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}}selected{{ENDIF}}>No</option>
                   <option value="1" {{IF [[copy.getIsCpuTask()]] == 1}}selected{{ENDIF}}>Yes</option>
                 </select>
@@ -81,7 +82,7 @@
             <tr>
               <td>Task is small (only one agent gets assigned to it):</td>
               <td>
-                <select name="isSmall" class="form-control" title="Is small">
+                <select name="isSmall" class="form-control" title="Is small"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
                   <option value="0" {{IF [[copy.getIsSmall()]] == 0}}selected{{ENDIF}}>No</option>
                   <option value="1" {{IF [[copy.getIsSmall()]] == 1}}selected{{ENDIF}}>Yes</option>
                 </select>
@@ -90,7 +91,7 @@
             <tr>
               <td>Skip a given keyspace at the beginning of the task:</td>
               <td>
-                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace">
+                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
               </td>
             </tr>
             <tr>
@@ -163,7 +164,7 @@
             {{FOREACH file;[[rules]]}}
               <tr>
                 <td>
-                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                     <img src="static/lock.gif" alt="Secret">
@@ -188,7 +189,7 @@
           {{FOREACH file;[[wordlists]]}}
             <tr>
               <td>
-                <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}>
+                <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');"{{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
                 [[file.getVal('file').getFilename()]]
                 {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                   <img src="static/lock.gif" alt="Secret">

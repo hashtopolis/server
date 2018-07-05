@@ -83,7 +83,7 @@ class DTaskAction {
   const SET_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
   
   const CREATE_TASK      = "createTask";
-  const CREATE_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+  const CREATE_TASK_PERM = DAccessControl::RUN_TASK_ACCESS;
   
   const DELETE_SUPERTASK      = "deleteSupertask";
   const DELETE_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
