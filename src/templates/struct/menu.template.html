@@ -102,6 +102,8 @@
 							<li[[menu.isActive('config_log')]]><a href="log.php">Log</a></li>
 						</ul>
 					</li>
+                {{ENDIF}}
+                {{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
 					<li class="dropdown[[menu.isActive('users', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li[[menu.isActive('users_list')]]><a href="users.php">All users</a></li>
