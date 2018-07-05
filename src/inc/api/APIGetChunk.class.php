@@ -228,22 +228,9 @@ class APIGetChunk extends APIBasic {
         return 0;
       }
       
-      $benchmark[1] *= 2 / 3;
-      
-      $factor = $chunkTime * 1000 / $benchmark[1];
-      if ($factor <= 0.25) {
-        $benchmark[0] /= 4;
-      }
-      else if ($factor <= 0.5) {
-        $benchmark[0] /= 2;
-      }
-      else {
-        $factor = floor($factor);
-      }
-      if ($factor == 0) {
-        $factor = 1;
-      }
-      $size = $benchmark[0] * $factor;
+      // NEW VARIANT
+      $factor = $chunkTime / $benchmark[1] * 1000;
+      $size = floor($factor * $benchmark[0]);
     }
     
     $chunkSize = $size * $tolerance;
