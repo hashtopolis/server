@@ -20,7 +20,7 @@ class Encryption {
     $cycles = Encryption::getCount($username . $startTime, 500, 1000);
     $CIPHER = $username . $startTime;
     for ($x = 0; $x < $cycles; $x++) {
-      $CIPHER = openssl_encrypt($CIPHER, 'AES256', $KEY, 0, substr($PEPPER, 0, 16));
+      $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
       $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER));
     }
     return Util::strToHex($KEY);
@@ -114,7 +114,7 @@ class Encryption {
     $cycles = Encryption::getCount($username . $PEPPER, 500, 1000);
     $CIPHER = $id . $username;
     for ($x = 0; $x < $cycles; $x++) {
-      $CIPHER = openssl_encrypt($CIPHER, 'AES256', $KEY, 0, substr($PEPPER, 0, 16));
+      $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
       $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER . $username));
     }
     return Util::strToHex($KEY);
