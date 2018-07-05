@@ -66,16 +66,22 @@ class AccessControlHandler implements Handler {
 
     $acl = new AccessControl(null, $group->getId());
     $arr = $newArr;
+    $changes = false;
     foreach($newArr as $constant => $set){
       if($set == true){
         continue;
       }
       else if($acl->givenByDependency($constant)){
         $arr[$constant] = true;
+        $changes = true;
       }
     }
     $group->setPermissions(json_encode($arr));
     $FACTORIES::getRightGroupFactory()->update($group);
+
+    if($changes){
+      UI::addMessage(UI::WARN, "NOTE: Some permissions were additionally allowed because of dependencies!");
+    }
   }
 
   private function deleteGroup($groupId) {
