@@ -70,7 +70,7 @@ class AccessControlHandler implements Handler {
       if($set == true){
         continue;
       }
-      else if($acl->hasPermission($constant)){
+      else if($acl->givenByDependency($constant)){
         $arr[$constant] = true;
       }
     }

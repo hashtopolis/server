@@ -12,14 +12,14 @@ class AccessControl {
    * @param $user User
    * @param $groupId int
    */
-  public function __construct($user = null, $groupId = null) {
+  public function __construct($user = null, $groupId = 0) {
     global $FACTORIES;
 
     $this->user = $user;
     if ($this->user != null) {
       $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
-    else if($groupId != null){
+    else if($groupId != 0){
       $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($groupId);
     }
   }
@@ -43,6 +43,22 @@ class AccessControl {
     if (!$this->hasPermission($perm)) {
       UI::permissionError();
     }
+  }
+
+  /**
+   * @param $singlePerm string
+   */
+  public function givenByDependency($singlePerm){
+    $constants = DAccessControl::getConstants();
+    foreach($constants as $constant){
+      if(is_array($constant) && in_array($singlePerm, $constant) && $this->hasPermission($constant)){
+        return true;
+      }
+      else if(!is_array($constant) && $constant == $singlePerm && $this->hasPermission($constant)){
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
