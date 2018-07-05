@@ -3,109 +3,111 @@
 <h2>New task</h2>
 {%TEMPLATE->struct/messages%}
 <form class='form-inline' action="tasks.php?new=true{{IF [[orig]] > 0 && [[origType]] == 2}}&copyPre=[[orig]]{{ENDIF}}{{IF [[orig]] > 0 && [[origType]] == 1}}&copy=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data">
-	<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
-	<input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
-    <input type="hidden" name="copy" value="[[orig]]">
-    <input type="hidden" name="csrf" value="[[csrf]]">
-		<div class="panel panel-default">
-			<table class="table table-bordered table-nonfluid">
-				<tr>
-					<th>Property</th>
-					<th>Value</th>
-				</tr>
-				<tr>
-					<td>Name:</td>
-					<td>
-						<input type="text" class='form-control' name="name" value="[[copy.getTaskName()]]">
-					</td>
-				</tr>
-				<tr>
-					<td>Hashlist:</td>
-					<td>
-						<select class='form-control' name="hashlist">
-							{{FOREACH list;[[lists]]}}
-								<option value="[[list.getVal('id')]]"{{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
-							{{ENDFOREACH}}
-						</select> (hashlist needs to be created before task)
-					</td>
-				</tr>
-				<tr>
-					<td>Command line:</td>
-					<td>
-						<textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
-						<br>
-      					Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
-      					If you have Linux agents, please mind the filename case sensitivity!<br>
-      					Also, don't use any of these parameters, they will be invoked automatically:<br>
-      					hash-type, limit, outfile-check-dir, outfile-check-timer, potfile-disable, remove,<br>
-      					remove-timer, separator, session, skip, status, status-timer
-      				</td>
-      			</tr>
-      			<tr>
-      				<td>Chunk size:</td>
-      				<td>
-      					<input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-      					seconds
-      				</td>
-      			</tr>
-      			<tr>
-      				<td>Status timer:</td>
-      				<td>
-      					<input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-      					seconds
-      				</td>
-      			</tr>
-						<tr>
-							<td>Benchmark Type (Hashcat only): </td>
-							<td>
-                <select name="benchType" class="form-control" title="Benchmark Type"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-                  <option value="0" {{IF [[copy.getUseNewBench()]] == 0}}selected{{ENDIF}}>Runtime Benchmark</option>
-                  <option value="1" {{IF [[copy.getUseNewBench()]] == 1}}selected{{ENDIF}}>Speed Test</option>
-                </select>
-							</td>
-						</tr>
-      			<tr>
-      				<td>Color:</td>
-      				<td>
-      					#<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-      				</td>
-      			</tr>
-            <tr>
-              <td>Task is CPU only (gets only CPU agents assigned):</td>
-              <td>
-                <select name="cpuOnly" class="form-control" title="CPU only"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-                  <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}}selected{{ENDIF}}>No</option>
-                  <option value="1" {{IF [[copy.getIsCpuTask()]] == 1}}selected{{ENDIF}}>Yes</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Task is small (only one agent gets assigned to it):</td>
-              <td>
-                <select name="isSmall" class="form-control" title="Is small"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-                  <option value="0" {{IF [[copy.getIsSmall()]] == 0}}selected{{ENDIF}}>No</option>
-                  <option value="1" {{IF [[copy.getIsSmall()]] == 1}}selected{{ENDIF}}>Yes</option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>Skip a given keyspace at the beginning of the task:</td>
-              <td>
-                <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace"{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-              </td>
-            </tr>
-            <tr>
-              <td>Binary type to run task:</td>
-              <td>
-                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
-                  {{FOREACH binary;[[binaries]]}}
-                    <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}}selected{{ENDIF}}>[[binary.getTypeName()]]</option>
-                  {{ENDFOREACH}}
-                </select>
-                <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
-                  <option value="0">&nbsp;</option>
-                </select>
-                <script type="text/javascript">
+    <div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
+        <input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
+        {{IF [[orig]] > 0 && [[origType]] == 2}}
+            <input type="hidden" name="copy" value="[[orig]]">
+        {{ENDIF}}
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <div class="panel panel-default">
+            <table class="table table-bordered table-nonfluid">
+                <tr>
+                    <th>Property</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Name:</td>
+                    <td>
+                        <input type="text" class='form-control' name="name" value="[[copy.getTaskName()]]">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Hashlist:</td>
+                    <td>
+                        <select class='form-control' name="hashlist">
+                            {{FOREACH list;[[lists]]}}
+                            <option value="[[list.getVal('id')]]" {{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+                            {{ENDFOREACH}}
+                        </select> (hashlist needs to be created before task)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Command line:</td>
+                    <td>
+                        <textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
+                        <br>
+                        Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
+                        If you have Linux agents, please mind the filename case sensitivity!<br>
+                        Also, don't use any of these parameters, they will be invoked automatically:<br>
+                        hash-type, limit, outfile-check-dir, outfile-check-timer, potfile-disable, remove,<br>
+                        remove-timer, separator, session, skip, status, status-timer
+                    </td>
+                </tr>
+                <tr>
+                    <td>Chunk size:</td>
+                    <td>
+                        <input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                        seconds
+                    </td>
+                </tr>
+                <tr>
+                    <td>Status timer:</td>
+                    <td>
+                        <input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                        seconds
+                    </td>
+                </tr>
+                <tr>
+                    <td>Benchmark Type (Hashcat only): </td>
+                    <td>
+                        <select name="benchType" class="form-control" title="Benchmark Type" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                            <option value="0" {{IF [[copy.getUseNewBench()]] == 0}} selected{{ENDIF}}>Runtime Benchmark</option>
+                            <option value="1" {{IF [[copy.getUseNewBench()]] == 1}} selected{{ENDIF}}>Speed Test</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Color:</td>
+                    <td>
+                        #<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Task is CPU only (gets only CPU agents assigned):</td>
+                    <td>
+                        <select name="cpuOnly" class="form-control" title="CPU only" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                            <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
+                            <option value="1" {{IF [[copy.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Task is small (only one agent gets assigned to it):</td>
+                    <td>
+                        <select name="isSmall" class="form-control" title="Is small" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                            <option value="0" {{IF [[copy.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
+                            <option value="1" {{IF [[copy.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Skip a given keyspace at the beginning of the task:</td>
+                    <td>
+                        <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Binary type to run task:</td>
+                    <td>
+                        <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
+                            {{FOREACH binary;[[binaries]]}}
+                            <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}} selected{{ENDIF}}>[[binary.getTypeName()]]</option>
+                            {{ENDFOREACH}}
+                        </select>
+                        <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
+                            <option value="0">&nbsp;</option>
+                        </select>
+                        <script type="text/javascript">
                   var versions = [];
                   {{FOREACH version;[[versions]]}}
                     if ([[version.getCrackerBinaryTypeId()]] in versions) {
@@ -137,17 +139,17 @@
                     opt.text = text;
                     ddl.options.add(opt);
                   }
-                </script>
-              </td>
-            </tr>
-      			<tr>
-      				<td colspan="2">
-      					<input type="submit" class='btn btn-default' value="Create task">
-      				</td>
-      			</tr>
-			</table>
-		</div>
-	</div>
+                        </script>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" class='btn btn-default' value="Create task">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
 	<div class='col-md-4' style='padding: 0px;'>
     <div class='btn-group'>
       <button id="ruleButton" class='btn btn-default' onclick="return toggleFiles()">Rules</button>
