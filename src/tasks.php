@@ -287,6 +287,7 @@ else if (isset($_GET['new'])) {
 
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
+  $OBJECTS['origType'] = $origType;
   $OBJECTS['hashlistId'] = $hashlistId;
 
   $lists = array();
