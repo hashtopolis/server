@@ -23,58 +23,59 @@
 		</div>
 	</div>
 	<h3>Existing [[fileType]] ([[sizeof([[files]])]])</h3>
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th>ID</th>
-				<th>File</th>
-				<th><img src="static/lock.gif" alt="Secret"></th>
-				<th style="text-align: right">Size</th>
-				<th>Action</th>
-			</tr>
-			{{FOREACH file;[[files]]}}
-				<tr>
-					<td>[[file.getId()]]</td>
-					<td>
-						<a name="[[file.getId()]]" href="getFile.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
-						{{IF [[file.getIsSecret()]] == '1'}}
-							<img src="static/lock.gif" alt="Secret">
-						{{ENDIF}}
-					</td>
-					<td>
-						{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
-							<form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
-								<input type="hidden" name="file" value="[[file.getId()]]">
-								<input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
-								<input type="hidden" name="csrf" value="[[csrf]]">
-								<input type='hidden' name="secret" value="{{IF [[file.getIsSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
-								<input title="Is Secret" type="checkbox" onChange="document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getIsSecret()]] == '1'}} checked{{ENDIF}}>
-							</form>
-						{{ELSE}}
-							<input type='checkbox'{{IF [[file.getIsSecret()]] == 1}} checked{{ENDIF}} disabled title="Is Secret">
-						{{ENDIF}}
-					</td>
-					<td class='num'>
-						[[Util::nicenum([[file.getSize()]])]]B
-					</td>
-					<td>
-						{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
-							<form style ='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
-								<input type="submit" class='btn btn-primary' value="Rename">
-							</form>
-							<form style ='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
-								<input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
-								<input type="hidden" name="csrf" value="[[csrf]]">
-								<input type="hidden" name="file" value="[[file.getId()]]">
-								<input type="submit" class='btn btn-danger' value="Delete">
-							</form>
-						{{ENDIF}}
-					</td>
-				</tr>
-			{{ENDFOREACH}}
-		</table>
-	</div>
-</div>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th>ID</th>
+                    <th>File</th>
+                    <th><img src="static/lock.gif" alt="Secret"></th>
+                    <th style="text-align: right">Size</th>
+                    <th>Action</th>
+                </tr>
+                {{FOREACH file;[[files]]}}
+                <tr>
+                    <td>[[file.getId()]]</td>
+                    <td>
+                        <a name="[[file.getId()]]" href="getFile.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
+                        {{IF [[file.getIsSecret()]] == '1'}}
+                        <img src="static/lock.gif" alt="Secret">
+                        {{ENDIF}}
+                    </td>
+                    <td>
+                        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
+                        <form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
+                            <input type="hidden" name="file" value="[[file.getId()]]">
+                            <input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
+                            <input type="hidden" name="csrf" value="[[csrf]]">
+                            <input type='hidden' name="secret" value="{{IF [[file.getIsSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
+                            <input title="Is Secret" type="checkbox" onChange="document.getElementById('secret[[file.getId()]]').submit();" {{IF [[file.getIsSecret()]] == '1'}} checked{{ENDIF}}>
+                        </form>
+                        {{ELSE}}
+                        <input type='checkbox' {{IF [[file.getIsSecret()]] == 1}} checked{{ENDIF}} disabled title="Is Secret">
+                        {{ENDIF}}
+                    </td>
+                    <td class='num'>
+                        [[Util::nicenum([[file.getSize()]])]]B
+                    </td>
+                    <td>
+                        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
+                        <form style='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
+                            <input type="submit" class='btn btn-primary' value="Rename">
+                        </form>
+                        <form style='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
+                            <input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
+                            <input type="hidden" name="csrf" value="[[csrf]]">
+                            <input type="hidden" name="file" value="[[file.getId()]]">
+                            <input type="submit" class='btn btn-danger' value="Delete">
+                        </form>
+                        {{ENDIF}}
+                    </td>
+                </tr>
+                {{ENDFOREACH}}
+            </table>
+        </div>
+    </div>
 {{IF [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
 	<div class='col-md-4' style='padding: 0px;'>
 		<h3>Add new [[fileType]]</h3>
