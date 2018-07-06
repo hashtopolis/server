@@ -9,7 +9,7 @@
 		<div id="navbar" class="collapse navbar-collapse">
 			<ul class="navbar-nav mr-auto">
 				{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
-					<li class="dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
+					<li class="nav-item dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
 								<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
