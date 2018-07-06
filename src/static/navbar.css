@@ -33,3 +33,11 @@ td.num {
 	border-collapse: separate;
 	border: 1px solid #0f00ae !important;
 }
+
+.card {
+    border: none !important;
+}
+
+td {
+    vertical-align: middle;
+}
