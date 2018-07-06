@@ -62,5 +62,5 @@ table.styled td {
 
 
 .card {
-    border: none;
+    border: none !important;
 }
