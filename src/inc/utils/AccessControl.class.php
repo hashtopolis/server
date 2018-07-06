@@ -6,7 +6,7 @@ use DBA\RightGroup;
 class AccessControl {
   private $user;
   private $rightGroup;
-
+  
   /**
    * AccessControl constructor.
    * @param $user User
@@ -14,27 +14,27 @@ class AccessControl {
    */
   public function __construct($user = null, $groupId = 0) {
     global $FACTORIES;
-
+    
     $this->user = $user;
     if ($this->user != null) {
       $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
-    else if($groupId != 0){
+    else if ($groupId != 0) {
       $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($groupId);
     }
   }
-
+  
   /**
    * Force a reload of the permissions from the database
    */
-  public function reload(){
+  public function reload() {
     global $FACTORIES;
-
+    
     if ($this->user != null) {
       $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
   }
-
+  
   /**
    * If access is not granted, permission denied page will be shown
    * @param $perm string|string[]
@@ -44,23 +44,23 @@ class AccessControl {
       UI::permissionError();
     }
   }
-
+  
   /**
    * @param $singlePerm string
    */
-  public function givenByDependency($singlePerm){
+  public function givenByDependency($singlePerm) {
     $constants = DAccessControl::getConstants();
-    foreach($constants as $constant){
-      if(is_array($constant) && $singlePerm == $constant[0] && $this->hasPermission($constant)){
+    foreach ($constants as $constant) {
+      if (is_array($constant) && $singlePerm == $constant[0] && $this->hasPermission($constant)) {
         return true;
       }
-      else if(!is_array($constant) && $constant == $singlePerm && $this->hasPermission($constant)){
+      else if (!is_array($constant) && $constant == $singlePerm && $this->hasPermission($constant)) {
         return true;
       }
     }
     return false;
   }
-
+  
   /**
    * @param $perm string|string[]
    * @return bool true if access is granted
@@ -68,7 +68,7 @@ class AccessControl {
   public function hasPermission($perm) {
     /** @var $LOGIN Login */
     global $LOGIN;
-
+    
     if ($perm == DAccessControl::PUBLIC_ACCESS) {
       return true;
     }

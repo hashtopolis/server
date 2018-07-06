@@ -49,12 +49,12 @@ $admins = $FACTORIES::getRightGroupFactory()->save($admins);
 $others = new RightGroup(0, 'Other Users', '{}');
 $others = $FACTORIES::getRightGroupFactory()->save($others);
 // go through users and assign them to correct group
-foreach($users as $user){
-  if($user->getRightGroupId() == $adminGroup->getId()){
+foreach ($users as $user) {
+  if ($user->getRightGroupId() == $adminGroup->getId()) {
     // user was admin
     $user->setRightGroupId($admins->getId());
   }
-  else{
+  else {
     $user->setRightGroupId($others->getId());
   }
   $FACTORIES::getUserFactory()->update($user);

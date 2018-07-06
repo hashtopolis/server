@@ -25,11 +25,11 @@ class DAccessControl {
   const CRACKER_BINARY_ACCESS       = "crackerBinaryAccess";
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
-
+  
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";
   const LOGIN_ACCESS  = "loginAccess";
-
+  
   static function getConstants() {
     try {
       $oClass = new ReflectionClass(__CLASS__);
@@ -39,7 +39,7 @@ class DAccessControl {
     }
     return $oClass->getConstants();
   }
-
+  
   /**
    * @param $access string
    * @return string description
@@ -142,10 +142,10 @@ class DViewControl {
 class DAccessControlAction {
   const CREATE_GROUP      = "createGroup";
   const CREATE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
-
+  
   const DELETE_GROUP      = "deleteGroup";
   const DELETE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
-
+  
   const EDIT      = "edit";
   const EDIT_PERM = DAccessControl::USER_CONFIG_ACCESS;
 }
