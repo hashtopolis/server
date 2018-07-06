@@ -13,9 +13,9 @@
 {%TEMPLATE->struct/messages%}
 <div class="row">
     {{IF [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
-    <div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
+    <div class='col-md-8'>
     {{ELSE}}
-    <div class='col-md-12' style='padding: 0px; padding-right: 5px;'>
+    <div class='col-md-12'>
     {{ENDIF}}
 	    <div class='btn-toolbar'>
 		    <div class='btn-group'>
@@ -79,7 +79,7 @@
         </div>
     </div>
     {{IF [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
-	    <div class='col-md-4' style='padding: 0px;'>
+	    <div class='col-md-4'>
 		    <h3>Add new [[fileType]]</h3>
 		    <form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
 			    <input type="hidden" name="source" value="upload">
