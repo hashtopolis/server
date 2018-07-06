@@ -4,8 +4,13 @@ use DBA\AgentBinary;
 use DBA\QueryFilter;
 use DBA\RightGroup;
 use DBA\User;
+use DBA\Factory;
 
-require_once(dirname(__FILE__) . "/../../inc/load.php");
+require_once(dirname(__FILE__) . "/../../inc/db.php");
+require_once(dirname(__FILE__) . "/../../dba/init.php");
+require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+
+$FACTORIES = new Factory();
 
 echo "Apply updates...\n";
 
@@ -23,6 +28,7 @@ if ($binary != null) {
 echo "\n";
 
 echo "Create new permissions... ";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `user` CHANGE `rightGroupId` `rightGroupId` INT(11) NULL");
 // load all users and set permission group to null
 $users = $FACTORIES::getUserFactory()->filter(array());
 $uS = new UpdateSet(User::RIGHT_GROUP_ID, null);
@@ -32,7 +38,7 @@ $FACTORIES::getUserFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTO
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `RightGroup` ADD `permissions` TEXT NOT NULL");
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `RightGroup` DROP `level`");
 $qF = new QueryFilter(RightGroup::GROUP_NAME, 'Administrator', "=");
-$adminGroup = $FACTORIES::getRightGroupFactory()->filter(array($FACTORIES::FILTER => $qF));
+$adminGroup = $FACTORIES::getRightGroupFactory()->filter(array($FACTORIES::FILTER => $qF), true);
 // delete all right groups
 $qF = new QueryFilter(RightGroup::RIGHT_GROUP_ID, 0, ">");
 $FACTORIES::getRightGroupFactory()->massDeletion(array($qF));
