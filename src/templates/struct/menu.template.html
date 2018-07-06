@@ -1,5 +1,5 @@
 
-<nav class="navbar navbar-expand-md mb-4 navbar-light rounded" style="background-color: #f8f8f8; border-color: #e7e7e7;">
+<nav class="navbar navbar-expand-md mb-4 navbar-light rounded" style="background-color: #f8f8f8; border: 1px solid #e7e7e7;">
     <a href="#" class="navbar-left"><img src="static/logo.png" alt="logo" style="width: 40px; margin: 5px 5px 5px -5px;"></a><a class="navbar-brand" href="index.php">[[$APP_NAME]]</a>
 	<button type="button" class="navbar-toggler"
 		data-toggle="collapse" data-target="#navbar" aria-expanded="false"
@@ -9,13 +9,13 @@
 	<div id="navbar" class="collapse navbar-collapse">
 		<ul class="navbar-nav mr-auto">
 			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
-				<li class="nav-item dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownAgents" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
+				<li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle[[menu.isActive('agents', 'classonly')]]" id="dropdownAgents" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
 					<div class="dropdown-menu" aria-labelledby="dropdownAgents">
 						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
-							<a class="dropdown-item[[menu.isActive('agents_list', 'classonly')]]" href="agents.php">Show Agents</a>
+							<a class="dropdown-item[[menu.isActive('agents_list')]]" href="agents.php">Show Agents</a>
 						{{ENDIF}}
 						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_AGENT_ACCESS]])]]}}
-							<a class="dropdown-item[[menu.isActive('agents_new', 'classonly')]]" href="agents.php?new=true">New Agent</a>
+							<a class="dropdown-item[[menu.isActive('agents_new')]]" href="agents.php?new=true">New Agent</a>
 						{{ENDIF}}
 					</div>
 				</li>
