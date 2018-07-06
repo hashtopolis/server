@@ -41,3 +41,7 @@ td.num {
 td {
     vertical-align: middle;
 }
+
+.btn-light {
+    border-color: #c3c3c3;
+}
