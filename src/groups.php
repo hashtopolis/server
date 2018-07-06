@@ -17,11 +17,8 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-else if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
-  $TEMPLATE = new Template("errors/restricted");
-  $OBJECTS['pageTitle'] = "Restricted";
-  die($TEMPLATE->render($OBJECTS));
-}
+
+$ACCESS_CONTROL->checkPermission(DViewControl::GROUPS_VIEW_PERM);
 
 $TEMPLATE = new Template("groups/index");
 $MENU->setActive("users_groups");

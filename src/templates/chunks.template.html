@@ -57,10 +57,10 @@
 					{{IF [[chunk.getAgentId()]] == null}}
 						N/A
 					{{ENDIF}}
-					{{IF [[chunk.getAgentId()]] != null && [[login.getLevel()]] >= 20}}
+					{{IF [[chunk.getAgentId()]] != null && [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
 						<a href="agents.php?id=[[chunk.getAgentId()]]">[[agentNames.getVal([[chunk.getAgentId()]])]]</a>
 					{{ENDIF}}
-					{{IF [[chunk.getAgentId()]] != null && [[login.getLevel()]] < 20}}
+					{{IF [[chunk.getAgentId()]] != null && ![[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
 						[[agentNames.getVal([[chunk.getAgentId()]])]]
 					{{ENDIF}}
 				</td>

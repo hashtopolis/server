@@ -1,4 +1,4 @@
-{{IF [[login.getLevel()]] >= 20}}
+{{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
   <h3>Create supertask:</h3>
   <div class="panel panel-default">
     <table class="table table-bordered table-nonfluid">

@@ -1,43 +1,45 @@
-<h3>Tasks cracking this hashlist:</h3>
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th class="col-md-1">ID</th>
-      <th class="col-md-1">Color</th>
-			<th>Name</th>
-			<th>Dispatched</th>
-			<th>Searched</th>
-			<th>Cracked</th>
-		</tr>
-		{{FOREACH task;[[tasks]]}}
-			<tr>
-				<td>
-					<a href="tasks.php?id=[[task.getVal('task')->getId()]]">[[task.getVal('task')->getId()]]</a>
-				</td>
-        <td{{IF [[strlen([[task.getVal('task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('task').getColor()]]""{{ENDIF}}>
-          &nbsp;
-        </td>
-				<td>
-					<a href="tasks.php?id=[[task.getVal('task')->getId()]]" title="[[task.getVal('task')->getAttackCmd()]]">[[task.getVal('task')->getTaskName()]]</a>
-          [[Util::tickdone([[task.getVal('task')->getKeyspaceProgress()]], [[task.getVal('task')->getKeyspace()]])]]
-          {{IF [[task.getVal('isActive')]] && [[task.getVal('searched')]] < [[task.getVal('task')->getKeyspace()]]}}
-            <img src="static/active.gif" alt="Active">
-          {{ENDIF}}
-        </td>
-        <td class="num">
-          [[Util::showperc([[task.getVal('dispatched')]], [[task.getVal('task')->getKeyspace()]])]]%
-        </td>
-        <td class="num">
-          [[Util::showperc([[task.getVal('searched')]], [[task.getVal('task')->getKeyspace()]])]]%
-        </td>
-        <td class="num">
-          {{IF [[task.getVal('cracked')]] > 0}}
-            <a href="hashes.php?task=[[task.getVal('task')->getId()]]">[[task.getVal('cracked')]]</a>
-          {{ELSE}}
-            0
-          {{ENDIF}}
-        </td>
+{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+  <h3>Tasks cracking this hashlist:</h3>
+  <div class="panel panel-default">
+    <table class="table table-bordered table-nonfluid">
+      <tr>
+        <th class="col-md-1">ID</th>
+        <th class="col-md-1">Color</th>
+        <th>Name</th>
+        <th>Dispatched</th>
+        <th>Searched</th>
+        <th>Cracked</th>
       </tr>
-		{{ENDFOREACH}}
-	</table>
-</div>
+      {{FOREACH task;[[tasks]]}}
+        <tr>
+          <td>
+            <a href="tasks.php?id=[[task.getVal('task')->getId()]]">[[task.getVal('task')->getId()]]</a>
+          </td>
+          <td{{IF [[strlen([[task.getVal('task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('task').getColor()]]""{{ENDIF}}>
+            &nbsp;
+          </td>
+          <td>
+            <a href="tasks.php?id=[[task.getVal('task')->getId()]]" title="[[task.getVal('task')->getAttackCmd()]]">[[task.getVal('task')->getTaskName()]]</a>
+            [[Util::tickdone([[task.getVal('task')->getKeyspaceProgress()]], [[task.getVal('task')->getKeyspace()]])]]
+            {{IF [[task.getVal('isActive')]] && [[task.getVal('searched')]] < [[task.getVal('task')->getKeyspace()]]}}
+              <img src="static/active.gif" alt="Active">
+            {{ENDIF}}
+          </td>
+          <td class="num">
+            [[Util::showperc([[task.getVal('dispatched')]], [[task.getVal('task')->getKeyspace()]])]]%
+          </td>
+          <td class="num">
+            [[Util::showperc([[task.getVal('searched')]], [[task.getVal('task')->getKeyspace()]])]]%
+          </td>
+          <td class="num">
+            {{IF [[task.getVal('cracked')]] > 0}}
+              <a href="hashes.php?task=[[task.getVal('task')->getId()]]">[[task.getVal('cracked')]]</a>
+            {{ELSE}}
+              0
+            {{ENDIF}}
+          </td>
+        </tr>
+      {{ENDFOREACH}}
+    </table>
+  </div>
+{{ENDIF}}

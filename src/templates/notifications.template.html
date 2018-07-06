@@ -35,25 +35,31 @@
             {{ENDFOREACH}}
           </select>
 
-          <select id="Task" name="tasks" class="form-control" title="Task">
-            <option value="ALL">ALL</option>
-            {{FOREACH task;[[allTasks]]}}
-              <option value="[[task.getId()]]">[[task.getTaskName()]] ([[task.getId()]])</option>
-            {{ENDFOREACH}}
-          </select>
-          <select id="Agent" name="agents" class="form-control" title="Agent">
-            <option value="ALL">ALL</option>
-            {{FOREACH agent;[[allAgents]]}}
-              <option value="[[agent.getId()]]">[[agent.getAgentName()]] ([[agent.getId()]])</option>
-            {{ENDFOREACH}}
-          </select>
-          <select id="Hashlist" name="hashlists" class="form-control" title="Hashlist">
-            <option value="ALL">ALL</option>
-            {{FOREACH hashlist;[[allHashlists]]}}
-              <option value="[[hashlist.getId()]]">[[hashlist.getHashlistName()]] ([[hashlist.getId()]])</option>
-            {{ENDFOREACH}}
-          </select>
-          {{IF [[login.getLevel()]] >= 50}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+            <select id="Task" name="tasks" class="form-control" title="Task">
+              <option value="ALL">ALL</option>
+              {{FOREACH task;[[allTasks]]}}
+                <option value="[[task.getId()]]">[[task.getTaskName()]] ([[task.getId()]])</option>
+              {{ENDFOREACH}}
+            </select>
+          {{ENDIF}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+            <select id="Agent" name="agents" class="form-control" title="Agent">
+              <option value="ALL">ALL</option>
+              {{FOREACH agent;[[allAgents]]}}
+                <option value="[[agent.getId()]]">[[agent.getAgentName()]] ([[agent.getId()]])</option>
+              {{ENDFOREACH}}
+            </select>
+          {{ENDIF}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+            <select id="Hashlist" name="hashlists" class="form-control" title="Hashlist">
+              <option value="ALL">ALL</option>
+              {{FOREACH hashlist;[[allHashlists]]}}
+                <option value="[[hashlist.getId()]]">[[hashlist.getHashlistName()]] ([[hashlist.getId()]])</option>
+              {{ENDFOREACH}}
+            </select>
+          {{ENDIF}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
             <select id="User" name="users" class="form-control" title="User">
               <option value="ALL">ALL</option>
               {{FOREACH user;[[allUsers]]}}

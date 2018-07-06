@@ -14,16 +14,6 @@ class Login {
   private $valid   = false;
   private $session = null;
   
-  public function getLevel() {
-    global $FACTORIES;
-    
-    if ($this->valid) {
-      $rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
-      return $rightGroup->getLevel();
-    }
-    return 0;
-  }
-  
   public function setUser($user) {
     $this->user = $user;
   }

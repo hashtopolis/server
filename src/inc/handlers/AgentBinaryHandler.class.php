@@ -10,14 +10,19 @@ class AgentBinaryHandler implements Handler {
   }
   
   public function handle($action) {
+    global $ACCESS_CONTROL;
+    
     switch ($action) {
       case DAgentBinaryAction::NEW_BINARY:
+        $ACCESS_CONTROL->checkPermission(DAgentBinaryAction::NEW_BINARY_PERM);
         $this->newBinary();
         break;
       case DAgentBinaryAction::EDIT_BINARY:
+        $ACCESS_CONTROL->checkPermission(DAgentBinaryAction::EDIT_BINARY_PERM);
         $this->editBinary();
         break;
       case DAgentBinaryAction::DELETE_BINARY:
+        $ACCESS_CONTROL->checkPermission(DAgentBinaryAction::DELETE_BINARY_PERM);
         $this->deleteBinary();
         break;
       default:

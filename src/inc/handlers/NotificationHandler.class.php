@@ -10,14 +10,19 @@ class NotificationHandler implements Handler {
   }
   
   public function handle($action) {
+    global $ACCESS_CONTROL;
+    
     switch ($action) {
       case DNotificationAction::CREATE_NOTIFICATION:
+        $ACCESS_CONTROL->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
         $this->create();
         break;
       case DNotificationAction::SET_ACTIVE:
+        $ACCESS_CONTROL->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
         $this->toggleActive();
         break;
       case DNotificationAction::DELETE_NOTIFICATION:
+        $ACCESS_CONTROL->checkPermission(DNotificationAction::DELETE_NOTIFICATION_PERM);
         $this->delete();
         break;
       default:
@@ -107,7 +112,7 @@ class NotificationHandler implements Handler {
   
   private function create() {
     /** @var Login $LOGIN */
-    global $FACTORIES, $NOTIFICATIONS, $LOGIN;
+    global $FACTORIES, $NOTIFICATIONS, $LOGIN, $ACCESS_CONTROL;
     
     $actionType = $_POST['actionType'];
     $notification = $_POST['notification'];
@@ -125,14 +130,14 @@ class NotificationHandler implements Handler {
       UI::addMessage(UI::ERROR, "You need to fill in a receiver!");
       return;
     }
-    else if (DNotificationType::getRequiredLevel($actionType) > $LOGIN->getLevel()) {
+    else if (!$ACCESS_CONTROL->hasPermission(DNotificationType::getRequiredPermission($actionType))) {
       UI::addMessage(UI::ERROR, "You are not allowed to use this action type!");
       return;
     }
     $objectId = null;
     switch (DNotificationType::getObjectType($actionType)) {
       case DNotificationObjectType::USER:
-        if ($LOGIN->getLevel() < DAccessLevel::ADMINISTRATOR) {
+        if (!$ACCESS_CONTROL->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
           UI::addMessage(UI::ERROR, "You are not allowed to use user action types!");
           return;
         }

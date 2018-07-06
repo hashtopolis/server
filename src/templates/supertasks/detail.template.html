@@ -19,18 +19,24 @@
 				<th>Tasks</th>
         <td>
           {{FOREACH task;[[tasks]]}}
-            <a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+              <a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
+            {{ELSE}}
+              [[task.getTaskName()]]<br>
+            {{ENDIF}}
           {{ENDFOREACH}}
         </td>
       </tr>
       <tr>
 				<th>Actions</th>
         <td>
-          <form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="submit" class='btn btn-default' value="Apply to Hashlist">
-          </form>
-          {{IF [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
+            <form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="submit" class='btn btn-default' value="Apply to Hashlist">
+            </form>
+          {{ENDIF}}
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
             <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
               <input type="hidden" name="supertask" value="[[supertask.getId()]]">

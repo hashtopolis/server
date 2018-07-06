@@ -15,111 +15,83 @@ use DBA\TaskWrapper;
 
 class TaskHandler implements Handler {
   private $task;
-  
+
   public function __construct($taskId = null) {
     global $FACTORIES;
-    
+
     if ($taskId == null) {
       $this->task = null;
       return;
     }
-    
+
     $this->task = $FACTORIES::getAgentFactory()->get($taskId);
     if ($this->task == null) {
       UI::printError("FATAL", "Task with ID $taskId not found!");
     }
   }
-  
+
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN;
-    
+    global $ACCESS_CONTROL;
+
     switch ($action) {
       case DTaskAction::SET_BENCHMARK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
         $this->adjustBenchmark();
         break;
       case DTaskAction::SET_SMALL_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
         $this->setSmallTask();
         break;
       case DTaskAction::SET_CPU_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_CPU_TASK_PERM);
         $this->setCpuTask();
         break;
       case DTaskAction::ABORT_CHUNK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
         $this->abortChunk();
         break;
       case DTaskAction::RESET_CHUNK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
         $this->resetChunk();
         break;
       case DTaskAction::PURGE_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
         $this->purgeTask();
         break;
       case DTaskAction::SET_COLOR:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
         $this->updateColor();
         break;
       case DTaskAction::SET_TIME:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
         $this->changeChunkTime();
         break;
       case DTaskAction::RENAME_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
         $this->rename();
         break;
       case DTaskAction::DELETE_FINISHED:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
         $this->deleteFinished();
         break;
       case DTaskAction::DELETE_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
         $this->delete();
         break;
       case DTaskAction::SET_PRIORITY:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_PRIORITY_PERM);
         $this->updatePriority();
         break;
       case DTaskAction::CREATE_TASK:
+        $ACCESS_CONTROL->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
         $this->create();
         break;
       case DTaskAction::DELETE_SUPERTASK:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
         $this->deleteSupertask($_POST['supertaskId']);
         break;
       case DTaskAction::SET_SUPERTASK_PRIORITY:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
         $this->setSupertaskPriority($_POST['supertaskId'], $_POST['priority']);
         break;
       default:
@@ -127,16 +99,16 @@ class TaskHandler implements Handler {
         break;
     }
   }
-  
+
   private function deleteSupertask($supertaskId) {
     global $FACTORIES;
-    
+
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
     if ($taskWrapper === null) {
       UI::addMessage(UI::ERROR, "Invalid supertask!");
       return;
     }
-    
+
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -146,10 +118,10 @@ class TaskHandler implements Handler {
     $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
     $FACTORIES::getAgentFactory()->getDB()->commit();
   }
-  
+
   private function setSupertaskPriority($supertaskId, $priority) {
     global $FACTORIES;
-    
+
     $supertask = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
     if ($supertask === null) {
       UI::addMessage(UI::ERROR, "Invalid supertask!");
@@ -159,10 +131,10 @@ class TaskHandler implements Handler {
     $supertask->setPriority($priority);
     $FACTORIES::getTaskWrapperFactory()->update($supertask);
   }
-  
+
   private function setSmallTask() {
     global $FACTORIES;
-    
+
     $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
     if ($task == null) {
       UI::addMessage(UI::ERROR, "No such task!");
@@ -175,10 +147,10 @@ class TaskHandler implements Handler {
     $task->setIsSmall($isSmall);
     $FACTORIES::getTaskFactory()->update($task);
   }
-  
+
   private function setCpuTask() {
     global $FACTORIES;
-    
+
     $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
     if ($task == null) {
       UI::addMessage(UI::ERROR, "No such task!");
@@ -191,30 +163,30 @@ class TaskHandler implements Handler {
     $task->setIsCpuTask($isCpuTask);
     $FACTORIES::getTaskFactory()->update($task);
   }
-  
+
   private function create() {
     /** @var DataSet $CONFIG */
     /** @var $LOGIN Login */
-    global $FACTORIES, $CONFIG, $LOGIN;
-    
+    global $FACTORIES, $CONFIG, $LOGIN, $ACCESS_CONTROL;
+
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
-    $cmdline = $_POST["cmdline"];
-    $chunk = intval($_POST["chunk"]);
-    $status = intval($_POST["status"]);
-    $useNewBench = intval($_POST['benchType']);
-    $isCpuTask = intval($_POST['cpuOnly']);
-    $isSmall = intval($_POST['isSmall']);
-    $skipKeyspace = intval($_POST['skipKeyspace']);
+    $cmdline = @$_POST["cmdline"];
+    $chunk = intval(@$_POST["chunk"]);
+    $status = intval(@$_POST["status"]);
+    $useNewBench = intval(@$_POST['benchType']);
+    $isCpuTask = intval(@$_POST['cpuOnly']);
+    $isSmall = intval(@$_POST['isSmall']);
+    $skipKeyspace = intval(@$_POST['skipKeyspace']);
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
-    $color = $_POST["color"];
-    
+    $color = @$_POST["color"];
+
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
     $accessGroup = $FACTORIES::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
-    
+
     if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
@@ -243,7 +215,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Chunk time must be higher than status timer!");
       return;
     }
-    
+
     $qF1 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
     $qF2 = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
     $accessGroupUser = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -251,7 +223,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No access to this access group!");
       return;
     }
-    
+
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
@@ -266,11 +238,25 @@ class TaskHandler implements Handler {
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
-    
+
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
-    $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
+
+    if($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)){
+      $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
+    }
+    else{
+      $copy = $FACTORIES::getPretaskFactory()->get($_POST['copy']);
+      if($copy == null){
+        UI::addMessage(UI::ERROR, "Invalid preconfigured task used!");
+        return;
+      }
+      // force to copy from pretask to make sure user cannot change anything he is not allowed to
+      $task = new Task(0, $name, $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, 0, $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
+      $forward = "pretasks.php";
+    }
+
     $task = $FACTORIES::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
@@ -279,17 +265,17 @@ class TaskHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->commit();
-    
+
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
-    
+
     header("Location: $forward");
     die();
   }
-  
+
   private function updatePriority() {
     global $FACTORIES;
-    
+
     // change task priority
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
@@ -306,10 +292,10 @@ class TaskHandler implements Handler {
       $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
     }
   }
-  
+
   private function delete() {
     global $FACTORIES;
-    
+
     // delete a task
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
@@ -318,10 +304,10 @@ class TaskHandler implements Handler {
     }
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    
+
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
-    
+
     $this->deleteTask($task);
     if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
       $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
@@ -329,16 +315,16 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->commit();
     header("Location: tasks.php");
   }
-  
+
   /**
    * @param $task Task
    */
   private function deleteTask($task) {
     global $FACTORIES;
-    
+
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunkIds = Util::arrayOfIds($FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF)));
-    
+
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($notifications as $notification) {
@@ -346,7 +332,7 @@ class TaskHandler implements Handler {
         $FACTORIES::getNotificationSettingFactory()->delete($notification);
       }
     }
-    
+
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
@@ -362,10 +348,10 @@ class TaskHandler implements Handler {
     $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getTaskFactory()->delete($task);
   }
-  
+
   private function deleteFinished() {
     global $FACTORIES;
-    
+
     // check every task wrapper
     $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
     foreach ($taskWrappers as $taskWrapper) {
@@ -398,10 +384,10 @@ class TaskHandler implements Handler {
       }
     }
   }
-  
+
   private function rename() {
     global $FACTORIES;
-    
+
     // change task name
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
@@ -412,10 +398,10 @@ class TaskHandler implements Handler {
     $task->setTaskName($name);
     $FACTORIES::getTaskFactory()->update($task);
   }
-  
+
   private function changeChunkTime() {
     global $FACTORIES;
-    
+
     // update task chunk time
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
@@ -436,10 +422,10 @@ class TaskHandler implements Handler {
     $FACTORIES::getTaskFactory()->update($task);
     $FACTORIES::getAgentFactory()->getDB()->commit();
   }
-  
+
   private function updateColor() {
     global $FACTORIES;
-    
+
     // change task color
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
@@ -453,10 +439,10 @@ class TaskHandler implements Handler {
     $task->setColor($color);
     $FACTORIES::getTaskFactory()->update($task);
   }
-  
+
   private function abortChunk() {
     global $FACTORIES;
-    
+
     // reset chunk state and progress to zero
     $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
     if ($chunk == null) {
@@ -466,10 +452,10 @@ class TaskHandler implements Handler {
     $chunk->setState(DHashcatStatus::ABORTED);
     $FACTORIES::getChunkFactory()->update($chunk);
   }
-  
+
   private function resetChunk() {
     global $FACTORIES;
-    
+
     // reset chunk state and progress to zero
     $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
     if ($chunk == null) {
@@ -483,10 +469,10 @@ class TaskHandler implements Handler {
     $chunk->setSolveTime(0);
     $FACTORIES::getChunkFactory()->update($chunk);
   }
-  
+
   private function purgeTask() {
     global $FACTORIES;
-    
+
     // delete all task chunks, forget its keyspace value and reset progress to zero
     $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
     if ($task == null) {
@@ -514,10 +500,10 @@ class TaskHandler implements Handler {
     $FACTORIES::getTaskFactory()->update($task);
     $FACTORIES::getAgentFactory()->getDB()->commit();
   }
-  
+
   private function adjustBenchmark() {
     global $FACTORIES;
-    
+
     // adjust agent benchmark
     $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agentId'], "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);

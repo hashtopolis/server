@@ -72,7 +72,7 @@
             [[accessGroup.getGroupName()]]<br>
           {{ENDFOREACH}}
         </td>
-        {{IF [[login.getLevel()]] >= 30}}
+        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}
           <td>
             <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[agent.getId()]]?')) return false;">
               <input type='hidden' name='action' value='[[$DAgentAction::DELETE_AGENT]]'>

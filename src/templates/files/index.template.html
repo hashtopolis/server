@@ -11,7 +11,11 @@
 	}
 </script>
 {%TEMPLATE->struct/messages%}
+{{IF [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
 <div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
+{{ELSE}}
+<div class='col-md-12' style='padding: 0px; padding-right: 5px;'>
+{{ENDIF}}
 	<div class='btn-toolbar'>
 		<div class='btn-group'>
 			<button class='btn btn-default{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
@@ -38,7 +42,7 @@
 						{{ENDIF}}
 					</td>
 					<td>
-						{{IF [[login.getLevel()]] >= 30}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
 							<form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
 								<input type="hidden" name="file" value="[[file.getId()]]">
 								<input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
@@ -54,7 +58,7 @@
 						[[Util::nicenum([[file.getSize()]])]]B
 					</td>
 					<td>
-						{{IF [[login.getLevel()]] >= 30}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
 							<form style ='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
 								<input type="submit" class='btn btn-primary' value="Rename">
 							</form>
@@ -71,82 +75,84 @@
 		</table>
 	</div>
 </div>
-<div class='col-md-4' style='padding: 0px;'>
-	<h3>Add new [[fileType]]</h3>
-	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-		<input type="hidden" name="source" value="upload">
-		<input type="hidden" name="csrf" value="[[csrf]]">
-		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-		<div class="panel panel-default">
-			<table class="table table-bordered table-nonfluid" id='upfiles'>
-				<tr>
-					<th>
-						Upload files 
-						<button type="button" class='btn btn-default' onclick="addLine('upfiles');">Add file</button>
-					</th>
-				</tr>
-				<tr>
-					<td>
-						<input type="submit" class='btn btn-default' value="Upload files">
-					</td>
-				</tr>
-			</table>
-		</div>
-	</form>
-	<form id="impfiles" action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-		<input type="hidden" name="source" value="import">
-		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-		<input type="hidden" name="csrf" value="[[csrf]]">
+{{IF [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
+	<div class='col-md-4' style='padding: 0px;'>
+		<h3>Add new [[fileType]]</h3>
+		<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="source" value="upload">
+			<input type="hidden" name="csrf" value="[[csrf]]">
+			<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
 			<div class="panel panel-default">
-			<table class="table table-bordered table-nonfluid" id='imfiles'>
-				<tr>
-					<th>Import files</th>
-				</tr>
-				{{FOREACH impfile;[[impfiles]]}}
+				<table class="table table-bordered table-nonfluid" id='upfiles'>
+					<tr>
+						<th>
+							Upload files
+							<button type="button" class='btn btn-default' onclick="addLine('upfiles');">Add file</button>
+						</th>
+					</tr>
 					<tr>
 						<td>
-							<input type="checkbox" name="imfile[]" value="[[impfile.getVal('file')]]" title="Import File">
-							[[impfile.getVal('file')]] ([[Util::nicenum([[impfile.getVal('size')]])]]B)
+							<input type="submit" class='btn btn-default' value="Upload files">
 						</td>
 					</tr>
-				{{ENDFOREACH}}
-				{{IF [[sizeof([[impfiles]])]] == 0}}
+				</table>
+			</div>
+		</form>
+		<form id="impfiles" action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="source" value="import">
+			<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
+			<input type="hidden" name="csrf" value="[[csrf]]">
+				<div class="panel panel-default">
+				<table class="table table-bordered table-nonfluid" id='imfiles'>
 					<tr>
-						<td>'import' directory is empty.</td>
+						<th>Import files</th>
 					</tr>
-				{{ELSE}}
+					{{FOREACH impfile;[[impfiles]]}}
+						<tr>
+							<td>
+								<input type="checkbox" name="imfile[]" value="[[impfile.getVal('file')]]" title="Import File">
+								[[impfile.getVal('file')]] ([[Util::nicenum([[impfile.getVal('size')]])]]B)
+							</td>
+						</tr>
+					{{ENDFOREACH}}
+					{{IF [[sizeof([[impfiles]])]] == 0}}
+						<tr>
+							<td>'import' directory is empty.</td>
+						</tr>
+					{{ELSE}}
+						<tr>
+							<td>
+								<input type="submit" class='btn btn-default' value="Import files">
+								<input type="checkbox" onChange="checkAll('impfiles',this.checked);" title="Select All"> Select All
+							</td>
+						</tr>
+					{{ENDIF}}
+				</table>
+			</div>
+		</form>
+		<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
+				<input type="hidden" name="source" value="url">
+			<input type="hidden" name="csrf" value="[[csrf]]">
+				<div class="panel panel-default">
+				<table class="table table-bordered table-nonfluid" id='upfiles'>
 					<tr>
+						<td colspan='2'>Download URL</td>
+					</tr>
+					<tr>
+						<td>URL:</td>
 						<td>
-							<input type="submit" class='btn btn-default' value="Import files"> 
-							<input type="checkbox" onChange="checkAll('impfiles',this.checked);" title="Select All"> Select All
+							<input type="text" class='form-control' name="url" title="URL">
 						</td>
 					</tr>
-				{{ENDIF}}
-			</table>
-		</div>
-	</form>
-	<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-		<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-			<input type="hidden" name="source" value="url">
-		<input type="hidden" name="csrf" value="[[csrf]]">
-			<div class="panel panel-default">
-			<table class="table table-bordered table-nonfluid" id='upfiles'>
-				<tr>
-					<td colspan='2'>Download URL</td>
-				</tr>
-				<tr>
-					<td>URL:</td>
-					<td>
-						<input type="text" class='form-control' name="url" title="URL">
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<input type="submit" class='btn btn-default' value="Download file">
-					</td>
-				</tr>
-			</table>
-		</div>
-	</form>
-</div>
+					<tr>
+						<td colspan="2">
+							<input type="submit" class='btn btn-default' value="Download file">
+						</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+{{ENDIF}}
 {%TEMPLATE->struct/foot%}

@@ -10,6 +10,8 @@ if (!$LOGIN->isLoggedin()) {
   die();
 }
 
+$ACCESS_CONTROL->checkPermission(DViewControl::ACCOUNT_VIEW_PERM);
+
 $TEMPLATE = new Template("account");
 $MENU->setActive("account_settings");
 $OBJECTS['pageTitle'] = "Account Settings";

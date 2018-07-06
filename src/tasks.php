@@ -22,6 +22,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
+$ACCESS_CONTROL->checkPermission(array_merge(DViewControl::TASKS_VIEW_PERM, DAccessControl::RUN_TASK_ACCESS));
 
 $TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");
@@ -61,12 +62,7 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 }
 
 if (isset($_GET['id'])) {
-  if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-    $TEMPLATE = new Template("restricted");
-    $OBJECTS['pageTitle'] = "Restricted";
-    die($TEMPLATE->render($OBJECTS));
-  }
-  
+  $ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
   $TEMPLATE = new Template("tasks/detail");
   $task = $FACTORIES::getTaskFactory()->get($_GET['id']);
   if ($task == null) {
@@ -75,12 +71,12 @@ if (isset($_GET['id'])) {
   $OBJECTS['task'] = $task;
   $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
   $OBJECTS['taskWrapper'] = $taskWrapper;
-  
+
   $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
   $OBJECTS['hashlist'] = $hashlist;
   $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
   $OBJECTS['hashtype'] = $hashtype;
-  
+
   $isActive = 0;
   $activeChunks = array();
   $activeChunksIds = new DataSet();
@@ -104,14 +100,14 @@ if (isset($_GET['id'])) {
   }
   $OBJECTS['isActive'] = $isActive;
   $OBJECTS['currentSpeed'] = $currentSpeed;
-  
+
   $agentsBench = new DataSet();
   $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
   $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
   foreach ($assignments as $assignment) {
     $agentsBench->addValue($assignment->getAgentId(), $assignment->getBenchmark());
   }
-  
+
   $cProgress = 0;
   $chunkIntervals = array();
   $agentsProgress = new DataSet();
@@ -139,7 +135,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['agentsSpent'] = $agentsSpent;
   $OBJECTS['agentsCracked'] = $agentsCracked;
   $OBJECTS['cProgress'] = $cProgress;
-  
+
   $timeChunks = $chunks;
   usort($timeChunks, "Util::compareChunksTime");
   $timeSpent = 0;
@@ -155,19 +151,19 @@ if (isset($_GET['id'])) {
     }
   }
   $OBJECTS['timeSpent'] = $timeSpent;
-  
+
   if ($task->getKeyspace() != 0 && ($cProgress / $task->getKeyspace()) != 0) {
     $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
   }
   else {
     $OBJECTS['timeLeft'] = -1;
   }
-  
+
   $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
   $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
-  
+
   $jF = new JoinFilter($FACTORIES::getAssignmentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
   $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getAssignmentFactory());
   $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -180,7 +176,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['activeAgents'] = $activeAgents;
   $OBJECTS['agentsBench'] = $agentsBench;
   $OBJECTS['agentsSpeed'] = $agentsSpeed;
-  
+
   $assignAgents = array();
   $allAgents = $FACTORIES::getAgentFactory()->filter(array());
   foreach ($allAgents as $agent) {
@@ -189,7 +185,7 @@ if (isset($_GET['id'])) {
     }
   }
   $OBJECTS['assignAgents'] = $assignAgents;
-  
+
   $OBJECTS['showAllAgents'] = false;
   if (isset($_GET['allagents'])) {
     $OBJECTS['showAllAgents'] = true;
@@ -220,7 +216,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['agentObjects'] = $agentObjects;
     $OBJECTS['allAgentsSpent'] = $allAgentsSpent;
   }
-  
+
   if (isset($_GET['all'])) {
     $OBJECTS['chunkFilter'] = 1;
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -233,7 +229,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['chunks'] = $activeChunks;
     $OBJECTS['activeChunks'] = $activeChunksIds;
   }
-  
+
   $agents = $FACTORIES::getAgentFactory()->filter(array());
   $fullAgents = new DataSet();
   foreach ($agents as $agent) {
@@ -243,10 +239,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['pageTitle'] = "Task details for " . $task->getTaskName();
 }
 else if (isset($_GET['new'])) {
-  if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-    $TEMPLATE = new Template("restricted");
-    die($TEMPLATE->render($OBJECTS));
-  }
+  $ACCESS_CONTROL->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
@@ -254,6 +247,8 @@ else if (isset($_GET['new'])) {
   $hashlistId = 0;
   $copy = null;
   if (isset($_GET["copy"])) {
+    $ACCESS_CONTROL->checkPermission(DAccessControl::CREATE_TASK_ACCESS); // enforce additional permission for this
+
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
@@ -287,13 +282,14 @@ else if (isset($_GET['new'])) {
   if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
     $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
-  
+
   $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
-  
+
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
+  $OBJECTS['origType'] = $origType;
   $OBJECTS['hashlistId'] = $hashlistId;
-  
+
   $lists = array();
   $res = $FACTORIES::getHashlistFactory()->filter(array());
   foreach ($res as $list) {
@@ -303,7 +299,7 @@ else if (isset($_GET['new'])) {
     $lists[] = $set;
   }
   $OBJECTS['lists'] = $lists;
-  
+
   $origFiles = array();
   if ($orig > 0) {
     if ($origType == 1) {
@@ -342,7 +338,7 @@ else if (isset($_GET['new'])) {
   }
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
-  
+
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
   $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::ORDER => $oF));
@@ -351,6 +347,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['pageTitle'] = "Create Task";
 }
 else {
+  $ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
   Util::loadTasks();
   $OBJECTS['pageTitle'] = "Tasks";
 }

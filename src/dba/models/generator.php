@@ -177,7 +177,7 @@ $CONF['RegVoucher'] = array(
 $CONF['RightGroup'] = array(
   'rightGroupId',
   'groupName',
-  'level'
+  'permissions'
 );
 $CONF['Session'] = array(
   'sessionId',

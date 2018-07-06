@@ -4,10 +4,10 @@
 	<h2>Hashes of chunk [[chunk.getId()]]</h2>
 {{ENDIF}}
 {{IF [[src]] == "task"}}
-	<h2>Hashes of task <a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a></h2>
+	<h2>Hashes of task {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}<a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a>{{ELSE}}[[task.getTaskName()]]{{ENDIF}}</h2>
 {{ENDIF}}
 {{IF [[src]] == "hashlist"}}
-	<h2>Hashes of hashlist <a href="hashlists.php?id=[[list.getId()]]">[[list.getHashlistName()]]</a></h2>
+	<h2>Hashes of hashlist {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}<a href="hashlists.php?id=[[list.getId()]]">[[list.getHashlistName()]]{{ELSE}}[[list.getHashlistName()]]{{ENDIF}}</a></h2>
 {{ENDIF}}
 {%TEMPLATE->struct/messages%}
 

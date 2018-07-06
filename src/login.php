@@ -5,6 +5,8 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
+$ACCESS_CONTROL->checkPermission(DViewControl::LOGIN_VIEW_PERM);
+
 if (!isset($_POST['username']) || !isset($_POST['password'])) {
   header("Location: index.php?err=1" . time());
   die();
