@@ -27,7 +27,7 @@
 							<a class="dropdown-item[[menu.isActive('tasks_list')]]" href="tasks.php">Show Tasks</a>
 						{{ENDIF}}
 						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
-							<a class="dropdown-item[[menu.isActive('tasks_new')]" href="tasks.php?new=true">New Task</a>
+							<a class="dropdown-item[[menu.isActive('tasks_new')]]" href="tasks.php?new=true">New Task</a>
 						{{ENDIF}}
 						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
 							<a class="dropdown-item[[menu.isActive('tasks_pre')]]" href="pretasks.php">Preconfigured Tasks</a>
