@@ -2,70 +2,72 @@
 {%TEMPLATE->struct/menu%}
 <h2>Superhashlists ([[sizeof([[lists]])]])</h2>
 {%TEMPLATE->struct/messages%}
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th>Hash type</th>
-			<th>Cracked</th>
-			<th>Hashlists</th>
-			<th>Pre-cracked</th>
-			<th>Action</th>
-		</tr>
-		{{FOREACH list;[[lists]]}}
-			<tr>
-				<td>
-					<a href="hashlists.php?id=[[list.getId()]]">[[list.getId()]]</a>
-				</td>
-				<td>
-					<a href="hashlists.php?id=[[list.getId()]]">[[list.getHashlistName()]]</a>
-					{{IF [[list.getIsSecret()]] == 1}}
-						<img src="static/lock.gif" alt="Secret">
-					{{ENDIF}}
-					[[Util::tickdone([[list.getCracked()]], [[list.getHashCount()]])]]
-				</td>
-				<td>
-					[[hashtypes.getVal([[list.getHashtypeId()]])]]
-				</td>
-				<td>
-					[[Util::showperc([[list.getCracked()]], [[list.getHashCount()]])]]%<br>
-					(<a href="hashes.php?hashlist=[[list.getId()]]&filter=cracked">[[list.getCracked()]]</a>
-					/ <a href="hashes.php?hashlist=[[list.getId()]]">[[list.getHashCount()]]</a>)
-				</td>
-				<td>
-					{{FOREACH subList;[[subLists.getVal([[list.getId()]])]]}}
-            <a href="hashlists.php?id=[[subList.getId()]]">[[subList.getHashlistName()]]</a><br>
-          {{ENDFOREACH}}
-				</td>
-				<td>
-					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-						<form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
-							<input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
-							<input type="hidden" name="hashlist" value="[[list.getId()]]">
-							<input type="hidden" name="csrf" value="[[csrf]]">
-							<input type="submit" class='btn btn-default' value="Import">
-						</form>
-						<form style ='float: left;' action="hashlists.php" method="POST">
-							<input type="hidden" name="action" value="[[$DHashlistAction::EXPORT_HASHLIST]]">
-							<input type="hidden" name="hashlist" value="[[list.getId()]]">
-							<input type="hidden" name="csrf" value="[[csrf]]">
-							<input type="submit" class='btn btn-default' value="Export">
-						</form>
-					{{ENDIF}}
-				</td>
-				<td>
-					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-						<form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete superhashlist [[list.getId()]]?\n(Included hashes will stay intact in their hashlists)')) return false;">
-							<input type="hidden" name="action" value="[[$DHashlistAction::DELETE_HASHLIST]]">
-							<input type="hidden" name="hashlist" value="[[list.getId()]]">
-							<input type="hidden" name="csrf" value="[[csrf]]">
-							<input type="submit" class='btn btn-danger' value="Delete">
-						</form>
-					{{ENDIF}}
-				</td>
-			</tr>
-		{{ENDFOREACH}}
-	</table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <th>ID</th>
+			  <th>Name</th>
+			  <th>Hash type</th>
+			  <th>Cracked</th>
+			  <th>Hashlists</th>
+			  <th>Pre-cracked</th>
+			  <th>Action</th>
+		  </tr>
+		  {{FOREACH list;[[lists]]}}
+			  <tr>
+				  <td>
+					  <a href="hashlists.php?id=[[list.getId()]]">[[list.getId()]]</a>
+				  </td>
+				  <td>
+					  <a href="hashlists.php?id=[[list.getId()]]">[[list.getHashlistName()]]</a>
+					  {{IF [[list.getIsSecret()]] == 1}}
+						  <img src="static/lock.gif" alt="Secret">
+					  {{ENDIF}}
+					  [[Util::tickdone([[list.getCracked()]], [[list.getHashCount()]])]]
+				  </td>
+				  <td>
+					  [[hashtypes.getVal([[list.getHashtypeId()]])]]
+				  </td>
+				  <td>
+					  [[Util::showperc([[list.getCracked()]], [[list.getHashCount()]])]]%<br>
+					  (<a href="hashes.php?hashlist=[[list.getId()]]&filter=cracked">[[list.getCracked()]]</a>
+					  / <a href="hashes.php?hashlist=[[list.getId()]]">[[list.getHashCount()]]</a>)
+				  </td>
+				  <td>
+					  {{FOREACH subList;[[subLists.getVal([[list.getId()]])]]}}
+              <a href="hashlists.php?id=[[subList.getId()]]">[[subList.getHashlistName()]]</a><br>
+            {{ENDFOREACH}}
+				  </td>
+				  <td>
+					  {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+						  <form style ='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
+							  <input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
+							  <input type="hidden" name="hashlist" value="[[list.getId()]]">
+							  <input type="hidden" name="csrf" value="[[csrf]]">
+							  <input type="submit" class='btn btn-light' value="Import">
+						  </form>
+						  <form style ='float: left;' action="hashlists.php" method="POST">
+							  <input type="hidden" name="action" value="[[$DHashlistAction::EXPORT_HASHLIST]]">
+							  <input type="hidden" name="hashlist" value="[[list.getId()]]">
+							  <input type="hidden" name="csrf" value="[[csrf]]">
+							  <input type="submit" class='btn btn-light' value="Export">
+						  </form>
+					  {{ENDIF}}
+				  </td>
+				  <td>
+					  {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+						  <form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete superhashlist [[list.getId()]]?\n(Included hashes will stay intact in their hashlists)')) return false;">
+							  <input type="hidden" name="action" value="[[$DHashlistAction::DELETE_HASHLIST]]">
+							  <input type="hidden" name="hashlist" value="[[list.getId()]]">
+							  <input type="hidden" name="csrf" value="[[csrf]]">
+							  <input type="submit" class='btn btn-danger' value="Delete">
+						  </form>
+					  {{ENDIF}}
+				  </td>
+			  </tr>
+		  {{ENDFOREACH}}
+	  </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}
