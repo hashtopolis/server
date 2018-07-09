@@ -643,9 +643,9 @@ class Util {
       "CPU"
     );
     $oses = array(
-      '<span class="fas fa-linux" aria-hidden="true"></span>',
+      '<span class="fab fa-linux" aria-hidden="true"></span>',
       '<span class="fab fa-windows" aria-hidden="true"></span>',
-      '<span class="fas fa-apple" aria-hidden="true"></span>'
+      '<span class="fab fa-apple" aria-hidden="true"></span>'
     );
     $formats = array(
       "Text",
