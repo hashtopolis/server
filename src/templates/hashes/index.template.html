@@ -39,7 +39,7 @@
 </div>
 <div class="row">
   <div class="col-md-12">
-    <div class="btn-toolbar">
+    <div class="btn-toolbar" style="justify-content: center; display: flex;">
       <div class='btn-group'>
         <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[previousPage]]'" {{IF [[previousPage]] == -1}} disabled{{ENDIF}}>[[Util::calculate([[previousPage]]+1)]] &lt;</button>
         <button class='btn btn-light active'>Page [[Util::calculate([[currentPage]]+1)]]</button>
@@ -48,9 +48,10 @@
     </div>
   </div>
 </div>
+<br>
 <div class="row">
   <div class="col-md-12">
-    <form class='form-inline' action='hashes.php' method='get'>
+    <form class='form-inline' style="justify-content: center; display: flex;" action='hashes.php' method='get'>
       <input type='hidden' name='[[src]]' value='[[srcId]]'>
       <select name='display' class='form-control' style='float: left;' title="Display Selection">
         {{FOREACH display;[[displays]]}}
