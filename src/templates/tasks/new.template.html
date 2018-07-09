@@ -159,7 +159,6 @@
         </div>
       </div>
       <br>
-      <br>
       <div id="rules">
         <div class="card">
           <div class="table-responsive">
@@ -224,8 +223,8 @@
             wordlist.style.display = "none";
             rule.style.visibility = "visible"; // or
             rule.style.display = "inline";
-            document.getElementById("ruleButton").className = "btn btn-default active";
-            document.getElementById("wordlistButton").className = "btn btn-default";
+            document.getElementById("ruleButton").className = "btn btn-light active";
+            document.getElementById("wordlistButton").className = "btn btn-light";
             show = "rules";
           }
           else {
@@ -233,8 +232,8 @@
             wordlist.style.display = "inline";
             rule.style.visibility = "hidden"; // or
             rule.style.display = "none";
-            document.getElementById("ruleButton").className = "btn btn-default";
-            document.getElementById("wordlistButton").className = "btn btn-default active";
+            document.getElementById("ruleButton").className = "btn btn-light";
+            document.getElementById("wordlistButton").className = "btn btn-light active";
             show = "wordlists";
           }
           return false;
