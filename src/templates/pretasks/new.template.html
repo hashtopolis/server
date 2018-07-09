@@ -3,118 +3,146 @@
 <h2>New preconfigured task</h2>
 {%TEMPLATE->struct/messages%}
 <form class='form-inline' action="pretasks.php" method="POST" enctype="multipart/form-data">
-	<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
-		<input type='hidden' name='action' value='[[$DPretaskAction::CREATE_TASK]]'>
-    <input type="hidden" name="csrf" value="[[csrf]]">
-		<div class="card">
-      <div class="table-responsive">
-        <table class="table table-bordered">
-				  <tr>
-					  <th>Property</th>
-					  <th>Value</th>
-				  </tr>
-				  <tr>
-					  <td>Name:</td>
-					  <td>
-						  <input type="text" class='form-control' name="name" title="Name">
-					  </td>
-				  </tr>
-				  <tr>
-					  <td>Command line:</td>
-					  <td>
-						  <textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Attack Command"></textarea>
-						  <br>
-      					  Use <b>[[config.getVal([[$DConfig::HASHLIST_ALIAS]])]]</b> for hash list and assume all files in current directory.<br>
-      					  If you have Linux agents, please mind the filename case sensitivity!<br>
-      					  Also, don't use any of these parameters, they will be invoked automatically:<br>
-      					  hash-type, limit, outfile-check-dir, outfile-check-timer, potfile-disable, remove,<br>
-      					  remove-timer, separator, session, skip, status, status-timer
-      		  </td>
-      	  </tr>
-      		<tr>
-      			<td>Chunk size:</td>
-      			<td>
-      				<input type="text" class='form-control' name="chunk" title="Chunk Size" value="[[config.getVal([[$DConfig::CHUNK_DURATION]])]]"> seconds
-      			</td>
-      		</tr>
-      		<tr>
-      			<td>Status timer:</td>
-      			<td>
-      				<input type="text" class='form-control' name="status" title="Status Timer" value="[[config.getVal([[$DConfig::STATUS_TIMER]])]]"> seconds
-      			</td>
-      		</tr>
-					<tr>
-						<td>Benchmark Type (Hashcat only): </td>
-						<td>
-              <select name="benchType" class="form-control" title="benchmarkType">
-                <option value="0">Runtime Benchmark</option>
-                <option value="1">Speed Test</option>
-              </select>
-						</td>
-					</tr>
-      		<tr>
-      			<td>Color:</td>
-      			<td>
-      				#<input type="text" class='form-control color {required:false}' name="color" size="6" title="Color">
-      			</td>
-      		</tr>
-          <tr>
-            <td>Task is CPU only (gets only CPU agents assigned):</td>
-            <td>
-              <select name="cpuOnly" class="form-control" title="CPU Only">
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Task is small (only one agent gets assigned to it):</td>
-            <td>
-              <select name="isSmall" class="form-control" title="Small Task">
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Cracker Binary which is used to run this task:</td>
-            <td>
-              <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
-                {{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
-                  <option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
-                {{ENDFOREACH}}
-              </select>
-            </td>
-          </tr>
-      		<tr>
-      			<td colspan="2" class="text-center">
-      				<input type="submit" class='btn btn-success' value="Create preconfigured task">
-      			</td>
-      		</tr>
-			   </table>
-      </div>
-		</div>
-	</div>
-	<div class='col-md-4' style='padding: 0px;'>
-    <div class='btn-toolbar'>
-      <div class='btn-group'>
-        <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles()">Rules</button>
-        <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles()">Wordlists</button>
-      </div>
-    </div>
-    <br>
-    <br>
-    <div id="rules">
-      <div class="card">
+  <div class="row">
+	  <div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
+		  <input type='hidden' name='action' value='[[$DPretaskAction::CREATE_TASK]]'>
+      <input type="hidden" name="csrf" value="[[csrf]]">
+		  <div class="card">
         <div class="table-responsive">
           <table class="table table-bordered">
+				    <tr>
+					    <th>Property</th>
+					    <th>Value</th>
+				    </tr>
+				    <tr>
+					    <td>Name:</td>
+					    <td>
+						    <input type="text" class='form-control' name="name" title="Name">
+					    </td>
+				    </tr>
+				    <tr>
+					    <td>Command line:</td>
+					    <td>
+						    <textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Attack Command"></textarea>
+						    <br>
+      					    Use <b>[[config.getVal([[$DConfig::HASHLIST_ALIAS]])]]</b> for hash list and assume all files in current directory.<br>
+      					    If you have Linux agents, please mind the filename case sensitivity!<br>
+      					    Also, don't use any of these parameters, they will be invoked automatically:<br>
+      					    hash-type, limit, outfile-check-dir, outfile-check-timer, potfile-disable, remove,<br>
+      					    remove-timer, separator, session, skip, status, status-timer
+      		    </td>
+      	    </tr>
+      		  <tr>
+      			  <td>Chunk size:</td>
+      			  <td>
+      				  <input type="text" class='form-control' name="chunk" title="Chunk Size" value="[[config.getVal([[$DConfig::CHUNK_DURATION]])]]"> seconds
+      			  </td>
+      		  </tr>
+      		  <tr>
+      			  <td>Status timer:</td>
+      			  <td>
+      				  <input type="text" class='form-control' name="status" title="Status Timer" value="[[config.getVal([[$DConfig::STATUS_TIMER]])]]"> seconds
+      			  </td>
+      		  </tr>
+					  <tr>
+						  <td>Benchmark Type (Hashcat only): </td>
+						  <td>
+                <select name="benchType" class="form-control" title="benchmarkType">
+                  <option value="0">Runtime Benchmark</option>
+                  <option value="1">Speed Test</option>
+                </select>
+						  </td>
+					  </tr>
+      		  <tr>
+      			  <td>Color:</td>
+      			  <td>
+      				  #<input type="text" class='form-control color {required:false}' name="color" size="6" title="Color">
+      			  </td>
+      		  </tr>
             <tr>
-              <th>Filename</th>
-              <th>Size</th>
-              {{FOREACH file;[[rules]]}}
+              <td>Task is CPU only (gets only CPU agents assigned):</td>
+              <td>
+                <select name="cpuOnly" class="form-control" title="CPU Only">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Task is small (only one agent gets assigned to it):</td>
+              <td>
+                <select name="isSmall" class="form-control" title="Small Task">
+                  <option value="0">No</option>
+                  <option value="1">Yes</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Cracker Binary which is used to run this task:</td>
+              <td>
+                <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+                  {{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
+                    <option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+              </td>
+            </tr>
+      		  <tr>
+      			  <td colspan="2" class="text-center">
+      				  <input type="submit" class='btn btn-success' value="Create preconfigured task">
+      			  </td>
+      		  </tr>
+			     </table>
+        </div>
+		  </div>
+	  </div>
+	  <div class='col-md-4' style='padding: 0px;'>
+      <div class='btn-toolbar'>
+        <div class='btn-group'>
+          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles()">Rules</button>
+          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles()">Wordlists</button>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div id="rules">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Filename</th>
+                <th>Size</th>
+                {{FOREACH file;[[rules]]}}
+                  <tr>
+                    <td>
+                      <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'rule');" title="Rule">
+                      [[file.getFilename()]]
+                      {{IF [[file.getIsSecret()]] == 1}}
+                        <span class="fas fa-lock" aria-hidden="true"></span>
+                      {{ENDIF}}
+                    </td>
+                    <td>
+                      [[Util::nicenum([[file.getSize()]])]]B
+                    </td>
+                  </tr>
+                {{ENDFOREACH}}
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="wordlists">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[wordlists]]}}
                 <tr>
                   <td>
-                    <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'rule');" title="Rule">
+                    <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'wordlist');" title="Wordlist">
                     [[file.getFilename()]]
                     {{IF [[file.getIsSecret()]] == 1}}
                       <span class="fas fa-lock" aria-hidden="true"></span>
@@ -125,95 +153,69 @@
                   </td>
                 </tr>
               {{ENDFOREACH}}
-            </tr>
-          </table>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="wordlists">
-      <div class="card">
-        <div class="table-responsive">
-          <table class="table table-bordered">
-            <tr>
-              <th>Filename</th>
-              <th>Size</th>
-            </tr>
-            {{FOREACH file;[[wordlists]]}}
-              <tr>
-                <td>
-                  <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'wordlist');" title="Wordlist">
-                  [[file.getFilename()]]
-                  {{IF [[file.getIsSecret()]] == 1}}
-                    <span class="fas fa-lock" aria-hidden="true"></span>
-                  {{ENDIF}}
-                </td>
-                <td>
-                  [[Util::nicenum([[file.getSize()]])]]B
-                </td>
-              </tr>
-            {{ENDFOREACH}}
-          </table>
-        </div>
-      </div>
-    </div>
-    <script type='text/javascript'>
-      var show = "rules";
-      toggleFiles();
+      <script type='text/javascript'>
+        var show = "rules";
+        toggleFiles();
 
-      function toggleFiles(){
-        var wordlist = document.getElementById('wordlists');
-        var rule = document.getElementById('rules');
-        if(show === 'wordlists'){
-          wordlist.style.visibility = "hidden"; // or
-          wordlist.style.display = "none";
-          rule.style.visibility = "visible"; // or
-          rule.style.display = "inline";
-          document.getElementById("ruleButton").className = "btn btn-light active";
-          document.getElementById("wordlistButton").className = "btn btn-light";
-          show = "rules";
+        function toggleFiles(){
+          var wordlist = document.getElementById('wordlists');
+          var rule = document.getElementById('rules');
+          if(show === 'wordlists'){
+            wordlist.style.visibility = "hidden"; // or
+            wordlist.style.display = "none";
+            rule.style.visibility = "visible"; // or
+            rule.style.display = "inline";
+            document.getElementById("ruleButton").className = "btn btn-light active";
+            document.getElementById("wordlistButton").className = "btn btn-light";
+            show = "rules";
+          }
+          else{
+            wordlist.style.visibility = "visible"; // or
+            wordlist.style.display = "inline";
+            rule.style.visibility = "hidden"; // or
+            rule.style.display = "none";
+            document.getElementById("ruleButton").className = "btn btn-light";
+            document.getElementById("wordlistButton").className = "btn btn-light active";
+            show = "wordlists";
+          }
+          return false;
         }
-        else{
-          wordlist.style.visibility = "visible"; // or
-          wordlist.style.display = "inline";
-          rule.style.visibility = "hidden"; // or
-          rule.style.display = "none";
-          document.getElementById("ruleButton").className = "btn btn-light";
-          document.getElementById("wordlistButton").className = "btn btn-light active";
-          show = "wordlists";
-        }
-        return false;
-      }
 
-      function assignFile(cmdLine, addObject, fileName, type) {
-        if (fileName.indexOf('.7z') !== -1) {
-          fileName=fileName.substring(0,fileName.length-2)+'???';
-        }
-        var cmdObject = document.getElementById(cmdLine);
-        if (addObject === true) {
-          if (cmdObject.value.indexOf(fileName) === -1) {
-            if (cmdObject.value.length > 0 && cmdObject.value.slice(-1) !== ' ') {
-              cmdObject.value += ' ';
+        function assignFile(cmdLine, addObject, fileName, type) {
+          if (fileName.indexOf('.7z') !== -1) {
+            fileName=fileName.substring(0,fileName.length-2)+'???';
+          }
+          var cmdObject = document.getElementById(cmdLine);
+          if (addObject === true) {
+            if (cmdObject.value.indexOf(fileName) === -1) {
+              if (cmdObject.value.length > 0 && cmdObject.value.slice(-1) !== ' ') {
+                cmdObject.value += ' ';
+              }
+              if(type === 'rule'){
+                  cmdObject.value += '-r ';
+              }
+              cmdObject.value += fileName;
             }
+          }
+          else {
             if(type === 'rule'){
-                cmdObject.value += '-r ';
+                cmdObject.value = cmdObject.value.replace('-r ' + fileName, '');
             }
-            cmdObject.value += fileName;
+            cmdObject.value = cmdObject.value.replace(fileName, '');
+            while (cmdObject.value.slice(-1) === ' ') {
+              cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1);
+            }
+            while (cmdObject.value.substring(0,1) === ' ') {
+              cmdObject.value=cmdObject.value.substring(1);
+            }
           }
         }
-        else {
-          if(type === 'rule'){
-              cmdObject.value = cmdObject.value.replace('-r ' + fileName, '');
-          }
-          cmdObject.value = cmdObject.value.replace(fileName, '');
-          while (cmdObject.value.slice(-1) === ' ') {
-            cmdObject.value=cmdObject.value.substring(0,cmdObject.value.length-1);
-          }
-          while (cmdObject.value.substring(0,1) === ' ') {
-            cmdObject.value=cmdObject.value.substring(1);
-          }
-        }
-      }
-    </script>
-	</div>
+      </script>
+	  </div>
+  </div>
 </form>
 {%TEMPLATE->struct/foot%}
