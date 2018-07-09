@@ -1,9 +1,11 @@
-# v0.5.1 -> x.x.x
+# v0.5.1 -> v0.6.0
 
 ## Features
 
 - Added autofocus for login field
 - Added fine grained permission management
+- Updated Bootstrap and jQuery to newest versions
+- Added Icons instead of images
 
 ## Bugfixes
 

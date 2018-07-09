@@ -19,8 +19,18 @@ $qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
 $binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
 if ($binary != null) {
   if (Util::versionComparison($binary->getVersion(), "0.1.4") == 1) {
-    echo "update version... ";
+    echo "update python version... ";
     $binary->setVersion("0.1.4");
+    $FACTORIES::getAgentBinaryFactory()->update($binary);
+    echo "OK";
+  }
+}
+$qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
+$binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+if ($binary != null) {
+  if (Util::versionComparison($binary->getVersion(), "0.52.2") == 1) {
+    echo "update csharp version... ";
+    $binary->setVersion("0.52.2");
     $FACTORIES::getAgentBinaryFactory()->update($binary);
     echo "OK";
   }
