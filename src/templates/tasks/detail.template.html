@@ -250,7 +250,7 @@
         </tr>
         <tr>
           <td>
-            <img class='img-responsive' style="height: 32px" src="api/taskimg.php?task=[[task.getId()]]&x=1500&y=32">
+            <img class='img-fluid' style="height: 32px" src="api/taskimg.php?task=[[task.getId()]]&x=1500&y=32">
           </td>
         </tr>
       {{ENDIF}}
@@ -392,7 +392,7 @@
             <td colspan="4">
               <div class="row">
                 <form action="agents.php?task=[[task.getId()]]" method="POST">
-                  <div class="col-md-8">
+                  <div class="col">
                     <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
                     <input type="hidden" name="task" value="[[task.getId()]]">
                     <input type="hidden" name="csrf" value="[[csrf]]">
@@ -407,7 +407,7 @@
                       {{ENDFOREACH}}
                     </select>
                   </div>
-                  <div class="col-md-4">
+                  <div class="col">
                     <input type="submit" class='btn btn-light' value="Assign">
                   </div>
                 </form>
