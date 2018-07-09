@@ -152,20 +152,23 @@
       </div>
     </div>
     <div class='col-md-4'>
-      <div class='btn-group'>
-        <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles()">Rules</button>
-        <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles()">Wordlists</button>
+      <div class='btn-toolbar'>
+        <div class='btn-group'>
+          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles()">Rules</button>
+          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles()">Wordlists</button>
+        </div>
       </div>
       <br>
       <br>
       <div id="rules">
-        <div class="panel panel-default">
-          <table class="table table-bordered table-nonfluid">
-            <tr>
-              <th>Filename</th>
-              <th>Size</th>
-            </tr>
-            {{FOREACH file;[[rules]]}}
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[rules]]}}
               <tr>
                 <td>
                   <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
@@ -178,18 +181,20 @@
                   [[Util::nicenum([[file.getVal('file').getSize()]])]]B
                 </td>
               </tr>
-            {{ENDFOREACH}}
-          </table>
+              {{ENDFOREACH}}
+            </table>
+          </div>
         </div>
       </div>
       <div id="wordlists">
-        <div class="panel panel-default">
-          <table class="table table-bordered table-nonfluid">
-            <tr>
-              <th>Filename</th>
-              <th>Size</th>
-            </tr>
-            {{FOREACH file;[[wordlists]]}}
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[wordlists]]}}
               <tr>
                 <td>
                   <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
@@ -202,8 +207,9 @@
                   [[Util::nicenum([[file.getVal('file').getSize()]])]]B
                 </td>
               </tr>
-            {{ENDFOREACH}}
-          </table>
+              {{ENDFOREACH}}
+            </table>
+          </div>
         </div>
       </div>
       <script type='text/javascript'>
