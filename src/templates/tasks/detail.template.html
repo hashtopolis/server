@@ -390,8 +390,8 @@
         <tr>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}
             <td colspan="4">
-              <div class="row">
-                <form action="agents.php?task=[[task.getId()]]" method="POST">
+              <form action="agents.php?task=[[task.getId()]]" method="POST">
+                <div class="row">
                   <div class="col">
                     <input type="hidden" name="action" value="[[$DAgentAction::ASSIGN_AGENT]]">
                     <input type="hidden" name="task" value="[[task.getId()]]">
@@ -410,8 +410,8 @@
                   <div class="col">
                     <input type="submit" class='btn btn-light' value="Assign">
                   </div>
-                </form>
-              </div>
+                </div>
+              </form>
             </td>
           {{ELSE}}
             <td colspan="4">&nbsp;</td>
