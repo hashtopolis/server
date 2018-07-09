@@ -2,7 +2,7 @@
 {%TEMPLATE->struct/menu%}
 <h2>Use Supertask</h2>
 {%TEMPLATE->struct/messages%}
-<form class="form-inline" action="supertasks.php" method="POST">
+<form action="supertasks.php" method="POST">
 	<input type='hidden' name='action' value='[[$DSupertaskAction::APPLY_SUPERTASK]]'>
 	<input type='hidden' name='supertask' value='[[orig]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
@@ -15,26 +15,39 @@
 			  </tr>
 			  <tr>
 				  <td>Hashlist:</td>
-				  <td>
-					  <select class='form-control' name="hashlist" title="Hashlist">
-						  {{FOREACH list;[[lists]]}}
-							  <option value="[[list.getId()]]">[[list.getHashlistName()]]</option>
-						  {{ENDFOREACH}}
-					  </select> (hashlist needs to be created before task)
-				  </td>
+          <td>
+            <div class="row">
+              <div class="col">
+                <select class='form-control' name="hashlist" title="Hashlist">
+                  {{FOREACH list;[[lists]]}}
+                    <option value="[[list.getId()]]">[[list.getHashlistName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+              </div>
+              <div class="col">
+                (hashlist needs to be created before task)
+              </div>
+            </div>
+          </td>
 			  </tr>
 			  <tr>
 				  <td>Binary type to run task:</td>
 				  <td>
 					  <!-- TODO: need only to ask for version as all pretasks need to have the same type -->
-					  <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
-						  {{FOREACH binary;[[binaries]]}}
-							  <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
-						  {{ENDFOREACH}}
-					  </select>
-					  <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
-						  <option value="0">&nbsp;</option>
-					  </select>
+            <div class="row">
+              <div class="col">
+                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
+                  {{FOREACH binary;[[binaries]]}}
+                    <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+              </div>
+              <div class="col">
+                <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
+                  <option value="0">&nbsp;</option>
+                </select>
+              </div>
+            </div>
 					  <script type="text/javascript">
                 var versions = [];
                 {{FOREACH version;[[versions]]}}
