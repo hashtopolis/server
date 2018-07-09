@@ -15,7 +15,7 @@
 				  <td>
 					  <a href="hashlists.php?id=[[sublist.getVal('hashlist')->getId()]]">[[sublist.getVal('hashlist')->getHashlistName()]]</a>
 					  {{IF [[sublist.getVal('hashlist')->getIsSecret()]] == 1}}
-						  <img src="static/lock.gif" alt="Secret">
+              <span class="fas fa-lock" aria-hidden="true"></span>
 					  {{ENDIF}}
 					  [[Util::tickdone([[sublist.getVal('hashlist')->getCracked()]], [[sublist.getVal('hashlist')->getHashCount()]])]]
 				  </td>

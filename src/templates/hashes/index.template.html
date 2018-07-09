@@ -1,7 +1,7 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
 {{IF [[src]] == "chunk"}}
-<h2>Hashes of chunk [[chunk.getId()]]</h2>
+ <h2>Hashes of chunk [[chunk.getId()]]</h2>
 {{ENDIF}}
 {{IF [[src]] == "task"}}
 <h2>Hashes of task {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}<a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a>{{ELSE}}[[task.getTaskName()]]{{ENDIF}}</h2>

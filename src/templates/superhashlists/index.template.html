@@ -22,7 +22,7 @@
 				  <td>
 					  <a href="hashlists.php?id=[[list.getId()]]">[[list.getHashlistName()]]</a>
 					  {{IF [[list.getIsSecret()]] == 1}}
-						  <img src="static/lock.gif" alt="Secret">
+              <span class="fas fa-lock" aria-hidden="true"></span>
 					  {{ENDIF}}
 					  [[Util::tickdone([[list.getCracked()]], [[list.getHashCount()]])]]
 				  </td>
