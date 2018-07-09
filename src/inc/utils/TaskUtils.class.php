@@ -83,6 +83,7 @@ class TaskUtils {
         $taskFiles[] = new FileTask(0, $f->getId(), $newTask->getId());
       }
       $FACTORIES::getFileTaskFactory()->massSave($taskFiles);
+      $prio--;
     }
     $newWrapper->setPriority($taskWrapper->getPriority());
     $FACTORIES::getTaskWrapperFactory()->update($newWrapper);
