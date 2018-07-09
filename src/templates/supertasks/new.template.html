@@ -14,7 +14,7 @@
 				  <th>Value</th>
 			  </tr>
 			  <tr>
-				  <td>Hashlist:</td>
+          <td>Hashlist:<br>(hashlist needs to be created before task)</td>
           <td>
             <div class="row">
               <div class="col">
@@ -25,7 +25,7 @@
                 </select>
               </div>
               <div class="col">
-                (hashlist needs to be created before task)
+                &nbsp;
               </div>
             </div>
           </td>
@@ -47,8 +47,7 @@
                   <option value="0">&nbsp;</option>
                 </select>
               </div>
-            </div>
-					  <script type="text/javascript">
+              <script type="text/javascript">
                 var versions = [];
                 {{FOREACH version;[[versions]]}}
 								  if ([[version.getCrackerBinaryTypeId()]] in versions) {
@@ -80,7 +79,8 @@
                     opt.text = text;
                     ddl.options.add(opt);
                 }
-					  </script>
+              </script>
+            </div>
 				  </td>
 			  </tr>
 			  <tr>
