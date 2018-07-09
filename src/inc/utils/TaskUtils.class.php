@@ -37,13 +37,14 @@ class TaskUtils {
     // create the temporary rule files
     $newFiles = [];
     $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename())));
-    for($i=0; $i < $numLines; $i += $linesPerFile){
+    $count = 0;
+    for($i=0; $i < $numLines; $i += $linesPerFile, $count++){
       $copy = [];
       for($j=$i; $j < $i + $linesPerFile && $j < sizeof($content); $j++){
         $copy[] = $content[$j];
       }
-      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$i", implode("\n", $copy));
-      $f = new File(0, $splitFile->getFilename() . "_p$i", $numLines, $splitFile->getIsSecret(), DFileType::TEMPORARY);
+      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count", implode("\n", $copy));
+      $f = new File(0, $splitFile->getFilename() . "_p$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY);
       $f = $FACTORIES::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
@@ -78,7 +79,8 @@ class TaskUtils {
         $task->getCrackerBinaryTypeId(),
         $newWrapper->getId());
       $newTask = $FACTORIES::getTaskFactory()->save($newTask);
-      $taskFiles = [new FileTask(0, $newFile->getId(), $newTask->getId())];
+      $taskFiles = [];
+      $taskFiles[] = new FileTask(0, $newFile->getId(), $newTask->getId());
       foreach($files as $f){
         $taskFiles[] = new FileTask(0, $f->getId(), $newTask->getId());
       }
