@@ -1,6 +1,6 @@
 function expansionCheck(elementId) {
-    var isExpanded = $(elementId).attr("aria-expanded");
-    if (isExpanded === "false") {
+    var isExpanded = $(elementId).is(":hidden");
+    if (isExpanded === false) {
         window.localStorage.setItem(elementId, "yes");
     }
     else {
