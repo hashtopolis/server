@@ -41,7 +41,7 @@
                     <td>
                         <a name="[[file.getId()]]" href="getFile.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
                         {{IF [[file.getIsSecret()]] == '1'}}
-                            <img src="static/lock.gif" alt="Secret">
+                            <span class="fas fa-lock" aria-hidden="true"></span>
                         {{ENDIF}}
                     </td>
                     <td>
