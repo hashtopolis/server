@@ -5,15 +5,15 @@
 
 <div class="btn-toolbar">
   <div class="btn-group" role="group">
-    <button onclick="window.location='config.php?view=1'" type="button" class="btn btn-default{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
-    <button onclick="window.location='config.php?view=2'" type="button" class="btn btn-default{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
-    <button onclick="window.location='config.php?view=3'" type="button" class="btn btn-default{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
-    <button onclick="window.location='config.php?view=4'" type="button" class="btn btn-default{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
-    <button onclick="window.location='config.php?view=5'" type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
+    <button onclick="window.location='config.php?view=1'" type="button" class="btn btn-light{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
+    <button onclick="window.location='config.php?view=2'" type="button" class="btn btn-light{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
+    <button onclick="window.location='config.php?view=3'" type="button" class="btn btn-light{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
+    <button onclick="window.location='config.php?view=4'" type="button" class="btn btn-light{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
+    <button onclick="window.location='config.php?view=5'" type="button" class="btn btn-light{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
   </div>
 </div>
 
-<br><br>
+<br>
 
 <form action="" method="POST">
 	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
