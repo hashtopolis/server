@@ -1,31 +1,33 @@
 {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
   <h3>Create supertask:</h3>
-  <div class="panel panel-default">
-    <table class="table table-bordered table-nonfluid">
-      <tr>
-        <th class="col-md-1">ID</th>
-        <th>Name</th>
-        <th>&nbsp;</th>
-      </tr>
-      {{FOREACH supertask;[[superTasks]]}}
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
         <tr>
-          <td>
-            <a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a>
-          </td>
-          <td>
-            <a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a>
-          </td>
-          <td>
-            <form class='form-inline' action="supertasks.php" method="POST">
-              <input type='hidden' name='action' value='[[$DSupertaskAction::APPLY_SUPERTASK]]'>
-              <input type='hidden' name='supertask' value='[[supertask.getId()]]'>
-              <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
-              <input type="submit" class='btn btn-default' value="Create Supertask">
-            </form>
-          </td>
+          <th>ID</th>
+          <th>Name</th>
+          <th>&nbsp;</th>
         </tr>
-      {{ENDFOREACH}}
-    </table>
+        {{FOREACH supertask;[[superTasks]]}}
+          <tr>
+            <td>
+              <a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a>
+            </td>
+            <td>
+              <a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a>
+            </td>
+            <td>
+              <form class='form-inline' action="supertasks.php" method="POST">
+                <input type='hidden' name='action' value='[[$DSupertaskAction::APPLY_SUPERTASK]]'>
+                <input type='hidden' name='supertask' value='[[supertask.getId()]]'>
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
+                <input type="submit" class='btn btn-light' value="Create Supertask">
+              </form>
+            </td>
+          </tr>
+        {{ENDFOREACH}}
+      </table>
+    </div>
   </div>
 {{ENDIF}}

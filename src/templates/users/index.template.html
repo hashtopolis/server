@@ -2,40 +2,42 @@
 {%TEMPLATE->struct/menu%}
 <h2>All users ([[numUsers]])</h2>
 {%TEMPLATE->struct/messages%}
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>ID</th>
-			<th>Username</th>
-			<th>Creation date</th>
-			<th>Last login</th>
-			<th>Email</th>
-			<th>Validity</th>
-			<th>Session lifetime</th>
-			<th>Right group</th>
-			<th>Action</th>
-		</tr>
-		{{FOREACH entry;[[allUsers]]}}
-			<tr>
-				<td>[[entry.getVal('user').getId()]]</td>
-				<td>[[htmlentities([[entry.getVal('user').getUsername()]], ENT_QUOTES, "UTF-8")]]</td>
-				<td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[entry.getVal('user').getRegisteredSince()]])]]</td>
-				<td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[entry.getVal('user').getLastLoginDate()]])]]</td>
-				<td>[[entry.getVal('user').getEmail()]]</td>
-				<td>
-					{{IF [[entry.getVal('user').getIsValid()]] == 1}}
-						Valid
-					{{ELSE}}
-						Invalid/Not activated
-					{{ENDIF}}
-				</td>
-				<td>[[entry.getVal('user').getSessionLifetime()]]</td>
-				<td>[[entry.getVal('group').getGroupName()]]</td>
-				<td>
-					<a class='btn btn-primary' href="users.php?id=[[entry.getVal('user').getId()]]">Manage</a>
-				</td>
-			</tr>
-		{{ENDFOREACH}}
-	</table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <th>ID</th>
+			  <th>Username</th>
+			  <th>Creation date</th>
+			  <th>Last login</th>
+			  <th>Email</th>
+			  <th>Validity</th>
+			  <th>Session lifetime</th>
+			  <th>Right group</th>
+			  <th>Action</th>
+		  </tr>
+		  {{FOREACH entry;[[allUsers]]}}
+			  <tr>
+				  <td>[[entry.getVal('user').getId()]]</td>
+				  <td>[[htmlentities([[entry.getVal('user').getUsername()]], ENT_QUOTES, "UTF-8")]]</td>
+				  <td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[entry.getVal('user').getRegisteredSince()]])]]</td>
+				  <td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[entry.getVal('user').getLastLoginDate()]])]]</td>
+				  <td>[[entry.getVal('user').getEmail()]]</td>
+				  <td>
+					  {{IF [[entry.getVal('user').getIsValid()]] == 1}}
+						  Valid
+					  {{ELSE}}
+						  Invalid/Not activated
+					  {{ENDIF}}
+				  </td>
+				  <td>[[entry.getVal('user').getSessionLifetime()]]</td>
+				  <td>[[entry.getVal('group').getGroupName()]]</td>
+				  <td>
+					  <a class='btn btn-primary' href="users.php?id=[[entry.getVal('user').getId()]]">Manage</a>
+				  </td>
+			  </tr>
+		  {{ENDFOREACH}}
+	  </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}

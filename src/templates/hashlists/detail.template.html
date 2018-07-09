@@ -5,133 +5,135 @@
 {{IF [[zap]]}}
   {%TEMPLATE->hashlists/zap%}
 {{ENDIF}}
-<div class="panel panel-default">
-  <table class="table table-bordered table-nonfluid">
-    <tr>
-      <th>Property</th>
-      <th>Value</th>
-    </tr>
-    <tr>
-      <td>ID:</td>
-      <td>[[list.getVal('hashlist')->getId()]]</td>
-    </tr>
-    <tr>
-      <td>Member of Access Group:</td>
-      <td>[[accessGroup.getGroupName()]]</td>
-    </tr>
-    <tr>
-      <td>Name:</td>
-      <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-          <form class='form-inline' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
-            <input type="hidden" name="action" value="[[$DHashlistAction::RENAME_HASHLIST]]">
-            <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('hashlist')->getHashlistName()]]" title="Hashlist Name">
-            <input type="submit" class='btn btn-default' value="Change">
-          </form>
-        {{ELSE}}
-          [[list.getVal('hashlist')->getHashlistName()]]
-        {{ENDIF}}
-      </td>
-    </tr>
-    <tr>
-      <td>Hash type:</td>
-      <td>
-        [[list.getVal('hashtype')->getDescription()]]
-      </td>
-    </tr>
-    <tr>
-      <td>Format:</td>
-      <td>
-        [[Util::getStaticArray([[list.getVal('hashlist')->getFormat()]], 'formats')]]
-        {{IF [[list.getVal('hashlist')->getHexSalt()]] == 1}}
-          (salt in hex-format)
-        {{ENDIF}}
-      </td>
-    </tr>
-    <tr>
-      <td>Hashes:</td>
-      <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
-          <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]">[[list.getVal('hashlist').getHashCount()]]</a>
-        {{ELSE}}
-          [[list.getVal('hashlist').getHashCount()]]
-        {{ENDIF}}
-      </td>
-    </tr>
-    <tr>
-      <td>Cracked:</td>
-      <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
-          <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=cracked">[[list.getVal('hashlist').getCracked()]]</a>
-        {{ELSE}}
-          [[list.getVal('hashlist').getCracked()]]
-        {{ENDIF}}
-        ([[Util::showperc([[list.getVal('hashlist').getCracked()]], [[list.getVal('hashlist').getHashCount()]])]]%)
-      </td>
-    </tr>
-    <tr>
-      <td>Remaining:</td>
-      <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
-          <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=uncracked">[[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]</a>
-        {{ELSE}}
-          [[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]
-        {{ENDIF}}
-        ([[Util::showperc([[list.getVal('hashlist').getHashCount()]] - [[list.getVal('hashlist').getCracked()]], [[list.getVal('hashlist').getHashCount()]])]]%)
-      </td>
-    </tr>
-    <tr>
-      <td>Secret:</td>
-      <td>
-        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-          <form id="hashlistsecret" action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
-            <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
-            <input type="hidden" name="action" value="[[$DHashlistAction::SET_SECRET]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input title="Is Secret" type="checkbox" name="secret" value="1"{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}}
-            onChange="javascript:document.getElementById('hashlistsecret').submit();"> Hashlist contains secret data
-          </form>
-        {{ELSE}}
-          <input title="Is Secret" type='checkbox'{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}} disabled> Hashlist contains secret data
-        {{ENDIF}}
-      </td>
-    </tr>
-    <tr>
-      <td>Actions:</td>
-      <td>
-        {{IF [[list.getVal('hashlist')->getCracked()]] > 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]] && [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
-          <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
-            <input type='hidden' name='action' value='[[$DHashlistAction::CREATE_WORDLIST]]'>
-            <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type='submit' class='btn btn-default' value='Generate wordlist'>
-          </form>
-          <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
-            <input type='hidden' name='action' value='[[$DHashlistAction::EXPORT_HASHLIST]]'>
-            <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type='submit' class='btn btn-default' value='Export hashes for pre-crack'>
-          </form>
-          <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
-            <input type='hidden' name='action' value='[[$DHashlistAction::CREATE_LEFTLIST]]'>
-            <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type='submit' class='btn btn-default' value='Export left hashes'>
-          </form>
-        {{ENDIF}}
-        {{IF [[list.getVal('hashlist')->getCracked()]] < [[list.getVal('hashlist')->getHashCount()]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-          <form style='float: left;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
-            <input type='hidden' name='action' value='[[$DHashlistAction::ZAP_HASHLIST]]'>
-            <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type='submit' class='btn btn-default' value='Import pre-cracked hashes'>
-          </form>
-        {{ENDIF}}
-      </td>
-    </tr>
-  </table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <tr>
+        <th>Property</th>
+        <th>Value</th>
+      </tr>
+      <tr>
+        <td>ID:</td>
+        <td>[[list.getVal('hashlist')->getId()]]</td>
+      </tr>
+      <tr>
+        <td>Member of Access Group:</td>
+        <td>[[accessGroup.getGroupName()]]</td>
+      </tr>
+      <tr>
+        <td>Name:</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+            <form class='form-inline' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
+              <input type="hidden" name="action" value="[[$DHashlistAction::RENAME_HASHLIST]]">
+              <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('hashlist')->getHashlistName()]]" title="Hashlist Name">&nbsp;&nbsp;
+              <input type="submit" class='btn btn-light' value="Change">
+            </form>
+          {{ELSE}}
+            [[list.getVal('hashlist')->getHashlistName()]]
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <td>Hash type:</td>
+        <td>
+          [[list.getVal('hashtype')->getDescription()]]
+        </td>
+      </tr>
+      <tr>
+        <td>Format:</td>
+        <td>
+          [[Util::getStaticArray([[list.getVal('hashlist')->getFormat()]], 'formats')]]
+          {{IF [[list.getVal('hashlist')->getHexSalt()]] == 1}}
+            (salt in hex-format)
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <td>Hashes:</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+            <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]">[[list.getVal('hashlist').getHashCount()]]</a>
+          {{ELSE}}
+            [[list.getVal('hashlist').getHashCount()]]
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <td>Cracked:</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+            <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=cracked">[[list.getVal('hashlist').getCracked()]]</a>
+          {{ELSE}}
+            [[list.getVal('hashlist').getCracked()]]
+          {{ENDIF}}
+          ([[Util::showperc([[list.getVal('hashlist').getCracked()]], [[list.getVal('hashlist').getHashCount()]])]]%)
+        </td>
+      </tr>
+      <tr>
+        <td>Remaining:</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+            <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=uncracked">[[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]</a>
+          {{ELSE}}
+            [[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]
+          {{ENDIF}}
+          ([[Util::showperc([[list.getVal('hashlist').getHashCount()]] - [[list.getVal('hashlist').getCracked()]], [[list.getVal('hashlist').getHashCount()]])]]%)
+        </td>
+      </tr>
+      <tr>
+        <td>Secret:</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+            <form id="hashlistsecret" action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
+              <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="action" value="[[$DHashlistAction::SET_SECRET]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input title="Is Secret" type="checkbox" name="secret" value="1"{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}}
+              onChange="javascript:document.getElementById('hashlistsecret').submit();"> Hashlist contains secret data
+            </form>
+          {{ELSE}}
+            <input title="Is Secret" type='checkbox'{{IF [[list.getVal('hashlist')->getIsSecret()]] == 1}} checked{{ENDIF}} disabled> Hashlist contains secret data
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <td>Actions:</td>
+        <td>
+          {{IF [[list.getVal('hashlist')->getCracked()]] > 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]] && [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
+            <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
+              <input type='hidden' name='action' value='[[$DHashlistAction::CREATE_WORDLIST]]'>
+              <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type='submit' class='btn btn-light' value='Generate wordlist'>
+            </form>
+            <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
+              <input type='hidden' name='action' value='[[$DHashlistAction::EXPORT_HASHLIST]]'>
+              <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type='submit' class='btn btn-light' value='Export hashes for pre-crack'>
+            </form>
+            <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
+              <input type='hidden' name='action' value='[[$DHashlistAction::CREATE_LEFTLIST]]'>
+              <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type='submit' class='btn btn-light' value='Export left hashes'>
+            </form>
+          {{ENDIF}}
+          {{IF [[list.getVal('hashlist')->getCracked()]] < [[list.getVal('hashlist')->getHashCount()]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+            <form style='float: left;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
+              <input type='hidden' name='action' value='[[$DHashlistAction::ZAP_HASHLIST]]'>
+              <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type='submit' class='btn btn-light' value='Import pre-cracked hashes'>
+            </form>
+          {{ENDIF}}
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 {{IF [[list.getVal('hashlist')->getFormat()]] == 3 && [[sizeof([[sublists]])]]}}
   {%TEMPLATE->hashlists/detail/superhashlist%}

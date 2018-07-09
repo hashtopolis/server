@@ -22,7 +22,7 @@
       [[set.getVal('hashlistName')]]
     {{ENDIF}}
     {{IF [[set.getVal('isSecret')]] == 1}}
-      <img src="static/lock.gif" alt="Secret">
+      <span class="fas fa-lock" aria-hidden="true"></span>
     {{ENDIF}}
     {{IF [[set.getVal('hashCount')]] == [[set.getVal('hashlistCracked')]]}}
       [[Util::tickdone(1, 1)]]
@@ -59,7 +59,7 @@
       [[set.getVal('numFiles')]]
     {{ENDIF}}
     {{IF [[set.getVal('fileSecret')]]}}
-      <img src="static/lock.gif" alt="Secret">
+      <span class="fas fa-lock" aria-hidden="true"></span>
     {{ENDIF}}
     {{IF [[set.getVal('numFiles')]] > 0}}
       <br>([[Util::nicenum([[set.getVal('fileSizes')]])]]B)
@@ -71,8 +71,8 @@
         <input type='hidden' name='action' value='[[$DTaskAction::SET_PRIORITY]]'>
         <input type="hidden" name="task" value="[[set.getVal('taskId')]]">
         <input type="hidden" name="csrf" value="[[csrf]]">
-        <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[set.getVal('priority')]]" title="Priority">
-        <input type="submit" class='btn btn-default' value="Set">
+        <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[set.getVal('priority')]]" title="Priority">&nbsp;&nbsp;
+        <input type="submit" class='btn btn-light' value="Set">
       </form>
     {{ELSE}}
       [[set.getVal('priority')]]
@@ -81,7 +81,7 @@
   <td style='min-width: 120px'>
     {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
       <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[set.getVal('taskId')]]" method="post">
-        <input type="submit" class='btn btn-default' value="Copy">
+        <input type="submit" class='btn btn-light' value="Copy">
       </form>
       <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[set.getVal('taskId')]]?')) return false;">
         <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">

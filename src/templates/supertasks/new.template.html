@@ -2,79 +2,94 @@
 {%TEMPLATE->struct/menu%}
 <h2>Use Supertask</h2>
 {%TEMPLATE->struct/messages%}
-<form class='form-inline' action="supertasks.php" method="POST">
+<form action="supertasks.php" method="POST">
 	<input type='hidden' name='action' value='[[$DSupertaskAction::APPLY_SUPERTASK]]'>
 	<input type='hidden' name='supertask' value='[[orig]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th>Property</th>
-				<th>Value</th>
-			</tr>
-			<tr>
-				<td>Hashlist:</td>
-				<td>
-					<select class='form-control' name="hashlist" title="Hashlist">
-						{{FOREACH list;[[lists]]}}
-							<option value="[[list.getId()]]">[[list.getHashlistName()]]</option>
-						{{ENDFOREACH}}
-					</select> (hashlist needs to be created before task)
-				</td>
-			</tr>
-			<tr>
-				<td>Binary type to run task:</td>
-				<td>
-					<!-- TODO: need only to ask for version as all pretasks need to have the same type -->
-					<select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
-						{{FOREACH binary;[[binaries]]}}
-							<option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
-						{{ENDFOREACH}}
-					</select>
-					<select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
-						<option value="0">&nbsp;</option>
-					</select>
-					<script type="text/javascript">
-              var versions = [];
-              {{FOREACH version;[[versions]]}}
-								if ([[version.getCrackerBinaryTypeId()]] in versions) {
-										versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]] ]);
-								}
-								else{
-										versions [ [[version.getCrackerBinaryTypeId()]] ] = [ ["[[version.getVersion()]]", [[version.getId()]] ] ];
-								}
-              {{ENDFOREACH}}
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <th>Property</th>
+				  <th>Value</th>
+			  </tr>
+			  <tr>
+          <td>Hashlist:<br>(hashlist needs to be created before task)</td>
+          <td>
+            <div class="d-flex">
+              <div class="col">
+                <select class='form-control' name="hashlist" title="Hashlist">
+                  {{FOREACH list;[[lists]]}}
+                    <option value="[[list.getId()]]">[[list.getHashlistName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+              </div>
+              <div class="col">
+                &nbsp;
+              </div>
+            </div>
+          </td>
+			  </tr>
+			  <tr>
+				  <td>Binary type to run task:</td>
+				  <td>
+					  <!-- TODO: need only to ask for version as all pretasks need to have the same type -->
+            <div class="d-flex">
+              <div class="col">
+                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
+                  {{FOREACH binary;[[binaries]]}}
+                    <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+              </div>
+              <div class="col">
+                <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
+                  <option value="0">&nbsp;</option>
+                </select>
+              </div>
+              <script type="text/javascript">
+                var versions = [];
+                {{FOREACH version;[[versions]]}}
+								  if ([[version.getCrackerBinaryTypeId()]] in versions) {
+										  versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]] ]);
+								  }
+								  else{
+										  versions [ [[version.getCrackerBinaryTypeId()]] ] = [ ["[[version.getVersion()]]", [[version.getId()]] ] ];
+								  }
+                {{ENDFOREACH}}
 
-              configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
-              $("#crackerBinaryType").change(function() {
-                  configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
-              });
+                configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                $("#crackerBinaryType").change(function() {
+                    configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                });
 
-              function configureDropDownLists(ddl1, ddl2) {
-                  ddl2.options.length = 0;
-                  if (ddl1.value.length === 0) {
-                      return;
-                  }
-                  for (i = 0; i < versions[ddl1.value].length; i++){
-                      createOption(ddl2, versions[ddl1.value][i][0], versions[ddl1.value][i][1]);
-                  }
-              }
+                function configureDropDownLists(ddl1, ddl2) {
+                    ddl2.options.length = 0;
+                    if (ddl1.value.length === 0) {
+                        return;
+                    }
+                    for (i = 0; i < versions[ddl1.value].length; i++){
+                        createOption(ddl2, versions[ddl1.value][i][0], versions[ddl1.value][i][1]);
+                    }
+                }
 
-              function createOption(ddl, text, value) {
-                  var opt = document.createElement('option');
-                  opt.value = value;
-                  opt.text = text;
-                  ddl.options.add(opt);
-              }
-					</script>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<input type="submit" class='btn btn-default' value="Create tasks from supertask">
-				</td>
-			</tr>
-		</table>
+                function createOption(ddl, text, value) {
+                    var opt = document.createElement('option');
+                    opt.value = value;
+                    opt.text = text;
+                    ddl.options.add(opt);
+                }
+              </script>
+            </div>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td colspan="2">
+					  <input type="submit" class='btn btn-light' value="Create tasks from supertask">
+				  </td>
+			  </tr>
+		  </table>
+    </div>
 	</div>
 </form>
 {%TEMPLATE->struct/foot%}

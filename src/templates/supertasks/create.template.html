@@ -2,42 +2,44 @@
 {%TEMPLATE->struct/menu%}
 <h2>Create Supertask</h2>
 {%TEMPLATE->struct/messages%}
-<form class='form-inline' action="supertasks.php" method="POST">
+<form action="supertasks.php" method="POST">
 	<input type='hidden' name='action' value='[[$DSupertaskAction::CREATE_SUPERTASK]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<td>Name:</td>
-				<td>
-					<input type='text' name='name' class='form-control' title="Name">
-				</td>
-			</tr>
-			<tr>
-				<th colspan='2'>Select tasks assigned to this supertask:</th>
-			</tr>
-			{{FOREACH task;[[preTasks]]}}
-				<tr>
-					<td>&nbsp;</td>
-					<td>
-						<input type="checkbox" name="task[]" value="[[task.getId()]]" title="Pretask">
-						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
-							<a href="tasks.php?id=[[task.getId()]]" title="[[task.getAttackCmd()]]">[[task.getTaskName()]]</a>
-						{{ELSE}}
-							[[task.getTaskName()]]
-						{{ENDIF}}
-					</td>
-				</tr>
-			{{ENDFOREACH}}
-			{{IF [[sizeof([[preTasks]])]] == 0}}
-        <tr><td colspan="2">Currently there are no preconfigured tasks which can be used for creating supertasks!</td></tr>
-      {{ENDIF}}
-			<tr>
-				<td colspan="2">
-					<input type="submit" class='btn btn-default' value="Create Supertask">
-				</td>
-			</tr>
-		</table>
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <td>Name:</td>
+				  <td>
+					  <input type='text' name='name' class='form-control' title="Name">
+				  </td>
+			  </tr>
+			  <tr>
+				  <th colspan='2'>Select tasks assigned to this supertask:</th>
+			  </tr>
+			  {{FOREACH task;[[preTasks]]}}
+				  <tr>
+					  <td>&nbsp;</td>
+					  <td>
+						  <input type="checkbox" name="task[]" value="[[task.getId()]]" title="Pretask">
+						  {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+							  <a href="tasks.php?id=[[task.getId()]]" title="[[task.getAttackCmd()]]">[[task.getTaskName()]]</a>
+						  {{ELSE}}
+							  [[task.getTaskName()]]
+						  {{ENDIF}}
+					  </td>
+				  </tr>
+			  {{ENDFOREACH}}
+			  {{IF [[sizeof([[preTasks]])]] == 0}}
+          <tr><td colspan="2">Currently there are no preconfigured tasks which can be used for creating supertasks!</td></tr>
+        {{ENDIF}}
+			  <tr>
+				  <td colspan="2">
+					  <input type="submit" class='btn btn-light' value="Create Supertask">
+				  </td>
+			  </tr>
+		  </table>
+    </div>
 	</div>
 </form>
 {%TEMPLATE->struct/foot%}

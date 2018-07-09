@@ -53,7 +53,7 @@
         [[subTask.getVal('numFiles')]]
       {{ENDIF}}
       {{IF [[subTask.getVal('fileSecret')]]}}
-        <img src="static/lock.gif" alt="Secret">
+        <span class="fas fa-lock" aria-hidden="true"></span>
       {{ENDIF}}
       {{IF [[subTask.getVal('numFiles')]] > 0}}
         <br>([[Util::nicenum([[subTask.getVal('filesSize')]])]]B)
@@ -65,8 +65,8 @@
           <input type='hidden' name='action' value='[[$DTaskAction::SET_PRIORITY]]'>
           <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
-          <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[subTask.getVal('priority')]]" title="Priority">
-          <input type="submit" class='btn btn-default' value="Set">
+          <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[subTask.getVal('priority')]]" title="Priority">&nbsp;&nbsp;
+          <input type="submit" class='btn btn-light' value="Set">
         </form>
       {{ELSE}}
         [[subTask.getVal('priority')]]
@@ -75,7 +75,7 @@
     <td style='min-width: 120px'>
       {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
         <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[subTask.getVal('taskId')]]" method="post">
-          <input type="submit" class='btn btn-default' value="Copy">
+          <input type="submit" class='btn btn-light' value="Copy">
         </form>
         <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[subTask.getVal('taskId')]]?')) return false;">
           <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">

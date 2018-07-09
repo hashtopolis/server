@@ -11,148 +11,159 @@
 	}
 </script>
 {%TEMPLATE->struct/messages%}
+<div class="row">
 {{IF [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
-<div class='col-md-8' style='padding: 0px; padding-right: 5px;'>
+<div class='col-md-8'>
 {{ELSE}}
-<div class='col-md-12' style='padding: 0px; padding-right: 5px;'>
+<div class='col-md-12'>
 {{ENDIF}}
-	<div class='btn-toolbar'>
-		<div class='btn-group'>
-			<button class='btn btn-default{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
-			<button class='btn btn-default{{IF [[view]] == "dict"}} active{{ENDIF}}' onclick="window.location='files.php?view=dict'">Wordlists</button>
-		</div>
-	</div>
-	<h3>Existing [[fileType]] ([[sizeof([[files]])]])</h3>
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th>ID</th>
-				<th>File</th>
-				<th><img src="static/lock.gif" alt="Secret"></th>
-				<th style="text-align: right">Size</th>
-				<th>Action</th>
-			</tr>
-			{{FOREACH file;[[files]]}}
-				<tr>
-					<td>[[file.getId()]]</td>
-					<td>
-						<a name="[[file.getId()]]" href="getFile.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
-						{{IF [[file.getIsSecret()]] == '1'}}
-							<img src="static/lock.gif" alt="Secret">
-						{{ENDIF}}
-					</td>
-					<td>
-						{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
-							<form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
-								<input type="hidden" name="file" value="[[file.getId()]]">
-								<input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
-								<input type="hidden" name="csrf" value="[[csrf]]">
-								<input type='hidden' name="secret" value="{{IF [[file.getIsSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
-								<input title="Is Secret" type="checkbox" onChange="document.getElementById('secret[[file.getId()]]').submit();"{{IF [[file.getIsSecret()]] == '1'}} checked{{ENDIF}}>
-							</form>
-						{{ELSE}}
-							<input type='checkbox'{{IF [[file.getIsSecret()]] == 1}} checked{{ENDIF}} disabled title="Is Secret">
-						{{ENDIF}}
-					</td>
-					<td class='num'>
-						[[Util::nicenum([[file.getSize()]])]]B
-					</td>
-					<td>
-						{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
-							<form style ='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
-								<input type="submit" class='btn btn-primary' value="Rename">
-							</form>
-							<form style ='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
-								<input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
-								<input type="hidden" name="csrf" value="[[csrf]]">
-								<input type="hidden" name="file" value="[[file.getId()]]">
-								<input type="submit" class='btn btn-danger' value="Delete">
-							</form>
-						{{ENDIF}}
-					</td>
-				</tr>
-			{{ENDFOREACH}}
-		</table>
-	</div>
+  <div class='btn-toolbar'>
+    <div class='btn-group'>
+      <button class='btn btn-light{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
+      <button class='btn btn-light{{IF [[view]] == "dict"}} active{{ENDIF}}' onclick="window.location='files.php?view=dict'">Wordlists</button>
+    </div>
+  </div>
+  <br>
+  <h3>Existing [[fileType]] ([[sizeof([[files]])]])</h3>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <tr>
+                    <th>ID</th>
+                    <th>File</th>
+                    <th><span class="fas fa-lock" aria-hidden="true"></span></th>
+                    <th style="text-align: right">Size</th>
+                    <th>Action</th>
+                </tr>
+                {{FOREACH file;[[files]]}}
+                <tr>
+                    <td>[[file.getId()]]</td>
+                    <td>
+                        <a name="[[file.getId()]]" href="getFile.php?file=[[file.getId()]]" target="_blank">[[file.getFilename()]]</a>
+                        {{IF [[file.getIsSecret()]] == '1'}}
+                            <span class="fas fa-lock" aria-hidden="true"></span>
+                        {{ENDIF}}
+                    </td>
+                    <td>
+                        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
+                            <form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
+                                <input type="hidden" name="file" value="[[file.getId()]]">
+                                <input type="hidden" name="action" value="[[$DFileAction::SET_SECRET]]">
+                                <input type="hidden" name="csrf" value="[[csrf]]">
+                                <input type='hidden' name="secret" value="{{IF [[file.getIsSecret()]] == '0'}}1 {{ELSE}}0 {{ENDIF}}">
+                                <input title="Is Secret" type="checkbox" onChange="document.getElementById('secret[[file.getId()]]').submit();" {{IF [[file.getIsSecret()]] == '1'}} checked{{ENDIF}}>
+                            </form>
+                        {{ELSE}}
+                            <input type='checkbox' {{IF [[file.getIsSecret()]] == 1}} checked{{ENDIF}} disabled title="Is Secret">
+                        {{ENDIF}}
+                    </td>
+                    <td class='num'>
+                        [[Util::nicenum([[file.getSize()]])]]B
+                    </td>
+                    <td>
+                        {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
+                        <form style='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
+                            <input type="submit" class='btn btn-primary' value="Rename">
+                        </form>
+                        <form style='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
+                            <input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
+                            <input type="hidden" name="csrf" value="[[csrf]]">
+                            <input type="hidden" name="file" value="[[file.getId()]]">
+                            <input type="submit" class='btn btn-danger' value="Delete">
+                        </form>
+                        {{ENDIF}}
+                    </td>
+                </tr>
+                {{ENDFOREACH}}
+            </table>
+        </div>
+    </div>
 </div>
 {{IF [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
-	<div class='col-md-4' style='padding: 0px;'>
-		<h3>Add new [[fileType]]</h3>
-		<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-			<input type="hidden" name="source" value="upload">
-			<input type="hidden" name="csrf" value="[[csrf]]">
-			<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-			<div class="panel panel-default">
-				<table class="table table-bordered table-nonfluid" id='upfiles'>
-					<tr>
-						<th>
-							Upload files
-							<button type="button" class='btn btn-default' onclick="addLine('upfiles');">Add file</button>
-						</th>
-					</tr>
-					<tr>
-						<td>
-							<input type="submit" class='btn btn-default' value="Upload files">
-						</td>
-					</tr>
-				</table>
-			</div>
-		</form>
-		<form id="impfiles" action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-			<input type="hidden" name="source" value="import">
-			<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-			<input type="hidden" name="csrf" value="[[csrf]]">
-				<div class="panel panel-default">
-				<table class="table table-bordered table-nonfluid" id='imfiles'>
-					<tr>
-						<th>Import files</th>
-					</tr>
-					{{FOREACH impfile;[[impfiles]]}}
-						<tr>
-							<td>
-								<input type="checkbox" name="imfile[]" value="[[impfile.getVal('file')]]" title="Import File">
-								[[impfile.getVal('file')]] ([[Util::nicenum([[impfile.getVal('size')]])]]B)
-							</td>
-						</tr>
-					{{ENDFOREACH}}
-					{{IF [[sizeof([[impfiles]])]] == 0}}
-						<tr>
-							<td>'import' directory is empty.</td>
-						</tr>
-					{{ELSE}}
-						<tr>
-							<td>
-								<input type="submit" class='btn btn-default' value="Import files">
-								<input type="checkbox" onChange="checkAll('impfiles',this.checked);" title="Select All"> Select All
-							</td>
-						</tr>
-					{{ENDIF}}
-				</table>
-			</div>
-		</form>
-		<form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
-			<input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
-				<input type="hidden" name="source" value="url">
-			<input type="hidden" name="csrf" value="[[csrf]]">
-				<div class="panel panel-default">
-				<table class="table table-bordered table-nonfluid" id='upfiles'>
-					<tr>
-						<td colspan='2'>Download URL</td>
-					</tr>
-					<tr>
-						<td>URL:</td>
-						<td>
-							<input type="text" class='form-control' name="url" title="URL">
-						</td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<input type="submit" class='btn btn-default' value="Download file">
-						</td>
-					</tr>
-				</table>
-			</div>
-		</form>
-	</div>
+  <div class='col-md-4'>
+    <h3>Add new [[fileType]]</h3>
+    <form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="source" value="upload">
+      <input type="hidden" name="csrf" value="[[csrf]]">
+      <input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="upfiles">
+                        <tr>
+                            <th>
+                                Upload files
+                                <button type="button" class='btn btn-light' onclick="addLine('upfiles');">Add file</button>
+                            </th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" class='btn btn-light' value="Upload files">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </form>
+    <form id="impfiles" action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="source" value="import">
+      <input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
+      <input type="hidden" name="csrf" value="[[csrf]]">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="imfiles">
+                        <tr>
+                            <th>Import files</th>
+                        </tr>
+                        {{FOREACH impfile;[[impfiles]]}}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="imfile[]" value="[[impfile.getVal('file')]]" title="Import File">
+                                [[impfile.getVal('file')]] ([[Util::nicenum([[impfile.getVal('size')]])]]B)
+                            </td>
+                        </tr>
+                        {{ENDFOREACH}}
+                        {{IF [[sizeof([[impfiles]])]] == 0}}
+                        <tr>
+                            <td>'import' directory is empty.</td>
+                        </tr>
+                        {{ELSE}}
+                        <tr>
+                            <td>
+                                <input type="submit" class='btn btn-light' value="Import files">
+                                <input type="checkbox" onChange="checkAll('impfiles',this.checked);" title="Select All"> Select All
+                            </td>
+                        </tr>
+                        {{ENDIF}}
+                    </table>
+                </div>
+            </div>
+        </form>
+    <form action="files.php?view=[[view]]" method="POST" enctype="multipart/form-data">
+      <input type="hidden" name="action" value="[[$DFileAction::ADD_FILE]]">
+    <input type="hidden" name="source" value="url">
+      <input type="hidden" name="csrf" value="[[csrf]]">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="upfiles">
+                        <tr>
+                            <td colspan='2'>Download URL</td>
+                        </tr>
+                        <tr>
+                            <td>URL:</td>
+                            <td>
+                                <input type="text" class='form-control' name="url" title="URL">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <input type="submit" class='btn btn-light' value="Download file">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </form>
+  </div>
 {{ENDIF}}
+</div>
 {%TEMPLATE->struct/foot%}

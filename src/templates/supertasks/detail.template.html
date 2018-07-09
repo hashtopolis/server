@@ -5,48 +5,50 @@
 {{IF ! [[supertask]]}}
 	<div class='alert alert-danger'>Invalid supertask!</div>
 {{ELSE}}
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th>ID</th>
-        <td>[[supertask.getId()]]</td>
-      </tr>
-      <tr>
-				<th>Name</th>
-        <td>[[supertask.getSupertaskName()]]</td>
-      </tr>
-      <tr>
-				<th>Tasks</th>
-        <td>
-          {{FOREACH task;[[tasks]]}}
-            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
-              <a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
-            {{ELSE}}
-              [[task.getTaskName()]]<br>
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <th>ID</th>
+          <td>[[supertask.getId()]]</td>
+        </tr>
+        <tr>
+				  <th>Name</th>
+          <td>[[supertask.getSupertaskName()]]</td>
+        </tr>
+        <tr>
+				  <th>Tasks</th>
+          <td>
+            {{FOREACH task;[[tasks]]}}
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+                <a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
+              {{ELSE}}
+                [[task.getTaskName()]]<br>
+              {{ENDIF}}
+            {{ENDFOREACH}}
+          </td>
+        </tr>
+        <tr>
+				  <th>Actions</th>
+          <td>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
+              <form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <input type="submit" class='btn btn-light' value="Apply to Hashlist">
+              </form>
             {{ENDIF}}
-          {{ENDFOREACH}}
-        </td>
-      </tr>
-      <tr>
-				<th>Actions</th>
-        <td>
-          {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
-            <form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
-              <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="submit" class='btn btn-default' value="Apply to Hashlist">
-            </form>
-          {{ENDIF}}
-          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
-            <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
-              <input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
-              <input type="hidden" name="supertask" value="[[supertask.getId()]]">
-              <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="submit" class='btn btn-danger' value="X">
-            </form>
-          {{ENDIF}}
-        </td>
-			</tr>
-		</table>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
+              <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
+                <input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
+                <input type="hidden" name="supertask" value="[[supertask.getId()]]">
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <input type="submit" class='btn btn-danger' value="X">
+              </form>
+            {{ENDIF}}
+          </td>
+			  </tr>
+		  </table>
+    </div>
 	</div>
 {{ENDIF}}
 {%TEMPLATE->struct/foot%}
