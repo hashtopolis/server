@@ -16,7 +16,7 @@
 			  <tr>
           <td>Hashlist:<br>(hashlist needs to be created before task)</td>
           <td>
-            <div class="row">
+            <div class="d-flex">
               <div class="col">
                 <select class='form-control' name="hashlist" title="Hashlist">
                   {{FOREACH list;[[lists]]}}
@@ -34,7 +34,7 @@
 				  <td>Binary type to run task:</td>
 				  <td>
 					  <!-- TODO: need only to ask for version as all pretasks need to have the same type -->
-            <div class="row">
+            <div class="d-flex">
               <div class="col">
                 <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
