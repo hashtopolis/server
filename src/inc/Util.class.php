@@ -1173,6 +1173,12 @@ class Util {
   }
 
   public static function countLines($tmpfile) {
+    if(stripos(PHP_OS, "WIN") === 0){
+      // windows line count
+      $ret = exec('find /c /v "" "' . $tmpfile . '"');
+      $ret = str_replace('-', '', str_ireplace($tmpfile . ':', '', $ret));
+      return intval($ret);
+    }
     return intval(exec("wc -l '$tmpfile'"));
   }
 
