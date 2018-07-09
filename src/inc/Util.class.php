@@ -188,7 +188,7 @@ class Util {
       }
       $sizeFiles += $file->getSize();
     }
-    return array(sizeof($files), $fileSecret, $sizeFiles);
+    return array(sizeof($files), $fileSecret, $sizeFiles, $files);
   }
 
   /**

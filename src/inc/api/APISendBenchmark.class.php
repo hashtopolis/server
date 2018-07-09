@@ -18,6 +18,7 @@ class APISendBenchmark extends APIBasic {
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid task ID!");
     }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
 
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
@@ -39,6 +40,20 @@ class APISendBenchmark extends APIBasic {
         }
 
         // TODO: Here we should check if the benchmark result would require to split the task and check if the task can be split
+        if($split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+          // test if we have a large rule file
+          $files = Util::getFileInfo($task)[3];
+          foreach($files as $file){
+            if($file->getFileType() == DFileType::RULE){
+              // test if splitting makes sense here
+              if(Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() * 2){
+                // --> split
+                TaskUtils::splitByRules($task, $taskWrapper, $files, $file, $split);
+                $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Task was split due to benchmark!");
+              }
+            }
+          }
+        }
 
         break;
       case PValuesBenchmarkType::RUN_TIME:

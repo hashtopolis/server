@@ -113,7 +113,7 @@ class TaskHandler implements Handler {
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
     $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($tasks as $task) {
-      $this->deleteTask($task);
+      TaskUtils::deleteTask($task);
     }
     $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
     $FACTORIES::getAgentFactory()->getDB()->commit();
@@ -308,7 +308,7 @@ class TaskHandler implements Handler {
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
     
-    $this->deleteTask($task);
+    TaskUtils::deleteTask($task);
     if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
       $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
     }
@@ -377,7 +377,7 @@ class TaskHandler implements Handler {
       if ($isComplete) {
         $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
         foreach ($tasks as $task) {
-          $this->deleteTask($task);
+          TaskUtils::deleteTask($task);
         }
         $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
         $FACTORIES::getAgentFactory()->getDB()->commit();
