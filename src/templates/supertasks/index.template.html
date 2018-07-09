@@ -2,94 +2,98 @@
 {%TEMPLATE->struct/menu%}
 <h2>Supertasks ([[sizeof([[supertasks]])]])</h2>
 {%TEMPLATE->struct/messages%}
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th class="right">Actions</th>
-		</tr>
-		{{FOREACH supertask;[[supertasks]]}}
-			<tr>
-				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a></td>
-				<td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a></td>
-				<td class="right">
-					{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
-						<form style ='float: right;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
-							<input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
-							<input type="hidden" name="supertask" value="[[supertask.getId()]]">
-							<input type="hidden" name="csrf" value="[[csrf]]">
-							<input type="submit" class='btn btn-danger' value="X">
-						</form>
-					{{ENDIF}}
-					<form style ='float: right; padding-right: 5px;'>
-						<a class="btn btn-primary accordion-toggle" role="button" onclick="expansionCheck('#supertask[[supertask.getId()]]')" href="#" data-toggle="collapse" data-target="#supertask[[supertask.getId()]]">Show/Hide</a>
-					</form>
-					{{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
-						<form style ='float: right; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
-							<input type="hidden" name="csrf" value="[[csrf]]">
-							<input type="submit" class='btn btn-default' value="Apply to Hashlist">
-						</form>
-					{{ENDIF}}
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3" class="hiddenRow">
-					<div id="supertask[[supertask.getId()]]" class="accordian-body collapse" style="margin: 10px;" aria-expanded="false">
-						<div class="panel panel-default" style="margin-bottom: 0;">
-							<table class="table table-bordered table-nonfluid table-subtask-border">
-								<tr>
-									<th>ID</th>
-									<th>Name</th>
-									<th>Subtask Priority</th>
-									<th class="right">Action</th>
-								</tr>
-								{{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
-									<tr>
-										<td>[[task.getId()]]</td>
-										<td>
-											{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
-												<a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a>
-											{{ELSE}}
-												[[task.getTaskName()]]
-											{{ENDIF}}
-										</td>
-										<td>
-											{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
-												<form class="form-inline" action="pretasks.php?super=true" method="POST">
-													<input type='hidden' name='action' value='[[$DPretaskAction::SET_PRIORITY]]'>
-													<input type="hidden" name="pretaskId" value="[[task.getId()]]">
-													<input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getPriority()]]" title="Priority">
-													<input type="hidden" name="csrf" value="[[csrf]]">
-													<input type="submit" class='btn btn-default' value="Set">
-												</form>
-											{{ELSE}}
-												[[task.getPriority()]]
-											{{ENDIF}}
-										</td>
-										<td class="right">
-											{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
-												<form style ='float: right;' action="pretasks.php?super=true" method="POST" onSubmit="if (!confirm('Really delete preconfigured task [[task.getId()]]?')) return false;">
-													<input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
-													<input type="hidden" name="pretaskId" value="[[task.getId()]]">
-													<input type="hidden" name="csrf" value="[[csrf]]">
-													<input type="submit" class='btn btn-danger' value="X">
-												</form>
-											{{ENDIF}}
-										</td>
-									</tr>
-								{{ENDFOREACH}}
-							</table>
-						</div>
-					</div>
-				</td>
-			</tr>
-			<script type="text/javascript">
-				$( document ).ready(function() {
-					checkOnLoading("#supertask[[supertask.getId()]]");
-				});
-			</script>
-		{{ENDFOREACH}}
-	</table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <th>ID</th>
+			  <th>Name</th>
+			  <th class="right">Actions</th>
+		  </tr>
+		  {{FOREACH supertask;[[supertasks]]}}
+			  <tr>
+				  <td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getId()]]</a></td>
+				  <td><a href="supertasks.php?id=[[supertask.getId()]]">[[supertask.getSupertaskName()]]</a></td>
+				  <td class="right">
+					  {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
+						  <form style ='float: right;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
+							  <input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
+							  <input type="hidden" name="supertask" value="[[supertask.getId()]]">
+							  <input type="hidden" name="csrf" value="[[csrf]]">
+							  <input type="submit" class='btn btn-danger' value="X">
+						  </form>
+					  {{ENDIF}}
+					  <form style ='float: right; padding-right: 5px;'>
+						  <a class="btn btn-primary accordion-toggle" role="button" onclick="expansionCheck('#supertask[[supertask.getId()]]')" href="#" data-toggle="collapse" data-target="#supertask[[supertask.getId()]]">Show/Hide</a>
+					  </form>
+					  {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
+						  <form style ='float: right; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
+							  <input type="hidden" name="csrf" value="[[csrf]]">
+							  <input type="submit" class='btn btn-light' value="Apply to Hashlist">
+						  </form>
+					  {{ENDIF}}
+				  </td>
+			  </tr>
+			  <tr>
+				  <td colspan="3" class="hiddenRow">
+					  <div id="supertask[[supertask.getId()]]" class="accordian-body collapse" style="margin: 10px;" aria-expanded="false">
+						  <div class="card">
+                <div class="table-nonfluid">
+                  <table class="table table-bordered table-subtask-border" style="margin-bottom: 0;">
+								    <tr>
+									    <th>ID</th>
+									    <th>Name</th>
+									    <th>Subtask Priority</th>
+									    <th class="right">Action</th>
+								    </tr>
+								    {{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
+									    <tr>
+										    <td>[[task.getId()]]</td>
+										    <td>
+											    {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+												    <a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a>
+											    {{ELSE}}
+												    [[task.getTaskName()]]
+											    {{ENDIF}}
+										    </td>
+										    <td>
+											    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
+												    <form class="form-inline" action="pretasks.php?super=true" method="POST">
+													    <input type='hidden' name='action' value='[[$DPretaskAction::SET_PRIORITY]]'>
+													    <input type="hidden" name="pretaskId" value="[[task.getId()]]">
+													    <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getPriority()]]" title="Priority">&nbsp;&nbsp;
+													    <input type="hidden" name="csrf" value="[[csrf]]">
+													    <input type="submit" class='btn btn-light' value="Set">
+												    </form>
+											    {{ELSE}}
+												    [[task.getPriority()]]
+											    {{ENDIF}}
+										    </td>
+										    <td class="right">
+											    {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
+												    <form style ='float: right;' action="pretasks.php?super=true" method="POST" onSubmit="if (!confirm('Really delete preconfigured task [[task.getId()]]?')) return false;">
+													    <input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
+													    <input type="hidden" name="pretaskId" value="[[task.getId()]]">
+													    <input type="hidden" name="csrf" value="[[csrf]]">
+													    <input type="submit" class='btn btn-danger' value="X">
+												    </form>
+											    {{ENDIF}}
+										    </td>
+									    </tr>
+								    {{ENDFOREACH}}
+							    </table>
+                </div>
+						  </div>
+					  </div>
+				  </td>
+			  </tr>
+			  <script type="text/javascript">
+				  $( document ).ready(function() {
+					  checkOnLoading("#supertask[[supertask.getId()]]");
+				  });
+			  </script>
+		  {{ENDFOREACH}}
+	  </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}

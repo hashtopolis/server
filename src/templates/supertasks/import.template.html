@@ -9,54 +9,56 @@
 <form class='form-inline' action="supertasks.php" method="POST">
 	<input type='hidden' name='action' value='[[$DSupertaskAction::IMPORT_SUPERTASK]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<td style="width: 150px;">Name:</td>
-				<td>
-					<input type='text' name='name' class='form-control' title="Name">
-				</td>
-			</tr>
-			<tr>
-				<td>Is Small Task:</td>
-				<td>
-					<select name="isSmall" class="form-control" title="Small Task">
-						<option value="0">No</option>
-						<option value="1">Yes</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>Is CPU Task:</td>
-				<td>
-					<select name="isCpu" class="form-control" title="CPU Task">
-						<option value="0">No</option>
-						<option value="1">Yes</option>
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>Cracker Binary which is used to run this task:</td>
-				<td>
-					<select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
-						{{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
-							<option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
-						{{ENDFOREACH}}
-					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>Insert masks</td>
-				<td>
-					<textarea name="masks" class="form-control" cols="100" rows="20" placeholder="Paste your Hashcat mask lines here. Format should be according to .hcmask files..."></textarea>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<input type="submit" class='btn btn-default' value="Create Supertask">
-				</td>
-			</tr>
-		</table>
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <td style="width: 150px;">Name:</td>
+				  <td>
+					  <input type='text' name='name' class='form-control' title="Name">
+				  </td>
+			  </tr>
+			  <tr>
+				  <td>Is Small Task:</td>
+				  <td>
+					  <select name="isSmall" class="form-control" title="Small Task">
+						  <option value="0">No</option>
+						  <option value="1">Yes</option>
+					  </select>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td>Is CPU Task:</td>
+				  <td>
+					  <select name="isCpu" class="form-control" title="CPU Task">
+						  <option value="0">No</option>
+						  <option value="1">Yes</option>
+					  </select>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td>Cracker Binary which is used to run this task:</td>
+				  <td>
+					  <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+						  {{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
+							  <option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+						  {{ENDFOREACH}}
+					  </select>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td>Insert masks</td>
+				  <td>
+					  <textarea name="masks" class="form-control" cols="100" rows="20" placeholder="Paste your Hashcat mask lines here. Format should be according to .hcmask files..."></textarea>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td colspan="2">
+					  <input type="submit" class='btn btn-light' value="Create Supertask">
+				  </td>
+			  </tr>
+		  </table>
+    </div>
 	</div>
 </form>
 {%TEMPLATE->struct/foot%}
