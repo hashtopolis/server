@@ -28,10 +28,10 @@
         <td>
           <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
           {{IF [[agent.getIsTrusted()]] == 1}}
-            <img src="static/lock.gif" alt="Trusted">
+            <span class="fas fa-lock" aria-hidden="true"></span>
           {{ENDIF}}
           {{IF [[agent.getIsActive()]] == 0}}
-            <img src="static/pause.gif" alt="Paused">
+            <span class="fas fa-pause-circle" aria-hidden="true"></span>
           {{ENDIF}}
           <br>
           {{IF [[agent.getUserId()]] > 0}}
