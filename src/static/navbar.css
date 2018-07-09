@@ -25,6 +25,10 @@ td.num {
   text-align: right;
 }
 
+.table td, .table th {
+    padding: .5rem;
+}
+
 .hiddenRow {
 	padding: 0 !important;
 }
