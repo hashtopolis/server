@@ -248,7 +248,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (13, 1, 'blacklistChars', '&|`\"\'{}()[]$<>'),
   (14, 3, 'numLogEntries', '5000'),
   (15, 1, 'disptolerance', '20'),
-  (16, 3, 'batchSize', '10000'),
+  (16, 3, 'batchSize', '50000'),
   (18, 2, 'yubikey_id', ''),
   (19, 2, 'yubikey_key', ''),
   (20, 2, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
@@ -266,7 +266,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (32, 5, 'voucherDeletion', '0'),
   (33, 4, 'hashesPerPage', '1000'),
   (34, 4, 'hideIpInfo', '0'),
-  (35, 1, 'defaultBenchmark', '0'),
+  (35, 1, 'defaultBenchmark', '1'),
   (36, 4, 'showTaskPerformance', '0');
 
 -- --------------------------------------------------------
