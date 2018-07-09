@@ -3,12 +3,14 @@
 <h2>Server configuration</h2>
 {%TEMPLATE->struct/messages%}
 
-<div class="btn-group" role="group">
-	<button onclick="window.location='config.php?view=1'" type="button" class="btn btn-default{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
-	<button onclick="window.location='config.php?view=2'" type="button" class="btn btn-default{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
-	<button onclick="window.location='config.php?view=3'" type="button" class="btn btn-default{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
-	<button onclick="window.location='config.php?view=4'" type="button" class="btn btn-default{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
-	<button onclick="window.location='config.php?view=5'" type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
+<div class="btn-toolbar">
+  <div class="btn-group" role="group">
+    <button onclick="window.location='config.php?view=1'" type="button" class="btn btn-default{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
+    <button onclick="window.location='config.php?view=2'" type="button" class="btn btn-default{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
+    <button onclick="window.location='config.php?view=3'" type="button" class="btn btn-default{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
+    <button onclick="window.location='config.php?view=4'" type="button" class="btn btn-default{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
+    <button onclick="window.location='config.php?view=5'" type="button" class="btn btn-default{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
+  </div>
 </div>
 
 <br><br>
@@ -16,74 +18,78 @@
 <form action="" method="POST">
 	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th>Item</th>
-				<th>Value</th>
-			</tr>
-			{{FOREACH conf;[[configuration]]}}
-				<tr>
-					<td>[[DConfig::getConfigDescription([[conf.getVal('item')]])]]</td>
-					<td>
-						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "string"}}
-							<input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
-						{{ENDIF}}
-						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
-							<input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
-						{{ENDIF}}
-						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "email"}}
-							<input type="email" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
-						{{ENDIF}}
-						{{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "checkbox"}}
-							<input type="hidden" name="config_[[conf.getVal('item')]]" value="0">
-							<input title="Config Value" type="checkbox" name="config_[[conf.getVal('item')]]" value="1" {{IF [[conf.getVal('value')]] == 1}}checked{{ENDIF}}>
-						{{ENDIF}}
-					</td>
-				</tr>
-			{{ENDFOREACH}}
-			<tr>
-				<td colspan="2">
-					<input type="submit" class='btn btn-success' value="Save Changes">
-				</td>
-			</tr>
-		</table>
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <th>Item</th>
+				  <th>Value</th>
+			  </tr>
+			  {{FOREACH conf;[[configuration]]}}
+				  <tr>
+					  <td>[[DConfig::getConfigDescription([[conf.getVal('item')]])]]</td>
+					  <td>
+						  {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "string"}}
+							  <input type="text" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
+						  {{ENDIF}}
+						  {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "number"}}
+							  <input type="number" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
+						  {{ENDIF}}
+						  {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "email"}}
+							  <input type="email" class='form-control' name="config_[[conf.getVal('item')]]" value="[[Util::escapeSpecial([[conf.getVal('value')]])]]" title="Config Value">
+						  {{ENDIF}}
+						  {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "checkbox"}}
+							  <input type="hidden" name="config_[[conf.getVal('item')]]" value="0">
+							  <input title="Config Value" type="checkbox" name="config_[[conf.getVal('item')]]" value="1" {{IF [[conf.getVal('value')]] == 1}}checked{{ENDIF}}>
+						  {{ENDIF}}
+					  </td>
+				  </tr>
+			  {{ENDFOREACH}}
+			  <tr>
+				  <td colspan="2">
+					  <input type="submit" class='btn btn-success' value="Save Changes">
+				  </td>
+			  </tr>
+		  </table>
+    </div>
 	</div>
 </form>
 
 <h3>Database tools:</h3>
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<td>
-				<form action='config.php' method='post'>
-					<input type='hidden' name='action' value='[[$DConfigAction::REBUILD_CACHE]]'>
-					<input type="hidden" name="csrf" value="[[csrf]]">
-					<input type='submit' class='btn btn-default' value='Rebuild chunk cache'>
-				</form>
-			</td>
-			<td>Counts cracked hashes in all chunks and all hashlists using slow but precise COUNT() function.</td>
-		</tr>
-		<tr>
-			<td>
-				<form action='config.php' method='post'>
-					<input type='hidden' name='action' value='[[$DConfigAction::RESCAN_FILES]]'>
-					<input type="hidden" name="csrf" value="[[csrf]]">
-					<input type='submit' class='btn btn-default' value='Rescan global files'>
-				</form>
-			</td>
-			<td>Scans all global files for size mismatch or inexistence.</td>
-		</tr>
-		<tr>
-			<td>
-				<form action='config.php' method='post' onSubmit='if(prompt("Do you really want to delete everything? Enter OK to confirm.") !== "OK")return false'>
-					<input type='hidden' name='action' value='[[$DConfigAction::CLEAR_ALL]]'>
-					<input type="hidden" name="csrf" value="[[csrf]]">
-					<input type='submit' class='btn btn-danger' value='Clear all'>
-				</form>
-			</td>
-			<td>Erases all hashlists, tasks (not pre-configured) and chunks of those tasks.</td>
-		</tr>
-	</table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <td>
+				  <form action='config.php' method='post'>
+					  <input type='hidden' name='action' value='[[$DConfigAction::REBUILD_CACHE]]'>
+					  <input type="hidden" name="csrf" value="[[csrf]]">
+					  <input type='submit' class='btn btn-light' value='Rebuild chunk cache'>
+				  </form>
+			  </td>
+			  <td>Counts cracked hashes in all chunks and all hashlists using slow but precise COUNT() function.</td>
+		  </tr>
+		  <tr>
+			  <td>
+				  <form action='config.php' method='post'>
+					  <input type='hidden' name='action' value='[[$DConfigAction::RESCAN_FILES]]'>
+					  <input type="hidden" name="csrf" value="[[csrf]]">
+					  <input type='submit' class='btn btn-light' value='Rescan global files'>
+				  </form>
+			  </td>
+			  <td>Scans all global files for size mismatch or inexistence.</td>
+		  </tr>
+		  <tr>
+			  <td>
+				  <form action='config.php' method='post' onSubmit='if(prompt("Do you really want to delete everything? Enter OK to confirm.") !== "OK")return false'>
+					  <input type='hidden' name='action' value='[[$DConfigAction::CLEAR_ALL]]'>
+					  <input type="hidden" name="csrf" value="[[csrf]]">
+					  <input type='submit' class='btn btn-danger' value='Clear all'>
+				  </form>
+			  </td>
+			  <td>Erases all hashlists, tasks (not pre-configured) and chunks of those tasks.</td>
+		  </tr>
+	  </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}
