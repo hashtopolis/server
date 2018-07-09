@@ -33,11 +33,6 @@ td.num {
 	padding: 0 !important;
 }
 
-.table-subtask-border {
-	border-collapse: separate;
-	border: 1px solid #0f00ae !important;
-}
-
 .card {
     border: none !important;
 }
