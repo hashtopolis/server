@@ -7,37 +7,39 @@
 		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
 			<input type='hidden' name='action' value='[[$DTaskAction::DELETE_FINISHED]]'>
 			<input type="hidden" name="csrf" value="[[csrf]]">
-			<input type="submit" value="Delete finished" class='btn btn-default'>
+			<input type="submit" value="Delete finished" class='btn btn-light'>
 		</form>
 	{{ENDIF}}
 	{%TEMPLATE->tasks/autorefresh%}
 	<br>
 </div>
 <br>
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>ID</th>
-			<th>Name</th>
-			<th>Hashlist</th>
-			<th>Chunks</th>
-			<th>Dispatched</th>
-			<th>Searched</th>
-			<th>Cracked</th>
-			<th>Agents</th>
-			<th>Files</th>
-			<th>Task Priority</th>
-			<th style="min-width: 170px;">Action</th>
-		</tr>
-		{{FOREACH set;[[taskList]]}}
-			{{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
-				<!-- normal task -->
-				{%TEMPLATE->tasks/normal%}
-			{{ELSE}}
-				<!-- supertask -->
-        {%TEMPLATE->tasks/supertask%}
-			{{ENDIF}}
-    {{ENDFOREACH}}
-  </table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Hashlist</th>
+        <th>Chunks</th>
+        <th>Dispatched</th>
+        <th>Searched</th>
+        <th>Cracked</th>
+        <th>Agents</th>
+        <th>Files</th>
+        <th>Task Priority</th>
+        <th style="min-width: 170px;">Action</th>
+      </tr>
+      {{FOREACH set;[[taskList]]}}
+        {{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
+          <!-- normal task -->
+          {%TEMPLATE->tasks/normal%}
+        {{ELSE}}
+          <!-- supertask -->
+          {%TEMPLATE->tasks/supertask%}
+        {{ENDIF}}
+      {{ENDFOREACH}}
+    </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}
