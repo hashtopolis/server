@@ -5,69 +5,73 @@
 <form action="hashtypes.php" method="POST">
 	<input type='hidden' name='action' value='[[$DHashtypeAction::ADD_HASHTYPE]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th colspan='2' style='text-align: center;'>
-					<b>Add new Hashtype</b>
-				</th>
-			</tr>
-			<tr>
-				<th>Hashtype (Hashcat -m)</th>
-				<th>Description</th>
-				<th>Salted (only if there is a separate salt value)</th>
-			</tr>
-			<tr>
-				<td>
-					<input type='text' name='id' class='form-control' title="ID">
-				</td>
-				<td>
-					<input type='text' name='description' class='form-control' title="Description">
-				</td>
-				<td>
-					<select name="isSalted" class="form-control" title="Is Salted">
-            <option value="0">No</option>
-            <option value="1">Yes</option>
-          </select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">
-					<input type="submit" class='btn btn-success' value="Add">
-				</td>
-			</tr>
-		</table>
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <th colspan='3' style='text-align: center;'>
+					  <b>Add new Hashtype</b>
+				  </th>
+			  </tr>
+			  <tr>
+				  <th>Hashtype (Hashcat -m)</th>
+				  <th>Description</th>
+				  <th>Salted (only if there is a separate salt value)</th>
+			  </tr>
+			  <tr>
+				  <td>
+					  <input type='text' name='id' class='form-control' title="ID">
+				  </td>
+				  <td>
+					  <input type='text' name='description' class='form-control' title="Description">
+				  </td>
+				  <td>
+					  <select name="isSalted" class="form-control" title="Is Salted">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td colspan="3">
+					  <input type="submit" class='btn btn-success' value="Add">
+				  </td>
+			  </tr>
+		  </table>
+    </div>
 	</div>
 </form>
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>Hashtype (Hashcat -m)</th>
-			<th>Description</th>
-      <th>Salted</th>
-			<th>&nbsp;</th>
-		</tr>
-		{{FOREACH type;[[hashtypes]]}}
-			<tr>
-				<td>[[type.getId()]]</td>
-				<td>[[type.getDescription()]]</td>
-        <td>
-          {{IF [[type.getIsSalted()]] == 1}}
-          Yes
-          {{ELSE}}
-          No
-          {{ENDIF}}
-        </td>
-				<td>
-					<form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getId()]]?')) return false;">
-						<input type="hidden" name="action" value="[[$DHashtypeAction::DELETE_HASHTYPE]]">
-						<input type="hidden" name="type" value="[[type.getId()]]">
-						<input type="hidden" name="csrf" value="[[csrf]]">
-						<input type="submit" class='btn btn-danger' value="Delete">
-					</form>
-				</td>
-			</tr>
-		{{ENDFOREACH}}
-	</table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <th>Hashtype (Hashcat -m)</th>
+			  <th>Description</th>
+        <th>Salted</th>
+			  <th>&nbsp;</th>
+		  </tr>
+		  {{FOREACH type;[[hashtypes]]}}
+			  <tr>
+				  <td>[[type.getId()]]</td>
+				  <td>[[type.getDescription()]]</td>
+          <td>
+            {{IF [[type.getIsSalted()]] == 1}}
+            Yes
+            {{ELSE}}
+            No
+            {{ENDIF}}
+          </td>
+				  <td>
+					  <form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getId()]]?')) return false;">
+						  <input type="hidden" name="action" value="[[$DHashtypeAction::DELETE_HASHTYPE]]">
+						  <input type="hidden" name="type" value="[[type.getId()]]">
+						  <input type="hidden" name="csrf" value="[[csrf]]">
+						  <input type="submit" class='btn btn-danger' value="Delete">
+					  </form>
+				  </td>
+			  </tr>
+		  {{ENDFOREACH}}
+	  </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}
