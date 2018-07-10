@@ -22,6 +22,7 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
+$ACCESS_CONTROL->checkPermission(array_merge(DViewControl::TASKS_VIEW_PERM, DAccessControl::RUN_TASK_ACCESS));
 
 $TEMPLATE = new Template("tasks/index");
 $MENU->setActive("tasks_list");
@@ -61,12 +62,7 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 }
 
 if (isset($_GET['id'])) {
-  if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-    $TEMPLATE = new Template("restricted");
-    $OBJECTS['pageTitle'] = "Restricted";
-    die($TEMPLATE->render($OBJECTS));
-  }
-  
+  $ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
   $TEMPLATE = new Template("tasks/detail");
   $task = $FACTORIES::getTaskFactory()->get($_GET['id']);
   if ($task == null) {
@@ -243,10 +239,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['pageTitle'] = "Task details for " . $task->getTaskName();
 }
 else if (isset($_GET['new'])) {
-  if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-    $TEMPLATE = new Template("restricted");
-    die($TEMPLATE->render($OBJECTS));
-  }
+  $ACCESS_CONTROL->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
@@ -254,6 +247,8 @@ else if (isset($_GET['new'])) {
   $hashlistId = 0;
   $copy = null;
   if (isset($_GET["copy"])) {
+    $ACCESS_CONTROL->checkPermission(DAccessControl::CREATE_TASK_ACCESS); // enforce additional permission for this
+    
     //copied from a task
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
@@ -292,6 +287,7 @@ else if (isset($_GET['new'])) {
   
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
+  $OBJECTS['origType'] = $origType;
   $OBJECTS['hashlistId'] = $hashlistId;
   
   $lists = array();
@@ -351,6 +347,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['pageTitle'] = "Create Task";
 }
 else {
+  $ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
   Util::loadTasks();
   $OBJECTS['pageTitle'] = "Tasks";
 }

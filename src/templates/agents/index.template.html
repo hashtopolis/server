@@ -2,90 +2,92 @@
 {%TEMPLATE->struct/menu%}
 <h2>Agents ([[numAgents]])</h2>
 {%TEMPLATE->struct/messages%}
-<div class="panel panel-default">
-  <table class="table table-bordered table-nonfluid">
-    <tr>
-      <th>Id</th>
-      <th>Act</th>
-      <th>Name / Owner / Client</th>
-      <th>GPUs/CPUs</th>
-      <th>CPU only</th>
-      <th>Last activity</th>
-      <th>Access Groups</th>
-      <th>Action</th>
-    </tr>
-    {{FOREACH agent;[[agents]]}}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
       <tr>
-        <td><a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a></td>
-        <td>
-          <form id="active[[agent.getId()]]" action="agents.php" method="post">
-            <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
-            <input type="hidden" name="agentId" value="[[agent.getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="document.getElementById('active[[agent.getId()]]').submit();" title="Is Active">
-          </form>
-        </td>
-        <td>
-          <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
-          {{IF [[agent.getIsTrusted()]] == 1}}
-            <img src="static/lock.gif" alt="Trusted">
-          {{ENDIF}}
-          {{IF [[agent.getIsActive()]] == 0}}
-            <img src="static/pause.gif" alt="Paused">
-          {{ENDIF}}
-          <br>
-          {{IF [[agent.getUserId()]] > 0}}
-            [[Util::getUsernameById([[agent.getUserId()]])]]
-          {{ELSE}}
-            ---
-          {{ENDIF}}
-          {{IF strlen([[agent.getClientSignature()]]) > 0}}
-            <br>Running: [[agent.getClientSignature()]]
-          {{ELSE}}
-            <br>Running: unknown
-          {{ENDIF}}
-        </td>
-        <td>
-          {{FOREACH device;[[agent.getDevices()]]}}
-            [[Util::shortenstring([[device]], 20)]]<br>
-          {{ENDFOREACH}}
-        </td>
-        <td>
-          {{IF [[agent.getCpuOnly()]] == 0}}
-            No
-          {{ELSE}}
-            Yes
-          {{ENDIF}}
-        </td>
-        <td>
-          <code>[[agent.getLastAct()]]</code> at <br>
-          [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
-          IP:
-          {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
-            <code>[[agent.getLastIp()]]</code>
-          {{ELSE}}
-            <code>Hidden</code>
-          {{ENDIF}}
-        </td>
-        <td>
-          {{FOREACH accessGroup;[[accessGroupAgents.getVal([[agent.getId()]])]]}}
-            [[accessGroup.getGroupName()]]<br>
-          {{ENDFOREACH}}
-        </td>
-        {{IF [[login.getLevel()]] >= 30}}
+        <th>Id</th>
+        <th>Act</th>
+        <th>Name / Owner / Client</th>
+        <th>GPUs/CPUs</th>
+        <th>CPU only</th>
+        <th>Last activity</th>
+        <th>Access Groups</th>
+        <th>Action</th>
+      </tr>
+      {{FOREACH agent;[[agents]]}}
+        <tr>
+          <td><a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a></td>
           <td>
-            <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[agent.getId()]]?')) return false;">
-              <input type='hidden' name='action' value='[[$DAgentAction::DELETE_AGENT]]'>
+            <form id="active[[agent.getId()]]" action="agents.php" method="post">
+              <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
               <input type="hidden" name="agentId" value="[[agent.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="submit" class='btn btn-danger' value="Delete">
+              <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} onChange="document.getElementById('active[[agent.getId()]]').submit();" title="Is Active">
             </form>
           </td>
-        {{ELSE}}
-          <td>&nbsp;</td>
-        {{ENDIF}}
-      </tr>
-    {{ENDFOREACH}}
-  </table>
+          <td>
+            <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
+            {{IF [[agent.getIsTrusted()]] == 1}}
+              <span class="fas fa-lock" aria-hidden="true"></span>
+            {{ENDIF}}
+            {{IF [[agent.getIsActive()]] == 0}}
+              <span class="fas fa-pause-circle" aria-hidden="true"></span>
+            {{ENDIF}}
+            <br>
+            {{IF [[agent.getUserId()]] > 0}}
+              [[Util::getUsernameById([[agent.getUserId()]])]]
+            {{ELSE}}
+              ---
+            {{ENDIF}}
+            {{IF strlen([[agent.getClientSignature()]]) > 0}}
+              <br>Running: [[agent.getClientSignature()]]
+            {{ELSE}}
+              <br>Running: unknown
+            {{ENDIF}}
+          </td>
+          <td>
+            {{FOREACH device;[[agent.getDevices()]]}}
+              [[Util::shortenstring([[device]], 20)]]<br>
+            {{ENDFOREACH}}
+          </td>
+          <td>
+            {{IF [[agent.getCpuOnly()]] == 0}}
+              No
+            {{ELSE}}
+              Yes
+            {{ENDIF}}
+          </td>
+          <td>
+            <code>[[agent.getLastAct()]]</code> at <br>
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
+            IP:
+            {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
+              <code>[[agent.getLastIp()]]</code>
+            {{ELSE}}
+              <code>Hidden</code>
+            {{ENDIF}}
+          </td>
+          <td>
+            {{FOREACH accessGroup;[[accessGroupAgents.getVal([[agent.getId()]])]]}}
+              [[accessGroup.getGroupName()]]<br>
+            {{ENDFOREACH}}
+          </td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}
+            <td>
+              <form action="agents.php" method="POST" onSubmit="if (!confirm('Really delete agent [[agent.getId()]]?')) return false;">
+                <input type='hidden' name='action' value='[[$DAgentAction::DELETE_AGENT]]'>
+                <input type="hidden" name="agentId" value="[[agent.getId()]]">
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <input type="submit" class='btn btn-danger' value="Delete">
+              </form>
+            </td>
+          {{ELSE}}
+            <td>&nbsp;</td>
+          {{ENDIF}}
+        </tr>
+      {{ENDFOREACH}}
+    </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}

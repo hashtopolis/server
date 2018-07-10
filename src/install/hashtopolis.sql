@@ -122,8 +122,8 @@ CREATE TABLE `AgentBinary` (
 --
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
-  (1, 'csharp', '0.52.1', 'Windows, Linux(mono), OS X(mono)', 'hashtopolis.exe'),
-  (2, 'python', '0.1.3', 'Windows, Linux, OS X', 'hashtopolis.zip');
+  (1, 'csharp', '0.52.2', 'Windows, Linux(mono), OS X(mono)', 'hashtopolis.exe'),
+  (2, 'python', '0.1.4', 'Windows, Linux, OS X', 'hashtopolis.zip');
 
 -- --------------------------------------------------------
 
@@ -248,7 +248,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (13, 1, 'blacklistChars', '&|`\"\'{}()[]$<>'),
   (14, 3, 'numLogEntries', '5000'),
   (15, 1, 'disptolerance', '20'),
-  (16, 3, 'batchSize', '10000'),
+  (16, 3, 'batchSize', '50000'),
   (18, 2, 'yubikey_id', ''),
   (19, 2, 'yubikey_key', ''),
   (20, 2, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
@@ -266,7 +266,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (32, 5, 'voucherDeletion', '0'),
   (33, 4, 'hashesPerPage', '1000'),
   (34, 4, 'hideIpInfo', '0'),
-  (35, 1, 'defaultBenchmark', '0'),
+  (35, 1, 'defaultBenchmark', '1'),
   (36, 4, 'showTaskPerformance', '0');
 
 -- --------------------------------------------------------
@@ -814,7 +814,7 @@ CREATE TABLE `RightGroup` (
   `rightGroupId` INT(11)                 NOT NULL,
   `groupName`    VARCHAR(50)
                  COLLATE utf8_unicode_ci NOT NULL,
-  `level`        INT(11)                 NOT NULL
+  `permissions`  TEXT                    NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -824,12 +824,8 @@ CREATE TABLE `RightGroup` (
 -- Daten für Tabelle `RightGroup`
 --
 
-INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `level`) VALUES
-  (1, 'View User', 1),
-  (2, 'Read Only User', 5),
-  (3, 'Normal User', 20),
-  (4, 'Superuser', 30),
-  (5, 'Administrator', 50);
+INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `permissions`) VALUES
+  (1, 'Administrator', 'ALL');
 
 -- --------------------------------------------------------
 

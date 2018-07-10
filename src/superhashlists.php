@@ -14,16 +14,13 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-  $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Restricted";
-  die($TEMPLATE->render($OBJECTS));
-}
+
+$ACCESS_CONTROL->checkPermission(DViewControl::SUPERHASHLISTS_VIEW_PERM);
 
 $TEMPLATE = new Template("superhashlists/index");
 $MENU->setActive("lists_super");
 
-if (isset($_GET['new'])) {
+if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_SUPERHASHLIST_ACCESS)) {
   $TEMPLATE = new Template("superhashlists/new");
   $MENU->setActive("lists_snew");
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");

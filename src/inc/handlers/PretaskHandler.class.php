@@ -11,56 +11,39 @@ class PretaskHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN;
+    global $ACCESS_CONTROL;
     
     switch ($action) {
       case DPretaskAction::DELETE_PRETASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::DELETE_PRETASK_PERM);
         $this->delete($_POST['pretaskId']);
         break;
       case DPretaskAction::RENAME_PRETASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::RENAME_PRETASK_PERM);
         $this->rename($_POST['name'], $_POST['pretaskId']);
         break;
       case DPretaskAction::SET_TIME:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::SET_TIME_PERM);
         $this->setChunkTime($_POST['chunktime'], $_POST['pretaskId']);
         break;
       case DPretaskAction::SET_COLOR:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::SET_COLOR_PERM);
         $this->setColor($_POST['color'], $_POST['pretaskId']);
         break;
       case DPretaskAction::SET_PRIORITY:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::SET_PRIORITY_PERM);
         $this->setPriority($_POST['priority'], $_POST['pretaskId']);
         break;
       case DPretaskAction::SET_CPU_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::SET_CPU_TASK_PERM);
         $this->setCpuTask($_POST['isCpu'], $_POST['pretaskId']);
         break;
       case DPretaskAction::SET_SMALL_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::SET_SMALL_TASK_PERM);
         $this->setSmallTask($_POST['isSmall'], $_POST['pretaskId']);
         break;
       case DPretaskAction::CREATE_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DPretaskAction::CREATE_TASK_PERM);
         $this->createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType'], $_POST['crackerBinaryTypeId']);
         break;
       default:

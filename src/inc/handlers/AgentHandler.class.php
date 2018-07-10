@@ -29,77 +29,59 @@ class AgentHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN;
+    global $ACCESS_CONTROL;
     
     switch ($action) {
       case DAgentAction::CLEAR_ERRORS:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
         $this->clearErrors();
         break;
       case DAgentAction::RENAME_AGENT:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::RENAME_AGENT_PERM);
         $this->rename($_POST['name']);
         break;
       case DAgentAction::SET_OWNER:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_OWNER_PERM);
         $this->changeOwner($_POST['owner']);
         break;
       case DAgentAction::SET_TRUSTED:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_TRUSTED_PERM);
         $this->changeTrusted($_POST["trusted"]);
         break;
       case DAgentAction::SET_IGNORE:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_IGNORE_PERM);
         $this->changeIgnoreErrors($_POST["ignore"]);
         break;
       case DAgentAction::SET_PARAMETERS:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
         $this->changeCmdParameters($_POST["cmdpars"]);
         break;
       case DAgentAction::SET_ACTIVE:
+        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_ACTIVE_PERM);
         $this->toggleActive();
         break;
       case DAgentAction::DELETE_AGENT:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_AGENT_PERM);
         $this->delete($_POST['agentId']);
         break;
       case DAgentAction::ASSIGN_AGENT:
+        $ACCESS_CONTROL->checkPermission(DAgentAction::ASSIGN_AGENT_PERM);
         $this->assign();
         break;
       case DAgentAction::CREATE_VOUCHER:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
         $this->createVoucher($_POST["newvoucher"]);
         break;
       case DAgentAction::DELETE_VOUCHER:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_VOUCHER_PERM);
         $this->deleteVoucher();
         break;
       case DAgentAction::DOWNLOAD_AGENT:
+        $ACCESS_CONTROL->checkPermission(DAgentAction::DOWNLOAD_AGENT_PERM);
         $this->downloadAgent($_POST['binary']);
         break;
       case DAgentAction::SET_CPU:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER && $this->agent->getUserId() != $LOGIN->getUserID()) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_CPU_PERM);
         $this->setAgentCpu($_POST['cpuOnly']);
         break;
       default:
@@ -164,7 +146,7 @@ class AgentHandler implements Handler {
       UI::printError("ERROR", "Invalid task!");
     }
     else if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
-      UI::printError("ERROR", "Task cannot be accessed by this agent!");
+      UI::printError("ERROR", "This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
     }
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");

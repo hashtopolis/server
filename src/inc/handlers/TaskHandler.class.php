@@ -31,95 +31,67 @@ class TaskHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN;
+    global $ACCESS_CONTROL;
     
     switch ($action) {
       case DTaskAction::SET_BENCHMARK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
         $this->adjustBenchmark();
         break;
       case DTaskAction::SET_SMALL_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
         $this->setSmallTask();
         break;
       case DTaskAction::SET_CPU_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_CPU_TASK_PERM);
         $this->setCpuTask();
         break;
       case DTaskAction::ABORT_CHUNK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
         $this->abortChunk();
         break;
       case DTaskAction::RESET_CHUNK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
         $this->resetChunk();
         break;
       case DTaskAction::PURGE_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
         $this->purgeTask();
         break;
       case DTaskAction::SET_COLOR:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
         $this->updateColor();
         break;
       case DTaskAction::SET_TIME:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
         $this->changeChunkTime();
         break;
       case DTaskAction::RENAME_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
         $this->rename();
         break;
       case DTaskAction::DELETE_FINISHED:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
         $this->deleteFinished();
         break;
       case DTaskAction::DELETE_TASK:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
         $this->delete();
         break;
       case DTaskAction::SET_PRIORITY:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_PRIORITY_PERM);
         $this->updatePriority();
         break;
       case DTaskAction::CREATE_TASK:
+        $ACCESS_CONTROL->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
         $this->create();
         break;
       case DTaskAction::DELETE_SUPERTASK:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
         $this->deleteSupertask($_POST['supertaskId']);
         break;
       case DTaskAction::SET_SUPERTASK_PRIORITY:
-        if ($LOGIN->getLevel() < DAccessLevel::USER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
         $this->setSupertaskPriority($_POST['supertaskId'], $_POST['priority']);
         break;
       default:
@@ -195,20 +167,20 @@ class TaskHandler implements Handler {
   private function create() {
     /** @var DataSet $CONFIG */
     /** @var $LOGIN Login */
-    global $FACTORIES, $CONFIG, $LOGIN;
+    global $FACTORIES, $CONFIG, $LOGIN, $ACCESS_CONTROL;
     
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
-    $cmdline = $_POST["cmdline"];
-    $chunk = intval($_POST["chunk"]);
-    $status = intval($_POST["status"]);
-    $useNewBench = intval($_POST['benchType']);
-    $isCpuTask = intval($_POST['cpuOnly']);
-    $isSmall = intval($_POST['isSmall']);
-    $skipKeyspace = intval($_POST['skipKeyspace']);
+    $cmdline = @$_POST["cmdline"];
+    $chunk = intval(@$_POST["chunk"]);
+    $status = intval(@$_POST["status"]);
+    $useNewBench = intval(@$_POST['benchType']);
+    $isCpuTask = intval(@$_POST['cpuOnly']);
+    $isSmall = intval(@$_POST['isSmall']);
+    $skipKeyspace = intval(@$_POST['skipKeyspace']);
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
-    $color = $_POST["color"];
+    $color = @$_POST["color"];
     
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
@@ -270,7 +242,21 @@ class TaskHandler implements Handler {
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
-    $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
+    
+    if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
+      $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
+    }
+    else {
+      $copy = $FACTORIES::getPretaskFactory()->get($_POST['copy']);
+      if ($copy == null) {
+        UI::addMessage(UI::ERROR, "Invalid preconfigured task used!");
+        return;
+      }
+      // force to copy from pretask to make sure user cannot change anything he is not allowed to
+      $task = new Task(0, $name, $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, 0, $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
+      $forward = "pretasks.php";
+    }
+    
     $task = $FACTORIES::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {

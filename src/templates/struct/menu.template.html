@@ -1,122 +1,118 @@
-<nav class="navbar navbar-default">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed"
-				data-toggle="collapse" data-target="#navbar" aria-expanded="false"
-				aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span> 
-				<span class="icon-bar"></span> 
-				<span class="icon-bar"></span> 
-				<span class="icon-bar"></span>
-			</button>
-			<a href="#" class="navbar-left"><img src="static/logo.png" alt="logo" style="width: 40px; margin: 5px 5px 5px -5px;"></a><a class="navbar-brand" href="index.php">[[$APP_NAME]]</a>
-		</div>
-		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav">
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
-					<li class="dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('agents_list')]]><a href="agents.php">Show Agents</a></li>
-							<li[[menu.isActive('agents_new')]]><a href="agents.php?new=true">New Agent</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]] && [[login.getLevel()]] < [[$DAccessLevel::SUPERUSER]]}}
-					<li[[menu.isActive('agents_list')]]><a href="agents.php">Agents</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
-					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
-							<li[[menu.isActive('tasks_new')]]><a href="tasks.php?new=true">New Task</a></li>
-							<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Preconfigured Tasks</a></li>
-							<li[[menu.isActive('tasks_prenew')]]><a href="pretasks.php?new=true">New preconfigured Tasks</a></li>
-							<li[[menu.isActive('tasks_super')]]><a href='supertasks.php'>Supertasks</a></li>
-							<li[[menu.isActive('tasks_supernew')]]><a href='supertasks.php?create=new'>New Supertask</a></li>
-							<li[[menu.isActive('tasks_superimport')]]><a href='supertasks.php?create=import'>Import Mask(s)</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] > 0 && [[login.getLevel()]] < [[$DAccessLevel::READ_ONLY]]}}
-					<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]] && [[login.getLevel()]] < [[$DAccessLevel::USER]]}}
-					<li class="dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('tasks_list')]]><a href="tasks.php">Show Tasks</a></li>
-							<li[[menu.isActive('tasks_pre')]]><a href="pretasks.php">Pre-conf Tasks</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
-					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
-							<li[[menu.isActive('lists_new')]]><a href="hashlists.php?new=true">New hashlist</a></li>
-							<li[[menu.isActive('lists_super')]]><a href="superhashlists.php">Superhashlists</a></li>
-							<li[[menu.isActive('lists_snew')]]><a href="superhashlists.php?new=true">New superhashlist</a></li>
-							<li[[menu.isActive('lists_search')]]><a href="search.php">Search Hash</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]] && [[login.getLevel()]] < [[$DAccessLevel::USER]]}}
-					<li class="dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('lists_norm')]]><a href="hashlists.php">Hashlists</a></li>
-							<li[[menu.isActive('lists_super')]]><a href="superhashlists.php">Superhashlists</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
-					<li[[menu.isActive('files')]]><a href="files.php">Files</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::READ_ONLY]]}}
-					<li[[menu.isActive('chunks')]]><a href="chunks.php">Chunk activity</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= [[$DAccessLevel::SUPERUSER]]}}
-					<li class="dropdown[[menu.isActive('crackers', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Crackers <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Binaries</a></li>
-							<li[[menu.isActive('crackers_new')]]><a href="crackers.php?new=true">New Binary</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 10 && [[login.getLevel()]] < [[$DAccessLevel::SUPERUSER]]}}
-					<li[[menu.isActive('crackers_list')]]><a href="crackers.php">Crackers</a></li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]]}}
-					<li class="dropdown[[menu.isActive('account', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('account_settings')]]><a href="account.php">Settings</a></li>
-              {{IF [[login.getLevel()]] >= [[$DAccessLevel::USER]]}}
-							  <li[[menu.isActive('account_notifications')]]><a href="notifications.php">Notifications</a></li>
-              {{ENDIF}}
-						</ul>
-					</li>
-				{{ENDIF}}
-				{{IF [[login.isLoggedin()]] && [[login.getLevel()]] >= 40}}
-					<li class="dropdown[[menu.isActive('config', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Config <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('config_server')]]><a href="config.php">Server</a></li>
-							<li[[menu.isActive('config_hashtypes')]]><a href="hashtypes.php">Hashtypes</a></li>
-							<li[[menu.isActive('config_binaries')]]><a href="binaries.php">Agent Binaries</a></li>
-							<li[[menu.isActive('config_log')]]><a href="log.php">Log</a></li>
-						</ul>
-					</li>
-					<li class="dropdown[[menu.isActive('users', 'classonly')]]"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
-						<ul class="dropdown-menu">
-							<li[[menu.isActive('users_list')]]><a href="users.php">All users</a></li>
-							<li[[menu.isActive('users_new')]]><a href="users.php?new=true">New User</a></li>
-							<li[[menu.isActive('users_groups')]]><a href="groups.php">Groups</a></li>
-						</ul>
-					</li>
-				{{ENDIF}}
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				{{IF [[login.isLoggedin()]]}}
-					<li><a href="logout.php">Logout</a></li>
-				{{ENDIF}}
-			</ul>
-		</div>
+<nav class="navbar navbar-expand-md mb-4 navbar-light rounded" style="background-color: #f8f8f8; border: 1px solid #e7e7e7;">
+	<a href="#" class="navbar-left"><img src="static/logo.png" alt="logo" style="width: 40px; margin: 5px 5px 5px -5px;"></a><a class="navbar-brand" href="index.php">[[$APP_NAME]]</a>
+	<button type="button" class="navbar-toggler"
+		data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+		aria-controls="navbar" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+	</button>
+	<div id="navbar" class="collapse navbar-collapse">
+		<ul class="navbar-nav mr-auto">
+			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+				<li class="nav-item dropdown[[menu.isActive('agents', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownAgents" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Agents <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="dropdownAgents">
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('agents_list')]]" href="agents.php">Show Agents</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_AGENT_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('agents_new')]]" href="agents.php?new=true">New Agent</a>
+						{{ENDIF}}
+					</div>
+				</li>
+			{{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]] || [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]] || [[accessControl.hasPermission([[$DAccessControl::VIEW_SUPERTASK_ACCESS]])]]}}
+				<li class="nav-item dropdown[[menu.isActive('tasks', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownTasks" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tasks <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="dropdownTasks">
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('tasks_list')]]" href="tasks.php">Show Tasks</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('tasks_new')]]" href="tasks.php?new=true">New Task</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('tasks_pre')]]" href="pretasks.php">Preconfigured Tasks</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('tasks_prenew')]]" href="pretasks.php?new=true">New preconfigured Tasks</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_SUPERTASK_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('tasks_super')]]" href='supertasks.php'>Supertasks</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_SUPERTASK_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('tasks_supernew')]]" href='supertasks.php?create=new'>New Supertask</a>
+							<a class="dropdown-item[[menu.isActive('tasks_superimport')]]" href='supertasks.php?create=import'>Import Mask(s)</a>
+						{{ENDIF}}
+					</div>
+				</li>
+			{{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+				<li class="nav-item dropdown[[menu.isActive('lists', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownHashlists" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Lists <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="dropdownHashlists">
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('lists_norm')]]" href="hashlists.php">Hashlists</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_HASHLIST_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('lists_new')]]" href="hashlists.php?new=true">New hashlist</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('lists_super')]]" href="superhashlists.php">Superhashlists</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_SUPERHASHLIST_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('lists_snew')]]" href="superhashlists.php?new=true">New superhashlist</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('lists_search')]]" href="search.php">Search Hash</a>
+						{{ENDIF}}
+					</div>
+				</li>
+			{{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_FILE_ACCESS]])]]}}
+				<li class="nav-item[[menu.isActive('files')]]"><a class="nav-link" href="files.php">Files</a></li>
+			{{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+				<li class="nav-item[[menu.isActive('chunks')]]"><a class="nav-link" href="chunks.php">Chunk activity</a></li>
+			{{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::CRACKER_BINARY_ACCESS]])]]}}
+				<li class="nav-item dropdown[[menu.isActive('crackers', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownCrackers" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Crackers <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="dropdownCrackers">
+						<a class="dropdown-item[[menu.isActive('crackers_list')]]" href="crackers.php">Binaries</a>
+						<a class="dropdown-item[[menu.isActive('crackers_new')]]" href="crackers.php?new=true">New Binary</a>
+					</div>
+				</li>
+			{{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::LOGIN_ACCESS]])]]}}
+				<li class="nav-item dropdown[[menu.isActive('account', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownAccount" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My Account <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="dropdownAccount">
+						<a class="dropdown-item[[menu.isActive('account_settings')]]" href="account.php">Settings</a>
+						<a class="dropdown-item[[menu.isActive('account_notifications')]]" href="notifications.php">Notifications</a>
+					</div>
+				</li>
+			{{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::SERVER_CONFIG_ACCESS]])]]}}
+				<li class="nav-item dropdown[[menu.isActive('config', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownConfig" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Config <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="dropdownConfig">
+						<a class="dropdown-item[[menu.isActive('config_server')]]" href="config.php">Server</a>
+						<a class="dropdown-item[[menu.isActive('config_hashtypes')]]" href="hashtypes.php">Hashtypes</a>
+						<a class="dropdown-item[[menu.isActive('config_binaries')]]" href="binaries.php">Agent Binaries</a>
+						<a class="dropdown-item[[menu.isActive('config_log')]]" href="log.php">Log</a>
+					</div>
+				</li>
+            {{ENDIF}}
+            {{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
+				<li class="nav-item dropdown[[menu.isActive('users', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownUsers" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
+					<div class="dropdown-menu" aria-labelledby="dropdownUsers">
+						<a class="dropdown-item[[menu.isActive('users_list')]]" href="users.php">All users</a>
+						<a class="dropdown-item[[menu.isActive('users_new')]]" href="users.php?new=true">New User</a>
+						<a class="dropdown-item[[menu.isActive('users_access')]]" href="access.php">Access Management</a>
+						<a class="dropdown-item[[menu.isActive('users_groups')]]" href="groups.php">Groups</a>
+					</div>
+				</li>
+			{{ENDIF}}
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			{{IF [[login.isLoggedin()]]}}
+				<li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+			{{ENDIF}}
+		</ul>
 	</div>
 </nav>
+

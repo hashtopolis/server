@@ -7,28 +7,28 @@ class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-    
+
     if (!PQuerySendBenchmark::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
     }
     $this->checkToken(PActions::SEND_BENCHMARK, $QUERY);
     $this->updateAgent(PActions::SEND_BENCHMARK);
-    
+
     $task = $FACTORIES::getTaskFactory()->get($QUERY[PQuerySendBenchmark::TASK_ID]);
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid task ID!");
     }
-    
+
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
     if ($assignment == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "You are not assigned to this task!");
     }
-    
+
     $type = $QUERY[PQuerySendBenchmark::TYPE];
     $benchmark = $QUERY[PQuerySendBenchmark::RESULT];
-    
+
     switch ($type) {
       case PValuesBenchmarkType::SPEED_TEST:
         $split = explode(":", $benchmark);
@@ -37,6 +37,9 @@ class APISendBenchmark extends APIBasic {
           $FACTORIES::getAgentFactory()->update($this->agent);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
+
+        // TODO: Here we should check if the benchmark result would require to split the task and check if the task can be split
+
         break;
       case PValuesBenchmarkType::RUN_TIME:
         if (!is_numeric($benchmark) || $benchmark <= 0) {
@@ -52,7 +55,7 @@ class APISendBenchmark extends APIBasic {
         $FACTORIES::getAgentFactory()->update($this->agent);
         $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
     }
-    
+
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
     $this->sendResponse(array(

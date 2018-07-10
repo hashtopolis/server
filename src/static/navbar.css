@@ -25,11 +25,22 @@ td.num {
   text-align: right;
 }
 
+.table td, .table th {
+    padding: .5rem;
+}
+
 .hiddenRow {
 	padding: 0 !important;
 }
 
-.table-subtask-border {
-	border-collapse: separate;
-	border: 1px solid #0f00ae !important;
+.card {
+    border: none !important;
+}
+
+td {
+    vertical-align: middle !important;
+}
+
+.btn-light {
+    border-color: #c3c3c3;
 }
