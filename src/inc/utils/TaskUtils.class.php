@@ -233,6 +233,8 @@ class TaskUtils {
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
       $FACTORIES::getHashBinaryFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
     }
+
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $FACTORIES::getTaskFactory()->delete($task);
   }
