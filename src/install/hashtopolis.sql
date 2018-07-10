@@ -269,7 +269,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (35, 1, 'defaultBenchmark', '1'),
   (36, 4, 'showTaskPerformance', '0'),
   (37, 1, 'ruleSplitSmallTasks', '0'),
-  (38, 1, 'ruleSplitAlways', '0');
+  (38, 1, 'ruleSplitAlways', '0'),
+  (39, 1, 'ruleSplitDisable', '0');
 
 -- --------------------------------------------------------
 
