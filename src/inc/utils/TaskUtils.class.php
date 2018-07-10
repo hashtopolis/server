@@ -38,13 +38,14 @@ class TaskUtils {
     $newFiles = [];
     $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename())));
     $count = 0;
+    $taskId = $task->getId();
     for($i=0; $i < $numLines; $i += $linesPerFile, $count++){
       $copy = [];
       for($j=$i; $j < $i + $linesPerFile && $j < sizeof($content); $j++){
         $copy[] = $content[$j];
       }
-      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count", implode("\n", $copy));
-      $f = new File(0, $splitFile->getFilename() . "_p$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY);
+      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy));
+      $f = new File(0, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY);
       $f = $FACTORIES::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
