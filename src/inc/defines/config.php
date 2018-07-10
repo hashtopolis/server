@@ -134,6 +134,10 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::SHOW_TASK_PERFORMANCE:
         return DConfigType::TICKBOX;
+      case DConfig::RULE_SPLIT_ALWAYS:
+        return DConfigType::TICKBOX;
+      case DConfig::RULE_SPLIT_SMALL_TASKS:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
