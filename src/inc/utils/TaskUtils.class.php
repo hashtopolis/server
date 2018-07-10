@@ -27,7 +27,7 @@ class TaskUtils {
    * @param array $split
    */
   public static function splitByRules($task, $taskWrapper, $files, $splitFile, $split){
-    global $FACTORIES;
+    global $FACTORIES, $CONFIG;
 
     // calculate how much we need to split
     $numSplits = $split[1] / 1000 / ($task->getChunkTime() * 0.75);
@@ -71,7 +71,7 @@ class TaskUtils {
         0,
         $prio,
         $task->getColor(),
-        0,
+        ($CONFIG->getVal(DConfig::RULE_SPLIT_SMALL_TASKS) == 0)?0:1,
         $task->getIsCpuTask(),
         $task->getUseNewBench(),
         $task->getSkipKeyspace(),

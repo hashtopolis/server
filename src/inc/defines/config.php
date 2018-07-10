@@ -10,13 +10,13 @@ class DConfigType {
 class DConfigAction {
   const UPDATE_CONFIG      = "updateConfig";
   const UPDATE_CONFIG_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-  
+
   const REBUILD_CACHE      = "rebuildCache";
   const REBUILD_CACHE_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-  
+
   const RESCAN_FILES      = "rescanFiles";
   const RESCAN_FILES_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-  
+
   const CLEAR_ALL      = "clearAll";
   const CLEAR_ALL_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
 }
@@ -24,22 +24,23 @@ class DConfigAction {
 // used config values
 class DConfig {
   // Section: Cracking/Tasks
-  const BENCHMARK_TIME  = "benchtime";
-  const CHUNK_DURATION  = "chunktime";
-  const CHUNK_TIMEOUT   = "chunktimeout";
-  const AGENT_TIMEOUT   = "agenttimeout";
-  const FIELD_SEPARATOR = "fieldseparator";
-  const HASHLIST_ALIAS  = "hashlistAlias";
-  const STATUS_TIMER    = "statustimer";
-  const BLACKLIST_CHARS = "blacklistChars";
-  const DISP_TOLERANCE  = "disptolerance";
-  const DEFAULT_BENCH   = "defaultBenchmark";
-  
+  const BENCHMARK_TIME         = "benchtime";
+  const CHUNK_DURATION         = "chunktime";
+  const CHUNK_TIMEOUT          = "chunktimeout";
+  const AGENT_TIMEOUT          = "agenttimeout";
+  const FIELD_SEPARATOR        = "fieldseparator";
+  const HASHLIST_ALIAS         = "hashlistAlias";
+  const STATUS_TIMER           = "statustimer";
+  const BLACKLIST_CHARS        = "blacklistChars";
+  const DISP_TOLERANCE         = "disptolerance";
+  const DEFAULT_BENCH          = "defaultBenchmark";
+  const RULE_SPLIT_SMALL_TASKS = "ruleSplitSmallTasks";
+
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
   const YUBIKEY_KEY = "yubikey_key";
   const YUBIKEY_URL = "yubikey_url";
-  
+
   // Section: Finetuning
   const HASHES_PAGE_SIZE     = "pagingSize";
   const NUMBER_LOGENTRIES    = "numLogEntries";
@@ -47,7 +48,7 @@ class DConfig {
   const PLAINTEXT_MAX_LENGTH = "plainTextMaxLength";
   const HASH_MAX_LENGTH      = "hashMaxLength";
   const MAX_HASHLIST_SIZE    = "maxHashlistSize";
-  
+
   // Section: UI
   const TIME_FORMAT           = "timefmt";
   const DONATE_OFF            = "donateOff";
@@ -55,7 +56,7 @@ class DConfig {
   const HASHES_PER_PAGE       = "hashesPerPage";
   const HIDE_IP_INFO          = "hideIpInfo";
   const SHOW_TASK_PERFORMANCE = "showTaskPerformance";
-  
+
   // Section: Server
   const BASE_URL           = "baseUrl";
   const BASE_HOST          = "baseHost";
@@ -65,8 +66,8 @@ class DConfig {
   const CONTACT_EMAIL      = "contactEmail";
   const VOUCHER_DELETION   = "voucherDeletion";
   const S_NAME             = "jeSuisHashtopussy";
-  
-  
+
+
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
    * @param $config string
@@ -135,7 +136,7 @@ class DConfig {
     }
     return DConfigType::STRING_INPUT;
   }
-  
+
   /**
    * @param $config string
    * @return string
