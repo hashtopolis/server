@@ -1,8 +1,9 @@
 <?php
 
 class DFileType {
-  const WORDLIST = 0;
-  const RULE     = 1;
+  const TEMPORARY = 100;
+  const WORDLIST  = 0;
+  const RULE      = 1;
 }
 
 class DFileAction {

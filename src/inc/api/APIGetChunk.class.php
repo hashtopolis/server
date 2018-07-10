@@ -236,6 +236,9 @@ class APIGetChunk extends APIBasic {
     $chunkSize = $size * $tolerance;
     if ($chunkSize <= 0) {
       $chunkSize = 1;
+      if(is_array($benchmark)){
+        $benchmark = implode(":", $benchmark);
+      }
       Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
     

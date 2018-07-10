@@ -329,10 +329,10 @@ else if (isset($_GET['new'])) {
     }
     $set->addValue('checked', $checked);
     $set->addValue('file', $singleFile);
-    if ($singleFile->getFileType() == 1) {
+    if ($singleFile->getFileType() == DFileType::RULE) {
       $rules[] = $set;
     }
-    else {
+    else if($singleFile->getFileType() == DFileType::WORDLIST){
       $wordlists[] = $set;
     }
   }

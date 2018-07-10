@@ -1,3 +1,9 @@
+# v0.6.0 -> v0.x.x
+
+## Features
+
+- Tasks which are recognized containing large rule files and not giving good benchmarks result in splitting into subtasks
+
 # v0.5.1 -> v0.6.0
 
 ## Features
