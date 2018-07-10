@@ -220,6 +220,7 @@ class TaskUtils {
     $toDelete = [];
     foreach($files as $file){ /** @var $file File */
       if($file->getFileType() == DFileType::TEMPORARY){
+        unlink(dirname(__FILE__)."/../../files/".$file->getFilename());
         $toDelete[] = $file;
       }
     }
