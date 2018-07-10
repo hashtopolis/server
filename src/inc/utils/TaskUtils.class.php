@@ -30,7 +30,7 @@ class TaskUtils {
     global $FACTORIES, $CONFIG;
 
     // calculate how much we need to split
-    $numSplits = $split[1] / 1000 / ($task->getChunkTime() * 0.75);
+    $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
     $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
     $linesPerFile = $numLines / $numSplits + 1;
 
