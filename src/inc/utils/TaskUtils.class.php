@@ -224,8 +224,8 @@ class TaskUtils {
       }
     }
     $FACTORIES::getFileTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new ContainFilter(File::FILE_ID, Util::arrayOfIds($toDelete));
-    $FACTORIES::getFileFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $cF = new ContainFilter(File::FILE_ID, Util::arrayOfIds($toDelete));
+    $FACTORIES::getFileFactory()->massDeletion(array($FACTORIES::FILTER => $cF));
 
     $uS = new UpdateSet(Hash::CHUNK_ID, null);
     if (sizeof($chunkIds) > 0) {
