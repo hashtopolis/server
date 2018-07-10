@@ -27,7 +27,7 @@
   <h3>Existing [[fileType]] ([[sizeof([[files]])]])</h3>
     <div class="card">
         <div class="table-responsive">
-            <table class="table table-bordered">
+            <table class="table table-bordered" id="files">
                 <tr>
                     <th>ID</th>
                     <th>File</th>
@@ -76,6 +76,11 @@
                 </tr>
                 {{ENDFOREACH}}
             </table>
+            <script type="text/javascript">
+              $(document).ready(function () {
+                $('#files').DataTable();
+              });
+            </script>
         </div>
     </div>
 </div>
