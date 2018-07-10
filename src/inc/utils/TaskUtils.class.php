@@ -211,8 +211,22 @@ class TaskUtils {
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=");
+
+    // test if this task used temporary files
+    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
+    $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $files = $joined[$FACTORIES::getFileFactory()->getModelName()];
+    $toDelete = [];
+    foreach($files as $file){ /** @var $file File */
+      if($file->getFileType() == DFileType::TEMPORARY){
+        $toDelete[] = $file;
+      }
+    }
     $FACTORIES::getFileTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new ContainFilter(File::FILE_ID, Util::arrayOfIds($toDelete));
+    $FACTORIES::getFileFactory()->massDeletio(array($FACTORIES::FILTER => $qF));
+
     $uS = new UpdateSet(Hash::CHUNK_ID, null);
     if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
