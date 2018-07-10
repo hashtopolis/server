@@ -268,7 +268,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (34, 4, 'hideIpInfo', '0'),
   (35, 1, 'defaultBenchmark', '1'),
   (36, 4, 'showTaskPerformance', '0'),
-  (37, 1, 'ruleSplitSmallTasks', '0');
+  (37, 1, 'ruleSplitSmallTasks', '0'),
+  (38, 1, 'ruleSplitAlways', '0');
 
 -- --------------------------------------------------------
 

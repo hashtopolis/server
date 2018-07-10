@@ -46,7 +46,7 @@ class APISendBenchmark extends APIBasic {
           foreach($files as $file){
             if($file->getFileType() == DFileType::RULE){
               // test if splitting makes sense here
-              if(Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime()){
+              if(Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || $CONFIG->getVal(DConfig::RULE_SPLIT_ALWAYS)){
                 // --> split
                 TaskUtils::splitByRules($task, $taskWrapper, $files, $file, $split);
                 $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Task was split due to benchmark!");

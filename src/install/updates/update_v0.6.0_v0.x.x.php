@@ -39,6 +39,8 @@ echo "\n";
 echo "Adding new config settings...";
 $entry = new Config(0, 1, 'ruleSplitSmallTasks', '0');
 $FACTORIES::getConfigFactory()->save($entry);
+$entry = new Config(0, 1, 'ruleSplitAlways', '0');
+$FACTORIES::getConfigFactory()->save($entry);
 echo "OK\n";
 
 echo "Update complete!\n";

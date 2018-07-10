@@ -32,7 +32,7 @@ class TaskUtils {
     // calculate how much we need to split
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
     $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
-    $linesPerFile = $numLines / $numSplits + 1;
+    $linesPerFile = floor($numLines / $numSplits) + 1;
 
     // create the temporary rule files
     $newFiles = [];

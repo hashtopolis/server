@@ -35,6 +35,7 @@ class DConfig {
   const DISP_TOLERANCE         = "disptolerance";
   const DEFAULT_BENCH          = "defaultBenchmark";
   const RULE_SPLIT_SMALL_TASKS = "ruleSplitSmallTasks";
+  const RULE_SPLIT_ALWAYS      = "ruleSplitAlways";
 
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -207,6 +208,10 @@ class DConfig {
         return "Use speed benchmark as default.";
       case DConfig::SHOW_TASK_PERFORMANCE:
         return "Show cracks/minute for tasks which are running.";
+      case DConfig::RULE_SPLIT_SMALL_TASKS:
+        return "When rule splitting is applied for tasks, always make them a small task.";
+      case DConfig::RULE_SPLIT_ALWAYS:
+        return "Even do rule splitting when there are not enough rules but just the benchmark is too high.<br>Can result in subtasks with just one rule.";
     }
     return $config;
   }
