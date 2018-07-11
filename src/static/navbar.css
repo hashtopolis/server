@@ -48,3 +48,7 @@ td {
 tr {
     height: 25px;
 }
+
+.popover {
+    max-width: 100%;
+}
