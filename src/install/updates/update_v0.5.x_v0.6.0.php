@@ -38,7 +38,7 @@ if ($binary != null) {
 echo "\n";
 
 echo "Create new permissions... ";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `user` CHANGE `rightGroupId` `rightGroupId` INT(11) NULL");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `User` CHANGE `rightGroupId` `rightGroupId` INT(11) NULL");
 // load all users and set permission group to null
 $users = $FACTORIES::getUserFactory()->filter(array());
 $uS = new UpdateSet(User::RIGHT_GROUP_ID, null);
