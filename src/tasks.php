@@ -185,6 +185,9 @@ if (isset($_GET['id'])) {
     }
   }
   $OBJECTS['assignAgents'] = $assignAgents;
+
+  $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+  $OBJECTS['numChunks'] = $FACTORIES::getChunkFactory()->countFilter(array($FACTORIES::FILTER => $qF));
   
   $OBJECTS['showAllAgents'] = false;
   if (isset($_GET['allagents'])) {

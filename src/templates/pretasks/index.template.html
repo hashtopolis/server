@@ -4,64 +4,80 @@
 {%TEMPLATE->struct/messages%}
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-bordered">
-		  <tr>
-			  <th>ID</th>
-			  <th>Name</th>
-			  <th>Attack command</th>
-			  <th>Files</th>
-			  <th>Priority</th>
-			  <th>Action</th>
-		  </tr>
-		  {{FOREACH task;[[tasks]]}}
-			  <tr>
-				  <td{{IF [[strlen([[task.getVal('Task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('Task').getColor()]]"{{ENDIF}}>
-					  <a href="pretasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getId()]]</a>
-				  </td>
-				  <td>
-					  <a href="pretasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getTaskName()]]</a>
-				  </td>
-          <td>[[task.getVal('Task').getAttackCmd()]]</td>
-          <td>
-            {{IF [[task.getVal('numFiles')]] > 0}}
-              [[task.getVal('numFiles')]] ([[Util::nicenum([[task.getVal('filesSize')]])]]B)
-            {{ENDIF}}
-            {{IF [[task.getVal('fileSecret')]] == 1}}
-              <span class="fas fa-lock" aria-hidden="true"></span>
-            {{ENDIF}}
-          </td>
-          <td>
-					  {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
-						  <form class='form-inline' action="pretasks.php" method="POST">
-							  <input type="hidden" name="action" value="[[$DPretaskAction::SET_PRIORITY]]">
-							  <input type="hidden" name="pretaskId" value="[[task.getVal('Task').getId()]]">
-							  <input type="hidden" name="csrf" value="[[csrf]]">
-							  <input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('Task').getPriority()]]" title="Priority">&nbsp;&nbsp;
-							  <input type="submit" class='btn btn-light' value="Set">
-						  </form>
-					  {{ELSE}}
-						  [[task.getVal('Task').getPriority()]]
-					  {{ENDIF}}
-          </td>
-          <td>
-					  {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
-						  <form style='float: left; padding-right: 5px;' action="tasks.php?new=true&copyPre=[[task.getVal('Task').getId()]]" method="POST">
-							  <input type="submit" class='btn btn-light' value="Copy">
-						  </form>
-					  {{ENDIF}}
-					  {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
-						  <form style='float: left;' action="pretasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?') || ({{IF [[task.getVal('isUsed')]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
-							  <input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
-							  <input type='hidden' name='refer' value='pretask'>
-							  <input type="hidden" name="pretaskId" value="[[task.getVal('Task').getId()]]">
-							  <input type="hidden" name="csrf" value="[[csrf]]">
-							  <input type="submit" class='btn btn-danger' value="Delete">
-						  </form>
-					  {{ENDIF}}
-				  </td>
-			  </tr>
-		  {{ENDFOREACH}}
+    <table class="table table-bordered table-sm" id="pretasks">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Attack command</th>
+          <th>Files</th>
+          <th>Priority</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+		    {{FOREACH task;[[tasks]]}}
+			    <tr>
+				    <td{{IF [[strlen([[task.getVal('Task').getColor()]])]] > 0}} style="background-color: #[[task.getVal('Task').getColor()]]"{{ENDIF}}>
+					    <a href="pretasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getId()]]</a>
+				    </td>
+				    <td>
+					    <a href="pretasks.php?id=[[task.getVal('Task').getId()]]">[[task.getVal('Task').getTaskName()]]</a>
+				    </td>
+            <td>[[task.getVal('Task').getAttackCmd()]]</td>
+            <td data-sort="[[task.getVal('filesSize')]]">
+              {{IF [[task.getVal('numFiles')]] > 0}}
+                [[task.getVal('numFiles')]] ([[Util::nicenum([[task.getVal('filesSize')]])]]B)
+              {{ENDIF}}
+              {{IF [[task.getVal('fileSecret')]] == 1}}
+                <span class="fas fa-lock" aria-hidden="true"></span>
+              {{ENDIF}}
+            </td>
+            <td data-sort="[[task.getVal('Task').getPriority()]]">
+					    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
+						    <form class='form-inline' action="pretasks.php" method="POST">
+							    <input type="hidden" name="action" value="[[$DPretaskAction::SET_PRIORITY]]">
+							    <input type="hidden" name="pretaskId" value="[[task.getVal('Task').getId()]]">
+							    <input type="hidden" name="csrf" value="[[csrf]]">
+							    <input type="text" class='form-control' name="priority" size="4" value="[[task.getVal('Task').getPriority()]]" title="Priority">&nbsp;&nbsp;
+							    <input type="submit" class='btn btn-light' value="Set">
+						    </form>
+					    {{ELSE}}
+						    [[task.getVal('Task').getPriority()]]
+					    {{ENDIF}}
+            </td>
+            <td>
+					    {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
+						    <form style='float: left; padding-right: 5px;' action="tasks.php?new=true&copyPre=[[task.getVal('Task').getId()]]" method="POST">
+							    <input type="submit" class='btn btn-light' value="Copy">
+						    </form>
+					    {{ENDIF}}
+					    {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
+						    <form style='float: left;' action="pretasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getVal('Task').getId()]]?') || ({{IF [[task.getVal('isUsed')]]}}true{{ELSE}}false{{ENDIF}} && !confirm('This task is used in a Supertask, are you sure you really want to delete it?'))) return false;">
+							    <input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
+							    <input type='hidden' name='refer' value='pretask'>
+							    <input type="hidden" name="pretaskId" value="[[task.getVal('Task').getId()]]">
+							    <input type="hidden" name="csrf" value="[[csrf]]">
+							    <input type="submit" class='btn btn-danger' value="Delete">
+						    </form>
+					    {{ENDIF}}
+				    </td>
+			    </tr>
+		    {{ENDFOREACH}}
+      </tbody>
 	  </table>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#pretasks').DataTable({
+          pageLength: 50,
+          "order": [ [0, 'asc'] ],
+          "columnDefs": [
+            { "orderable": false, "targets": [2, 5] },
+            { "orderable": true, "targets": [0, 1, 3, 4] }
+          ]
+        });
+      });
+    </script>
   </div>
 </div>
 {%TEMPLATE->struct/foot%}
