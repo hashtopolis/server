@@ -18,35 +18,44 @@ class AccountHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var Login $LOGIN */
-    global $LOGIN, $OBJECTS;
+    /** @var $LOGIN Login */
+    global $OBJECTS, $LOGIN, $ACCESS_CONTROL;
     
     switch ($action) {
       case DAccountAction::SET_EMAIL:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::SET_EMAIL_PERM);
         $this->setEmail();
         break;
       case DAccountAction::YUBIKEY_DISABLE:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::YUBIKEY_DISABLE_PERM);
         $this->setOTP(-1);
         break;
       case DAccountAction::YUBIKEY_ENABLE:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::YUBIKEY_ENABLE_PERM);
         $this->setOTP(0);
         break;
       case DAccountAction::SET_OTP1:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP1_PERM);
         $this->setOTP(1);
         break;
       case DAccountAction::SET_OTP2:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP2_PERM);
         $this->setOTP(2);
         break;
       case DAccountAction::SET_OTP3:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP3_PERM);
         $this->setOTP(3);
         break;
       case DAccountAction::SET_OTP4:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP4_PERM);
         $this->setOTP(4);
         break;
       case DAccountAction::UPDATE_LIFETIME:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::UPDATE_LIFETIME_PERM);
         $this->updateLifetime();
         break;
       case DAccountAction::CHANGE_PASSWORD:
+        $ACCESS_CONTROL->checkPermission(DAccountAction::CHANGE_PASSWORD_PERM);
         $this->changePassword();
         break;
       default:

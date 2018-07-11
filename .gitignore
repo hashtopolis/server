@@ -6,3 +6,6 @@ query.log
 *.iml
 src/files/*
 !src/files/.htaccess
+.vs/
+*.phpproj
+*.sln

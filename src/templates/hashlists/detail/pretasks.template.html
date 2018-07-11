@@ -1,4 +1,4 @@
-{{IF [[login.getLevel()]] >= 20}}
+{{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
   <h3>Create pre-configured tasks:</h3>
   <form id="preconf" action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
     <input type='hidden' name='action' value='[[$DHashlistAction::APPLY_PRECONFIGURED_TASKS]]'>
@@ -7,8 +7,8 @@
     <div class="panel panel-default">
       <table class="table table-bordered table-nonfluid">
         <tr>
-          <th class="col-md-1">ID</th>
-          <th class="col-md-1">Color</th>
+          <th>ID</th>
+          <th>Color</th>
           <th>Name</th>
         </tr>
         {{FOREACH task;[[preTasks]]}}
@@ -26,8 +26,8 @@
           </tr>
         {{ENDFOREACH}}
         <tr>
-          <td colspan="2">
-            <input type="submit" class='btn btn-default' value="Create">
+          <td colspan="3">
+            <input type="submit" class='btn btn-light' value="Create">
             <input type="checkbox" onChange="checkAll('preconf', this.checked);" title="Check All"> Select All
           </td>
         </tr>

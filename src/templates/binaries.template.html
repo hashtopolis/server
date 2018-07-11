@@ -6,30 +6,32 @@
   <form action="" method="post">
     <input type="hidden" name="action" value="[[$DAgentBinaryAction::NEW_BINARY]]">
     <input type="hidden" name="csrf" value="[[csrf]]">
-    <div class="panel panel-default">
-      <table class="table table-bordered table-nonfluid">
-        <tr>
-          <th>Type</th>
-          <td><input type="text" name="type" class="form-control" value="" title="Type"></td>
-        </tr>
-        <tr>
-          <th>Operating Systems</th>
-          <td><input type="text" name="os" class="form-control" value="" title="Operating Systems"></td>
-        </tr>
-        <tr>
-          <th>Filename (placed in 'bin' folder)</th>
-          <td><input type="text" name="filename" class="form-control" value="" title="Filename"></td>
-        </tr>
-        <tr>
-          <th>Version</th>
-          <td><input type="text" name="version" class="form-control" value="" title="Version"></td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <button type="submit" class="btn btn-success">Create</button>
-          </td>
-        </tr>
-      </table>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <tr>
+            <th>Type</th>
+            <td><input type="text" name="type" class="form-control" value="" title="Type"></td>
+          </tr>
+          <tr>
+            <th>Operating Systems</th>
+            <td><input type="text" name="os" class="form-control" value="" title="Operating Systems"></td>
+          </tr>
+          <tr>
+            <th>Filename (placed in 'bin' folder)</th>
+            <td><input type="text" name="filename" class="form-control" value="" title="Filename"></td>
+          </tr>
+          <tr>
+            <th>Version</th>
+            <td><input type="text" name="version" class="form-control" value="" title="Version"></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <button type="submit" class="btn btn-success">Create</button>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </form>
 {{ENDIF}}
@@ -38,70 +40,74 @@
     <input type="hidden" name="action" value="[[$DAgentBinaryAction::EDIT_BINARY]]">
     <input type="hidden" name="id" value="[[bin.getId()]]">
     <input type="hidden" name="csrf" value="[[csrf]]">
-    <div class="panel panel-default">
-      <table class="table table-bordered table-nonfluid">
-        <tr>
-          <th>Type</th>
-          <td><input type="text" name="type" class="form-control" value="[[bin.getType()]]" title="Type"></td>
-        </tr>
-        <tr>
-          <th>Operating Systems</th>
-          <td><input type="text" name="os" class="form-control" value="[[bin.getOperatingSystems()]]" title="Operating Systems"></td>
-        </tr>
-        <tr>
-          <th>Filename (placed in 'static' folder)</th>
-          <td><input type="text" name="filename" class="form-control" value="[[bin.getFilename()]]" title="Filename"></td>
-        </tr>
-        <tr>
-          <th>Current Version (update here if you placed a new binary)</th>
-          <td><input type="text" name="version" class="form-control" value="[[bin.getVersion()]]" title="Current Version"></td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <button type="submit" class="btn btn-success">Save</button>
-          </td>
-        </tr>
-      </table>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <tr>
+            <th>Type</th>
+            <td><input type="text" name="type" class="form-control" value="[[bin.getType()]]" title="Type"></td>
+          </tr>
+          <tr>
+            <th>Operating Systems</th>
+            <td><input type="text" name="os" class="form-control" value="[[bin.getOperatingSystems()]]" title="Operating Systems"></td>
+          </tr>
+          <tr>
+            <th>Filename (placed in 'static' folder)</th>
+            <td><input type="text" name="filename" class="form-control" value="[[bin.getFilename()]]" title="Filename"></td>
+          </tr>
+          <tr>
+            <th>Current Version (update here if you placed a new binary)</th>
+            <td><input type="text" name="version" class="form-control" value="[[bin.getVersion()]]" title="Current Version"></td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <button type="submit" class="btn btn-success">Save</button>
+            </td>
+          </tr>
+        </table>
+      </div>
     </div>
   </form>
 {{ENDIF}}
 
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-    <tr>
-      <td colspan="7">
-        <a href="binaries.php?new=true"><button class="btn btn-success">Add New Binary</button></a>
-      </td>
-    </tr>
-		<tr>
-			<th>ID</th>
-			<th>Type</th>
-			<th>OS</th>
-			<th>Filename</th>
-			<th>Current Version</th>
-			<th>&nbsp;</th>
-      <th>&nbsp;</th>
-		</tr>
-		{{FOREACH binary;[[binaries]]}}
-			<tr>
-        <td>[[binary.getId()]]</td>
-        <td>[[binary.getType()]]</td>
-        <td>[[binary.getOperatingSystems()]]</td>
-        <td><code>[[binary.getFilename()]]</code></td>
-        <td>[[binary.getVersion()]]</td>
-        <td>
-          <a href="binaries.php?edit=[[binary.getId()]]"><button class="btn btn-primary">Edit</button></a>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <tr>
+        <td colspan="7">
+          <a href="binaries.php?new=true"><button class="btn btn-success">Add New Binary</button></a>
         </td>
-        <td>
-          <form action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
-            <input type='hidden' name='action' value='[[$DAgentBinaryAction::DELETE_BINARY]]'>
-            <input type="hidden" name="id" value="[[binary.getId()]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="submit" class='btn btn-danger' value="Delete">
-          </form>
-        </td>
-			</tr>
-		{{ENDFOREACH}}
-	</table>
+      </tr>
+		  <tr>
+			  <th>ID</th>
+			  <th>Type</th>
+			  <th>OS</th>
+			  <th>Filename</th>
+			  <th>Current Version</th>
+			  <th>&nbsp;</th>
+        <th>&nbsp;</th>
+		  </tr>
+		  {{FOREACH binary;[[binaries]]}}
+			  <tr>
+          <td>[[binary.getId()]]</td>
+          <td>[[binary.getType()]]</td>
+          <td>[[binary.getOperatingSystems()]]</td>
+          <td><code>[[binary.getFilename()]]</code></td>
+          <td>[[binary.getVersion()]]</td>
+          <td>
+            <a href="binaries.php?edit=[[binary.getId()]]"><button class="btn btn-primary">Edit</button></a>
+          </td>
+          <td>
+            <form action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
+              <input type='hidden' name='action' value='[[$DAgentBinaryAction::DELETE_BINARY]]'>
+              <input type="hidden" name="id" value="[[binary.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="submit" class='btn btn-danger' value="Delete">
+            </form>
+          </td>
+			  </tr>
+		  {{ENDFOREACH}}
+	  </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}

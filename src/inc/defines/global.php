@@ -35,5 +35,6 @@ class DOperatingSystem {
 }
 
 class DSearchAction {
-  const SEARCH = "search";
+  const SEARCH      = "search";
+  const SEARCH_PERM = DAccessControl::VIEW_HASHLIST_ACCESS;
 }

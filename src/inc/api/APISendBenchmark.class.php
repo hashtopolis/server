@@ -7,28 +7,29 @@ class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-    
+
     if (!PQuerySendBenchmark::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
     }
     $this->checkToken(PActions::SEND_BENCHMARK, $QUERY);
     $this->updateAgent(PActions::SEND_BENCHMARK);
-    
+
     $task = $FACTORIES::getTaskFactory()->get($QUERY[PQuerySendBenchmark::TASK_ID]);
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid task ID!");
     }
-    
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
     if ($assignment == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "You are not assigned to this task!");
     }
-    
+
     $type = $QUERY[PQuerySendBenchmark::TYPE];
     $benchmark = $QUERY[PQuerySendBenchmark::RESULT];
-    
+
     switch ($type) {
       case PValuesBenchmarkType::SPEED_TEST:
         $split = explode(":", $benchmark);
@@ -37,6 +38,23 @@ class APISendBenchmark extends APIBasic {
           $FACTORIES::getAgentFactory()->update($this->agent);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
+
+        // TODO: Here we should check if the benchmark result would require to split the task and check if the task can be split
+        if($CONFIG->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+          // test if we have a large rule file
+          $files = Util::getFileInfo($task)[3];
+          foreach($files as $file){
+            if($file->getFileType() == DFileType::RULE){
+              // test if splitting makes sense here
+              if(Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || $CONFIG->getVal(DConfig::RULE_SPLIT_ALWAYS)){
+                // --> split
+                TaskUtils::splitByRules($task, $taskWrapper, $files, $file, $split);
+                $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Task was split due to benchmark!");
+              }
+            }
+          }
+        }
+
         break;
       case PValuesBenchmarkType::RUN_TIME:
         if (!is_numeric($benchmark) || $benchmark <= 0) {
@@ -52,7 +70,7 @@ class APISendBenchmark extends APIBasic {
         $FACTORIES::getAgentFactory()->update($this->agent);
         $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
     }
-    
+
     $assignment->setBenchmark($benchmark);
     $FACTORIES::getAssignmentFactory()->update($assignment);
     $this->sendResponse(array(

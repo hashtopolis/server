@@ -5,35 +5,37 @@
 <form id="newsuper" action="hashlists.php" method="POST">
 	<input type='hidden' name='action' value='[[$DHashlistAction::CREATE_SUPERHASHLIST]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<th>ID</th>
-				<th>Name</th>
-				<th>Hash type</th>
-			</tr>
-			{{FOREACH list;[[lists]]}}
-				<tr>
-					<td>
-						<input type="checkbox" name="hlist[]" value="[[list.getId()]]" title="Hashlist"> [[list.getId()]]
-					</td>
-					<td>[[list.getHashlistName()]]</td>
-					<td>[[hashtypes.getVal([[list.getHashtypeId()]])]]</td>
-				</tr>
-			{{ENDFOREACH}}
-			<tr>
-				<td>Name:</td>
-				<td colspan="2">
-					<input type="text" class='form-control' name="name" title="Superhashlist Name">
-				</td>
-			</tr>
-			<tr>
-				<td colspan="3">
-					<input type="submit" class='btn btn-default' value="Create">
-					<input type="checkbox" onChange="checkAll('newsuper',this.checked);" title="Check All"> Select All
-				</td>
-			</tr>
-		</table>
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <th>ID</th>
+				  <th>Name</th>
+				  <th>Hash type</th>
+			  </tr>
+			  {{FOREACH list;[[lists]]}}
+				  <tr>
+					  <td>
+						  <input type="checkbox" name="hlist[]" value="[[list.getId()]]" title="Hashlist"> [[list.getId()]]
+					  </td>
+					  <td>[[list.getHashlistName()]]</td>
+					  <td>[[hashtypes.getVal([[list.getHashtypeId()]])]]</td>
+				  </tr>
+			  {{ENDFOREACH}}
+			  <tr>
+				  <td>Name:</td>
+				  <td colspan="2">
+					  <input type="text" class='form-control' name="name" title="Superhashlist Name">
+				  </td>
+			  </tr>
+			  <tr>
+				  <td colspan="3">
+					  <input type="submit" class='btn btn-light' value="Create">
+					  <input type="checkbox" onChange="checkAll('newsuper',this.checked);" title="Check All"> Select All
+				  </td>
+			  </tr>
+		  </table>
+    </div>
 	</div>
 </form>
 {%TEMPLATE->struct/foot%}

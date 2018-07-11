@@ -41,7 +41,7 @@ if (!$LOGIN->isLoggedin()) {
     die("No access!");
   }
 }
-else if ($LOGIN->getLevel() < DAccessLevel::USER) {
+else if (!$ACCESS_CONTROL->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
   die("No access!");
 }
 

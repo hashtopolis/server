@@ -13,23 +13,31 @@ class UsersHandler implements Handler {
   }
   
   public function handle($action) {
+    global $ACCESS_CONTROL;
+    
     switch ($action) {
       case DUserAction::DELETE_USER:
+        $ACCESS_CONTROL->checkPermission(DUserAction::DELETE_USER_PERM);
         $this->delete();
         break;
       case DUserAction::ENABLE_USER:
+        $ACCESS_CONTROL->checkPermission(DUserAction::ENABLE_USER_PERM);
         $this->enable();
         break;
       case DUserAction::DISABLE_USER:
+        $ACCESS_CONTROL->checkPermission(DUserAction::DISABLE_USER_PERM);
         $this->disable();
         break;
       case DUserAction::SET_RIGHTS:
+        $ACCESS_CONTROL->checkPermission(DUserAction::SET_RIGHTS_PERM);
         $this->setRights();
         break;
       case DUserAction::SET_PASSWORD:
+        $ACCESS_CONTROL->checkPermission(DUserAction::SET_PASSWORD_PERM);
         $this->setPassword();
         break;
       case DUserAction::CREATE_USER:
+        $ACCESS_CONTROL->checkPermission(DUserAction::CREATE_USER_PERM);
         $this->create();
         break;
       default:

@@ -9,7 +9,7 @@ session_start();
 
 $OBJECTS = array();
 
-$VERSION = "0.5.1";
+$VERSION = "0.6.0";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
@@ -68,11 +68,13 @@ $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
 $OBJECTS['messages'] = array();
 $OBJECTS['pageTitle'] = "";
+$ACCESS_CONTROL = new AccessControl();
 if ($INSTALL) {
   $LOGIN = new Login();
   $OBJECTS['login'] = $LOGIN;
   if ($LOGIN->isLoggedin()) {
     $OBJECTS['user'] = $LOGIN->getUser();
+    $ACCESS_CONTROL = new AccessControl($LOGIN->getUser());
   }
   
   $res = $FACTORIES::getConfigFactory()->filter(array());
@@ -87,6 +89,7 @@ if ($INSTALL) {
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
 }
+$OBJECTS['accessControl'] = $ACCESS_CONTROL;
 
 // CSRF setup
 CSRF::init();

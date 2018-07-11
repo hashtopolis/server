@@ -1,92 +1,113 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
 <h2>Chunk activity</h2>
+{{IF ![[all]]}}
 <div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		{{IF ![[all]]}}
-			<tr>
-				<td colspan="12" style="text-align: center">
-					<a href="chunks.php?show=all"><button class="btn btn-primary">Show all chunks</button></a><br><br>
-					<div class="btn-group" role="group">
-						<a href="chunks.php?page=[[Util::calculate([[page]] - 1)]]"><button type="button" class="btn btn-default"{{IF [[page]] == 0}} disabled{{ENDIF}}>&lt;</button></a>
-						<a href="#"><button type="button" class="btn btn-default" disabled>Page [[Util::calculate([[page]] + 1)]]</button></a>
-						<a href="chunks.php?page=[[Util::calculate([[page]] + 1)]]"><button type="button" class="btn btn-default"{{IF [[page]] == [[maxpage]]}} disabled{{ENDIF}}>&gt;</button></a>
-					</div>
-				</td>
-			</tr>
-		{{ENDIF}}
-		<tr>
-			<th>ID</th>
-			<th>Start</th>
-			<th>Length</th>
-			<th>Checkpoint</th>
-			<th>Progress</th>
-			<th>Task</th>
-			<th>Agent</th>
-			<th>Dispatch time</th>
-			<th>Last activity</th>
-			<th>Time spent</th>
-			<th>State</th>
-			<th>Cracked</th>
-		</tr>
-		{{FOREACH chunk;[[chunks]]}}
-			<tr>
-				<td>
-					[[chunk.getId()]]
-					{{IF [[max([[chunk.getSolveTime()]], [[chunk.getDispatchTime()]])]] > [[time()]] - [[config.getVal('chunktimeout')]] && [[chunk.getProgress()]] < [[chunk.getLength()]] && [[chunk.getState()]] < 4}}
-						<img src="static/active.gif" alt="Active" title="[[Util::nicenum([[chunk.getSpeed()]], 100000, 1000)]]H/s">
-					{{ENDIF}}
-				</td>
-				<td class="num">[[chunk.getSkip()]]</td>
-				<td class="num">[[chunk.getLength()]]</td>
-				<td class="num">
-					[[chunk.getCheckpoint()]]
-					{{IF [[chunk.getLength()]] > 0}}
-						([[Util::showperc([[chunk.getCheckpoint()]] - [[chunk.getSkip()]], [[chunk.getLength()]])]]%)
-					{{ENDIF}}
-				</td>
-				<td class="num">[[Util::showperc([[chunk.getProgress()]], 10000)]]%</td>
-				<td>
-					{{IF [[chunk.getTaskId()]] == null}}
-						N/A
-					{{ELSE}}
-						<a href="tasks.php?id=[[chunk.getTaskId()]]">[[taskNames.getVal([[chunk.getTaskId()]])]]</a>
-					{{ENDIF}}
-				</td>
-				<td>
-					{{IF [[chunk.getAgentId()]] == null}}
-						N/A
-					{{ENDIF}}
-					{{IF [[chunk.getAgentId()]] != null && [[login.getLevel()]] >= 20}}
-						<a href="agents.php?id=[[chunk.getAgentId()]]">[[agentNames.getVal([[chunk.getAgentId()]])]]</a>
-					{{ENDIF}}
-					{{IF [[chunk.getAgentId()]] != null && [[login.getLevel()]] < 20}}
-						[[agentNames.getVal([[chunk.getAgentId()]])]]
-					{{ENDIF}}
-				</td>
-				<td>
-					[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getDispatchTime()]])]]
-				</td>
-				<td>
-					{{IF [[chunk.getSolveTime()]] == 0}}
-						(no activity)</td><td>
-					{{ELSE}}
-							[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getSolveTime()]])]]
-            </td>
-            <td class="num">
+  <table class="table table-bordered table-nonfluid">
+    <tr>
+      <td style="text-align: center">
+        <a href="chunks.php?show=all"><button class="btn btn-primary">Show all chunks</button></a><br><br>
+        <div class="btn-group" role="group">
+          <a href="chunks.php?page=[[Util::calculate([[page]] - 1)]]"><button type="button" class="btn btn-default" {{IF [[page]] == 0}} disabled{{ENDIF}}>&lt;</button></a>
+          <a href="#"><button type="button" class="btn btn-default" disabled>Page [[Util::calculate([[page]] + 1)]]</button></a>
+          <a href="chunks.php?page=[[Util::calculate([[page]] + 1)]]"><button type="button" class="btn btn-default" {{IF [[page]] == [[maxpage]]}} disabled{{ENDIF}}>&gt;</button></a>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+{{ENDIF}}
+<div class="panel panel-default">
+  <table class="table table-bordered table-nonfluid table-sm" id="chunks">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Start</th>
+        <th>Length</th>
+        <th>Checkpoint</th>
+        <th>Progress</th>
+        <th>Task</th>
+        <th>Agent</th>
+        <th>Dispatch time</th>
+        <th>Last activity</th>
+        <th>Time spent</th>
+        <th>State</th>
+        <th>Cracked</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{FOREACH chunk;[[chunks]]}}
+        <tr>
+          <td data-sort="[[chunk.getId()]]">
+            [[chunk.getId()]]
+            {{IF [[max([[chunk.getSolveTime()]], [[chunk.getDispatchTime()]])]] > [[time()]] - [[config.getVal('chunktimeout')]] && [[chunk.getProgress()]] < [[chunk.getLength()]] && [[chunk.getState()]] < 4}}
+              <img src="static/active.gif" alt="Active" title="[[Util::nicenum([[chunk.getSpeed()]], 100000, 1000)]]H/s">
+            {{ENDIF}}
+          </td>
+          <td class="num">[[chunk.getSkip()]]</td>
+          <td class="num">[[chunk.getLength()]]</td>
+          <td class="num" data-sort="[[chunk.getCheckpoint()]]">
+            [[chunk.getCheckpoint()]]
+            {{IF [[chunk.getLength()]] > 0}}
+              ([[Util::showperc([[chunk.getCheckpoint()]] - [[chunk.getSkip()]], [[chunk.getLength()]])]]%)
+            {{ENDIF}}
+          </td>
+          <td class="num">[[Util::showperc([[chunk.getProgress()]], 10000)]]%</td>
+          <td>
+            {{IF [[chunk.getTaskId()]] == null}}
+              N/A
+            {{ELSE}}
+              <a href="tasks.php?id=[[chunk.getTaskId()]]">[[taskNames.getVal([[chunk.getTaskId()]])]]</a>
+            {{ENDIF}}
+          </td>
+          <td>
+            {{IF [[chunk.getAgentId()]] == null}}
+              N/A
+            {{ENDIF}}
+            {{IF [[chunk.getAgentId()]] != null && [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+              <a href="agents.php?id=[[chunk.getAgentId()]]">[[agentNames.getVal([[chunk.getAgentId()]])]]</a>
+            {{ENDIF}}
+            {{IF [[chunk.getAgentId()]] != null && ![[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+              [[agentNames.getVal([[chunk.getAgentId()]])]]
+            {{ENDIF}}
+          </td>
+          <td>
+            [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getDispatchTime()]])]]
+          </td>
+          <td>
+            {{IF [[chunk.getSolveTime()]] == 0}}
+              (no activity)
+          </td>
+          <td>
+            {{ELSE}}
+              [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getSolveTime()]])]]
+          </td>
+          <td class="num">
               [[Util::sectotime([[spent.getVal([[chunk.getId()]])]])]]
-          {{ENDIF}}
-        </td>
-        <td>
-          [[Util::getStaticArray([[chunk.getState()]], 'states')]]
-        </td>
-        <td class="num">
-          {{IF [[chunk.getCracked()]] > 0}}
-            <a href="hashes.php?chunk=[[chunk.getId()]]">[[chunk.getCracked()]]</a>
-          {{ENDIF}}
-        </td>
-			</tr>
-		{{ENDFOREACH}}
-	</table>
+            {{ENDIF}}
+          </td>
+          <td>
+            [[Util::getStaticArray([[chunk.getState()]], 'states')]]
+          </td>
+          <td class="num">
+            {{IF [[chunk.getCracked()]] > 0}}
+              <a href="hashes.php?chunk=[[chunk.getId()]]">[[chunk.getCracked()]]</a>
+            {{ENDIF}}
+          </td>
+        </tr>
+      {{ENDFOREACH}}
+    </tbody>
+  </table>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('#chunks').DataTable({
+        pageLength: 50,
+        "order": [ [0, 'desc'] ],
+        "columnDefs": [
+          { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] }
+        ]
+      });
+    });
+  </script>
 </div>
 {%TEMPLATE->struct/foot%}

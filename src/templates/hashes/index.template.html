@@ -1,101 +1,104 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
 {{IF [[src]] == "chunk"}}
-	<h2>Hashes of chunk [[chunk.getId()]]</h2>
+ <h2>Hashes of chunk [[chunk.getId()]]</h2>
 {{ENDIF}}
 {{IF [[src]] == "task"}}
-	<h2>Hashes of task <a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a></h2>
+<h2>Hashes of task {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}<a href="tasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a>{{ELSE}}[[task.getTaskName()]]{{ENDIF}}</h2>
 {{ENDIF}}
 {{IF [[src]] == "hashlist"}}
-	<h2>Hashes of hashlist <a href="hashlists.php?id=[[list.getId()]]">[[list.getHashlistName()]]</a></h2>
+<h2>Hashes of hashlist {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}<a href="hashlists.php?id=[[list.getId()]]">[[list.getHashlistName()]]{{ELSE}}[[list.getHashlistName()]]{{ENDIF}}</a></h2>
 {{ENDIF}}
 {%TEMPLATE->struct/messages%}
 
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<th>Filter:</th>
-			<td>
-				{{IF [[filtering]] == ""}}
-					Cracked + Uncracked
-				{{ELSE}}
-					[[filtering]]
-				{{ENDIF}}
-			</td>
-		</tr>
-		<tr>
-			<th>Displaying:</th>
-			<td>
-				{{IF [[displaying]] == ""}}
-					Hash + Plain
-				{{ELSE}}
-					[[displaying]]
-				{{ENDIF}}
-			</td>
-		</tr>
-    <tr>
-      <td colspan="2" style="text-align: center;">
-        <div class='btn-group'>
-          <button class='btn btn-default' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[previousPage]]'"{{IF [[previousPage]] == -1}} disabled{{ENDIF}}>[[Util::calculate([[previousPage]]+1)]] &lt;</button>
-          <button class='btn btn-default active'>Page [[Util::calculate([[currentPage]]+1)]]</button>
-          <button class='btn btn-default' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[nextPage]]'"{{IF [[nextPage]] == -1}} disabled{{ENDIF}}>&gt; [[Util::calculate([[nextPage]]+1)]]</button>
-        </div>
-      </td>
-    </tr>
-	</table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <tr>
+        <th>Filter:</th>
+        <td>
+          {{IF [[filtering]] == ""}}
+          Cracked + Uncracked
+          {{ELSE}}
+          [[filtering]]
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <th>Displaying:</th>
+        <td>
+          {{IF [[displaying]] == ""}}
+          Hash + Plain
+          {{ELSE}}
+          [[displaying]]
+          {{ENDIF}}
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
-<form class='form-inline' action='hashes.php' method='get'>
-	<input type='hidden' name='[[src]]' value='[[srcId]]'>
-	<div class="panel panel-default">
-		<table class="table table-bordered table-nonfluid">
-			<tr>
-				<td>
-					<select name='display' class='form-control' style='float: left;' title="Display Selection">
-						{{FOREACH display;[[displays]]}}
-						  <option value="[[display.getVal('id')]]"{{IF [[display.getVal('id')]] == [[displaying]]}} selected{{ENDIF}}>[[display.getVal('text')]]</option>
-						{{ENDFOREACH}}
-					</select>&nbsp;&nbsp;
-					{{IF [[src]] == "hashlist"}}
-            <select name="filter" class='form-control' title="Filtering">
-              {{FOREACH filter;[[filters]]}}
-                <option value="[[filter.getVal('id')]]"{{IF [[filter.getVal('id')]] == [[filtering]]}} selected{{ENDIF}}>[[filter.getVal('text')]]</option>
-              {{ENDFOREACH}}
-            </select>
-					{{ENDIF}}
-					&nbsp;&nbsp;
-					<input type="submit" class='form-control' value="OK">
-				</td>
-			</tr>
-		</table>
-	</div>
-</form>
+<div class="row">
+  <div class="col-md-12">
+    <div class="btn-toolbar" style="justify-content: center; display: flex;">
+      <div class='btn-group'>
+        <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[previousPage]]'" {{IF [[previousPage]] == -1}} disabled{{ENDIF}}>[[Util::calculate([[previousPage]]+1)]] &lt;</button>
+        <button class='btn btn-light active'>Page [[Util::calculate([[currentPage]]+1)]]</button>
+        <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[nextPage]]'" {{IF [[nextPage]] == -1}} disabled{{ENDIF}}>&gt; [[Util::calculate([[currentPage]]+1)]]</button>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<div class="row">
+  <div class="col-md-12">
+    <form class='form-inline' style="justify-content: center; display: flex;" action='hashes.php' method='get'>
+      <input type='hidden' name='[[src]]' value='[[srcId]]'>
+      <select name='display' class='form-control' style='float: left;' title="Display Selection">
+        {{FOREACH display;[[displays]]}}
+          <option value="[[display.getVal('id')]]" {{IF [[display.getVal('id')]] == [[displaying]]}} selected{{ENDIF}}>[[display.getVal('text')]]</option>
+        {{ENDFOREACH}}
+      </select>&nbsp;&nbsp;
+      {{IF [[src]] == "hashlist"}}
+        <select name="filter" class='form-control' title="Filtering">
+          {{FOREACH filter;[[filters]]}}
+            <option value="[[filter.getVal('id')]]" {{IF [[filter.getVal('id')]] == [[filtering]]}} selected{{ENDIF}}>[[filter.getVal('text')]]</option>
+          {{ENDFOREACH}}
+        </select>
+      {{ENDIF}}
+      &nbsp;&nbsp;
+      <input type="submit" class='form-control' value="OK">
+    </form>
+  </div>
+</div>
 <h3>Matching hashes: [[count]]</h3>
-<div class="panel panel-default">
-	<table class="table table-bordered table-nonfluid">
-		<tr>
-			<td>
-				<pre style='max-height: 400px;' readonly>[[output]]</pre>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<script type='text/javascript'>
-					function hex2a(hex) { 
-						var str = ''; 
-						for (var i = 0; i < hex.length; i += 2){
-							str += String.fromCharCode(parseInt(hex.substr(i, 2), 16)); 
-						}
-						return str;
-					}
-				</script>
-				HEX convertor: 
-				<form class='form-inline' method='get'>
-					$HEX[ <input type="text" class='form-control' id="conv" title="HEX Input"> ] ->
-					<input type="text" class='form-control' id="convr" readonly title="Converted">
-					<button class='btn btn-default' onclick="document.getElementById('convr').value=hex2a(document.getElementById('conv').value); return false;">Convert</button>
-				</form>
-			</td>
-		</tr>
-	</table>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <tr>
+        <td>
+          <pre style='max-height: 400px;' readonly>[[output]]</pre>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <script type='text/javascript'>
+            function hex2a(hex) {
+              var str = '';
+              for (var i = 0; i < hex.length; i += 2) {
+                str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+              }
+              return str;
+            }
+          </script>
+          HEX convertor:
+          <form class='form-inline' method='get'>
+            $HEX[ <input type="text" class='form-control' id="conv" title="HEX Input"> ] ->
+            <input type="text" class='form-control' id="convr" readonly title="Converted">&nbsp;
+            <button class='btn btn-light' onclick="document.getElementById('convr').value=hex2a(document.getElementById('conv').value); return false;">Convert</button>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 {%TEMPLATE->struct/foot%}

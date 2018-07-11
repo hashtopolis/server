@@ -18,11 +18,8 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-else if ($LOGIN->getLevel() < DAccessLevel::READ_ONLY) {
-  $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Restricted";
-  die($TEMPLATE->render($OBJECTS));
-}
+
+$ACCESS_CONTROL->checkPermission(DViewControl::PRETASKS_VIEW_PERM);
 
 $TEMPLATE = new Template("pretasks/index");
 $MENU->setActive("tasks_pre");
@@ -58,7 +55,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['isUsed'] = $isUsed;
   $OBJECTS['pageTitle'] = "Preconfigured task details for " . $pretask->getTaskName();
 }
-else if (isset($_GET['new'])) {
+else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
   $TEMPLATE = new Template("pretasks/new");
   $MENU->setActive("tasks_prenew");
   

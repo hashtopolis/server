@@ -12,23 +12,31 @@ class AccessGroupHandler implements Handler {
   }
   
   public function handle($action) {
+    global $ACCESS_CONTROL;
+    
     switch ($action) {
       case DAccessGroupAction::CREATE_GROUP:
+        $ACCESS_CONTROL->checkPermission(DAccessGroupAction::CREATE_GROUP_PERM);
         $this->createGroup($_POST['groupName']);
         break;
       case DAccessGroupAction::DELETE_GROUP:
+        $ACCESS_CONTROL->checkPermission(DAccessGroupAction::DELETE_GROUP_PERM);
         $this->deleteGroup($_POST['groupId']);
         break;
       case DAccessGroupAction::REMOVE_USER:
+        $ACCESS_CONTROL->checkPermission(DAccessGroupAction::REMOVE_USER_PERM);
         $this->removeUser($_POST['userId'], $_POST['groupId']);
         break;
       case DAccessGroupAction::REMOVE_AGENT:
+        $ACCESS_CONTROL->checkPermission(DAccessGroupAction::REMOVE_AGENT_PERM);
         $this->removeAgent($_POST['agentId'], $_POST['groupId']);
         break;
       case DAccessGroupAction::ADD_USER:
+        $ACCESS_CONTROL->checkPermission(DAccessGroupAction::ADD_USER_PERM);
         $this->addUser($_POST['userId'], $_POST['groupId']);
         break;
       case DAccessGroupAction::ADD_AGENT:
+        $ACCESS_CONTROL->checkPermission(DAccessGroupAction::ADD_AGENT_PERM);
         $this->addAgent($_POST['agentId'], $_POST['groupId']);
         break;
       default:

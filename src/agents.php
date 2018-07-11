@@ -27,11 +27,8 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-else if ($LOGIN->getLevel() < DAccessLevel::USER) {
-  $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Restricted";
-  die($TEMPLATE->render($OBJECTS));
-}
+
+$ACCESS_CONTROL->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
 $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
@@ -97,7 +94,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeSpent'] = $timeSpent;
   }
 }
-else if (isset($_GET['new']) && $LOGIN->getLevel() >= DAccessLevel::SUPERUSER) {
+else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_AGENT_ACCESS)) {
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
   $OBJECTS['pageTitle'] = "New Agent";

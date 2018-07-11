@@ -1,9 +1,19 @@
-# v0.5.1 -> x.x.x
+# v0.6.0 -> v0.x.x
+
+## Features
+
+- Tasks which are recognized containing large rule files and not giving good benchmarks result in splitting into subtasks
+- Most of the tables can now be easily ordered and searched with the datatables plugin
+- Agent Errors can be handled better
+
+# v0.5.1 -> v0.6.0
 
 ## Features
 
 - Added autofocus for login field
-- Agent Errors can be handled better
+- Added fine grained permission management
+- Updated Bootstrap and jQuery to newest versions
+- Added Icons instead of images
 
 ## Bugfixes
 

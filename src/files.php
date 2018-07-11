@@ -13,11 +13,8 @@ if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
-else if ($LOGIN->getLevel() < DAccessLevel::USER) {
-  $TEMPLATE = new Template("restricted");
-  $OBJECTS['pageTitle'] = "Restricted";
-  die($TEMPLATE->render($OBJECTS));
-}
+
+$ACCESS_CONTROL->checkPermission(DViewControl::FILES_VIEW_PERM);
 
 $TEMPLATE = new Template("files/index");
 $MENU->setActive("files");
@@ -37,7 +34,7 @@ if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))) {
   $view = $_GET['view'];
 }
 
-if (isset($_GET['edit'])) {
+if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::MANAGE_FILE_ACCESS)) {
   $file = $FACTORIES::getFileFactory()->get($_GET['edit']);
   if ($file == null) {
     UI::addMessage(UI::ERROR, "Invalid file ID!");

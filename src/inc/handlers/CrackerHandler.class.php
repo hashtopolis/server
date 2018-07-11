@@ -13,38 +13,27 @@ class CrackerHandler implements Handler {
   }
   
   public function handle($action) {
-    /** @var $LOGIN Login */
-    global $LOGIN;
+    global $ACCESS_CONTROL;
     
     switch ($action) {
       case DCrackerBinaryAction::DELETE_BINARY_TYPE:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DCrackerBinaryAction::DELETE_BINARY_TYPE_PERM);
         $this->deleteBinaryType($_POST['binaryTypeId']);
         break;
       case DCrackerBinaryAction::DELETE_BINARY:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DCrackerBinaryAction::DELETE_BINARY_PERM);
         $this->deleteBinary($_POST['binaryId']);
         break;
       case DCrackerBinaryAction::CREATE_BINARY_TYPE:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DCrackerBinaryAction::CREATE_BINARY_TYPE_PERM);
         $this->createBinaryType($_POST['name']);
         break;
       case DCrackerBinaryAction::CREATE_BINARY:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DCrackerBinaryAction::CREATE_BINARY_PERM);
         $this->createBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryTypeId']);
         break;
       case DCrackerBinaryAction::EDIT_BINARY:
-        if ($LOGIN->getLevel() < DAccessLevel::SUPERUSER) {
-          UI::printError("ERROR", "You have no rights to execute this action!");
-        }
+        $ACCESS_CONTROL->checkPermission(DCrackerBinaryAction::EDIT_BINARY_PERM);
         $this->updateBinary($_POST['version'], $_POST['name'], $_POST['url'], $_POST['binaryId']);
         break;
       default:

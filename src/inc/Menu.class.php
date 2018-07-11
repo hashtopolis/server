@@ -41,7 +41,7 @@ class Menu {
       return "";
     }
     if ($name == $this->active) {
-      return " class='active'";
+      return " active";
     }
     return "";
   }
