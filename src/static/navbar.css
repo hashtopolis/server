@@ -60,6 +60,6 @@ tr {
 .overlay {
     position: absolute;
     top: 0px;
-    height: 10px;
+    height: 20px;
     background-color: #444444;
 }
