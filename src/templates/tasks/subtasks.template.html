@@ -45,7 +45,7 @@
         [[subTask.getVal('numAssignments')]]
       {{ENDIF}}
     </td>
-    <td style='min-width: 95px'>
+    <td style='min-width: 95px' data-sort="[[subTask.getVal('filesSize')]]">
       {{IF [[subTask.getVal('numFiles')]] > 0}}
         [[subTask.getVal('numFiles')]]
       {{ENDIF}}
@@ -56,7 +56,7 @@
         <br>([[Util::nicenum([[subTask.getVal('filesSize')]])]]B)
       {{ENDIF}}
     </td>
-    <td style='min-width: 130px'>
+    <td style='min-width: 130px' data-sort="[[subTask.getVal('priority')]]">
       {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
         <form class="form-inline" action="tasks.php" method="POST">
           <input type='hidden' name='action' value='[[$DTaskAction::SET_PRIORITY]]'>

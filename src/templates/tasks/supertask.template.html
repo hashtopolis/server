@@ -84,12 +84,11 @@
           <div class="modal-body">
             <div class="card">
               <div class="table-nonfluid">
-                <table class="table table-bordered table-subtask-border" style="margin-bottom: 0;">
+                <table class="table table-bordered table-subtask-border" style="margin-bottom: 0;" id="subtasks[[set.getVal('taskWrapperId')]]">
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Dispatched / Dispatched</th>
-                    <th>Searched</th>
+                    <th>Dispatched / Searched</th>
                     <th>Cracked</th>
                     <th>Agents</th>
                     <th>Files</th>
@@ -107,6 +106,17 @@
         </div>
       </div>
     </div>
-
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable({
+          pageLength: 50,
+          "order": [ [7, 'desc'], [0, 'asc'] ],
+          "columnDefs": [
+            { "orderable": false, "targets": [2, 7] },
+            { "orderable": true, "targets": [0, 1, 3, 4, 5, 6] }
+          ]
+        });
+      });
+    </script>
   </td>
 </tr>
