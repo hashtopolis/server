@@ -1,6 +1,6 @@
 {{FOREACH subTask;[[set.getVal('subtaskList')]]}}
   <tr>
-    <td{{IF [[strlen([[subTask.getVal('color')]])]] > 0}} style="background-color: #[[subTask.getVal('color')]]"{{ENDIF}}>
+    <td {{IF [[subTask.getVal('sumProgress')]] < [[subTask.getVal('keyspace')]]}}rel="popover" data-img="api/taskimg.php?task=[[subTask.getVal('taskId')]]&x=1200&y=6"{{ENDIF}}{{IF [[strlen([[subTask.getVal('color')]])]] > 0}} style="background-color: #[[subTask.getVal('color')]]"{{ENDIF}}>
       {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
         <a href="tasks.php?id=[[subTask.getVal('taskId')]]">[[subTask.getVal('taskId')]]</a>
       {{ELSE}}
@@ -24,16 +24,13 @@
         <br>Small Task
       {{ENDIF}}
     </td>
-    <td class="num">[[subTask.getVal('numChunks')]]@[[subTask.getVal('chunkTime')]]s</td>
     {{IF [[subTask.getVal('keyspace')]] > 0}}
       <td class='num'>
-        [[Util::showperc([[subTask.getVal('taskProgress')]], [[subTask.getVal('keyspace')]])]]%
-      </td>
-      <td class='num'>
+        [[Util::showperc([[subTask.getVal('taskProgress')]], [[subTask.getVal('keyspace')]])]]% /
         [[Util::showperc([[subTask.getVal('sumProgress')]], [[subTask.getVal('keyspace')]])]]%
       </td>
     {{ELSE}}
-      <td colspan='2'>Keyspace unknown</td>
+      <td>&nbsp;</td>
     {{ENDIF}}
     <td class='num' style="min-width: 50px;">
       {{IF [[subTask.getVal('cracked')]] > 0 && [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
@@ -86,11 +83,4 @@
       {{ENDIF}}
     </td>
   </tr>
-  {{IF [[subTask.getVal('sumProgress')]] < [[subTask.getVal('keyspace')]]}}
-    <tr>
-      <td colspan="11" style="padding: 0px 1px;">
-        <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[subTask.getVal('taskId')]]&x=1200&y=6">
-      </td>
-    </tr>
-  {{ENDIF}}
 {{ENDFOREACH}}

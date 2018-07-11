@@ -55,6 +55,6 @@ tr {
 
 @media (min-width: 992px) {
     .modal-lg {
-        width: 900px;
+        max-width: 80%;
     }
 }
