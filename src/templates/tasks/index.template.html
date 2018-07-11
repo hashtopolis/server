@@ -15,30 +15,45 @@
 </div>
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-bordered">
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Hashlist</th>
-        <th>Chunks</th>
-        <th>Dispatched</th>
-        <th>Searched</th>
-        <th>Cracked</th>
-        <th>Agents</th>
-        <th>Files</th>
-        <th>Task Priority</th>
-        <th style="min-width: 170px;">Action</th>
-      </tr>
-      {{FOREACH set;[[taskList]]}}
+    <table class="table table-bordered" id="tasks">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Hashlist</th>
+          <th>Chunks</th>
+          <th>Dispatched</th>
+          <th>Searched</th>
+          <th>Cracked</th>
+          <th>Agents</th>
+          <th>Files</th>
+          <th>Task Priority</th>
+          <th style="min-width: 170px;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{FOREACH set;[[taskList]]}}
         {{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
-          <!-- normal task -->
-          {%TEMPLATE->tasks/normal%}
+        <!-- normal task -->
+        {%TEMPLATE->tasks/normal%}
         {{ELSE}}
-          <!-- supertask -->
-          {%TEMPLATE->tasks/supertask%}
+        <!-- supertask -->
+        {%TEMPLATE->tasks/supertask%}
         {{ENDIF}}
-      {{ENDFOREACH}}
+        {{ENDFOREACH}}
+      </tbody>
     </table>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#tasks').DataTable({
+          pageLength: 50,
+          "columnDefs": [
+            { "orderable": false, "targets": [4] },
+            { "orderable": true, "targets": [0, 1, 2, 3] }
+          ]
+        });
+      });
+    </script>
   </div>
 </div>
 {%TEMPLATE->struct/foot%}
