@@ -32,7 +32,8 @@
   </td>
   {{IF [[set.getVal('keyspace')]] > 0}}
     <td class='num'>
-      [[Util::showperc([[set.getVal('taskProgress')]], [[set.getVal('keyspace')]])]]%/[[Util::showperc([[set.getVal('sumProgress')]], [[set.getVal('keyspace')]])]]%
+      [[Util::showperc([[set.getVal('taskProgress')]], [[set.getVal('keyspace')]])]]%
+      / [[Util::showperc([[set.getVal('sumProgress')]], [[set.getVal('keyspace')]])]]%
     </td>
   {{ELSE}}
     <td>&nbsp;</td>
