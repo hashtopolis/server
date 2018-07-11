@@ -1,0 +1,25 @@
+\documentclass{article}
+\author{s3in!c $\langle$s3inlc@hashes.org$\rangle$ }
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[left=10mm, right=10mm]{geometry}
+\usepackage[english]{babel}
+\begin{document}
+	\title{Hashtopolis User API (V1)}
+	\maketitle
+	\section*{Introduction}
+	The communication for the User API is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
+	Every request has a \textit{section} and a \textit{request} field to state which action should be executed. Every response again then contains the requested section and request and gives a \textit{status} to indicate if the query was successful or not.
+
+	\section*{Errors}
+	In case of an error with the query which the user sends to the server, the response will have following format with the corresponding action which was requested and the error message which should help in getting information about this error.
+	\begin{verbatim}
+	{
+	  "section":"task",
+	  "request":"create",
+	  "status":"ERROR",
+	  "message":"You are not allowed to create tasks!"
+	}
+	\end{verbatim}
+	\pagebreak
+\end{document}
