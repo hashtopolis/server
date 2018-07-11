@@ -52,3 +52,9 @@ tr {
 .popover {
     max-width: 50%;
 }
+
+@media (min-width: 992px) {
+    .modal-lg {
+        width: 900px;
+    }
+}
