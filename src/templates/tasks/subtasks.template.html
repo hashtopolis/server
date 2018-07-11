@@ -34,10 +34,10 @@
     {{ENDIF}}
     <td class='num' style="min-width: 50px;">
       {{IF [[subTask.getVal('cracked')]] > 0 && [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
-        <a href="hashes.php?task=[[subTask.getVal('taskId')]]&filter=cracked">[[subTask.getVal('cracked')]] ([[subTask.getVal('performance')]]c/m)</a>
+        <a href="hashes.php?task=[[subTask.getVal('taskId')]]&filter=cracked">[[subTask.getVal('cracked')]] {{IF [[config.getVal([[$DConfig::SHOW_TASK_PERFORMANCE]])]] == 1}}([[subTask.getVal('performance')]]c/m){{ENDIF}}</a>
       {{ENDIF}}
       {{IF [[subTask.getVal('cracked')]] > 0 && ![[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
-        [[subTask.getVal('cracked')]] ([[subTask.getVal('performance')]]c/m)
+        [[subTask.getVal('cracked')]] {{IF [[config.getVal([[$DConfig::SHOW_TASK_PERFORMANCE]])]] == 1}}([[subTask.getVal('performance')]]c/m){{ENDIF}}
       {{ENDIF}}
     </td>
     <td class='num' style="min-width: 50px;">
