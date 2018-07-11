@@ -3,6 +3,7 @@
 ## Features
 
 - Tasks which are recognized containing large rule files and not giving good benchmarks result in splitting into subtasks
+- Most of the tables can now be easily ordered and searched with the datatables plugin
 
 # v0.5.1 -> v0.6.0
 
