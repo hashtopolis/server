@@ -300,7 +300,7 @@ class AgentHandler implements Handler {
     global $FACTORIES;
     
     $ignore = intval($ignoreErrors);
-    if ($ignore != 0 && $ignore != 1) {
+    if ($ignore != 0 && $ignore != 1 && $ignore != 2) {
       UI::printError("ERROR", "Invalid Ignore state!");
     }
     $this->agent->setIgnoreErrors($ignore);
