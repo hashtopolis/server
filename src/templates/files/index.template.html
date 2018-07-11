@@ -60,7 +60,7 @@
                               <input type='checkbox' {{IF [[file.getIsSecret()]] == 1}} checked{{ENDIF}} disabled title="Is Secret">
                           {{ENDIF}}
                       </td>
-                      <td class='num'>
+                      <td class='num' data-sort="[[file.getSize()]]">
                           [[Util::nicenum([[file.getSize()]])]]B
                       </td>
                       <td>
