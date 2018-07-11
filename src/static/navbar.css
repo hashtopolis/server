@@ -44,3 +44,21 @@ td {
 .btn-light {
     border-color: #c3c3c3;
 }
+
+tr {
+    height: 25px;
+}
+
+
+
+
+
+.overlay-container {
+    position: relative;
+}
+
+.overlay {
+    position: absolute;
+    top: 0px;
+    height: 10px;
+}

@@ -33,13 +33,13 @@
       </thead>
       <tbody>
         {{FOREACH set;[[taskList]]}}
-        {{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
-        <!-- normal task -->
-        {%TEMPLATE->tasks/normal%}
-        {{ELSE}}
-        <!-- supertask -->
-        {%TEMPLATE->tasks/supertask%}
-        {{ENDIF}}
+          {{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
+            <!-- normal task -->
+            {%TEMPLATE->tasks/normal%}
+          {{ELSE}}
+            <!-- supertask -->
+            {%TEMPLATE->tasks/supertask%}
+          {{ENDIF}}
         {{ENDFOREACH}}
       </tbody>
     </table>
