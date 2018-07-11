@@ -15,7 +15,7 @@
 </div>
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-bordered" id="tasks">
+    <table class="table table-bordered table-sm" id="tasks">
       <thead>
         <tr>
           <th>ID</th>
@@ -53,6 +53,12 @@
           ]
         });
       });*/
+      $('a[rel=popover]').popover({
+        html: true,
+        trigger: 'hover',
+        placement: 'bottom',
+        content: function () { return '<img src="' + $(this).data('img') + '" />'; }
+      });
     </script>
   </div>
 </div>
