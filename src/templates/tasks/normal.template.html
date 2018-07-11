@@ -90,10 +90,11 @@
         <input type="submit" class='btn btn-danger' value="X">
       </form>
     {{ENDIF}}
+    
+    {{IF [[set.getVal('sumProgress')]] < [[set.getVal('keyspace')]]}}
+      <div class="overlay">
+        <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[set.getVal('taskId')]]&x=1200&y=6">
+      </div>
+    {{ENDIF}}
   </td>
-  {{IF [[set.getVal('sumProgress')]] < [[set.getVal('keyspace')]]}}
-    <div class="overlay">
-      <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?task=[[set.getVal('taskId')]]&x=1200&y=6">
-    </div>
-  {{ENDIF}}
 </tr>
