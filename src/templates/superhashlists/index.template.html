@@ -4,7 +4,7 @@
 {%TEMPLATE->struct/messages%}
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-bordered table-sm">
+    <table class="table table-bordered table-sm" id="superhashlists">
       <thead>
         <tr>
           <th>ID</th>
@@ -74,7 +74,7 @@
     </table>
     <script type="text/javascript">
       $(document).ready(function () {
-        $('#hashlists').DataTable({
+        $('#superhashlists').DataTable({
           pageLength: 50,
           "order": [ [0, 'asc'] ],
           "columnDefs": [
