@@ -85,17 +85,21 @@
             <div class="card">
               <div class="table-nonfluid">
                 <table class="table table-bordered table-subtask-border" style="margin-bottom: 0;" id="subtasks[[set.getVal('taskWrapperId')]]">
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Dispatched / Searched</th>
-                    <th>Cracked</th>
-                    <th>Agents</th>
-                    <th>Files</th>
-                    <th>Subtask Priority</th>
-                    <th>Action</th>
-                  </tr>
-                  {%TEMPLATE->tasks/subtasks%}
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Dispatched / Searched</th>
+                      <th>Cracked</th>
+                      <th>Agents</th>
+                      <th>Files</th>
+                      <th>Subtask Priority</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {%TEMPLATE->tasks/subtasks%}
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -109,7 +113,7 @@
     <script type="text/javascript">
       $(document).ready(function () {
         $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable({
-          pageLength: 50,
+          pageLength: 25,
           "order": [ [7, 'desc'], [0, 'asc'] ],
           "columnDefs": [
             { "orderable": false, "targets": [2, 7] },
