@@ -1,4 +1,4 @@
-<tr style="background-color: rgba(0,0,0,0.1);">
+<tr rel="popover" data-img="api/taskimg.php?supertask=[[set.getVal('taskWrapperId')]]&x=1200&y=6" style="background-color: rgba(0,0,0,0.1);">
   <td>&nbsp;</td>
   <td>
     [[set.getVal('supertaskName')]]
@@ -22,7 +22,9 @@
       [[Util::tickdone(0, 1)]]
     {{ENDIF}}
   </td>
-  <td colspan="3">Supertask</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
+  <td>&nbsp;</td>
   <td class='num'>
     {{IF [[set.getVal('cracked')]] > 0}}
       [[set.getVal('cracked')]]
@@ -76,11 +78,6 @@
         <input type="submit" class='btn btn-danger' value="X">
       </form>
     {{ENDIF}}
-  </td>
-</tr>
-<tr style="background-color: rgba(0,0,0,0.1);" data-toggle="collapse" data-target="#task[[set.getVal('taskWrapperId')]]" class="accordion-toggle">
-  <td colspan="11" style="padding: 0px 1px;">
-    <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?supertask=[[set.getVal('taskWrapperId')]]&x=1200&y=6">
   </td>
 </tr>
 <tr>
