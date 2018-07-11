@@ -47,7 +47,7 @@
                               <span class="fas fa-lock" aria-hidden="true"></span>
                           {{ENDIF}}
                       </td>
-                      <td>
+                      <td data-sort="[[file.getIsSecret()]]">
                           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
                               <form id="secret[[file.getId()]]" action="files.php?view=[[view]]" method="POST">
                                   <input type="hidden" name="file" value="[[file.getId()]]">
