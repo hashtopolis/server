@@ -48,18 +48,3 @@ td {
 tr {
     height: 25px;
 }
-
-
-
-
-
-.overlay-container {
-    position: relative;
-}
-
-.overlay {
-    position: absolute;
-    top: 0px;
-    height: 20px;
-    background-color: #444444;
-}
