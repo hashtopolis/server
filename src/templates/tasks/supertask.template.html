@@ -60,13 +60,8 @@
   <td style='min-width: 120px'>
     {{IF [[set.getVal('taskType')]] == 1}}
       <form style ='float: left; padding-right: 5px;'>
-        <a class="btn btn-primary accordion-toggle" onclick="expansionCheck('#task[[set.getVal('taskWrapperId')]]')" role="button" href="#" data-toggle="collapse" data-target="#task[[set.getVal('taskWrapperId')]]">Show/Hide</a>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]">Show Subtasks</button>
       </form>
-      <script type="text/javascript">
-          $( document ).ready(function() {
-              checkOnLoading("#task[[set.getVal('taskWrapperId')]]");
-          });
-      </script>
     {{ENDIF}}
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
       <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
@@ -76,30 +71,43 @@
         <input type="submit" class='btn btn-danger' value="X">
       </form>
     {{ENDIF}}
-  </td>
-</tr>
-<tr>
-  <td colspan="11" class="hiddenRow">
-    <div id="task[[set.getVal('taskWrapperId')]]" class="accordian-body collapse" style="margin: 10px;" aria-expanded="false">
-      <div class="card">
-        <div class="table-nonfluid">
-          <table class="table table-bordered table-subtask-border" style="margin-bottom: 0;">
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Chunks</th>
-              <th>Dispatched</th>
-              <th>Searched</th>
-              <th>Cracked</th>
-              <th>Agents</th>
-              <th>Files</th>
-              <th>Subtask Priority</th>
-              <th>Action</th>
-            </tr>
-            {%TEMPLATE->tasks/subtasks%}
-          </table>
+
+    <div class="modal fade" id="task[[set.getVal('taskWrapperId')]]" tabindex="-1" role="dialog" aria-labelledby="subtasks" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Subtasks</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="card">
+              <div class="table-nonfluid">
+                <table class="table table-bordered table-subtask-border" style="margin-bottom: 0;">
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Chunks</th>
+                    <th>Dispatched</th>
+                    <th>Searched</th>
+                    <th>Cracked</th>
+                    <th>Agents</th>
+                    <th>Files</th>
+                    <th>Subtask Priority</th>
+                    <th>Action</th>
+                  </tr>
+                  {%TEMPLATE->tasks/subtasks%}
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
     </div>
+
   </td>
 </tr>
