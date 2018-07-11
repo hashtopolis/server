@@ -82,7 +82,13 @@
             </table>
             <script type="text/javascript">
               $(document).ready(function () {
-                $('#files').DataTable();
+                $('#files').DataTable({
+                  pageLength: 25,
+                  "order": [1, 'asc'],
+                  "columnDefs": [
+                    { "orderable": true, "targets": [0, 1, 2, 3] }
+                  ]
+                });
               });
             </script>
         </div>
