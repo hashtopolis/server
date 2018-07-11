@@ -1,5 +1,5 @@
 <tr>
-  <td rel="popover" data-img="https://placehold.it/400x200" {{IF [[set.getVal('hasColor')]]}}style="background-color: #[[set.getVal('color')]]"{{ENDIF}}>
+  <td {{IF [[set.getVal('sumProgress')]] < [[set.getVal('keyspace')]]}}rel="popover" data-img="api/taskimg.php?task=[[set.getVal('taskId')]]&x=1200&y=6"{{ENDIF}} {{IF [[set.getVal('hasColor')]]}}style="background-color: #[[set.getVal('color')]]"{{ENDIF}}>
     <a href="tasks.php?id=[[set.getVal('taskId')]]">[[set.getVal('taskId')]]</a>
   </td>
   <td title="[[htmlentities([[set.getVal('attackCmd')]], ENT_QUOTES, 'UTF-8')]]">
