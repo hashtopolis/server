@@ -30,7 +30,6 @@
       [[Util::tickdone(0, 1)]]
     {{ENDIF}}
   </td>
-  <td class="num">[[set.getVal('numChunks')]]@[[set.getVal('chunkTime')]]s</td>
   {{IF [[set.getVal('keyspace')]] > 0}}
     <td class='num'>
       [[Util::showperc([[set.getVal('taskProgress')]], [[set.getVal('keyspace')]])]]%
