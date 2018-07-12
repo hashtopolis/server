@@ -57,15 +57,18 @@ abstract class UserAPIBasic {
   }
 
   /**
-   * @param string $section 
-   * @param string $request 
-   * @param ApiKey $apiKey 
+   * @param string $section
+   * @param string $request
+   * @param ApiKey $apiKey
    */
   private function hasPermission($section, $request, $apiKey){
-    if($apiKey->getPermissions() == 'ALL'){
+    global $FACTORIES;
+
+    $apiGroup = $FACTORIES::getApiGroupFactory()->get($apiKey->getApiGroupId());
+    if($apiGroup->getPermissions() == 'ALL'){
       return true;
     }
-    $json = json_decode($apiKey->getPermissions(), true);
+    $json = json_decode($apiGroup->getPermissions(), true);
     if(!isset($json[$section])){
       return false;
     }
