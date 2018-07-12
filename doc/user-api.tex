@@ -102,4 +102,31 @@
 				}
 				\end{verbatim}
 			}
+	\section*{Agents (\textit{agent})}
+		Used to access all functions around agents. Please note that the user must have access to the groups where an agent is member of to retrieve it and to be able to apply changes.
+	
+		\subsection*{\textit{setActive}}
+			Set an agent active/inactive. 
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setActive",
+				  "active": false,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setActive",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
 \end{document}
