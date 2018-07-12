@@ -33,6 +33,11 @@ abstract class UValues {
   const ERROR   = "ERROR";
 }
 
+class UValuesAccess extends UValues {
+  const NOT_FOUND = "notFound";
+  const EXPIRED   = "expired";
+}
+
 
 
 ########################
@@ -56,9 +61,22 @@ class UResponseErrorMessage extends UResponse {
 ###############################
 
 class USection {
-  const TEST = "test";
+  const TEST          = "test";
+  const AGENT         = "agent";
+  const TASK          = "task";
+  const PRETASK       = "pretask";
+  const SUPERTASK     = "supertask";
+  const HASHLIST      = "hashlist";
+  const SUPERHASHLIST = "superhashlist";
+  const FILE          = "file";
+  const CRACKER       = "cracker";
+  const CONFIG        = "config";
+  const USER          = "user";
+  const GROUP         = "group";
+  const ACCESS        = "access":
 }
 
 class USectionTest {
   const CONNECTION = "connection";
+  const ACCESS     = "access";
 }
