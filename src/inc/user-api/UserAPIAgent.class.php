@@ -1,4 +1,6 @@
 <?php
+use DBA\QueryFilter;
+use DBA\RegVoucher;
 
 class UserAPIAgent extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -12,7 +14,7 @@ class UserAPIAgent extends UserAPIBasic {
         $this->getBinaries($QUERY);
         break;
       case USectionAgent::DELETE_VOUCHER:
-        // TODO:
+        $this->deleteVoucher($QUERY);
         break;
       case USectionAgent::LIST_VOUCHERS:
         $this->listVouchers($QUERY);
@@ -23,6 +25,26 @@ class UserAPIAgent extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function deleteVoucher($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::VOUCHER])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid delete voucher query!");
+    }
+    $qF = new QueryFilter(RegVoucher::VOUCHER, $QUERY['voucher'], "=");
+    $voucher = $FACTORIES::getRegVoucherFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    if($voucher == null){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Voucher not found!");
+    }
+    $FACTORIES::getRegVoucherFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $this->sendResponse(array(
+        UResponseAgent::SECTION => USection::AGENT,
+        UResponseAgent::REQUEST => USectionAgent::DELETE_VOUCHER,
+        UResponseAgent::RESPONSE => UValues::OK
+      )
+    );
   }
 
   private function listVouchers($QUERY){

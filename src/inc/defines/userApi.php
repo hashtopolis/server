@@ -109,7 +109,7 @@ abstract class UApi {
   }
 
   static function getDescription($section, $constant){
-    // TODO:
+    // TODO: add descriptions for sections and constants
     return "__" . $section . "_" . $constant . "__";
   }
 }
