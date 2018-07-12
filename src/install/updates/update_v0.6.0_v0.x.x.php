@@ -36,6 +36,36 @@ if ($binary != null) {
 }
 echo "\n";
 
+echo "Creating User API...";
+$FACTORIES::getAgentFactory()->getDB()->query("
+CREATE TABLE `apikey` (
+  `apiKeyId` int(11) NOT NULL,
+  `startValid` bigint(20) NOT NULL,
+  `endValid` bigint(20) NOT NULL,
+  `accessKey` varchar(256) NOT NULL,
+  `accessCount` int(11) NOT NULL,
+  `permissions` text NOT NULL
+)");
+$FACTORIES::getAgentFactory()->getDB()->query("
+ALTER TABLE `ApiKey`
+  ADD PRIMARY KEY (`apiKeyId`)");
+$FACTORIES::getAgentFactory()->getDB()->query("
+ALTER TABLE `ApiKey`
+  MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT");
+$FACTORIES::getAgentFactory()->getDB()->query("
+CREATE TABLE `apikeyuser` (
+  `apiKeyUserId` int(11) NOT NULL,
+  `apiKeyId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL
+)");
+$FACTORIES::getAgentFactory()->getDB()->query("
+ALTER TABLE `ApiKeyUser`
+  ADD PRIMARY KEY (`apiKeyUserId`)");
+$FACTORIES::getAgentFactory()->getDB()->query("
+ALTER TABLE `ApiKeyUser` 
+  MODIFY `apiKeyUserId` INT(11) NOT NULL AUTO_INCREMENT");
+echo "OK\n";
+
 echo "Adding new config settings...";
 $entry = new Config(0, 1, 'ruleSplitSmallTasks', '0');
 $FACTORIES::getConfigFactory()->save($entry);

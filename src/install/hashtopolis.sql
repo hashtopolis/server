@@ -1000,6 +1000,30 @@ CREATE TABLE `Zap` (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
+
+
+CREATE TABLE `apikey` (
+  `apiKeyId` int(11) NOT NULL,
+  `startValid` bigint(20) NOT NULL,
+  `endValid` bigint(20) NOT NULL,
+  `accessKey` varchar(256) NOT NULL,
+  `accessCount` int(11) NOT NULL,
+  `permissions` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `apikeyuser` (
+  `apiKeyUserId` int(11) NOT NULL,
+  `apiKeyId` int(11) NOT NULL,
+  `userId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Indexes for table `ApiKey`
+--
+ALTER TABLE `ApiKey`
+  ADD PRIMARY KEY (`apiKeyId`);
+
+
 --
 -- Indizes der exportierten Tabellen
 --
@@ -1009,6 +1033,9 @@ CREATE TABLE `Zap` (
 --
 ALTER TABLE `AccessGroup`
   ADD PRIMARY KEY (`accessGroupId`);
+
+ALTER TABLE `ApiKeyUser`
+  ADD PRIMARY KEY (`apiKeyUserId`);
 
 --
 -- Indizes für die Tabelle `AccessGroupAgent`
@@ -1257,6 +1284,12 @@ ALTER TABLE `Zap`
 --
 -- AUTO_INCREMENT für exportierte Tabellen
 --
+
+ALTER TABLE `ApiKey`
+  MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `ApiKeyUser` 
+  MODIFY `apiKeyUserId` INT(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`

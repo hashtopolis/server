@@ -32,12 +32,14 @@ class Factory {
   private static $taskWrapperFactory = null;
   private static $userFactory = null;
   private static $zapFactory = null;
+  private static $apiKeyFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
   private static $filePretaskFactory = null;
   private static $supertaskPretaskFactory = null;
   private static $hashlistHashlistFactory = null;
+  private static $apiKeyUserFactory = null;
 
   public static function getAccessGroupFactory() {
     if (self::$accessGroupFactory == null) {
@@ -329,6 +331,16 @@ class Factory {
     }
   }
   
+  public static function getApiKeyFactory() {
+    if (self::$apiKeyFactory == null) {
+      $f = new ApiKeyFactory();
+      self::$apiKeyFactory = $f;
+      return $f;
+    } else {
+      return self::$apiKeyFactory;
+    }
+  }
+  
   public static function getAccessGroupUserFactory() {
     if (self::$accessGroupUserFactory == null) {
       $f = new AccessGroupUserFactory();
@@ -386,6 +398,16 @@ class Factory {
       return $f;
     } else {
       return self::$hashlistHashlistFactory;
+    }
+  }
+  
+  public static function getApiKeyUserFactory() {
+    if (self::$apiKeyUserFactory == null) {
+      $f = new ApiKeyUserFactory();
+      self::$apiKeyUserFactory = $f;
+      return $f;
+    } else {
+      return self::$apiKeyUserFactory;
     }
   }
 

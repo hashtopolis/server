@@ -247,6 +247,14 @@ $CONF['Zap'] = array(
   'agentId',
   'hashlistId'
 );
+$CONF['ApiKey'] = array(
+  'apiKeyId',
+  'startValid',
+  'endValid',
+  'accessKey',
+  'accessCount',
+  'permissions'
+);
 
 // relations
 $CONF['AccessGroupUser'] = array(
@@ -278,6 +286,11 @@ $CONF['HashlistHashlist'] = array(
   'hashlistHashlistId',
   'parentHashlistId',
   'hashlistId'
+);
+$CONF['ApiKeyUser'] = array(
+  'apiKeyUserId',
+  'apiKeyId',
+  'userId'
 );
 
 foreach ($CONF as $NAME => $COLUMNS) {
