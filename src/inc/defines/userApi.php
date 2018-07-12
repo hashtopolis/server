@@ -59,6 +59,11 @@ class UResponseAgent extends UResponse {
   const BINARIES_OS       = "os";
   const BINARIES_FILENAME = "filename";
   const AGENT_URL         = "apiUrl";
+
+  const AGENTS         = "agents";
+  const AGENTS_ID      = "agentId";
+  const AGENTS_NAME    = "name";
+  const AGENTS_DEVICES = "devices";
 }
 
 ###############################

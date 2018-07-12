@@ -1,6 +1,10 @@
 <?php
+use DBA\Agent;
 use DBA\QueryFilter;
 use DBA\RegVoucher;
+use DBA\ContainFilter;
+use DBA\AccessGroupAgent;
+use DBA\OrderFilter;
 
 class UserAPIAgent extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -20,11 +24,43 @@ class UserAPIAgent extends UserAPIBasic {
         $this->listVouchers($QUERY);
         break;
       case USectionAgent::LIST_AGENTS:
-        // TODO:
+        $this->listAgents($QUERY);
         break;
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function listAgents($QUERY){
+    global $FACTORIES;
+
+    $accessGroups = AccessUtils::getAccessGroupsOfUser($this->user);
+
+    $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, Util::arrayOfIds($accessGroups));
+    $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $agentIds = array();
+    foreach ($accessGroupAgents as $accessGroupAgent) {
+      $agentIds[] = $accessGroupAgent->getAgentId();
+    }
+
+    $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
+    $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
+    $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+    $arr = [];
+    foreach ($agents as $agent) {
+      $arr[] = array(
+        UResponseAgent::AGENTS_ID => $agent->getId(),
+        UResponseAgent::AGENTS_NAME => $agent->getAgentName(),
+        UResponseAgent::AGENTS_DEVICES => explode("\n", $agent->getDevices())
+      );
+    }
+    $this->sendResponse(array(
+        UResponseAgent::SECTION => USection::AGENT,
+        UResponseAgent::REQUEST => USectionAgent::LIST_AGENTS,
+        UResponseAgent::RESPONSE => UValues::OK,
+        UResponseAgent::AGENTS => $arr
+      )
+    );
   }
 
   private function deleteVoucher($QUERY){
