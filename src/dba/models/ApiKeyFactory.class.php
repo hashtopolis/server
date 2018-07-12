@@ -23,7 +23,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @return ApiKey
    */
   function getNullObject() {
-    $o = new ApiKey(-1, null, null, null, null, null);
+    $o = new ApiKey(-1, null, null, null, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class ApiKeyFactory extends AbstractModelFactory {
    * @return ApiKey
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new ApiKey($dict['apiKeyId'], $dict['startValid'], $dict['endValid'], $dict['accessKey'], $dict['accessCount'], $dict['permissions']);
+    $o = new ApiKey($dict['apiKeyId'], $dict['startValid'], $dict['endValid'], $dict['accessKey'], $dict['accessCount'], $dict['permissions'], $dict['userId']);
     return $o;
   }
 

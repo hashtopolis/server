@@ -9,14 +9,16 @@ class ApiKey extends AbstractModel {
   private $accessKey;
   private $accessCount;
   private $permissions;
+  private $userId;
   
-  function __construct($apiKeyId, $startValid, $endValid, $accessKey, $accessCount, $permissions) {
+  function __construct($apiKeyId, $startValid, $endValid, $accessKey, $accessCount, $permissions, $userId) {
     $this->apiKeyId = $apiKeyId;
     $this->startValid = $startValid;
     $this->endValid = $endValid;
     $this->accessKey = $accessKey;
     $this->accessCount = $accessCount;
     $this->permissions = $permissions;
+    $this->userId = $userId;
   }
   
   function getKeyValueDict() {
@@ -27,6 +29,7 @@ class ApiKey extends AbstractModel {
     $dict['accessKey'] = $this->accessKey;
     $dict['accessCount'] = $this->accessCount;
     $dict['permissions'] = $this->permissions;
+    $dict['userId'] = $this->userId;
     
     return $dict;
   }
@@ -86,6 +89,14 @@ class ApiKey extends AbstractModel {
   function setPermissions($permissions){
     $this->permissions = $permissions;
   }
+  
+  function getUserId(){
+    return $this->userId;
+  }
+  
+  function setUserId($userId){
+    $this->userId = $userId;
+  }
 
   const API_KEY_ID = "apiKeyId";
   const START_VALID = "startValid";
@@ -93,4 +104,5 @@ class ApiKey extends AbstractModel {
   const ACCESS_KEY = "accessKey";
   const ACCESS_COUNT = "accessCount";
   const PERMISSIONS = "permissions";
+  const USER_ID = "userId";
 }
