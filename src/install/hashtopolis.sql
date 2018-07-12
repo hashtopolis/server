@@ -1018,6 +1018,8 @@ CREATE TABLE `ApiGroup` (
   `permissions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `ApiGroup` ( `name`, `permissions`) VALUES ('Administrators', 'ALL');
+
 --
 -- Indexes for table `ApiKey`
 --

@@ -65,6 +65,7 @@ ALTER TABLE `ApiGroup`
 $FACTORIES::getAgentFactory()->getDB()->query("
 ALTER TABLE `ApiGroup`
   MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT");
+$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `ApiGroup` ( `name`, `permissions`) VALUES ('Administrators', 'ALL')");
 echo "OK\n";
 
 echo "Adding new config settings...";
