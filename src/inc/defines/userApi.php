@@ -68,7 +68,7 @@ class UResponseAgent extends UResponse {
 abstract class UApi {
   static function getConstants() {
     try {
-      $oClass = new ReflectionClass(static::getClass());
+      $oClass = new ReflectionClass(static::class);
     }
     catch (ReflectionException $e) {
       die("Exception: " . $e->getMessage());
