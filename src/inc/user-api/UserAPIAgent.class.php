@@ -89,6 +89,7 @@ class UserAPIAgent extends UserAPIBasic {
         UResponseAgent::BINARIES_FILENAME => $binary->getFilename()
       );
     }
+    $response[UResponseAgent::BINARIES] = $arr;
     $this->sendResponse($response);
   }
 
