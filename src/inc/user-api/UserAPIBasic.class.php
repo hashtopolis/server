@@ -20,6 +20,19 @@ abstract class UserAPIBasic {
     die();
   }
 
+  /**
+   * Used to send a generic success response if no additional data is sent
+   * @param array $QUERY original query
+   */
+  protected function sendSuccessResponse($QUERY){
+    $this->sendResponse(array(
+        UResponse::SECTION => $QUERY[UQuery::SECTION],
+        UResponse::REQUEST => $QUERY[UQuery::REQUEST],
+        UResponse::RESPONSE => UValues::OK
+      )
+    );
+  }
+
   protected function updateApi() {
     global $FACTORIES;
 

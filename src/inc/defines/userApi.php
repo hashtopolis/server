@@ -14,6 +14,8 @@ abstract class UQuery { // include only generalized query values
 
 class UQueryAgent extends UQuery {
   const VOUCHER = "voucher";
+  const AGENT_ID = "agentId";
+  const ACTIVE = "active";
 }
 
 ######################
@@ -140,7 +142,16 @@ class USectionAgent extends UApi {
   const GET_BINARIES   = "getBinaries";
   const LIST_VOUCHERS  = "listVouchers";
   const DELETE_VOUCHER = "deleteVoucher";
-  const LIST_AGENTS    = "listAgents";
+
+  const LIST_AGENTS      = "listAgents";
+  const GET              = "get";
+  const SET_ACTIVE       = "setActive";
+  const CHANGE_OWNER     = "changeOwner";
+  const SET_NAME         = "setName";
+  const SET_CPU_ONLY     = "setCpuOnly";
+  const SET_EXTRA_PARAMS = "setExtraParams";
+  const SET_ERROR_FLAG   = "setErrorFlag";
+  const SET_TRUSTED      = "setTrusted";
 }
 
 class USectionTask extends UApi {}

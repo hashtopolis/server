@@ -26,9 +26,65 @@ class UserAPIAgent extends UserAPIBasic {
       case USectionAgent::LIST_AGENTS:
         $this->listAgents($QUERY);
         break;
+      case USectionAgent::GET:
+
+        break;
+      case USectionAgent::SET_ACTIVE:
+        $this->setActive($QUERY);
+        break;
+      case USectionAgent::CHANGE_OWNER:
+
+        break;
+      case USectionAgent::SET_NAME:
+
+        break;
+      case USectionAgent::SET_CPU_ONLY:
+
+        break;
+      case USectionAgent::SET_EXTRA_PARAMS:
+
+        break;
+      case USectionAgent::SET_ERROR_FLAG:
+
+        break;
+      case USectionAgent::SET_TRUSTED:
+
+        break;
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function setActive($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::ACTIVE]) || !is_bool($QUERY[UQueryAgent::ACTIVE])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $this->checkAgent($QUERY);
+    $agent->setIsActive(($QUERY[UQueryAgent::ACTIVE])?1:0);
+    $FACTORIES::getAgentFactory()->update($agent);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  /**
+   * @param array $QUERY
+   * @return Agent
+   */
+  private function checkAgent($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::AGENT_ID])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $FACTORIES::getAgentFactory()->get($QUERY[UQueryAgent::AGENT_ID]);
+    if($agent == null){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid agent ID!");
+    }
+    else if(!AccessUtils::userCanAccessAgent($agent, $this->user)){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "No access to this agent!");
+    }
+    return $agent;
   }
 
   private function listAgents($QUERY){
