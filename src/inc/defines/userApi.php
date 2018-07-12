@@ -65,7 +65,56 @@ class UResponseAgent extends UResponse {
 # Section/Request definitions #
 ###############################
 
-class USection {
+class UApi {
+  static function getConstants() {
+    try {
+      $oClass = new ReflectionClass(__CLASS__);
+    }
+    catch (ReflectionException $e) {
+      die("Exception: " . $e->getMessage());
+    }
+    return $oClass->getConstants();
+  }
+
+  static function getSection($section){
+    switch($section){
+      case USection::TEST:
+        return new USectionTest();
+      case USection::AGENT:
+        return new USectionAgent();
+      case USection::TASK:
+        return new USectionTask();
+      case USection::PRETASK:
+        return new USectionPretask();
+      case USection::SUPERTASK:
+        return new USectionSupertask();
+      case USection::HASHLIST:
+        return new USectionHashlist();
+      case USection::SUPERHASHLIST:
+        return new USectionSuperhashlist();
+      case USection::FILE:
+        return new USectionFile();
+      case USection::CRACKER:
+        return new USectionCracker();
+      case USection::CONFIG:
+        return new USectionConfig();
+      case USection::USER:
+        return new USectionUser();
+      case USection::GROUP:
+        return new USectionGroup();
+      case USection::ACCESS:
+        return new USectionAccess();
+    }
+    return null;
+  }
+
+  static function getDescription($section, $constant){
+    // TODO:
+    return "__" . $section . "_" . $constant . "__";
+  }
+}
+
+class USection extends UApi {
   const TEST          = "test";
   const AGENT         = "agent";
   const TASK          = "task";
@@ -81,12 +130,12 @@ class USection {
   const ACCESS        = "access";
 }
 
-class USectionTest {
+class USectionTest extends UApi {
   const CONNECTION = "connection";
   const ACCESS     = "access";
 }
 
-class USectionAgent {
+class USectionAgent extends UApi {
   const CREATE_VOUCHER = "createVoucher";
   const GET_BINARIES   = "getBinaries";
   const LIST_VOUCHERS  = "listVouchers";
@@ -94,24 +143,24 @@ class USectionAgent {
   const LIST_AGENTS    = "listAgents";
 }
 
-class USectionTask {}
+class USectionTask extends UApi {}
 
-class USectionPretask {}
+class USectionPretask extends UApi {}
 
-class USectionSupertask {}
+class USectionSupertask extends UApi {}
 
-class USectionHashlist {}
+class USectionHashlist extends UApi {}
 
-class USectionSuperhashlist {}
+class USectionSuperhashlist extends UApi {}
 
-class USectionFile {}
+class USectionFile extends UApi {}
 
-class USectionCracker {}
+class USectionCracker extends UApi {}
 
-class USectionConfig {}
+class USectionConfig extends UApi {}
 
-class USectionUser {}
+class USectionUser extends UApi {}
 
-class USectionGroup {}
+class USectionGroup extends UApi {}
 
-class USectionAccess {}
+class USectionAccess extends UApi {}
