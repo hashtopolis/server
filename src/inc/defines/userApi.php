@@ -27,11 +27,6 @@ abstract class UValues {
   const ERROR   = "ERROR";
 }
 
-class UValuesAccess extends UValues {
-  const NOT_FOUND = "notFound";
-  const EXPIRED   = "expired";
-}
-
 
 
 ########################

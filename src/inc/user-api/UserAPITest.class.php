@@ -37,7 +37,7 @@ class UserAPITest extends UserAPIBasic {
           UResponseErrorMessage::SECTION => USection::TEST,
           UResponseErrorMessage::REQUEST => USectionTest::ACCESS,
           UResponseErrorMessage::RESPONSE => UValues::ERROR,
-          UResponseErrorMessage::MESSAGE => UValuesAccess::NOT_FOUND
+          UResponseErrorMessage::MESSAGE => "API key was not found!"
         )
       );
     }
@@ -46,14 +46,14 @@ class UserAPITest extends UserAPIBasic {
           UResponseErrorMessage::SECTION => USection::TEST,
           UResponseErrorMessage::REQUEST => USectionTest::ACCESS,
           UResponseErrorMessage::RESPONSE => UValues::ERROR,
-          UResponseErrorMessage::MESSAGE => UValuesAccess::EXPIRED
+          UResponseErrorMessage::MESSAGE => "API key is not valid yet or has expired!"
         )
       );
     }
     $this->sendResponse(array(
         UResponse::SECTION => USection::TEST,
         UResponse::REQUEST => USectionTest::ACCESS,
-        UResponse::RESPONSE => UValuesAccess::OK
+        UResponse::RESPONSE => UValues::OK
       )
     );
   }
