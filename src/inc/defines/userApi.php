@@ -59,6 +59,6 @@ class USection {
   const TEST = "test";
 }
 
-class UTestRequest {
+class USectionTest {
   const CONNECTION = "connection";
 }

@@ -14,12 +14,16 @@ header("Content-Type: application/json");
 $QUERY = json_decode(file_get_contents('php://input'), true);
 
 $api = null;
-switch ($QUERY['section']) {
-  
+switch ($QUERY[UQuery::SECTION]) {
+  case USection::TEST:
+    $api = new UserAPITest();
+    break;
 }
 
 if ($api == null) {
   // TODO: response that the query was invalid
+  $api = new UserAPITest();
+  $api->sendErrorResponse("INV", "INV", "Invalid user api query!");
 }
 else {
   $api->execute($QUERY);
