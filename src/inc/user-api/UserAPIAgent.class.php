@@ -15,7 +15,7 @@ class UserAPIAgent extends UserAPIBasic {
         // TODO:
         break;
       case USectionAgent::LIST_VOUCHERS:
-        // TODO:
+        $this->listVouchers($QUERY);
         break;
       case USectionAgent::LIST_AGENTS:
         // TODO:
@@ -23,6 +23,23 @@ class UserAPIAgent extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function listVouchers($QUERY){
+    global $FACTORIES;
+
+    $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
+    $arr = [];
+    foreach($vouchers as $voucher){
+      $arr[] = $voucher->getVoucher();
+    }
+    $this->sendResponse(array(
+        UResponseAgent::SECTION => USection::AGENT,
+        UResponseAgent::REQUEST => USectionAgent::GET_BINARIES,
+        UResponseAgent::RESPONSE => UValues::OK,
+        UResponseAgent::VOUCHERS => $arr
+      )
+    );
   }
 
   private function getBinaries($QUERY){

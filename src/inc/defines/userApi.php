@@ -49,7 +49,8 @@ class UResponseErrorMessage extends UResponse {
 }
 
 class UResponseAgent extends UResponse {
-  const VOUCHER = "voucher";
+  const VOUCHER  = "voucher";
+  const VOUCHERS = "vouchers";
 
   const BINARIES          = "binaries";
   const BINARIES_NAME     = "name";
