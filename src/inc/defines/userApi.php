@@ -10,17 +10,11 @@ abstract class UQuery { // include only generalized query values
   const SECTION = "section";
   const REQUEST = "request";
   const ACCESS_KEY  = "accessKey";
-
-  /**
-   * This function checks if all required values are given in the query
-   *
-   * @param $QUERY array the given query
-   * @return bool true on valid, false if not
-   */
-  abstract static function isValid($QUERY);
 }
 
-
+class UQueryAgent extends UQuery {
+  const VOUCHER = "voucher";
+}
 
 ######################
 # Values definitions #
@@ -54,7 +48,17 @@ class UResponseErrorMessage extends UResponse {
   const MESSAGE = "message";
 }
 
+class UResponseAgent extends UResponse {
+  const VOUCHER = "voucher";
 
+  const BINARIES          = "binaries";
+  const BINARIES_NAME     = "name";
+  const BINARIES_URL      = "url";
+  const BINARIES_VERSION  = "version";
+  const BINARIES_OS       = "os";
+  const BINARIES_FILENAME = "filename";
+  const AGENT_URL         = "apiUrl";
+}
 
 ###############################
 # Section/Request definitions #
@@ -73,10 +77,39 @@ class USection {
   const CONFIG        = "config";
   const USER          = "user";
   const GROUP         = "group";
-  const ACCESS        = "access":
+  const ACCESS        = "access";
 }
 
 class USectionTest {
   const CONNECTION = "connection";
   const ACCESS     = "access";
 }
+
+class USectionAgent {
+  const CREATE_VOUCHER = "createVoucher";
+  const GET_BINARIES   = "getBinaries";
+  const LIST_VOUCHERS  = "listVouchers";
+  const LIST_AGENTS    = "listAgents";
+}
+
+class USectionTask {}
+
+class USectionPretask {}
+
+class USectionSupertask {}
+
+class USectionHashlist {}
+
+class USectionSuperhashlist {}
+
+class USectionFile {}
+
+class USectionCracker {}
+
+class USectionConfig {}
+
+class USectionUser {}
+
+class USectionGroup {}
+
+class USectionAccess {}

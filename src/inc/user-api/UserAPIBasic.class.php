@@ -46,8 +46,33 @@ abstract class UserAPIBasic {
     if ($apiKey == null) {
       $this->sendErrorResponse($section, $request, "Invalid access key!");
     }
+    else if($apiKey->getStartValid() > time() || $apiKey->getEndValid() < time()){
+      $this->sendErrorResponse($section, $request, "Expired access key!");
+    }
+    else if(!$this->hasPermission($section, $request, $apiKey)){
+      $this->sendErrorResponse($section, $request, "Permission denied!");
+    }
     $this->apiKey = $apiKey;
     $this->user = $FACTORIES::getApiKeyFactory()->get($apiKey->getUserId());
+  }
+
+  /**
+   * @param string $section 
+   * @param string $request 
+   * @param ApiKey $apiKey 
+   */
+  private function hasPermission($section, $request, $apiKey){
+    $json = json_decode($apiKey->getPermissions(), true);
+    if(!isset($json[$section])){
+      return false;
+    }
+    else if(!isset($json[$section][$request])){
+      return false;
+    }
+    else if($json[$section][$request] == true){
+      return true;
+    }
+    return false;
   }
 }
 

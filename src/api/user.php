@@ -18,6 +18,42 @@ switch ($QUERY[UQuery::SECTION]) {
   case USection::TEST:
     $api = new UserAPITest();
     break;
+  case USection::ACCESS:
+    $api = new UserAPIAccess();
+    break;
+  case USection::AGENT:
+    $api = new UserAPIAgent();
+    break;
+  case USection::CONFIG:
+    $api = new UserAPIConfig();
+    break;
+  case USection::CRACKER:
+    $api = new UserAPICracker();
+    break;
+  case USection::FILE:
+    $api = new UserAPIFile();
+    break;
+  case USection::GROUP:
+    $api = new UserAPIGroup();
+    break;
+  case USection::HASHLIST:
+    $api = new UserAPIHashlist();
+    break;
+  case USection::PRETASK:
+    $api = new UserAPIPretask();
+    break;
+  case USection::SUPERHASHLIST:
+    $api = new UserAPISuperhashlist();
+    break;
+  case USection::SUPERTASK:
+    $api = new UserAPISupertask();
+    break;
+  case USection::TASK:
+    $api = new UserAPITask();
+    break;
+  case USection::USER:
+    $api = new UserAPIUser();
+    break;
 }
 
 if ($api == null) {
@@ -26,6 +62,9 @@ if ($api == null) {
   $api->sendErrorResponse("INV", "INV", "Invalid user api query!");
 }
 else {
+  if($QUERY[UQuery::SECTION] != USection::TEST){
+    $api->checkApiKey($QUERY[UQuery::SECTION], $QUERY[UQuery::REQUEST], $QUERY);
+  }
   $api->execute($QUERY);
 }
 

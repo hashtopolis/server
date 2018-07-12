@@ -210,7 +210,7 @@ class AgentHandler implements Handler {
     $FACTORIES::getRegVoucherFactory()->delete($voucher);
   }
   
-  private function createVoucher($newVoucher) {
+  public function createVoucher($newVoucher) {
     global $FACTORIES;
     
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");

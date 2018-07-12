@@ -13,6 +13,8 @@ class UserAPITest extends UserAPIBasic {
       case USectionTest::ACCESS:
         $this->accessTest($QUERY);
         break;
+      default:
+        $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
   }
 
