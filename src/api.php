@@ -24,7 +24,27 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-// TODO:
+if(isset($_GET['id'])){
+  // TODO:
+}
+else {
+  // determine keys and groups
+  $groups = $FACTORIES::getApiGroupFactory()->filter(array());
+
+  $apis = array();
+  foreach ($groups as $group) {
+    $apis[$group->getId()] = 0;
+  }
+
+  $allApiKeys = $FACTORIES::getApiKeyFactory()->filter(array());
+  foreach ($allApiKeys as $apiKey) {
+    $apis[$apiKey->getApiGroupId()]++;
+  }
+
+  $OBJECTS['apis'] = new DataSet($apis);
+  $OBJECTS['groups'] = $groups;
+  $OBJECTS['pageTitle'] = "Api Groups";
+}
 
 echo $TEMPLATE->render($OBJECTS);
 

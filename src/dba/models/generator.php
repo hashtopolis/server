@@ -253,8 +253,13 @@ $CONF['ApiKey'] = array(
   'endValid',
   'accessKey',
   'accessCount',
+  'userId',
+  'apiGroupId'
+);
+$CONF['ApiGroup'] = array(
+  'apiGroupId',
   'permissions',
-  'userId'
+  'name'
 );
 
 // relations

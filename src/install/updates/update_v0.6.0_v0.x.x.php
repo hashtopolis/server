@@ -44,7 +44,8 @@ CREATE TABLE `ApiKey` (
   `endValid` bigint(20) NOT NULL,
   `accessKey` varchar(256) NOT NULL,
   `accessCount` int(11) NOT NULL,
-  `permissions` text NOT NULL
+  `userId` int(11) NOT NULL,
+  `apiGroupId` int(11) NOT NULL
 )");
 $FACTORIES::getAgentFactory()->getDB()->query("
 ALTER TABLE `ApiKey`
@@ -52,6 +53,18 @@ ALTER TABLE `ApiKey`
 $FACTORIES::getAgentFactory()->getDB()->query("
 ALTER TABLE `ApiKey`
   MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT");
+$FACTORIES::getAgentFactory()->getDB()->query("
+CREATE TABLE `ApiGroup` (
+  `apiGroupId` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `permissions` text NOT NULL
+)");
+$FACTORIES::getAgentFactory()->getDB()->query("
+ALTER TABLE `ApiGroup`
+  ADD PRIMARY KEY (`apiGroupId`)");
+$FACTORIES::getAgentFactory()->getDB()->query("
+ALTER TABLE `ApiGroup`
+  MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT");
 echo "OK\n";
 
 echo "Adding new config settings...";

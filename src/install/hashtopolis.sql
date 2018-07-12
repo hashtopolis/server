@@ -1002,14 +1002,20 @@ CREATE TABLE `Zap` (
 
 
 
-CREATE TABLE `apikey` (
+CREATE TABLE `ApiKey` (
   `apiKeyId` int(11) NOT NULL,
   `startValid` bigint(20) NOT NULL,
   `endValid` bigint(20) NOT NULL,
   `accessKey` varchar(256) NOT NULL,
   `accessCount` int(11) NOT NULL,
-  `permissions` text NOT NULL,
-  `userId` int(11) NOT NULL
+  `userId` int(11) NOT NULL,
+  `apiGroupId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ApiGroup` (
+  `apiGroupId` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `permissions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -1017,6 +1023,9 @@ CREATE TABLE `apikey` (
 --
 ALTER TABLE `ApiKey`
   ADD PRIMARY KEY (`apiKeyId`);
+
+ALTER TABLE `ApiGroup`
+  ADD PRIMARY KEY (`apiGroupId`);
 
 
 --
@@ -1279,6 +1288,9 @@ ALTER TABLE `Zap`
 
 ALTER TABLE `ApiKey`
   MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `ApiGroup`
+  MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`

@@ -8,17 +8,17 @@ class ApiKey extends AbstractModel {
   private $endValid;
   private $accessKey;
   private $accessCount;
-  private $permissions;
   private $userId;
+  private $apiGroupId;
   
-  function __construct($apiKeyId, $startValid, $endValid, $accessKey, $accessCount, $permissions, $userId) {
+  function __construct($apiKeyId, $startValid, $endValid, $accessKey, $accessCount, $userId, $apiGroupId) {
     $this->apiKeyId = $apiKeyId;
     $this->startValid = $startValid;
     $this->endValid = $endValid;
     $this->accessKey = $accessKey;
     $this->accessCount = $accessCount;
-    $this->permissions = $permissions;
     $this->userId = $userId;
+    $this->apiGroupId = $apiGroupId;
   }
   
   function getKeyValueDict() {
@@ -28,8 +28,8 @@ class ApiKey extends AbstractModel {
     $dict['endValid'] = $this->endValid;
     $dict['accessKey'] = $this->accessKey;
     $dict['accessCount'] = $this->accessCount;
-    $dict['permissions'] = $this->permissions;
     $dict['userId'] = $this->userId;
+    $dict['apiGroupId'] = $this->apiGroupId;
     
     return $dict;
   }
@@ -82,14 +82,6 @@ class ApiKey extends AbstractModel {
     $this->accessCount = $accessCount;
   }
   
-  function getPermissions(){
-    return $this->permissions;
-  }
-  
-  function setPermissions($permissions){
-    $this->permissions = $permissions;
-  }
-  
   function getUserId(){
     return $this->userId;
   }
@@ -97,12 +89,20 @@ class ApiKey extends AbstractModel {
   function setUserId($userId){
     $this->userId = $userId;
   }
+  
+  function getApiGroupId(){
+    return $this->apiGroupId;
+  }
+  
+  function setApiGroupId($apiGroupId){
+    $this->apiGroupId = $apiGroupId;
+  }
 
   const API_KEY_ID = "apiKeyId";
   const START_VALID = "startValid";
   const END_VALID = "endValid";
   const ACCESS_KEY = "accessKey";
   const ACCESS_COUNT = "accessCount";
-  const PERMISSIONS = "permissions";
   const USER_ID = "userId";
+  const API_GROUP_ID = "apiGroupId";
 }
