@@ -11,6 +11,9 @@ class UserAPIAgent extends UserAPIBasic {
       case USectionAgent::GET_BINARIES:
         $this->getBinaries($QUERY);
         break;
+      case USectionAgent::DELETE_VOUCHER:
+        // TODO:
+        break;
       case USectionAgent::LIST_VOUCHERS:
         // TODO:
         break;

@@ -62,6 +62,9 @@ abstract class UserAPIBasic {
    * @param ApiKey $apiKey 
    */
   private function hasPermission($section, $request, $apiKey){
+    if($apiKey->getPermissions() == 'ALL'){
+      return true;
+    }
     $json = json_decode($apiKey->getPermissions(), true);
     if(!isset($json[$section])){
       return false;

@@ -89,6 +89,7 @@ class USectionAgent {
   const CREATE_VOUCHER = "createVoucher";
   const GET_BINARIES   = "getBinaries";
   const LIST_VOUCHERS  = "listVouchers";
+  const DELETE_VOUCHER = "deleteVoucher";
   const LIST_AGENTS    = "listAgents";
 }
 
