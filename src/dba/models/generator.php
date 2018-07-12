@@ -287,11 +287,6 @@ $CONF['HashlistHashlist'] = array(
   'parentHashlistId',
   'hashlistId'
 );
-$CONF['ApiKeyUser'] = array(
-  'apiKeyUserId',
-  'apiKeyId',
-  'userId'
-);
 
 foreach ($CONF as $NAME => $COLUMNS) {
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");

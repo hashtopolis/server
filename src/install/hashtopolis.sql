@@ -1008,12 +1008,7 @@ CREATE TABLE `apikey` (
   `endValid` bigint(20) NOT NULL,
   `accessKey` varchar(256) NOT NULL,
   `accessCount` int(11) NOT NULL,
-  `permissions` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `apikeyuser` (
-  `apiKeyUserId` int(11) NOT NULL,
-  `apiKeyId` int(11) NOT NULL,
+  `permissions` text NOT NULL,
   `userId` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1033,9 +1028,6 @@ ALTER TABLE `ApiKey`
 --
 ALTER TABLE `AccessGroup`
   ADD PRIMARY KEY (`accessGroupId`);
-
-ALTER TABLE `ApiKeyUser`
-  ADD PRIMARY KEY (`apiKeyUserId`);
 
 --
 -- Indizes für die Tabelle `AccessGroupAgent`
@@ -1287,9 +1279,6 @@ ALTER TABLE `Zap`
 
 ALTER TABLE `ApiKey`
   MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `ApiKeyUser` 
-  MODIFY `apiKeyUserId` INT(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`

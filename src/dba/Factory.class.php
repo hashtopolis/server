@@ -39,7 +39,6 @@ class Factory {
   private static $filePretaskFactory = null;
   private static $supertaskPretaskFactory = null;
   private static $hashlistHashlistFactory = null;
-  private static $apiKeyUserFactory = null;
 
   public static function getAccessGroupFactory() {
     if (self::$accessGroupFactory == null) {
@@ -398,16 +397,6 @@ class Factory {
       return $f;
     } else {
       return self::$hashlistHashlistFactory;
-    }
-  }
-  
-  public static function getApiKeyUserFactory() {
-    if (self::$apiKeyUserFactory == null) {
-      $f = new ApiKeyUserFactory();
-      self::$apiKeyUserFactory = $f;
-      return $f;
-    } else {
-      return self::$apiKeyUserFactory;
     }
   }
 
