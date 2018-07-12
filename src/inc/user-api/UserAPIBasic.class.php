@@ -20,7 +20,7 @@ abstract class UserAPIBasic {
     die();
   }
 
-  protected function updateApi($action) {
+  protected function updateApi() {
     global $FACTORIES;
 
     $this->apiKey->setAccessCount($this->apiKey->getAccessCount() + 1);
@@ -54,6 +54,7 @@ abstract class UserAPIBasic {
     }
     $this->apiKey = $apiKey;
     $this->user = $FACTORIES::getApiKeyFactory()->get($apiKey->getUserId());
+    $this->updateApi();
   }
 
   /**
