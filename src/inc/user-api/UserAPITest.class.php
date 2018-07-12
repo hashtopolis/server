@@ -34,17 +34,19 @@ class UserAPITest extends UserAPIBasic {
     $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if($apiKey == null){
       $this->sendResponse(array(
-          UResponse::SECTION => USection::TEST,
-          UResponse::REQUEST => USectionTest::ACCESS,
-          UResponse::RESPONSE => UValuesAccess::NOT_FOUND
+          UResponseErrorMessage::SECTION => USection::TEST,
+          UResponseErrorMessage::REQUEST => USectionTest::ACCESS,
+          UResponseErrorMessage::RESPONSE => UValues::ERROR,
+          UResponseErrorMessage::MESSAGE => UValuesAccess::NOT_FOUND
         )
       );
     }
     else if($apiKey->getStartValid() > time() || $apiKey->getEndValid() < time()){
       $this->sendResponse(array(
-          UResponse::SECTION => USection::TEST,
-          UResponse::REQUEST => USectionTest::ACCESS,
-          UResponse::RESPONSE => UValuesAccess::EXPIRED
+          UResponseErrorMessage::SECTION => USection::TEST,
+          UResponseErrorMessage::REQUEST => USectionTest::ACCESS,
+          UResponseErrorMessage::RESPONSE => UValues::ERROR,
+          UResponseErrorMessage::MESSAGE => UValuesAccess::EXPIRED
         )
       );
     }
