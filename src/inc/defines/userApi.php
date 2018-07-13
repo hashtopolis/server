@@ -16,6 +16,7 @@ class UQueryAgent extends UQuery {
   const VOUCHER = "voucher";
   const AGENT_ID = "agentId";
   const ACTIVE = "active";
+  const USER = "user";
 }
 
 ######################

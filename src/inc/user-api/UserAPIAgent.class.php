@@ -5,6 +5,7 @@ use DBA\RegVoucher;
 use DBA\ContainFilter;
 use DBA\AccessGroupAgent;
 use DBA\OrderFilter;
+use DBA\User;
 
 class UserAPIAgent extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -33,7 +34,7 @@ class UserAPIAgent extends UserAPIBasic {
         $this->setActive($QUERY);
         break;
       case USectionAgent::CHANGE_OWNER:
-
+        $this->changeOwner($QUERY);
         break;
       case USectionAgent::SET_NAME:
 
@@ -53,6 +54,40 @@ class UserAPIAgent extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function changeOwner($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::USER])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    else if(!isset($QUERY[UQueryAgent::AGENT_ID])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $FACTORIES::getAgentFactory()->get($QUERY[UQueryAgent::AGENT_ID]);
+    if($agent == null){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid agent specified!");
+    }
+    $user = null;
+    if($QUERY[UQueryAgent::USER] === 0){
+      $agent->setUserId(null);
+      $FACTORIES::getAgentFactory()->update($agent);
+      $this->sendSuccessResponse($QUERY);
+    }
+    else if(is_numeric($QUERY[UQueryAgent::USER])){
+      $user = $FACTORIES::getUserFactory()->get($QUERY[UQueryAgent::USER]);
+    }
+    else{
+      $qF = new QueryFilter(User::USERNAME, $QUERY[UQueryAgent::USER], "=");
+      $user = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    }
+    if($user == null){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid user specified!");
+    }
+    $agent->setUserId($user->getId());
+    $FACTORIES::getAgentFactory()->update($agent);
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function setActive($QUERY){
