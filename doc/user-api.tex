@@ -129,4 +129,52 @@
 				}
 				\end{verbatim}
 			}
+		\subsection*{\textit{changeOwner}}
+			Either set an owner for an agent or remove the owner from it. The user can either be specified by providing the user ID or the username. If no owner should be specified, the user value must be \textit{null}.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "user": 1,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "user": "testuser",
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "user": null,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
 \end{document}
