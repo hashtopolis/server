@@ -376,4 +376,129 @@
 				}
 				\end{verbatim}
 			}
+		
+		\subsection*{\textit{listVouchers}}
+			Lists all currently existing vouchers on the server which can be used to register new agents.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "listVouchers",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "getBinaries",
+				  "response": "OK",
+				  "vouchers": [
+				    "sM2q6CwiPY",
+				    "xkw782a3x9",
+				    "2drg6Vsqor",
+				    "AZyY8dK1ao"
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{createVoucher}}
+			Create a new voucher on the server. It is optional to specify a voucher code otherwise the server will just generate a random one. The server always sends back the created voucher.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "createVoucher",
+				  "voucher": "mySpecificVoucher",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "createVoucher",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "createVoucher",
+				  "response": "OK",
+				  "voucher": "Gjawgidkr4"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{deleteVoucher}}
+			Delete a voucher from the server.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "deleteVoucher",
+				  "voucher": "Gjawgidkr4",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "deleteVoucher",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getBinaries}}
+			Lists which agent binaries are available on the server to be used for agents.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "getBinaries",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "getBinaries",
+				  "response": "OK",
+				   "apiUrl": "http:\/\/localhost\/hashtopolis\/src\/api\/api\/server.php",
+				  "binaries": [
+				    {
+				      "name": "csharp",
+				      "os": "Windows, Linux(mono), OS X(mono)",
+				      "url": "http:\/\/localhost\/hashtopolis\/src\/api\/agents.php?download=1",
+				      "version": "0.52.2",
+				      "filename": "hashtopolis.exe"
+				    },
+				    {
+				      "name": "python",
+				      "os": "Windows, Linux, OS X",
+				      "url": "http:\/\/localhost\/hashtopolis\/src\/api\/agents.php?download=2",
+				      "version": "0.1.4",
+				      "filename": "hashtopolis.zip"
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
 \end{document}
