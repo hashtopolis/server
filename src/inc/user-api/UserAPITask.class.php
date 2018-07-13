@@ -34,7 +34,7 @@ class UserAPITask extends UserAPIBasic {
     }
   }
 
-  private function listTask($QUERY){
+  private function listTasks($QUERY){
     global $FACTORIES;
 
     $accessGroupIds = Util::getAccessGroupIds($this->user->getId());
