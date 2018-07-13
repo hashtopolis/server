@@ -28,7 +28,7 @@ class UserAPIAgent extends UserAPIBasic {
         $this->listAgents($QUERY);
         break;
       case USectionAgent::GET:
-
+        $this->getAgent($QUERY);
         break;
       case USectionAgent::SET_ACTIVE:
         $this->setActive($QUERY);
@@ -54,6 +54,35 @@ class UserAPIAgent extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function getAgent($QUERY){
+    global $FACTORIES, $CONFIG;
+
+    $agent = $this->checkAgent($QUERY);
+    $response = [
+      UResponseAgent::SECTION => $QUERY[UQueryAgent::SECTION],
+      UResponseAgent::REQUEST => $QUERY[UQueryAgent::REQUEST],
+      UResponseAgent::RESPONSE => UValues::OK,
+      UResponseAgent::AGENT_NAME => $agent->getAgentName(),
+      UResponseAgent::AGENT_DEVICES => explode("\n", $agent->getDevices()),
+      UResponseAgent::AGENT_OWNER => [
+        UResponseAgent::AGENT_OWNER_ID => $agent->getUserId(),
+        UResponseAgent::AGENT_OWNER_NAME => Util::getUsernameById($agent->getUserId())
+      ],
+      UResponseAgent::AGENT_CPU_ONLY => ($agent->getCpuOnly() == 1)?true:false,
+      UResponseAgent::AGENT_TRUSTED => ($agent->getIsTrusted() == 1)?true:false,
+      UResponseAgent::AGENT_ACTIVE => ($agent->getIsActive() == 1)?true:false,
+      UResponseAgent::AGENT_TOKEN => $agent->getToken(),
+      UResponseAgent::AGENT_PARAMS => $agent->getCmdPars(),
+      UResponseAgent::AGENT_ERRORS => $agent->getIgnoreErrors(),
+      UResponseAgent::AGENT_ACTIVITY => [
+        UResponseAgent::AGENT_ACTIVITY_ACTION => $agent->getLastAct(),
+        UResponseAgent::AGENT_ACTIVITY_TIME => $agent->getLastTime(),
+        UResponseAgent::AGENT_ACTIVITY_IP => ($CONFIG->getVal(DConfig::HIDE_IP_INFO) == 1)?"Hidden":$agent->getLastIp()
+      ]
+    ];
+    $this->sendResponse($response);
   }
 
   private function setTrusted($QUERY){
