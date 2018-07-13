@@ -67,7 +67,7 @@ class UserAPIAgent extends UserAPIBasic {
       UResponseAgent::AGENT_NAME => $agent->getAgentName(),
       UResponseAgent::AGENT_DEVICES => explode("\n", $agent->getDevices()),
       UResponseAgent::AGENT_OWNER => [
-        UResponseAgent::AGENT_OWNER_ID => $agent->getUserId(),
+        UResponseAgent::AGENT_OWNER_ID => (int)$agent->getUserId(),
         UResponseAgent::AGENT_OWNER_NAME => Util::getUsernameById($agent->getUserId())
       ],
       UResponseAgent::AGENT_CPU_ONLY => ($agent->getCpuOnly() == 1)?true:false,
@@ -75,10 +75,10 @@ class UserAPIAgent extends UserAPIBasic {
       UResponseAgent::AGENT_ACTIVE => ($agent->getIsActive() == 1)?true:false,
       UResponseAgent::AGENT_TOKEN => $agent->getToken(),
       UResponseAgent::AGENT_PARAMS => $agent->getCmdPars(),
-      UResponseAgent::AGENT_ERRORS => $agent->getIgnoreErrors(),
+      UResponseAgent::AGENT_ERRORS => (int)$agent->getIgnoreErrors(),
       UResponseAgent::AGENT_ACTIVITY => [
         UResponseAgent::AGENT_ACTIVITY_ACTION => $agent->getLastAct(),
-        UResponseAgent::AGENT_ACTIVITY_TIME => $agent->getLastTime(),
+        UResponseAgent::AGENT_ACTIVITY_TIME => (int)$agent->getLastTime(),
         UResponseAgent::AGENT_ACTIVITY_IP => ($CONFIG->getVal(DConfig::HIDE_IP_INFO) == 1)?"Hidden":$agent->getLastIp()
       ]
     ];
