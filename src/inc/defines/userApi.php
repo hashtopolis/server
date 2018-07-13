@@ -85,6 +85,16 @@ class UResponseAgent extends UResponse {
   const AGENT_ACTIVITY_IP = "ip";
 }
 
+class UResponseTask extends UResponse {
+  const TASKS = "tasks";
+  const TASKS_ID = "taskId";
+  const TASKS_SUPERTASK_ID = "supertaskId";
+  const TASKS_NAME = "name";
+  const TASKS_TYPE = "type";
+  const TASKS_HASHLIST = "hashlistId";
+  const TASKS_PRIORITY = "priority";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -176,7 +186,44 @@ class USectionAgent extends UApi {
   const SET_TRUSTED      = "setTrusted";
 }
 
-class USectionTask extends UApi {}
+class USectionTask extends UApi {
+  const LIST_TASKS = "listTasks";
+  const GET_TASK = "getTask";
+  const LIST_SUBTASKS = "listSubtasks";
+  const LIST_PRETASKS = "listPretasks";
+  const GET_PRETASK = "getPretask";
+  const LIST_SUPERTASKS = "listSupertasks";
+  const GET_SUPERTASK = "getSupertask";
+
+  const CREATE_TASK = "createTask";
+  const RUN_PRETASK = "runPretask";
+  const RUN_SUPERTASK = "runSupertask";
+  const CREATE_PRETASK = "createPretask";
+  const CREATE_SUPERTASK = "createSupertask";
+  const IMPORT_SUPERTASK = "importSupertask";
+
+  const SET_TASK_PRIORITY = "setTaskPriority";
+  const SET_SUPERTASK_PRIORITY = "setSupertaskPriority";
+  const SET_TASK_NAME = "setTaskName";
+  const SET_TASK_COLOR = "setTaskColor";
+  const SET_TASK_CPU_ONLY = "setTaskCpuOnly";
+  const SET_TASK_SMALL = "setTaskSmall";
+  const TASK_UNASSIGN_AGENT = "taskUnassignAgent";
+  const DELETE_TASK = "deleteTask";
+  const PURGE_TASK = "purgeTask";
+
+  const SET_PRETASK_PRIORITY = "setPretaskPriority";
+  const SET_PRETASK_NAME = "setPretaskName";
+  const SET_PRETASK_COLOR = "setPretaskColor";
+  const SET_PRETASK_CHUNKSIZE = "setPretaskChunksize";
+  const SET_PRETASK_CPU_ONLY = "setPretaskCpuOnly";
+  const SET_PRETASK_SMALL = "setPretaskSmall";
+  const DELETE_PRETASK = "deletePretask";
+
+  const SET_SUBTASK_PRIORITY = "setSubtaskPriority";
+  const SET_SUPERTASK_NAME = "setSupertaskName";
+  const DELETE_SUPERTASK = "deleteSupertask";
+}
 
 class USectionPretask extends UApi {}
 
