@@ -73,9 +73,9 @@ class UserAPITask extends UserAPIBasic {
     $arr = [];
     foreach($files as $file){
       $arr[] = [
-        UResponseTask::TASK_FILES_ID => $file->getId(),
+        UResponseTask::TASK_FILES_ID => (int)$file->getId(),
         UResponseTask::TASK_FILES_NAME => $file->getFilename(),
-        UResponseTask::TASK_FILES_SIZE => $file->getSize()
+        UResponseTask::TASK_FILES_SIZE => (int)$file->getSize()
       ];
     }
     $response[UResponseTask::TASK_FILES] = $arr;
