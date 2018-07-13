@@ -282,6 +282,7 @@ class UserAPIAgent extends UserAPIBasic {
 
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
+    unset($url[sizeof($url) - 1]);
     $agentUrl = Util::buildServerUrl() . implode("/", $url) . "/api/server.php";
     $baseUrl = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
     $response = array(

@@ -66,7 +66,7 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::TASK_KEYSPACE => (int)$task->getKeyspace(),
       UResponseTask::TASK_DISPATCHED => (int)$task->getKeyspaceProgress(),
       UResponseTask::TASK_HASHLIST => (int)$taskWrapper->getHashlistId(),
-      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url)."/api/taskimg.php?task=".$task->getId(),
+      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url)."/taskimg.php?task=".$task->getId(),
     ];
 
     $files = TaskUtils::getFilesOfTask($task);
