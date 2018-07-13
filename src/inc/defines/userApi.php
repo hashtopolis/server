@@ -24,6 +24,10 @@ class UQueryAgent extends UQuery {
   const TRUSTED = "trusted";
 }
 
+class UQueryTask extends UQuery {
+  
+}
+
 ######################
 # Values definitions #
 ######################
