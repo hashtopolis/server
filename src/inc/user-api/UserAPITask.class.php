@@ -48,8 +48,8 @@ class UserAPITask extends UserAPIBasic {
 
     $taskList = array();
     $response = [
-      UResponseTask::SECTION => $QUERY[USection::TASK],
-      UResponseTask::REQUEST => $QUERY[USectionTask::LIST_TASKS],
+      UResponseTask::SECTION => USection::TASK,
+      UResponseTask::REQUEST => USectionTask::LIST_TASKS,
       UResponseTask::RESPONSE => UValues::OK
     ];
     foreach ($taskWrappers as $taskWrapper) {
