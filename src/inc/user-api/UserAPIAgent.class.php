@@ -37,23 +37,83 @@ class UserAPIAgent extends UserAPIBasic {
         $this->changeOwner($QUERY);
         break;
       case USectionAgent::SET_NAME:
-
+        $this->setName($QUERY);
         break;
       case USectionAgent::SET_CPU_ONLY:
-
+        $this->setCpuOnly($QUERY);
         break;
       case USectionAgent::SET_EXTRA_PARAMS:
-
+        $this->setExtraParams($QUERY);
         break;
       case USectionAgent::SET_ERROR_FLAG:
-
+        $this->setError($QUERY);
         break;
       case USectionAgent::SET_TRUSTED:
-
+        $this->setTrusted($QUERY);
         break;
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function setTrusted($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::TRUSTED]) || !is_bool($QUERY[UQueryAgent::TRUSTED])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $this->checkAgent($QUERY);
+    $agent->setIsTrusted(($QUERY[UQueryAgent::TRUSTED])?1:0);
+    $FACTORIES::getAgentFactory()->update($agent);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  private function setError($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::IGNORE_ERRORS])  || !is_numeric($QUERY[UQueryAgent::IGNORE_ERRORS]) || !in_array($QUERY[UQueryAgent::IGNORE_ERRORS], [0, 1, 2])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $this->checkAgent($QUERY);
+    $agent->setIgnoreErrors($QUERY[UQueryAgent::IGNORE_ERRORS]);
+    $FACTORIES::getAgentFactory()->update($agent);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  private function setExtraParams($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::EXTRA_PARAMS])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $this->checkAgent($QUERY);
+    $agent->setCmdPars($QUERY[UQueryAgent::EXTRA_PARAMS]);
+    $FACTORIES::getAgentFactory()->update($agent);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  private function setCpuOnly($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::CPU_ONLY]) || !is_bool($QUERY[UQueryAgent::CPU_ONLY])){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $this->checkAgent($QUERY);
+    $agent->setCpuOnly(($QUERY[UQueryAgent::CPU_ONLY])?1:0);
+    $FACTORIES::getAgentFactory()->update($agent);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  private function setName($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryAgent::NAME]) || strlen($QUERY[UQueryAgent::NAME]) == 0){
+      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
+    }
+    $agent = $this->checkAgent($QUERY);
+    $agent->setAgentName($QUERY[UQueryAgent::NAME]);
+    $FACTORIES::getAgentFactory()->update($agent);
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function changeOwner($QUERY){
@@ -65,10 +125,7 @@ class UserAPIAgent extends UserAPIBasic {
     else if(!isset($QUERY[UQueryAgent::AGENT_ID])){
       $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
     }
-    $agent = $FACTORIES::getAgentFactory()->get($QUERY[UQueryAgent::AGENT_ID]);
-    if($agent == null){
-      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid agent specified!");
-    }
+    $agent = $this->checkAgent($QUERY);
     $user = null;
     if($QUERY[UQueryAgent::USER] === 0){
       $agent->setUserId(null);
