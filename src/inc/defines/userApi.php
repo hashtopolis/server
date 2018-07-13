@@ -25,7 +25,7 @@ class UQueryAgent extends UQuery {
 }
 
 class UQueryTask extends UQuery {
-  
+  const TASK_ID = "taskId";
 }
 
 ######################
@@ -97,7 +97,35 @@ class UResponseTask extends UResponse {
   const TASKS_TYPE = "type";
   const TASKS_HASHLIST = "hashlistId";
   const TASKS_PRIORITY = "priority";
+
+  const TASK_ID = "taskId";
+  const TASK_NAME = "name";
+  const TASK_ATTACK = "attack";
+  const TASK_CHUNKSIZE = "cunksize";
+  const TASK_COLOR = "color";
+  const TASK_BENCH_TYPE = "benchmarkType";
+  const TASK_STATUS = "statusTimer";
+  const TASK_PRIORITY = "priority";
+  const TASK_CPU_ONLY = "isCpuOnly";
+  const TASK_SMALL = "isSmall";
+  const TASK_SKIP = "skipKeyspace";
+  const TASK_KEYSPACE = "keyspace";
+  const TASK_DISPATCHED = "dispatched";
+  const TASK_SEARCHED = "searched";
+  const TASK_SPEED = "speed";
+  const TASK_HASHLIST = "hashlistId";
+  const TASK_IMAGE = "imageUrl";
+  const TASK_FILES = "files";
+  const TASK_FILES_ID = "fileId";
+  const TASK_FILES_NAME = "filename";
+  const TASK_FILES_SIZE = "size";
+  const TASK_AGENTS = "agents";
+  const TASK_AGENTS_ID = "agentId";
+  const TASK_AGENTS_BENCHMARK = "benchmark";
+  const TASK_AGENTS_SPEED = "speed";
+  const TASK_CHUNKS = "chunkIds";
 }
+
 
 ###############################
 # Section/Request definitions #
@@ -198,6 +226,7 @@ class USectionTask extends UApi {
   const GET_PRETASK = "getPretask";
   const LIST_SUPERTASKS = "listSupertasks";
   const GET_SUPERTASK = "getSupertask";
+  const GET_CHUNK = "getChunk";
 
   const CREATE_TASK = "createTask";
   const RUN_PRETASK = "runPretask";
