@@ -2,6 +2,8 @@
 use DBA\ContainFilter;
 use DBA\OrderFilter;
 use DBA\TaskWrapper;
+use DBA\QueryFilter;
+use DBA\Task;
 
 class UserAPITask extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -52,6 +54,7 @@ class UserAPITask extends UserAPIBasic {
     ];
     foreach ($taskWrappers as $taskWrapper) {
       if($taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+        $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
         $task = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
         $taskList[] = [
           UResponseTask::TASKS_ID => (int)$task->getId(),
