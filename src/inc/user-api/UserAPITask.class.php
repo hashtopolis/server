@@ -151,7 +151,7 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::PRETASK_NAME => $pretask->getTaskName(),
       UResponseTask::PRETASK_ATTACK => $pretask->getAttackCmd(),
       UResponseTask::PRETASK_CHUNKSIZE => (int)$pretask->getChunkTime(),
-      UResponseTask::PRETASK_COLOR => $pretask->getColor(),
+      UResponseTask::PRETASK_COLOR => (strlen($pretask->getColor()) == 0)?null:$pretask->getColor(),
       UResponseTask::PRETASK_BENCH_TYPE => ($pretask->getUseNewBench() == 1)?"speed":"runtime",
       UResponseTask::PRETASK_STATUS => (int)$pretask->getStatusTimer(),
       UResponseTask::PRETASK_PRIORITY => (int)$pretask->getPriority(),
