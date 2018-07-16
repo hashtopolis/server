@@ -54,7 +54,7 @@ class UserAPITask extends UserAPIBasic {
         $this->runSupertask($QUERY);
         break;
       case USectionTask::CREATE_PRETASK:
-        // TODO:
+        $this->createPretask($QUERY);
         break;
       case USectionTask::CREATE_SUPERTASK:
         // TODO:
@@ -65,6 +65,93 @@ class UserAPITask extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function createPretask($QUERY){
+    global $FACTORIES, $CONFIG;
+
+    $toCheck = [
+      UQueryTask::TASK_NAME,
+      UQueryTask::TASK_ATTACKCMD,
+      UQueryTask::TASK_CHUNKSIZE,
+      UQueryTask::TASK_STATUS,
+      UQueryTask::TASK_BENCHTYPE,
+      UQueryTask::TASK_COLOR,
+      UQueryTask::TASK_CPU_ONLY,
+      UQueryTask::TASK_SMALL,
+      UQueryTask::TASK_CRACKER_TYPE,
+      UQueryTask::TASK_FILES
+    ];
+    foreach($toCheck as $input){
+      if(!isset($QUERY[$input])){
+        $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+      }
+    }
+    $name = $QUERY[UQueryTask::TASK_NAME];
+    $cracker = $FACTORIES::getCrackerBinaryTypeFactory()->get($QUERY[UQueryTask::TASK_CRACKER_TYPE]);
+    if($cracker == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker type ID!");
+    }
+    $attackCmd = $QUERY[UQueryTask::TASK_ATTACKCMD];
+    if(strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Attack command does not contain hashlist alias!");
+    }
+    else if(Util::containsBlacklistedChars($attackCmd)){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Attack command contains blacklisted characters!");
+    }
+    $chunksize = $QUERY[UQueryTask::TASK_CHUNKSIZE];
+    if(!is_numeric($chunksize) || $chunksize < 1){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid chunk size!");
+    }
+    $status = $QUERY[UQueryTask::TASK_STATUS];
+    if(!is_numeric($status) || $status < 1){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid status timer!");
+    }
+    $benchtype = $QUERY[UQueryTask::TASK_BENCHTYPE];
+    if($benchtype != 'speed' && $benchtype != 'runtime'){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid benchmark type!");
+    }
+    $benchtype = ($benchtype == 'speed')?1:0;
+    $color = $QUERY[UQueryTask::TASK_COLOR];
+    if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
+      $color = null;
+    }
+    $isCpuOnly = ($QUERY[UQueryTask::TASK_CPU_ONLY])?1:0;
+    $isSmall = ($QUERY[UQueryTask::TASK_SMALL])?1:0;
+    $priority = $QUERY[UQueryTask::TASK_PRIORITY];
+    if($priority < 0){
+      $priority = 0;
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+
+    $pretask = new Pretask(
+      0,
+      $name,
+      $attackCmd,
+      $chunksize,
+      $status,
+      $color,
+      $isSmall,
+      $isCpuOnly,
+      $benchtype,
+      $priority,
+      0,
+      $cracker->getId()
+    );
+
+    $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
+
+    $files = $QUERY[UQueryTask::TASK_FILES];
+    if (is_array($files) && sizeof($files) > 0) {
+      foreach ($files as $fileId) {
+        $taskFile = new FilePretask(0, $fileId, $pretask->getId());
+        $FACTORIES::getFilePretaskFactory()->save($taskFile);
+      }
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function runSupertask($QUERY){
@@ -91,11 +178,11 @@ class UserAPITask extends UserAPIBasic {
     $pretasks = $joined[$FACTORIES::getPretaskFactory()->getModelName()];
 
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    
+
     $wrapperPriority = 0;
     foreach ($pretasks as $pretask) {
       if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
-        $wrapperPriority = $pretask->getPriority(); 
+        $wrapperPriority = $pretask->getPriority();
       }
     }
 
@@ -260,10 +347,6 @@ class UserAPITask extends UserAPIBasic {
     $priority = $QUERY[UQueryTask::TASK_PRIORITY];
     if($priority < 0){
       $priority = 0;
-    }
-    $cracker = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[UQueryTask::TASK_CRACKER_VERSION]);
-    if($cracker == null){
-      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker ID!");
     }
 
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();

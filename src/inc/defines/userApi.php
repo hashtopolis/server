@@ -43,6 +43,8 @@ class UQueryTask extends UQuery {
   const TASK_CRACKER_VERSION = "crackerVersionId";
   const TASK_FILES = "files";
   const TASK_PRIORITY = "priority";
+
+  const TASK_CRACKER_TYPE = "crackerTypeId";
 }
 
 ######################
