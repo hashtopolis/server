@@ -111,10 +111,10 @@ class UserAPITask extends UserAPIBasic {
   }
 
   private function unassignAgent($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::AGENT_ID])){
+    if(!isset($QUERY[UQueryTask::AGENT_ID])){
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
     }
-    $error = AgentUtils::assign($QUERY[UQueryTask::AGENT_ID], $QUERY[UQueryTask::TASK_ID], $this->user);
+    $error = AgentUtils::assign($QUERY[UQueryTask::AGENT_ID], 0, $this->user);
     $this->checkForError($QUERY, $error);
   }
 
