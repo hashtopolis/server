@@ -146,7 +146,7 @@ class UserAPITask extends UserAPIBasic {
     }
 
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "");
+    $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
     $task = new Task(
