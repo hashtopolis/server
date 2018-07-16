@@ -158,6 +158,14 @@ class UserAPITask extends UserAPIBasic {
     $this->checkForError($QUERY, $error);
   }
 
+  private function setSupertaskPriority($QUERY){
+    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_PRIORITY])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::setSupertaskPriority($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_PRIORITY], $this->user);
+    $this->checkForError($QUERY, $error);
+  }
+
   private function importSupertask($QUERY){
     global $FACTORIES;
 

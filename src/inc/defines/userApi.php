@@ -49,6 +49,7 @@ class UQueryTask extends UQuery {
   const MASKS = "masks";
   const TASK_OPTIMIZED = "optimizedFlag";
   const AGENT_ID = "agentId";
+  const SUPERTASK_PRIORITY = "suprtaskPriority";
 }
 
 ######################
