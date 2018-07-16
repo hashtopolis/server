@@ -26,6 +26,7 @@ class UQueryAgent extends UQuery {
 
 class UQueryTask extends UQuery {
   const TASK_ID = "taskId";
+  const SUPERTASK_ID = "supertaskId";
 }
 
 ######################

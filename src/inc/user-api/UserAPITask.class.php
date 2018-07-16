@@ -20,7 +20,7 @@ class UserAPITask extends UserAPIBasic {
         $this->getTask($QUERY);
         break;
       case USectionTask::LIST_SUBTASKS:
-        // TODO:
+        $this->listSubtasks($QUERY);
         break;
       case USectionTask::LIST_PRETASKS:
         // TODO:
@@ -40,6 +40,31 @@ class UserAPITask extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function listSubTasks($QUERY){
+    global $FACTORIES;
+
+    $supertask = $this->checkSupertask($QUERY);
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $supertask->getId(), "=");
+    $oF = new OrderFilter(Task::PRIORITY, "DESC");
+    $subtasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+
+    $taskList = array();
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK
+    ];
+    foreach ($subtasks as $subtask) {
+      $taskList[] = [
+        UResponseTask::TASKS_ID => (int)$subtask->getId(),
+        UResponseTask::TASKS_NAME => $subtask->getTaskName(),
+        UResponseTask::TASKS_PRIORITY => (int)$subtask->getPriority()
+      ];
+    }
+    $response[UResponseTask::TASKS] = $taskList;
+    $this->sendResponse($response);
   }
 
   private function getTask($QUERY){
@@ -117,6 +142,27 @@ class UserAPITask extends UserAPIBasic {
     }
     $response[UResponseTask::TASK_AGENTS] = $arr;
     $this->sendResponse($response);
+  }
+
+  /**
+   * @param array $QUERY
+   * @return Supertask
+   */
+  private function checkSupertask($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $supertask = $FACTORIES::getTaskWrapperFactory()->get($QUERY[UQueryTask::SUPERTASK_ID]);
+    if($supertask == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid agent ID!");
+    }
+    $accessGroupIds = Util::getAccessGroupIds($this->user->getId());
+    if(!in_array($taskWrapper->getAccessGroupId(), $accessGroupIds)){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "No access to this task!");
+    }
+    return $supertask;
   }
 
   /**

@@ -501,4 +501,124 @@
 				}
 				\end{verbatim}
 			}
+	\section*{Tasks (\textit{task})}
+		Used to access all functions around tasks. Please note that the user must have access to the groups where a task is belonging to, to retrieve it and to be able to apply changes.
+		\subsection*{\textit{listTasks}}
+			List all tasks on the server. There are two task types:
+			\begin{description}
+				\item[0] Normal Task
+				\item[1] Supertask
+			\end{description}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listTasks",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listTasks",
+				  "response": "OK",
+				  "tasks": [
+				    {
+				      "taskId": 7587,
+				      "name": "test 2",
+				      "type": 0,
+				      "hashlistId": 1,
+				      "priority": 5
+				    },
+				    {
+				      "supertaskId": 33,
+				      "name": "Increment ?a",
+				      "type": 1,
+				      "hashlistId": 1,
+				      "priority": 3
+				    },
+				    {
+				      "supertaskId": 32,
+				      "name": "Supertask Test",
+				      "type": 1,
+				      "hashlistId": 1,
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7580,
+				      "name": "test 1",
+				      "type": 0,
+				      "hashlistId": 1,
+				      "priority": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getTask}}
+			Get the details for a specific task. Note that this request can only be done with tasks or subtasks, but not with supertasks.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getTask",
+				  "taskId": 7587,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getTask",
+				  "response": "OK",
+				  "taskId": 7587,
+				  "name": "testing",
+				  "attack": "#HL# -a 0 top10000.txt -r dive.rule",
+				  "cunksize": 600,
+				  "color": null,
+				  "benchmarkType": "speed",
+				  "statusTimer": 5,
+				  "priority": 0,
+				  "isCpuOnly": false,
+				  "isSmall": false,
+				  "skipKeyspace": 0,
+				  "keyspace": 10000,
+				  "dispatched": 10000,
+				  "hashlistId": 1,
+				  "imageUrl": "http:\/\/localhost\/hashtopolis\/src\/api\/taskimg.php?task=7587",
+				  "files": [
+				    {
+				      "fileId": 2,
+				      "filename": "dive.rule",
+				      "size": 887155
+				    },
+				    {
+				      "fileId": 3653,
+				      "filename": "top10000.txt",
+				      "size": 76508
+				    }
+				  ],
+				  "speed": 0,
+				  "searched": 10000,
+				  "chunkIds": [
+				    31
+				  ],
+				  "agents": [
+				    {
+				      "agentId": 2,
+				      "benchmark": "0",
+				      "speed": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
 \end{document}
