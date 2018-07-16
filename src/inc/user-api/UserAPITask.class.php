@@ -62,9 +62,100 @@ class UserAPITask extends UserAPIBasic {
       case USectionTask::IMPORT_SUPERTASK:
         $this->importSupertask($QUERY);
         break;
+      case USectionTask::SET_TASK_PRIORITY:
+        $this->setTaskPriority($QUERY);
+        break;
+      case USectionTask::SET_SUPERTASK_PRIORITY:
+        $this->setSuperTaskPriority($QUERY);
+        break;
+      case USectionTask::SET_TASK_NAME:
+        $this->setTaskName($QUERY);
+        break;
+      case USectionTask::SET_TASK_COLOR:
+        $this->setTaskColor($QUERY);
+        break;
+      case USectionTask::SET_TASK_CPU_ONLY:
+        $this->setCpuTask($QUERY);
+        break;
+      case USectionTask::SET_TASK_SMALL:
+        $this->setSmallTask($QUERY);
+        break;
+      case USectionTask::TASK_UNASSIGN_AGENT:
+        $this->unassignAgent($QUERY);
+        break;
+      case USectionTask::DELETE_TASK:
+        $this->deleteTask($QUERY);
+        break;
+      case USectionTask::PURGE_TASK:
+        $this->purgeTask($QUERY);
+        break;
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function purgeTask($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::purgeTask($QUERY[UQueryTask::TASK_ID], $this->user);
+    $this->checkForError($QUERY, $error);
+  }
+
+  private function deleteTask($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::delete($QUERY[UQueryTask::TASK_ID], $this->user, true);
+    $this->checkForError($QUERY, $error);
+  }
+
+  private function unassignAgent($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::AGENT_ID])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = AgentUtils::assign($QUERY[UQueryTask::AGENT_ID], $QUERY[UQueryTask::TASK_ID], $this->user);
+    $this->checkForError($QUERY, $error);
+  }
+
+  private function setSmallTask($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_SMALL])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::setSmallTask($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_SMALL], $this->user);
+    $this->checkForError($QUERY, $error);
+  }
+
+  private function setCpuTask($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_CPU_ONLY])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::setCpuTask($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_CPU_ONLY], $this->user);
+    $this->checkForError($QUERY, $error);
+  }
+
+  private function setTaskColor($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_COLOR])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::updateColor($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_COLOR], $this->user);
+    $this->checkForError($QUERY, $error);
+  }
+
+  private function setTaskName($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_NAME])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::rename($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_PRIORITY], $this->user);
+    $this->checkForError($QUERY, $error);
+  }
+
+  private function setTaskPriority($QUERY){
+    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_PRIORITY])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $error = TaskUtils::updatePriority($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_PRIORITY], $this->user);
+    $this->checkForError($QUERY, $error);
   }
 
   private function importSupertask($QUERY){

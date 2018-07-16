@@ -20,6 +20,16 @@ abstract class UserAPIBasic {
     die();
   }
 
+  protected function checkForError($QUERY, $error, $response = null){
+    if($error !== false){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $error);
+    }
+    else if($response != null){
+      $this->sendResponse($response);
+    }
+    $this->sendSuccessResponse($QUERY);
+  }
+
   /**
    * Used to send a generic success response if no additional data is sent
    * @param array $QUERY original query

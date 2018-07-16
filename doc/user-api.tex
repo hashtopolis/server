@@ -1005,7 +1005,39 @@
 				}
 				\end{verbatim}
 			}		
-		
+		\subsection*{\textit{importSupertask}}
+			Create a supertask configuration with a given list of masks.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "importSupertask",
+				  "name": "Mask Supertask",
+				  "isCpuOnly": false,
+				  "isSmall": false,
+				  "masks": [
+				    "?d?d?d?d",
+				    "?l?d?d?d?d",
+				    "?d?d?d?d?d",
+				    "?u?d?d?d?d"
+				  ],
+				  "optimizedFlag": true,
+				  "crackerTypeId": 1,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "importSupertask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}		
 		
 		
 		

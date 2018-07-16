@@ -8,6 +8,7 @@ use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\User;
+use DBA\TaskWrapper;
 
 class AccessUtils {
   /**
@@ -31,6 +32,21 @@ class AccessUtils {
     $accessGroupsUser = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
     
     return sizeof(AccessUtils::intersection($accessGroupsAgent, $accessGroupsUser)) > 0;
+  }
+
+  /**
+   * @param TaskWrapper $taskWrapper 
+   * @param User $user 
+   * @return boolean
+   */
+  public static function userCanAccessTask($taskWrapper, $user){
+    global $FACTORIES;
+
+    $accessGroupIds = Util::getAccessGroupIds($user->getId());
+    if(!in_array($taskWrapper->getAccessGroupId(), $accessGroupIds)){
+      return false;
+    }
+    return true;
   }
   
   /**

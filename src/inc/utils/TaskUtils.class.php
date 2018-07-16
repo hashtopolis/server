@@ -18,6 +18,7 @@ use DBA\AgentError;
 use DBA\Hash;
 use DBA\FilePretask;
 use DBA\Pretask;
+use DBA\User;
 
 class TaskUtils {
   public static function copyPretaskFiles($pretask, $task){
@@ -30,6 +31,205 @@ class TaskUtils {
       $fileTask = new FileTask(0, $pretaskFile->getFileId(), $task->getId());
       $FACTORIES::getFileTaskFactory()->save($fileTask);
     }
+  }
+
+  /**
+   * @param int $supertaskId
+   * @param int $priority
+   * @param User $user
+   * @return bool|string
+   */
+  public static function setSupertaskPriority($supertaskId, $priority, $user) {
+    global $FACTORIES;
+
+    $supertask = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
+    if ($supertask === null) {
+      return "Invalid supertask!";
+    }
+    else if(!AccessUtils::userCanAccessTask($supertask, $user)){
+      return "No access to this task!";
+    }
+    $priority = ($priority < 0) ? 0 : $priority;
+    $supertask->setPriority($priority);
+    $FACTORIES::getTaskWrapperFactory()->update($supertask);
+    return false;
+  }
+
+  /**
+   * @param int $taskId
+   * @param int $isCpuOnly
+   * @param User $user
+   * @return boolean|string
+   */
+  public static function setCpuTask($taskId, $isCpuOnly, $user) {
+    global $FACTORIES;
+
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $isCpuTask = intval($isCpuOnly);
+    if ($isCpuTask != 0 && $isCpuTask != 1) {
+      $isCpuTask = 0;
+    }
+    $task->setIsCpuTask($isCpuTask);
+    $FACTORIES::getTaskFactory()->update($task);
+    return false;
+  }
+
+  /**
+   * @param int $taskId 
+   * @param User $user 
+   * @return boolean|string
+   */
+  public static function purgeTask($taskId, $user) {
+    global $FACTORIES;
+
+    // delete all task chunks, forget its keyspace value and reset progress to zero
+    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $uS = new UpdateSet(Assignment::BENCHMARK, 0);
+    $FACTORIES::getAssignmentFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $chunkIds = array();
+    foreach ($chunks as $chunk) {
+      $chunkIds[] = $chunk->getId();
+    }
+    if (sizeof($chunkIds) > 0) {
+      $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
+      $uS = new UpdateSet(Hash::CHUNK_ID, null);
+      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
+      $FACTORIES::getHashBinaryFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
+    }
+    $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $task->setKeyspace(0);
+    $task->setKeyspaceProgress(0);
+    $FACTORIES::getTaskFactory()->update($task);
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    return false;
+  }
+
+  /**
+   * @param int $taskId
+   * @param User $user
+   * @param boolean $api
+   * @return boolean|string
+   */
+  public static function delete($taskId, $user, $api = false) {
+    global $FACTORIES;
+
+    // delete a task
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+
+    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+    NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
+
+    TaskUtils::deleteTask($task);
+    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
+      $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+    }
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    if(!$api){
+      header("Location: tasks.php");
+    }
+    return false;
+  }
+
+  /**
+   * @param int $taskId
+   * @param int $isSmall
+   * @param User $user
+   * @return boolean|string
+   */
+  public static function setSmallTask($taskId, $isSmall, $user) {
+    global $FACTORIES;
+
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $isSmall = intval($isSmall);
+    if ($isSmall != 0 && $isSmall != 1) {
+      $isSmall = 0;
+    }
+    $task->setIsSmall($isSmall);
+    $FACTORIES::getTaskFactory()->update($task);
+    return false;
+  }
+
+  /**
+   * @param int $taskId
+   * @param string $color
+   * @param User $user
+   * @return boolean|string
+   */
+  public static function updateColor($taskId, $color, $user) {
+    global $FACTORIES;
+
+    // change task color
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    if (preg_match("/[0-9A-Za-z]{6}/", $color) == 0) {
+      $color = null;
+    }
+    $task->setColor($color);
+    $FACTORIES::getTaskFactory()->update($task);
+    return false;
+  }
+
+  /**
+   * @param int $taskId
+   * @param string $name
+   * @param User $user
+   * @return bool|string
+   */
+  public static function rename($taskId, $name, $user) {
+    global $FACTORIES;
+
+    // change task name
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
+    $task->setTaskName($name);
+    $FACTORIES::getTaskFactory()->update($task);
+    return false;
   }
 
   public static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType, $useOptimized = false){
@@ -68,6 +268,29 @@ class TaskUtils {
       $priority--;
     }
     return $preTasks;
+  }
+
+  public static function updatePriority($taskId, $priority, $user) {
+    global $FACTORIES;
+
+    // change task priority
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $priority = intval($priority);
+    $priority = ($priority < 0) ? 0 : $priority;
+    $task->setPriority($priority);
+    $taskWrapper->setPriority($priority);
+    $FACTORIES::getTaskFactory()->update($task);
+    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
+      $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
+    }
+    return false;
   }
 
   public static function prepareImportMasks(&$masks){
