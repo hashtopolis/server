@@ -67,7 +67,7 @@ class AgentHandler implements Handler {
         break;
       case DAgentAction::ASSIGN_AGENT:
         $ACCESS_CONTROL->checkPermission(DAgentAction::ASSIGN_AGENT_PERM);
-        $error = AgentUtils::assign($_POST['agentId'], $_POST['taskId'], $LOGIN->getUser());
+        $error = AgentUtils::assign($_POST['agentId'], $_POST['task'], $LOGIN->getUser());
         break;
       case DAgentAction::CREATE_VOUCHER:
         $ACCESS_CONTROL->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
