@@ -19,6 +19,7 @@ use DBA\Hash;
 use DBA\FilePretask;
 use DBA\Pretask;
 use DBA\User;
+use DBA\Hashlist;
 
 class TaskUtils {
   public static function copyPretaskFiles($pretask, $task){
