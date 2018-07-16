@@ -81,10 +81,6 @@ class UserAPITask extends UserAPIBasic {
     if($hashlist == null){
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid hashlist ID!");
     }
-    $name = $QUERY[UQueryTask::TASK_NAME];
-    if (strlen($name) == 0) {
-      $name = "HL" . $hashlist->getId() . "_" . date("Ymd_Hi");
-    }
     $cracker = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[UQueryTask::TASK_CRACKER_VERSION]);
     if($cracker == null){
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker ID!");
