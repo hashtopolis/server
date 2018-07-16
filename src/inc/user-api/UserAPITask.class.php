@@ -86,6 +86,7 @@ class UserAPITask extends UserAPIBasic {
     $name = $QUERY[UQueryTask::TASK_NAME];
     $isCpuOnly = ($QUERY[UQueryTask::TASK_CPU_ONLY])?1:0;
     $isSmall = ($QUERY[UQueryTask::TASK_SMALL])?1:0;
+    $useOptimized = ($QUERY[UQueryTask::TASK_OPTIMIZED])?true:false;
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($QUERY[UQueryTask::TASK_CRACKER_TYPE]);
     if($crackerBinaryType == null){
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker type ID!");
@@ -101,7 +102,7 @@ class UserAPITask extends UserAPIBasic {
     }
 
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $pretasks = TaskUtils::createImportPretasks($masks, $isSmall, $isCpuOnly, $crackerBinaryType);
+    $pretasks = TaskUtils::createImportPretasks($masks, $isSmall, $isCpuOnly, $crackerBinaryType, $useOptimized);
 
     $supertask = new Supertask(0, $name);
     $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);

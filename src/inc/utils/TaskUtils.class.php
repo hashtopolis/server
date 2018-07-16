@@ -32,7 +32,7 @@ class TaskUtils {
     }
   }
 
-  public static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType){
+  public static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType, $useOptimized = false){
     global $FACTORIES, $CONFIG;
 
     // create the preconf tasks
@@ -52,6 +52,9 @@ class TaskUtils {
           $cmd = " -1 " . $mask[0] . $cmd;
         case 1:
           $cmd .= " $pattern";
+      }
+      if($useOptimized){
+        $cmd .= " -O ";
       }
       $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
       $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
