@@ -11,6 +11,7 @@ use DBA\Pretask;
 use DBA\JoinFilter;
 use DBA\SupertaskPretask;
 use DBA\AccessGroupUser;
+use DBA\FileTask;
 
 class UserAPITask extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -167,10 +168,20 @@ class UserAPITask extends UserAPIBasic {
       $taskWrapper->getId()
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
+
+    $files = $QUERY[UQueryTask::TASK_FILES];
+    if (is_array($files) && sizeof($files) > 0) {
+      foreach ($files as $fileId) {
+        $taskFile = new FileTask(0, $fileId, $task->getId());
+        $FACTORIES::getFileTaskFactory()->save($taskFile);
+      }
+    }
+
     $FACTORIES::getAgentFactory()->getDB()->commit();
 
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function getChunk($QUERY){
