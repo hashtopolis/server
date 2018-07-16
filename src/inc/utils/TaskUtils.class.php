@@ -20,6 +20,18 @@ use DBA\FilePretask;
 use DBA\Pretask;
 
 class TaskUtils {
+  public static function copyPretaskFiles($pretask, $task){
+    global $FACTORIES;
+
+    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=");
+    $pretaskFiles = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $subTasks[] = $task;
+    foreach ($pretaskFiles as $pretaskFile) {
+      $fileTask = new FileTask(0, $pretaskFile->getFileId(), $task->getId());
+      $FACTORIES::getFileTaskFactory()->save($fileTask);
+    }
+  }
+
   /**
    * Splits a given task into subtasks within a supertask by splitting the rule file
    * @param Task $task

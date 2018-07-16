@@ -204,13 +204,7 @@ class SupertaskHandler implements Handler {
         $isCpuTask = 1;
       }
       
-      $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=");
-      $pretaskFiles = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $subTasks[] = $task;
-      foreach ($pretaskFiles as $pretaskFile) {
-        $fileTask = new FileTask(0, $pretaskFile->getFileId(), $task->getId());
-        $FACTORIES::getFileTaskFactory()->save($fileTask);
-      }
+      TaskUtils::copyPretaskFiles($pretask, $task);
     }
     
     foreach ($subTasks as $task) {

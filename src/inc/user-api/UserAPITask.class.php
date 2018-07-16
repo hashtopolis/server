@@ -51,7 +51,7 @@ class UserAPITask extends UserAPIBasic {
         $this->runPretask($QUERY);
         break;
       case USectionTask::RUN_SUPERTASK:
-        // TODO:
+        $this->runSupertask($QUERY);
         break;
       case USectionTask::CREATE_PRETASK:
         // TODO:
@@ -65,6 +65,63 @@ class UserAPITask extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function runSupertask($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $supertask = $FACTORIES::getSupertaskFactory()->get($QUERY[UQueryTask::SUPERTASK_ID]);
+    if($supertask == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid supertask ID!");
+    }
+    $hashlist = $FACTORIES::getHashlistFactory()->get($QUERY[UQueryTask::TASK_HASHLIST]);
+    if($hashlist == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid hashlist ID!");
+    }
+    $name = $QUERY[UQueryTask::TASK_NAME];
+    if (strlen($name) == 0) {
+      $name = "HL" . $hashlist->getId() . "_" . date("Ymd_Hi");
+    }
+    $cracker = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[UQueryTask::TASK_CRACKER_VERSION]);
+    if($cracker == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker ID!");
+    }
+    $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", $FACTORIES::getSupertaskPretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
+    $joined = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $pretasks = $joined[$FACTORIES::getPretaskFactory()->getModelName()];
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    
+    $wrapperPriority = 0;
+    foreach ($pretasks as $pretask) {
+      if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
+        $wrapperPriority = $pretask->getPriority(); 
+      }
+    }
+
+    $taskWrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $accessGroupId, $supertask->getSupertaskName());
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
+
+    foreach ($pretasks as $pretask) {
+      $crackerBinaryId = $cracker->getCrackerBinaryId();
+      if($cracker->getCrackerBinaryTypeId() != $pretask->getCrackerBinaryTypeId()){
+        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId());
+      }
+
+      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $cracker->getCrackerBinaryTypeId(), $taskWrapper->getId());
+      if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
+        $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
+      }
+      $task = $FACTORIES::getTaskFactory()->save($task);
+      TaskUtils::copyPretaskFiles($pretask, $task);
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function runPretask($QUERY){
