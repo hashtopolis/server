@@ -621,4 +621,270 @@
 				}
 				\end{verbatim}
 			}
+		\subsection*{\textit{listSubtasks}}
+			List all subtasks of a given running supertask.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listSubtasks",
+				  "supertaskId": 33,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listSubtasks",
+				  "response": "OK",
+				  "subtasks": [
+				    {
+				      "taskId": 7582,
+				      "name": "?a?a?a",
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7583,
+				      "name": "?a?a?a?a",
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7584,
+				      "name": "?a?a?a?a?a",
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7585,
+				      "name": "?a?a?a?a?a?a",
+				      "priority": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{listPretasks}}
+			Lists all preconfigured tasks available on the server.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listPretasks",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listPretasks",
+				  "response": "OK",
+				  "pretasks": [
+				    {
+				      "pretaskId": 1,
+				      "name": "Test Pre",
+				      "priority": 0
+				    },
+				    {
+				      "pretaskId": 7,
+				      "name": "Brute ?a 8",
+				      "priority": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getPretask}}
+			Get complete information about a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getPretask",
+				  "pretaskId": 7,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getPretask",
+				  "response": "OK",
+				  "pretaskId": 7,
+				  "name": "Brute ?a 8",
+				  "attackCmd": "#HL# -a 3 ?a?a?a?a?a?a?a?a",
+				  "chunksize": 600,
+				  "color": null,
+				  "benchmarkType": "runtime",
+				  "statusTimer": 5,
+				  "priority": 0,
+				  "isCpuOnly": false,
+				  "isSmall": false,
+				  "files": []
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{listSupertasks}}
+			Lists the available supertasks on the server which group preconfigured tasks together.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listSupertasks",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listSupertasks",
+				  "response": "OK",
+				  "supertasks": [
+				    {
+				      "supertaskId": 1,
+				      "name": "Supertask Test"
+				    },
+				    {
+				      "supertaskId": 2,
+				      "name": "Increment ?a"
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getSupertask}}
+			Get detail information of a supertask.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getSupertask",
+				  "supertaskId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getSupertask",
+				  "response": "OK",
+				  "supertaskId": 2,
+				  "name": "Increment ?a",
+				  "pretasks": [
+				    {
+				      "pretaskId": 2,
+				      "name": "?a?a?a",
+				      "priority": 6
+				    },
+				    {
+				      "pretaskId": 3,
+				      "name": "?a?a?a?a",
+				      "priority": 5
+				    },
+				    {
+				      "pretaskId": 4,
+				      "name": "?a?a?a?a?a",
+				      "priority": 4
+				    },
+				    {
+				      "pretaskId": 5,
+				      "name": "?a?a?a?a?a?a",
+				      "priority": 3
+				    },
+				    {
+				      "pretaskId": 6,
+				      "name": "?a?a?a?a?a?a?a",
+				      "priority": 2
+				    },
+				    {
+				      "pretaskId": 1,
+				      "name": "Test Pre",
+				      "priority": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getChunk}}
+			Get details about a specific chunk. Progress is given in percents, start/length/checkpoint are in relation to the keyspace.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getChunk",
+				  "chunkId": 30,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getChunk",
+				  "response": "OK",
+				  "chunkId": 30,
+				  "start": 23141360,
+				  "length": 5785340,
+				  "checkpoint": 28926700,
+				  "progress": 100,
+				  "taskId": 7585,
+				  "agentId": 2,
+				  "dispatchTime": 1531313146,
+				  "lastActivity": 1531313738,
+				  "state": 4,
+				  "cracked": 0,
+				  "speed": 0
+				}
+				\end{verbatim}
+			}
+		
+		
+		
+		
+		
+		
+%		\subsection*{\textit{temporary}}
+%			Delete a voucher from the server.
+%			{
+%				\color{blue}
+%				\begin{verbatim}
+%				{
+%				"section": "agent",
+%				"request": "deleteVoucher",
+%				"voucher": "Gjawgidkr4",
+%				"accessKey": "mykey"
+%				}
+%				\end{verbatim}
+%			}
+%			{
+%				\color{OliveGreen}
+%				\begin{verbatim}
+%				{
+%				"section": "agent",
+%				"request": "deleteVoucher",
+%				"response": "OK"
+%				}
+%				\end{verbatim}
+%			}
 \end{document}
