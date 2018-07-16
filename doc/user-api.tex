@@ -858,7 +858,67 @@
 				}
 				\end{verbatim}
 			}
-		
+			\subsection*{\textit{createTask}}
+				Create a new task (one example with files and one without).
+				{
+					\color{blue}
+					\begin{verbatim}
+					{
+					  "section": "task",
+					  "request": "createTask",
+					  "name": "API Task",
+					  "hashlistId": 1,
+					  "attackCmd": "#HL# -a 0 -r dive.rule example.dict",
+					  "chunksize": 600,
+					  "statusTimer": 5,
+					  "benchmarkType": "speed",
+					  "color": "5D5D5D",
+					  "isCpuOnly": false,
+					  "isSmall": false,
+					  "skip": 0,
+					  "crackerVersionId": 2,
+					  "files": [
+					    1,
+					    2
+					  ],
+					  "priority": 100,
+					  "accessKey": "mykey"
+					}
+					\end{verbatim}
+				}
+				{
+					\color{blue}
+					\begin{verbatim}
+					{
+					  "section": "task",
+					  "request": "createTask",
+					  "name": "API Task BF",
+					  "hashlistId": 1,
+					  "attackCmd": "#HL# -a 3 ?l?l?l?l?l?l",
+					  "chunksize": 600,
+					  "statusTimer": 5,
+					  "benchmarkType": "speed",
+					  "color": "5D5D5D",
+					  "isCpuOnly": false,
+					  "isSmall": true,
+					  "skip": 0,
+					  "crackerVersionId": 2,
+					  "files": [],
+					  "priority": 99,
+					  "accessKey": "mykey"
+					}
+					\end{verbatim}
+				}
+				{
+					\color{OliveGreen}
+					\begin{verbatim}
+					{
+					  "section": "task",
+					  "request": "createTask",
+					  "response": "OK"
+					}
+					\end{verbatim}
+				}
 		
 		
 		
