@@ -36,7 +36,7 @@ class AgentUtils {
 
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
-      return "No access to this task!":
+      return "No access to this task!";
     }
 
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
