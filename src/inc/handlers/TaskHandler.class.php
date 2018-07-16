@@ -57,11 +57,11 @@ class TaskHandler implements Handler {
         break;
       case DTaskAction::PURGE_TASK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
-        $this->purgeTask();
+        $error = TaskUtils::purgeTask($_POST['task'], $LOGIN->getUser());
         break;
       case DTaskAction::SET_COLOR:
         $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
-        TaskUtils::updateColor($_POST['task'], $_POST['color'], $LOGIN->getUser());
+        $error = TaskUtils::updateColor($_POST['task'], $_POST['color'], $LOGIN->getUser());
         break;
       case DTaskAction::SET_TIME:
         $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
@@ -69,7 +69,7 @@ class TaskHandler implements Handler {
         break;
       case DTaskAction::RENAME_TASK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
-        TaskUtils::rename($_POST['task'], $_POST['name'], $LOGIN->getUser());
+        $error = TaskUtils::rename($_POST['task'], $_POST['name'], $LOGIN->getUser());
         break;
       case DTaskAction::DELETE_FINISHED:
         $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
