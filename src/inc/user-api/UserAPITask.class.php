@@ -107,7 +107,7 @@ class UserAPITask extends UserAPIBasic {
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
     foreach ($pretasks as $pretask) {
-      $crackerBinaryId = $cracker->getCrackerBinaryId();
+      $crackerBinaryId = $cracker->getId();
       if($cracker->getCrackerBinaryTypeId() != $pretask->getCrackerBinaryTypeId()){
         $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId());
       }
