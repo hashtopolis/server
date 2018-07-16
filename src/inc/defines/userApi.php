@@ -45,6 +45,7 @@ class UQueryTask extends UQuery {
   const TASK_PRIORITY = "priority";
 
   const TASK_CRACKER_TYPE = "crackerTypeId";
+  const PRETASKS = "pretasks";
 }
 
 ######################

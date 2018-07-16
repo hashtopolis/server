@@ -57,7 +57,7 @@ class UserAPITask extends UserAPIBasic {
         $this->createPretask($QUERY);
         break;
       case USectionTask::CREATE_SUPERTASK:
-        // TODO:
+        $this->createSupertask($QUERY);
         break;
       case USectionTask::IMPORT_SUPERTASK:
         // TODO:
@@ -65,6 +65,39 @@ class UserAPITask extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function createSupertask($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryTask::TASK_NAME]) || !isset($QUERY[UQueryTask::PRETASKS])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $name = $QUERY[UQueryTask::TASK_NAME];
+    $pretasks = $QUERY[UQueryTask::PRETASKS];
+    if(!is_array($pretasks) || sizeof($pretasks) == 0){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Cannot create empty supertask!");
+    }
+    $tasks = [];
+    foreach($pretasks as $pretaskId){
+      $pretask = $FACTORIES::getPretaskFactory()->get($pretaskId);
+      if($pretask == null){
+        $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid preconfigured task ID ($pretaskId)!");
+      }
+      $tasks[] = $pretask;
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $supertask = new Supertask(0, $name);
+    $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
+
+    foreach($tasks as $pretask){
+      $supertaskPretask = new SupertaskPretask(0, $supertask->getId(), $pretask->getId());
+      $FACTORIES::getSupertaskPretaskFactory()->save($supertaskPretask);
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function createPretask($QUERY){
@@ -80,7 +113,7 @@ class UserAPITask extends UserAPIBasic {
       UQueryTask::TASK_CPU_ONLY,
       UQueryTask::TASK_SMALL,
       UQueryTask::TASK_CRACKER_TYPE,
-      UQueryTask::TASK_FILES, 
+      UQueryTask::TASK_FILES,
       UQueryTask::TASK_PRIORITY
     ];
     foreach($toCheck as $input){
