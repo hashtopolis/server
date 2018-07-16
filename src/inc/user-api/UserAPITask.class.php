@@ -80,7 +80,8 @@ class UserAPITask extends UserAPIBasic {
       UQueryTask::TASK_CPU_ONLY,
       UQueryTask::TASK_SMALL,
       UQueryTask::TASK_CRACKER_TYPE,
-      UQueryTask::TASK_FILES
+      UQueryTask::TASK_FILES, 
+      UQueryTask::TASK_PRIORITY
     ];
     foreach($toCheck as $input){
       if(!isset($QUERY[$input])){
