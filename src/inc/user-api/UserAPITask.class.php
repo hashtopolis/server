@@ -12,6 +12,8 @@ use DBA\JoinFilter;
 use DBA\SupertaskPretask;
 use DBA\AccessGroupUser;
 use DBA\FileTask;
+use DBA\FilePretask;
+use DBA\File;
 
 class UserAPITask extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -46,7 +48,7 @@ class UserAPITask extends UserAPIBasic {
         $this->createTask($QUERY);
         break;
       case USectionTask::RUN_PRETASK:
-        // TODO:
+        $this->runPretask($QUERY);
         break;
       case USectionTask::RUN_SUPERTASK:
         // TODO:
@@ -63,6 +65,72 @@ class UserAPITask extends UserAPIBasic {
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function runPretask($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $pretask = $FACTORIES::getPretaskFactory()->get($QUERY[UQueryTask::PRETASK_ID]);
+    if($pretask == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid preconfigured task ID!");
+    }
+    $hashlist = $FACTORIES::getHashlistFactory()->get($QUERY[UQueryTask::TASK_HASHLIST]);
+    if($hashlist == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid hashlist ID!");
+    }
+    $name = $QUERY[UQueryTask::TASK_NAME];
+    if (strlen($name) == 0) {
+      $name = "HL" . $hashlist->getId() . "_" . date("Ymd_Hi");
+    }
+    $cracker = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[UQueryTask::TASK_CRACKER_VERSION]);
+    if($cracker == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker ID!");
+    }
+    else if($pretask->getCrackerBinaryTypeId() != $cracker->getCrackerBinaryTypeId()){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Provided cracker does not match the type of the pretask!");
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $taskWrapper = new TaskWrapper(0, $pretask->getPriority(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "");
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
+
+    $task = new Task(
+      0,
+      $name,
+      $pretask->getAttackCmd(),
+      $pretask->getChunkTime(),
+      $pretask->getStatusTimer(),
+      0,
+      0,
+      $pretask->getPriority(),
+      $pretask->getColor(),
+      $pretask->getIsSmall(),
+      $pretask->getIsCpuTask(),
+      $pretask->getUseNewBench(),
+      0,
+      $cracker->getId(),
+      $cracker->getCrackerBinaryTypeId(),
+      $taskWrapper->getId()
+    );
+    $task = $FACTORIES::getTaskFactory()->save($task);
+
+    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+    $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $files = $joined[$FACTORIES::getFileFactory()->getModelName()];
+    foreach ($files as $file) {
+      $taskFile = new FileTask(0, $file->getId(), $task->getId());
+      $FACTORIES::getFileTaskFactory()->save($taskFile);
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+
+    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+    NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function createTask($QUERY){
