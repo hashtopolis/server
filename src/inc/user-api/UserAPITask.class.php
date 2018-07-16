@@ -10,6 +10,7 @@ use DBA\Chunk;
 use DBA\Pretask;
 use DBA\JoinFilter;
 use DBA\SupertaskPretask;
+use DBA\AccessGroupUser;
 
 class UserAPITask extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -40,9 +41,136 @@ class UserAPITask extends UserAPIBasic {
       case USectionTask::GET_CHUNK:
         $this->getChunk($QUERY);
         break;
+      case USectionTask::CREATE_TASK:
+        $this->createTask($QUERY);
+        break;
+      case USectionTask::RUN_PRETASK:
+        // TODO:
+        break;
+      case USectionTask::RUN_SUPERTASK:
+        // TODO:
+        break;
+      case USectionTask::CREATE_PRETASK:
+        // TODO:
+        break;
+      case USectionTask::CREATE_SUPERTASK:
+        // TODO:
+        break;
+      case USectionTask::IMPORT_SUPERTASK:
+        // TODO:
+        break;
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function createTask($QUERY){
+    global $FACTORIES, $CONFIG;
+
+    $toCheck = [
+      UQueryTask::TASK_NAME,
+      UQueryTask::TASK_HASHLIST,
+      UQueryTask::TASK_ATTACKCMD,
+      UQueryTask::TASK_CHUNKSIZE,
+      UQueryTask::TASK_STATUS,
+      UQueryTask::TASK_BENCHTYPE,
+      UQueryTask::TASK_COLOR,
+      UQueryTask::TASK_CPU_ONLY,
+      UQueryTask::TASK_SMALL,
+      UQueryTask::TASK_SKIP,
+      UQueryTask::TASK_CRACKER_VERSION,
+      UQueryTask::TASK_FILES
+    ];
+    foreach($toCheck as $input){
+      if(!isset($QUERY[$input])){
+        $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+      }
+    }
+    $hashlist = $FACTORIES::getHashlistFactory()->get($QUERY[UQueryTask::TASK_HASHLIST]);
+    if($hashlist == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid hashlist ID!");
+    }
+    $name = $QUERY[UQueryTask::TASK_NAME];
+    if (strlen($name) == 0) {
+      $name = "HL" . $hashlist->getId() . "_" . date("Ymd_Hi");
+    }
+    $accessGroup = $FACTORIES::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
+    $qF1 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
+    $qF2 = new QueryFilter(AccessGroupUser::USER_ID, $this->user->getId(), "=");
+    $accessGroupUser = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+    if ($accessGroupUser == null) {
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "You have no access to this hashlist!");
+    }
+    $cracker = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[UQueryTask::TASK_CRACKER_VERSION]);
+    if($cracker == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker ID!");
+    }
+    $attackCmd = $QUERY[UQueryTask::TASK_ATTACKCMD];
+    if(strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Attack command does not contain hashlist alias!");
+    }
+    else if(Util::containsBlacklistedChars($attackCmd)){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Attack command contains blacklisted characters!");
+    }
+    $chunksize = $QUERY[UQueryTask::TASK_CHUNKSIZE];
+    if(!is_numeric($chunksize) || $chunksize < 1){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid chunk size!");
+    }
+    $status = $QUERY[UQueryTask::TASK_STATUS];
+    if(!is_numeric($status) || $status < 1){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid status timer!");
+    }
+    $benchtype = $QUERY[UQueryTask::TASK_BENCHTYPE];
+    if($benchtype != 'speed' && $benchtype != 'runtime'){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid benchmark type!");
+    }
+    $benchtype = ($benchtype == 'speed')?1:0;
+    $color = $QUERY[UQueryTask::TASK_COLOR];
+    if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
+      $color = null;
+    }
+    $isCpuOnly = ($QUERY[UQueryTask::TASK_CPU_ONLY])?1:0;
+    $isSmall = ($QUERY[UQueryTask::TASK_SMALL])?1:0;
+    $skip = $QUERY[UQueryTask::TASK_SKIP];
+    if($skip < 0){
+      $skip = 0;
+    }
+    $priority = $QUERY[UQueryTask::TASK_PRIORITY];
+    if($priority < 0){
+      $priority = 0;
+    }
+    $cracker = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[UQueryTask::TASK_CRACKER_VERSION]);
+    if($cracker == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker ID!");
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "");
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
+
+    $task = new Task(
+      0,
+      $name,
+      $attackCmd,
+      $chunksize,
+      $status,
+      0,
+      0,
+      $priority,
+      $color,
+      $isSmall,
+      $isCpuOnly,
+      $benchtype,
+      $skip,
+      $cracker->getId(),
+      $cracker->getCrackerBinaryTypeId(),
+      $taskWrapper->getId()
+    );
+    $task = $FACTORIES::getTaskFactory()->save($task);
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+
+    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+    NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
   }
 
   private function getChunk($QUERY){
