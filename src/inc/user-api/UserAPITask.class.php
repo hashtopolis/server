@@ -85,7 +85,7 @@ class UserAPITask extends UserAPIBasic {
     ];
     foreach($toCheck as $input){
       if(!isset($QUERY[$input])){
-        $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+        $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query (missing $input)!");
       }
     }
     $name = $QUERY[UQueryTask::TASK_NAME];
