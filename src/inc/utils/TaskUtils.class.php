@@ -32,6 +32,61 @@ class TaskUtils {
     }
   }
 
+  public static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType){
+    global $FACTORIES, $CONFIG;
+
+    // create the preconf tasks
+    $preTasks = array();
+    $priority = sizeof($masks) + 1;
+    foreach ($masks as $mask) {
+      $pattern = $mask[sizeof($mask) - 1];
+      $cmd = "";
+      switch (sizeof($mask)) {
+        case 5:
+          $cmd = " -4 " . $mask[3] . $cmd;
+        case 4:
+          $cmd = " -3 " . $mask[2] . $cmd;
+        case 3:
+          $cmd = " -2 " . $mask[1] . $cmd;
+        case 2:
+          $cmd = " -1 " . $mask[0] . $cmd;
+        case 1:
+          $cmd .= " $pattern";
+      }
+      $cmd = str_replace("COMMA_PLACEHOLDER", "\\,", $cmd);
+      $cmd = str_replace("HASH_PLACEHOLDER", "\\#", $cmd);
+      $preTaskName = implode(",", $mask);
+      $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
+      $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
+
+      $pretask = new Pretask(0, $preTaskName, $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), "", $isSmall, $isCpu, 0, $priority, 1, $crackerBinaryType->getId());
+      $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
+      $preTasks[] = $pretask;
+      $priority--;
+    }
+    return $preTasks;
+  }
+
+  public static function prepareImportMasks(&$masks){
+    for ($i = 0; $i < sizeof($masks); $i++) {
+      if (strlen($masks[$i]) == 0) {
+        unset($masks[$i]);
+        continue;
+      }
+      $mask = str_replace("\\,", "COMMA_PLACEHOLDER", $masks[$i]);
+      $mask = str_replace("\\#", "HASH_PLACEHOLDER", $mask);
+      if (strpos($mask, "#") !== false) {
+        $mask = substr($mask, 0, strpos($mask, "#"));
+      }
+      $mask = explode(",", $mask);
+      if (sizeof($mask) > 5) {
+        unset($masks[$i]);
+        continue;
+      }
+      $masks[$i] = $mask;
+    }
+  }
+
   /**
    * Splits a given task into subtasks within a supertask by splitting the rule file
    * @param Task $task

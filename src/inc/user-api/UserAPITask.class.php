@@ -60,11 +60,57 @@ class UserAPITask extends UserAPIBasic {
         $this->createSupertask($QUERY);
         break;
       case USectionTask::IMPORT_SUPERTASK:
-        // TODO:
+        $this->importSupertask($QUERY);
         break;
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function importSupertask($QUERY){
+    global $FACTORIES;
+
+    $toCheck = [
+      UQueryTask::TASK_NAME,
+      UQueryTask::TASK_CPU_ONLY,
+      UQueryTask::TASK_SMALL,
+      UQueryTask::TASK_CRACKER_TYPE,
+      UQueryTask::MASKS,
+      UQueryTask::TASK_OPTIMIZED
+    ];
+    foreach($toCheck as $input){
+      if(!isset($QUERY[$input])){
+        $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query (missing $input)!");
+      }
+    }
+    $name = $QUERY[UQueryTask::TASK_NAME];
+    $isCpuOnly = ($QUERY[UQueryTask::TASK_CPU_ONLY])?1:0;
+    $isSmall = ($QUERY[UQueryTask::TASK_SMALL])?1:0;
+    $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($QUERY[UQueryTask::TASK_CRACKER_TYPE]);
+    if($crackerBinaryType == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid cracker type ID!");
+    }
+
+    $masks = $QUERY[UQueryTask::MASKS];
+    if(!is_array($masks)){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Masks need to be provided as array!");
+    }
+    TaskUtils::prepareImportMasks($masks);
+    if (sizeof($masks) == 0) {
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "No valid masks found!");
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $pretasks = TaskUtils::createImportPretasks($masks, $isSmall, $isCpuOnly, $crackerBinaryType);
+
+    $supertask = new Supertask(0, $name);
+    $supertask = $FACTORIES::getSupertaskFactory()->save($supertask);
+    foreach ($pretasks as $preTask) {
+      $relation = new SupertaskPretask(0, $supertask->getId(), $preTask->getId());
+      $FACTORIES::getSupertaskPretaskFactory()->save($relation);
+    }
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    $this->sendSuccessResponse($QUERY);
   }
 
   private function createSupertask($QUERY){

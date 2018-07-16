@@ -46,6 +46,8 @@ class UQueryTask extends UQuery {
 
   const TASK_CRACKER_TYPE = "crackerTypeId";
   const PRETASKS = "pretasks";
+  const MASKS = "masks";
+  const TASK_OPTIMIZED = "optimizedFlag";
 }
 
 ######################
