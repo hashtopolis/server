@@ -31,222 +31,89 @@ class AgentHandler implements Handler {
   public function handle($action) {
     global $ACCESS_CONTROL, $LOGIN;
 
-    $error = false;
-    switch ($action) {
-      case DAgentAction::CLEAR_ERRORS:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
-        $this->clearErrors();
-        break;
-      case DAgentAction::RENAME_AGENT:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::RENAME_AGENT_PERM);
-        $this->rename($_POST['name']);
-        break;
-      case DAgentAction::SET_OWNER:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_OWNER_PERM);
-        $this->changeOwner($_POST['owner']);
-        break;
-      case DAgentAction::SET_TRUSTED:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_TRUSTED_PERM);
-        $this->changeTrusted($_POST["trusted"]);
-        break;
-      case DAgentAction::SET_IGNORE:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_IGNORE_PERM);
-        $this->changeIgnoreErrors($_POST["ignore"]);
-        break;
-      case DAgentAction::SET_PARAMETERS:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
-        $this->changeCmdParameters($_POST["cmdpars"]);
-        break;
-      case DAgentAction::SET_ACTIVE:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_ACTIVE_PERM);
-        $this->toggleActive();
-        break;
-      case DAgentAction::DELETE_AGENT:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_AGENT_PERM);
-        $this->delete($_POST['agentId']);
-        break;
-      case DAgentAction::ASSIGN_AGENT:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::ASSIGN_AGENT_PERM);
-        $error = AgentUtils::assign($_POST['agentId'], $_POST['task'], $LOGIN->getUser());
-        break;
-      case DAgentAction::CREATE_VOUCHER:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
-        $this->createVoucher($_POST["newvoucher"]);
-        break;
-      case DAgentAction::DELETE_VOUCHER:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_VOUCHER_PERM);
-        $this->deleteVoucher();
-        break;
-      case DAgentAction::DOWNLOAD_AGENT:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::DOWNLOAD_AGENT_PERM);
-        $this->downloadAgent($_POST['binary']);
-        break;
-      case DAgentAction::SET_CPU:
-        $ACCESS_CONTROL->checkPermission(DAgentAction::SET_CPU_PERM);
-        $this->setAgentCpu($_POST['cpuOnly']);
-        break;
-      default:
-        UI::addMessage(UI::ERROR, "Invalid action!");
-        break;
-    }
-    if($error !== false){
-      UI::addMessage(UI::ERROR, $error);
+    try{
+      switch ($action) {
+        case DAgentAction::CLEAR_ERRORS:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
+          $this->clearErrors();
+          break;
+        case DAgentAction::RENAME_AGENT:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::RENAME_AGENT_PERM);
+          AgentUtils::rename($_POST['agentId'], $_POST['name'], $LOGIN->getUser());
+          break;
+        case DAgentAction::SET_OWNER:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_OWNER_PERM);
+          $this->changeOwner($_POST['owner']);
+          break;
+        case DAgentAction::SET_TRUSTED:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_TRUSTED_PERM);
+          $this->changeTrusted($_POST["trusted"]);
+          break;
+        case DAgentAction::SET_IGNORE:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_IGNORE_PERM);
+          $this->changeIgnoreErrors($_POST["ignore"]);
+          break;
+        case DAgentAction::SET_PARAMETERS:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
+          AgentUtils::changeCmdParameters($_POST['agentId'], $_POST["cmdpars"], $LOGIN->getUser());
+          break;
+        case DAgentAction::SET_ACTIVE:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_ACTIVE_PERM);
+          AgentUtils::setActive($_POST['agentId'], false, $LOGIN->getUser(), true);
+          break;
+        case DAgentAction::DELETE_AGENT:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_AGENT_PERM);
+          AgentUtils::delete($_POST['agentId'], $LOGIN->getUser());
+          break;
+        case DAgentAction::ASSIGN_AGENT:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::ASSIGN_AGENT_PERM);
+          AgentUtils::assign($_POST['agentId'], $_POST['task'], $LOGIN->getUser());
+          break;
+        case DAgentAction::CREATE_VOUCHER:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
+          AgentUtils::createVoucher($_POST["newvoucher"]);
+          break;
+        case DAgentAction::DELETE_VOUCHER:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_VOUCHER_PERM);
+          AgentUtils::deleteVoucher($_POST['voucher']);
+          break;
+        case DAgentAction::DOWNLOAD_AGENT:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::DOWNLOAD_AGENT_PERM);
+          $this->downloadAgent($_POST['binary']);
+          break;
+        case DAgentAction::SET_CPU:
+          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_CPU_PERM);
+          AgentUtils::setAgentCpu($_POST['agentId'], $_POST['cpuOnly'], $LOGIN->getUser());
+          break;
+        default:
+          UI::addMessage(UI::ERROR, "Invalid action!");
+          break;
+      }
+    } catch(HTException $e){
+      UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
 
-  private function setAgentCpu($cpuOnly) {
-    global $FACTORIES;
-
-    $cpuOnly = ($cpuOnly == 1) ? 1 : 0;
-    $this->agent->setCpuOnly($cpuOnly);
-    $FACTORIES::getAgentFactory()->update($this->agent);
-  }
-
+  /**
+   * @param int $binaryId 
+   * @throws HTException 
+   */
   public function downloadAgent($binaryId) {
     global $FACTORIES;
 
     $agentBinary = $FACTORIES::getAgentBinaryFactory()->get($binaryId);
     if ($agentBinary == null) {
-      UI::printError("ERROR", "Invalid Agent Binary!");
+      throw new HTException("Invalid Agent Binary!");
     }
     $filename = $agentBinary->getFilename();
     if (!file_exists(dirname(__FILE__) . "/../../bin/" . $filename)) {
-      UI::printError("ERROR", "Agent Binary not present on server!");
+      throw new HTException("Agent Binary not present on server!");
     }
     header("Content-Type: application/force-download");
     header("Content-Description: " . $filename);
     header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
     echo file_get_contents(dirname(__FILE__) . "/../../bin/" . $filename);
     die();
-  }
-
-  private function delete($agentId) {
-    /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
-
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $this->agent = $FACTORIES::getAgentFactory()->get($agentId);
-    if ($this->agent == null) {
-      UI::printError("FATAL", "Agent with ID " . $agentId . " not found!");
-    }
-    $name = $this->agent->getAgentName();
-    $agent = $this->agent;
-
-    $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
-    NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
-
-    if ($this->deleteDependencies($this->agent)) {
-      $FACTORIES::getAgentFactory()->getDB()->commit();
-      Util::createLogEntry("User", $LOGIN->getUserID(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
-    }
-    else {
-      $FACTORIES::getAgentFactory()->getDB()->rollBack();
-      UI::printError("FATAL", "Error occured on deletion of agent!");
-    }
-  }
-
-  private function deleteVoucher() {
-    global $FACTORIES;
-
-    $voucher = $FACTORIES::getRegVoucherFactory()->get(intval($_POST["voucher"]));
-    $FACTORIES::getRegVoucherFactory()->delete($voucher);
-  }
-
-  public function createVoucher($newVoucher) {
-    global $FACTORIES;
-
-    $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
-    $voucher = new RegVoucher(0, $key, time());
-    $FACTORIES::getRegVoucherFactory()->save($voucher);
-  }
-
-  private function deleteDependencies($agent) {
-    global $FACTORIES;
-
-    if ($agent == null) {
-      $agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
-      if ($agent == null) {
-        UI::printError("ERROR", "Invalid agent!");
-      }
-    }
-
-    $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-    $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $agent->getId(), "=");
-    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($notifications as $notification) {
-      if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::AGENT) {
-        $FACTORIES::getNotificationSettingFactory()->delete($notification);
-      }
-    }
-    $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
-    $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-
-    $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
-
-    $FACTORIES::getAgentZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-
-    $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
-    $uS = new UpdateSet(Zap::AGENT_ID, null);
-    $FACTORIES::getZapFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
-
-    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
-    $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $chunkIds = array();
-    foreach ($chunks as $chunk) {
-      $chunkIds[] = $chunk->getId();
-    }
-    if (sizeof($chunks) > 0) {
-      $uS = new UpdateSet(Chunk::AGENT_ID, null);
-      $FACTORIES::getChunkFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
-    }
-    $FACTORIES::getAgentFactory()->delete($agent);
-    return true;
-  }
-
-  private function toggleActive() {
-    global $FACTORIES;
-
-    if ($this->agent == null) {
-      $this->agent = $FACTORIES::getAgentFactory()->get($_POST['agentId']);
-      if ($this->agent == null) {
-        UI::printError("ERROR", "Invalid agent!");
-      }
-    }
-
-    if ($this->agent->getIsActive() == 1) {
-      $this->agent->setIsActive(0);
-    }
-    else {
-      $this->agent->setIsActive(1);
-    }
-    $FACTORIES::getAgentFactory()->update($this->agent);
-  }
-
-  private function changeCmdParameters($cmdParameters) {
-    global $FACTORIES;
-
-    $pars = htmlentities($cmdParameters, ENT_QUOTES, "UTF-8");
-
-    if (Util::containsBlacklistedChars($pars)) {
-      UI::addMessage(UI::ERROR, "Parameters must contain no blacklisted characters!");
-      return;
-    }
-    $this->agent->setCmdPars($pars);
-    $FACTORIES::getAgentFactory()->update($this->agent);
-  }
-
-  private function changeIgnoreErrors($ignoreErrors) {
-    global $FACTORIES;
-
-    $ignore = intval($ignoreErrors);
-    if ($ignore != 0 && $ignore != 1 && $ignore != 2) {
-      UI::printError("ERROR", "Invalid Ignore state!");
-    }
-    $this->agent->setIgnoreErrors($ignore);
-    $FACTORIES::getAgentFactory()->update($this->agent);
   }
 
   private function changeTrusted($isTrusted) {
@@ -288,15 +155,5 @@ class AgentHandler implements Handler {
 
     $qF = new QueryFilter(AgentError::AGENT_ID, $this->agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
-  }
-
-  private function rename($newname) {
-    global $FACTORIES;
-
-    $name = htmlentities($newname, ENT_QUOTES, "UTF-8");
-    if (strlen($name) > 0) {
-      $this->agent->setAgentName($name);
-      $FACTORIES::getAgentFactory()->update($this->agent);
-    }
   }
 }
