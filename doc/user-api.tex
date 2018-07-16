@@ -1062,13 +1062,207 @@
 				}
 				\end{verbatim}
 			}		
-		
+		\subsection*{\textit{setSupertaskPriority}}
+			Set the priority for a supertask.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskPriority",
+				  "supertaskId": 42,
+				  "supertaskPriority": 9000,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskPriority",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskName}}
+			Set the name for a task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskName",
+				  "taskId": 7580,
+				  "name": "New Task Name",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskName",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskColor}}
+			Set the color of a task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskColor",
+				  "taskId": 7580,
+				  "color": "78ABCD",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskColor",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskCpuOnly}}
+			Set if a task is a CPU only task or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskCpuOnly",
+				  "taskId": 7580,
+				  "isCpuOnly": false,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskCpuOnly",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskSmall}}
+			Set if a task is small or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskSmall",
+				  "taskId": 7580,
+				  "isSmall": false,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskSmall",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{taskUnassignAgent}}
+			Unassign an agent from his task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskUnassignAgent",
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskUnassignAgent",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{deleteTask}}
+			Completely delete a task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deleteTask",
+				  "taskId": 7580,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deleteTask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}		
+		\subsection*{\textit{purgeTask}}
+			Purge all task data and reset it to initial state.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "purgeTask",
+				  "taskId": 7591,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "purgeTask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+
+
+
+
+
+
 		
 		
 		
 		
 %		\subsection*{\textit{temporary}}
-%			Delete a voucher from the server.
+%			TODO
 %			{
 %				\color{blue}
 %				\begin{verbatim}
