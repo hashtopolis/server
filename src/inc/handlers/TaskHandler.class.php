@@ -37,7 +37,7 @@ class TaskHandler implements Handler {
     switch ($action) {
       case DTaskAction::SET_BENCHMARK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
-        $this->adjustBenchmark();
+        $error = TaskUtils::setBenchmark($_POST['agentId'], $_POST['bench'], $LOGIN->getUser());
         break;
       case DTaskAction::SET_SMALL_TASK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
@@ -49,11 +49,11 @@ class TaskHandler implements Handler {
         break;
       case DTaskAction::ABORT_CHUNK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
-        $this->abortChunk();
+        $error = TaskUtils::abortChunk($_POST['chunk'], $LOGIN->getUser());
         break;
       case DTaskAction::RESET_CHUNK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
-        $this->resetChunk();
+        $error = TaskUtils::resetChunk($_POST['chunk'], $LOGIN->getUser());
         break;
       case DTaskAction::PURGE_TASK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
@@ -65,7 +65,7 @@ class TaskHandler implements Handler {
         break;
       case DTaskAction::SET_TIME:
         $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
-        $this->changeChunkTime();
+        $error = TaskUtils::changeChunkTime($_POST['task'], $_POST['chunktime'], $LOGIN->getUser());
         break;
       case DTaskAction::RENAME_TASK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
@@ -73,7 +73,7 @@ class TaskHandler implements Handler {
         break;
       case DTaskAction::DELETE_FINISHED:
         $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
-        $this->deleteFinished();
+        $error = TaskUtils::deleteFinished($LOGIN->getUser());
         break;
       case DTaskAction::DELETE_TASK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
@@ -89,7 +89,7 @@ class TaskHandler implements Handler {
         break;
       case DTaskAction::DELETE_SUPERTASK:
         $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
-        $this->deleteSupertask($_POST['supertaskId']);
+        $error = TaskUtils::deleteSupertask($_POST['supertaskId'], $LOGIN->getUser());
         break;
       case DTaskAction::SET_SUPERTASK_PRIORITY:
         $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
@@ -102,25 +102,6 @@ class TaskHandler implements Handler {
     if($error !== false){
       UI::addMessage(UI::ERROR, $error);
     }
-  }
-
-  private function deleteSupertask($supertaskId) {
-    global $FACTORIES;
-
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
-    if ($taskWrapper === null) {
-      UI::addMessage(UI::ERROR, "Invalid supertask!");
-      return;
-    }
-
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($tasks as $task) {
-      TaskUtils::deleteTask($task);
-    }
-    $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
   }
 
   private function create() {
@@ -230,143 +211,5 @@ class TaskHandler implements Handler {
 
     header("Location: $forward");
     die();
-  }
-
-  /**
-   * @param $task Task
-   */
-  private function deleteTask($task) {
-    global $FACTORIES;
-
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunkIds = Util::arrayOfIds($FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF)));
-
-    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
-    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($notifications as $notification) {
-      if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::TASK) {
-        $FACTORIES::getNotificationSettingFactory()->delete($notification);
-      }
-    }
-
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getFileTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $uS = new UpdateSet(Hash::CHUNK_ID, null);
-    if (sizeof($chunkIds) > 0) {
-      $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
-      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
-      $FACTORIES::getHashBinaryFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
-    }
-    $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $FACTORIES::getTaskFactory()->delete($task);
-  }
-
-  private function deleteFinished() {
-    global $FACTORIES;
-
-    // check every task wrapper
-    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
-    foreach ($taskWrappers as $taskWrapper) {
-      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
-      $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $isComplete = true;
-      foreach ($tasks as $task) {
-        if ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getKeyspaceProgress()) {
-          $isComplete = false;
-          break;
-        }
-        $sumProg = 0;
-        $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-        $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-        foreach ($chunks as $chunk) {
-          $sumProg += $chunk->getCheckpoint() - $chunk->getSkip();
-        }
-        if ($sumProg < $task->getKeyspace()) {
-          $isComplete = false;
-          break;
-        }
-      }
-      if ($isComplete) {
-        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-        foreach ($tasks as $task) {
-          TaskUtils::deleteTask($task);
-        }
-        $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
-        $FACTORIES::getAgentFactory()->getDB()->commit();
-      }
-    }
-  }
-
-  private function changeChunkTime() {
-    global $FACTORIES;
-
-    // update task chunk time
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $chunktime = intval($_POST["chunktime"]);
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
-    $join = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    for ($i = 0; $i < sizeof($join[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
-      $assignment = \DBA\Util::cast($join[$FACTORIES::getAssignmentFactory()->getModelName()][$i], \DBA\Assignment::class);
-      $assignment->setBenchmark($assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
-      $FACTORIES::getAssignmentFactory()->update($assignment);
-    }
-    $task->setChunkTime($chunktime);
-    $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-  }
-
-  private function abortChunk() {
-    global $FACTORIES;
-
-    // reset chunk state and progress to zero
-    $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
-    if ($chunk == null) {
-      UI::addMessage(UI::ERROR, "No such chunk!");
-      return;
-    }
-    $chunk->setState(DHashcatStatus::ABORTED);
-    $FACTORIES::getChunkFactory()->update($chunk);
-  }
-
-  private function resetChunk() {
-    global $FACTORIES;
-
-    // reset chunk state and progress to zero
-    $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
-    if ($chunk == null) {
-      UI::addMessage(UI::ERROR, "No such chunk!");
-      return;
-    }
-    $chunk->setState(0);
-    $chunk->setProgress(0);
-    $chunk->setCheckpoint($chunk->getSkip());
-    $chunk->setDispatchTime(0);
-    $chunk->setSolveTime(0);
-    $FACTORIES::getChunkFactory()->update($chunk);
-  }
-
-  private function adjustBenchmark() {
-    global $FACTORIES;
-
-    // adjust agent benchmark
-    $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agentId'], "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-    if ($assignment == null) {
-      UI::addMessage(UI::ERROR, "No assignment for this agent!");
-      return;
-    }
-    $bench = floatval($_POST["bench"]);
-    $assignment->setBenchmark($bench);
-    $FACTORIES::getAssignmentFactory()->update($assignment);
   }
 }

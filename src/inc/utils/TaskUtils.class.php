@@ -82,8 +82,160 @@ class TaskUtils {
   }
 
   /**
-   * @param int $taskId 
-   * @param User $user 
+   * @param User $user
+   * @return boolean
+   */
+  public static function deleteFinished($user) {
+    global $FACTORIES;
+
+    // check every task wrapper
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
+    foreach ($taskWrappers as $taskWrapper) {
+      if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+        continue; // we only delete finished ones where the user has access to
+      }
+      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+      $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $isComplete = true;
+      foreach ($tasks as $task) {
+        if ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getKeyspaceProgress()) {
+          $isComplete = false;
+          break;
+        }
+        $sumProg = 0;
+        $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+        $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+        foreach ($chunks as $chunk) {
+          $sumProg += $chunk->getCheckpoint() - $chunk->getSkip();
+        }
+        if ($sumProg < $task->getKeyspace()) {
+          $isComplete = false;
+          break;
+        }
+      }
+      if ($isComplete) {
+        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+        foreach ($tasks as $task) {
+          TaskUtils::deleteTask($task);
+        }
+        $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+        $FACTORIES::getAgentFactory()->getDB()->commit();
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param int $taskId
+   * @param int $chunkTime
+   * @param User $user
+   * @return boolean|string
+   */
+  public static function changeChunkTime($taskId, $chunkTime, $user) {
+    global $FACTORIES;
+
+    // update task chunk time
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
+    if ($task == null) {
+      return "No such task!";
+    }
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $chunktime = intval($chunkTime);
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFactory());
+    $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
+    $join = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    for ($i = 0; $i < sizeof($join[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
+      $assignment = $join[$FACTORIES::getAssignmentFactory()->getModelName()][$i];
+      $assignment->setBenchmark($assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
+      $FACTORIES::getAssignmentFactory()->update($assignment);
+    }
+    $task->setChunkTime($chunktime);
+    $FACTORIES::getTaskFactory()->update($task);
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    return false;
+  }
+
+  /**
+   * @param int $chunkId
+   * @param User $user
+   * @return boolean|string
+   */
+  public static function abortChunk($chunkId, $user) {
+    global $FACTORIES;
+
+    // reset chunk state and progress to zero
+    $chunk = $FACTORIES::getChunkFactory()->get($chunkId);
+    if ($chunk == null) {
+      return "No such chunk!";
+    }
+    $task = $FACTORIES::getTaskFactory()->get($chunk->getTaskId());
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $chunk->setState(DHashcatStatus::ABORTED);
+    $FACTORIES::getChunkFactory()->update($chunk);
+    return false;
+  }
+
+  /**
+   * @param int $chunkId
+   * @param User $user
+   * @return boolean|string
+   */
+  public static function resetChunk($chunkId, $user) {
+    global $FACTORIES;
+
+    // reset chunk state and progress to zero
+    $chunk = $FACTORIES::getChunkFactory()->get($chunkId);
+    if ($chunk == null) {
+      return "No such chunk!";
+    }
+    $task = $FACTORIES::getTaskFactory()->get($chunk->getTaskId());
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this task!";
+    }
+    $chunk->setState(0);
+    $chunk->setProgress(0);
+    $chunk->setCheckpoint($chunk->getSkip());
+    $chunk->setDispatchTime(0);
+    $chunk->setSolveTime(0);
+    $FACTORIES::getChunkFactory()->update($chunk);
+    return false;
+  }
+
+  /**
+   * @param int $agentId
+   * @param string $benchmark
+   * @param User $user
+   * @return boolean|string
+   */
+  public static function setBenchmark($agentId, $benchmark, $user) {
+    global $FACTORIES;
+
+    // adjust agent benchmark
+    $qF = new QueryFilter(Assignment::AGENT_ID, $agentId, "=");
+    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    if ($assignment == null) {
+      return "No assignment for this agent!";
+    }
+    else if(!AccessUtils::userCanAccessAgent($FACTORIES::getAgentFactory()->get($agentId), $user)){
+      return "No access to this agent!";
+    }
+    // TODO: check benchmark validity
+    $assignment->setBenchmark($benchmark);
+    $FACTORIES::getAssignmentFactory()->update($assignment);
+    return false;
+  }
+
+  /**
+   * @param int $taskId
+   * @param User $user
    * @return boolean|string
    */
   public static function purgeTask($taskId, $user) {
@@ -679,5 +831,32 @@ class TaskUtils {
     $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     /** @var $files File[] */
     return $joined[$FACTORIES::getFileFactory()->getModelName()];
+  }
+
+  /**
+   * @param int $supertaskId 
+   * @param User $user 
+   * @return boolean|string
+   */
+  public static function deleteSupertask($supertaskId, $user) {
+    global $FACTORIES;
+
+    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
+    if ($taskWrapper === null) {
+      return "Invalid supertask!";
+    }
+    else if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+      return "No access to this supertask!";
+    }
+
+    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    foreach ($tasks as $task) {
+      TaskUtils::deleteTask($task);
+    }
+    $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+    $FACTORIES::getAgentFactory()->getDB()->commit();
+    return false;
   }
 }
