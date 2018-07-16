@@ -27,10 +27,10 @@ class AgentUtils {
   }
 
   /**
-   * @param int $agentId 
-   * @param string $newname 
-   * @param User $user 
-   * @throws HTException 
+   * @param int $agentId
+   * @param string $newname
+   * @param User $user
+   * @throws HTException
    */
   public static function rename($agentId, $newname, $user) {
     global $FACTORIES;
@@ -213,8 +213,8 @@ class AgentUtils {
   }
 
   /**
-   * @param int $agentId 
-   * @param boolean $trusted 
+   * @param int $agentId
+   * @param boolean $trusted
    * @param User $user
    * @throws HTException
    */
@@ -224,6 +224,42 @@ class AgentUtils {
     $agent = AgentUtils::getAgent($agentId, $user);
     $trusted = ($trusted)?1:0;
     $agent->setIsTrusted($trusted);
+    $FACTORIES::getAgentFactory()->update($agent);
+  }
+
+  /**
+   * @param int $agentId
+   * @param int|string $ownerId
+   * @param User $user
+   * @throws HTException
+   */
+  public static function changeOwner($agentId, $ownerId, $user) {
+    global $FACTORIES;
+
+    $agent = AgentUtils::getAgent($agentId, $user);
+    if ($ownerId == 0) {
+      $agent->setUserId(null);
+      $username = "NONE";
+      $FACTORIES::getAgentFactory()->update($agent);
+    }
+    else if(is_numeric($ownerId)){
+      $owner = $FACTORIES::getUserFactory()->get(intval($ownerId));
+      if (!$owner) {
+        throw new HTException("Invalid user selected!");
+      }
+      $username = $user->getUsername();
+      $agent->setUserId($owner->getId());
+    }
+    else {
+      $qF = new QueryFilter(User::USERNAME, $ownerId, "=");
+      $owner = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+      if (!$owner) {
+        throw new HTException("Invalid user selected!");
+      }
+      $username = $user->getUsername();
+      $agent->setUserId($owner->getId());
+    }
+    Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Owner for agent " . $agent->getAgentName() . " was changed to " . $username);
     $FACTORIES::getAgentFactory()->update($agent);
   }
 

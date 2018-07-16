@@ -129,27 +129,6 @@ class AgentHandler implements Handler {
     $FACTORIES::getAgentFactory()->update($this->agent);
   }
 
-  private function changeOwner($owner) {
-    /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
-
-    if ($owner == 0) {
-      $this->agent->setUserId(null);
-      $username = "NONE";
-      $FACTORIES::getAgentFactory()->update($this->agent);
-    }
-    else {
-      $user = $FACTORIES::getUserFactory()->get(intval($owner));
-      if (!$user) {
-        UI::printError("ERROR", "Invalid user selected!");
-      }
-      $username = $user->getUsername();
-      $this->agent->setUserId($user->getId());
-    }
-    Util::createLogEntry(DLogEntryIssuer::USER, $LOGIN->getUserID(), DLogEntry::INFO, "Owner for agent " . $this->agent->getAgentName() . " was changed to " . $username);
-    $FACTORIES::getAgentFactory()->update($this->agent);
-  }
-
   private function clearErrors() {
     global $FACTORIES;
 

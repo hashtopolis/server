@@ -91,7 +91,7 @@ class UserAPIAgent extends UserAPIBasic {
   }
 
   /**
-   * @param array $QUERY 
+   * @param array $QUERY
    * @throws HTException
    */
   private function setTrusted($QUERY){
@@ -160,31 +160,17 @@ class UserAPIAgent extends UserAPIBasic {
     $this->sendSuccessResponse($QUERY);
   }
 
+  /**
+   * @param array $QUERY 
+   * @throws HTException
+   */
   private function changeOwner($QUERY){
     global $FACTORIES;
 
     if(!isset($QUERY[UQueryAgent::USER]) || !isset($QUERY[UQueryAgent::AGENT_ID])){
       $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid query!");
     }
-    $agent = $this->checkAgent($QUERY);
-    $user = null;
-    if($QUERY[UQueryAgent::USER] === 0){
-      $agent->setUserId(null);
-      $FACTORIES::getAgentFactory()->update($agent);
-      $this->sendSuccessResponse($QUERY);
-    }
-    else if(is_numeric($QUERY[UQueryAgent::USER])){
-      $user = $FACTORIES::getUserFactory()->get($QUERY[UQueryAgent::USER]);
-    }
-    else{
-      $qF = new QueryFilter(User::USERNAME, $QUERY[UQueryAgent::USER], "=");
-      $user = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-    }
-    if($user == null){
-      $this->sendErrorResponse($QUERY[UQueryAgent::SECTION], $QUERY[UQueryAgent::REQUEST], "Invalid user specified!");
-    }
-    $agent->setUserId($user->getId());
-    $FACTORIES::getAgentFactory()->update($agent);
+    AgentUtils::changeOwner($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::USER], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
 
