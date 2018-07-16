@@ -90,7 +90,7 @@ class TaskUtils {
     global $FACTORIES;
 
     // delete all task chunks, forget its keyspace value and reset progress to zero
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
+    $task = $FACTORIES::getTaskFactory()->get($taskId);
     if ($task == null) {
       return "No such task!";
     }
