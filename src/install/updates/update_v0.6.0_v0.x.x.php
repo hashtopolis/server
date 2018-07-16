@@ -77,4 +77,8 @@ $entry = new Config(0, 1, 'ruleSplitDisable', '0');
 $FACTORIES::getConfigFactory()->save($entry);
 echo "OK\n";
 
+echo "Fix constraints on preconfigured tasks...";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Pretask` CHANGE `color` `color` VARCHAR(20) NULL;");
+echo "OK\n";
+
 echo "Update complete!\n";

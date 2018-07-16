@@ -779,7 +779,7 @@ CREATE TABLE `Pretask` (
   `chunkTime`           INT(11)                 NOT NULL,
   `statusTimer`         INT(11)                 NOT NULL,
   `color`               VARCHAR(20)
-                        COLLATE utf8_unicode_ci NOT NULL,
+                        COLLATE utf8_unicode_ci NULL,
   `isSmall`             INT(11)                 NOT NULL,
   `isCpuTask`           INT(11)                 NOT NULL,
   `useNewBench`         INT(11)                 NOT NULL,
