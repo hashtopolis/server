@@ -16,6 +16,8 @@ use DBA\TaskWrapper;
 use DBA\NotificationSetting;
 use DBA\AgentError;
 use DBA\Hash;
+use DBA\FilePretask;
+use DBA\Pretask;
 
 class TaskUtils {
   /**
@@ -367,6 +369,20 @@ class TaskUtils {
 
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
     $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
+    $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    /** @var $files File[] */
+    return $joined[$FACTORIES::getFileFactory()->getModelName()];
+  }
+
+  /**
+   * @param $task Pretask
+   * @return File[]
+   */
+  public static function getFilesOfPreask($pretask) {
+    global $FACTORIES;
+
+    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
     $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     /** @var $files File[] */
     return $joined[$FACTORIES::getFileFactory()->getModelName()];

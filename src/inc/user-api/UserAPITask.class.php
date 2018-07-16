@@ -4,9 +4,12 @@ use DBA\OrderFilter;
 use DBA\TaskWrapper;
 use DBA\QueryFilter;
 use DBA\Task;
-use DBA\AbstractModel;
+use DBA\Supertask;
 use DBA\Assignment;
 use DBA\Chunk;
+use DBA\Pretask;
+use DBA\JoinFilter;
+use DBA\SupertaskPretask;
 
 class UserAPITask extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -23,23 +26,174 @@ class UserAPITask extends UserAPIBasic {
         $this->listSubtasks($QUERY);
         break;
       case USectionTask::LIST_PRETASKS:
-        // TODO:
+        $this->listPreTasks($QUERY);
         break;
       case USectionTask::GET_PRETASK:
-        // TODO:
+        $this->getPretask($QUERY);
         break;
       case USectionTask::LIST_SUPERTASKS:
-        // TODO:
+        $this->listSupertasks($QUERY);
         break;
       case USectionTask::GET_SUPERTASK:
-        // TODO:
+        $this->getSupertask($QUERY);
         break;
       case USectionTask::GET_CHUNK:
-        // TODO:
+        $this->getChunk($QUERY);
         break;
       default:
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
+  }
+
+  private function getChunk($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryTask::CHUNK_ID])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $chunk = $FACTORIES::getChunkFactory()->get($QUERY[UQueryTask::CHUNK_ID]);
+    if($chunk == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid chunk ID!");
+    }
+
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK,
+      UResponseTask::CHUNK_ID => (int)$chunk->getId(),
+      UResponseTask::CHUNK_START => (int)$chunk->getSkip(),
+      UResponseTask::CHUNK_LENGTH => (int)$chunk->getLength(),
+      UResponseTask::CHUNK_CHECKPOINT => (int)$chunk->getCheckpoint(),
+      UResponseTask::CHUNK_PROGRESS => (float)($chunk->getProgress()/100),
+      UResponseTask::CHUNK_TASK => (int)$chunk->getTaskId(),
+      UResponseTask::CHUNK_AGENT => (int)$chunk->getAgentId(),
+      UResponseTask::CHUNK_DISPATCHED => (int)$chunk->getDispatchTime(),
+      UResponseTask::CHUNK_ACTIVITY => (int)$chunk->getSolveTime(),
+      UResponseTask::CHUNK_STATE => (int)$chunk->getState(),
+      UResponseTask::CHUNK_CRACKED => (int)$chunk->getCracked(),
+      UResponseTask::CHUNK_SPEED => (int)$chunk->getSpeed()
+    ];
+    $this->sendResponse($response);
+  }
+
+  private function getSupertask($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $supertask = $FACTORIES::getSupertaskFactory()->get($QUERY[UQueryTask::SUPERTASK_ID]);
+    if($supertask == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid supertask ID!");
+    }
+
+    $oF = new OrderFilter(Pretask::PRIORITY, "DESC", $FACTORIES::getPretaskFactory());
+    $jF = new JoinFilter($FACTORIES::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
+    $joined = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::ORDER => $oF, $FACTORIES::JOIN => $jF));
+    $pretasks = $joined[$FACTORIES::getPretaskFactory()->getModelName()];
+
+    $taskList = array();
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK,
+      UResponseTask::SUPERTASK_ID => (int)$supertask->getId(),
+      UResponseTask::SUPERTASK_NAME => $supertask->getSupertaskName()
+    ];
+    foreach ($pretasks as $pretask) {
+      $taskList[] = [
+        UResponseTask::PRETASKS_ID => (int)$pretask->getId(),
+        UResponseTask::PRETASKS_NAME => $pretask->getTaskName(),
+        UResponseTask::PRETASKS_PRIORITY => (int)$pretask->getPriority()
+      ];
+    }
+    $response[UResponseTask::PRETASKS] = $taskList;
+    $this->sendResponse($response);
+  }
+
+  private function listSupertasks($QUERY){
+    global $FACTORIES;
+
+    $supertasks = $FACTORIES::getSupertaskFactory()->filter(array());
+
+    $taskList = array();
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK
+    ];
+    foreach ($supertasks as $supertask) {
+      $taskList[] = [
+        UResponseTask::SUPERTASKS_ID => (int)$supertask->getId(),
+        UResponseTask::SUPERTASKS_NAME => $supertask->getSupertaskName()
+      ];
+    }
+    $response[UResponseTask::SUPERTASKS] = $taskList;
+    $this->sendResponse($response);
+  }
+
+  private function getPretask($QUERY){
+    global $FACTORIES;
+
+    if(!isset($QUERY[UQueryTask::PRETASK_ID])){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid query!");
+    }
+    $pretask = $FACTORIES::getPretaskFactory()->get($QUERY[UQueryTask::PRETASK_ID]);
+    if($pretask == null){
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid preconfigured task!");
+    }
+
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK,
+      UResponseTask::PRETASK_ID => (int)$pretask->getId(),
+      UResponseTask::PRETASK_NAME => $pretask->getTaskName(),
+      UResponseTask::PRETASK_ATTACK => $pretask->getAttackCmd(),
+      UResponseTask::PRETASK_CHUNKSIZE => (int)$pretask->getChunkTime(),
+      UResponseTask::PRETASK_COLOR => $pretask->getColor(),
+      UResponseTask::PRETASK_BENCH_TYPE => ($pretask->getUseNewBench() == 1)?"speed":"runtime",
+      UResponseTask::PRETASK_STATUS => (int)$pretask->getStatusTimer(),
+      UResponseTask::PRETASK_PRIORITY => (int)$pretask->getPriority(),
+      UResponseTask::PRETASK_CPU_ONLY => ($pretask->getIsCpuTask() == 1)?true:false,
+      UResponseTask::PRETASK_SMALL => ($pretask->getIsSmall() == 1)?true:false
+    ];
+
+    $files = TaskUtils::getFilesOfPretask($pretask);
+    $arr = [];
+    foreach($files as $file){
+      $arr[] = [
+        UResponseTask::PRETASK_FILES_ID => (int)$file->getId(),
+        UResponseTask::PRETASK_FILES_NAME => $file->getFilename(),
+        UResponseTask::PRETASK_FILES_SIZE => (int)$file->getSize()
+      ];
+    }
+    $response[UResponseTask::PRETASK_FILES] = $arr;
+    $this->sendResponse($response);
+  }
+
+  private function listPreTasks($QUERY){
+    global $FACTORIES;
+
+    $oF = new OrderFilter(Pretask::PRIORITY, "DESC");
+    $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+    $pretasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::ORDER => $oF, $FACTORIES::FILTER => $qF));
+
+    $taskList = array();
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK
+    ];
+    foreach ($pretasks as $pretask) {
+      $taskList[] = [
+        UResponseTask::PRETASKS_ID => (int)$pretask->getId(),
+        UResponseTask::PRETASKS_NAME => $pretask->getTaskName(),
+        UResponseTask::PRETASKS_PRIORITY => (int)$pretask->getPriority()
+      ];
+    }
+    $response[UResponseTask::PRETASKS] = $taskList;
+    $this->sendResponse($response);
   }
 
   private function listSubTasks($QUERY){
@@ -63,7 +217,7 @@ class UserAPITask extends UserAPIBasic {
         UResponseTask::TASKS_PRIORITY => (int)$subtask->getPriority()
       ];
     }
-    $response[UResponseTask::TASKS] = $taskList;
+    $response[UResponseTask::SUBTASKS] = $taskList;
     $this->sendResponse($response);
   }
 
@@ -156,7 +310,7 @@ class UserAPITask extends UserAPIBasic {
     }
     $supertask = $FACTORIES::getTaskWrapperFactory()->get($QUERY[UQueryTask::SUPERTASK_ID]);
     if($supertask == null){
-      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid agent ID!");
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid taskwrapper ID!");
     }
     $accessGroupIds = Util::getAccessGroupIds($this->user->getId());
     if(!in_array($supertask->getAccessGroupId(), $accessGroupIds)){
@@ -177,7 +331,7 @@ class UserAPITask extends UserAPIBasic {
     }
     $task = $FACTORIES::getTaskFactory()->get($QUERY[UQueryTask::TASK_ID]);
     if($task == null){
-      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid agent ID!");
+      $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid task ID!");
     }
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     $accessGroupIds = Util::getAccessGroupIds($this->user->getId());
