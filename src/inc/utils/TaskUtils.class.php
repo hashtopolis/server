@@ -378,7 +378,7 @@ class TaskUtils {
    * @param $task Pretask
    * @return File[]
    */
-  public static function getFilesOfPreask($pretask) {
+  public static function getFilesOfPretask($pretask) {
     global $FACTORIES;
 
     $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
