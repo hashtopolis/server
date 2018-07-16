@@ -103,7 +103,7 @@ class UserAPITask extends UserAPIBasic {
       }
     }
 
-    $taskWrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $accessGroupId, $supertask->getSupertaskName());
+    $taskWrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName());
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
     foreach ($pretasks as $pretask) {
