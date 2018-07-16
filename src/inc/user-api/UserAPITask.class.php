@@ -159,7 +159,7 @@ class UserAPITask extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "Invalid agent ID!");
     }
     $accessGroupIds = Util::getAccessGroupIds($this->user->getId());
-    if(!in_array($taskWrapper->getAccessGroupId(), $accessGroupIds)){
+    if(!in_array($supertask->getAccessGroupId(), $accessGroupIds)){
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], "No access to this task!");
     }
     return $supertask;
