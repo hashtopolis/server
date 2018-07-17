@@ -5,10 +5,7 @@ class HTMessages extends Exception {
 
   public function __construct($message = "", $code = 0, Throwable $previous = NULL){
     $this->arr = $message;
-  }
-
-  public function getMessage(){
-    return implode("\n", $this->arr);
+    $this->message = implode("\n", $this->arr);
   }
 
   public function getHTMLMessage(){
