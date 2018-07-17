@@ -1,16 +1,5 @@
 <?php
 
-use DBA\AccessGroupAgent;
-use DBA\Agent;
-use DBA\AgentError;
-use DBA\AgentZap;
-use DBA\Assignment;
-use DBA\Chunk;
-use DBA\NotificationSetting;
-use DBA\QueryFilter;
-use DBA\RegVoucher;
-use DBA\Zap;
-
 class AgentHandler implements Handler {
   private $agent;
 
@@ -35,7 +24,7 @@ class AgentHandler implements Handler {
       switch ($action) {
         case DAgentAction::CLEAR_ERRORS:
           $ACCESS_CONTROL->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
-          $this->clearErrors();
+          AgentUtils::clearErrors($_POST['agentId'], $LOGIN->getUser());
           break;
         case DAgentAction::RENAME_AGENT:
           $ACCESS_CONTROL->checkPermission(DAgentAction::RENAME_AGENT_PERM);
@@ -43,15 +32,15 @@ class AgentHandler implements Handler {
           break;
         case DAgentAction::SET_OWNER:
           $ACCESS_CONTROL->checkPermission(DAgentAction::SET_OWNER_PERM);
-          $this->changeOwner($_POST['owner']);
+          AgentUtils::changeOwner($_POST['agentId'], $_POST['owner'], $LOGIN->getUser());
           break;
         case DAgentAction::SET_TRUSTED:
           $ACCESS_CONTROL->checkPermission(DAgentAction::SET_TRUSTED_PERM);
-          $this->changeTrusted($_POST["trusted"]);
+          AgentUtils::setTrusted($_POST['agentId'], $_POST["trusted"], $LOGIN->getUser());
           break;
         case DAgentAction::SET_IGNORE:
           $ACCESS_CONTROL->checkPermission(DAgentAction::SET_IGNORE_PERM);
-          $this->changeIgnoreErrors($_POST["ignore"]);
+          AgentUtils::changeIgnoreErrors($_POST['agentId'], $_POST['ignore'], $LOGIN->getUser());
           break;
         case DAgentAction::SET_PARAMETERS:
           $ACCESS_CONTROL->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
@@ -114,25 +103,5 @@ class AgentHandler implements Handler {
     header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
     echo file_get_contents(dirname(__FILE__) . "/../../bin/" . $filename);
     die();
-  }
-
-  private function changeTrusted($isTrusted) {
-    /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN;
-
-    $trusted = intval($isTrusted);
-    if ($trusted != 0 && $trusted != 1) {
-      UI::printError("ERROR", "Invalid trusted state!");
-    }
-    $this->agent->setIsTrusted($trusted);
-    Util::createLogEntry(DLogEntryIssuer::USER, $LOGIN->getUserID(), DLogEntry::INFO, "Trust status for agent " . $this->agent->getAgentName() . " was changed to " . $this->agent->getIsTrusted());
-    $FACTORIES::getAgentFactory()->update($this->agent);
-  }
-
-  private function clearErrors() {
-    global $FACTORIES;
-
-    $qF = new QueryFilter(AgentError::AGENT_ID, $this->agent->getId(), "=");
-    $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
   }
 }

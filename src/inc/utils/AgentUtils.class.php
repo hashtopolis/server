@@ -27,6 +27,20 @@ class AgentUtils {
   }
 
   /**
+   * @param int $agentId 
+   * @param User $user 
+   * @throws HTException
+   */
+  public static function clearErrors($agentId, $user) {
+    global $FACTORIES;
+
+    $agent = AgentUtils::getAgent($agentId, $user);
+
+    $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
+    $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+  }
+
+  /**
    * @param int $agentId
    * @param string $newname
    * @param User $user
