@@ -8,10 +8,15 @@ class ApiHandler implements Handler {
   }
   
   public function handle($action) {
-    switch ($action) {
-      default:
-        UI::addMessage(UI::ERROR, "Invalid action!");
-        break;
+    try{
+      switch ($action) {
+        default:
+          UI::addMessage(UI::ERROR, "Invalid action!");
+          break;
+      }
+    }
+    catch (HTException $e){
+      UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
 }
