@@ -323,13 +323,19 @@ class AgentUtils {
   }
 
   /**
-   * @param int $voucherId
+   * @param int|string $voucher
    * @throws HTException
    */
-  public static function deleteVoucher($voucherId) {
+  public static function deleteVoucher($voucher) {
     global $FACTORIES;
 
-    $voucher = $FACTORIES::getRegVoucherFactory()->get($voucherId);
+    if(is_numeric($voucher)){
+      $voucher = $FACTORIES::getRegVoucherFactory()->get($voucher);
+    }
+    else{
+      $qF = new QueryFilter(RegVoucher::VOUCHER, $voucher, "=");
+      $voucher = $FACTORIES::getRegVoucherFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    }
     if($voucher == null){
       throw new HTException("Invalid voucher!");
     }
