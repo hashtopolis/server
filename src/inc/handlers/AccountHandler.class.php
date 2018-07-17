@@ -77,7 +77,6 @@ class AccountHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
 
-    $LOGIN->setUser($this->user);
-    $OBJECTS['user'] = $this->user;
+    $OBJECTS['user'] = $LOGIN->getUser();
   }
 }
