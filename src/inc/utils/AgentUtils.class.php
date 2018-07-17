@@ -213,14 +213,14 @@ class AgentUtils {
    * @throws HTException
    * @return Agent
    */
-  public static function getAgent($agentId, $user){
+  public static function getAgent($agentId, $user = null){
     global $FACTORIES;
 
     $agent = $FACTORIES::getAgentFactory()->get($agentId);
     if ($agent == null) {
       throw new HTException("Invalid agent!");
     }
-    else if(!AccessUtils::userCanAccessAgent($agent, $user)){
+    else if($user != null && !AccessUtils::userCanAccessAgent($agent, $user)){
       throw new HTException("No access to this agent!");
     }
     return $agent;
