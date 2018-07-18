@@ -50,6 +50,13 @@ class UQueryTask extends UQuery {
   const TASK_OPTIMIZED = "optimizedFlag";
   const AGENT_ID = "agentId";
   const SUPERTASK_PRIORITY = "supertaskPriority";
+
+  const PRETASK_PRIORITY = "priority";
+  const PRETASK_NAME = "name";
+  const PRETASK_COLOR = "color";
+  const PRETASK_CHUNKSIZE = "chunksize";
+  const PRETASK_CPU_ONLY = "isCpuOnly";
+  const PRETASK_SMALL = "isSmall";
 }
 
 ######################
