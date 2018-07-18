@@ -1251,10 +1251,173 @@
 				}
 				\end{verbatim}
 			}
-
-
-
-
+		\subsection*{\textit{setPretaskPriority}}
+			Set the priority of a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskPriority",
+				  "pretaskId": 1,
+				  "priority": 100,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskPriority",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskName}}
+			Rename a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskName",
+				  "pretaskId": 1,
+				  "name": "New name",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskName",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskColor}}
+			Set the color of a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskColor",
+				  "pretaskId": 1,
+				  "color": "FF00FF",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskColor",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskChunksize}}
+			Set the chunk time for a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskChunksize",
+				  "pretaskId": 1,
+				  "chunksize": 300,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskChunksize",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskCpuOnly}}
+			Set if a preconfigured task is a CPU only task or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskCpuOnly",
+				  "pretaskId": 1,
+				  "isCpuOnly": true,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskCpuOnly",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskSmall}}
+			Set if a preconfigured task is small or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskSmall",
+				  "pretaskId": 1,
+				  "isSmall": true,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setPretaskSmall",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{deletePretask}}
+			Deletes a preconfigured task. This also includes removing it from supertasks if it is used there.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deletePretask",
+				  "pretaskId": 1,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deletePretask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
 
 
 		
