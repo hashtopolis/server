@@ -50,6 +50,7 @@ class UQueryTask extends UQuery {
   const TASK_OPTIMIZED = "optimizedFlag";
   const AGENT_ID = "agentId";
   const SUPERTASK_PRIORITY = "supertaskPriority";
+  const SUPERTASK_NAME = "name";
 
   const PRETASK_PRIORITY = "priority";
   const PRETASK_NAME = "name";
@@ -326,9 +327,10 @@ class USectionTask extends UApi {
   const SET_PRETASK_SMALL = "setPretaskSmall";
   const DELETE_PRETASK = "deletePretask";
 
-  const SET_SUBTASK_PRIORITY = "setSubtaskPriority";
   const SET_SUPERTASK_NAME = "setSupertaskName";
+  const SET_RUNNING_SUPERTASK_NAME = "setRunningSupertaskName";
   const DELETE_SUPERTASK = "deleteSupertask";
+  const DELETE_RUNNING_SUPERTASK = "deleteRunningSupertask";
 }
 
 class USectionPretask extends UApi {}

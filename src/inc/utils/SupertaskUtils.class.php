@@ -11,7 +11,21 @@ use DBA\User;
 
 class SupertaskUtils {
   /**
-   * @param int $supertaskId 
+   * @param int $supertaskId
+   * @param string $newName
+   * @throws HTException
+   */
+  public static function renameSupertask($supertaskId, $newName){
+    global $FACTORIES;
+
+    $supertask = SupertaskUtils::getSupertask($supertaskId);
+    $name = htmlentities($newName, ENT_QUOTES, "UTF-8");
+    $supertask->setSupertaskName($name);
+    $FACTORIES::getSupertaskFactory()->update($supertask);
+  }
+
+  /**
+   * @param int $supertaskId
    * @throws HTException
    */
   public static function deleteSupertask($supertaskId){

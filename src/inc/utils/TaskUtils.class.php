@@ -25,6 +25,21 @@ use DBA\AccessGroupUser;
 class TaskUtils {
   /**
    * @param int $taskWrapperId 
+   * @param string $newName 
+   * @param User $user 
+   * @throws HTException
+   */
+  public static function renameSupertask($taskWrapperId, $newName, $user){
+    global $FACTORIES;
+
+    $taskWrapper = TaskUtils::getTaskWrapper($taskWrapperId, $user);
+    $name = htmlentities($newName, ENT_QUOTES, "UTF-8");
+    $taskWrapper->setTaskWrapperName($name);
+    $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
+  }
+
+  /**
+   * @param int $taskWrapperId
    * @return Task
    */
   public static function getTaskOfWrapper($taskWrapperId){
