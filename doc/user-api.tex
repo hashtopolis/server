@@ -1419,30 +1419,6 @@
 				\end{verbatim}
 			}
 		\subsection*{\textit{setSupertaskName}}
-			Change the name of a supertask which is in the supertask list, but not running yet.
-			{
-				\color{blue}
-				\begin{verbatim}
-				{
-				  "section": "task",
-				  "request": "setSupertaskName",
-				  "supertaskId": 2,
-				  "name": "New Supertask Name",
-				  "accessKey": "mykey"
-				}
-				\end{verbatim}
-			}
-			{
-				\color{OliveGreen}
-				\begin{verbatim}
-				{
-				  "section": "task",
-				  "request": "setSupertaskName",
-				  "response": "OK"
-				}
-				\end{verbatim}
-			}
-		\subsection*{\textit{setRunningSupertaskName}}
 			Set the name of a running supertask.
 			{
 				\color{blue}
@@ -1467,29 +1443,6 @@
 				\end{verbatim}
 			}
 		\subsection*{\textit{deleteSupertask}}
-			Deletes a configured supertask which is not running. The contained preconfigured tasks are only deleted if they were from a mask import.
-			{
-				\color{blue}
-				\begin{verbatim}
-				{
-				  "section": "task",
-				  "request": "deleteSupertask",
-				  "supertaskId": 2,
-				  "accessKey": "mykey"
-				}
-				\end{verbatim}
-			}
-			{
-				\color{OliveGreen}
-				\begin{verbatim}
-				{
-				  "section": "task",
-				  "request": "deleteSupertask",
-				  "response": "OK"
-				}
-				\end{verbatim}
-			}
-		\subsection*{\textit{deleteRunningSupertask}}
 			Delete a running supertask. This includes all contained subtasks.
 			{
 				\color{blue}

@@ -99,14 +99,8 @@ class UserAPITask extends UserAPIBasic {
         case USectionTask::SET_SUPERTASK_NAME:
           $this->setSupertaskName($QUERY);
           break;
-        case USectionTask::SET_RUNNING_SUPERTASK_NAME:
-          $this->setRunningSupertaskName($QUERY);
-          break;
         case USectionTask::DELETE_SUPERTASK:
           $this->deleteSupertask($QUERY);
-          break;
-        case USectionTask::DELETE_RUNNING_SUPERTASK:
-          $this->deleteRunningSupertask($QUERY);
           break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
@@ -121,35 +115,11 @@ class UserAPITask extends UserAPIBasic {
    * @param array $QUERY 
    * @throws HTException 
    */
-  private function deleteRunningSupertask($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
-      throw new HTException("Invalid query!");
-    }
-    TaskUtils::deleteSupertask($QUERY[UQueryTask::SUPERTASK_ID], $this->user);
-    $this->sendSuccessResponse($QUERY);
-  }
-
-  /**
-   * @param array $QUERY 
-   * @throws HTException 
-   */
   private function deleteSupertask($QUERY){
     if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
       throw new HTException("Invalid query!");
     }
-    SupertaskUtils::deleteSupertask($QUERY[UQueryTask::SUPERTASK_ID]);
-    $this->sendSuccessResponse($QUERY);
-  }
-
-  /**
-   * @param array $QUERY
-   * @throws HTException
-   */
-  private function setRunningSupertaskName($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_NAME])){
-      throw new HTException("Invalid query!");
-    }
-    TaskUtils::renameSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_NAME], $this->user);
+    TaskUtils::deleteSupertask($QUERY[UQueryTask::SUPERTASK_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
 
@@ -161,7 +131,7 @@ class UserAPITask extends UserAPIBasic {
     if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_NAME])){
       throw new HTException("Invalid query!");
     }
-    SupertaskUtils::renameSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_NAME]);
+    TaskUtils::renameSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
 

@@ -328,9 +328,7 @@ class USectionTask extends UApi {
   const DELETE_PRETASK = "deletePretask";
 
   const SET_SUPERTASK_NAME = "setSupertaskName";
-  const SET_RUNNING_SUPERTASK_NAME = "setRunningSupertaskName";
   const DELETE_SUPERTASK = "deleteSupertask";
-  const DELETE_RUNNING_SUPERTASK = "deleteRunningSupertask";
 }
 
 class USectionPretask extends UApi {}
