@@ -20,11 +20,11 @@ class NotificationHandler implements Handler {
           break;
         case DNotificationAction::SET_ACTIVE:
           $ACCESS_CONTROL->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
-          NotificationUtils::setActive($_POST['notification'], false, true, $ACCESS_CONTROL->user);
+          NotificationUtils::setActive($_POST['notification'], false, true, $ACCESS_CONTROL->getUser());
           break;
         case DNotificationAction::DELETE_NOTIFICATION:
           $ACCESS_CONTROL->checkPermission(DNotificationAction::DELETE_NOTIFICATION_PERM);
-          NotificationUtils::delete($_POST['notification'], $ACCESS_CONTROL->user);
+          NotificationUtils::delete($_POST['notification'], $ACCESS_CONTROL->getUser());
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");

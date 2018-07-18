@@ -56,12 +56,12 @@ class NotificationUtils {
         if ($post['tasks'] == "ALL") {
           break;
         }
-        $task = TaskUtils::getTask($post['tasks'], $ACCESS_CONTROL->user);
+        $task = TaskUtils::getTask($post['tasks'], $ACCESS_CONTROL->getUser());
         $objectId = $task->getId();
         break;
     }
 
-    $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, $ACCESS_CONTROL->user->getId(), $receiver, 1);
+    $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, $ACCESS_CONTROL->getUser()->getId(), $receiver, 1);
     $FACTORIES::getNotificationSettingFactory()->save($notificationSetting);
   }
 

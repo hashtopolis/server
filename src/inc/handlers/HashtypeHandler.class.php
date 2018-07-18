@@ -15,7 +15,7 @@ class HashtypeHandler implements Handler {
           UI::addMessage(UI::SUCCESS, "Hashtype was deleted successfully!");
           break;
         case DHashtypeAction::ADD_HASHTYPE:
-          HashtypeUtils::addHashtype($_POST['id'], $_POST['description'], $_POST['isSalted'], $ACCESS_CONTROL->user);
+          HashtypeUtils::addHashtype($_POST['id'], $_POST['description'], $_POST['isSalted'], $ACCESS_CONTROL->getUser());
           UI::addMessage(UI::SUCCESS, "New hashtype created successfully!");
           break;
         default:

@@ -29,26 +29,26 @@ class HashlistHandler implements Handler {
       switch ($action) {
         case DHashlistAction::APPLY_PRECONFIGURED_TASKS:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::APPLY_PRECONFIGURED_TASKS_PERM);
-          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['tasks']))?$_POST['tasks']:[], $ACCESS_CONTROL->user);
+          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['tasks']))?$_POST['tasks']:[], $ACCESS_CONTROL->getUser());
           UI::addMessage(UI::SUCCESS, "Successfully created $count new tasks! You will be forward to the tasks page in 5 seconds.");
           UI::setForward("tasks.php", 5);
           break;
         case DHashlistAction::CREATE_WORDLIST:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::CREATE_WORDLIST_PERM);
-          $data = HashlistUtils::createWordlists($_POST['hashlist'], $ACCESS_CONTROL->user);
+          $data = HashlistUtils::createWordlists($_POST['hashlist'], $ACCESS_CONTROL->getUser());
           UI::addMessage(UI::SUCCESS, "Exported " . $data[0] . " found plains to " . $data[1] . " successfully!");
           break;
         case DHashlistAction::SET_SECRET:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::SET_SECRET_PERM);
-          HashlistUtils::setSecret($_POST['hashlistId'], $_POST['secret'], $ACCESS_CONTROL->user);
+          HashlistUtils::setSecret($_POST['hashlistId'], $_POST['secret'], $ACCESS_CONTROL->getUser());
           break;
         case DHashlistAction::RENAME_HASHLIST:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::RENAME_HASHLIST_PERM);
-          HashlistUtils::rename($_POST['hashlist'], $_POST['name'], $ACCESS_CONTROL->user);
+          HashlistUtils::rename($_POST['hashlist'], $_POST['name'], $ACCESS_CONTROL->getUser());
           break;
         case DHashlistAction::PROCESS_ZAP:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::PROCESS_ZAP_PERM);
-          $data = HashlistUtils::processZap($_POST['hashlist'], $_POST['separator'], $_POST['source'], $_POST, $_FILES, $ACCESS_CONTROL->user);
+          $data = HashlistUtils::processZap($_POST['hashlist'], $_POST['separator'], $_POST['source'], $_POST, $_FILES, $ACCESS_CONTROL->getUser());
           UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: " . $data[0] . " total lines, " . $data[1] . " new cracked hashes, " . $data[2] . " were already cracked, " . $data[3] . " invalid lines, " . $data[4] . " not matching entries (" . $data[5] . "s)!");
           if ($data[6] > 0) {
             UI::addMessage(UI::WARN, $data[6] . " entries with too long plaintext");
@@ -56,7 +56,7 @@ class HashlistHandler implements Handler {
           break;
         case DHashlistAction::EXPORT_HASHLIST:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::EXPORT_HASHLIST_PERM);
-          HashlistUtils::export($_POST['hashlist'], $ACCESS_CONTROL->user);
+          HashlistUtils::export($_POST['hashlist'], $ACCESS_CONTROL->getUser());
           UI::addMessage(UI::SUCCESS, "Cracked hashes from hashlist exported successfully!");
           break;
         case DHashlistAction::ZAP_HASHLIST:
@@ -65,7 +65,7 @@ class HashlistHandler implements Handler {
           break;
         case DHashlistAction::DELETE_HASHLIST:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::DELETE_HASHLIST_PERM);
-          $format = HashlistUtils::delete($_POST['hashlist'], $ACCESS_CONTROL->user);
+          $format = HashlistUtils::delete($_POST['hashlist'], $ACCESS_CONTROL->getUser());
           if($format > DHashlistFormat::BINARY){
             header("Location: superhashlists.php");
           }
@@ -88,7 +88,7 @@ class HashlistHandler implements Handler {
             $_POST['source'],
             $_POST,
             $_FILES,
-            $ACCESS_CONTROL->user
+            $ACCESS_CONTROL->getUser()
           );
           header("Location: hashlists.php?id=" . $hashlist->getId());
           die();

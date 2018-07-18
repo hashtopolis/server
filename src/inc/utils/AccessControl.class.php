@@ -6,6 +6,13 @@ use DBA\RightGroup;
 class AccessControl {
   private $user;
   private $rightGroup;
+
+  /**
+   * @return User
+   */
+  public function getUser(){
+    return $this->user;
+  }
   
   /**
    * AccessControl constructor.
