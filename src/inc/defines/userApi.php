@@ -296,18 +296,11 @@ class USectionTask extends UApi {
   const LIST_TASKS = "listTasks";
   const GET_TASK = "getTask";
   const LIST_SUBTASKS = "listSubtasks";
-  const LIST_PRETASKS = "listPretasks";
-  const GET_PRETASK = "getPretask";
-  const LIST_SUPERTASKS = "listSupertasks";
-  const GET_SUPERTASK = "getSupertask";
   const GET_CHUNK = "getChunk";
 
   const CREATE_TASK = "createTask";
   const RUN_PRETASK = "runPretask";
   const RUN_SUPERTASK = "runSupertask";
-  const CREATE_PRETASK = "createPretask";
-  const CREATE_SUPERTASK = "createSupertask";
-  const IMPORT_SUPERTASK = "importSupertask";
 
   const SET_TASK_PRIORITY = "setTaskPriority";
   const SET_SUPERTASK_PRIORITY = "setSupertaskPriority";
@@ -319,6 +312,15 @@ class USectionTask extends UApi {
   const DELETE_TASK = "deleteTask";
   const PURGE_TASK = "purgeTask";
 
+  const SET_SUPERTASK_NAME = "setSupertaskName";
+  const DELETE_SUPERTASK = "deleteSupertask";
+}
+
+class USectionPretask extends UApi {
+  const LIST_PRETASKS = "listPretasks";
+  const GET_PRETASK = "getPretask";
+  const CREATE_PRETASK = "createPretask";
+
   const SET_PRETASK_PRIORITY = "setPretaskPriority";
   const SET_PRETASK_NAME = "setPretaskName";
   const SET_PRETASK_COLOR = "setPretaskColor";
@@ -326,14 +328,16 @@ class USectionTask extends UApi {
   const SET_PRETASK_CPU_ONLY = "setPretaskCpuOnly";
   const SET_PRETASK_SMALL = "setPretaskSmall";
   const DELETE_PRETASK = "deletePretask";
+}
 
+class USectionSupertask extends UApi {
+  const LIST_SUPERTASKS = "listSupertasks";
+  const GET_SUPERTASK = "getSupertask";
+  const CREATE_SUPERTASK = "createSupertask";
+  const IMPORT_SUPERTASK = "importSupertask";
   const SET_SUPERTASK_NAME = "setSupertaskName";
   const DELETE_SUPERTASK = "deleteSupertask";
 }
-
-class USectionPretask extends UApi {}
-
-class USectionSupertask extends UApi {}
 
 class USectionHashlist extends UApi {}
 
