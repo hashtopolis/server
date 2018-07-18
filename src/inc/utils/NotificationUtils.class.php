@@ -1,0 +1,125 @@
+<?php
+use DBA\NotificationSetting;
+use DBA\User;
+
+class NotificationUtils {
+  /**
+   * @param string $actionType 
+   * @param string $notification 
+   * @param string $receiver 
+   * @param array $post 
+   * @throws HTException 
+   */
+  public static function createNotificaton($actionType, $notification, $receiver, $post) {
+    global $FACTORIES, $NOTIFICATIONS, $ACCESS_CONTROL;
+
+    $receiver = trim($receiver);
+    if (!isset($NOTIFICATIONS[$notification])) {
+      throw new HTException("This notification is not available!");
+    }
+    else if (!in_array($actionType, DNotificationType::getAll())) {
+      throw new HTException("This actionType is not available!");
+    }
+    else if (strlen($receiver) == 0) {
+      throw new HTException("You need to fill in a receiver!");
+    }
+    else if (!$ACCESS_CONTROL->hasPermission(DNotificationType::getRequiredPermission($actionType))) {
+      throw new HTException("You are not allowed to use this action type!");
+    }
+    $objectId = null;
+    switch (DNotificationType::getObjectType($actionType)) {
+      case DNotificationObjectType::USER:
+        if (!$ACCESS_CONTROL->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
+          throw new HTException("You are not allowed to use user action types!");
+        }
+        if ($post['users'] == "ALL") {
+          break;
+        }
+        $user = UserUtils::getUser($post['users']);
+        $objectId = $user->getId();
+        break;
+      case DNotificationObjectType::AGENT:
+        if ($post['agents'] == "ALL") {
+          break;
+        }
+        $agent = AgentUtils::getAgent($post['agents']);
+        $objectId = $agent->getId();
+        break;
+      case DNotificationObjectType::HASHLIST:
+        if ($post['hashlists'] == "ALL") {
+          break;
+        }
+        $hashlist = HashlistUtils::getHashlist($post['hashlists']);
+        $objectId = $hashlist->getId();
+        break;
+      case DNotificationObjectType::TASK:
+        if ($post['tasks'] == "ALL") {
+          break;
+        }
+        $task = TaskUtils::getTask($post['tasks'], $ACCESS_CONTROL->user);
+        $objectId = $task->getId();
+        break;
+    }
+
+    $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, $ACCESS_CONTROL->user->getId(), $receiver, 1);
+    $FACTORIES::getNotificationSettingFactory()->save($notificationSetting);
+  }
+
+  /**
+   * @param int $notification
+   * @param boolean $isActive
+   * @param boolean $doToggle
+   * @param User $user
+   * @throws HTException
+   */
+  public static function setActive($notification, $isActive, $doToggle, $user) {
+    global $FACTORIES;
+
+    $notification = NotificationUtils::getNotification($notification);
+    if ($notification->getUserId() != $user->getId()) {
+      throw new HTException("You have no access to this notification!");
+    }
+    if($doToggle){
+      if ($notification->getIsActive() == 1) {
+        $notification->setIsActive(0);
+      }
+      else {
+        $notification->setIsActive(1);
+      }
+    }
+    else{
+      $notification->setIsActive(($isActive)?1:0);
+    }
+    $FACTORIES::getNotificationSettingFactory()->update($notification);
+  }
+
+  /**
+   * @param int $notification
+   * @param User $user
+   * @throws HTException
+   */
+  public static function delete($notification, $user) {
+    global $FACTORIES;
+
+    $notification = NotificationUtils::getNotification($notification);
+    if ($notification->getUserId() != $user->getId()) {
+      throw new HTException("You are not allowed to delete this notification!");
+    }
+    $FACTORIES::getNotificationSettingFactory()->delete($notification);
+  }
+
+  /**
+   * @param int $notification
+   * @throws HTException
+   * @return NotificationSetting
+   */
+  public static function getNotification($notification){
+    global $FACTORIES;
+
+    $notification = $FACTORIES::getNotificationSettingFactory()->get($notification);
+    if ($notification == null) {
+      throw new HTException("Notification not found!");
+    }
+    return $notification;
+  }
+}
