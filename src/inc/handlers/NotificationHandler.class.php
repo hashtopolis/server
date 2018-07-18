@@ -16,7 +16,7 @@ class NotificationHandler implements Handler {
       switch ($action) {
         case DNotificationAction::CREATE_NOTIFICATION:
           $ACCESS_CONTROL->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
-          NotificationUtils::createNotificaton($_POST['actionType'], $_POST['notification'], $_POST['reciever'], $_POST);
+          NotificationUtils::createNotificaton($_POST['actionType'], $_POST['notification'], $_POST['receiver'], $_POST);
           break;
         case DNotificationAction::SET_ACTIVE:
           $ACCESS_CONTROL->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
