@@ -820,7 +820,7 @@ class Util {
 
         case "import":
           if (file_exists(dirname(__FILE__) . "/../import/" . $sourcedata)) {
-            rename("import/" . $sourcedata, $target);
+            rename(dirname(__FILE__) . "/../import/" . $sourcedata, $target);
             if (file_exists($target)) {
               $success = true;
             }
