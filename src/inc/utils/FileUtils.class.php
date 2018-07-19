@@ -6,11 +6,39 @@ use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\FilePretask;
 use DBA\Pretask;
+use DBA\OrderFilter;
 
 class FileUtils {
   /**
    * @param int $fileId 
+   * @param int $fileType 
    * @throws HTException 
+   */
+  public static function setFileType($fileId, $fileType){
+    global $FACTORIES;
+
+    $file = FileUtils::getFile($fileId);
+    if($fileType < DFileType::WORDLIST || $fileType > DFileType::RULE){
+      throw new HTException("Invalid file type!");
+    }
+    $file->setFileType($fileType);
+    $FACTORIES::getFileFactory()->update($file);
+  }
+
+  /**
+   * @return File[]
+   */
+  public static function getFiles(){
+    global $FACTORIES;
+
+    $oF = new OrderFilter(File::FILE_ID, "ASC");
+    $qF = new QueryFilter(File::FILE_TYPE, DFileType::TEMPORARY, "<>");
+    return $FACTORIES::getFileFactory()->filter(array($FACTORIES::ORDER => $oF, $FACTORIES::FILTER => $qF));
+  }
+
+  /**
+   * @param int $fileId
+   * @throws HTException
    */
   public static function delete($fileId) {
     global $FACTORIES;
@@ -35,7 +63,7 @@ class FileUtils {
    * @param string $source
    * @param array $file
    * @param array $post
-   * @param int $view
+   * @param string $view
    * @throws HTException
    * @return integer
    */
@@ -46,6 +74,26 @@ class FileUtils {
     }
 
     switch ($source) {
+      case 'inline':
+        $realname = str_replace(" ", "_", htmlentities(basename($post["filename"]), ENT_QUOTES, "UTF-8"));
+        if ($realname == "") {
+          throw new HTException("Empty filename!");
+        }
+        $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
+        $resp = Util::uploadFile($tmpfile, 'paste', $post['data']);
+        if ($resp[0]) {
+          $resp = Util::insertFile($tmpfile, $realname, $view);
+          if ($resp) {
+            $fileCount++;
+          }
+          else {
+            throw new HTException("Failed to insert file $realname into DB!");
+          }
+        }
+        else {
+          throw new HTException("Failed to copy file $realname to the right place! " . $resp[1]);
+        }
+        break;
       case "upload":
         // from http upload
         $uploaded = $file;

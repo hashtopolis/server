@@ -80,6 +80,17 @@ class UQuerySuperhashlist extends UQuery{
   const SUPERHASHLIST_HASHLISTS = "hashlists";
 }
 
+class UQueryFile extends UQuery {
+  const FILE_ID = "fileId";
+
+  const FILENAME = "filename";
+  const FILE_TYPE = "fileType";
+  const SOURCE = "source";
+  const DATA = "data";
+
+  const SET_SECRET = "isSecret";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -269,6 +280,20 @@ class UResponseSuperhashlist extends UResponse {
   const SUPERHASHLIST_HASHLISTS = "hashlists";
 }
 
+class UResponseFile extends UResponse {
+  const FILES = "files";
+  const FILES_FILE_ID = "fileId";
+  const FILES_FILETYPE = "fileType";
+  const FILES_FILENAME = "filename";
+
+  const FILE_ID = "fileId";
+  const FILE_TYPE = "fileType";
+  const FILE_FILENAME = "filename";
+  const FILE_SECRET = "isSecret";
+  const FILE_SIZE = "size";
+  const FILE_URL = "url";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -429,7 +454,16 @@ class USectionSuperhashlist extends UApi {
   const DELETE_SUPERHASHLIST = "deleteSuperhashlist";
 }
 
-class USectionFile extends UApi {}
+class USectionFile extends UApi {
+  const LIST_FILES = "listFiles";
+  const GET_FILE = "getFile";
+  const ADD_FILE = "addFile";
+
+  const RENAME_FILE = "renameFile";
+  const SET_SECRET = "setSecret";
+  const DELETE_FILE = "deleteFile";
+  const SET_FILE_TYPE = "setFileType";
+}
 
 class USectionCracker extends UApi {}
 
