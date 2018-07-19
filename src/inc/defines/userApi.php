@@ -74,6 +74,12 @@ class UQueryHashlist extends UQuery {
   const HASHLIST_DATA = "data";
 }
 
+class UQuerySuperhashlist extends UQuery{
+  const SUPERHASHLIST_ID = "superhashlistId";
+  const SUPERHASHLIST_NAME = "name";
+  const SUPERHASHLIST_HASHLISTS = "hashlists";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -246,6 +252,23 @@ class UResponseHashlist extends UResponse {
   const EXPORT_FILE_NAME = "filename";
 }
 
+class UResponseSuperhashlist extends UResponse {
+  const SUPERHASHLISTS = "superhashlists";
+  const SUPERHASHLISTS_ID = "hashlistId";
+  const SUPERHASHLISTS_NAME = "name";
+  const SUPERHASHLISTS_HASHTYPE_ID = "hashtypeId";
+  const SUPERHASHLISTS_FORMAT = "format";
+  const SUPERHASHLISTS_COUNT = "hashCount";
+
+  const SUPERHASHLIST_ID = "hashlistId";
+  const SUPERHASHLIST_NAME = "name";
+  const SUPERHASHLIST_HASHTYPE_ID = "hashtypeId";
+  const SUPERHASHLIST_COUNT = "hashCount";
+  const SUPERHASHLIST_CRACKED = "cracked";
+  const SUPERHASHLIST_ACCESS_GROUP = "accessGroupId";
+  const SUPERHASHLIST_SECRET = "isSecret";
+  const SUPERHASHLIST_HASHLISTS = "hashlists";
+}
 
 ###############################
 # Section/Request definitions #
@@ -404,7 +427,7 @@ class USectionSuperhashlist extends UApi {
   const LIST_SUPERHASHLISTS = "listSuperhashlists";
   const GET_SUPERHASHLIST = "getSuperhashlist";
   const CREATE_SUPERHASHLIST = "createSuperhashlist";
-
+  const DELETE_SUPERHASHLIST = "deleteSuperhashlist";
 }
 
 class USectionFile extends UApi {}

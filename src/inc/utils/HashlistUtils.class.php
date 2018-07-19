@@ -32,6 +32,18 @@ class HashlistUtils {
   }
 
   /**
+   * @param User $user
+   * @return Hashlist[]
+   */
+  public static function getSuperhashlists($user){
+    global $FACTORIES;
+
+    $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
+    $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
+    return $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+  }
+
+  /**
    * @param int $hashlistId
    * @param int[] $pretasks
    * @param User $user
@@ -851,7 +863,7 @@ class HashlistUtils {
    * @param string $name
    * @throws HTException
    */
-  public static function createSuperhashlist($hashlists, $name) {
+  public static function createSuperhashlist($hashlists, $name, $user) {
     global $FACTORIES;
 
     for ($i = 0; $i < sizeof($hashlists); $i++) {
@@ -869,6 +881,9 @@ class HashlistUtils {
     if (strlen($name) == 0) {
       $name = "SHL_" . $lists[0]->getHashtypeId();
     }
+    else if(!AccessUtils::userCanAccessHashlists($lists, $user)){
+      throw new HTException("You have no access to at least one of the provided hashlists!");
+    }
     $hashcount = 0;
     $cracked = 0;
     foreach ($lists as $list) {
@@ -881,6 +896,9 @@ class HashlistUtils {
       if ($accessGroupId == null) {
         $accessGroupId = $list->getAccessGroupId();
         continue;
+      }
+      else if($list->getFormat() == DHashlistFormat::SUPERHASHLIST){
+        throw new HTException("You cannot create a new superhashlist containing a superhashlist!");
       }
       else if ($accessGroupId != $list->getAccessGroupId()) {
         throw new HTException("You cannot create superhashlists from hashlists which belong to different access groups");

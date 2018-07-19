@@ -217,6 +217,9 @@ class UserAPIHashlist extends UserAPIBasic {
       throw new HTException("Invalid query!");
     }
     $hashlist = HashlistUtils::getHashlist($QUERY[UQueryHashlist::HASHLIST_ID]);
+    if($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST){
+      throw new HTException("This is not a single hashlist!");
+    }
     $response = [
       UResponseHashlist::SECTION => $QUERY[UQueryHashlist::SECTION],
       UResponseHashlist::REQUEST => $QUERY[UQueryHashlist::REQUEST],

@@ -94,7 +94,7 @@ class HashlistHandler implements Handler {
           die();
         case DHashlistAction::CREATE_SUPERHASHLIST:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::CREATE_SUPERHASHLIST_PERM);
-          HashlistUtils::createSuperhashlist($_POST['hlist'], $_POST['name']);
+          HashlistUtils::createSuperhashlist($_POST['hlist'], $_POST['name'], $ACCESS_CONTROL->getUser());
           header("Location: superhashlists.php");
           die();
         case DHashlistAction::CREATE_LEFTLIST:
