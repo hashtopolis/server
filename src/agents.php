@@ -35,7 +35,7 @@ $MENU->setActive("agents_list");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
-  $agentHandler = new AgentHandler($_POST['agentId']);
+  $agentHandler = new AgentHandler(@$_POST['agentId']);
   $agentHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
     Util::refresh();
