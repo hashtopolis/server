@@ -255,7 +255,29 @@
 		}
 		\end{verbatim}
 	}
-
+\subsection*{\textit{deleteHashlist}}
+	Delete a hashlist and all according hashes. This will remove a hashlist from the superhashlists it is member of.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "deleteHashlist",
+		  "hashlistId": 5,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "deleteHashlist",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
 
 
 
