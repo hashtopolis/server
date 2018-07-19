@@ -122,3 +122,82 @@
 			}
 			\end{verbatim}
 		}
+\subsection*{\textit{createSupertask}}
+	Create a new supertask out of existing preconfigured tasks.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "createSupertask",
+		  "name": "Mixed Supertask",
+		  "pretasks": [
+		    7,
+		    8
+		  ],
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "createSupertask",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{setSupertaskName}}
+	Rename a supertask to a new name.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "setSupertaskName",
+		  "supertaskId": 4,
+		  "name": "Other Name",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "setSupertaskName",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteSupertask}}
+	Delete a supertask.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "deleteSupertask",
+		  "supertaskId": 4,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "deleteSupertask",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+
+
+
+
+
