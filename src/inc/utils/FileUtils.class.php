@@ -144,7 +144,7 @@ class FileUtils {
             $realname[0] = "_";
           }
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
-          $resp = Util::uploadFile($tmpfile, $source, $realname);
+          $resp = Util::uploadFile($tmpfile, $source, $import);
           if ($resp[0]) {
             $resp = Util::insertFile($tmpfile, $realname, $view);
             if ($resp) {
