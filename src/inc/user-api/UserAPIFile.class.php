@@ -116,7 +116,7 @@ class UserAPIFile extends UserAPIBasic {
         FileUtils::add('url', [], ['url' => $QUERY[UQueryFile::DATA]], $type);
         break;
       case 'import':
-        FileUtils::add('import', [], ['imfile' => $QUERY[UQueryFile::DATA]], $type);
+        FileUtils::add('import', [], ['imfile' => [$QUERY[UQueryFile::DATA]]], $type);
         break;
       case 'inline':
         FileUtils::add('inline', [], ['filename' => $QUERY[UQueryFile::FILENAME], 'data' => base64_decode($QUERY[UQueryFile::DATA])], $type);
