@@ -145,7 +145,7 @@ class UserAPIFile extends UserAPIBasic {
       UResponseFile::FILE_FILENAME =>$file->getFilename(),
       UResponseFile::FILE_SECRET => ($file->getIsSecret() == 1)?true:false,
       UResponseFile::FILE_SIZE => (int)$file->getSize(),
-      UResponseFile::FILE_URL => "getFile.php?file=" . $file->getId() . "&apiKey=" . $this->apiKey
+      UResponseFile::FILE_URL => "getFile.php?file=" . $file->getId() . "&apiKey=" . $this->apiKey->getAccessKey()
     ];
     $this->sendResponse($response);
   }
