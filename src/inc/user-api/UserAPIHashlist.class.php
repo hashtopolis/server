@@ -33,6 +33,9 @@ class UserAPIHashlist extends UserAPIBasic {
         case USectionHashlist::EXPORT_LEFT:
           $this->exportLeft($QUERY);
           break;
+        case USectionHashlist::DELETE_HASHLIST:
+          $this->deleteHashlist($QUERY);
+          break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -45,6 +48,18 @@ class UserAPIHashlist extends UserAPIBasic {
   /**
    * @param array $QUERY 
    * @throws HTException 
+   */
+  private function deleteHashlist($QUERY){
+    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID])){
+      throw new HTException("Invalid query!");
+    }
+    HashlistUtils::delete($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  /**
+   * @param array $QUERY
+   * @throws HTException
    */
   private function exportLeft($QUERY){
     if(!isset($QUERY[UQueryHashlist::HASHLIST_ID])){

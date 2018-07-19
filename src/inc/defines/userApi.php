@@ -396,9 +396,16 @@ class USectionHashlist extends UApi {
   const EXPORT_CRACKED = "exportCracked";
   const GENERATE_WORDLIST = "generateWordlist";
   const EXPORT_LEFT = "exportLeft";
+
+  const DELETE_HASHLIST = "deleteHashlist";
 }
 
-class USectionSuperhashlist extends UApi {}
+class USectionSuperhashlist extends UApi {
+  const LIST_SUPERHASHLISTS = "listSuperhashlists";
+  const GET_SUPERHASHLIST = "getSuperhashlist";
+  const CREATE_SUPERHASHLIST = "createSuperhashlist";
+
+}
 
 class USectionFile extends UApi {}
 
