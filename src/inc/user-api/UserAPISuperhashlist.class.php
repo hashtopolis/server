@@ -28,8 +28,8 @@ class UserAPISuperhashlist extends UserAPIBasic {
   }
 
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
   private function deleteSuperhashlist($QUERY){
     if(!isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_ID])){
@@ -70,7 +70,11 @@ class UserAPISuperhashlist extends UserAPIBasic {
     else if(!AccessUtils::userCanAccessHashlists($hashlist, $this->user)){
       throw new HTException("No access to this hashlist!");
     }
-    $hashlists = Util::checkSuperHashlist($hashlist);
+    $hashlists = Util::arrayOfIds(Util::checkSuperHashlist($hashlist));
+    $hashlistIds = [];
+    foreach($hashlists as $l){
+      $hashlistIds[] = (int)$l;
+    }
     $response = [
       UResponseSuperhashlist::SECTION => $QUERY[UQueryHashlist::SECTION],
       UResponseSuperhashlist::REQUEST => $QUERY[UQueryHashlist::REQUEST],
@@ -82,7 +86,7 @@ class UserAPISuperhashlist extends UserAPIBasic {
       UResponseSuperhashlist::SUPERHASHLIST_CRACKED => (int)$hashlist->getCracked(),
       UResponseSuperhashlist::SUPERHASHLIST_ACCESS_GROUP => (int)$hashlist->getAccessGroupId(),
       UResponseSuperhashlist::SUPERHASHLIST_SECRET => ($hashlist->getIsSecret() == 1)?true:false,
-      UResponseSuperhashlist::SUPERHASHLIST_HASHLISTS => Util::arrayOfIds($hashlists)
+      UResponseSuperhashlist::SUPERHASHLIST_HASHLISTS => $hashlistIds
     ];
     $this->sendResponse($response);
   }
