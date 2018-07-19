@@ -18,6 +18,12 @@ class UserAPISupertask extends UserAPIBasic {
         case USectionSupertask::IMPORT_SUPERTASK:
           $this->importSupertask($QUERY);
           break;
+        case USectionSupertask::SET_SUPERTASK_NAME:
+          $this->setSupertaskName($QUERY);
+          break;
+        case USectionSupertask::DELETE_SUPERTASK:
+          $this->deleteSupertask($QUERY);
+          break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -25,6 +31,30 @@ class UserAPISupertask extends UserAPIBasic {
     catch(HTException $e){
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
+  }
+
+  /**
+   * @param array $QUERY 
+   * @throws HTException 
+   */
+  private function deleteSupertask($QUERY){
+    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
+      throw new HTException("Invalid query!");
+    }
+    SupertaskUtils::deleteSupertask($QUERY[UQueryTask::SUPERTASK_ID]);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function setSupertaskName($QUERY){
+    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_NAME])){
+      throw new HTException("Invalid query!");
+    }
+    SupertaskUtils::renameSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_NAME]);
+    $this->sendSuccessResponse($QUERY);
   }
 
   /**
@@ -60,10 +90,10 @@ class UserAPISupertask extends UserAPIBasic {
    * @throws HTException
    */
   private function createSupertask($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_NAME]) || !isset($QUERY[UQueryTask::PRETASKS])){
+    if(!isset($QUERY[UQueryTask::SUPERTASK_NAME]) || !isset($QUERY[UQueryTask::PRETASKS])){
       throw new HTException("Invalid query!");
     }
-    SupertaskUtils::createSupertask($QUERY[UQueryTask::TASK_NAME], $QUERY[UQueryTask::PRETASKS]);
+    SupertaskUtils::createSupertask($QUERY[UQueryTask::SUPERTASK_NAME], $QUERY[UQueryTask::PRETASKS]);
     $this->sendSuccessResponse($QUERY);
   }
 
