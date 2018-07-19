@@ -257,7 +257,6 @@ class UResponseSuperhashlist extends UResponse {
   const SUPERHASHLISTS_ID = "hashlistId";
   const SUPERHASHLISTS_NAME = "name";
   const SUPERHASHLISTS_HASHTYPE_ID = "hashtypeId";
-  const SUPERHASHLISTS_FORMAT = "format";
   const SUPERHASHLISTS_COUNT = "hashCount";
 
   const SUPERHASHLIST_ID = "hashlistId";

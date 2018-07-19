@@ -104,7 +104,6 @@ class UserAPISuperhashlist extends UserAPIBasic {
         UResponseSuperhashlist::SUPERHASHLISTS_ID => (int)$hashlist->getId(),
         UResponseSuperhashlist::SUPERHASHLISTS_HASHTYPE_ID => (int)$hashlist->getHashTypeId(),
         UResponseSuperhashlist::SUPERHASHLISTS_NAME => $hashlist->getHashlistName(),
-        UResponseSuperhashlist::SUPERHASHLISTS_FORMAT => (int)$hashlist->getFormat(),
         UResponseSuperhashlist::SUPERHASHLISTS_COUNT => (int)$hashlist->getHashCount()
       ];
     }
