@@ -167,7 +167,6 @@ class UserAPIHashlist extends UserAPIBasic {
       UQueryHashlist::HASHLIST_SEPARATOR,
       UQueryHashlist::HASHLIST_FORMAT,
       UQueryHashlist::HASHLIST_HASHTYPE_ID,
-      UQueryHashlist::HASHLIST_SEPARATOR,
       UQueryHashlist::HASHLIST_ACCESS_GROUP_ID,
       UQueryHashlist::HASHLIST_DATA
     ];

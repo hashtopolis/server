@@ -1,0 +1,267 @@
+\section*{Hashlists (\textit{hashlist})}
+	Used to access all functions around hashlists.
+
+\subsection*{\textit{listsHashlists}}
+	List all hashlists (excluding superhashlists);
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "listHashlists",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "listHashlists",
+		  "response": "OK",
+		  "hashlists": [
+		    {
+		      "hashlistId": 1,
+		      "hashtypeId": 0,
+		      "name": "Hashcat Example",
+		      "format": 0,
+		      "hashCount": 6494
+		    },
+		    {
+		      "hashlistId": 3,
+		      "hashtypeId": 14800,
+		      "name": "iTunes test for splitting",
+		      "format": 0,
+		      "hashCount": 1
+		    },
+		    {
+		      "hashlistId": 4,
+		      "hashtypeId": 6242,
+		      "name": "truecrypt test",
+		      "format": 2,
+		      "hashCount": 1
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{getHashlist}}
+	Get information about a specific hashlist.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		"section": "agent",
+		"request": "deleteVoucher",
+		"voucher": "Gjawgidkr4",
+		"accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		"section": "agent",
+		"request": "deleteVoucher",
+		"response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{createHashlist}}
+	Create a new hashlist. Please note that it is not ideal to create large hashlists with the API as you have to send the full data. The hashlist data should always be base64 (using UTF-8) encoded.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "createHashlist",
+		  "name": "API Hashlist",
+		  "isSalted": false,
+		  "isSecret": true,
+		  "isHexSalt": false,
+		  "separator": ":",
+		  "format": 0,
+		  "hashtypeId": 3200,
+		  "accessGroupId": 1,
+		  "data": "JDJ5JDEyJDcwMElMNlZ4TGwyLkEvS2NISmJEYmVKMGFhcWVxYUdrcHhlc0FFZC5jWFBQUU4vWjNVN1c2",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "createHashlist",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{setHashlistName}}
+	Set the name of a hashlist.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "setHashlistName",
+		  "name": "BCRYPT easy",
+		  "hashlistId": 5,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "setHashlistName",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{setSecret}}
+	Set if a hashlist is secret or not.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "setSecret",
+		  "isSecret": false,
+		  "hashlistId": 5,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "setSecret",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{importCracked}}
+	Add some cracked hashes from an external source for this hashlist. The data must be base64 (using UTF-8) encoded.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "importCracked",
+		  "hashlistId": 5,
+		  "separator": ":",
+		  "data": "JDJ5JDEyJDcwMElMNlZ4TGwyLkEvS2NISmJEYmVKMGFhcWVxYUdrcHhlc0FFZC5jWFBQUU4vWjNVN1c2OnRlc3Q=",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "importCracked",
+		  "response": "OK",
+		  "linesProcessed": 1,
+		  "newCracked": 1,
+		  "alreadyCracked": 0,
+		  "invalidLines": 0,
+		  "notFound": 0,
+		  "processTime": 0,
+		  "tooLongPlains": 0
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{exportCracked}}
+	Exports the cracked hashes in hash:plain format to a new file. The response includes the informations about the created file.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "exportCracked",
+		  "hashlistId": 5,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "exportCracked",
+		  "response": "OK",
+		  "fileId": 7567,
+		  "filename": "Pre-cracked_5_19-07-2018_14-45-52.txt"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{generateWordlist}}
+	Generates a wordlist of all plaintexts of the cracked hashes of this hashlist. The response includes the informations about the created file.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "generateWordlist",
+		  "hashlistId": 5,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "generateWordlist",
+		  "response": "OK",
+		  "fileId": 7568,
+		  "filename": "Wordlist_5_19.07.2018_14.47.20.txt"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{exportLeft}}
+	Generates a left list with all hashes which are not cracked. The response returns informations about the created file. This only works for plaintext hashlists!
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "exportLeft",
+		  "hashlistId": 1,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "exportLeft",
+		  "response": "OK",
+		  "fileId": 7569,
+		  "filename": "Leftlist_1_19-07-2018_14-49-02.txt"
+		}
+		\end{verbatim}
+	}
+
+
+
+
+
+
+
+
+
+ 
