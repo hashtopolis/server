@@ -70,7 +70,7 @@ class TaskHandler implements Handler {
           break;
         case DTaskAction::DELETE_TASK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
-          TaskUtils::delete($_POST['taskId'], $LOGIN->getUser());
+          TaskUtils::delete($_POST['task'], $LOGIN->getUser());
           break;
         case DTaskAction::SET_PRIORITY:
           $ACCESS_CONTROL->checkPermission(DTaskAction::SET_PRIORITY_PERM);
