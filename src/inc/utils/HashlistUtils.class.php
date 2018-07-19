@@ -20,10 +20,22 @@ use DBA\Zap;
 
 class HashlistUtils {
   /**
-   * @param int $hashlistId 
-   * @param int[] $pretasks 
-   * @param User $user 
-   * @throws HTException 
+   * @param User $user
+   * @return Hashlist[]
+   */
+  public static function getHashlists($user){
+    global $FACTORIES;
+
+    $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
+    $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
+    return $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+  }
+
+  /**
+   * @param int $hashlistId
+   * @param int[] $pretasks
+   * @param User $user
+   * @throws HTException
    * @return int
    */
   public static function applyPreconfTasks($hashlistId, $pretasks, $user) {
@@ -132,7 +144,7 @@ class HashlistUtils {
     //add file to files list
     $file = new File(0, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0);
     $FACTORIES::getFileFactory()->save($file);
-    return [$wordCount, $wordlistName];
+    return [$wordCount, $wordlistName, $file];
   }
 
   /**
@@ -554,6 +566,7 @@ class HashlistUtils {
   /**
    * @param int $hashlistId
    * @param User $user
+   * @return File
    * @throws HTException
    */
   public static function export($hashlistId, $user) {
@@ -622,7 +635,8 @@ class HashlistUtils {
     usleep(1000000);
 
     $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0);
-    $FACTORIES::getFileFactory()->save($file);
+    $file = $FACTORIES::getFileFactory()->save($file);
+    return $file;
   }
 
   /**
@@ -885,17 +899,16 @@ class HashlistUtils {
 
   /**
    * @param int $hashlistId
+   * @param User $user
+   * @return File
    * @throws HTException
    */
-  public static function leftlist($hashlistId) {
+  public static function leftlist($hashlistId, $user) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
 
-    $hashlist = $FACTORIES::getHashlistFactory()->get($hashlistId);
-    if ($hashlist == null) {
-      throw new HTException("Invalid hashlist!");
-    }
-    else if ($hashlist->getFormat() == DHashlistFormat::WPA || $hashlist->getFormat() == DHashlistFormat::BINARY) {
+    $hashlist = HashlistUtils::getHashlist($hashlistId, $user);
+    if ($hashlist->getFormat() == DHashlistFormat::WPA || $hashlist->getFormat() == DHashlistFormat::BINARY) {
       throw new HTException("You cannot create left lists for binary hashes!");
     }
     $hashlists = Util::checkSuperHashlist($hashlist);
@@ -908,29 +921,39 @@ class HashlistUtils {
       $hashlistIds[] = $hl->getId();
     }
 
-    $qF1 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
-    $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
+    $tmpname = "Leftlist_" . $hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
+    $tmpfile = dirname(__FILE__) . "/../../files/$tmpname";
 
-    header("Content-Type: application/force-download");
-    header("Content-Description: " . $hashlist->getHashlistName() . "_left.txt");
-    header("Content-Disposition: attachment; filename=\"" . $hashlist->getHashlistName() . "_left.txt\"");
+    $file = fopen($tmpfile, "wb");
+    if (!$file) {
+      throw new HTException("Failed to write file!");
+    }
 
-    $count = 0;
-    $pageSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
-    do {
-      $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . $count . ",". $pageSize);
-      $hashEntries = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
-      $output = "";
-      foreach ($hashEntries as $hashEntry) {
-        $output .= $hashEntry->getHash();
+    $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
+    $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
+    $count = $FACTORIES::getHashFactory()->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $pagingSize = 5000;
+    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
+    }
+    for ($x = 0; $x * $pagingSize < $count; $x++) {
+      $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
+      $entries = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
+      $buffer = "";
+      foreach ($entries as $entry) {
+        $buffer .= $entry->getHash();
         if ($hashlist->getIsSalted()) {
-          $output .= $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $hashEntry->getSalt();
+          $buffer .= $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $entry->getSalt();
         }
-        $output .= "\n";
+        $buffer .= "\n";
       }
-      echo $output;
-      $count += $pageSize;
-    } while (sizeof($hashEntries) > 0);
-    die(); // download finished
+      fputs($file, $buffer);
+    }
+    fclose($file);
+    usleep(1000000);
+
+    $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0);
+    $file = $FACTORIES::getFileFactory()->save($file);
+    return $file;
   }
 }

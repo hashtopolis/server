@@ -99,7 +99,8 @@ class HashlistHandler implements Handler {
           die();
         case DHashlistAction::CREATE_LEFTLIST:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::CREATE_LEFTLIST_PERM);
-          HashlistUtils::leftlist($_POST['hashlist']);
+          $file = HashlistUtils::leftlist($_POST['hashlist'], $ACCESS_CONTROL->getUser());
+          UI::addMessage(UI::SUCCESS, "Created left list: " . $file->getFilename());
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
