@@ -118,6 +118,14 @@ class UQueryUser extends UQuery {
   const USER_RIGHT_GROUP_ID = "rightGroupId";
 }
 
+class UQueryGroup extends UQuery {
+  const GROUP_ID = "groupId";
+  const GROUP_NAME = "name";
+
+  const AGENT_ID = "agentId";
+  const USER_ID = "userId";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -364,6 +372,17 @@ class UResponseUser extends UResponse {
   const USER_SESSION_LIFETIME = "sessionLifetime";
 }
 
+class UResponseGroup extends UResponse {
+  const GROUPS = "groups";
+  const GROUPS_ID = "groupId";
+  const GROUPS_NAME = "name";
+
+  const GROUP_ID = "groupId";
+  const GROUP_NAME = "name";
+  const USERS = "users";
+  const AGENTS = "agents";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -431,6 +450,7 @@ class USection extends UApi {
   const USER          = "user";
   const GROUP         = "group";
   const ACCESS        = "access";
+  const ACCOUNT       = "account";
 }
 
 class USectionTest extends UApi {
@@ -563,6 +583,18 @@ class USectionUser extends UApi {
   const SET_USER_RIGHT_GROUP = "setUserRightGroup";
 }
 
-class USectionGroup extends UApi {}
+class USectionGroup extends UApi {
+  const LIST_GROUPS = "listGroups";
+  const GET_GROUP = "getGroup";
+  const CREATE_GROUP = "createGroup";
+  const DELETE_GROUP = "deleteGroup";
+
+  const ADD_AGENT = "addAgent";
+  const ADD_USER = "addUser";
+  const REMOVE_AGENT = "removeAgent";
+  const REMOVE_USER = "removeUser";
+}
 
 class USectionAccess extends UApi {}
+
+class USectionAccount extends UApi {}

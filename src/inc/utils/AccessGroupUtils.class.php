@@ -4,11 +4,43 @@ use DBA\TaskWrapper;
 use DBA\QueryFilter;
 use DBA\AccessGroupUser;
 use DBA\AccessGroupAgent;
+use DBA\Hashlist;
 
 class AccessGroupUtils {
   /**
-   * @param string $groupName 
-   * @throws HTException 
+   * @param int $groupId
+   * @return AccessGroupUser[]
+   */
+  public static function getUsers($groupId){
+    global $FACTORIES;
+
+    $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $groupId, "=");
+    return $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => $qF));
+  }
+
+  /**
+   * @param int $groupId
+   * @return AccessGroupAgent[]
+   */
+  public static function getAgents($groupId){
+    global $FACTORIES;
+
+    $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $groupId, "=");
+    return $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+  }
+
+  /**
+   * @return AccessGroup[]
+   */
+  public static function getGroups(){
+    global $FACTORIES;
+
+    return $FACTORIES::getAccessGroupFactory()->filter([]);
+  }
+
+  /**
+   * @param string $groupName
+   * @throws HTException
    * @return AccessGroup
    */
   public static function createGroup($groupName) {
@@ -120,11 +152,20 @@ class AccessGroupUtils {
     global $FACTORIES;
 
     $group = AccessGroupUtils::getGroup($groupId);
+    $default = AccessUtils::getOrCreateDefaultAccessGroup();
+    if($default->getId() == $group->getId()){
+      throw new HTException("You cannot delete the default group!");
+    }
 
-    // delete association of tasks with this group
+    // update association of tasks with this group
     $qF = new QueryFilter(TaskWrapper::ACCESS_GROUP_ID, $group->getId(), "=");
-    $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, null);
+    $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, $default->getId());
     $FACTORIES::getTaskWrapperFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+
+    // update associations of hashlists with this group
+    $qF = new QueryFilter(Hashlist::ACCESS_GROUP_ID, $group->getId(), "=");
+    $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $default->getId());
+    $FACTORIES::getHashlistFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
 
     // delete all associations to users
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=");
