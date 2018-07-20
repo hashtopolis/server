@@ -124,19 +124,19 @@ class UserAPIGroup extends UserAPIBasic {
       UResponseGroup::SECTION => $QUERY[UQueryGroup::SECTION],
       UResponseGroup::REQUEST => $QUERY[UQueryGroup::REQUEST],
       UResponseGroup::RESPONSE => UValues::OK,
-      UResponseGroup::GROUP_ID => $group->getId(),
+      UResponseGroup::GROUP_ID => (int)$group->getId(),
       UResponseGroup::GROUP_NAME => $group->getGroupName()
     ];
     $users = AccessGroupUtils::getUsers($group->getId());
     $list = [];
     foreach($users as $user){
-      $list[] = $user->getUserId();
+      $list[] = (int)$user->getUserId();
     }
     $response[UResponseGroup::USERS] = $list;
     $agents = AccessGroupUtils::getAgents($group->getId());
     $list = [];
     foreach($agents as $agent){
-      $list[] = $agent->getAgentId();
+      $list[] = (int)$agent->getAgentId();
     }
     $response[UResponseGroup::AGENTS] = $list;
     $this->sendResponse($response);
