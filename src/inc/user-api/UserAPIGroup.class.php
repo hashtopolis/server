@@ -2,10 +2,8 @@
 
 class UserAPIGroup extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
     try {
-      switch($QUERY[UQuery::REQUEST]){
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionGroup::LIST_GROUPS:
           $this->listGroups($QUERY);
           break;
@@ -34,89 +32,89 @@ class UserAPIGroup extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function removeUser($QUERY){
-    if(!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::USER_ID])){
+  private function removeUser($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::USER_ID])) {
       throw new HTException("Invalid query!");
     }
     AccessGroupUtils::removeUser($QUERY[UQueryGroup::USER_ID], $QUERY[UQueryGroup::GROUP_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function removeAgent($QUERY){
-    if(!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::AGENT_ID])){
+  private function removeAgent($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::AGENT_ID])) {
       throw new HTException("Invalid query!");
     }
     AccessGroupUtils::removeAgent($QUERY[UQueryGroup::AGENT_ID], $QUERY[UQueryGroup::GROUP_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function addUser($QUERY){
-    if(!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::USER_ID])){
+  private function addUser($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::USER_ID])) {
       throw new HTException("Invalid query!");
     }
     AccessGroupUtils::addUser($QUERY[UQueryGroup::USER_ID], $QUERY[UQueryGroup::GROUP_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function addAgent($QUERY){
-    if(!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::AGENT_ID])){
+  private function addAgent($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_ID]) || !isset($QUERY[UQueryGroup::AGENT_ID])) {
       throw new HTException("Invalid query!");
     }
     AccessGroupUtils::addAgent($QUERY[UQueryGroup::AGENT_ID], $QUERY[UQueryGroup::GROUP_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function deleteGroup($QUERY){
-    if(!isset($QUERY[UQueryGroup::GROUP_ID])){
+  private function deleteGroup($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_ID])) {
       throw new HTException("Invalid query!");
     }
     AccessGroupUtils::deleteGroup($QUERY[UQueryGroup::GROUP_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function createGroup($QUERY){
-    if(!isset($QUERY[UQueryGroup::GROUP_NAME])){
+  private function createGroup($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_NAME])) {
       throw new HTException("Invalid query!");
     }
     AccessGroupUtils::createGroup($QUERY[UQueryGroup::GROUP_NAME]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getGroup($QUERY){
-    if(!isset($QUERY[UQueryGroup::GROUP_ID])){
+  private function getGroup($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_ID])) {
       throw new HTException("Invalid query!");
     }
     $group = AccessGroupUtils::getGroup($QUERY[UQueryGroup::GROUP_ID]);
@@ -129,23 +127,23 @@ class UserAPIGroup extends UserAPIBasic {
     ];
     $users = AccessGroupUtils::getUsers($group->getId());
     $list = [];
-    foreach($users as $user){
+    foreach ($users as $user) {
       $list[] = (int)$user->getUserId();
     }
     $response[UResponseGroup::USERS] = $list;
     $agents = AccessGroupUtils::getAgents($group->getId());
     $list = [];
-    foreach($agents as $agent){
+    foreach ($agents as $agent) {
       $list[] = (int)$agent->getAgentId();
     }
     $response[UResponseGroup::AGENTS] = $list;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    */
-  private function listGroups($QUERY){
+  private function listGroups($QUERY) {
     $groups = AccessGroupUtils::getGroups();
     $list = [];
     $response = [
@@ -153,7 +151,7 @@ class UserAPIGroup extends UserAPIBasic {
       UResponseGroup::REQUEST => $QUERY[UQueryGroup::REQUEST],
       UResponseGroup::RESPONSE => UValues::OK
     ];
-    foreach($groups as $group){
+    foreach ($groups as $group) {
       $list[] = [
         UResponseGroup::GROUPS_ID => (int)$group->getId(),
         UResponseGroup::GROUPS_NAME => $group->getGroupName()

@@ -4,11 +4,12 @@ class ConfigHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
+    /** @var $LOGIN Login */
     global $ACCESS_CONTROL, $LOGIN;
-
-    try{
+    
+    try {
       switch ($action) {
         case DConfigAction::UPDATE_CONFIG:
           $ACCESS_CONTROL->checkPermission(DConfigAction::UPDATE_CONFIG_PERM);
@@ -34,10 +35,10 @@ class ConfigHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
-    catch(HTMessages $m){
+    catch (HTMessages $m) {
       UI::addMessage(UI::ERROR, $m->getHTMLMessage());
     }
   }

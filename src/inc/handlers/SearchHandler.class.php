@@ -14,7 +14,7 @@ class SearchHandler implements Handler {
   public function handle($action) {
     global $ACCESS_CONTROL;
     
-    try{
+    try {
       switch ($action) {
         case DSearchAction::SEARCH:
           $ACCESS_CONTROL->checkPermission(DSearchAction::SEARCH_PERM);
@@ -25,13 +25,13 @@ class SearchHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
   
   /**
-   * @throws HTException 
+   * @throws HTException
    */
   private function search() {
     global $FACTORIES, $OBJECTS;

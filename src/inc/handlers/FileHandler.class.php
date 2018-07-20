@@ -4,11 +4,11 @@ class FileHandler implements Handler {
   public function __construct($fileId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DFileAction::DELETE_FILE:
           $ACCESS_CONTROL->checkPermission(DFileAction::DELETE_FILE_PERM);
@@ -33,7 +33,7 @@ class FileHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

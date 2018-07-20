@@ -8,24 +8,25 @@ use DBA\TaskWrapper;
 
 class TaskHandler implements Handler {
   private $task;
-
+  
   public function __construct($taskId = null) {
     global $FACTORIES;
-
+    
     if ($taskId == null) {
       $this->task = null;
       return;
     }
-
+    
     $this->task = $FACTORIES::getAgentFactory()->get($taskId);
     if ($this->task == null) {
       UI::printError("FATAL", "Task with ID $taskId not found!");
     }
   }
-
+  
   public function handle($action) {
+    /** @var $LOGIN Login */
     global $ACCESS_CONTROL, $LOGIN;
-
+    
     try {
       switch ($action) {
         case DTaskAction::SET_BENCHMARK:
@@ -93,16 +94,16 @@ class TaskHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
   private function create() {
     /** @var DataSet $CONFIG */
     /** @var $LOGIN Login */
     global $FACTORIES, $CONFIG, $LOGIN, $ACCESS_CONTROL;
-
+    
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $cmdline = @$_POST["cmdline"];
@@ -115,12 +116,12 @@ class TaskHandler implements Handler {
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
     $color = @$_POST["color"];
-
+    
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
     $accessGroup = $FACTORIES::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
-
+    
     if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
@@ -149,7 +150,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Chunk time must be higher than status timer!");
       return;
     }
-
+    
     $qF1 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
     $qF2 = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
     $accessGroupUser = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -157,7 +158,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No access to this access group!");
       return;
     }
-
+    
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
@@ -172,11 +173,11 @@ class TaskHandler implements Handler {
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
-
+    
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "");
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
-
+    
     if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
       $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
     }
@@ -190,7 +191,7 @@ class TaskHandler implements Handler {
       $task = new Task(0, $name, $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, 0, $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId());
       $forward = "pretasks.php";
     }
-
+    
     $task = $FACTORIES::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
@@ -199,10 +200,10 @@ class TaskHandler implements Handler {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->commit();
-
+    
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
-
+    
     header("Location: $forward");
     die();
   }

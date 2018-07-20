@@ -2,25 +2,26 @@
 
 class AgentHandler implements Handler {
   private $agent;
-
+  
   public function __construct($agentId = null) {
     global $FACTORIES;
-
+    
     if ($agentId == null) {
       $this->agent = null;
       return;
     }
-
+    
     $this->agent = $FACTORIES::getAgentFactory()->get($agentId);
     if ($this->agent == null) {
       UI::printError("FATAL", "Agent with ID $agentId not found!");
     }
   }
-
+  
   public function handle($action) {
+    /** @var $LOGIN Login */
     global $ACCESS_CONTROL, $LOGIN;
-
-    try{
+    
+    try {
       switch ($action) {
         case DAgentAction::CLEAR_ERRORS:
           $ACCESS_CONTROL->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
@@ -78,18 +79,19 @@ class AgentHandler implements Handler {
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
       }
-    } catch(HTException $e){
+    }
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
   /**
-   * @param int $binaryId 
-   * @throws HTException 
+   * @param int $binaryId
+   * @throws HTException
    */
   public function downloadAgent($binaryId) {
     global $FACTORIES;
-
+    
     $agentBinary = $FACTORIES::getAgentBinaryFactory()->get($binaryId);
     if ($agentBinary == null) {
       throw new HTException("Invalid Agent Binary!");

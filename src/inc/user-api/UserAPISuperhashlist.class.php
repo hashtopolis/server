@@ -2,10 +2,8 @@
 
 class UserAPISuperhashlist extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    try{
-      switch($QUERY[UQuery::REQUEST]){
+    try {
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionSuperhashlist::LIST_SUPERHASHLISTS:
           $this->listSuperhashlists($QUERY);
           break;
@@ -22,57 +20,57 @@ class UserAPISuperhashlist extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function deleteSuperhashlist($QUERY){
-    if(!isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_ID])){
+  private function deleteSuperhashlist($QUERY) {
+    if (!isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_ID])) {
       throw new HTException("Invalid query!");
     }
     $hashlist = HashlistUtils::getHashlist($QUERY[UQuerySuperhashlist::SUPERHASHLIST_ID]);
-    if($hashlist->getFormat() != DHashlistFormat::SUPERHASHLIST){
+    if ($hashlist->getFormat() != DHashlistFormat::SUPERHASHLIST) {
       throw new HTException("This is not a superhashlist!");
     }
     HashlistUtils::delete($hashlist->getId(), $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function createSuperhashlist($QUERY){
-    if(!isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_NAME]) || !isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_HASHLISTS])){
+  private function createSuperhashlist($QUERY) {
+    if (!isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_NAME]) || !isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_HASHLISTS])) {
       throw new HTException("Invalid query!");
     }
     HashlistUtils::createSuperhashlist($QUERY[UQuerySuperhashlist::SUPERHASHLIST_HASHLISTS], $QUERY[UQuerySuperhashlist::SUPERHASHLIST_NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getSuperhashlist($QUERY){
-    if(!isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_ID])){
+  private function getSuperhashlist($QUERY) {
+    if (!isset($QUERY[UQuerySuperhashlist::SUPERHASHLIST_ID])) {
       throw new HTException("Invalid query!");
     }
     $hashlist = HashlistUtils::getHashlist($QUERY[UQuerySuperhashlist::SUPERHASHLIST_ID]);
-    if($hashlist->getFormat() != DHashlistFormat::SUPERHASHLIST){
+    if ($hashlist->getFormat() != DHashlistFormat::SUPERHASHLIST) {
       throw new HTException("This is not a superhashlist!");
     }
-    else if(!AccessUtils::userCanAccessHashlists($hashlist, $this->user)){
+    else if (!AccessUtils::userCanAccessHashlists($hashlist, $this->user)) {
       throw new HTException("No access to this hashlist!");
     }
     $hashlists = Util::arrayOfIds(Util::checkSuperHashlist($hashlist));
     $hashlistIds = [];
-    foreach($hashlists as $l){
+    foreach ($hashlists as $l) {
       $hashlistIds[] = (int)$l;
     }
     $response = [
@@ -85,17 +83,17 @@ class UserAPISuperhashlist extends UserAPIBasic {
       UResponseSuperhashlist::SUPERHASHLIST_COUNT => (int)$hashlist->getHashCount(),
       UResponseSuperhashlist::SUPERHASHLIST_CRACKED => (int)$hashlist->getCracked(),
       UResponseSuperhashlist::SUPERHASHLIST_ACCESS_GROUP => (int)$hashlist->getAccessGroupId(),
-      UResponseSuperhashlist::SUPERHASHLIST_SECRET => ($hashlist->getIsSecret() == 1)?true:false,
+      UResponseSuperhashlist::SUPERHASHLIST_SECRET => ($hashlist->getIsSecret() == 1) ? true : false,
       UResponseSuperhashlist::SUPERHASHLIST_HASHLISTS => $hashlistIds
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function listSuperhashlists($QUERY){
+  private function listSuperhashlists($QUERY) {
     $hashlists = HashlistUtils::getSuperhashlists($this->user);
     $lists = [];
     $response = [
@@ -103,7 +101,7 @@ class UserAPISuperhashlist extends UserAPIBasic {
       UResponseSuperhashlist::REQUEST => $QUERY[UQuerySuperhashlist::REQUEST],
       UResponseSuperhashlist::RESPONSE => UValues::OK
     ];
-    foreach($hashlists as $hashlist){
+    foreach ($hashlists as $hashlist) {
       $lists[] = [
         UResponseSuperhashlist::SUPERHASHLISTS_ID => (int)$hashlist->getId(),
         UResponseSuperhashlist::SUPERHASHLISTS_HASHTYPE_ID => (int)$hashlist->getHashTypeId(),

@@ -1,4 +1,5 @@
 <?php
+
 use DBA\File;
 use DBA\QueryFilter;
 use DBA\Task;
@@ -10,41 +11,41 @@ use DBA\OrderFilter;
 
 class FileUtils {
   /**
-   * @param int $fileId 
-   * @param int $fileType 
-   * @throws HTException 
+   * @param int $fileId
+   * @param int $fileType
+   * @throws HTException
    */
-  public static function setFileType($fileId, $fileType){
+  public static function setFileType($fileId, $fileType) {
     global $FACTORIES;
-
+    
     $file = FileUtils::getFile($fileId);
-    if($fileType < DFileType::WORDLIST || $fileType > DFileType::RULE){
+    if ($fileType < DFileType::WORDLIST || $fileType > DFileType::RULE) {
       throw new HTException("Invalid file type!");
     }
     $file->setFileType($fileType);
     $FACTORIES::getFileFactory()->update($file);
   }
-
+  
   /**
    * @return File[]
    */
-  public static function getFiles(){
+  public static function getFiles() {
     global $FACTORIES;
-
+    
     $oF = new OrderFilter(File::FILE_ID, "ASC");
     $qF = new QueryFilter(File::FILE_TYPE, DFileType::TEMPORARY, "<>");
     return $FACTORIES::getFileFactory()->filter(array($FACTORIES::ORDER => $oF, $FACTORIES::FILTER => $qF));
   }
-
+  
   /**
    * @param int $fileId
    * @throws HTException
    */
   public static function delete($fileId) {
     global $FACTORIES;
-
+    
     $file = FileUtils::getFile($fileId);
-
+    
     $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=");
     $tasks = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=");
@@ -58,7 +59,7 @@ class FileUtils {
     $FACTORIES::getFileFactory()->delete($file);
     unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
   }
-
+  
   /**
    * @param string $source
    * @param array $file
@@ -72,7 +73,7 @@ class FileUtils {
     if (!file_exists(dirname(__FILE__) . "/../../files")) {
       mkdir(dirname(__FILE__) . "/../../files");
     }
-
+    
     switch ($source) {
       case 'inline':
         $realname = str_replace(" ", "_", htmlentities(basename($post["filename"]), ENT_QUOTES, "UTF-8"));
@@ -104,7 +105,7 @@ class FileUtils {
           if ($realname == "") {
             continue;
           }
-
+          
           $toMove = array();
           foreach ($uploaded as $key => $upload) {
             $toMove[$key] = $upload[$i];
@@ -186,7 +187,7 @@ class FileUtils {
     }
     return $fileCount;
   }
-
+  
   /**
    * @param int $fileId
    * @param int $isSecret
@@ -194,14 +195,14 @@ class FileUtils {
    */
   public static function switchSecret($fileId, $isSecret) {
     global $FACTORIES;
-
+    
     // switch global file secret state
     $file = FileUtils::getFile($fileId);
     $secret = intval($isSecret);
     $file->setIsSecret($secret);
     $FACTORIES::getFileFactory()->update($file);
   }
-
+  
   /**
    * @param int $fileId
    * @param string $filename
@@ -209,7 +210,7 @@ class FileUtils {
    */
   public static function saveChanges($fileId, $filename) {
     global $FACTORIES;
-
+    
     $file = FileUtils::getFile($fileId);
     $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
     $newName = str_replace("/", "_", str_replace("\\", "_", $newName));
@@ -224,9 +225,9 @@ class FileUtils {
     if (sizeof($files) > 0) {
       throw new HTException("This filename is already used!");
     }
-
+    
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-
+    
     //check where the file is used and replace the filename in all the tasks
     $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=", $FACTORIES::getFileTaskFactory());
     $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), Task::TASK_ID, FileTask::TASK_ID);
@@ -236,7 +237,7 @@ class FileUtils {
       $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
       $FACTORIES::getTaskFactory()->update($task);
     }
-
+    
     //check where the file is used and replace the filename in all the preconfigured tasks
     $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=", $FACTORIES::getFilePretaskFactory());
     $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), Pretask::PRETASK_ID, FilePretask::PRETASK_ID);
@@ -246,7 +247,7 @@ class FileUtils {
       $pretask->setAttackCmd(str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
       $FACTORIES::getPretaskFactory()->update($pretask);
     }
-
+    
     $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
     if (!$success) {
       $FACTORIES::getAgentFactory()->getDB()->rollback();
@@ -256,15 +257,15 @@ class FileUtils {
     $FACTORIES::getFileFactory()->update($file);
     $FACTORIES::getAgentFactory()->getDB()->commit();
   }
-
+  
   /**
    * @param int $fileId
    * @throws HTException
    * @return File
    */
-  public static function getFile($fileId){
+  public static function getFile($fileId) {
     global $FACTORIES;
-
+    
     $file = $FACTORIES::getFileFactory()->get($fileId);
     if ($file == null) {
       throw new HTException("Invalid file ID!");

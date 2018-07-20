@@ -4,15 +4,15 @@ use DBA\NotificationSetting;
 use DBA\QueryFilter;
 
 class NotificationHandler implements Handler {
-
+  
   public function __construct($id = null) {
     // nothing required here
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DNotificationAction::CREATE_NOTIFICATION:
           $ACCESS_CONTROL->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
@@ -31,11 +31,11 @@ class NotificationHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
   /**
    * @param $action
    * @param $payload DataSet
@@ -43,7 +43,7 @@ class NotificationHandler implements Handler {
   public static function checkNotifications($action, $payload) {
     /** @var $NOTIFICATIONS HashtopolisNotification[] */
     global $FACTORIES, $NOTIFICATIONS;
-
+    
     $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");
     $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
     $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));

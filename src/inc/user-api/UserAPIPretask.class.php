@@ -2,10 +2,8 @@
 
 class UserAPIPretask extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    try{
-      switch($QUERY[UQuery::REQUEST]){
+    try {
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionPretask::LIST_PRETASKS:
           $this->listPreTasks($QUERY);
           break;
@@ -40,100 +38,100 @@ class UserAPIPretask extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function deletePretask($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID])){
+  private function deletePretask($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID])) {
       throw new HTException("Invalid query!");
     }
     PretaskUtils::deletePretask($QUERY[UQueryTask::PRETASK_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setPretaskSmall($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_SMALL])){
+  private function setPretaskSmall($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_SMALL])) {
       throw new HTException("Invalid query!");
     }
-    PretaskUtils::setSmallTask($QUERY[UQueryTask::PRETASK_ID], ($QUERY[UQueryTask::PRETASK_SMALL])?1:0);
+    PretaskUtils::setSmallTask($QUERY[UQueryTask::PRETASK_ID], ($QUERY[UQueryTask::PRETASK_SMALL]) ? 1 : 0);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setPretaskCpuOnly($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_CPU_ONLY])){
+  private function setPretaskCpuOnly($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_CPU_ONLY])) {
       throw new HTException("Invalid query!");
     }
-    PretaskUtils::setCpuOnlyTask($QUERY[UQueryTask::PRETASK_ID], ($QUERY[UQueryTask::PRETASK_CPU_ONLY])?1:0);
+    PretaskUtils::setCpuOnlyTask($QUERY[UQueryTask::PRETASK_ID], ($QUERY[UQueryTask::PRETASK_CPU_ONLY]) ? 1 : 0);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setPretaskChunksize($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_CHUNKSIZE])){
+  private function setPretaskChunksize($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_CHUNKSIZE])) {
       throw new HTException("Invalid query!");
     }
     PretaskUtils::setChunkTime($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_CHUNKSIZE]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setPretaskColor($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_COLOR])){
+  private function setPretaskColor($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_COLOR])) {
       throw new HTException("Invalid query!");
     }
     PretaskUtils::setColor($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_COLOR]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setPretaskName($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_NAME])){
+  private function setPretaskName($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_NAME])) {
       throw new HTException("Invalid query!");
     }
     PretaskUtils::renamePretask($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_NAME]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setPretaskPriority($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_PRIORITY])){
+  private function setPretaskPriority($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_PRIORITY])) {
       throw new HTException("Invalid query!");
     }
     PretaskUtils::setPriority($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_PRIORITY]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function createPretask($QUERY){
+  private function createPretask($QUERY) {
     $toCheck = [
       UQueryTask::TASK_NAME,
       UQueryTask::TASK_ATTACKCMD,
@@ -147,13 +145,13 @@ class UserAPIPretask extends UserAPIBasic {
       UQueryTask::TASK_FILES,
       UQueryTask::TASK_PRIORITY
     ];
-    foreach($toCheck as $input){
-      if(!isset($QUERY[$input])){
+    foreach ($toCheck as $input) {
+      if (!isset($QUERY[$input])) {
         throw new HTException("Invalid query (missing $input)!");
       }
     }
     $priority = $QUERY[UQueryTask::TASK_PRIORITY];
-    if($priority < 0){
+    if ($priority < 0) {
       $priority = 0;
     }
     PretaskUtils::createPretask(
@@ -162,8 +160,8 @@ class UserAPIPretask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_CHUNKSIZE],
       $QUERY[UQueryTask::TASK_STATUS],
       $QUERY[UQueryTask::TASK_COLOR],
-      ($QUERY[UQueryTask::TASK_CPU_ONLY])?1:0,
-      ($QUERY[UQueryTask::TASK_SMALL])?1:0,
+      ($QUERY[UQueryTask::TASK_CPU_ONLY]) ? 1 : 0,
+      ($QUERY[UQueryTask::TASK_SMALL]) ? 1 : 0,
       $QUERY[UQueryTask::TASK_BENCHTYPE],
       $QUERY[UQueryTask::TASK_FILES],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],
@@ -171,17 +169,17 @@ class UserAPIPretask extends UserAPIBasic {
     );
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getPretask($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID])){
+  private function getPretask($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID])) {
       throw new HTException("Invalid query!");
     }
     $pretask = PretaskUtils::getPretask($QUERY[UQueryTask::PRETASK_ID]);
-
+    
     $response = [
       UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
       UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
@@ -190,17 +188,17 @@ class UserAPIPretask extends UserAPIBasic {
       UResponseTask::PRETASK_NAME => $pretask->getTaskName(),
       UResponseTask::PRETASK_ATTACK => $pretask->getAttackCmd(),
       UResponseTask::PRETASK_CHUNKSIZE => (int)$pretask->getChunkTime(),
-      UResponseTask::PRETASK_COLOR => (strlen($pretask->getColor()) == 0)?null:$pretask->getColor(),
-      UResponseTask::PRETASK_BENCH_TYPE => ($pretask->getUseNewBench() == 1)?"speed":"runtime",
+      UResponseTask::PRETASK_COLOR => (strlen($pretask->getColor()) == 0) ? null : $pretask->getColor(),
+      UResponseTask::PRETASK_BENCH_TYPE => ($pretask->getUseNewBench() == 1) ? "speed" : "runtime",
       UResponseTask::PRETASK_STATUS => (int)$pretask->getStatusTimer(),
       UResponseTask::PRETASK_PRIORITY => (int)$pretask->getPriority(),
-      UResponseTask::PRETASK_CPU_ONLY => ($pretask->getIsCpuTask() == 1)?true:false,
-      UResponseTask::PRETASK_SMALL => ($pretask->getIsSmall() == 1)?true:false
+      UResponseTask::PRETASK_CPU_ONLY => ($pretask->getIsCpuTask() == 1) ? true : false,
+      UResponseTask::PRETASK_SMALL => ($pretask->getIsSmall() == 1) ? true : false
     ];
-
+    
     $files = TaskUtils::getFilesOfPretask($pretask);
     $arr = [];
-    foreach($files as $file){
+    foreach ($files as $file) {
       $arr[] = [
         UResponseTask::PRETASK_FILES_ID => (int)$file->getId(),
         UResponseTask::PRETASK_FILES_NAME => $file->getFilename(),
@@ -210,11 +208,11 @@ class UserAPIPretask extends UserAPIBasic {
     $response[UResponseTask::PRETASK_FILES] = $arr;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    */
-  private function listPreTasks($QUERY){
+  private function listPreTasks($QUERY) {
     $pretasks = PretaskUtils::getPretasks(false);
     $taskList = array();
     $response = [

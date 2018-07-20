@@ -2,10 +2,8 @@
 
 class UserAPIFile extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    try{
-      switch($QUERY[UQuery::REQUEST]){
+    try {
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionFile::LIST_FILES:
           $this->listFiles($QUERY);
           break;
@@ -31,77 +29,76 @@ class UserAPIFile extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
-  private function setFileType($QUERY){
-    if(!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::FILE_TYPE])){
+  private function setFileType($QUERY) {
+    if (!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::FILE_TYPE])) {
       throw new HTException("Invalid query!");
     }
     FileUtils::setFileType($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILE_TYPE]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function deleteFile($QUERY){
-    if(!isset($QUERY[UQueryFile::FILE_ID])){
+  private function deleteFile($QUERY) {
+    if (!isset($QUERY[UQueryFile::FILE_ID])) {
       throw new HTException("Invalid query!");
     }
     FileUtils::delete($QUERY[UQueryFile::FILE_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setSecret($QUERY){
-    if(!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::SET_SECRET])){
+  private function setSecret($QUERY) {
+    if (!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::SET_SECRET])) {
       throw new HTException("Invalid query!");
     }
-    FileUtils::switchSecret($QUERY[UQueryFile::FILE_ID], ($QUERY[UQueryFile::SET_SECRET])?1:0);
+    FileUtils::switchSecret($QUERY[UQueryFile::FILE_ID], ($QUERY[UQueryFile::SET_SECRET]) ? 1 : 0);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function renameFile($QUERY){
-    if(!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::FILENAME])){
+  private function renameFile($QUERY) {
+    if (!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::FILENAME])) {
       throw new HTException("Invalid query!");
     }
     FileUtils::saveChanges($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILENAME]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function addFile($QUERY){
+  private function addFile($QUERY) {
     $toCheck = [
       UQueryFile::FILENAME,
       UQueryFile::FILE_TYPE,
       UQueryFile::SOURCE,
       UQueryFile::DATA
     ];
-    foreach($toCheck as $input){
-      if(!isset($QUERY[$input])){
+    foreach ($toCheck as $input) {
+      if (!isset($QUERY[$input])) {
         throw new HTException("Invalid query!");
       }
     }
-    $type = "";
-    switch($QUERY[UQueryFile::FILE_TYPE]){
+    switch ($QUERY[UQueryFile::FILE_TYPE]) {
       case DFileType::WORDLIST:
         $type = 'wordlist';
         break;
@@ -111,7 +108,7 @@ class UserAPIFile extends UserAPIBasic {
       default:
         throw new HTException("Invalid file type!");
     }
-    switch($QUERY[UQueryFile::SOURCE]){
+    switch ($QUERY[UQueryFile::SOURCE]) {
       case 'url':
         FileUtils::add('url', [], ['url' => $QUERY[UQueryFile::DATA]], $type);
         break;
@@ -126,13 +123,13 @@ class UserAPIFile extends UserAPIBasic {
     }
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getFile($QUERY){
-    if(!isset($QUERY[UQueryFile::FILE_ID])){
+  private function getFile($QUERY) {
+    if (!isset($QUERY[UQueryFile::FILE_ID])) {
       throw new HTException("Invalid query!");
     }
     $file = FileUtils::getFile($QUERY[UQueryFile::FILE_ID]);
@@ -142,19 +139,19 @@ class UserAPIFile extends UserAPIBasic {
       UResponseFile::RESPONSE => UValues::OK,
       UResponseFile::FILE_ID => (int)$file->getId(),
       UResponseFile::FILE_TYPE => (int)$file->getFileType(),
-      UResponseFile::FILE_FILENAME =>$file->getFilename(),
-      UResponseFile::FILE_SECRET => ($file->getIsSecret() == 1)?true:false,
+      UResponseFile::FILE_FILENAME => $file->getFilename(),
+      UResponseFile::FILE_SECRET => ($file->getIsSecret() == 1) ? true : false,
       UResponseFile::FILE_SIZE => (int)$file->getSize(),
       UResponseFile::FILE_URL => "getFile.php?file=" . $file->getId() . "&apiKey=" . $this->apiKey->getAccessKey()
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function listFiles($QUERY){
+  private function listFiles($QUERY) {
     $files = FileUtils::getFiles();
     $all = [];
     $response = [
@@ -162,7 +159,7 @@ class UserAPIFile extends UserAPIBasic {
       UResponseFile::REQUEST => $QUERY[UQueryFile::REQUEST],
       UResponseFile::RESPONSE => UValues::OK
     ];
-    foreach($files as $file){
+    foreach ($files as $file) {
       $all[] = [
         UResponseFile::FILES_FILE_ID => (int)$file->getId(),
         UResponseFile::FILES_FILETYPE => (int)$file->getFileType(),

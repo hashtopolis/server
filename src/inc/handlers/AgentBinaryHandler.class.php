@@ -1,15 +1,16 @@
 <?php
 
 class AgentBinaryHandler implements Handler {
-
+  
   public function __construct($id = null) {
     //nothing
   }
-
+  
   public function handle($action) {
+    /** @var $LOGIN Login */
     global $ACCESS_CONTROL, $LOGIN;
-
-    try{
+    
+    try {
       switch ($action) {
         case DAgentBinaryAction::NEW_BINARY:
           $ACCESS_CONTROL->checkPermission(DAgentBinaryAction::NEW_BINARY_PERM);
@@ -31,7 +32,7 @@ class AgentBinaryHandler implements Handler {
           break;
       }
     }
-    catch (HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

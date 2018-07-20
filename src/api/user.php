@@ -62,7 +62,7 @@ if ($api == null) {
   $api->sendErrorResponse("INV", "INV", "Invalid user api query!");
 }
 else {
-  if($QUERY[UQuery::SECTION] != USection::TEST){
+  if ($QUERY[UQuery::SECTION] != USection::TEST) {
     $api->checkApiKey($QUERY[UQuery::SECTION], $QUERY[UQuery::REQUEST], $QUERY);
   }
   $api->execute($QUERY);

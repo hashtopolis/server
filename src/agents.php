@@ -20,7 +20,12 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 if (isset($_GET['download'])) {
   $agentHandler = new AgentHandler();
-  $agentHandler->downloadAgent($_GET['download']);
+  try {
+    $agentHandler->downloadAgent($_GET['download']);
+  }
+  catch (HTException $e) {
+    die($e->getMessage());
+  }
 }
 
 if (!$LOGIN->isLoggedin()) {

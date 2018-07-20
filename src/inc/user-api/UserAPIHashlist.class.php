@@ -1,11 +1,11 @@
 <?php
 
+use DBA\File;
+
 class UserAPIHashlist extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    try{
-      switch($QUERY[UQuery::REQUEST]){
+    try {
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionHashlist::LIST_HASLISTS:
           $this->listHashlists($QUERY);
           break;
@@ -40,29 +40,29 @@ class UserAPIHashlist extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
-  private function deleteHashlist($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID])){
+  private function deleteHashlist($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID])) {
       throw new HTException("Invalid query!");
     }
     HashlistUtils::delete($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function exportLeft($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID])){
+  private function exportLeft($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID])) {
       throw new HTException("Invalid query!");
     }
     $file = HashlistUtils::leftlist($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
@@ -75,32 +75,34 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function generateWordlist($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID])){
+  private function generateWordlist($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID])) {
       throw new HTException("Invalid query!");
     }
     $arr = HashlistUtils::createWordlists($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
+    /** @var $file File */
+    $file = $arr[2];
     $response = [
       UResponseHashlist::SECTION => $QUERY[UQueryHashlist::SECTION],
       UResponseHashlist::REQUEST => $QUERY[UQueryHashlist::REQUEST],
       UResponseHashlist::RESPONSE => UValues::OK,
-      UResponseHashlist::EXPORT_FILE_ID => (int)$arr[2]->getId(),
-      UResponseHashlist::EXPORT_FILE_NAME => $arr[2]->getFilename()
+      UResponseHashlist::EXPORT_FILE_ID => (int)$file->getId(),
+      UResponseHashlist::EXPORT_FILE_NAME => $file->getFilename()
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function exportCracked($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID])){
+  private function exportCracked($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID])) {
       throw new HTException("Invalid query!");
     }
     $file = HashlistUtils::export($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
@@ -113,13 +115,13 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function importCracked($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_SEPARATOR]) || !isset($QUERY[UQueryHashlist::HASHLIST_DATA])){
+  private function importCracked($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_SEPARATOR]) || !isset($QUERY[UQueryHashlist::HASHLIST_DATA])) {
       throw new HTException("Invalid query!");
     }
     $arr = HashlistUtils::processZap(
@@ -144,36 +146,36 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setSecret($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_IS_SECRET])){
+  private function setSecret($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_IS_SECRET])) {
       throw new HTException("Invalid query!");
     }
     HashlistUtils::setSecret($QUERY[UQueryHashlist::HASHLIST_ID], $QUERY[UQueryHashlist::HASHLIST_IS_SECRET], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setHashlistName($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_NAME])){
+  private function setHashlistName($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_NAME])) {
       throw new HTException("Invalid query!");
     }
     HashlistUtils::rename($QUERY[UQueryHashlist::HASHLIST_ID], $QUERY[UQueryHashlist::HASHLIST_NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function createHashlist($QUERY){
+  private function createHashlist($QUERY) {
     $toCheck = [
       UQueryHashlist::HASHLIST_NAME,
       UQueryHashlist::HASHLIST_IS_SALTED,
@@ -185,8 +187,8 @@ class UserAPIHashlist extends UserAPIBasic {
       UQueryHashlist::HASHLIST_ACCESS_GROUP_ID,
       UQueryHashlist::HASHLIST_DATA
     ];
-    foreach($toCheck as $input){
-      if(!isset($QUERY[$input])){
+    foreach ($toCheck as $input) {
+      if (!isset($QUERY[$input])) {
         throw new HTException("Invalid query!");
       }
     }
@@ -207,17 +209,17 @@ class UserAPIHashlist extends UserAPIBasic {
     );
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getHashlist($QUERY){
-    if(!isset($QUERY[UQueryHashlist::HASHLIST_ID])){
+  private function getHashlist($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID])) {
       throw new HTException("Invalid query!");
     }
     $hashlist = HashlistUtils::getHashlist($QUERY[UQueryHashlist::HASHLIST_ID]);
-    if($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST){
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       throw new HTException("This is not a single hashlist!");
     }
     $response = [
@@ -231,19 +233,19 @@ class UserAPIHashlist extends UserAPIBasic {
       UResponseHashlist::HASHLIST_COUNT => (int)$hashlist->getHashCount(),
       UResponseHashlist::HASHLIST_CRACKED => (int)$hashlist->getCracked(),
       UResponseHashlist::HASHLIST_ACCESS_GROUP => (int)$hashlist->getAccessGroupId(),
-      UResponseHashlist::HASHLIST_HEX_SALT => ($hashlist->getHexSalt() == 1)?true:false,
-      UResponseHashlist::HASHLIST_SALTED => ($hashlist->getIsSalted() == 1)?true:false,
-      UResponseHashlist::HASHLIST_SECRET => ($hashlist->getIsSecret() == 1)?true:false,
+      UResponseHashlist::HASHLIST_HEX_SALT => ($hashlist->getHexSalt() == 1) ? true : false,
+      UResponseHashlist::HASHLIST_SALTED => ($hashlist->getIsSalted() == 1) ? true : false,
+      UResponseHashlist::HASHLIST_SECRET => ($hashlist->getIsSecret() == 1) ? true : false,
       UResponseHashlist::HASHLIST_SALT_SEPARATOR => $hashlist->getSaltSeparator()
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function listHashlists($QUERY){
+  private function listHashlists($QUERY) {
     $hashlists = HashlistUtils::getHashlists($this->user);
     $lists = [];
     $response = [
@@ -251,7 +253,7 @@ class UserAPIHashlist extends UserAPIBasic {
       UResponseHashlist::REQUEST => $QUERY[UQueryHashlist::REQUEST],
       UResponseHashlist::RESPONSE => UValues::OK
     ];
-    foreach($hashlists as $hashlist){
+    foreach ($hashlists as $hashlist) {
       $lists[] = [
         UResponseHashlist::HASHLISTS_ID => (int)$hashlist->getId(),
         UResponseHashlist::HASHLISTS_HASHTYPE_ID => (int)$hashlist->getHashTypeId(),

@@ -4,11 +4,11 @@ class SupertaskHandler implements Handler {
   public function __construct($supertaskId = null) {
     //nothing
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DSupertaskAction::DELETE_SUPERTASK:
           $ACCESS_CONTROL->checkPermission(DSupertaskAction::DELETE_SUPERTASK_PERM);
@@ -31,7 +31,7 @@ class SupertaskHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

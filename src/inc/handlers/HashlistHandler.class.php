@@ -7,29 +7,29 @@ class HashlistHandler implements Handler {
    * @var Hashlist $hashlist
    */
   private $hashlist;
-
+  
   public function __construct($hashlistId = null) {
     global $FACTORIES;
-
+    
     if ($hashlistId == null) {
       $this->hashlist = null;
       return;
     }
-
+    
     $this->hashlist = $FACTORIES::getHashlistFactory()->get($hashlistId);
     if ($this->hashlist == null) {
       UI::printError("FATAL", "Hashlist with ID $hashlistId not found!");
     }
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
+    
     try {
       switch ($action) {
         case DHashlistAction::APPLY_PRECONFIGURED_TASKS:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::APPLY_PRECONFIGURED_TASKS_PERM);
-          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['tasks']))?$_POST['tasks']:[], $ACCESS_CONTROL->getUser());
+          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['tasks'])) ? $_POST['tasks'] : [], $ACCESS_CONTROL->getUser());
           UI::addMessage(UI::SUCCESS, "Successfully created $count new tasks! You will be forward to the tasks page in 5 seconds.");
           UI::setForward("tasks.php", 5);
           break;
@@ -66,10 +66,10 @@ class HashlistHandler implements Handler {
         case DHashlistAction::DELETE_HASHLIST:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::DELETE_HASHLIST_PERM);
           $format = HashlistUtils::delete($_POST['hashlist'], $ACCESS_CONTROL->getUser());
-          if($format > DHashlistFormat::BINARY){
+          if ($format > DHashlistFormat::BINARY) {
             header("Location: superhashlists.php");
           }
-          else{
+          else {
             header("Location: hashlists.php");
           }
           die();
@@ -107,17 +107,20 @@ class HashlistHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
+  /**
+   * @throws HTException
+   */
   private function zap() {
     global $FACTORIES, $OBJECTS;
-
+    
     $this->hashlist = HashlistUtils::getHashlist($_POST['hashlist']);
     $type = $FACTORIES::getHashTypeFactory()->get($this->hashlist->getHashTypeId());
-
+    
     $OBJECTS['list'] = new DataSet(array('hashlist' => $this->hashlist, 'hashtype' => $type));
     $OBJECTS['zap'] = true;
     $OBJECTS['impfiles'] = Util::scanImportDirectory();

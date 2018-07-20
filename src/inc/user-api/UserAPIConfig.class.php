@@ -1,12 +1,11 @@
 <?php
+
 use DBA\Config;
 
 class UserAPIConfig extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    try{
-      switch($QUERY[UQuery::REQUEST]){
+    try {
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionConfig::LIST_SECTIONS:
           $this->listSections($QUERY);
           break;
@@ -23,41 +22,42 @@ class UserAPIConfig extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setConfig($QUERY){
+  private function setConfig($QUERY) {
+    /** @var $CONFIG DataSet */
     global $CONFIG;
-
-    if(!isset($QUERY[UQueryConfig::CONFIG_ITEM]) || !isset($QUERY[UQueryConfig::CONFIG_VALUE]) || !isset($QUERY[UQueryConfig::CONFIG_FORCE])){
+    
+    if (!isset($QUERY[UQueryConfig::CONFIG_ITEM]) || !isset($QUERY[UQueryConfig::CONFIG_VALUE]) || !isset($QUERY[UQueryConfig::CONFIG_FORCE])) {
       throw new HTException("Invalid query!");
     }
     $value = $CONFIG->getVal($QUERY[UQueryConfig::CONFIG_ITEM]);
     $new = false;
-    if($value === false && $QUERY[UQueryConfig::CONFIG_FORCE] !== true){
+    if ($value === false && $QUERY[UQueryConfig::CONFIG_FORCE] !== true) {
       throw new HTException("Unknown config item!");
     }
-    else if($QUERY[UQueryConfig::CONFIG_FORCE] === true){
+    else if ($QUERY[UQueryConfig::CONFIG_FORCE] === true) {
       try {
         $config = ConfigUtils::get($QUERY[UQueryConfig::CONFIG_ITEM]);
         $config->setValue($QUERY[UQueryConfig::CONFIG_VALUE]);
       }
-      catch(HTException $e){
+      catch (HTException $e) {
         $config = new Config(0, 1, $QUERY[UQueryConfig::CONFIG_ITEM], $QUERY[UQueryConfig::CONFIG_VALUE]);
         $new = true;
       }
     }
-    else{
+    else {
       $config = ConfigUtils::get($QUERY[UQueryConfig::CONFIG_ITEM]);
     }
     $type = DConfig::getConfigType($config->getItem());
-    switch($type){
+    switch ($type) {
       case DConfigType::EMAIL:
         if (!filter_var($config->getValue(), FILTER_VALIDATE_EMAIL)) {
           throw new HTException("Value must be email!");
@@ -66,12 +66,12 @@ class UserAPIConfig extends UserAPIBasic {
       case DConfigType::STRING_INPUT:
         break;
       case DConfigType::NUMBER_INPUT:
-        if(!is_numeric($config->getValue())){
+        if (!is_numeric($config->getValue())) {
           throw new HTException("Value must be numeric!");
         }
         break;
       case DConfigType::TICKBOX:
-        if(!is_bool($config->getValue())){
+        if (!is_bool($config->getValue())) {
           throw new HTException("Value most be boolean!");
         }
         break;
@@ -79,20 +79,21 @@ class UserAPIConfig extends UserAPIBasic {
     ConfigUtils::set($config, $new);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getConfig($QUERY){
+  private function getConfig($QUERY) {
+    /** @var $CONFIG DataSet */
     global $CONFIG;
-
-    if(!isset($QUERY[UQueryConfig::CONFIG_ITEM])){
+    
+    if (!isset($QUERY[UQueryConfig::CONFIG_ITEM])) {
       throw new HTException("Invalid query!");
     }
-
+    
     $value = $CONFIG->getVal($QUERY[UQueryConfig::CONFIG_ITEM]);
-    if($value === false){
+    if ($value === false) {
       throw new HTException("Unknown config item!");
     }
     $response = [
@@ -102,7 +103,7 @@ class UserAPIConfig extends UserAPIBasic {
       UResponseConfig::CONFIG_ITEM => $QUERY[UQueryConfig::CONFIG_ITEM],
       UResponseConfig::CONFIG_TYPE => DConfig::getConfigType($QUERY[UQueryConfig::CONFIG_ITEM])
     ];
-    switch(DConfig::getConfigType($QUERY[UQueryConfig::CONFIG_ITEM])){
+    switch (DConfig::getConfigType($QUERY[UQueryConfig::CONFIG_ITEM])) {
       case DConfigType::EMAIL:
       case DConfigType::STRING_INPUT:
         $response[UResponseConfig::CONFIG_VALUE] = $value;
@@ -111,16 +112,16 @@ class UserAPIConfig extends UserAPIBasic {
         $response[UResponseConfig::CONFIG_VALUE] = (int)$value;
         break;
       case DConfigType::TICKBOX:
-        $response[UResponseConfig::CONFIG_VALUE] = ($value == 1)?true:false;
+        $response[UResponseConfig::CONFIG_VALUE] = ($value == 1) ? true : false;
         break;
     }
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param mixed $QUERY
    */
-  private function listSections($QUERY){
+  private function listSections($QUERY) {
     $sections = ConfigUtils::getSections();
     $response = [
       UResponseConfig::SECTION => $QUERY[UQueryConfig::SECTION],
@@ -128,7 +129,7 @@ class UserAPIConfig extends UserAPIBasic {
       UResponseConfig::RESPONSE => UValues::OK
     ];
     $list = [];
-    foreach($sections as $section){
+    foreach ($sections as $section) {
       $list[] = [
         UResponseConfig::SECTIONS_ID => (int)$section->getId(),
         UResponseConfig::SECTIONS_NAME => $section->getSectionName()
@@ -137,11 +138,11 @@ class UserAPIConfig extends UserAPIBasic {
     $response[UResponseConfig::SECTIONS] = $list;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param mixed $QUERY
    */
-  private function listConfig($QUERY){
+  private function listConfig($QUERY) {
     $configs = ConfigUtils::getAll();
     $response = [
       UResponseConfig::SECTION => $QUERY[UQueryConfig::SECTION],
@@ -149,7 +150,7 @@ class UserAPIConfig extends UserAPIBasic {
       UResponseConfig::RESPONSE => UValues::OK
     ];
     $list = [];
-    foreach($configs as $config){
+    foreach ($configs as $config) {
       $list[] = [
         UResponseConfig::CONFIG_ITEM => $config->getItem(),
         UResponseConfig::CONFIG_SECTION_ID => $config->getConfigSectionId(),

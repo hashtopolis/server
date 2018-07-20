@@ -4,11 +4,11 @@ class CrackerHandler implements Handler {
   public function __construct($hashcatId = null) {
     //nothing
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DCrackerBinaryAction::DELETE_BINARY_TYPE:
           $ACCESS_CONTROL->checkPermission(DCrackerBinaryAction::DELETE_BINARY_TYPE_PERM);
@@ -21,7 +21,7 @@ class CrackerHandler implements Handler {
           break;
         case DCrackerBinaryAction::CREATE_BINARY_TYPE:
           $ACCESS_CONTROL->checkPermission(DCrackerBinaryAction::CREATE_BINARY_TYPE_PERM);
-          $this->createBinaryType($_POST['name']);
+          CrackerUtils::createBinaryType($_POST['name']);
           header("Location: crackers.php");
           die();
         case DCrackerBinaryAction::CREATE_BINARY:
@@ -39,7 +39,7 @@ class CrackerHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

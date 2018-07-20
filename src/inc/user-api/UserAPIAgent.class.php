@@ -1,18 +1,14 @@
 <?php
+
 use DBA\Agent;
-use DBA\QueryFilter;
-use DBA\RegVoucher;
 use DBA\ContainFilter;
 use DBA\AccessGroupAgent;
 use DBA\OrderFilter;
-use DBA\User;
 
 class UserAPIAgent extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
     try {
-      switch($QUERY[UQuery::REQUEST]){
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionAgent::CREATE_VOUCHER:
           $this->createVoucher($QUERY);
           break;
@@ -56,14 +52,19 @@ class UserAPIAgent extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch (HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQuery::SECTION], $QUERY[UQuery::REQUEST], $e->getMessage());
     }
   }
-
-  private function getAgent($QUERY){
-    global $FACTORIES, $CONFIG;
-
+  
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function getAgent($QUERY) {
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+    
     $agent = AgentUtils::getAgent($QUERY[UQueryAgent::AGENT_ID], $this->user);
     $response = [
       UResponseAgent::SECTION => $QUERY[UQueryAgent::SECTION],
@@ -75,131 +76,117 @@ class UserAPIAgent extends UserAPIBasic {
         UResponseAgent::AGENT_OWNER_ID => (int)$agent->getUserId(),
         UResponseAgent::AGENT_OWNER_NAME => Util::getUsernameById($agent->getUserId())
       ],
-      UResponseAgent::AGENT_CPU_ONLY => ($agent->getCpuOnly() == 1)?true:false,
-      UResponseAgent::AGENT_TRUSTED => ($agent->getIsTrusted() == 1)?true:false,
-      UResponseAgent::AGENT_ACTIVE => ($agent->getIsActive() == 1)?true:false,
+      UResponseAgent::AGENT_CPU_ONLY => ($agent->getCpuOnly() == 1) ? true : false,
+      UResponseAgent::AGENT_TRUSTED => ($agent->getIsTrusted() == 1) ? true : false,
+      UResponseAgent::AGENT_ACTIVE => ($agent->getIsActive() == 1) ? true : false,
       UResponseAgent::AGENT_TOKEN => $agent->getToken(),
       UResponseAgent::AGENT_PARAMS => $agent->getCmdPars(),
       UResponseAgent::AGENT_ERRORS => (int)$agent->getIgnoreErrors(),
       UResponseAgent::AGENT_ACTIVITY => [
         UResponseAgent::AGENT_ACTIVITY_ACTION => $agent->getLastAct(),
         UResponseAgent::AGENT_ACTIVITY_TIME => (int)$agent->getLastTime(),
-        UResponseAgent::AGENT_ACTIVITY_IP => ($CONFIG->getVal(DConfig::HIDE_IP_INFO) == 1)?"Hidden":$agent->getLastIp()
+        UResponseAgent::AGENT_ACTIVITY_IP => ($CONFIG->getVal(DConfig::HIDE_IP_INFO) == 1) ? "Hidden" : $agent->getLastIp()
       ]
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setTrusted($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::TRUSTED]) || !isset($QUERY[UQueryAgent::AGENT_ID]) || !is_bool($QUERY[UQueryAgent::TRUSTED])){
+  private function setTrusted($QUERY) {
+    if (!isset($QUERY[UQueryAgent::TRUSTED]) || !isset($QUERY[UQueryAgent::AGENT_ID]) || !is_bool($QUERY[UQueryAgent::TRUSTED])) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::setTrusted($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::TRUSTED], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setError($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::AGENT_ID]) || !isset($QUERY[UQueryAgent::IGNORE_ERRORS])  || !is_numeric($QUERY[UQueryAgent::IGNORE_ERRORS]) || !in_array($QUERY[UQueryAgent::IGNORE_ERRORS], [0, 1, 2])){
+  private function setError($QUERY) {
+    if (!isset($QUERY[UQueryAgent::AGENT_ID]) || !isset($QUERY[UQueryAgent::IGNORE_ERRORS]) || !is_numeric($QUERY[UQueryAgent::IGNORE_ERRORS]) || !in_array($QUERY[UQueryAgent::IGNORE_ERRORS], [0, 1, 2])) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::changeIgnoreErrors($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::IGNORE_ERRORS], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setExtraParams($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::EXTRA_PARAMS])){
+  private function setExtraParams($QUERY) {
+    if (!isset($QUERY[UQueryAgent::EXTRA_PARAMS])) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::changeCmdParameters($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::EXTRA_PARAMS], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setCpuOnly($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::CPU_ONLY]) || !isset($QUERY[UQueryAgent::AGENT_ID]) || !is_bool($QUERY[UQueryAgent::CPU_ONLY])){
+  private function setCpuOnly($QUERY) {
+    if (!isset($QUERY[UQueryAgent::CPU_ONLY]) || !isset($QUERY[UQueryAgent::AGENT_ID]) || !is_bool($QUERY[UQueryAgent::CPU_ONLY])) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::setAgentCpu($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::CPU_ONLY], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setName($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::AGENT_ID]) || !isset($QUERY[UQueryAgent::NAME]) || strlen($QUERY[UQueryAgent::NAME]) == 0){
+  private function setName($QUERY) {
+    if (!isset($QUERY[UQueryAgent::AGENT_ID]) || !isset($QUERY[UQueryAgent::NAME]) || strlen($QUERY[UQueryAgent::NAME]) == 0) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::rename($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function changeOwner($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::USER]) || !isset($QUERY[UQueryAgent::AGENT_ID])){
+  private function changeOwner($QUERY) {
+    if (!isset($QUERY[UQueryAgent::USER]) || !isset($QUERY[UQueryAgent::AGENT_ID])) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::changeOwner($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::USER], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setActive($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::ACTIVE]) || !is_bool($QUERY[UQueryAgent::ACTIVE])){
+  private function setActive($QUERY) {
+    if (!isset($QUERY[UQueryAgent::ACTIVE]) || !is_bool($QUERY[UQueryAgent::ACTIVE])) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::setActive($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::ACTIVE], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
-  private function listAgents($QUERY){
+  
+  private function listAgents($QUERY) {
     global $FACTORIES;
-
+    
     $accessGroups = AccessUtils::getAccessGroupsOfUser($this->user);
-
+    
     $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, Util::arrayOfIds($accessGroups));
     $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
     $agentIds = array();
     foreach ($accessGroupAgents as $accessGroupAgent) {
       $agentIds[] = $accessGroupAgent->getAgentId();
     }
-
+    
     $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
     $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
     $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
@@ -219,23 +206,25 @@ class UserAPIAgent extends UserAPIBasic {
       )
     );
   }
-
-  private function deleteVoucher($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryAgent::VOUCHER])){
+  
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function deleteVoucher($QUERY) {
+    if (!isset($QUERY[UQueryAgent::VOUCHER])) {
       throw new HTException("Invalid delete voucher query!");
     }
     AgentUtils::deleteVoucher($QUERY[UQueryAgent::VOUCHER]);
     $this->sendSuccessResponse($QUERY);
   }
-
-  private function listVouchers($QUERY){
+  
+  private function listVouchers($QUERY) {
     global $FACTORIES;
-
+    
     $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
     $arr = [];
-    foreach($vouchers as $voucher){
+    foreach ($vouchers as $voucher) {
       $arr[] = $voucher->getVoucher();
     }
     $this->sendResponse(array(
@@ -246,10 +235,10 @@ class UserAPIAgent extends UserAPIBasic {
       )
     );
   }
-
-  private function getBinaries($QUERY){
+  
+  private function getBinaries($QUERY) {
     global $FACTORIES;
-
+    
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
     unset($url[sizeof($url) - 1]);
@@ -261,10 +250,10 @@ class UserAPIAgent extends UserAPIBasic {
       UResponseAgent::RESPONSE => UValues::OK,
       UResponseAgent::AGENT_URL => $agentUrl
     );
-
+    
     $arr = [];
     $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
-    foreach($binaries as $binary){
+    foreach ($binaries as $binary) {
       $arr[] = array(
         UResponseAgent::BINARIES_NAME => $binary->getType(),
         UResponseAgent::BINARIES_OS => $binary->getOperatingSystems(),
@@ -276,10 +265,10 @@ class UserAPIAgent extends UserAPIBasic {
     $response[UResponseAgent::BINARIES] = $arr;
     $this->sendResponse($response);
   }
-
-  private function createVoucher($QUERY){
+  
+  private function createVoucher($QUERY) {
     $voucher = Util::randomString(10);
-    if(isset($QUERY[UQueryAgent::VOUCHER])){
+    if (isset($QUERY[UQueryAgent::VOUCHER])) {
       $voucher = $QUERY[UQueryAgent::VOUCHER];
     }
     AgentUtils::createVoucher($voucher);

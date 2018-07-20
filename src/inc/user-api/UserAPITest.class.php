@@ -1,12 +1,11 @@
 <?php
+
 use DBA\ApiKey;
 use DBA\QueryFilter;
 
 class UserAPITest extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    switch($QUERY[UQuery::REQUEST]){
+    switch ($QUERY[UQuery::REQUEST]) {
       case USectionTest::CONNECTION:
         $this->connectionTest($QUERY);
         break;
@@ -17,8 +16,8 @@ class UserAPITest extends UserAPIBasic {
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
   }
-
-  private function connectionTest($QUERY){
+  
+  private function connectionTest($QUERY) {
     $this->sendResponse(array(
         UResponse::SECTION => USection::TEST,
         UResponse::REQUEST => USectionTest::CONNECTION,
@@ -26,13 +25,13 @@ class UserAPITest extends UserAPIBasic {
       )
     );
   }
-
-  private function accessTest($QUERY){
+  
+  private function accessTest($QUERY) {
     global $FACTORIES;
-
+    
     $qF = new QueryFilter(ApiKey::ACCESS_KEY, $QUERY[UQuery::ACCESS_KEY], "=");
     $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-    if($apiKey == null){
+    if ($apiKey == null) {
       $this->sendResponse(array(
           UResponseErrorMessage::SECTION => USection::TEST,
           UResponseErrorMessage::REQUEST => USectionTest::ACCESS,
@@ -41,7 +40,7 @@ class UserAPITest extends UserAPIBasic {
         )
       );
     }
-    else if($apiKey->getStartValid() > time() || $apiKey->getEndValid() < time()){
+    else if ($apiKey->getStartValid() > time() || $apiKey->getEndValid() < time()) {
       $this->sendResponse(array(
           UResponseErrorMessage::SECTION => USection::TEST,
           UResponseErrorMessage::REQUEST => USectionTest::ACCESS,

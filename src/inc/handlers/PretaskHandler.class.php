@@ -4,11 +4,11 @@ class PretaskHandler implements Handler {
   public function __construct($fileId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DPretaskAction::DELETE_PRETASK:
           $ACCESS_CONTROL->checkPermission(DPretaskAction::DELETE_PRETASK_PERM);
@@ -53,7 +53,7 @@ class PretaskHandler implements Handler {
           break;
       }
     }
-    catch (HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

@@ -4,11 +4,11 @@ class UsersHandler implements Handler {
   public function __construct($userId = null) {
     //nothing to do
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DUserAction::DELETE_USER:
           $ACCESS_CONTROL->checkPermission(DUserAction::DELETE_USER_PERM);
@@ -45,7 +45,7 @@ class UsersHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

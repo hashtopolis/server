@@ -2,10 +2,8 @@
 
 class UserAPISupertask extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    try{
-      switch($QUERY[UQuery::REQUEST]){
+    try {
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionSupertask::LIST_SUPERTASKS:
           $this->listSupertasks($QUERY);
           break;
@@ -28,40 +26,40 @@ class UserAPISupertask extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
-  private function deleteSupertask($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
+  private function deleteSupertask($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID])) {
       throw new HTException("Invalid query!");
     }
     SupertaskUtils::deleteSupertask($QUERY[UQueryTask::SUPERTASK_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setSupertaskName($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_NAME])){
+  private function setSupertaskName($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_NAME])) {
       throw new HTException("Invalid query!");
     }
     SupertaskUtils::renameSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_NAME]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function importSupertask($QUERY){
+  private function importSupertask($QUERY) {
     $toCheck = [
       UQueryTask::TASK_NAME,
       UQueryTask::TASK_CPU_ONLY,
@@ -70,8 +68,8 @@ class UserAPISupertask extends UserAPIBasic {
       UQueryTask::MASKS,
       UQueryTask::TASK_OPTIMIZED
     ];
-    foreach($toCheck as $input){
-      if(!isset($QUERY[$input])){
+    foreach ($toCheck as $input) {
+      if (!isset($QUERY[$input])) {
         throw new HTException("Invalid query (missing $input)!");
       }
     }
@@ -81,35 +79,34 @@ class UserAPISupertask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_SMALL],
       $QUERY[UQueryTask::TASK_OPTIMIZED],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],
-      $QUERY[UQueryTask::MASKS]);
+      $QUERY[UQueryTask::MASKS]
+    );
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function createSupertask($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_NAME]) || !isset($QUERY[UQueryTask::PRETASKS])){
+  private function createSupertask($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_NAME]) || !isset($QUERY[UQueryTask::PRETASKS])) {
       throw new HTException("Invalid query!");
     }
     SupertaskUtils::createSupertask($QUERY[UQueryTask::SUPERTASK_NAME], $QUERY[UQueryTask::PRETASKS]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getSupertask($QUERY){
-    global $FACTORIES;
-
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
+  private function getSupertask($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID])) {
       throw new HTException("Invalid query!");
     }
     $supertask = SupertaskUtils::getSupertask($QUERY[UQueryTask::SUPERTASK_ID]);
     $pretasks = SupertaskUtils::getPretasksOfSupertask($supertask->getId());
-
+    
     $taskList = array();
     $response = [
       UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
@@ -128,11 +125,11 @@ class UserAPISupertask extends UserAPIBasic {
     $response[UResponseTask::PRETASKS] = $taskList;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    */
-  private function listSupertasks($QUERY){
+  private function listSupertasks($QUERY) {
     $supertasks = SupertaskUtils::getAllSupertasks();
     $taskList = array();
     $response = [

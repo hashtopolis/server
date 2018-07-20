@@ -2,10 +2,8 @@
 
 class UserAPITask extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
     try {
-      switch($QUERY[UQuery::REQUEST]){
+      switch ($QUERY[UQuery::REQUEST]) {
         case USectionTask::LIST_TASKS:
           $this->listTasks($QUERY);
           break;
@@ -64,172 +62,172 @@ class UserAPITask extends UserAPIBasic {
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
-  private function deleteSupertask($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
+  private function deleteSupertask($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::deleteSupertask($QUERY[UQueryTask::SUPERTASK_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setSupertaskName($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_NAME])){
+  private function setSupertaskName($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_NAME])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::renameSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function purgeTask($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID])){
+  private function purgeTask($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::purgeTask($QUERY[UQueryTask::TASK_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function deleteTask($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID])){
+  private function deleteTask($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::delete($QUERY[UQueryTask::TASK_ID], $this->user, true);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function unassignAgent($QUERY){
-    if(!isset($QUERY[UQueryTask::AGENT_ID])){
+  private function unassignAgent($QUERY) {
+    if (!isset($QUERY[UQueryTask::AGENT_ID])) {
       throw new HTException("Invalid query!");
     }
     AgentUtils::assign($QUERY[UQueryTask::AGENT_ID], 0, $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setSmallTask($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_SMALL])){
+  private function setSmallTask($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_SMALL])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::setSmallTask($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_SMALL], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setCpuTask($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_CPU_ONLY])){
+  private function setCpuTask($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_CPU_ONLY])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::setCpuTask($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_CPU_ONLY], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setTaskColor($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_COLOR])){
+  private function setTaskColor($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_COLOR])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::updateColor($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_COLOR], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setTaskName($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_NAME])){
+  private function setTaskName($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_NAME])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::rename($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setTaskPriority($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_PRIORITY])){
+  private function setTaskPriority($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_PRIORITY])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::updatePriority($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_PRIORITY], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setSupertaskPriority($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_PRIORITY])){
+  private function setSupertaskPriority($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_PRIORITY])) {
       throw new HTException("Invalid query!");
     }
     TaskUtils::setSupertaskPriority($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_PRIORITY], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function runSupertask($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])){
+  private function runSupertask($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])) {
       throw new HTException("Invalid query!");
     }
     SupertaskUtils::runSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::TASK_HASHLIST], $QUERY[UQueryTask::TASK_CRACKER_VERSION]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function runPretask($QUERY){
-    if(!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])){
+  private function runPretask($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::TASK_HASHLIST]) || !isset($QUERY[UQueryTask::TASK_CRACKER_VERSION])) {
       throw new HTException("Invalid query!");
     }
     PretaskUtils::runPretask($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::TASK_HASHLIST], $QUERY[UQueryTask::TASK_NAME], $QUERY[UQueryTask::TASK_CRACKER_VERSION]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function createTask($QUERY){
+  private function createTask($QUERY) {
     $toCheck = [
       UQueryTask::TASK_NAME,
       UQueryTask::TASK_HASHLIST,
@@ -244,8 +242,8 @@ class UserAPITask extends UserAPIBasic {
       UQueryTask::TASK_CRACKER_VERSION,
       UQueryTask::TASK_FILES
     ];
-    foreach($toCheck as $input){
-      if(!isset($QUERY[$input])){
+    foreach ($toCheck as $input) {
+      if (!isset($QUERY[$input])) {
         throw new HTException("Invalid query!");
       }
     }
@@ -267,17 +265,17 @@ class UserAPITask extends UserAPIBasic {
     );
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getChunk($QUERY){
-    if(!isset($QUERY[UQueryTask::CHUNK_ID])){
+  private function getChunk($QUERY) {
+    if (!isset($QUERY[UQueryTask::CHUNK_ID])) {
       throw new HTException("Invalid query!");
     }
     $chunk = TaskUtils::getChunk($QUERY[UQueryTask::CHUNK_ID], $this->user);
-
+    
     $response = [
       UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
       UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
@@ -286,7 +284,7 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::CHUNK_START => (int)$chunk->getSkip(),
       UResponseTask::CHUNK_LENGTH => (int)$chunk->getLength(),
       UResponseTask::CHUNK_CHECKPOINT => (int)$chunk->getCheckpoint(),
-      UResponseTask::CHUNK_PROGRESS => (float)($chunk->getProgress()/100),
+      UResponseTask::CHUNK_PROGRESS => (float)($chunk->getProgress() / 100),
       UResponseTask::CHUNK_TASK => (int)$chunk->getTaskId(),
       UResponseTask::CHUNK_AGENT => (int)$chunk->getAgentId(),
       UResponseTask::CHUNK_DISPATCHED => (int)$chunk->getDispatchTime(),
@@ -297,18 +295,18 @@ class UserAPITask extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function listSubTasks($QUERY){
-    if(!isset($QUERY[UQueryTask::SUPERTASK_ID])){
+  private function listSubTasks($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID])) {
       throw new HTException("Invalid query!");
     }
     $supertask = SupertaskUtils::getRunningSupertask($QUERY[UQueryTask::SUPERTASK_ID], $this->user);
-    $subtasks = SupertaskUtils::getRunningSubtasks($supertask->getId(), $this->user);
-
+    $subtasks = SupertaskUtils::getRunningSubtasks($supertask->getId());
+    
     $taskList = array();
     $response = [
       UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
@@ -325,18 +323,18 @@ class UserAPITask extends UserAPIBasic {
     $response[UResponseTask::SUBTASKS] = $taskList;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getTask($QUERY){
-    if(!isset($QUERY[UQueryTask::TASK_ID])){
+  private function getTask($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID])) {
       throw new HTException("Invalid query!");
     }
     $task = TaskUtils::getTask($QUERY[UQueryTask::TASK_ID], $this->user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $this->user);
-
+    
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
     $response = [
@@ -348,21 +346,21 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::TASK_ATTACK => $task->getAttackCmd(),
       UResponseTask::TASK_CHUNKSIZE => (int)$task->getChunkTime(),
       UResponseTask::TASK_COLOR => $task->getColor(),
-      UResponseTask::TASK_BENCH_TYPE => ($task->getUseNewBench() == 1)?"speed":"runtime",
+      UResponseTask::TASK_BENCH_TYPE => ($task->getUseNewBench() == 1) ? "speed" : "runtime",
       UResponseTask::TASK_STATUS => (int)$task->getStatusTimer(),
       UResponseTask::TASK_PRIORITY => (int)$task->getPriority(),
-      UResponseTask::TASK_CPU_ONLY => ($task->getIsCpuTask() == 1)?true:false,
-      UResponseTask::TASK_SMALL => ($task->getIsSmall() == 1)?true:false,
+      UResponseTask::TASK_CPU_ONLY => ($task->getIsCpuTask() == 1) ? true : false,
+      UResponseTask::TASK_SMALL => ($task->getIsSmall() == 1) ? true : false,
       UResponseTask::TASK_SKIP => (int)$task->getSkipKeyspace(),
       UResponseTask::TASK_KEYSPACE => (int)$task->getKeyspace(),
       UResponseTask::TASK_DISPATCHED => (int)$task->getKeyspaceProgress(),
       UResponseTask::TASK_HASHLIST => (int)$taskWrapper->getHashlistId(),
-      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url)."/taskimg.php?task=".$task->getId(),
+      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId(),
     ];
-
+    
     $files = TaskUtils::getFilesOfTask($task);
     $arr = [];
-    foreach($files as $file){
+    foreach ($files as $file) {
       $arr[] = [
         UResponseTask::TASK_FILES_ID => (int)$file->getId(),
         UResponseTask::TASK_FILES_NAME => $file->getFilename(),
@@ -370,13 +368,13 @@ class UserAPITask extends UserAPIBasic {
       ];
     }
     $response[UResponseTask::TASK_FILES] = $arr;
-
+    
     $chunks = TaskUtils::getChunks($task->getId());
     $speed = 0;
     $searched = 0;
     $chunkIds = [];
-    foreach($chunks as $chunk){
-      if($chunk->getSpeed() > 0){
+    foreach ($chunks as $chunk) {
+      if ($chunk->getSpeed() > 0) {
         $speed += $chunk->getSpeed();
       }
       $searched += $chunk->getCheckpoint() - $chunk->getSkip();
@@ -385,13 +383,13 @@ class UserAPITask extends UserAPIBasic {
     $response[UResponseTask::TASK_SPEED] = (int)$speed;
     $response[UResponseTask::TASK_SEARCHED] = (int)$searched;
     $response[UResponseTask::TASK_CHUNKS] = $chunkIds;
-
+    
     $assignments = TaskUtils::getAssignments($task->getId());
     $arr = [];
     foreach ($assignments as $assignment) {
       $speed = 0;
-      foreach($chunks as $chunk){
-        if($chunk->getAgentId() == $assignment->getAgentId() && $chunk->getSpeed() > 0){
+      foreach ($chunks as $chunk) {
+        if ($chunk->getAgentId() == $assignment->getAgentId() && $chunk->getSpeed() > 0) {
           $speed = $chunk->getSpeed();
           break;
         }
@@ -405,11 +403,11 @@ class UserAPITask extends UserAPIBasic {
     $response[UResponseTask::TASK_AGENTS] = $arr;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    */
-  private function listTasks($QUERY){
+  private function listTasks($QUERY) {
     $taskWrappers = TaskUtils::getTaskWrappersForUser($this->user);
     $taskList = array();
     $response = [
@@ -418,7 +416,7 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::RESPONSE => UValues::OK
     ];
     foreach ($taskWrappers as $taskWrapper) {
-      if($taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+      if ($taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
         $task = TaskUtils::getTaskOfWrapper($taskWrapper->getId());
         $taskList[] = [
           UResponseTask::TASKS_ID => (int)$task->getId(),
@@ -428,7 +426,7 @@ class UserAPITask extends UserAPIBasic {
           UResponseTask::TASKS_PRIORITY => (int)$taskWrapper->getPriority()
         ];
       }
-      else{
+      else {
         $taskList[] = [
           UResponseTask::TASKS_SUPERTASK_ID => (int)$taskWrapper->getId(),
           UResponseTask::TASKS_NAME => $taskWrapper->getTaskWrapperName(),

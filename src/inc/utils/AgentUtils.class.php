@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Agent;
 use DBA\QueryFilter;
 use DBA\Assignment;
@@ -16,30 +17,31 @@ class AgentUtils {
    * @param int $agentId
    * @param boolean $isCpuOnly
    * @param User $user
+   * @throws HTException
    */
   public static function setAgentCpu($agentId, $isCpuOnly, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $agent->setCpuOnly($isCpuOnly);
     $FACTORIES::getAgentFactory()->update($agent);
   }
-
+  
   /**
-   * @param int $agentId 
-   * @param User $user 
+   * @param int $agentId
+   * @param User $user
    * @throws HTException
    */
   public static function clearErrors($agentId, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
-
+    
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
   }
-
+  
   /**
    * @param int $agentId
    * @param string $newname
@@ -48,16 +50,16 @@ class AgentUtils {
    */
   public static function rename($agentId, $newname, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
     $name = htmlentities($newname, ENT_QUOTES, "UTF-8");
-    if(strlen($name) == 0){
+    if (strlen($name) == 0) {
       throw new HTException("Agent name cannot be empty!");
     }
     $agent->setAgentName($name);
     $FACTORIES::getAgentFactory()->update($agent);
   }
-
+  
   /**
    * @param int $agentId
    * @param User $user
@@ -65,15 +67,15 @@ class AgentUtils {
    */
   public static function delete($agentId, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
-
+    
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $name = $agent->getAgentName();
-
+    
     $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
-
+    
     if (AgentUtils::deleteDependencies($agent)) {
       $FACTORIES::getAgentFactory()->getDB()->commit();
       Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
@@ -83,14 +85,14 @@ class AgentUtils {
       throw new HTException("Error occured on deletion of agent!");
     }
   }
-
+  
   /**
    * @param Agent $agent
    * @return boolean
    */
   public static function deleteDependencies($agent) {
     global $FACTORIES;
-
+    
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $agent->getId(), "=");
@@ -102,18 +104,18 @@ class AgentUtils {
     }
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-
+    
     $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
-
+    
     $FACTORIES::getAgentZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-
+    
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
     $uS = new UpdateSet(Zap::AGENT_ID, null);
     $FACTORIES::getZapFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
-
+    
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
     $FACTORIES::getAccessGroupAgentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-
+    
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
     $chunkIds = array();
     foreach ($chunks as $chunk) {
@@ -126,7 +128,7 @@ class AgentUtils {
     $FACTORIES::getAgentFactory()->delete($agent);
     return true;
   }
-
+  
   /**
    * @param int $agentId
    * @param int $taskId
@@ -134,10 +136,10 @@ class AgentUtils {
    */
   public static function assign($agentId, $taskId, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
-
-    if($taskId == 0){ // unassign
+    
+    if ($taskId == 0) { // unassign
       $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
       $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
       if (isset($_GET['task'])) {
@@ -146,7 +148,7 @@ class AgentUtils {
       }
       return;
     }
-
+    
     $task = $FACTORIES::getTaskFactory()->get(intval($taskId));
     if ($task == null) {
       throw new HTException("Invalid task!");
@@ -154,21 +156,21 @@ class AgentUtils {
     else if (!AccessUtils::agentCanAccessTask($agent, $task)) {
       throw new HTException("This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
     }
-
+    
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-    if(!AccessUtils::userCanAccessTask($taskWrapper, $user)){
+    if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-
+    
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
     if ($task->getIsSmall() && sizeof($assignments) > 0) {
       throw new HTException("You cannot assign agent to this task as the limit of assignments is reached!");
     }
-
+    
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
     $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)));
-
+    
     $benchmark = 0;
     if (sizeof($assignments) > 0) {
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
@@ -188,7 +190,7 @@ class AgentUtils {
       die();
     }
   }
-
+  
   /**
    * @param int $agentId
    * @param int $ignoreErrors
@@ -197,7 +199,7 @@ class AgentUtils {
    */
   public static function changeIgnoreErrors($agentId, $ignoreErrors, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
     $ignore = intval($ignoreErrors);
     if ($ignore != 0 && $ignore != 1 && $ignore != 2) {
@@ -206,41 +208,41 @@ class AgentUtils {
     $agent->setIgnoreErrors($ignore);
     $FACTORIES::getAgentFactory()->update($agent);
   }
-
+  
   /**
    * @param int $agentId
    * @param User $user
    * @throws HTException
    * @return Agent
    */
-  public static function getAgent($agentId, $user = null){
+  public static function getAgent($agentId, $user = null) {
     global $FACTORIES;
-
+    
     $agent = $FACTORIES::getAgentFactory()->get($agentId);
     if ($agent == null) {
       throw new HTException("Invalid agent!");
     }
-    else if($user != null && !AccessUtils::userCanAccessAgent($agent, $user)){
+    else if ($user != null && !AccessUtils::userCanAccessAgent($agent, $user)) {
       throw new HTException("No access to this agent!");
     }
     return $agent;
   }
-
+  
   /**
    * @param int $agentId
    * @param boolean $trusted
    * @param User $user
    * @throws HTException
    */
-  public static function setTrusted($agentId, $trusted, $user){
+  public static function setTrusted($agentId, $trusted, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
-    $trusted = ($trusted)?1:0;
+    $trusted = ($trusted) ? 1 : 0;
     $agent->setIsTrusted($trusted);
     $FACTORIES::getAgentFactory()->update($agent);
   }
-
+  
   /**
    * @param int $agentId
    * @param int|string $ownerId
@@ -249,14 +251,14 @@ class AgentUtils {
    */
   public static function changeOwner($agentId, $ownerId, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
     if ($ownerId == 0) {
       $agent->setUserId(null);
       $username = "NONE";
       $FACTORIES::getAgentFactory()->update($agent);
     }
-    else if(is_numeric($ownerId)){
+    else if (is_numeric($ownerId)) {
       $owner = $FACTORIES::getUserFactory()->get(intval($ownerId));
       if (!$owner) {
         throw new HTException("Invalid user selected!");
@@ -276,7 +278,7 @@ class AgentUtils {
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Owner for agent " . $agent->getAgentName() . " was changed to " . $username);
     $FACTORIES::getAgentFactory()->update($agent);
   }
-
+  
   /**
    * @param int $agentId
    * @param string $cmdParameters
@@ -285,7 +287,7 @@ class AgentUtils {
    */
   public static function changeCmdParameters($agentId, $cmdParameters, $user) {
     global $FACTORIES;
-
+    
     $agent = AgentUtils::getAgent($agentId, $user);
     if (Util::containsBlacklistedChars($cmdParameters)) {
       throw new HTException("Parameters must contain no blacklisted characters!");
@@ -293,7 +295,7 @@ class AgentUtils {
     $agent->setCmdPars($cmdParameters);
     $FACTORIES::getAgentFactory()->update($agent);
   }
-
+  
   /**
    * @param int $agentId
    * @param boolean $active
@@ -303,54 +305,54 @@ class AgentUtils {
    */
   public static function setActive($agentId, $active, $user, $toggle = false) {
     global $FACTORIES;
-
+    
     $agent = $FACTORIES::getAgentFactory()->get($agentId);
     if ($agent == null) {
       throw new HTException("Invalid agent!");
     }
-    else if(!AccessUtils::userCanAccessAgent($agent, $user)){
+    else if (!AccessUtils::userCanAccessAgent($agent, $user)) {
       throw new HTException("No access to this agent!");
     }
-
+    
     if ($toggle && $agent->getIsActive() == 1) {
       $agent->setIsActive(0);
     }
-    else if($toggle) {
+    else if ($toggle) {
       $agent->setIsActive(1);
     }
-    else{
-      $active = ($active)?1:0;
+    else {
+      $active = ($active) ? 1 : 0;
       $agent->setIsActive($active);
     }
     $FACTORIES::getAgentFactory()->update($agent);
   }
-
+  
   /**
    * @param string $newVoucher
    */
   public static function createVoucher($newVoucher) {
     global $FACTORIES;
-
+    
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(0, $key, time());
     $FACTORIES::getRegVoucherFactory()->save($voucher);
   }
-
+  
   /**
    * @param int|string $voucher
    * @throws HTException
    */
   public static function deleteVoucher($voucher) {
     global $FACTORIES;
-
-    if(is_numeric($voucher)){
+    
+    if (is_numeric($voucher)) {
       $voucher = $FACTORIES::getRegVoucherFactory()->get($voucher);
     }
-    else{
+    else {
       $qF = new QueryFilter(RegVoucher::VOUCHER, $voucher, "=");
       $voucher = $FACTORIES::getRegVoucherFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     }
-    if($voucher == null){
+    if ($voucher == null) {
       throw new HTException("Invalid voucher!");
     }
     $FACTORIES::getRegVoucherFactory()->delete($voucher);

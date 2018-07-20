@@ -1,4 +1,5 @@
 <?php
+
 use DBA\APiKey;
 use DBA\QueryFilter;
 
@@ -38,36 +39,36 @@ else if (isset($_GET['id'])) {
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
     $OBJECTS['keys'] = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF));
-
+    
     $sectionConstants = USection::getConstants();
     $OBJECTS['sectionConstants'] = $sectionConstants;
-
+    
     $section = USection::TEST;
-    if(isset($_GET['section'])){
+    if (isset($_GET['section'])) {
       $section = $_GET['section'];
     }
     $currentSection = UApi::getSection($section);
-    if($currentSection == null){
+    if ($currentSection == null) {
       UI::printError("ERROR", "Invalid section!");
     }
     $OBJECTS['currentConstants'] = $currentSection->getConstants();
     $OBJECTS['currentSection'] = $section;
-
+    
     $OBJECTS['group'] = $group;
     if ($group->getPermissions() == 'ALL') {
       $OBJECTS['perm'] = 'ALL';
     }
     else {
       $json = json_decode($group->getPermissions(), true);
-      if(isset($json[$section])){
+      if (isset($json[$section])) {
         $json = $json[$section];
       }
-      else{
+      else {
         $json = "{}";
       }
       $OBJECTS['perm'] = new DataSet($json);
     }
-
+    
     $TEMPLATE = new Template("api/detail");
     $OBJECTS['pageTitle'] = "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8");
   }
@@ -75,17 +76,17 @@ else if (isset($_GET['id'])) {
 else {
   // determine keys and groups
   $groups = $FACTORIES::getApiGroupFactory()->filter(array());
-
+  
   $apis = array();
   foreach ($groups as $group) {
     $apis[$group->getId()] = 0;
   }
-
+  
   $allApiKeys = $FACTORIES::getApiKeyFactory()->filter(array());
   foreach ($allApiKeys as $apiKey) {
     $apis[$apiKey->getApiGroupId()]++;
   }
-
+  
   $OBJECTS['apis'] = new DataSet($apis);
   $OBJECTS['groups'] = $groups;
   $OBJECTS['pageTitle'] = "Api Groups";

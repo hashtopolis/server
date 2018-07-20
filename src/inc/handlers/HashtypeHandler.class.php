@@ -4,11 +4,11 @@ class HashtypeHandler implements Handler {
   public function __construct($hashtypeId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DHashtypeAction::DELETE_HASHTYPE:
           HashtypeUtils::deleteHashtype($_POST['type']);
@@ -23,7 +23,7 @@ class HashtypeHandler implements Handler {
           break;
       }
     }
-    catch (HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }

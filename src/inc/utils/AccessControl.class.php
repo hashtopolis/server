@@ -1,16 +1,15 @@
 <?php
 
 use DBA\User;
-use DBA\RightGroup;
 
 class AccessControl {
   private $user;
   private $rightGroup;
-
+  
   /**
    * @return User
    */
-  public function getUser(){
+  public function getUser() {
     return $this->user;
   }
   

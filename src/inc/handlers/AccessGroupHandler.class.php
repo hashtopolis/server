@@ -4,11 +4,11 @@ class AccessGroupHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     global $ACCESS_CONTROL;
-
-    try{
+    
+    try {
       switch ($action) {
         case DAccessGroupAction::CREATE_GROUP:
           $ACCESS_CONTROL->checkPermission(DAccessGroupAction::CREATE_GROUP_PERM);
@@ -40,7 +40,7 @@ class AccessGroupHandler implements Handler {
           break;
       }
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
