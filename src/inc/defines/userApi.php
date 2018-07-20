@@ -101,6 +101,12 @@ class UQueryCracker extends UQuery {
   const BINARY_URL = "crackerBinaryUrl";
 }
 
+class UQueryConfig extends UQuery {
+  const CONFIG_ITEM = "configItem";
+  const CONFIG_VALUE = "value";
+  const CONFIG_FORCE = "force";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -319,6 +325,19 @@ class UResponseCracker extends UResponse {
   const VERSIONS_BINARY_NAME = "binaryBasename";
 }
 
+class UResponseConfig extends UResponse {
+  const CONFIG = "items";
+  const CONFIG_SECTION_ID = "configSectionId";
+  const CONFIG_ITEM = "item";
+  const CONFIG_VALUE = "value";
+  const CONFIG_TYPE = "configType";
+  const CONFIG_DESCRIPTION = "itemDescription";
+
+  const SECTIONS = "configSections";
+  const SECTIONS_ID = "configSectionId";
+  const SECTIONS_NAME = "name";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -501,7 +520,12 @@ class USectionCracker extends UApi {
   const UPDATE_VERSION = "updateVersion";
 }
 
-class USectionConfig extends UApi {}
+class USectionConfig extends UApi {
+  const LIST_SECTIONS = "listSections";
+  const LIST_CONFIG = "listConfig";
+  const GET_CONFIG = "getConfig";
+  const SET_CONFIG = "setConfig";
+}
 
 class USectionUser extends UApi {}
 

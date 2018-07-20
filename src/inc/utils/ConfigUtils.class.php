@@ -7,11 +7,61 @@ use DBA\QueryFilter;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\Config;
+use DBA\ConfigSection;
 
 class ConfigUtils {
   /**
-   * @param array $arr 
-   * @throws HTException 
+   * @param Config $config 
+   * @param boolean $new 
+   */
+  public static function set($config, $new){
+    global $FACTORIES;
+
+    if($new){
+      $FACTORIES::getConfigFactory()->save($config);
+    }
+    else{
+      $FACTORIES::getConfigFactory()->update($config);
+    }
+  }
+
+  /**
+   * @param string $item
+   * @throws HTException
+   * @return Config
+   */
+  public static function get($item){
+    global $FACTORIES;
+
+    $qF = new QueryFilter(Config::ITEM, $item, "=");
+    $config = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    if($config == null){
+      throw new HTException("Item not found!");
+    }
+    return $config;
+  }
+
+  /**
+   * @return ConfigSection[]
+   */
+  public static function getSections(){
+    global $FACTORIES;
+
+    return $FACTORIES::getConfigSectionFactory()->filter([]);
+  }
+
+  /**
+   * @return Config[]
+   */
+  public static function getAll(){
+    global $FACTORIES;
+
+    return $FACTORIES::getConfigFactory()->filter([]);
+  }
+
+  /**
+   * @param array $arr
+   * @throws HTException
    */
   public static function updateConfig($arr) {
     global $OBJECTS, $FACTORIES;
