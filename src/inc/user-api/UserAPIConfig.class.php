@@ -131,7 +131,7 @@ class UserAPIConfig extends UserAPIBasic {
       ];
     }
     $response[UResponseConfig::SECTIONS] = $list;
-    $this->sendSuccessResponse($response);
+    $this->sendResponse($response);
   }
 
   /**
@@ -153,6 +153,6 @@ class UserAPIConfig extends UserAPIBasic {
       ];
     }
     $response[UResponseConfig::CONFIG] = $list;
-    $this->sendSuccessResponse($response);
+    $this->sendResponse($response);
   }
 }
