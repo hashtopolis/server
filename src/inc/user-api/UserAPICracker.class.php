@@ -113,12 +113,12 @@ class UserAPICracker extends UserAPIBasic {
       UResponseCracker::SECTION => $QUERY[UQueryCracker::SECTION],
       UResponseCracker::REQUEST => $QUERY[UQueryCracker::REQUEST],
       UResponseCracker::RESPONSE => UValues::OK,
-      UResponseCracker::CRACKER_ID => $cracker->getId(),
+      UResponseCracker::CRACKER_ID => (int)$cracker->getId(),
       UResponseCracker::CRACKER_NAME => $cracker->getTypeName()
     ];
     foreach($versions as $version){
       $list[] = [
-        UResponseCracker::VERSIONS_ID => $version->getId(),
+        UResponseCracker::VERSIONS_ID => (int)$version->getId(),
         UResponseCracker::VERSIONS_VERSION => $version->getVersion(),
         UResponseCracker::VERSIONS_URL => $version->getDownloadUrl(),
         UResponseCracker::VERSIONS_BINARY_NAME => $version->getBinaryName()
