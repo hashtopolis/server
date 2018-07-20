@@ -7,8 +7,28 @@ use DBA\ContainFilter;
 
 class CrackerUtils {
   /**
-   * @param string $typeName 
-   * @throws HTException 
+   * @param CrackerBinaryType $cracker 
+   * @return CrackerBinary[]
+   */
+  public static function getBinaries($cracker){
+    global $FACTORIES;
+
+    $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $cracker->getId(), "=");
+    return $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+  }
+
+  /**
+   * @return CrackerBinaryType[]
+   */
+  public static function getBinaryTypes(){
+    global $FACTORIES;
+
+    return $FACTORIES::getCrackerBinaryTypeFactory()->filter([]);
+  }
+
+  /**
+   * @param string $typeName
+   * @throws HTException
    */
   public static function createBinaryType($typeName) {
     global $FACTORIES;

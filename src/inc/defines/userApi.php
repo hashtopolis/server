@@ -91,6 +91,16 @@ class UQueryFile extends UQuery {
   const SET_SECRET = "isSecret";
 }
 
+class UQueryCracker extends UQuery {
+  const CRACKER_ID = "crackerTypeId";
+  const CRACKER_VERSION_ID = "crackerVersionId";
+
+  const CRACKER_NAME = "crackerName";
+  const BINARY_VERSION = "crackerBinaryVersion";
+  const BINARY_NAME = "crackerBinaryBasename";
+  const BINARY_URL = "crackerBinaryUrl";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -294,6 +304,21 @@ class UResponseFile extends UResponse {
   const FILE_URL = "url";
 }
 
+class UResponseCracker extends UResponse {
+  const CRACKERS = "crackers";
+  const CRACKERS_ID = "crackerTypeId";
+  const CRACKERS_NAME = "crackerTypeName";
+
+  const CRACKER_ID = "crackerTypeId";
+  const CRACKER_NAME = "crackerTypeName";
+
+  const VERSIONS = "crackerVersions";
+  const VERSIONS_ID = "versionId";
+  const VERSIONS_VERSION = "version";
+  const VERSIONS_URL = "downloadUrl";
+  const VERSIONS_BINARY_NAME = "binaryBasename";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -465,7 +490,16 @@ class USectionFile extends UApi {
   const SET_FILE_TYPE = "setFileType";
 }
 
-class USectionCracker extends UApi {}
+class USectionCracker extends UApi {
+  const LIST_CRACKERS = "listCrackers";
+  const GET_CRACKER = "getCracker";
+  const DELETE_VERSION = "deleteVersion";
+  const DELETE_CRACKER = "deleteCracker";
+
+  const CREATE_CRACKER = "createCracker";
+  const ADD_VERSION = "addVersion";
+  const UPDATE_VERSION = "updateVersion";
+}
 
 class USectionConfig extends UApi {}
 
