@@ -8,9 +8,18 @@ use DBA\Agent;
 
 class UserUtils {
   /**
-   * @param int $userId 
-   * @param User $adminUser 
-   * @throws HTException 
+   * @return User[]
+   */
+  public static function getUsers(){
+    global $FACTORIES;
+
+    return $FACTORIES::getUserFactory()->filter([]);
+  }
+
+  /**
+   * @param int $userId
+   * @param User $adminUser
+   * @throws HTException
    */
   public static function deleteUser($userId, $adminUser) {
     global $FACTORIES;

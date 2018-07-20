@@ -107,6 +107,17 @@ class UQueryConfig extends UQuery {
   const CONFIG_FORCE = "force";
 }
 
+class UQueryUser extends UQuery {
+  const USER_ID = "userId";
+
+  const USER_USERNAME = "username";
+  const USER_EMAIL = "email";
+  const RIGHT_GROUP_ID = "rightGroupId";
+
+  const USER_PASSWORD = "password";
+  const USER_RIGHT_GROUP_ID = "rightGroupId";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -338,6 +349,21 @@ class UResponseConfig extends UResponse {
   const SECTIONS_NAME = "name";
 }
 
+class UResponseUser extends UResponse {
+  const USERS = "users";
+  const USERS_ID = "userId";
+  const USERS_USERNAME = "username";
+
+  const USER_ID = "userId";
+  const USER_USERNAME = "username";
+  const USER_EMAIL = "email";
+  const USER_RIGHT_GROUP_ID = "rightGroupId";
+  const USER_REGISTERED = "registered";
+  const USER_LAST_LOGIN = "lastLogin";
+  const USER_IS_VALID = "isValid";
+  const USER_SESSION_LIFETIME = "sessionLifetime";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -527,7 +553,15 @@ class USectionConfig extends UApi {
   const SET_CONFIG = "setConfig";
 }
 
-class USectionUser extends UApi {}
+class USectionUser extends UApi {
+  const LIST_USERS = "listUsers";
+  const GET_USER = "getUser";
+  const CREATE_USER = "createUser";
+  const DISABLE_USER = "disableUser";
+  const ENABLE_USER = "enableUser";
+  const SET_USER_PASSWORD = "setUserPassword";
+  const SET_USER_RIGHT_GROUP = "setUserRightGroup";
+}
 
 class USectionGroup extends UApi {}
 
