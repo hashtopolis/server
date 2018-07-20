@@ -29,8 +29,8 @@ class UserAPIConfig extends UserAPIBasic {
   }
 
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
   private function setConfig($QUERY){
     global $CONFIG;
@@ -59,6 +59,10 @@ class UserAPIConfig extends UserAPIBasic {
     $type = DConfig::getConfigType($config->getItem());
     switch($type){
       case DConfigType::EMAIL:
+        if (!filter_var($config->getValue(), FILTER_VALIDATE_EMAIL)) {
+          throw new HTException("Value must be email!");
+        }
+        break;
       case DConfigType::STRING_INPUT:
         break;
       case DConfigType::NUMBER_INPUT:
