@@ -1,0 +1,101 @@
+\section*{Account (\textit{account})}
+	Manage the own account, associated with the API key.
+
+\subsection*{\textit{getInformation}}
+	Get general information about the account.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "getInformation",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "getInformation",
+  "response": "OK",
+  "userId": 1,
+  "email": "htp@htp.htp",
+  "rightGroupId": 1,
+  "sessionLength": 36000
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{setEmail}}
+	Update the email of the user.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "setEmail",
+  "email": "place@hold.er",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "setEmail",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{setSessionLength}}
+	Set the time in seconds after a session of this user times out.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "setSessionLength",
+  "sessionLength": 6000,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "setSessionLength",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{changePassword}}
+	Change the password of the user account.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "changePassword",
+  "newPassword": "password",
+  "oldPassword": "htp",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "account",
+  "request": "changePassword",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+
+
