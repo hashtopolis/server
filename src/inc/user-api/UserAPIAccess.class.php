@@ -39,7 +39,7 @@ class UserAPIAccess extends UserAPIBasic {
     $perm = $QUERY[UQueryAccess::PERMISSIONS];
     $prepared = [];
     foreach($perm as $key => $p){
-      $prepared[] = $key."-".($p)?"1":"0";
+      $prepared[] = $key."-".(($p)?"1":"0");
     }
     $changed = AccessControlUtils::updateGroupPermissions($QUERY[UQueryAccess::RIGHT_GROUP_ID], $prepared);
     if($changed){
