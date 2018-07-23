@@ -126,6 +126,12 @@ class UQueryGroup extends UQuery {
   const USER_ID = "userId";
 }
 
+class UQueryAccess extends UQuery {
+  const RIGHT_GROUP_ID = "rightGroupId";
+  const RIGHT_GROUP_NAME = "name";
+  const PERMISSIONS = "permissions";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -383,6 +389,20 @@ class UResponseGroup extends UResponse {
   const AGENTS = "agents";
 }
 
+class UResponseAccess extends UResponse {
+  const RIGHT_GROUPS_ID = "rightGroupId";
+  const RIGHT_GROUPS_NAME = "name";
+  const RIGHT_GROUPS = "rightGroups";
+
+  const RIGHT_GROUP_ID = "rightGroupId";
+  const RIGHT_GROUP_NAME = "name";
+  const PERMISSIONS = "permissions";
+  const MEMBERS = "members";
+  const MEMBERS_ID = "userId";
+
+  const WARNING = "warning";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -595,6 +615,12 @@ class USectionGroup extends UApi {
   const REMOVE_USER = "removeUser";
 }
 
-class USectionAccess extends UApi {}
+class USectionAccess extends UApi {
+  const LIST_GROUPS = "listGroups";
+  const GET_GROUP = "getGroup";
+  const CREATE_GROUP = "createGroup";
+  const DELETE_GROUP = "deleteGroup";
+  const SET_PERMISSIONS = "setPermissions";
+}
 
 class USectionAccount extends UApi {}
