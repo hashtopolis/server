@@ -54,6 +54,9 @@ switch ($QUERY[UQuery::SECTION]) {
   case USection::USER:
     $api = new UserAPIUser();
     break;
+  case USection::ACCOUNT:
+    $api = new UserAPIAccount();
+    break;
 }
 
 if ($api == null) {

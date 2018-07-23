@@ -132,6 +132,14 @@ class UQueryAccess extends UQuery {
   const PERMISSIONS = "permissions";
 }
 
+class UQueryAccount extends UQuery {
+  const EMAIL = "email";
+  const SESSION_LENGTH = "sessionLength";
+
+  const OLD_PASS = "oldPassword";
+  const NEW_PASS = "newPassword";
+}
+
 ######################
 # Values definitions #
 ######################
@@ -401,6 +409,13 @@ class UResponseAccess extends UResponse {
   const WARNING = "warning";
 }
 
+class UResponseAccount extends UResponse {
+  const USER_ID = "userId";
+  const EMAIL = "email";
+  const RIGHT_GROUP_ID = "rightGroupId";
+  const SESSION_LENGTH = "sessionLength";
+}
+
 ###############################
 # Section/Request definitions #
 ###############################
@@ -621,4 +636,9 @@ class USectionAccess extends UApi {
   const SET_PERMISSIONS = "setPermissions";
 }
 
-class USectionAccount extends UApi {}
+class USectionAccount extends UApi {
+  const GET_INFORMATION = "getInformation";
+  const SET_EMAIL = "setEmail";
+  const SET_SESSION_LENGTH = "setSessionLength";
+  const CHANGE_PASSWORD = "changePassword";
+}
