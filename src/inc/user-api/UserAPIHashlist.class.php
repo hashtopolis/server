@@ -36,6 +36,8 @@ class UserAPIHashlist extends UserAPIBasic {
         case USectionHashlist::DELETE_HASHLIST:
           $this->deleteHashlist($QUERY);
           break;
+        case USectionHashlist::GET_HASH:
+          $this->getHash($QUERY);
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -44,7 +46,31 @@ class UserAPIHashlist extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-  
+
+  /**
+   * @param array $QUERY 
+   * @throws HTException 
+   */
+  private function getHash($QUERY){
+    if (!isset($QUERY[UQueryHashlist::HASH])) {
+      throw new HTException("Invalid query!");
+    }
+    $hash = HashlistUtils::getHash($QUERY[UQueryHashlist::HASH], $this->user);
+    if($hash == null){
+      throw new HTException("Hash was not found or is not cracked!");
+    }
+    else{
+      $resonse = [
+        UResponseHashlist::SECTION => $QUERY[UQueryHashlist::SECTION],
+        UResponseHashlist::REQUEST => $QUERY[UQueryHashlist::REQUEST],
+        UResponseHashlist::RESPONSE => UValues::OK,
+        UResponseHashlist::HASH => $QUERY[UQueryHashlist::HASH],
+        UResponseHashlist::PLAIN => $hash->getPlaintext()
+      ];
+      $this->sendResponse($resonse);
+    }
+  }
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -56,7 +82,7 @@ class UserAPIHashlist extends UserAPIBasic {
     HashlistUtils::delete($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -75,7 +101,7 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -96,7 +122,7 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -115,7 +141,7 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -146,7 +172,7 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -158,7 +184,7 @@ class UserAPIHashlist extends UserAPIBasic {
     HashlistUtils::setSecret($QUERY[UQueryHashlist::HASHLIST_ID], $QUERY[UQueryHashlist::HASHLIST_IS_SECRET], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -170,7 +196,7 @@ class UserAPIHashlist extends UserAPIBasic {
     HashlistUtils::rename($QUERY[UQueryHashlist::HASHLIST_ID], $QUERY[UQueryHashlist::HASHLIST_NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -209,7 +235,7 @@ class UserAPIHashlist extends UserAPIBasic {
     );
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -240,7 +266,7 @@ class UserAPIHashlist extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException

@@ -72,6 +72,8 @@ class UQueryHashlist extends UQuery {
   const HASHLIST_HASHTYPE_ID = "hashtypeId";
   const HASHLIST_ACCESS_GROUP_ID = "accessGroupId";
   const HASHLIST_DATA = "data";
+
+  const HASH = "hash";
 }
 
 class UQuerySuperhashlist extends UQuery{
@@ -308,6 +310,9 @@ class UResponseHashlist extends UResponse {
 
   const EXPORT_FILE_ID = "fileId";
   const EXPORT_FILE_NAME = "filename";
+
+  const HASH = "hash";
+  const PLAIN = "plain";
 }
 
 class UResponseSuperhashlist extends UResponse {
@@ -709,6 +714,7 @@ class USectionHashlist extends UApi {
   const EXPORT_LEFT = "exportLeft";
 
   const DELETE_HASHLIST = "deleteHashlist";
+  const GET_HASH = "getHash";
 
   public function describe($constant){
     switch($constant){
@@ -732,6 +738,8 @@ class USectionHashlist extends UApi {
         return "Export a left list of uncracked hashes";
       case USectionHashlist::DELETE_HASHLIST:
         return "Delete hashlists";
+      case USectionHashlist::GET_HASH:
+        return "Query for specific hashes";
       default:
         return "__".$constant."__";
     }
