@@ -76,9 +76,9 @@
         <td>Remaining:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
-            <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=uncracked">[[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]</a>
+            <a href="hashes.php?hashlist=[[list.getVal('hashlist')->getId()]]&filter=uncracked">[[Util::calculate([[list.getVal('hashlist').getHashCount()]] - [[list.getVal('hashlist').getCracked()]])]]</a>
           {{ELSE}}
-            [[Util::subtract([[list.getVal('hashlist').getHashCount()]], [[list.getVal('hashlist').getCracked()]])]]
+            [[Util::calculate([[list.getVal('hashlist').getHashCount()]] - [[list.getVal('hashlist').getCracked()]])]]
           {{ENDIF}}
           ([[Util::showperc([[list.getVal('hashlist').getHashCount()]] - [[list.getVal('hashlist').getCracked()]], [[list.getVal('hashlist').getHashCount()]])]]%)
         </td>

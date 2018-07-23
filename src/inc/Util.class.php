@@ -569,18 +569,6 @@ class Util {
   }
   
   /**
-   * Used in Template. Subtracts two variables
-   * TODO: this should be removed, as it can be done by Util::calculate
-   * TODO: also check if we really need this calculating function or if it can be done otherwise
-   * @param $x int value 1
-   * @param $y int value 2
-   * @return mixed
-   */
-  public static function subtract($x, $y) {
-    return ($x - $y);
-  }
-  
-  /**
    * Used in Template. Converts seconds to human readable format
    * @param $seconds
    * @return string
