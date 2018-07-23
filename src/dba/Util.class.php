@@ -37,7 +37,7 @@ class Util {
   public static function createPrefixedString($table, $dict) {
     $arr = array();
     foreach ($dict as $key => $val) {
-      $arr[] = "`" . $table . "`" . "." . "`" . $key . "`" . " AS `" . $table . "." . $key . "`";
+      $arr[] = '`' . $table . '`' . '.' . '`' . $key . '`' . ' AS `' . $table . '.' . $key . '`';
     }
     return implode(", ", $arr);
   }

@@ -541,7 +541,6 @@ class Util {
   
   /**
    * Checks if the task is completed and returns the html tick image if this is the case.
-   * TODO: remove this function and add this tick as a glyphicon and also without using this function
    * @param $prog int progress so far
    * @param $total int total to be done
    * @return string either the check.png with Finished or an empty string
@@ -677,22 +676,17 @@ class Util {
           return $platforms[0];
         }
         return $oses[$val];
-        break;
       case 'states':
         return $states[$val];
-        break;
       case 'formats':
         return $formats[$val];
-        break;
       case 'formattables':
         return $formattables[$val];
-        break;
       case 'platforms':
         if ($val == '-1') {
           return $platforms[0];
         }
         return $platforms[$val];
-        break;
     }
     return "";
   }
