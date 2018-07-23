@@ -278,7 +278,53 @@
 		}
 		\end{verbatim}
 	}
-
+\subsection*{\textit{getHash}}
+	Search if a hash is found on the server. This searches on all hashlists which the user has access to.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "getHash",
+		  "hash": "0021ca52049c734ac0d3d6f92042abf7",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "getHash",
+		  "response": "ERROR",
+		  "message": "Hash was not found or is not cracked!"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "getHash",
+		  "hash": "00428d94d9482d8c7037b6865521b3fd",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "getHash",
+		  "response": "OK",
+		  "hash": "00428d94d9482d8c7037b6865521b3fd",
+		  "plain": "wellgetthem"
+		}
+		\end{verbatim}
+	}
 
 
 
