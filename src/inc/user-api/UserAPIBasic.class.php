@@ -77,7 +77,7 @@ abstract class UserAPIBasic {
       $this->sendErrorResponse($section, $request, "Permission denied!");
     }
     $this->apiKey = $apiKey;
-    $this->user = $FACTORIES::getApiKeyFactory()->get($apiKey->getUserId());
+    $this->user = $FACTORIES::getUserFactory()->get($apiKey->getUserId());
     $this->updateApi();
   }
   
