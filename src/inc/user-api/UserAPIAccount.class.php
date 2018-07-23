@@ -70,7 +70,7 @@ class UserAPIAccount extends UserAPIBasic {
       UResponseAccount::REQUEST => $QUERY[UQueryAccount::REQUEST],
       UResponseAccount::RESPONSE => UValues::OK,
       UResponseAccount::USER_ID => (int)$this->user->getId(),
-      UResponseAccount::EMAIl => $this->user->getEmail(),
+      UResponseAccount::EMAIL => $this->user->getEmail(),
       UResponseAccount::RIGHT_GROUP_ID => (int)$this->user->getRightGroupId(),
       UResponseAccount::SESSION_LENGTH => (int)$this->user->getSessionLifetime()
     ];
