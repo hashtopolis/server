@@ -398,8 +398,6 @@ class UResponseAccess extends UResponse {
   const RIGHT_GROUP_NAME = "name";
   const PERMISSIONS = "permissions";
   const MEMBERS = "members";
-  const MEMBERS_ID = "userId";
-
   const WARNING = "warning";
 }
 

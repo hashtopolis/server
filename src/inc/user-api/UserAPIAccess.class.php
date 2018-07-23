@@ -100,9 +100,7 @@ class UserAPIAccess extends UserAPIBasic {
       UResponseAccess::PERMISSIONS => ($group->getPermissions() == 'ALL')?'ALL':json_decode($group->getPermissions(), true),
     ];
     foreach($members as $user){
-      $list[] = [
-        UResponseAccess::MEMBERS_ID => (int)$user->getId()
-      ];
+      $list[] = (int)$user->getId();
     }
     $response[UResponseAccess::MEMBERS] = $list;
     $this->sendResponse($response);
