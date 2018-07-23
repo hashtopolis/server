@@ -305,7 +305,7 @@ class UserAPITask extends UserAPIBasic {
       throw new HTException("Invalid query!");
     }
     $supertask = SupertaskUtils::getRunningSupertask($QUERY[UQueryTask::SUPERTASK_ID], $this->user);
-    $subtasks = SupertaskUtils::getRunningSubtasks($supertask->getId());
+    $subtasks = SupertaskUtils::getRunningSubtasks($supertask->getId(), $this->user);
     
     $taskList = array();
     $response = [

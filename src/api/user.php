@@ -60,7 +60,6 @@ switch ($QUERY[UQuery::SECTION]) {
 }
 
 if ($api == null) {
-  // TODO: response that the query was invalid
   $api = new UserAPITest();
   $api->sendErrorResponse("INV", "INV", "Invalid user api query!");
 }
