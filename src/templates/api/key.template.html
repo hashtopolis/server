@@ -5,13 +5,14 @@
 <form action='api.php?keyId=[[key.getId()]]' method='post'>
 	<input type='hidden' name='action' value='[[$DApiAction::EDIT_KEY]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
+  <input type="hidden" name="keyId" value="[[key.getId()]]">
 	<div class="card">
     <div class="table-responsive">
       <table class="table table-bordered">
 			  <tr>
 				  <th>User</th>
 				  <td>
-					  <select class="form-control" name="user" title="User">
+					  <select class="form-control" name="userId" title="User">
               <option value="">---</option>
               {{FOREACH user;[[users]]}}
                 <option value="[[user.getId()]]"{{IF [[user.getId()]] == [[key.getUserId()]]}} selected{{ENDIF}}>[[user.getUsername()]]</option>

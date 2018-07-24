@@ -5,9 +5,39 @@ use DBA\ApiGroup;
 
 class ApiUtils {
   /**
+   * @param int $keyId 
    * @param int $userId 
    * @param int $groupId 
+   * @param string $startValid 
+   * @param string $endValid 
    * @throws HTException 
+   */
+  public static function editKey($keyId, $userId, $groupId, $startValid, $endValid){
+    global $FACTORIES;
+
+    $key = $FACTORIES::getApiKeyFactory()->get($keyId);
+    $user = $FACTORIES::getUserFactory()->get($userId);
+    $group = $FACTORIES::getApiGroupFactory()->get($groupId);
+    if($key == null){
+      throw new HTException("Invalid API key!");
+    }
+    else if($user == null){
+      throw new HTException("Invalid user selected!");
+    }
+    else if($group == null){
+      throw new HTException("Invalud API group selected!");
+    }
+    $key->setUserId($user->getId());
+    $key->setApiGroupId($group->getId());
+    $key->setStartValid(strtotime($startValid));
+    $key->setEndValid(strtotime($endValid));
+    $FACTORIES::getApiKeyFactory()->update($key);
+  }
+
+  /**
+   * @param int $userId
+   * @param int $groupId
+   * @throws HTException
    */
   public static function createKey($userId, $groupId){
     global $FACTORIES;

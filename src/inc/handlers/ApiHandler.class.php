@@ -30,7 +30,7 @@ class ApiHandler implements Handler {
           header("Location: api.php");
           die();
         case DApiAction::EDIT_KEY:
-          // TODO:
+          ApiUtils::editKey($_POST['keyId'], $_POST['userId'], $_POST['groupId'], $_POST['startValid'], $_POST['endValid']);
           UI::addMessage(UI::SUCCESS, "Saved changes!");
           break;
         default:
