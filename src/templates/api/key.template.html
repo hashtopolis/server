@@ -33,13 +33,13 @@
         <tr>
           <th>Validity Start</th>
           <td>
-            <input type="datetime-local" value="[[key.getStartValid()]]" class="form-control" name="startValid">
+            <input type="datetime-local" value="[[date('Y-m-d\TH:i:s', [[key.getStartValid()]])]]" class="form-control" name="startValid">
           </td>
         </tr>
         <tr>
           <th>Validity End</th>
           <td>
-            <input type="datetime-local" value="[[key.getEndValid()]]" class="form-control" name="endValid">
+            <input type="datetime-local" value="[[date('Y-m-d\TH:i:s', [[key.getEndValid()]])]]" class="form-control" name="endValid">
           </td>
         </tr>
         <tr>
