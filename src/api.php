@@ -39,10 +39,10 @@ else if (isset($_GET['id'])) {
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
     $OBJECTS['keys'] = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF));
-    
+
     $sectionConstants = USection::getConstants();
     $OBJECTS['sectionConstants'] = $sectionConstants;
-    
+
     $section = USection::TEST;
     if (isset($_GET['section'])) {
       $section = $_GET['section'];
@@ -53,7 +53,7 @@ else if (isset($_GET['id'])) {
     }
     $OBJECTS['currentConstants'] = $currentSection->getConstants();
     $OBJECTS['currentSection'] = $section;
-    
+
     $OBJECTS['group'] = $group;
     if ($group->getPermissions() == 'ALL') {
       $OBJECTS['perm'] = 'ALL';
@@ -68,25 +68,34 @@ else if (isset($_GET['id'])) {
       }
       $OBJECTS['perm'] = new DataSet($json);
     }
-    
+
     $TEMPLATE = new Template("api/detail");
     $OBJECTS['pageTitle'] = "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8");
   }
 }
+else if(isset($_GET['newkey'])){
+  $TEMPLATE = new Template("api/newkey");
+  // TODO:
+}
+else if(isset($_GET['keyId'])){
+  $TEMPLATE = new Template("api/key");
+  // TODO:
+}
 else {
   // determine keys and groups
   $groups = $FACTORIES::getApiGroupFactory()->filter(array());
-  
+
   $apis = array();
   foreach ($groups as $group) {
     $apis[$group->getId()] = 0;
   }
-  
+
   $allApiKeys = $FACTORIES::getApiKeyFactory()->filter(array());
   foreach ($allApiKeys as $apiKey) {
     $apis[$apiKey->getApiGroupId()]++;
   }
-  
+
+  $OBJECTS['keys'] = $FACTORIES::getApiKeyFactory()->filter([]);
   $OBJECTS['apis'] = new DataSet($apis);
   $OBJECTS['groups'] = $groups;
   $OBJECTS['pageTitle'] = "Api Groups";
