@@ -24,7 +24,7 @@ class ApiUtils {
       // generate a unique key
       $accessKey = Util::randomString(30);
       $qF = new QueryFilter(ApiKey::ACCESS_KEY, $accessKey, "=");
-      $count = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $count = $FACTORIES::getApiKeyFactory()->countFilter(array($FACTORIES::FILTER => $qF));
     } while($count > 0);
     $key = new ApiKey(0, time(), time() + 3600*30, $accessKey, 0, $user->getId(), $group->getId());
     $FACTORIES::getApiKeyFactory()->save($key);
