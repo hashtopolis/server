@@ -13,7 +13,7 @@ class Lock {
    */
   public function __construct($lockFile) {
     $lockFile = dirname(__FILE__) . "/locks/" . $lockFile;
-    $lock = fopen($lockFile, 'a');
+    $lock = fopen($lockFile, 'w');
     if ($lock === false) {
       throw new Exception("Could not open lockfile '$lockFile'!");
     }
