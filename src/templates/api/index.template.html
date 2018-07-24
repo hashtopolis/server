@@ -18,22 +18,58 @@
         <th>Action</th>
       </tr>
       {{FOREACH group;[[groups]]}}
+        <tr>
+          <td>[[group.getId()]]</td>
+          <td>[[htmlentities([[group.getName()]], ENT_QUOTES, "UTF-8")]]</td>
+          <td>[[apis.getVal([[group.getId()]])]]</td>
+          <td>
+            <div style='float: left; padding-right: 5px;'>
+              <a class='btn btn-primary' href="api.php?id=[[group.getId()]]">Manage</a>
+            </div>
+            <form style='float: left;' action="api.php" method="POST" onSubmit="if (!confirm('Really delete api group [[htmlentities([[group.getName()]], ENT_QUOTES, 'UTF-8')]]?')) return false;">
+              <input type="hidden" name="action" value="[[$DApiAction::DELETE_GROUP]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="hidden" name="groupId" value="[[group.getId()]]">
+              <input type="submit" class='btn btn-danger' value="Delete" {{IF [[apis.getVal([[group.getId()]])]] > 0}} disabled{{ENDIF}}>
+            </form>
+          </td>
+        </tr>
+      {{ENDFOREACH}}
+    </table>
+  </div>
+</div>
+<h3>Api Keys</h3>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
       <tr>
-        <td>[[group.getId()]]</td>
-        <td>[[htmlentities([[group.getName()]], ENT_QUOTES, "UTF-8")]]</td>
-        <td>[[apis.getVal([[group.getId()]])]]</td>
-        <td>
-          <div style='float: left; padding-right: 5px;'>
-            <a class='btn btn-primary' href="api.php?id=[[group.getId()]]">Manage</a>
-          </div>
-          <form style='float: left;' action="api.php" method="POST" onSubmit="if (!confirm('Really delete api group [[htmlentities([[group.getName()]], ENT_QUOTES, 'UTF-8')]]?')) return false;">
-            <input type="hidden" name="action" value="[[$DApiAction::DELETE_GROUP]]">
-            <input type="hidden" name="csrf" value="[[csrf]]">
-            <input type="hidden" name="groupId" value="[[group.getId()]]">
-            <input type="submit" class='btn btn-danger' value="Delete" {{IF [[apis.getVal([[group.getId()]])]] > 0}} disabled{{ENDIF}}>
-          </form>
-        </td>
+        <th colspan="5" class="text-center">
+          <a href="api.php?newkey=true"><button class="btn btn-success">Create New Api Key</button></a>
+        </th>
       </tr>
+      <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Key</th>
+        <th>Action</th>
+      </tr>
+      {{FOREACH key;[[keys]]}}
+        <tr>
+          <td>[[key.getId()]]</td>
+          <td>[[Util::getUsernameById([[key.getUserId()]])]]</td>
+          <td>[[key.getAccessKey()]]</td>
+          <td>
+            <div style='float: left; padding-right: 5px;'>
+              <a class='btn btn-primary' href="api.php?keyId=[[key.getId()]]">Edit</a>
+            </div>
+            <form style='float: left;' action="api.php" method="POST" onSubmit="if (!confirm('Really delete this api key?')) return false;">
+              <input type="hidden" name="action" value="[[$DApiAction::DELETE_KEY]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="hidden" name="keyId" value="[[key.getId()]]">
+              <input type="submit" class='btn btn-danger' value="Delete">
+            </form>
+          </td>
+        </tr>
       {{ENDFOREACH}}
     </table>
   </div>
