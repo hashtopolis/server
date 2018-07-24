@@ -79,8 +79,15 @@ else if(isset($_GET['newkey'])){
   $OBJECTS['pageTitle'] = "Create new API key";
 }
 else if(isset($_GET['keyId'])){
+  $key = $FACTORIES::getApiKeyFactory()->get($_GET['keyId']);
+  if($key == null){
+    UI::printError(UI::ERROR, "Invalid API key ID!");
+  }
+  $OBJECTS['key'] = $key;
+  $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter([]);
+  $OBJECTS['groups'] = $FACTORIES::getApiGroupFactory()->filter([]);
   $TEMPLATE = new Template("api/key");
-  // TODO:
+  $OBJECTS['pageTitle'] = "Edit API key";
 }
 else {
   // determine keys and groups
