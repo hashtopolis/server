@@ -25,7 +25,7 @@ class ApiUtils {
       throw new HTException("Invalid user selected!");
     }
     else if($group == null){
-      throw new HTException("Invalud API group selected!");
+      throw new HTException("Invalid API group selected!");
     }
     $key->setUserId($user->getId());
     $key->setApiGroupId($group->getId());
