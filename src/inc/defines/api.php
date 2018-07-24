@@ -5,4 +5,5 @@ class DApiAction {
   const EDIT         = "edit";
   const CREATE_GROUP = "createGroup";
   const DELETE_KEY   = "deleteKey";
+  const CREATE_KEY   = "createKey";
 }

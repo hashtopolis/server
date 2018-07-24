@@ -75,7 +75,8 @@ else if (isset($_GET['id'])) {
 }
 else if(isset($_GET['newkey'])){
   $TEMPLATE = new Template("api/newkey");
-  // TODO:
+  $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter([]);
+  $OBJECTS['pageTitle'] = "Create new API key";
 }
 else if(isset($_GET['keyId'])){
   $TEMPLATE = new Template("api/key");
