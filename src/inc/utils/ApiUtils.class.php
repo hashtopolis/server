@@ -5,12 +5,12 @@ use DBA\ApiGroup;
 
 class ApiUtils {
   /**
-   * @param int $groupId 
-   * @param array $perm 
-   * @param string $section 
-   * @throws HTException 
+   * @param int $groupId
+   * @param array $perm
+   * @param string $section
+   * @throws HTException
    */
-  public static function update($groupId, $perm, $section) {
+  public static function update($groupId, $perm, $sectionName) {
     global $FACTORIES;
 
     $group = $FACTORIES::getApiGroupFactory()->get($groupId);
@@ -21,8 +21,8 @@ class ApiUtils {
       throw new HTException("Administrator group cannot be changed!");
     }
 
-    $newArr = [];
-    $section = UApi::getSection($section);
+    $newArr = json_decode($group->getPermissions(), true);
+    $section = UApi::getSection($sectionName);
     $constants = $section->getConstants();
     foreach ($perm as $p) {
       $split = explode("-", $p);
@@ -34,7 +34,7 @@ class ApiUtils {
           $constant = $constant[0];
         }
         if ($split[0] == $constant) {
-          $newArr[$constant] = ($split[1] == "1") ? true : false;
+          $newArr[$sectionName][$constant] = ($split[1] == "1") ? true : false;
         }
       }
     }
