@@ -49,7 +49,7 @@
 				  <tr>
 					  <td>[[UApi::getDescription([[currentSection]], [[constant]])]]</td>
 					  <td>
-						  {{IF [[perm]] == 'ALL'}}
+						  {{IF [[perm]] == 'ALL' || [[currentSection]] == 'test'}}
 							  <select name="perm[]" class="form-control" title="Permission">
 								  <option selected>Allowed (enforced)</option>
 							  </select>
