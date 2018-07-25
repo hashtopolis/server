@@ -10,6 +10,7 @@
 ## Bugfixes
 
 - Using correct function to get superhashlistId on zapping from webinterface.
+- Zapping from the website will now also issue zaps for non-salted hashlists.
 
 # v0.5.1 -> v0.6.0
 

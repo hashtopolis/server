@@ -21,8 +21,8 @@ use DBA\Zap;
 
 class HashlistUtils {
   /**
-   * @param string $hash 
-   * @param User $user 
+   * @param string $hash
+   * @param User $user
    * @return Hash
    */
   public static function getHash($hash, $user){
@@ -407,6 +407,9 @@ class HashlistUtils {
           $hashEntry->setIsCracked(1);
           $hashFactory->update($hashEntry);
           $crackedIn[$hashEntry->getHashlistId()]++;
+          if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
+            $zaps[] = new Zap(0, $hashEntry->getHash(), time(), null, $hashlist->getId());
+          }
           $newCracked++;
         }
       }
