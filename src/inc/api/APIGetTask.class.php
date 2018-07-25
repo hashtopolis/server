@@ -10,13 +10,13 @@ use DBA\Task;
 class APIGetTask extends APIBasic {
   public function execute($QUERY = array()) {
     global $FACTORIES;
-    
+
     if (!PQueryGetTask::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_TASK, "Invalid task query!");
     }
     $this->checkToken(PActions::GET_TASK, $QUERY);
     $this->updateAgent(PActions::GET_TASK);
-    
+
     if ($this->agent->getIsActive() == 0) {
       $this->sendResponse(array(
           PResponseGetTask::ACTION => PActions::GET_TASK,
@@ -26,7 +26,7 @@ class APIGetTask extends APIBasic {
         )
       );
     }
-    
+
     $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
     $task = TaskUtils::getBestTask($this->agent);
@@ -70,7 +70,7 @@ class APIGetTask extends APIBasic {
       }
     }
   }
-  
+
   private function noTask() {
     $this->sendResponse(array(
         PResponseGetTask::ACTION => PActions::GET_TASK,
@@ -80,7 +80,7 @@ class APIGetTask extends APIBasic {
       )
     );
   }
-  
+
   /**
    * @param $task Task
    * @param $assignment Assignment
@@ -88,7 +88,7 @@ class APIGetTask extends APIBasic {
   private function sendTask($task, $assignment) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-    
+
     // check if the assignment is up-to-date and correct if needed
     if ($assignment == null) {
       $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
@@ -102,7 +102,7 @@ class APIGetTask extends APIBasic {
         $FACTORIES::getAssignmentFactory()->save($assignment);
       }
     }
-    
+
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
       $this->sendErrorResponse(PActions::GET_TASK, "Inconsistent TaskWrapper information!");
@@ -111,7 +111,7 @@ class APIGetTask extends APIBasic {
     if ($hashlist == null) {
       $this->sendErrorResponse(PActions::GET_TASK, "Inconsistent TaskWrapper-Hashlist information");
     }
-    
+
     $taskFiles = array();
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
     $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
@@ -121,13 +121,13 @@ class APIGetTask extends APIBasic {
     foreach ($files as $file) {
       $taskFiles[] = $file->getFilename();
     }
-    
+
     $this->sendResponse(array(
         PResponseGetTask::ACTION => PActions::GET_TASK,
         PResponseGetTask::RESPONSE => PValues::SUCCESS,
         PResponseGetTask::TASK_ID => (int)$task->getId(),
-        PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd() . " -p " . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
-        PResponseGetTask::CMD_PARAMETERS => "",
+        PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
+        PResponseGetTask::CMD_PARAMETERS => " -p " . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
         PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
         PResponseGetTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
         PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),

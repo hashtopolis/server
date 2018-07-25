@@ -39,7 +39,7 @@ class APISendBenchmark extends APIBasic {
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
 
-        // TODO: Here we should check if the benchmark result would require to split the task and check if the task can be split
+        // Here we check if the benchmark result would require to split the task and check if the task can be split
         if($CONFIG->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
           // test if we have a large rule file
           $files = Util::getFileInfo($task)[3];
