@@ -15,7 +15,8 @@ class ApiHandler implements Handler {
           UI::addMessage(UI::SUCCESS, "API group was deleted!");
           break;
         case DApiAction::EDIT:
-          // TODO:
+          ApiUtils::update($_POST['groupId'], $_POST['perm'], $_POST['section']);
+          UI::addMessage(UI::SUCCESS, "Saved changes!");
           break;
         case DApiAction::CREATE_GROUP:
           ApiUtils::createGroup($_POST['groupName']);

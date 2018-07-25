@@ -5,12 +5,50 @@ use DBA\ApiGroup;
 
 class ApiUtils {
   /**
-   * @param int $keyId 
-   * @param int $userId 
    * @param int $groupId 
-   * @param string $startValid 
-   * @param string $endValid 
+   * @param array $perm 
+   * @param string $section 
    * @throws HTException 
+   */
+  public static function update($groupId, $perm, $section) {
+    global $FACTORIES;
+
+    $group = $FACTORIES::getApiGroupFactory()->get($groupId);
+    if($group == null){
+      throw new HTException("Invalid API group!");
+    }
+    else if ($group->getPermissions() == 'ALL') {
+      throw new HTException("Administrator group cannot be changed!");
+    }
+
+    $newArr = [];
+    $section = UApi::getSection($section);
+    $constants = $section->getConstants();
+    foreach ($perm as $p) {
+      $split = explode("-", $p);
+      if (sizeof($split) != 2 || !in_array($split[1], array("0", "1"))) {
+        continue; // ignore invalid submits
+      }
+      foreach ($constants as $constant) {
+        if (is_array($constant)) {
+          $constant = $constant[0];
+        }
+        if ($split[0] == $constant) {
+          $newArr[$constant] = ($split[1] == "1") ? true : false;
+        }
+      }
+    }
+    $group->setPermissions(json_encode($newArr));
+    $FACTORIES::getApiGroupFactory()->update($group);
+  }
+
+  /**
+   * @param int $keyId
+   * @param int $userId
+   * @param int $groupId
+   * @param string $startValid
+   * @param string $endValid
+   * @throws HTException
    */
   public static function editKey($keyId, $userId, $groupId, $startValid, $endValid){
     global $FACTORIES;
