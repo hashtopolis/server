@@ -464,6 +464,8 @@ abstract class UApi {
         return new USectionGroup();
       case USection::ACCESS:
         return new USectionAccess();
+      case USection::ACCOUNT>
+        return new USectionAccount*(<)
     }
     return null;
   }
