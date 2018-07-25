@@ -35,9 +35,9 @@ class QueryFilterWithNull extends Filter {
       return $table . $this->key . " IS NULL ";
     }
     if($this->matchNull){
-      return "(" . $table . $this->key . $this->operator . "? OR IS NULL)";
+      return "(" . $table . $this->key . $this->operator . "? OR " . $table . $this->key . " IS NULL)";
     }
-    return "(" . $table . $this->key . $this->operator . "? OR IS NOT NULL)";
+    return "(" . $table . $this->key . $this->operator . "? OR " . $table . $this->key . " IS NOT NULL)";
   }
 
   function getValue() {
