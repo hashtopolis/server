@@ -10,6 +10,7 @@ use DBA\HashBinary;
 use DBA\Hashlist;
 use DBA\QueryFilter;
 use DBA\Zap;
+use DBA\QueryFilterWithNull;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
@@ -350,7 +351,7 @@ class APISendProgress extends APIBasic {
         
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, Util::arrayOfIds($hashlists));
         $qF2 = new QueryFilter(Zap::ZAP_ID, ($agentZap->getLastZapId() == null) ? 0 : $agentZap->getLastZapId(), ">");
-        $qF3 = new QueryFilter(Zap::AGENT_ID, $this->agent->getId(), "<>");
+        $qF3 = new QueryFilterWithNull(Zap::AGENT_ID, $this->agent->getId(), "<>", true);
         $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
         foreach ($zaps as $zap) {
           if ($zap->getId() > $agentZap->getId()) {
