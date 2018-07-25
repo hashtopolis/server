@@ -779,7 +779,7 @@ CREATE TABLE `Pretask` (
   `chunkTime`           INT(11)                 NOT NULL,
   `statusTimer`         INT(11)                 NOT NULL,
   `color`               VARCHAR(20)
-                        COLLATE utf8_unicode_ci NOT NULL,
+                        COLLATE utf8_unicode_ci NULL,
   `isSmall`             INT(11)                 NOT NULL,
   `isCpuTask`           INT(11)                 NOT NULL,
   `useNewBench`         INT(11)                 NOT NULL,
@@ -999,6 +999,36 @@ CREATE TABLE `Zap` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
+
+
+
+CREATE TABLE `ApiKey` (
+  `apiKeyId` int(11) NOT NULL,
+  `startValid` bigint(20) NOT NULL,
+  `endValid` bigint(20) NOT NULL,
+  `accessKey` varchar(256) NOT NULL,
+  `accessCount` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `apiGroupId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ApiGroup` (
+  `apiGroupId` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `permissions` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `ApiGroup` ( `name`, `permissions`) VALUES ('Administrators', 'ALL');
+
+--
+-- Indexes for table `ApiKey`
+--
+ALTER TABLE `ApiKey`
+  ADD PRIMARY KEY (`apiKeyId`);
+
+ALTER TABLE `ApiGroup`
+  ADD PRIMARY KEY (`apiGroupId`);
+
 
 --
 -- Indizes der exportierten Tabellen
@@ -1257,6 +1287,12 @@ ALTER TABLE `Zap`
 --
 -- AUTO_INCREMENT für exportierte Tabellen
 --
+
+ALTER TABLE `ApiKey`
+  MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `ApiGroup`
+  MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`

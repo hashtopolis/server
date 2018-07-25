@@ -5,6 +5,7 @@
 - Tasks which are recognized containing large rule files and not giving good benchmarks result in splitting into subtasks
 - Most of the tables can now be easily ordered and searched with the datatables plugin
 - Agent Errors can be handled better
+- New User API allowing access to all functions without the webinterface via simple JSON commands.
 
 # v0.5.1 -> v0.6.0
 

@@ -1,0 +1,188 @@
+\section*{User Management (\textit{user})}
+	Used to access user management.
+
+\subsection*{\textit{listUsers}}
+	List all users on the server.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "listUsers",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "listUsers",
+  "response": "OK",
+  "users": [
+    {
+      "userId": 1,
+      "username": "htp"
+    },
+    {
+      "userId": 2,
+      "username": "testuser"
+    }
+  ]
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{getUser}}
+	Get detail information about a user account.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "getUser",
+  "userId": 2,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "getUser",
+  "response": "OK",
+  "userId": 2,
+  "username": "testuser",
+  "email": "place@hold.er",
+  "rightGroupId": 6,
+  "registered": 1530788681,
+  "lastLogin": 1531740557,
+  "isValid": true,
+  "sessionLifetime": 3600
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{createUser}}
+	Create a new user account (Please note that the server will try to send an email to this address and an error might occur when no email sending is configured!).
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "createUser",
+  "username": "blabla",
+  "email": "admin@example.org",
+  "rightGroupId": 6,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "createUser",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{disableUser}}
+	Disable an account, this will throw out the user of all open session and block any further login requests.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "disableUser",
+  "userId": 3,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "disableUser",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{enableUser}}
+	Enables a user account so it can log in.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "enableUser",
+  "userId": 3,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "enableUser",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{setUserPassword}}
+	Set a new password for the user. This will not affect open sessions, only new logins.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "setUserPassword",
+  "userId": 3,
+  "password": "password123",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "setUserPassword",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{setUserRightGroup}}
+	Assigns the user to the specified right group regarding what it is allowed to access.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "setUserRightGroup",
+  "userId": 3,
+  "rightGroupId": 6,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "setUserRightGroup",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+
+
+

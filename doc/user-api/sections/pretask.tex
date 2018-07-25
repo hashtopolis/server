@@ -1,0 +1,272 @@
+\section*{Preconfigured Tasks (\textit{pretask})}
+		Used to access all functions around preconfigured tasks. 
+		\subsection*{\textit{setPretaskPriority}}
+			Set the priority of a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskPriority",
+				  "pretaskId": 1,
+				  "priority": 100,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskPriority",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskName}}
+			Rename a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskName",
+				  "pretaskId": 1,
+				  "name": "New name",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskName",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskColor}}
+			Set the color of a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskColor",
+				  "pretaskId": 1,
+				  "color": "FF00FF",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskColor",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskChunksize}}
+			Set the chunk time for a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskChunksize",
+				  "pretaskId": 1,
+				  "chunksize": 300,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskChunksize",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskCpuOnly}}
+			Set if a preconfigured task is a CPU only task or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskCpuOnly",
+				  "pretaskId": 1,
+				  "isCpuOnly": true,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskCpuOnly",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setPretaskSmall}}
+			Set if a preconfigured task is small or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskSmall",
+				  "pretaskId": 1,
+				  "isSmall": true,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskSmall",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{deletePretask}}
+			Deletes a preconfigured task. This also includes removing it from supertasks if it is used there.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "deletePretask",
+				  "pretaskId": 1,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "deletePretask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{createPretask}}
+			Create a new preconfigured task
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "createPretask",
+				  "name": "API Pretask",
+				  "attackCmd": "#HL# -a 0 example.dict",
+				  "chunksize": 600,
+				  "statusTimer": 5,
+				  "benchmarkType": "speed",
+				  "color": "",
+				  "isCpuOnly": false,
+				  "isSmall": true,
+				  "priority": 9000,
+				  "files": [
+				    1
+				  ],
+				  "crackerTypeId": 1,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "createPretask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{listPretasks}}
+			Lists all preconfigured tasks available on the server.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "listPretasks",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "listPretasks",
+				  "response": "OK",
+				  "pretasks": [
+				    {
+				      "pretaskId": 1,
+				      "name": "Test Pre",
+				      "priority": 0
+				    },
+				    {
+				      "pretaskId": 7,
+				      "name": "Brute ?a 8",
+				      "priority": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+	\subsection*{\textit{getPretask}}
+		Get complete information about a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "getPretask",
+				  "pretaskId": 7,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "getPretask",
+				  "response": "OK",
+				  "pretaskId": 7,
+				  "name": "Brute ?a 8",
+				  "attackCmd": "#HL# -a 3 ?a?a?a?a?a?a?a?a",
+				  "chunksize": 600,
+				  "color": null,
+				  "benchmarkType": "runtime",
+				  "statusTimer": 5,
+				  "priority": 0,
+				  "isCpuOnly": false,
+				  "isSmall": false,
+				  "files": []
+				}
+				\end{verbatim}
+			}

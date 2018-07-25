@@ -8,8 +8,29 @@ use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\User;
+use DBA\TaskWrapper;
+use DBA\Hashlist;
 
 class AccessUtils {
+  /**
+   * @param Hashlist[]|Hashlist $hashlists
+   * @param User $user
+   * @return boolean
+   */
+  public static function userCanAccessHashlists($hashlists, $user) {
+    if (!is_array($hashlists)) {
+      $hashlists = array($hashlists);
+    }
+    
+    $accessGroupIds = Util::getAccessGroupIds($user->getId());
+    foreach ($hashlists as $hashlist) {
+      if (!in_array($hashlist->getAccessGroupId(), $accessGroupIds)) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   /**
    * @param $agent Agent
    * @param $user User
@@ -31,6 +52,19 @@ class AccessUtils {
     $accessGroupsUser = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
     
     return sizeof(AccessUtils::intersection($accessGroupsAgent, $accessGroupsUser)) > 0;
+  }
+  
+  /**
+   * @param TaskWrapper $taskWrapper
+   * @param User $user
+   * @return boolean
+   */
+  public static function userCanAccessTask($taskWrapper, $user) {
+    $accessGroupIds = Util::getAccessGroupIds($user->getId());
+    if (!in_array($taskWrapper->getAccessGroupId(), $accessGroupIds)) {
+      return false;
+    }
+    return true;
   }
   
   /**

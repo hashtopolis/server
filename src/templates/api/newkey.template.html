@@ -1,0 +1,42 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>New API Key</h2>
+{%TEMPLATE->struct/messages%}
+<form action='api.php?newkey=true' method='post'>
+	<input type='hidden' name='action' value='[[$DApiAction::CREATE_KEY]]'>
+	<input type="hidden" name="csrf" value="[[csrf]]">
+	<div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered">
+			  <tr>
+				  <th>User</th>
+				  <td>
+					  <select class="form-control" name="userId" title="User">
+              <option value="">---</option>
+              {{FOREACH user;[[users]]}}
+                <option value="[[user.getId()]]">[[user.getUsername()]]</option>
+              {{ENDFOREACH}}
+            </select>
+				  </td>
+			  </tr>
+        <tr>
+				  <th>API Access Group</th>
+				  <td>
+					  <select class="form-control" name="groupId" title="User">
+              <option value="">---</option>
+              {{FOREACH group;[[groups]]}}
+                <option value="[[group.getId()]]">[[group.getName()]]</option>
+              {{ENDFOREACH}}
+            </select>
+				  </td>
+			  </tr>
+			  <tr>
+				  <td colspan='2'>
+					  <input type='submit' class='btn btn-success' value='Create'>
+				  </td>
+			  </tr>
+		  </table>
+    </div>
+	</div>
+</form>
+{%TEMPLATE->struct/foot%}

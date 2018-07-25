@@ -1,14 +1,7 @@
 <?php
 
 use DBA\AccessGroupUser;
-use DBA\AgentError;
-use DBA\Assignment;
-use DBA\Chunk;
-use DBA\ContainFilter;
 use DBA\FileTask;
-use DBA\Hash;
-use DBA\JoinFilter;
-use DBA\NotificationSetting;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
@@ -31,137 +24,79 @@ class TaskHandler implements Handler {
   }
   
   public function handle($action) {
-    global $ACCESS_CONTROL;
+    /** @var $LOGIN Login */
+    global $ACCESS_CONTROL, $LOGIN;
     
-    switch ($action) {
-      case DTaskAction::SET_BENCHMARK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
-        $this->adjustBenchmark();
-        break;
-      case DTaskAction::SET_SMALL_TASK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
-        $this->setSmallTask();
-        break;
-      case DTaskAction::SET_CPU_TASK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_CPU_TASK_PERM);
-        $this->setCpuTask();
-        break;
-      case DTaskAction::ABORT_CHUNK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
-        $this->abortChunk();
-        break;
-      case DTaskAction::RESET_CHUNK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
-        $this->resetChunk();
-        break;
-      case DTaskAction::PURGE_TASK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
-        $this->purgeTask();
-        break;
-      case DTaskAction::SET_COLOR:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
-        $this->updateColor();
-        break;
-      case DTaskAction::SET_TIME:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
-        $this->changeChunkTime();
-        break;
-      case DTaskAction::RENAME_TASK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
-        $this->rename();
-        break;
-      case DTaskAction::DELETE_FINISHED:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
-        $this->deleteFinished();
-        break;
-      case DTaskAction::DELETE_TASK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
-        $this->delete();
-        break;
-      case DTaskAction::SET_PRIORITY:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_PRIORITY_PERM);
-        $this->updatePriority();
-        break;
-      case DTaskAction::CREATE_TASK:
-        $ACCESS_CONTROL->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
-        $this->create();
-        break;
-      case DTaskAction::DELETE_SUPERTASK:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
-        $this->deleteSupertask($_POST['supertaskId']);
-        break;
-      case DTaskAction::SET_SUPERTASK_PRIORITY:
-        $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
-        $this->setSupertaskPriority($_POST['supertaskId'], $_POST['priority']);
-        break;
-      default:
-        UI::addMessage(UI::ERROR, "Invalid action!");
-        break;
+    try {
+      switch ($action) {
+        case DTaskAction::SET_BENCHMARK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
+          TaskUtils::setBenchmark($_POST['agentId'], $_POST['bench'], $LOGIN->getUser());
+          break;
+        case DTaskAction::SET_SMALL_TASK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
+          TaskUtils::setSmallTask($_POST['task'], $_POST['isSmall'], $LOGIN->getUser());
+          break;
+        case DTaskAction::SET_CPU_TASK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_CPU_TASK_PERM);
+          TaskUtils::setCpuTask($_POST['task'], $_POST['isCpu'], $LOGIN->getUser());
+          break;
+        case DTaskAction::ABORT_CHUNK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
+          TaskUtils::abortChunk($_POST['chunk'], $LOGIN->getUser());
+          break;
+        case DTaskAction::RESET_CHUNK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
+          TaskUtils::resetChunk($_POST['chunk'], $LOGIN->getUser());
+          break;
+        case DTaskAction::PURGE_TASK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
+          TaskUtils::purgeTask($_POST['task'], $LOGIN->getUser());
+          break;
+        case DTaskAction::SET_COLOR:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
+          TaskUtils::updateColor($_POST['task'], $_POST['color'], $LOGIN->getUser());
+          break;
+        case DTaskAction::SET_TIME:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
+          TaskUtils::changeChunkTime($_POST['task'], $_POST['chunktime'], $LOGIN->getUser());
+          break;
+        case DTaskAction::RENAME_TASK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
+          TaskUtils::rename($_POST['task'], $_POST['name'], $LOGIN->getUser());
+          break;
+        case DTaskAction::DELETE_FINISHED:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
+          TaskUtils::deleteFinished($LOGIN->getUser());
+          break;
+        case DTaskAction::DELETE_TASK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
+          TaskUtils::delete($_POST['task'], $LOGIN->getUser());
+          break;
+        case DTaskAction::SET_PRIORITY:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_PRIORITY_PERM);
+          TaskUtils::updatePriority($_POST["task"], $_POST['priority'], $LOGIN->getUser());
+          break;
+        case DTaskAction::CREATE_TASK:
+          $ACCESS_CONTROL->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
+          $this->create();
+          break;
+        case DTaskAction::DELETE_SUPERTASK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
+          TaskUtils::deleteSupertask($_POST['supertaskId'], $LOGIN->getUser());
+          break;
+        case DTaskAction::SET_SUPERTASK_PRIORITY:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
+          TaskUtils::setSupertaskPriority($_POST['supertaskId'], $_POST['priority'], $LOGIN->getUser());
+          break;
+        default:
+          UI::addMessage(UI::ERROR, "Invalid action!");
+          break;
+      }
     }
-  }
-  
-  private function deleteSupertask($supertaskId) {
-    global $FACTORIES;
-    
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
-    if ($taskWrapper === null) {
-      UI::addMessage(UI::ERROR, "Invalid supertask!");
-      return;
+    catch (HTException $e) {
+      UI::addMessage(UI::ERROR, $e->getMessage());
     }
-    
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
-    $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($tasks as $task) {
-      TaskUtils::deleteTask($task);
-    }
-    $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-  }
-  
-  private function setSupertaskPriority($supertaskId, $priority) {
-    global $FACTORIES;
-    
-    $supertask = $FACTORIES::getTaskWrapperFactory()->get($supertaskId);
-    if ($supertask === null) {
-      UI::addMessage(UI::ERROR, "Invalid supertask!");
-      return;
-    }
-    $priority = ($priority < 0) ? 0 : $priority;
-    $supertask->setPriority($priority);
-    $FACTORIES::getTaskWrapperFactory()->update($supertask);
-  }
-  
-  private function setSmallTask() {
-    global $FACTORIES;
-    
-    $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $isSmall = intval($_POST['isSmall']);
-    if ($isSmall != 0 && $isSmall != 1) {
-      $isSmall = 0;
-    }
-    $task->setIsSmall($isSmall);
-    $FACTORIES::getTaskFactory()->update($task);
-  }
-  
-  private function setCpuTask() {
-    global $FACTORIES;
-    
-    $task = $FACTORIES::getTaskFactory()->get($_POST['task']);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $isCpuTask = intval($_POST['isCpu']);
-    if ($isCpuTask != 0 && $isCpuTask != 1) {
-      $isCpuTask = 0;
-    }
-    $task->setIsCpuTask($isCpuTask);
-    $FACTORIES::getTaskFactory()->update($task);
   }
   
   private function create() {
@@ -271,248 +206,5 @@ class TaskHandler implements Handler {
     
     header("Location: $forward");
     die();
-  }
-  
-  private function updatePriority() {
-    global $FACTORIES;
-    
-    // change task priority
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-    $priority = intval($_POST["priority"]);
-    $priority = ($priority < 0) ? 0 : $priority;
-    $task->setPriority($priority);
-    $taskWrapper->setPriority($priority);
-    $FACTORIES::getTaskFactory()->update($task);
-    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
-      $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
-    }
-  }
-  
-  private function delete() {
-    global $FACTORIES;
-    
-    // delete a task
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    
-    $payload = new DataSet(array(DPayloadKeys::TASK => $task));
-    NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
-    
-    TaskUtils::deleteTask($task);
-    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
-      $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
-    }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-    header("Location: tasks.php");
-  }
-  
-  /**
-   * @param $task Task
-   */
-  private function deleteTask($task) {
-    global $FACTORIES;
-    
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunkIds = Util::arrayOfIds($FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF)));
-    
-    $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
-    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
-    foreach ($notifications as $notification) {
-      if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::TASK) {
-        $FACTORIES::getNotificationSettingFactory()->delete($notification);
-      }
-    }
-    
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=");
-    $FACTORIES::getFileTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $uS = new UpdateSet(Hash::CHUNK_ID, null);
-    if (sizeof($chunkIds) > 0) {
-      $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
-      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
-      $FACTORIES::getHashBinaryFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
-    }
-    $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $FACTORIES::getTaskFactory()->delete($task);
-  }
-  
-  private function deleteFinished() {
-    global $FACTORIES;
-    
-    // check every task wrapper
-    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
-    foreach ($taskWrappers as $taskWrapper) {
-      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
-      $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-      $isComplete = true;
-      foreach ($tasks as $task) {
-        if ($task->getKeyspace() == 0 || $task->getKeyspace() > $task->getKeyspaceProgress()) {
-          $isComplete = false;
-          break;
-        }
-        $sumProg = 0;
-        $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-        $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-        foreach ($chunks as $chunk) {
-          $sumProg += $chunk->getCheckpoint() - $chunk->getSkip();
-        }
-        if ($sumProg < $task->getKeyspace()) {
-          $isComplete = false;
-          break;
-        }
-      }
-      if ($isComplete) {
-        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-        foreach ($tasks as $task) {
-          TaskUtils::deleteTask($task);
-        }
-        $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
-        $FACTORIES::getAgentFactory()->getDB()->commit();
-      }
-    }
-  }
-  
-  private function rename() {
-    global $FACTORIES;
-    
-    // change task name
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
-    $task->setTaskName($name);
-    $FACTORIES::getTaskFactory()->update($task);
-  }
-  
-  private function changeChunkTime() {
-    global $FACTORIES;
-    
-    // update task chunk time
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $chunktime = intval($_POST["chunktime"]);
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID);
-    $join = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    for ($i = 0; $i < sizeof($join[$FACTORIES::getTaskFactory()->getModelName()]); $i++) {
-      $assignment = \DBA\Util::cast($join[$FACTORIES::getAssignmentFactory()->getModelName()][$i], \DBA\Assignment::class);
-      $assignment->setBenchmark($assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
-      $FACTORIES::getAssignmentFactory()->update($assignment);
-    }
-    $task->setChunkTime($chunktime);
-    $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-  }
-  
-  private function updateColor() {
-    global $FACTORIES;
-    
-    // change task color
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $color = $_POST["color"];
-    if (preg_match("/[0-9A-Za-z]{6}/", $color) == 0) {
-      $color = null;
-    }
-    $task->setColor($color);
-    $FACTORIES::getTaskFactory()->update($task);
-  }
-  
-  private function abortChunk() {
-    global $FACTORIES;
-    
-    // reset chunk state and progress to zero
-    $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
-    if ($chunk == null) {
-      UI::addMessage(UI::ERROR, "No such chunk!");
-      return;
-    }
-    $chunk->setState(DHashcatStatus::ABORTED);
-    $FACTORIES::getChunkFactory()->update($chunk);
-  }
-  
-  private function resetChunk() {
-    global $FACTORIES;
-    
-    // reset chunk state and progress to zero
-    $chunk = $FACTORIES::getChunkFactory()->get($_POST['chunk']);
-    if ($chunk == null) {
-      UI::addMessage(UI::ERROR, "No such chunk!");
-      return;
-    }
-    $chunk->setState(0);
-    $chunk->setProgress(0);
-    $chunk->setCheckpoint($chunk->getSkip());
-    $chunk->setDispatchTime(0);
-    $chunk->setSolveTime(0);
-    $FACTORIES::getChunkFactory()->update($chunk);
-  }
-  
-  private function purgeTask() {
-    global $FACTORIES;
-    
-    // delete all task chunks, forget its keyspace value and reset progress to zero
-    $task = $FACTORIES::getTaskFactory()->get($_POST["task"]);
-    if ($task == null) {
-      UI::addMessage(UI::ERROR, "No such task!");
-      return;
-    }
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $uS = new UpdateSet(Assignment::BENCHMARK, 0);
-    $FACTORIES::getAssignmentFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $chunkIds = array();
-    foreach ($chunks as $chunk) {
-      $chunkIds[] = $chunk->getId();
-    }
-    if (sizeof($chunkIds) > 0) {
-      $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
-      $uS = new UpdateSet(Hash::CHUNK_ID, null);
-      $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
-      $FACTORIES::getHashBinaryFactory()->massUpdate(array($FACTORIES::FILTER => $qF2, $FACTORIES::UPDATE => $uS));
-    }
-    $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    $task->setKeyspace(0);
-    $task->setKeyspaceProgress(0);
-    $FACTORIES::getTaskFactory()->update($task);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-  }
-  
-  private function adjustBenchmark() {
-    global $FACTORIES;
-    
-    // adjust agent benchmark
-    $qF = new QueryFilter(Assignment::AGENT_ID, $_POST['agentId'], "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-    if ($assignment == null) {
-      UI::addMessage(UI::ERROR, "No assignment for this agent!");
-      return;
-    }
-    $bench = floatval($_POST["bench"]);
-    $assignment->setBenchmark($bench);
-    $FACTORIES::getAssignmentFactory()->update($assignment);
   }
 }

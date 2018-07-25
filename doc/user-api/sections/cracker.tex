@@ -1,0 +1,197 @@
+\section*{Crackers (\textit{cracker})}
+	Used to access all functions around crackers and their versions.
+	
+\subsection*{\textit{listCrackers}}
+	Lists all different types of crackers available.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "listCrackers",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "listCrackers",
+		  "response": "OK",
+		  "crackers": [
+		    {
+		      "crackerTypeId": 1,
+		      "crackerTypeName": "hashcat"
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{getCracker}}
+	Get detailed informations of cracker, especially all available versions.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "getCracker",
+		  "crackerTypeId": 1,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "getCracker",
+		  "response": "OK",
+		  "crackerTypeId": 1,
+		  "crackerTypeName": "hashcat",
+		  "crackerVersions": [
+		    {
+		      "versionId": 1,
+		      "version": "4.1.0",
+		      "downloadUrl": "https:\/\/hashcat.net\/files\/hashcat-4.1.0.7z",
+		      "binaryBasename": "hashcat"
+		    },
+		    {
+		      "versionId": 3,
+		      "version": "4.1.1",
+		      "downloadUrl": "https:\/\/hashcat.net\/beta\/hashcat-4.1.1-15.7z",
+		      "binaryBasename": "hashcat"
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteCracker}}
+	Deletes a complete cracker type including all versions configured. This is only possible if the type is not used in any of the preconfigured/normal tasks.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "deleteCracker",
+		  "crackerTypeId": 1,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "deleteCracker",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteVersion}}
+	Deletes a specific cracker version. This is only possible if the type is not used in any of the tasks.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "deleteVersion",
+		  "crackerVersionId": 3,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "deleteVersion",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{createCracker}}
+	Creates a new cracker type.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "createCracker",
+		  "crackerName": "My Generic Cracker",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "createCracker",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{addVersion}}
+	Add a new version to an existing cracker type.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "addVersion",
+		  "crackerTypeId": 2,
+		  "crackerBinaryVersion": "1.0.0",
+		  "crackerBinaryBasename": "cracker",
+		  "crackerBinaryUrl": "https://example.org/download.7z",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "addVersion",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{updateVersion}}
+	Update the data for an existing cracker version. All values need to be provided, but they do not have to change all.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "updateVersion",
+		  "crackerVersionId": 4,
+		  "crackerBinaryVersion": "1.0.0",
+		  "crackerBinaryBasename": "cracker",
+		  "crackerBinaryUrl": "https://example.org/archive/download.7z",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "cracker",
+		  "request": "updateVersion",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+
+
+
+
+
+

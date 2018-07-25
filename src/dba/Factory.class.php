@@ -32,6 +32,8 @@ class Factory {
   private static $taskWrapperFactory = null;
   private static $userFactory = null;
   private static $zapFactory = null;
+  private static $apiKeyFactory = null;
+  private static $apiGroupFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
@@ -326,6 +328,26 @@ class Factory {
       return $f;
     } else {
       return self::$zapFactory;
+    }
+  }
+  
+  public static function getApiKeyFactory() {
+    if (self::$apiKeyFactory == null) {
+      $f = new ApiKeyFactory();
+      self::$apiKeyFactory = $f;
+      return $f;
+    } else {
+      return self::$apiKeyFactory;
+    }
+  }
+  
+  public static function getApiGroupFactory() {
+    if (self::$apiGroupFactory == null) {
+      $f = new ApiGroupFactory();
+      self::$apiGroupFactory = $f;
+      return $f;
+    } else {
+      return self::$apiGroupFactory;
     }
   }
   

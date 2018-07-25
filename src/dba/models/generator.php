@@ -247,6 +247,20 @@ $CONF['Zap'] = array(
   'agentId',
   'hashlistId'
 );
+$CONF['ApiKey'] = array(
+  'apiKeyId',
+  'startValid',
+  'endValid',
+  'accessKey',
+  'accessCount',
+  'userId',
+  'apiGroupId'
+);
+$CONF['ApiGroup'] = array(
+  'apiGroupId',
+  'permissions',
+  'name'
+);
 
 // relations
 $CONF['AccessGroupUser'] = array(

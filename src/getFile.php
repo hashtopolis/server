@@ -2,6 +2,7 @@
 
 use DBA\Agent;
 use DBA\QueryFilter;
+use DBA\ApiKey;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -31,14 +32,29 @@ if (!$line) {
 //if the user is logged in, he need to have the rights to
 //if agent provides his voucher, check it.
 if (!$LOGIN->isLoggedin()) {
-  $token = @$_GET['token'];
-  $qF = new QueryFilter(Agent::TOKEN, $token, "=");
-  $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
-  if (!$agent) {
-    die("No access!");
+  if (isset($_GET['apiKey'])) {
+    $qF = new QueryFilter(ApiKey::ACCESS_KEY, $_GET['apiKey'], "=");
+    $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    if ($apiKey == null) {
+      die("Invalid access key!");
+    }
+    else if ($apiKey->getStartValid() > time() || $apiKey->getEndValid() < time()) {
+      die("Expired access key!");
+    }
+    else if (!$this->hasPermission(USection::FILE, USectionFile::GET_FILE, $apiKey)) {
+      die("Permission denied!");
+    }
   }
-  if ($agent->getIsTrusted() < $line->getIsSecret()) {
-    die("No access!");
+  else {
+    $token = @$_GET['token'];
+    $qF = new QueryFilter(Agent::TOKEN, $token, "=");
+    $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    if (!$agent) {
+      die("No access!");
+    }
+    if ($agent->getIsTrusted() < $line->getIsSecret()) {
+      die("No access!");
+    }
   }
 }
 else if (!$ACCESS_CONTROL->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {

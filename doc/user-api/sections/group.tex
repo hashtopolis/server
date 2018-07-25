@@ -1,0 +1,215 @@
+\section*{Group Management (\textit{group})}
+	Used to access group management.
+
+\subsection*{\textit{listGroups}}
+	List all existing groups.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "listGroups",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "listGroups",
+  "response": "OK",
+  "groups": [
+    {
+      "groupId": 1,
+      "name": "Default Group"
+    }
+  ]
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{getGroup}}
+	Get details about a group and its members.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "getGroup",
+  "groupId": 1,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "getGroup",
+  "response": "OK",
+  "groupId": 1,
+  "name": "Default Group",
+  "users": [
+    1,
+    2,
+    3
+  ],
+  "agents": [
+    2,
+    3
+  ]
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{createGroup}}
+	Create a new empty group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "createGroup",
+  "name": "Secret Group",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "createGroup",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{addAgent}}
+	Add agent as a member of a group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "addAgent",
+  "groupId": 3,
+  "agentId": 2,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "addAgent",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{removeAgent}}
+	Remove an agent as member of a group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "removeAgent",
+  "groupId": 3,
+  "agentId": 2,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "removeAgent",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{addUser}}
+	Add a user as member of a group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "addUser",
+  "groupId": 3,
+  "userId": 1,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "addUser",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{removeUser}}
+	Remove a user as member of a group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "removeUser",
+  "groupId": 3,
+  "userId": 1,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "removeUser",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteGroup}}
+	Deletes a group and its associations to users and agents. Please note that all hashlists/tasks belonging to this group will be assigned to the default group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "deleteGroup",
+  "groupId": 3,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "group",
+  "request": "deleteGroup",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+
+
+
+
+
+
+
+

@@ -1,0 +1,123 @@
+\section*{Superhashlists (\textit{superhashlist})}
+	Used to access all functions around superhashlists.
+	
+\subsection*{\textit{listSuperhashlists}}
+	List all superhashlists on the server.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "listSuperhashlists",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "listSuperhashlists",
+		  "response": "OK",
+		  "superhashlists": [
+		    {
+		      "hashlistId": 2,
+		      "hashtypeId": 0,
+		      "name": "Test superhashlist",
+		      "hashCount": 6494
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{getSuperhashlist}}
+	Get detailed information about a superhashlist.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "getSuperhashlist",
+		  "superhashlistId": 2,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "getSuperhashlist",
+		  "response": "OK",
+		  "hashlistId": 2,
+		  "hashtypeId": 0,
+		  "name": "Test superhashlist",
+		  "hashCount": 6494,
+		  "cracked": 80,
+		  "accessGroupId": 1,
+		  "isSecret": false,
+		  "hashlists": [
+		    1
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{createSuperhashlist}}
+	Create a new superhashlist out of existing hashlists.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "createSuperhashlist",
+		  "name": "New Superhashlist",
+		  "hashlists": [
+		    1,
+		    2
+		  ],
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "createSuperhashlist",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteSuperhashlist}}
+	Deletes a superhashlist. But the containing hashlists will not be removed.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "deleteSuperhashlist",
+		  "superhashlistId": 6,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "superhashlist",
+		  "request": "deleteSuperhashlist",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+
+
+
+
+
+
+

@@ -35,7 +35,9 @@ require_once(dirname(__FILE__) . "/templating/Template.class.php");
 $NOTIFICATIONS = array();
 require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
 require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
-$directories = array('handlers', 'api', 'defines', 'utils', 'notifications');
+require_once(dirname(__FILE__) . "/api/APIBasic.class.php");
+require_once(dirname(__FILE__) . "/user-api/UserAPIBasic.class.php");
+$directories = array('handlers', 'api', 'defines', 'utils', 'notifications', 'user-api');
 foreach ($directories as $directory) {
   $dir = scandir(dirname(__FILE__) . "/$directory/");
   foreach ($dir as $entry) {
@@ -76,16 +78,16 @@ if ($INSTALL) {
     $OBJECTS['user'] = $LOGIN->getUser();
     $ACCESS_CONTROL = new AccessControl($LOGIN->getUser());
   }
-  
+
   $res = $FACTORIES::getConfigFactory()->filter(array());
   $CONFIG = new DataSet();
   foreach ($res as $entry) {
     $CONFIG->addValue($entry->getItem(), $entry->getValue());
   }
   $OBJECTS['config'] = $CONFIG;
-  
+
   define("APP_NAME", ($CONFIG->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
-  
+
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
 }
