@@ -452,7 +452,7 @@ class HashlistUtils {
     if (sizeof($inSuperHashlists) > 0) {
       $total = array_sum($crackedIn);
       foreach ($inSuperHashlists as $super) {
-        $superHashlist = $FACTORIES::getHashlistFactory()->get($super->getSuperHashlistId());
+        $superHashlist = $FACTORIES::getHashlistFactory()->get($super->getParentHashlistId());
         $superHashlist->setCracked($superHashlist->getCracked() + $total);
         $FACTORIES::getHashlistFactory()->update($superHashlist);
       }

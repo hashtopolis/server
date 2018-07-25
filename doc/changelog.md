@@ -7,6 +7,10 @@
 - Agent Errors can be handled better
 - New User API allowing access to all functions without the webinterface via simple JSON commands.
 
+## Bugfixes
+
+- Using correct function to get superhashlistId on zapping from webinterface.
+
 # v0.5.1 -> v0.6.0
 
 ## Features
