@@ -24,6 +24,38 @@ use DBA\AccessGroupUser;
 
 class TaskUtils {
   /**
+   * @param int $supertaskId 
+   * @param User $user 
+   */
+  public static function archiveSupertask($supertaskId, $user){
+    global $FACTORIES;
+
+    $taskWrapper = TaskUtils::getTaskWrapper($supertaskId, $user);
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+    $uS = new UpdateSet(Task::IS_ARCHIVED, 1);
+    $FACTORIES::getTaskFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+    $taskWrapper->setIsArchived(1);
+    $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
+  }
+
+  /**
+   * @param int $taskId 
+   * @param User $user 
+   */
+  public static function archiveTask($taskId, $user){
+    global $FACTORIES;
+
+    $task = TaskUtils::getTask($taskId, $user);
+    $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
+    if($taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+      $taskWrapper->setIsArchived(1);
+      $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
+    }
+    $task->setIsArchived(1);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+
+  /**
    * @param int $taskWrapperId
    * @param string $newName
    * @param User $user
