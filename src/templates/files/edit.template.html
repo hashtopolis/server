@@ -27,6 +27,16 @@
         </td>
       </tr>
       <tr>
+        <th>File Type</th>
+        <td>
+          <select class="form-control" name="filetype" title="File Type">
+            <option value="dict" {{IF [[file.getFileType()]] == [[$DFileType::WORDLIST]]}} selected{{ENDIF}}>Wordlist</option>
+            <option value="dict" {{IF [[file.getFileType()]] == [[$DFileType::RULE]]}} selected{{ENDIF}}>Rules</option>
+            <option value="dict" {{IF [[file.getFileType()]] == [[$DFileType::OTHER]]}} selected{{ENDIF}}>Other</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
         <td colspan="2">
           <button type="submit" class="btn btn-success">Save</button>
         </td>
