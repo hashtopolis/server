@@ -190,6 +190,7 @@ abstract class PValues {
 class PValuesDownloadBinaryType extends PValues {
   const EXTRACTOR = "7zr";
   const CRACKER   = "cracker";
+  const PRINCE    = "prince";
 }
 
 class PValuesBenchmarkType extends PValues {

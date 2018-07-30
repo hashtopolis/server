@@ -131,7 +131,7 @@
 	with 'url' providing the download url for the new version.
 	
 	\subsection*{Download Binary}
-	This command is used to either download the 7z binary to extract Hashcat, or to get information where to download the newest Hashcat/Cracker version and some additional informations about it.
+	This command is used to either download the 7z binary to extract Hashcat, PRINCE, or to get information where to download the newest Hashcat/Cracker version and some additional informations about it.
 	\begin{verbatim}
 	{
 	  "action":"downloadBinary",
@@ -145,6 +145,22 @@
 	  "action":"downloadBinary",
 	  "response":"SUCCESS",
 	  "url":"https://example.com/getapp.php"
+	}
+	\end{verbatim}
+	The PRINCE download link must be configured on the server, then the client can retrieve the url.
+	\begin{verbatim}
+	{
+	  "action":"downloadBinary",
+	  "type":"prince",
+	  "token":"GHhgdf(/&"
+	}
+	\end{verbatim}
+	The server then will send a url where to download the binary:
+	\begin{verbatim}
+	{
+	  "action":"downloadBinary",
+	  "response":"SUCCESS",
+	  "url":"https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z"
 	}
 	\end{verbatim}
 	To download the Hashcat/Cracker binary, following command is used.
