@@ -187,7 +187,26 @@ class TaskHandler implements Handler {
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
     if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
-      $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId(), 0);
+      $task = new Task(
+        0, 
+        $name, 
+        $cmdline, 
+        $chunk, 
+        $status, 
+        0, 
+        0, 
+        0, 
+        $color, 
+        $isSmall, 
+        $isCpuTask, 
+        $useNewBench, 
+        $skipKeyspace, 
+        $crackerBinary->getId(), 
+        $crackerBinaryType->getId(), 
+        $taskWrapper->getId(), 
+        0,
+        0
+      );
     }
     else {
       $copy = $FACTORIES::getPretaskFactory()->get($_POST['copy']);
@@ -196,7 +215,26 @@ class TaskHandler implements Handler {
         return;
       }
       // force to copy from pretask to make sure user cannot change anything he is not allowed to
-      $task = new Task(0, $name, $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, 0, $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId(), 0);
+      $task = new Task(
+        0, 
+        $name, 
+        $copy->getAttackCmd(), 
+        $copy->getChunkTime(), 
+        $copy->getStatusTimer(), 
+        0, 
+        0, 
+        0, 
+        $copy->getColor(), 
+        $copy->getIsSmall(), 
+        $copy->getIsCpuTask(), 
+        $copy->getUseNewBench(), 
+        0, 
+        $crackerBinary->getId(), 
+        $crackerBinaryType->getId(), 
+        $taskWrapper->getId(), 
+        0,
+        0
+      );
       $forward = "pretasks.php";
     }
 

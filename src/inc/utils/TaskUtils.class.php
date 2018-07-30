@@ -633,6 +633,7 @@ class TaskUtils {
       $cracker->getId(),
       $cracker->getCrackerBinaryTypeId(),
       $taskWrapper->getId(),
+      0,
       0
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
@@ -711,6 +712,7 @@ class TaskUtils {
         $task->getCrackerBinaryId(),
         $task->getCrackerBinaryTypeId(),
         $newWrapper->getId(),
+        0,
         0
       );
       $newTask = $FACTORIES::getTaskFactory()->save($newTask);

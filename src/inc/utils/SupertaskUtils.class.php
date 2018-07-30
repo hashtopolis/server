@@ -170,7 +170,26 @@ class SupertaskUtils {
         $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId());
       }
       
-      $task = new Task(0, $pretask->getTaskName(), $pretask->getAttackCmd(), $pretask->getChunkTime(), $pretask->getStatusTimer(), 0, 0, $pretask->getPriority(), $pretask->getColor(), $pretask->getIsSmall(), $pretask->getIsCpuTask(), $pretask->getUseNewBench(), 0, $crackerBinaryId, $cracker->getCrackerBinaryTypeId(), $taskWrapper->getId(), 0);
+      $task = new Task(
+        0, 
+        $pretask->getTaskName(), 
+        $pretask->getAttackCmd(), 
+        $pretask->getChunkTime(), 
+        $pretask->getStatusTimer(), 
+        0, 
+        0, 
+        $pretask->getPriority(), 
+        $pretask->getColor(), 
+        $pretask->getIsSmall(), 
+        $pretask->getIsCpuTask(), 
+        $pretask->getUseNewBench(), 
+        0, 
+        $crackerBinaryId, 
+        $cracker->getCrackerBinaryTypeId(), 
+        $taskWrapper->getId(), 
+        0,
+        0
+      );
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
         $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
       }

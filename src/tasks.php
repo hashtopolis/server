@@ -276,11 +276,49 @@ else if (isset($_GET['new'])) {
     if ($copy != null) {
       $orig = $copy->getId();
       $origType = 2;
-      $copy = new Task(0, $copy->getTaskName(), $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, $copy->getPriority(), $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, 0, $copy->getCrackerBinaryTypeId(), 0, 0);
+      $copy = new Task(
+        0, 
+        $copy->getTaskName(), 
+        $copy->getAttackCmd(), 
+        $copy->getChunkTime(), 
+        $copy->getStatusTimer(), 
+        0, 
+        0, 
+        $copy->getPriority(), 
+        $copy->getColor(), 
+        $copy->getIsSmall(), 
+        $copy->getIsCpuTask(), 
+        $copy->getUseNewBench(), 
+        0, 
+        0, 
+        $copy->getCrackerBinaryTypeId(), 
+        0, 
+        0,
+        0
+      );
     }
   }
   if ($copy === null) {
-    $copy = new Task(0, "", "", $CONFIG->getVal(DConfig::CHUNK_DURATION), $CONFIG->getVal(DConfig::STATUS_TIMER), 0, 0, 0, "", 0, 0, $CONFIG->getVal(DConfig::DEFAULT_BENCH), 0, 0, 0, 0, 0);
+    $copy = new Task(
+      0, 
+      "", 
+      "", 
+      $CONFIG->getVal(DConfig::CHUNK_DURATION), 
+      $CONFIG->getVal(DConfig::STATUS_TIMER), 
+      0, 
+      0, 
+      0, 
+      "", 
+      0, 
+      0, 
+      $CONFIG->getVal(DConfig::DEFAULT_BENCH), 
+      0, 
+      0, 
+      0, 
+      0, 
+      0,
+      0
+    );
   }
   if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
     $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
