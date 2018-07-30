@@ -6,6 +6,8 @@
 - Most of the tables can now be easily ordered and searched with the datatables plugin
 - Agent Errors can be handled better
 - New User API allowing access to all functions without the webinterface via simple JSON commands.
+- Added new filetype (Other) for all non rules/wordlist files like hashcat charsets etc.
+- File types can be edited of existing files.
 
 ## Bugfixes
 

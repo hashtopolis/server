@@ -27,6 +27,7 @@ class FileHandler implements Handler {
         case DFileAction::EDIT_FILE:
           $ACCESS_CONTROL->checkPermission(DFileAction::EDIT_FILE_PERM);
           FileUtils::saveChanges($_POST['fileId'], $_POST['filename']);
+          FileUtils::setFileType($_POST['fileId'], $_POST['filetype']);
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");

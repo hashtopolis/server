@@ -67,7 +67,7 @@
                       <td>
                           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
                           <form style='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
-                              <input type="submit" class='btn btn-primary' value="Rename">
+                              <input type="submit" class='btn btn-primary' value="Edit">
                           </form>
                           <form style='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
                               <input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
