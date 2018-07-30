@@ -98,10 +98,10 @@ class FileUtils {
       case "upload":
         // from http upload
         $uploaded = $file["upfile"];
-        $numFiles = count($file["upfile"]);
+        $numFiles = count($file["upfile"]["name"]);
         for ($i = 0; $i < $numFiles; $i++) {
           // copy all uploaded attached files to proper directory
-          $realname = str_replace(" ", "_", htmlentities(basename($uploaded[$i]["name"]), ENT_QUOTES, "UTF-8"));
+          $realname = str_replace(" ", "_", htmlentities(basename($uploaded["name"][$i]), ENT_QUOTES, "UTF-8"));
           if ($realname == "") {
             continue;
           }
