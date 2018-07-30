@@ -921,7 +921,8 @@ CREATE TABLE `Task` (
   `skipKeyspace`        BIGINT(20)              NOT NULL,
   `crackerBinaryId`     INT(11) DEFAULT NULL,
   `crackerBinaryTypeId` INT(11)                 NULL,
-  `taskWrapperId`       INT(11)                 NOT NULL
+  `taskWrapperId`       INT(11)                 NOT NULL,
+  `isArchived`          INT(11)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -939,7 +940,8 @@ CREATE TABLE `TaskWrapper` (
   `taskType`        INT(11)      NOT NULL,
   `hashlistId`      INT(11)      NOT NULL,
   `accessGroupId`   INT(11) DEFAULT NULL,
-  `taskWrapperName` VARCHAR(100) NOT NULL
+  `taskWrapperName` VARCHAR(100) NOT NULL,
+  `isArchived`      INT(11)      NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

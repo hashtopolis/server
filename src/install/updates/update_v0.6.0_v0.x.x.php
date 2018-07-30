@@ -83,6 +83,7 @@ echo "OK\n";
 
 echo "Add archiving flag to Tasks...";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `isArchived` INT NOT NULL");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskWrapper` ADD `isArchived` INT NOT NULL");
 echo "OK\n";
 
 echo "Update complete!\n";
