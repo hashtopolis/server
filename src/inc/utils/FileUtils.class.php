@@ -220,8 +220,9 @@ class FileUtils {
     if ($newName[0] == '.') {
       $newName[0] = "_";
     }
-    $qF = new QueryFilter(File::FILENAME, $newName, "=");
-    $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $qF1 = new QueryFilter(File::FILENAME, $newName, "=");
+    $qF2 = new QueryFilter(File::FILE_ID, $file->getId(), "<>");
+    $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     if (sizeof($files) > 0) {
       throw new HTException("This filename is already used!");
     }
