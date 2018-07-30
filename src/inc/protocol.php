@@ -10,7 +10,7 @@ abstract class PQuery { // include only generalized query values
   const QUERY  = "query";
   const ACTION = "action";
   const TOKEN  = "token";
-  
+
   /**
    * This function checks if all required values are given in the query
    *
@@ -27,7 +27,7 @@ class PQueryLogin extends PQuery {
     }
     return true;
   }
-  
+
   const CLIENT_SIGNATURE = "clientSignature";
 }
 
@@ -38,7 +38,7 @@ class PQuerySendProgress extends PQuery {
     }
     return true;
   }
-  
+
   const CHUNK_ID          = "chunkId";
   const KEYSPACE_PROGRESS = "keyspaceProgress"; // aka curku
   const RELATIVE_PROGRESS = "relativeProgress";
@@ -54,7 +54,7 @@ class PQuerySendBenchmark extends PQuery {
     }
     return true;
   }
-  
+
   const TASK_ID = "taskId";
   const TYPE    = "type";
   const RESULT  = "result";
@@ -67,7 +67,7 @@ class PQuerySendKeyspace extends PQuery {
     }
     return true;
   }
-  
+
   const KEYSPACE = "keyspace";
   const TASK_ID  = "taskId";
 }
@@ -79,7 +79,7 @@ class PQueryGetChunk extends PQuery {
     }
     return true;
   }
-  
+
   const TASK_ID = "taskId";
 }
 
@@ -99,7 +99,7 @@ class PQueryGetHashlist extends PQuery {
     }
     return true;
   }
-  
+
   const HASHLIST_ID = "hashlistId";
 }
 
@@ -110,7 +110,7 @@ class PQueryGetFile extends PQuery {
     }
     return true;
   }
-  
+
   const TASK_ID  = "taskId";
   const FILENAME = "file";
 }
@@ -122,7 +122,7 @@ class PQueryClientError extends PQuery {
     }
     return true;
   }
-  
+
   const TASK_ID = "taskId";
   const MESSAGE = "message";
 }
@@ -134,7 +134,7 @@ class PQueryDownloadBinary extends PQuery {
     }
     return true;
   }
-  
+
   const BINARY_TYPE       = "type";
   const BINARY_VERSION_ID = "binaryVersionId";
 }
@@ -146,7 +146,7 @@ class PQueryCheckClientVersion extends PQuery {
     }
     return true;
   }
-  
+
   const VERSION = "version";
   const TYPE    = "type";
 }
@@ -158,7 +158,7 @@ class PQueryUpdateInformation extends PQuery {
     }
     return true;
   }
-  
+
   const DEVICES          = "devices";
   const UID              = "uid";
   const OPERATING_SYSTEM = "os";
@@ -171,7 +171,7 @@ class PQueryRegister extends PQuery {
     }
     return true;
   }
-  
+
   const VOUCHER    = "voucher";
   const AGENT_NAME = "name";
 }
@@ -275,6 +275,7 @@ class PResponseGetTask extends PResponse {
   const HASHLIST_ALIAS = "hashlistAlias";
   const KEYSPACE       = "keyspace";
   const REASON         = "reason";
+  const PRINCE         = "usePrince";
 }
 
 class PResponseGetChunk extends PResponse {

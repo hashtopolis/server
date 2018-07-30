@@ -135,7 +135,8 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::CRACKER_ID => $task->getCrackerBinaryId(),
         PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run", // TODO: this need to be adapted also for generic
         PResponseGetTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS),
-        PResponseGetTask::KEYSPACE => $task->getKeyspace()
+        PResponseGetTask::KEYSPACE => $task->getKeyspace(),
+        PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false
       )
     );
   }
