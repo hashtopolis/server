@@ -212,7 +212,8 @@ class PretaskUtils {
       0,
       $cracker->getId(),
       $cracker->getCrackerBinaryTypeId(),
-      $taskWrapper->getId()
+      $taskWrapper->getId(),
+      0
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
     TaskUtils::copyPretaskFiles($pretask, $task);

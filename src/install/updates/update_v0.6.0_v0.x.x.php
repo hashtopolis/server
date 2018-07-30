@@ -78,7 +78,11 @@ $FACTORIES::getConfigFactory()->save($entry);
 echo "OK\n";
 
 echo "Fix constraints on preconfigured tasks...";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Pretask` CHANGE `color` `color` VARCHAR(20) NULL;");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Pretask` CHANGE `color` `color` VARCHAR(20) NULL");
+echo "OK\n";
+
+echo "Add archiving flag to Tasks...";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `isArchived` INT NOT NULL");
 echo "OK\n";
 
 echo "Update complete!\n";

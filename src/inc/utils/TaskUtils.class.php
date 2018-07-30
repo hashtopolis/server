@@ -599,7 +599,8 @@ class TaskUtils {
       $skip,
       $cracker->getId(),
       $cracker->getCrackerBinaryTypeId(),
-      $taskWrapper->getId()
+      $taskWrapper->getId(),
+      0
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
     
@@ -676,7 +677,8 @@ class TaskUtils {
         $task->getSkipKeyspace(),
         $task->getCrackerBinaryId(),
         $task->getCrackerBinaryTypeId(),
-        $newWrapper->getId()
+        $newWrapper->getId(),
+        0
       );
       $newTask = $FACTORIES::getTaskFactory()->save($newTask);
       $taskFiles = [];

@@ -212,7 +212,8 @@ $CONF['Task'] = array(
   'skipKeyspace',
   'crackerBinaryId',
   'crackerBinaryTypeId',
-  'taskWrapperId'
+  'taskWrapperId',
+  'isArchived'
 );
 $CONF['TaskWrapper'] = array(
   'taskWrapperId',

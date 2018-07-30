@@ -19,8 +19,9 @@ class Task extends AbstractModel {
   private $crackerBinaryId;
   private $crackerBinaryTypeId;
   private $taskWrapperId;
+  private $isArchived;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -37,6 +38,7 @@ class Task extends AbstractModel {
     $this->crackerBinaryId = $crackerBinaryId;
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
     $this->taskWrapperId = $taskWrapperId;
+    $this->isArchived = $isArchived;
   }
   
   function getKeyValueDict() {
@@ -57,6 +59,7 @@ class Task extends AbstractModel {
     $dict['crackerBinaryId'] = $this->crackerBinaryId;
     $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     $dict['taskWrapperId'] = $this->taskWrapperId;
+    $dict['isArchived'] = $this->isArchived;
     
     return $dict;
   }
@@ -196,6 +199,14 @@ class Task extends AbstractModel {
   function setTaskWrapperId($taskWrapperId){
     $this->taskWrapperId = $taskWrapperId;
   }
+  
+  function getIsArchived(){
+    return $this->isArchived;
+  }
+  
+  function setIsArchived($isArchived){
+    $this->isArchived = $isArchived;
+  }
 
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
@@ -213,4 +224,5 @@ class Task extends AbstractModel {
   const CRACKER_BINARY_ID = "crackerBinaryId";
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const TASK_WRAPPER_ID = "taskWrapperId";
+  const IS_ARCHIVED = "isArchived";
 }
