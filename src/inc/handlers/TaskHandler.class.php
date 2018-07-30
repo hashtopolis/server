@@ -171,6 +171,10 @@ class TaskHandler implements Handler {
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
+    if($isPrince && !$useNewBench){
+      // enforce speed benchmark when using prince
+      $useNewBench = 1;
+    }
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
       $color = null;
     }
