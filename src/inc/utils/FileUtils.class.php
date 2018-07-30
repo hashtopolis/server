@@ -19,7 +19,7 @@ class FileUtils {
     global $FACTORIES;
     
     $file = FileUtils::getFile($fileId);
-    if ($fileType < DFileType::WORDLIST || $fileType > DFileType::RULE) {
+    if ($fileType < DFileType::WORDLIST || $fileType > DFileType::OTHER) {
       throw new HTException("Invalid file type!");
     }
     $file->setFileType($fileType);
