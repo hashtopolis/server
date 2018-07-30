@@ -1,6 +1,6 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Tasks ([[sizeof([[taskList]])]])</h2>
+<h2>{{IF [[showArchived]]}}Archived {{ENDIF}}Tasks ([[sizeof([[taskList]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <div style='overflow: auto;'>
 	{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
@@ -10,6 +10,9 @@
 			<input type="submit" value="Delete finished" class='btn btn-light'>
 		</form>
 	{{ENDIF}}
+  {{IF ![[showArchived]]}}
+    <button style="float: left; padding-right: 5px;" href="tasks.php?archived=true" class="btn btn-light">Show archived</button>
+  {{ENDIF}}
 	{%TEMPLATE->tasks/autorefresh%}
 	<br>
 </div>
