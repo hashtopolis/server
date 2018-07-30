@@ -227,8 +227,9 @@ class TaskUtils {
   public static function deleteFinished($user) {
     global $FACTORIES;
     
-    // check every task wrapper
-    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
+    // check every task wrapper (non-archived ones)
+    $qF = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF));
     foreach ($taskWrappers as $taskWrapper) {
       if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
         continue; // we only delete finished ones where the user has access to
