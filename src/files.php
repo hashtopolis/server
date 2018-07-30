@@ -48,7 +48,7 @@ if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::MANAG
 else {
   $qF = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule', 'other')), "=");
   $oF = new OrderFilter(File::FILENAME, "ASC");
-  $OBJECTS['fileType'] = "Other";
+  $OBJECTS['fileType'] = "Other Files";
   if($view == 'dict'){
     $OBJECTS['fileType'] = "Wordlists";
   }
