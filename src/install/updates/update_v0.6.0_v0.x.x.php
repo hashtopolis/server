@@ -86,4 +86,9 @@ $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `isArchive
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskWrapper` ADD `isArchived` INT NOT NULL");
 echo "OK\n";
 
+echo "Adding PRINCE config...";
+$config = new Config(0, 1, DConfig::PRINCE_LINK, 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
+$FACTORIES::getConfigFactory()->save($config);
+echo "OK\n";
+
 echo "Update complete!\n";
