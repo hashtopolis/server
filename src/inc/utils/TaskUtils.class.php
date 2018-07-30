@@ -561,7 +561,7 @@ class TaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $skip, $priority, $files, $crackerVersionId, $user) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
@@ -605,6 +605,7 @@ class TaskUtils {
     }
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
+    $isPrince = ($isPrince) ? 1 : 0;
     if ($skip < 0) {
       $skip = 0;
     }
@@ -634,7 +635,8 @@ class TaskUtils {
       $cracker->getCrackerBinaryTypeId(),
       $taskWrapper->getId(),
       0,
-      0
+      0,
+      $isPrince
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
     

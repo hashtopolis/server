@@ -120,6 +120,7 @@ class TaskHandler implements Handler {
     $useNewBench = intval(@$_POST['benchType']);
     $isCpuTask = intval(@$_POST['cpuOnly']);
     $isSmall = intval(@$_POST['isSmall']);
+    $isPrince = intval(@$_POST['isPrince']);
     $skipKeyspace = intval(@$_POST['skipKeyspace']);
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
@@ -188,24 +189,24 @@ class TaskHandler implements Handler {
 
     if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
       $task = new Task(
-        0, 
-        $name, 
-        $cmdline, 
-        $chunk, 
-        $status, 
-        0, 
-        0, 
-        0, 
-        $color, 
-        $isSmall, 
-        $isCpuTask, 
-        $useNewBench, 
-        $skipKeyspace, 
-        $crackerBinary->getId(), 
-        $crackerBinaryType->getId(), 
-        $taskWrapper->getId(), 
         0,
-        0
+        $name,
+        $cmdline,
+        $chunk,
+        $status,
+        0,
+        0,
+        0,
+        $color,
+        $isSmall,
+        $isCpuTask,
+        $useNewBench,
+        $skipKeyspace,
+        $crackerBinary->getId(),
+        $crackerBinaryType->getId(),
+        $taskWrapper->getId(),
+        0,
+        $isPrince
       );
     }
     else {
@@ -216,22 +217,22 @@ class TaskHandler implements Handler {
       }
       // force to copy from pretask to make sure user cannot change anything he is not allowed to
       $task = new Task(
-        0, 
-        $name, 
-        $copy->getAttackCmd(), 
-        $copy->getChunkTime(), 
-        $copy->getStatusTimer(), 
-        0, 
-        0, 
-        0, 
-        $copy->getColor(), 
-        $copy->getIsSmall(), 
-        $copy->getIsCpuTask(), 
-        $copy->getUseNewBench(), 
-        0, 
-        $crackerBinary->getId(), 
-        $crackerBinaryType->getId(), 
-        $taskWrapper->getId(), 
+        0,
+        $name,
+        $copy->getAttackCmd(),
+        $copy->getChunkTime(),
+        $copy->getStatusTimer(),
+        0,
+        0,
+        0,
+        $copy->getColor(),
+        $copy->getIsSmall(),
+        $copy->getIsCpuTask(),
+        $copy->getUseNewBench(),
+        0,
+        $crackerBinary->getId(),
+        $crackerBinaryType->getId(),
+        $taskWrapper->getId(),
         0,
         0
       );
