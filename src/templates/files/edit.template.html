@@ -31,8 +31,8 @@
         <td>
           <select class="form-control" name="filetype" title="File Type">
             <option value="dict" {{IF [[file.getFileType()]] == [[$DFileType::WORDLIST]]}} selected{{ENDIF}}>Wordlist</option>
-            <option value="dict" {{IF [[file.getFileType()]] == [[$DFileType::RULE]]}} selected{{ENDIF}}>Rules</option>
-            <option value="dict" {{IF [[file.getFileType()]] == [[$DFileType::OTHER]]}} selected{{ENDIF}}>Other</option>
+            <option value="rule" {{IF [[file.getFileType()]] == [[$DFileType::RULE]]}} selected{{ENDIF}}>Rules</option>
+            <option value="other" {{IF [[file.getFileType()]] == [[$DFileType::OTHER]]}} selected{{ENDIF}}>Other</option>
           </select>
         </td>
       </tr>

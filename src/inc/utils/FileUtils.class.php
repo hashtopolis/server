@@ -227,6 +227,10 @@ class FileUtils {
       throw new HTException("This filename is already used!");
     }
 
+    if($file->getFilename() == $newName){
+      return; // no name change was applied
+    }
+
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
 
     //check where the file is used and replace the filename in all the tasks
