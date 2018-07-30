@@ -60,10 +60,16 @@
   <td style='min-width: 120px'>
     {{IF [[set.getVal('taskType')]] == 1}}
       <form style ='float: left; padding-right: 5px;'>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]">Show Subtasks</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]">Details</button>
       </form>
     {{ENDIF}}
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+      <form style='float: left; padding-right: 5px;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskId')]]?')) return false;">
+        <input type="hidden" name="action" value="[[$DTaskAction::ARCHIVE_SUPERTASK]]">
+        <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <button type="submit" class='btn btn-warning'><i class="fas fa-archive" aria-hidden="true"></i></button>
+      </form>
       <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
         <input type="hidden" name="action" value="[[$DTaskAction::DELETE_SUPERTASK]]">
         <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
