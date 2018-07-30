@@ -11,7 +11,7 @@
 		</form>
 	{{ENDIF}}
   {{IF ![[showArchived]]}}
-    <button style="float: left; padding-right: 5px;" href="tasks.php?archived=true" class="btn btn-light">Show archived</button>
+    <a style="float: left; padding-right: 5px;" href="tasks.php?archived=true" class="btn btn-light">Show archived</a>
   {{ENDIF}}
 	{%TEMPLATE->tasks/autorefresh%}
 	<br>
