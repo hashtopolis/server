@@ -718,12 +718,13 @@ class TaskUtils {
     // get all TaskWrappers which we have access to
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroups);
     $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, ">");
+    $qF3 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
     if ($all) {
       // if we want to retrieve all tasks which are accessible, we also show the ones with 0 priority
       $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, ">=");
     }
     $oF = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
-    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3), $FACTORIES::ORDER => $oF));
     
     // go trough task wrappers and test if we have access
     foreach ($taskWrappers as $taskWrapper) {
@@ -875,7 +876,10 @@ class TaskUtils {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
     
-    if ($task->getKeyspace() == 0) {
+    if($task->getIsArchived() == 1){
+      return null;
+    }
+    else if ($task->getKeyspace() == 0) {
       return $task;
     }
     

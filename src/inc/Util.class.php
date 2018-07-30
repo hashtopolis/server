@@ -229,16 +229,17 @@ class Util {
     return Util::arrayOfIds($accessGroups);
   }
   
-  public static function loadTasks() {
+  public static function loadTasks($archived = false) {
     /** @var $LOGIN Login */
     global $FACTORIES, $OBJECTS, $LOGIN;
     
     $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
     
-    $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
+    $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
+    $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, ($archived)?1:0, "=");
     $oF1 = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $oF2 = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
-    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF1, $oF2)));
     
     $taskList = array();
     foreach ($taskWrappers as $taskWrapper) {
