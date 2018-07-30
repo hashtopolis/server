@@ -590,6 +590,9 @@ class USectionTask extends UApi {
   const SET_SUPERTASK_NAME = "setSupertaskName";
   const DELETE_SUPERTASK = "deleteSupertask";
 
+  const ARCHIVE_TASK = "archiveTask";
+  const ARCHIVE_SUPERTASK = "archiveSupertask";
+
   public function describe($constant){
     switch($constant){
       case USectionTask::LIST_TASKS:
@@ -628,6 +631,10 @@ class USectionTask extends UApi {
         return "Set the name of a supertask";
       case USectionTask::DELETE_SUPERTASK:
         return "Delete a supertask";
+      case USectionTask::ARCHIVE_TASK:
+        return "Archive tasks";
+      case USectionTask::ARCHIVE_SUPERTASK:
+        return "Archive supertasks";
       default:
         return "__".$constant."__";
     }
