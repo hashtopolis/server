@@ -80,6 +80,12 @@
       <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[set.getVal('taskId')]]" method="post">
         <input type="submit" class='btn btn-light' value="Copy">
       </form>
+      <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really arhive task [[set.getVal('taskId')]]?')) return false;">
+        <input type="hidden" name="action" value="[[$DTaskAction::ARCHIVE_TASK]]">
+        <input type="hidden" name="task" value="[[set.getVal('taskId')]]">
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <button type="submit" class='btn btn-warning'><i class="fas fa-archive" aria-hidden="true"></i></button>
+      </form>
       <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[set.getVal('taskId')]]?')) return false;">
         <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
         <input type="hidden" name="task" value="[[set.getVal('taskId')]]">
