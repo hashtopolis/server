@@ -100,7 +100,7 @@ class HashlistUtils {
         if ($task->getPriority() > 0) {
           $taskPriority = $priorityBase + $task->getPriority();
         }
-        $taskWrapper = new TaskWrapper(0, $taskPriority, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "");
+        $taskWrapper = new TaskWrapper(0, $taskPriority, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
         $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
         $newTask = new Task(0, $task->getTaskName(), $task->getAttackCmd(), $task->getChunkTime(), $task->getStatusTimer(), 0, 0, $taskPriority, $task->getColor(), $task->getIsSmall(), $task->getIsCpuTask(), $task->getUseNewBench(), 0, CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(), $task->getCrackerBinaryTypeId(), $taskWrapper->getId(), 0);

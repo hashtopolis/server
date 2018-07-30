@@ -161,7 +161,7 @@ class SupertaskUtils {
       }
     }
     
-    $taskWrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName());
+    $taskWrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0);
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
     
     foreach ($pretasks as $pretask) {

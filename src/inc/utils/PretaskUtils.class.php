@@ -193,7 +193,7 @@ class PretaskUtils {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, $pretask->getPriority(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "");
+    $taskWrapper = new TaskWrapper(0, $pretask->getPriority(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
     
     $task = new Task(

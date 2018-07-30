@@ -580,7 +580,7 @@ class TaskUtils {
     }
     
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "");
+    $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0);
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
     
     $task = new Task(
@@ -658,7 +658,7 @@ class TaskUtils {
     }
     
     // create new tasks as supertask
-    $newWrapper = new TaskWrapper(0, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName());
+    $newWrapper = new TaskWrapper(0, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName(), 0);
     $newWrapper = $FACTORIES::getTaskWrapperFactory()->save($newWrapper);
     $prio = sizeof($newFiles) + 1;
     foreach ($newFiles as $newFile) {
