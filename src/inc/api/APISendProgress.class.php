@@ -44,6 +44,9 @@ class APISendProgress extends APIBasic {
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "No task exists for the given chunk");
     }
+    else if($task->getIsArchived() == 1){
+      $this->sendErrorResponse(PActions::SEND_PROGRESS, "Task is archived, no work to do");
+    }
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Inconsistency error on taskWrapper");
