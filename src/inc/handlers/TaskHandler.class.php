@@ -43,15 +43,15 @@ class TaskHandler implements Handler {
           break;
         case DTaskAction::ABORT_CHUNK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
-          TaskUtils::abortChunk($_POST['chunk'], $LOGIN->getUser());
+          TaskUtils::abortChunk($_POST['chunk'], $ACCESS_CONTROL->getUser());
           break;
         case DTaskAction::RESET_CHUNK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
-          TaskUtils::resetChunk($_POST['chunk'], $LOGIN->getUser());
+          TaskUtils::resetChunk($_POST['chunk'], $ACCESS_CONTROL->getUser());
           break;
         case DTaskAction::PURGE_TASK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
-          TaskUtils::purgeTask($_POST['task'], $LOGIN->getUser());
+          TaskUtils::purgeTask($_POST['task'], $ACCESS_CONTROL->getUser());
           break;
         case DTaskAction::SET_COLOR:
           $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
