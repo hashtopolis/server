@@ -1,6 +1,6 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Task details</h2>
+<h2>Task details{{IF [[task.getIsPrince()]]}} (PRINCE task){{ENDIF}}</h2>
 {%TEMPLATE->struct/messages%}
 {%TEMPLATE->tasks/autorefresh%}
 <br>

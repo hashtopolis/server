@@ -9,3 +9,4 @@ src/files/*
 .vs/
 *.phpproj
 *.sln
+*.phpproj.user

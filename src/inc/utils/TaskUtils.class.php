@@ -923,6 +923,9 @@ class TaskUtils {
     else if ($task->getKeyspace() == 0) {
       return $task;
     }
+    else if($task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE){
+      return $task;
+    }
 
     // check chunks
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");

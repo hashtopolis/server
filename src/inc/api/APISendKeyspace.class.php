@@ -29,7 +29,11 @@ class APISendKeyspace extends APIBasic {
     
     if ($task->getKeyspace() == 0) {
       // keyspace is still required
-      if ($keyspace < 0) {
+      if($task->getIsPrince() && $keyspace == -1){
+        // this is the case when the keyspace gets too large, but we still accept it
+        $keyspace = DPrince::PRINCE_KEYSPACE;
+      }
+      else if ($keyspace < 0) {
         $this->sendErrorResponse(PActions::SEND_KEYSPACE, "Server parsed a negative keyspace, it's very likely that the number was too big to be handled by the server system!");
       }
       
@@ -38,7 +42,7 @@ class APISendKeyspace extends APIBasic {
     }
     
     // test if the task may have a skip value which is too high for this keyspace
-    if ($task->getSkipKeyspace() > $task->getKeyspace()) {
+    if ($task->getSkipKeyspace() > $task->getKeyspace() && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       // skip is too high
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);

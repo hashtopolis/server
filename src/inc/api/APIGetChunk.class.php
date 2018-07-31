@@ -110,7 +110,7 @@ class APIGetChunk extends APIBasic {
     }
     
     $remaining = $task->getKeyspace() - $task->getKeyspaceProgress();
-    if ($remaining == 0) {
+    if ($remaining == 0 && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       $FACTORIES::getAgentFactory()->getDB()->commit();
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
@@ -122,7 +122,7 @@ class APIGetChunk extends APIBasic {
     $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $start = $task->getKeyspaceProgress();
     $length = $agentChunkSize;
-    if ($remaining / $length <= $disptolerance) {
+    if ($remaining / $length <= $disptolerance && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       $length = $remaining;
     }
     $newProgress = $task->getKeyspaceProgress() + $length;
