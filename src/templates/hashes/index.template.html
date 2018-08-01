@@ -34,21 +34,20 @@
           {{ENDIF}}
         </td>
       </tr>
+      <tr>
+        <td colspan="2">
+          <div class="btn-toolbar" style="justify-content: center; display: flex;">
+            <div class='btn-group'>
+              <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[previousPage]]'" {{IF [[previousPage]] == -1}} disabled{{ENDIF}}>[[Util::calculate([[previousPage]]+1)]] &lt;</button>
+              <button class='btn btn-light active'>Page [[Util::calculate([[currentPage]]+1)]]</button>
+              <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[nextPage]]'" {{IF [[nextPage]] == -1}} disabled{{ENDIF}}>&gt; [[Util::calculate([[currentPage]]+1)]]</button>
+            </div>
+          </div>
+        </td>
+      </tr>
     </table>
   </div>
 </div>
-<div class="row">
-  <div class="col-md-12">
-    <div class="btn-toolbar" style="justify-content: center; display: flex;">
-      <div class='btn-group'>
-        <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[previousPage]]'" {{IF [[previousPage]] == -1}} disabled{{ENDIF}}>[[Util::calculate([[previousPage]]+1)]] &lt;</button>
-        <button class='btn btn-light active'>Page [[Util::calculate([[currentPage]]+1)]]</button>
-        <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[nextPage]]'" {{IF [[nextPage]] == -1}} disabled{{ENDIF}}>&gt; [[Util::calculate([[currentPage]]+1)]]</button>
-      </div>
-    </div>
-  </div>
-</div>
-<br>
 <div class="row">
   <div class="col-md-12">
     <form class='form-inline' style="justify-content: center; display: flex;" action='hashes.php' method='get'>
