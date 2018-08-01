@@ -58,11 +58,6 @@
     {{ENDIF}}
   </td>
   <td style='min-width: 120px'>
-    {{IF [[set.getVal('taskType')]] == 1}}
-      <form style ='float: left; padding-right: 5px;'>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]"><i class="fas fa-info-circle" aria-hidden="true"></i></button>
-      </form>
-    {{ENDIF}}
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
       <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
         <input type="hidden" name="action" value="[[$DTaskAction::DELETE_SUPERTASK]]">
@@ -78,6 +73,11 @@
           <button type="submit" class='btn btn-warning'><i class="fas fa-archive" aria-hidden="true"></i></button>
         </form>
       {{ENDIF}}
+    {{ENDIF}}
+    {{IF [[set.getVal('taskType')]] == 1}}
+      <form class="float-right mx-1">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]"><i class="fas fa-info-circle" aria-hidden="true"></i></button>
+      </form>
     {{ENDIF}}
 
     <div class="modal fade" id="task[[set.getVal('taskWrapperId')]]" tabindex="-1" role="dialog" aria-labelledby="subtasks" aria-hidden="true">
