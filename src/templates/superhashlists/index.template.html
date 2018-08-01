@@ -48,13 +48,13 @@
                   <input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
                   <input type="hidden" name="hashlist" value="[[list.getId()]]">
                   <input type="hidden" name="csrf" value="[[csrf]]">
-                  <input type="submit" class='btn btn-light' value="Import">
+                  <button type="submit" class='btn btn-light'><i class="fas fa-file-import" aria-hidden="true"></i></button>
                 </form>
                 <form style='float: left;' action="hashlists.php" method="POST">
                   <input type="hidden" name="action" value="[[$DHashlistAction::EXPORT_HASHLIST]]">
                   <input type="hidden" name="hashlist" value="[[list.getId()]]">
                   <input type="hidden" name="csrf" value="[[csrf]]">
-                  <input type="submit" class='btn btn-light' value="Export">
+                  <button type="submit" class='btn btn-light'><i class="fas fa-file-export" aria-hidden="true"></i></button>
                 </form>
               {{ENDIF}}
             </td>
