@@ -62,7 +62,7 @@
             {{ENDIF}}
           </td>
 				  <td>
-					  <form action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getId()]]?')) return false;">
+					  <form class="float-right" action="hashtypes.php" method="POST" onSubmit="if (!confirm('Really delete hashtype [[type.getId()]]?')) return false;">
 						  <input type="hidden" name="action" value="[[$DHashtypeAction::DELETE_HASHTYPE]]">
 						  <input type="hidden" name="type" value="[[type.getId()]]">
 						  <input type="hidden" name="csrf" value="[[csrf]]">

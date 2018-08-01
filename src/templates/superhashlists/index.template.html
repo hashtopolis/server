@@ -44,23 +44,23 @@
             </td>
             <td>
               {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-                <form style='float: left; padding-right: 5px;' action="hashlists.php" method="POST">
-                  <input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
-                  <input type="hidden" name="hashlist" value="[[list.getId()]]">
-                  <input type="hidden" name="csrf" value="[[csrf]]">
-                  <button type="submit" class='btn btn-light'><i class="fas fa-file-import" aria-hidden="true"></i></button>
-                </form>
-                <form style='float: left;' action="hashlists.php" method="POST">
+                <form class="float-right mx-1" action="hashlists.php" method="POST">
                   <input type="hidden" name="action" value="[[$DHashlistAction::EXPORT_HASHLIST]]">
                   <input type="hidden" name="hashlist" value="[[list.getId()]]">
                   <input type="hidden" name="csrf" value="[[csrf]]">
                   <button type="submit" class='btn btn-light'><i class="fas fa-file-export" aria-hidden="true"></i></button>
                 </form>
+                <form class="float-right mx-1" action="hashlists.php" method="POST">
+                  <input type="hidden" name="action" value="[[$DHashlistAction::ZAP_HASHLIST]]">
+                  <input type="hidden" name="hashlist" value="[[list.getId()]]">
+                  <input type="hidden" name="csrf" value="[[csrf]]">
+                  <button type="submit" class='btn btn-light'><i class="fas fa-file-import" aria-hidden="true"></i></button>
+                </form>
               {{ENDIF}}
             </td>
             <td>
               {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-                <form action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete superhashlist [[list.getId()]]?\n(Included hashes will stay intact in their hashlists)')) return false;">
+                <form class="float-right" action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete superhashlist [[list.getId()]]?\n(Included hashes will stay intact in their hashlists)')) return false;">
                   <input type="hidden" name="action" value="[[$DHashlistAction::DELETE_HASHLIST]]">
                   <input type="hidden" name="hashlist" value="[[list.getId()]]">
                   <input type="hidden" name="csrf" value="[[csrf]]">
