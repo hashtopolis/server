@@ -15,6 +15,10 @@
 
 - Standard buttons have now icons instead of text to use less space.
 
+## Enhancements
+
+- Hashcat is configured already as crack to make it easier for users to get started.
+
 ## Bugfixes
 
 - Using correct function to get superhashlistId on zapping from webinterface.
