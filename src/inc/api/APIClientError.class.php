@@ -28,7 +28,7 @@ class APIClientError extends APIBasic {
       $this->sendErrorResponse(PActions::CLIENT_ERROR, "Agent is not assigned to this task!");
     }
     
-    if ($this->agent->getIgnoreErrors() < DAgentIgnoreErrors::IGNORE_SAVE) {
+    if ($this->agent->getIgnoreErrors() <= DAgentIgnoreErrors::IGNORE_SAVE) {
       //save error message
       $error = new AgentError(0, $this->agent->getId(), $task->getId(), time(), $QUERY[PQueryClientError::MESSAGE]);
       $FACTORIES::getAgentErrorFactory()->save($error);
