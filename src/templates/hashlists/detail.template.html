@@ -29,7 +29,7 @@
               <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="text" class='form-control' name="name" size="20" value="[[list.getVal('hashlist')->getHashlistName()]]" title="Hashlist Name">&nbsp;&nbsp;
-              <input type="submit" class='btn btn-light' value="Change">
+              <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             [[list.getVal('hashlist')->getHashlistName()]]

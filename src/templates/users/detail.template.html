@@ -70,7 +70,7 @@
 							  <option value='[[group.getId()]]'{{IF [[group.getId()]] == [[user.getRightGroupId()]]}} selected{{ENDIF}}>[[group.getGroupName()]]</option>
 						  {{ENDFOREACH}}
 					  </select>&nbsp;&nbsp;
-					  <input type="submit" class='btn btn-light' value="Set">
+            <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
 				  </form>
 			  </td>
 		  </tr>
@@ -82,19 +82,19 @@
 					  <input type='hidden' name='user' value='[[user.getId()]]'>
 					  <input type='password' name='pass' class='form-control' title="Password">&nbsp;&nbsp;
 					  <input type="hidden" name="csrf" value="[[csrf]]">
-					  <input type="submit" class='btn btn-light' value="Set">
+            <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
 				  </form>
 			  </td>
 		  </tr>
 		  <tr>
 			  <th>Delete user</th>
 			  <td>
-				  <form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
-					  <input type='hidden' name='action' value='[[$DUserAction::DELETE_USER]]'>
-					  <input type='hidden' name='user' value='[[user.getId()]]'>
-					  <input type="hidden" name="csrf" value="[[csrf]]">
-					  <input type="submit" class='btn btn-danger' value="Delete" onclick="if(!confirm('Do you really want to delete this user? This cannot be undone!')){return false;}">
-				  </form>
+          <form class='form-inline' action="users.php?id=[[user.getId()]]" onsubmit="if(!confirm('Do you really want to delete this user? This cannot be undone!')){return false;}" method="post">
+            <input type='hidden' name='action' value='[[$DUserAction::DELETE_USER]]'>
+            <input type='hidden' name='user' value='[[user.getId()]]'>
+            <input type="hidden" name="csrf" value="[[csrf]]">
+            <button type="submit" class='btn btn-danger' value="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
+          </form>
 			  </td>
 		  </tr>
 	  </table>

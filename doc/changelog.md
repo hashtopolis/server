@@ -9,7 +9,11 @@
 - Added new filetype (Other) for all non rules/wordlist files like hashcat charsets etc.
 - File types can be edited of existing files.
 - Tasks can now be archived instead of being deleted.
-- Width of the container is increased more on large screens.
+- Width of the container is increased to have more space on large screens.
+
+## Enhancements
+
+- Standard buttons have now icons instead of text to use less space.
 
 ## Enhancements
 

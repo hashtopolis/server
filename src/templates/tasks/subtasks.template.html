@@ -65,8 +65,8 @@
           <input type='hidden' name='action' value='[[$DTaskAction::SET_PRIORITY]]'>
           <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
-          <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[subTask.getVal('priority')]]" title="Priority">&nbsp;&nbsp;
-          <input type="submit" class='btn btn-light' value="Set">
+          <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[subTask.getVal('priority')]]" title="Priority">
+          <button type="submit" class='btn btn-light mx-1'><i class="fas fa-save" aria-hidden="true"></i></button>
         </form>
       {{ELSE}}
         [[subTask.getVal('priority')]]
@@ -74,22 +74,22 @@
     </td>
     <td style='min-width: 120px'>
       {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
-        <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[subTask.getVal('taskId')]]" method="post">
-          <input type="submit" class='btn btn-light' value="Copy">
+        <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[subTask.getVal('taskId')]]?')) return false;">
+          <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
+          <input type="hidden" name="csrf" value="[[csrf]]">
+          <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
+          <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
         </form>
         {{IF ![[showArchived]]}}
-          <form style ='float: left; padding-right: 5px;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskId')]]?')) return false;">
+          <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskId')]]?')) return false;">
             <input type="hidden" name="action" value="[[$DTaskAction::ARCHIVE_TASK]]">
             <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
             <button type="submit" class='btn btn-warning'><i class="fas fa-archive" aria-hidden="true"></i></button>
           </form>
         {{ENDIF}}
-        <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[subTask.getVal('taskId')]]?')) return false;">
-          <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
-          <input type="hidden" name="csrf" value="[[csrf]]">
-          <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
-          <input type="submit" class='btn btn-danger' value="X">
+        <form class="float-right mx-1" action="tasks.php?new=true&copy=[[subTask.getVal('taskId')]]" method="post">
+          <button type="submit" class='btn btn-light'><i class="fas fa-copy" aria-hidden="true"></i></button>
         </form>
       {{ENDIF}}
     </td>
