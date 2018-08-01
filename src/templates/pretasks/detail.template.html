@@ -19,7 +19,7 @@
               <input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
-              <input type="submit" class='btn btn-danger' value="Delete">
+              <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
             </form>
           {{ENDIF}}
         </td>
@@ -33,7 +33,7 @@
               <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
               <input type="text" class='form-control' name="name" size="25" value="[[pretask.getTaskName()]]" title="Name">&nbsp;&nbsp;
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="submit" class='btn btn-light' value="Change">
+              <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             [[pretask.getTaskName()]]
@@ -55,7 +55,7 @@
               <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="text" class='form-control' name="chunktime" size="5" value="[[pretask.getChunkTime()]]" title="Chunk Time">&nbsp; seconds &nbsp;
-              <input type="submit" class='btn btn-light' value="Set">
+              <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             [[pretask.getChunkTime()]] seconds
@@ -71,7 +71,7 @@
             <input type="hidden" name="csrf" value="[[csrf]]">
             #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[pretask.getColor()]]" title="Color">&nbsp;&nbsp;
             {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
-              <input type="submit" class='btn btn-light' value="Set">
+              <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
             {{ENDIF}}
           </form>
         </td>
@@ -99,7 +99,7 @@
               <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="text" class='form-control' name="priority" size="4" value="[[pretask.getPriority()]]" title="Priority">&nbsp;&nbsp;
-              <input type="submit" class='btn btn-light' value="Set">
+              <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             [[pretask.getPriority()]]
@@ -118,7 +118,7 @@
                 <option value="0"{{IF [[pretask.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
                 <option value="1"{{IF [[pretask.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
               </select>&nbsp;&nbsp;
-              <input type="submit" class='btn btn-light' value="Set">
+              <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             {{IF [[pretask.getIsCpuTask()]] == 1}}
@@ -141,7 +141,7 @@
                 <option value="0"{{IF [[pretask.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
                 <option value="1"{{IF [[pretask.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
               </select>&nbsp;&nbsp;
-              <input type="submit" class='btn btn-light' value="Set">
+              <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             {{IF [[pretask.getIsSmall()]] == 1}}
