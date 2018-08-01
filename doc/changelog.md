@@ -11,6 +11,10 @@
 - Tasks can now be archived instead of being deleted.
 - Width of the container is increased more on large screens.
 
+## Enhancements
+
+- Hashcat is configured already as crack to make it easier for users to get started.
+
 ## Bugfixes
 
 - Using correct function to get superhashlistId on zapping from webinterface.
