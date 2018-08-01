@@ -61,12 +61,12 @@ tr {
 
 @media only screen and (min-width : 1200px) {
     .container {
-        width: 1100px;
+        min-width: 1100px;
     }
 }
 
 @media only screen and (min-width : 1500px) {
     .container {
-        width: 1400px;
+        min-width: 1400px;
     }
 }
