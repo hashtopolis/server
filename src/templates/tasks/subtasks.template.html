@@ -75,7 +75,7 @@
     <td style='min-width: 120px'>
       {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
         <form style ='float: left; padding-right: 5px;' action="tasks.php?new=true&copy=[[subTask.getVal('taskId')]]" method="post">
-          <input type="submit" class='btn btn-light' value="Copy">
+          <button type="submit" class='btn btn-light'><i class="fas fa-copy" aria-hidden="true"></i></button>
         </form>
         {{IF ![[showArchived]]}}
           <form style ='float: left; padding-right: 5px;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskId')]]?')) return false;">
