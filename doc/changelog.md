@@ -11,6 +11,10 @@
 - Tasks can now be archived instead of being deleted.
 - Width of the container is increased more on large screens.
 
+## Enhancements
+
+- Standard buttons have now icons instead of text to use less space.
+
 ## Bugfixes
 
 - Using correct function to get superhashlistId on zapping from webinterface.
