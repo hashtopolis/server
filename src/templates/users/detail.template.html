@@ -89,12 +89,12 @@
 		  <tr>
 			  <th>Delete user</th>
 			  <td>
-				  <form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
-					  <input type='hidden' name='action' value='[[$DUserAction::DELETE_USER]]'>
-					  <input type='hidden' name='user' value='[[user.getId()]]'>
-					  <input type="hidden" name="csrf" value="[[csrf]]">
-					  <input type="submit" class='btn btn-danger' value="Delete" onclick="if(!confirm('Do you really want to delete this user? This cannot be undone!')){return false;}">
-				  </form>
+          <form class='form-inline' action="users.php?id=[[user.getId()]]" onsubmit="if(!confirm('Do you really want to delete this user? This cannot be undone!')){return false;}" method="post">
+            <input type='hidden' name='action' value='[[$DUserAction::DELETE_USER]]'>
+            <input type='hidden' name='user' value='[[user.getId()]]'>
+            <input type="hidden" name="csrf" value="[[csrf]]">
+            <button type="submit" class='btn btn-danger' value="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
+          </form>
 			  </td>
 		  </tr>
 	  </table>
