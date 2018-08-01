@@ -47,11 +47,14 @@ class APIGetChunk extends APIBasic {
     else if ($this->agent->getIsActive() == 0) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Agent is inactive!");
     }
-    
+
+    LockUtils::get(Lock::CHUNKING);
+    $task = $FACTORIES::getTaskFactory()->get($task->getId());
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $task = TaskUtils::checkTask($task, $this->agent);
     if ($task == null) { // agent needs a new task
       $FACTORIES::getAgentFactory()->getDB()->commit();
+      LockUtils::release(Lock::CHUNKING);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
@@ -65,6 +68,7 @@ class APIGetChunk extends APIBasic {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
       if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
         $FACTORIES::getAgentFactory()->getDB()->commit();
+        LockUtils::release(Lock::CHUNKING);
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
     }
@@ -73,6 +77,7 @@ class APIGetChunk extends APIBasic {
     $bestTask = TaskUtils::getImportantTask($bestTask, $task);
     if ($bestTask->getId() != $task->getId()) {
       $FACTORIES::getAgentFactory()->getDB()->commit();
+      LockUtils::release(Lock::CHUNKING);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
     }
     
@@ -112,6 +117,7 @@ class APIGetChunk extends APIBasic {
     $remaining = $task->getKeyspace() - $task->getKeyspaceProgress();
     if ($remaining == 0 && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       $FACTORIES::getAgentFactory()->getDB()->commit();
+      LockUtils::release(Lock::CHUNKING);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
@@ -140,6 +146,7 @@ class APIGetChunk extends APIBasic {
     global $FACTORIES;
     
     $FACTORIES::getAgentFactory()->getDB()->commit();
+    LockUtils::release(Lock::CHUNKING);
     $this->sendResponse(array(
         PResponseGetChunk::ACTION => PActions::GET_CHUNK,
         PResponseGetChunk::RESPONSE => PValues::SUCCESS,

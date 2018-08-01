@@ -14,7 +14,7 @@ abstract class AbstractModelFactory {
   /**
    * @var PDO
    */
-  private $dbh = null;
+  private static $dbh = null;
   
   /**
    * Return the Models name
@@ -717,14 +717,14 @@ abstract class AbstractModelFactory {
       $password = $CONN['pass'];
     }
     
-    if ($this->dbh !== null) {
-      return $this->dbh;
+    if (self::$dbh !== null) {
+      return self::$dbh;
     }
     
     try {
-      $this->dbh = new PDO($dsn, $user, $password);
-      $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-      return $this->dbh;
+      self::$dbh = new PDO($dsn, $user, $password);
+      self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      return self::$dbh;
     }
     catch (PDOException $e) {
       if ($test) {
