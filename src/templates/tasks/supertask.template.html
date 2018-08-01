@@ -64,20 +64,20 @@
       </form>
     {{ENDIF}}
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+      <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
+        <input type="hidden" name="action" value="[[$DTaskAction::DELETE_SUPERTASK]]">
+        <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+      </form>
       {{IF ![[showArchived]]}}
-        <form style='float: left; padding-right: 5px;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskWrapperId')]]?')) return false;">
+        <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskWrapperId')]]?')) return false;">
           <input type="hidden" name="action" value="[[$DTaskAction::ARCHIVE_SUPERTASK]]">
           <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
           <button type="submit" class='btn btn-warning'><i class="fas fa-archive" aria-hidden="true"></i></button>
         </form>
       {{ENDIF}}
-      <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
-        <input type="hidden" name="action" value="[[$DTaskAction::DELETE_SUPERTASK]]">
-        <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
-        <input type="hidden" name="csrf" value="[[csrf]]">
-        <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
-      </form>
     {{ENDIF}}
 
     <div class="modal fade" id="task[[set.getVal('taskWrapperId')]]" tabindex="-1" role="dialog" aria-labelledby="subtasks" aria-hidden="true">
