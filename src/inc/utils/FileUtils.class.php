@@ -163,7 +163,10 @@ class FileUtils {
       case "url":
         // from url
         $realname = str_replace(" ", "_", htmlentities(basename($post["url"]), ENT_QUOTES, "UTF-8"));
-        if ($realname[0] == '.') {
+        if(strlen($realname) == 0){
+          throw new HTException("Empty URL provided!");
+        }
+        else if ($realname[0] == '.') {
           $realname[0] = "_";
         }
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
