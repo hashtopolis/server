@@ -60,7 +60,7 @@
   <td style='min-width: 120px'>
     {{IF [[set.getVal('taskType')]] == 1}}
       <form style ='float: left; padding-right: 5px;'>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]">Details</button>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]"><i class="fas fa-info" aria-hidden="true"></i></button>
       </form>
     {{ENDIF}}
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
