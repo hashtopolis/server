@@ -81,9 +81,15 @@ echo "Fix constraints on preconfigured tasks...";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Pretask` CHANGE `color` `color` VARCHAR(20) NULL");
 echo "OK\n";
 
-echo "Add archiving flag to Tasks...";
+echo "Add archiving and PRINCE flag to Tasks...";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `isArchived` INT NOT NULL");
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskWrapper` ADD `isArchived` INT NOT NULL");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `isPrince` INT NOT NULL");
+echo "OK\n";
+
+echo "Adding PRINCE settings...";
+$config = new Config(0, 1, DConfig::PRINCE_LINK, 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
+$FACTORIES::getConfigFactory()->save($config);
 echo "OK\n";
 
 echo "Update complete!\n";

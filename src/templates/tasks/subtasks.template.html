@@ -23,6 +23,9 @@
       {{IF [[subTask.getVal('isSmall')]] == 1}}
         <br>Small Task
       {{ENDIF}}
+      {{IF [[subTask.getVal('isPrince')]] == 1}}
+        <br>PRINCE
+      {{ENDIF}}
     </td>
     {{IF [[subTask.getVal('keyspace')]] > 0}}
       <td class='num'>

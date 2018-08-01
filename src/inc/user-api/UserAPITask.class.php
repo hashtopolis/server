@@ -270,7 +270,8 @@ class UserAPITask extends UserAPIBasic {
       UQueryTask::TASK_SMALL,
       UQueryTask::TASK_SKIP,
       UQueryTask::TASK_CRACKER_VERSION,
-      UQueryTask::TASK_FILES
+      UQueryTask::TASK_FILES,
+      UQueryTask::TASK_PRINCE
     ];
     foreach ($toCheck as $input) {
       if (!isset($QUERY[$input])) {
@@ -287,6 +288,7 @@ class UserAPITask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_COLOR],
       $QUERY[UQueryTask::TASK_CPU_ONLY],
       $QUERY[UQueryTask::TASK_SMALL],
+      $QUERY[UQueryTask::TASK_PRINCE],
       $QUERY[UQueryTask::TASK_SKIP],
       $QUERY[UQueryTask::TASK_PRIORITY],
       $QUERY[UQueryTask::TASK_FILES],

@@ -37,6 +37,7 @@ class DConfig {
   const RULE_SPLIT_SMALL_TASKS = "ruleSplitSmallTasks";
   const RULE_SPLIT_ALWAYS      = "ruleSplitAlways";
   const RULE_SPLIT_DISABLE     = "ruleSplitDisable";
+  const PRINCE_LINK            = "princeLink";
 
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -141,6 +142,8 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::RULE_SPLIT_DISABLE:
         return DConfigType::TICKBOX;
+      case DConfig::PRINCE_LINK:
+        return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -176,7 +179,7 @@ class DConfig {
       case DConfig::BASE_URL:
         return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
       case DConfig::DISP_TOLERANCE:
-        return "Allowable deviation in the final chunk of a task in percent. (avoids issuing small chunks when the remaining part of a task is slightly bigger than the normal chunk size)";
+        return "Allowable deviation in the final chunk of a task in percent.<br>(avoids issuing small chunks when the remaining part of a task is slightly bigger than the normal chunk size)";
       case DConfig::BATCH_SIZE:
         return "Batch size of SQL query when hashlist is sent to the agent";
       case DConfig::YUBIKEY_ID:
@@ -221,6 +224,8 @@ class DConfig {
         return "Even do rule splitting when there are not enough rules but just the benchmark is too high.<br>Can result in subtasks with just one rule.";
       case DConfig::RULE_SPLIT_DISABLE:
         return "Disable automatic task splitting with large rule files.";
+      case DConfig::PRINCE_LINK:
+        return "Download link for the prince preprocessor binaries.";
     }
     return $config;
   }

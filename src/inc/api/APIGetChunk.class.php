@@ -10,18 +10,18 @@ class APIGetChunk extends APIBasic {
   public function execute($QUERY = array()) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-
+    
     if (!PQueryGetChunk::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid chunk query!");
     }
     $this->checkToken(PActions::GET_CHUNK, $QUERY);
     $this->updateAgent(PActions::GET_CHUNK);
-
+    
     $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryGetChunk::TASK_ID]);
     if ($task == null) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid task ID!");
     }
-
+    
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
@@ -62,7 +62,7 @@ class APIGetChunk extends APIBasic {
         )
       );
     }
-
+    
     $bestTask = TaskUtils::getBestTask($this->agent);
     if ($bestTask == null) {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
@@ -72,7 +72,7 @@ class APIGetChunk extends APIBasic {
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
     }
-
+    
     // if the best task is not the one we are working on, we should switch
     $bestTask = TaskUtils::getImportantTask($bestTask, $task);
     if ($bestTask->getId() != $task->getId()) {
@@ -80,7 +80,7 @@ class APIGetChunk extends APIBasic {
       LockUtils::release(Lock::CHUNKING);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
     }
-
+    
     // find a chunk to assign
     $qF1 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $qF2 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
@@ -97,7 +97,7 @@ class APIGetChunk extends APIBasic {
     }
     $this->createNewChunk($task, $assignment);
   }
-
+  
   /**
    * @param $task Task
    * @param $assignment Assignment
@@ -105,17 +105,17 @@ class APIGetChunk extends APIBasic {
   protected function createNewChunk($task, $assignment) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-
+    
     $disptolerance = 1 + $CONFIG->getVal(DConfig::DISP_TOLERANCE) / 100;
-
+    
     // if we have set a skip keyspace we set the the current progress to the skip which was set initially
     if ($task->getSkipKeyspace() > $task->getKeyspaceProgress()) {
       $task->setKeyspaceProgress($task->getSkipKeyspace());
       $FACTORIES::getTaskFactory()->update($task);
     }
-
+    
     $remaining = $task->getKeyspace() - $task->getKeyspaceProgress();
-    if ($remaining == 0) {
+    if ($remaining == 0 && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       $FACTORIES::getAgentFactory()->getDB()->commit();
       LockUtils::release(Lock::CHUNKING);
       $this->sendResponse(array(
@@ -128,7 +128,7 @@ class APIGetChunk extends APIBasic {
     $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $start = $task->getKeyspaceProgress();
     $length = $agentChunkSize;
-    if ($remaining / $length <= $disptolerance) {
+    if ($remaining / $length <= $disptolerance && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       $length = $remaining;
     }
     $newProgress = $task->getKeyspaceProgress() + $length;
@@ -138,13 +138,13 @@ class APIGetChunk extends APIBasic {
     $FACTORIES::getChunkFactory()->save($chunk);
     $this->sendChunk($chunk);
   }
-
+  
   /**
    * @param $chunk Chunk
    */
   protected function sendChunk($chunk) {
     global $FACTORIES;
-
+    
     $FACTORIES::getAgentFactory()->getDB()->commit();
     LockUtils::release(Lock::CHUNKING);
     $this->sendResponse(array(
@@ -157,7 +157,7 @@ class APIGetChunk extends APIBasic {
       )
     );
   }
-
+  
   /**
    * @param $chunk Chunk
    * @param $task Task
@@ -166,9 +166,9 @@ class APIGetChunk extends APIBasic {
   protected function handleExistingChunk($chunk, $task, $assignment) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-
+    
     $disptolerance = 1 + $CONFIG->getVal(DConfig::DISP_TOLERANCE) / 100;
-
+    
     $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
     $agentChunkSizeMax = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance);
     if ($chunk->getCheckpoint() == $chunk->getSkip() && $agentChunkSizeMax > $chunk->getLength()) {
@@ -211,11 +211,11 @@ class APIGetChunk extends APIBasic {
       $this->sendChunk($newChunk);
     }
   }
-
+  
   protected function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1) {
     /** @var DataSet $CONFIG */
     global $CONFIG, $QUERY;
-
+    
     if ($chunkTime <= 0) {
       $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     }
@@ -225,7 +225,7 @@ class APIGetChunk extends APIBasic {
         // special case on small tasks, so we just create a chunk with the size of the keyspace
         return $keyspace;
       }
-
+      
       $size = floor($keyspace * $benchmark * $chunkTime / 100);
     }
     else {
@@ -234,12 +234,12 @@ class APIGetChunk extends APIBasic {
       if (sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0) {
         return 0;
       }
-
+      
       // NEW VARIANT
       $factor = $chunkTime / $benchmark[1] * 1000;
       $size = floor($factor * $benchmark[0]);
     }
-
+    
     $chunkSize = $size * $tolerance;
     if ($chunkSize <= 0) {
       $chunkSize = 1;
@@ -248,7 +248,7 @@ class APIGetChunk extends APIBasic {
       }
       Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
-
+    
     return $chunkSize;
   }
 }

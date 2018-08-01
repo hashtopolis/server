@@ -270,7 +270,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (36, 4, 'showTaskPerformance', '0'),
   (37, 1, 'ruleSplitSmallTasks', '0'),
   (38, 1, 'ruleSplitAlways', '0'),
-  (39, 1, 'ruleSplitDisable', '0');
+  (39, 1, 'ruleSplitDisable', '0'),
+  (40, 1, 'princeLink', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
 
 -- --------------------------------------------------------
 
@@ -922,7 +923,8 @@ CREATE TABLE `Task` (
   `crackerBinaryId`     INT(11) DEFAULT NULL,
   `crackerBinaryTypeId` INT(11)                 NULL,
   `taskWrapperId`       INT(11)                 NOT NULL,
-  `isArchived`          INT(11)                 NOT NULL
+  `isArchived`          INT(11)                 NOT NULL,
+  `isPrince`            INT(11)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

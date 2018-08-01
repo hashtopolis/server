@@ -99,6 +99,9 @@ else {
   $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
   $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
   foreach ($chunks as $chunk) {
+    if($task->getIsPrince() == 1 && $task->getKeyspace() <= 0){
+      continue;
+    }
     $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);
     $end = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength()) / $keyspace) - 1;
     //division by 10000 is required because rprogress is saved in percents with two decimals

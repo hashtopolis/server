@@ -27,6 +27,10 @@ class DStats {
   const TASKS_QUEUED       = "tasksQueued";
 }
 
+class DPrince {
+  const PRINCE_KEYSPACE = -1605;
+}
+
 // operating systems
 class DOperatingSystem {
   const LINUX   = 0;

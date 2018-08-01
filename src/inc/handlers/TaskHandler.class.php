@@ -43,15 +43,15 @@ class TaskHandler implements Handler {
           break;
         case DTaskAction::ABORT_CHUNK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
-          TaskUtils::abortChunk($_POST['chunk'], $LOGIN->getUser());
+          TaskUtils::abortChunk($_POST['chunk'], $ACCESS_CONTROL->getUser());
           break;
         case DTaskAction::RESET_CHUNK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
-          TaskUtils::resetChunk($_POST['chunk'], $LOGIN->getUser());
+          TaskUtils::resetChunk($_POST['chunk'], $ACCESS_CONTROL->getUser());
           break;
         case DTaskAction::PURGE_TASK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
-          TaskUtils::purgeTask($_POST['task'], $LOGIN->getUser());
+          TaskUtils::purgeTask($_POST['task'], $ACCESS_CONTROL->getUser());
           break;
         case DTaskAction::SET_COLOR:
           $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
@@ -120,6 +120,7 @@ class TaskHandler implements Handler {
     $useNewBench = intval(@$_POST['benchType']);
     $isCpuTask = intval(@$_POST['cpuOnly']);
     $isSmall = intval(@$_POST['isSmall']);
+    $isPrince = intval(@$_POST['isPrince']);
     $skipKeyspace = intval(@$_POST['skipKeyspace']);
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
@@ -170,6 +171,10 @@ class TaskHandler implements Handler {
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
+    if($isPrince && !$useNewBench){
+      // enforce speed benchmark when using prince
+      $useNewBench = 1;
+    }
     if (preg_match("/[0-9A-Za-z]{6}/", $color) != 1) {
       $color = null;
     }
@@ -187,7 +192,26 @@ class TaskHandler implements Handler {
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
     if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
-      $task = new Task(0, $name, $cmdline, $chunk, $status, 0, 0, 0, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId(), 0);
+      $task = new Task(
+        0,
+        $name,
+        $cmdline,
+        $chunk,
+        $status,
+        0,
+        0,
+        0,
+        $color,
+        $isSmall,
+        $isCpuTask,
+        $useNewBench,
+        $skipKeyspace,
+        $crackerBinary->getId(),
+        $crackerBinaryType->getId(),
+        $taskWrapper->getId(),
+        0,
+        $isPrince
+      );
     }
     else {
       $copy = $FACTORIES::getPretaskFactory()->get($_POST['copy']);
@@ -196,7 +220,26 @@ class TaskHandler implements Handler {
         return;
       }
       // force to copy from pretask to make sure user cannot change anything he is not allowed to
-      $task = new Task(0, $name, $copy->getAttackCmd(), $copy->getChunkTime(), $copy->getStatusTimer(), 0, 0, 0, $copy->getColor(), $copy->getIsSmall(), $copy->getIsCpuTask(), $copy->getUseNewBench(), 0, $crackerBinary->getId(), $crackerBinaryType->getId(), $taskWrapper->getId(), 0);
+      $task = new Task(
+        0,
+        $name,
+        $copy->getAttackCmd(),
+        $copy->getChunkTime(),
+        $copy->getStatusTimer(),
+        0,
+        0,
+        0,
+        $copy->getColor(),
+        $copy->getIsSmall(),
+        $copy->getIsCpuTask(),
+        $copy->getUseNewBench(),
+        0,
+        $crackerBinary->getId(),
+        $crackerBinaryType->getId(),
+        $taskWrapper->getId(),
+        0,
+        0
+      );
       $forward = "pretasks.php";
     }
 
