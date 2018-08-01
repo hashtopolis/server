@@ -70,7 +70,7 @@ CREATE TABLE `AccessGroupUser` (
 
 CREATE TABLE `Agent` (
   `agentId`         INT(11)                      NOT NULL,
-  `agentName`       VARCHAR(50)
+  `agentName`       VARCHAR(100)
                     COLLATE utf8_unicode_ci      NOT NULL,
   `uid`             VARCHAR(100)
                     COLLATE utf8_unicode_ci      NOT NULL,
@@ -911,7 +911,7 @@ CREATE TABLE `SupertaskPretask` (
 
 CREATE TABLE `Task` (
   `taskId`              INT(11)                 NOT NULL,
-  `taskName`            VARCHAR(100)
+  `taskName`            VARCHAR(256)
                         COLLATE utf8_unicode_ci NOT NULL,
   `attackCmd`           VARCHAR(256)
                         COLLATE utf8_unicode_ci NOT NULL,
