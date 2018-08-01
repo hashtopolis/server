@@ -66,15 +66,15 @@
                       </td>
                       <td>
                           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_FILE_ACCESS]])]]}}
-                          <form style='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
-                              <input type="submit" class='btn btn-primary' value="Edit">
-                          </form>
-                          <form style='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
+                            <form style='float: left; padding-right: 5px;' action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
+                              <button type="submit" class='btn btn-primary'><i class="fas fa-edit" aria-hidden="true"></i></button>
+                            </form>
+                            <form style='float: left;' action="files.php?view=[[view]]" method="POST" onSubmit="if (!confirm('Really delete file [[file.getFilename()]]?')) return false;">
                               <input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
                               <input type="hidden" name="csrf" value="[[csrf]]">
                               <input type="hidden" name="file" value="[[file.getId()]]">
-                              <input type="submit" class='btn btn-danger' value="Delete">
-                          </form>
+                              <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+                             </form>
                           {{ENDIF}}
                       </td>
                   </tr>
