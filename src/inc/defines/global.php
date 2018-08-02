@@ -4,6 +4,10 @@ class DLimits {
   const ACCESS_GROUP_MAX_LENGTH = 50;
 }
 
+class DZaps {
+	const LAST_ZAP_CLEANING = "lastZapCleaning";
+}
+
 // log entry types
 class DLogEntry {
   const WARN  = "warning";

@@ -31,8 +31,8 @@ use DBA\AgentBinary;
  */
 class Util {
 	/**
-	 * @param string $type 
-	 * @param string $version 
+	 * @param string $type
+	 * @param string $version
 	 */
 	public static function checkAgentVersion($type, $version){
 		global $FACTORIES;
@@ -423,10 +423,9 @@ class Util {
   public static function zapCleaning() {
     global $FACTORIES;
 
-    //TODO: make this as constant
-    $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
+    $entry = $FACTORIES::getStoredValueFactory()->get(DZaps::LAST_ZAP_CLEANING);
     if ($entry == null) {
-      $entry = new StoredValue("lastZapCleaning", 0);
+      $entry = new StoredValue(DZaps::LAST_ZAP_CLEANING, 0);
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
