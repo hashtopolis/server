@@ -1,7 +1,5 @@
 <?php
 
-use DBA\AgentBinary;
-use DBA\QueryFilter;
 use DBA\Factory;
 use DBA\Config;
 
@@ -16,7 +14,7 @@ echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
 Util::checkAgentVersion("python", "0.14");
-Util::checkAgentVersion("csharp", "0.52.2");
+Util::checkAgentVersion("csharp", "0.52.4");
 echo "\n";
 
 echo "Creating User API...";
