@@ -13,7 +13,7 @@ $FACTORIES = new Factory();
 echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.1.4");
+Util::checkAgentVersion("python", "0.1.5");
 Util::checkAgentVersion("csharp", "0.52.4");
 echo "\n";
 
