@@ -21,6 +21,7 @@ use DBA\StoredValue;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\Zap;
+use DBA\AgentBinary;
 
 /**
  *
@@ -29,6 +30,25 @@ use DBA\Zap;
  *         Bunch of useful static functions.
  */
 class Util {
+	/**
+	 * @param string $type 
+	 * @param string $version 
+	 */
+	public static function checkAgentVersion($type, $version){
+		global $FACTORIES;
+
+		$qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+		$binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+		if ($binary != null) {
+			if (Util::versionComparison($binary->getVersion(), $version) == 1) {
+				echo "update $type version... ";
+				$binary->setVersion($version);
+				$FACTORIES::getAgentBinaryFactory()->update($binary);
+				echo "OK";
+			}
+		}
+	}
+
   public static function isYubikeyEnabled() {
     /** @var $CONFIG DataSet */
     global $CONFIG;
