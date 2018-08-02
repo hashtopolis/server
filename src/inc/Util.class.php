@@ -185,7 +185,7 @@ class Util {
     }
 
     $isActive = false;
-    if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $progress < $task->getKeyspace()) {
+    if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == 0)) {
       $isActive = true;
     }
     return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
