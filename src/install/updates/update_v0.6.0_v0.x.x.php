@@ -8,6 +8,7 @@ use DBA\Config;
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
 require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
 
 $FACTORIES = new Factory();
 
