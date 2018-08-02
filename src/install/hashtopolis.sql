@@ -319,7 +319,7 @@ CREATE TABLE `CrackerBinary` (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
-INSERT INTO `crackerbinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
+INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
   (1, 1, '4.1.0', 'https://hashcat.net/files/hashcat-4.1.0.7z', 'hashcat');
 
 -- --------------------------------------------------------
@@ -338,7 +338,7 @@ CREATE TABLE `CrackerBinaryType` (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
-INSERT INTO `crackerbinarytype` (`crackerBinaryTypeId`, `typeName`, `isChunkingAvailable`) VALUES
+INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingAvailable`) VALUES
   (1, 'hashcat', 1);
 
 -- --------------------------------------------------------
