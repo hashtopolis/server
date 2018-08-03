@@ -26,6 +26,7 @@ class AgentUtils {
     $xlabels = [];
     $datasets = [];
     $axes = [];
+    $yLabels = [DAgentStatsType::GPU_TEMP => 'Temperature (°C)', DAgentStatsType::GPU_UTIL => 'Util (%)'];
     $position = 'left';
     $colors = ["#FF0000", "#00FFFF", "#008000", "#FFFF00", "#FF9333", "#800080", "#0000FF"];
     foreach($entries as $entry){
@@ -37,7 +38,7 @@ class AgentUtils {
         }
       }
       if(!$found){
-        $axes[] = ["id" => $entry->getStatType(), 'type' => 'linear', 'position' => $position];
+        $axes[] = ["id" => $entry->getStatType(), 'type' => 'linear', 'position' => $position, "display" => true, 'labelString' => $yLabels[$entry->getStatType()]];
         $position = ($position == 'left')?'right':'left';
       }
       $data = explode(",", $entry->getValue());
