@@ -11,8 +11,38 @@ use DBA\AccessGroupAgent;
 use DBA\Chunk;
 use DBA\RegVoucher;
 use DBA\Zap;
+use DBA\AgentStat;
+use DBA\OrderFilter;
 
 class AgentUtils {
+  public static function getGraphData($agent, $type){
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
+
+    $qF = new QueryFilter(AgentStat::STAT_TYPE, $type, "=");
+    $oF = new OrderFilter(AgentStat::TIME, "DESC LIMIT 30");
+    $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+    $xlabels = [];
+    $datasets = [];
+    foreach($entries as $entry){
+      $data = explode(",", $entry->getValue());
+      for($i = 0; $i < sizeof($data); $i++){
+        if(!isset($datasets[$i])){
+          $dataset[$i] = array(
+            "label" => "Device #" . ($i + 1),
+            "fill" => false,
+            "data" => []
+          );
+        }
+        if(!in_array(date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()), $xlabels)){
+          array_unshift($xlabels, date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()));
+        }
+        array_unshift($datasets[$i]['data'], $data[$i]);
+      }
+    }
+    return array("xlabels" => $xlabels, "sets" => $datasets);
+  }
+
   /**
    * @param int $agentId
    * @param boolean $isCpuOnly

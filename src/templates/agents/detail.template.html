@@ -219,6 +219,9 @@
     </table>
   </div>
 </div>
+{{IF [[sizeof([[gpuTemp]])]] > 0}}
+  {%TEMPLATE->agents/temperature%}
+{{ENDIF}}
 {{IF [[sizeof([[errors]])]] > 0}}
   <h3>Error messages:</h3>
   {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}

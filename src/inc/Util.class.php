@@ -426,8 +426,8 @@ class Util {
       $entry = new StoredValue(DStats::LAST_STAT_CLEANING, 0);
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
-    if (time() - $entry->getVal() > 3600) { // TODO: make configurable
-      $qF = new QueryFilter(AgentStat::TIME, time() - 3600, "<=");
+    if (time() - $entry->getVal() > 600) {
+      $qF = new QueryFilter(AgentStat::TIME, time() - 3600, "<="); // TODO: make configurable
       $FACTORIES::getAgentStatFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
 
       $entry->setVal(time());
