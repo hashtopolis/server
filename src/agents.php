@@ -81,6 +81,7 @@ if (isset($_GET['id'])) {
     // load agent detail data
     $data = AgentUtils::getGraphData($agent, DAgentStatsType::GPU_TEMP);
     $OBJECTS['gpuTemp'] = json_encode($data['sets']);
+    $OBJECTS['gpuTempAvailable'] = (sizeof($data['sets']) > 0)?true:false;
     $OBJECTS['gpuTempXLabels'] = json_encode($data['xlabels']);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");

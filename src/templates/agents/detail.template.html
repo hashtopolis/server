@@ -219,7 +219,7 @@
     </table>
   </div>
 </div>
-{{IF [[sizeof([[gpuTemp]])]] > 0}}
+{{IF [[gpuTempAvailable]] > 0}}
   {%TEMPLATE->agents/detail.temperature%}
 {{ENDIF}}
 {{IF [[sizeof([[errors]])]] > 0}}
