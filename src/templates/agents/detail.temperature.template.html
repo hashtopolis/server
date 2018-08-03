@@ -1,5 +1,9 @@
 ﻿<h3>GPU Temperatures</h3>
-<canvas id="gpuTemp" style="width: 100% !important;"></canvas>
+<div class="row">
+    <div class="col col-12">
+        <canvas id="gpuTemp"></canvas>
+    </div>
+</div>
 
 <script type="text/javascript">
     var config = {
@@ -10,6 +14,7 @@
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             tooltips: {
                 mode: 'index',
                 intersect: false,
