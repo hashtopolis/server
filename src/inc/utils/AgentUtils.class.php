@@ -21,9 +21,9 @@ class AgentUtils {
     global $FACTORIES, $CONFIG;
 
     $qF = new ContainFilter(AgentStat::STAT_TYPE, $types);
-    $oF1 = new OrderFilter(AgentStat::TIME, "DESC LIMIT 100"); // TODO: make this configurable
-    $oF2 = new OrderFilter(AgentStat::STAT_TYPE, "ASC");
-    $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => [$oF1, $oF2]));
+    $oF1 = new OrderFilter(AgentStat::TIME, "DESC");
+    $oF2 = new OrderFilter(AgentStat::STAT_TYPE, "ASC LIMIT 100"); // TODO: make this configurable
+    $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
     $xlabels = [];
     $datasets = [];
     $axes = [];
