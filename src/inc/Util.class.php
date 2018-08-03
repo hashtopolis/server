@@ -21,6 +21,7 @@ use DBA\StoredValue;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\Zap;
+use DBA\AgentBinary;
 
 /**
  *
@@ -29,6 +30,25 @@ use DBA\Zap;
  *         Bunch of useful static functions.
  */
 class Util {
+	/**
+	 * @param string $type
+	 * @param string $version
+	 */
+	public static function checkAgentVersion($type, $version){
+		global $FACTORIES;
+
+		$qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+		$binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+		if ($binary != null) {
+			if (Util::versionComparison($binary->getVersion(), $version) == 1) {
+				echo "update $type version... ";
+				$binary->setVersion($version);
+				$FACTORIES::getAgentBinaryFactory()->update($binary);
+				echo "OK";
+			}
+		}
+	}
+
   public static function isYubikeyEnabled() {
     /** @var $CONFIG DataSet */
     global $CONFIG;
@@ -121,9 +141,12 @@ class Util {
   public static function insertFile($path, $name, $type) {
     global $FACTORIES;
 
-    $fileType = DFileType::WORDLIST;
+    $fileType = DFileType::OTHER;
     if ($type == 'rule') {
       $fileType = DFileType::RULE;
+    }
+    else if ($type == 'dict'){
+      $fileType = DFileType::WORDLIST;
     }
     $file = new File(0, $name, Util::filesize($path), 1, $fileType);
     $file = $FACTORIES::getFileFactory()->save($file);
@@ -162,7 +185,7 @@ class Util {
     }
 
     $isActive = false;
-    if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $progress < $task->getKeyspace()) {
+    if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
     return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
@@ -188,7 +211,7 @@ class Util {
       }
       $sizeFiles += $file->getSize();
     }
-    return array(sizeof($files), $fileSecret, $sizeFiles);
+    return array(sizeof($files), $fileSecret, $sizeFiles, $files);
   }
 
   /**
@@ -226,16 +249,17 @@ class Util {
     return Util::arrayOfIds($accessGroups);
   }
 
-  public static function loadTasks() {
+  public static function loadTasks($archived = false) {
     /** @var $LOGIN Login */
     global $FACTORIES, $OBJECTS, $LOGIN;
 
     $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
 
-    $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
+    $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
+    $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, ($archived)?1:0, "=");
     $oF1 = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $oF2 = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
-    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF1, $oF2)));
 
     $taskList = array();
     foreach ($taskWrappers as $taskWrapper) {
@@ -278,6 +302,7 @@ class Util {
           $subSet->addValue('keyspace', $task->getKeyspace());
           $subSet->addValue('cpuOnly', $task->getIsCpuTask());
           $subSet->addValue('isSmall', $task->getIsSmall());
+          $subSet->addValue('isPrince', $task->getIsPrince());
           $subSet->addValue('chunkTime', $task->getChunkTime());
           $subSet->addValue('taskProgress', $task->getKeyspaceProgress());
           $subSet->addValue('priority', $task->getPriority());
@@ -345,6 +370,7 @@ class Util {
         $set->addValue('hashlistCracked', $hashlist->getCracked());
         $set->addValue('chunkTime', $task->getChunkTime());
         $set->addValue('isSecret', $hashlist->getIsSecret());
+        $set->addValue('isPrince', $task->getIsPrince());
         $set->addValue('priority', $task->getPriority());
         $set->addValue('keyspace', $task->getKeyspace());
         $set->addValue('isActive', $taskInfo[2]);
@@ -397,10 +423,9 @@ class Util {
   public static function zapCleaning() {
     global $FACTORIES;
 
-    //TODO: make this as constant
-    $entry = $FACTORIES::getStoredValueFactory()->get("lastZapCleaning");
+    $entry = $FACTORIES::getStoredValueFactory()->get(DZaps::LAST_ZAP_CLEANING);
     if ($entry == null) {
-      $entry = new StoredValue("lastZapCleaning", 0);
+      $entry = new StoredValue(DZaps::LAST_ZAP_CLEANING, 0);
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
@@ -541,7 +566,6 @@ class Util {
 
   /**
    * Checks if the task is completed and returns the html tick image if this is the case.
-   * TODO: remove this function and add this tick as a glyphicon and also without using this function
    * @param $prog int progress so far
    * @param $total int total to be done
    * @return string either the check.png with Finished or an empty string
@@ -567,18 +591,6 @@ class Util {
       return "Unknown" . (strlen($id) > 0) ? "-$id" : "";
     }
     return $user->getUsername();
-  }
-
-  /**
-   * Used in Template. Subtracts two variables
-   * TODO: this should be removed, as it can be done by Util::calculate
-   * TODO: also check if we really need this calculating function or if it can be done otherwise
-   * @param $x int value 1
-   * @param $y int value 2
-   * @return mixed
-   */
-  public static function subtract($x, $y) {
-    return ($x - $y);
   }
 
   /**
@@ -677,22 +689,17 @@ class Util {
           return $platforms[0];
         }
         return $oses[$val];
-        break;
       case 'states':
         return $states[$val];
-        break;
       case 'formats':
         return $formats[$val];
-        break;
       case 'formattables':
         return $formattables[$val];
-        break;
       case 'platforms':
         if ($val == '-1') {
           return $platforms[0];
         }
         return $platforms[$val];
-        break;
     }
     return "";
   }
@@ -819,8 +826,8 @@ class Util {
           break;
 
         case "import":
-          if (file_exists("import/" . $sourcedata)) {
-            rename("import/" . $sourcedata, $target);
+          if (file_exists(dirname(__FILE__) . "/../import/" . $sourcedata)) {
+            rename(dirname(__FILE__) . "/../import/" . $sourcedata, $target);
             if (file_exists($target)) {
               $success = true;
             }
@@ -1173,6 +1180,12 @@ class Util {
   }
 
   public static function countLines($tmpfile) {
+    if (stripos(PHP_OS, "WIN") === 0) {
+      // windows line count
+      $ret = exec('find /c /v "" "' . $tmpfile . '"');
+      $ret = str_replace('-', '', str_ireplace($tmpfile . ':', '', $ret));
+      return intval($ret);
+    }
     return intval(exec("wc -l '$tmpfile'"));
   }
 

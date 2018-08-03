@@ -10,6 +10,7 @@ use DBA\HashBinary;
 use DBA\Hashlist;
 use DBA\QueryFilter;
 use DBA\Zap;
+use DBA\QueryFilterWithNull;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
@@ -42,6 +43,9 @@ class APISendProgress extends APIBasic {
     $task = $FACTORIES::getTaskFactory()->get($chunk->getTaskId());
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "No task exists for the given chunk");
+    }
+    else if($task->getIsArchived() == 1){
+      $this->sendErrorResponse(PActions::SEND_PROGRESS, "Task is archived, no work to do");
     }
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
@@ -350,7 +354,7 @@ class APISendProgress extends APIBasic {
         
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, Util::arrayOfIds($hashlists));
         $qF2 = new QueryFilter(Zap::ZAP_ID, ($agentZap->getLastZapId() == null) ? 0 : $agentZap->getLastZapId(), ">");
-        $qF3 = new QueryFilter(Zap::AGENT_ID, $this->agent->getId(), "<>");
+        $qF3 = new QueryFilterWithNull(Zap::AGENT_ID, $this->agent->getId(), "<>", true);
         $zaps = $FACTORIES::getZapFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2, $qF3)));
         foreach ($zaps as $zap) {
           if ($zap->getId() > $agentZap->getId()) {

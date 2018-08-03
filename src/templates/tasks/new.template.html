@@ -27,7 +27,7 @@
             <td>
               <select class='form-control' name="hashlist">
                 {{FOREACH list;[[lists]]}}
-                  <option value="[[list.getVal('id')]]" {{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
+                <option value="[[list.getVal('id')]]" {{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
                 {{ENDFOREACH}}
               </select> (hashlist needs to be created before task)
             </td>
@@ -92,6 +92,15 @@
             </td>
           </tr>
           <tr>
+            <td>This is a PRINCE task (the command line is passed to prince which will be piped to the cracker):</td>
+            <td>
+              <select name="isPrince" class="form-control" title="Is PRINCE" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                <option value="0" {{IF [[copy.getIsPrince()]] == 0}} selected{{ENDIF}}>No</option>
+                <option value="1" {{IF [[copy.getIsPrince()]] == 1}} selected{{ENDIF}}>Yes</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
             <td>Skip a given keyspace at the beginning of the task:</td>
             <td>
               <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
@@ -102,7 +111,7 @@
             <td>
               <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
                 {{FOREACH binary;[[binaries]]}}
-                  <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}} selected{{ENDIF}}>[[binary.getTypeName()]]</option>
+                <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}} selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                 {{ENDFOREACH}}
               </select>
               <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">

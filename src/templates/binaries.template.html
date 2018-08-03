@@ -95,14 +95,14 @@
           <td><code>[[binary.getFilename()]]</code></td>
           <td>[[binary.getVersion()]]</td>
           <td>
-            <a href="binaries.php?edit=[[binary.getId()]]"><button class="btn btn-primary">Edit</button></a>
+            <a href="binaries.php?edit=[[binary.getId()]]" class="btn btn-primary float-right"><i class="fas fa-edit" aria-hidden="true"></i></a>
           </td>
           <td>
-            <form action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
+            <form class="float-right" action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
               <input type='hidden' name='action' value='[[$DAgentBinaryAction::DELETE_BINARY]]'>
               <input type="hidden" name="id" value="[[binary.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <input type="submit" class='btn btn-danger' value="Delete">
+              <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
             </form>
           </td>
 			  </tr>

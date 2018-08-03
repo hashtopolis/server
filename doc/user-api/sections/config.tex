@@ -1,0 +1,172 @@
+\section*{Server Config (\textit{config})}
+	Used to access server configuration.
+
+\subsection*{\textit{listSections}}
+	Lists the available config sections.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "config",
+		  "request": "listSections",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "config",
+		  "request": "listSections",
+		  "response": "OK",
+		  "configSections": [
+		    {
+		      "configSectionId": 1,
+		      "name": "Cracking\/Tasks"
+		    },
+		    {
+		      "configSectionId": 2,
+		      "name": "Yubikey"
+		    },
+		    {
+		      "configSectionId": 3,
+		      "name": "Finetuning"
+		    },
+		    {
+		      "configSectionId": 4,
+		      "name": "UI"
+		    },
+		    {
+		      "configSectionId": 5,
+		      "name": "Server"
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{listConfig}}
+	List all currently known config values.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "config",
+		  "request": "listConfig",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "config",
+		  "request": "listConfig",
+		  "response": "OK",
+		  "items": [
+		    {
+		      "item": "agenttimeout",
+		      "configSectionId": "1",
+		      "itemDescription": "Time in seconds the server will consider a client inactive or timed out."
+		    },
+            ...
+            ...
+		    {
+		      "item": "benchtime",
+		      "configSectionId": "1",
+		      "itemDescription": "Time in seconds an agent should benchmark a task"
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{getConfig}}
+	Get the type and specific value of a config item. The following config types exist:
+    \begin{description}
+        \item[string] basically everything is accepted as string
+        \item[email] similar to string, except that it's tested if it is a valid email
+        \item[number] all kind of numeric value
+        \item[checkbox] boolean value (true or false)
+    \end{description}
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "config",
+  "request": "getConfig",
+  "configItem": "hashlistAlias",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "config",
+  "request": "getConfig",
+  "response": "OK",
+  "item": "hashlistAlias",
+  "configType": "string",
+  "value": "#HL#"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{setConfig}}
+	Update a value for a config item. Force only needs to be set to true if a new item should be created. Otherwise it will throw an error when it detects an unknown item.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "config",
+  "request": "setConfig",
+  "configItem": "contact",
+  "value": "test@example.org",
+  "force": false,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "config",
+  "request": "setConfig",
+  "response": "ERROR",
+  "message": "Unknown config item!"
+}
+		\end{verbatim}
+	}
+    {
+        \color{blue}
+        \begin{verbatim}
+{
+  "section": "config",
+  "request": "setConfig",
+  "configItem": "contactEmail",
+  "value": "test@example.org",
+  "force": false,
+  "accessKey": "mykey"
+}
+        \end{verbatim}
+    }
+    {
+        \color{OliveGreen}
+        \begin{verbatim}
+{
+  "section": "config",
+  "request": "setConfig",
+  "response": "OK"
+}
+        \end{verbatim}
+    }
+
+
+
+
+
+
+
+

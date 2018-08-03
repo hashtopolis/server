@@ -1,0 +1,104 @@
+\documentclass{article}
+\author{s3in!c $\langle$s3inlc@hashes.org$\rangle$ }
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[left=10mm, right=10mm, top=20mm, bottom=20mm]{geometry}
+\usepackage[english]{babel}
+\usepackage{fancyvrb}
+\usepackage[dvipsnames]{xcolor}
+\begin{document}
+	\title{Hashtopolis User API (V1)}
+	\maketitle
+	\section*{Introduction}
+	The communication for the User API is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
+	Every request has a \textit{section} and a \textit{request} field to state which action should be executed. Every response again then contains the requested section and request and gives a \textit{status} to indicate if the query was successful or not. To increase the readability of this document, requests are always in blue, successful responses in green and error messages in red.
+
+	\section*{Errors}
+	In case of an error with the query which the user sends to the server, the response will have following format with the corresponding action which was requested and the error message which should help in getting information about this error.
+	{	
+		\color{BrickRed}
+		\begin{verbatim}
+		{
+		  "section":"task",
+		  "request":"create",
+		  "status":"ERROR",
+		  "message":"You are not allowed to create tasks!"
+		}
+		\end{verbatim}
+	}
+	
+	\section*{Sections}
+	This part lists all sections available on the API. The value in the brackets denotes the according value to be sent on API queries.
+	\begin{itemize}
+		\item{Access Control (\textit{access})}
+		\item{Agents (\textit{agent})}
+		\item{Server Config (\textit{config})}
+		\item{Crackers (\textit{cracker})}
+		\item{Files (\textit{file})}
+		\item{Groups (\textit{group})}
+		\item{Hashlists (\textit{hashlist})}
+		\item{Preconfigured Tasks (\textit{pretask})}
+		\item{Superhashlists (\textit{superhaslist})}
+		\item{Supertasks (\textit{supertask})}
+		\item{Tasks (\textit{task})}
+		\item{Test (\textit{test})}
+		\item{User Management (\textit{user})}
+	\end{itemize}
+	\pagebreak
+
+	\input{sections/test.tex}
+	\pagebreak
+	\input{sections/agent.tex}
+	\pagebreak
+	\input{sections/task.tex}
+	\pagebreak
+	\input{sections/pretask.tex}
+	\pagebreak
+	\input{sections/supertask.tex}	
+	\pagebreak
+	\input{sections/hashlist.tex}
+	\pagebreak
+	\input{sections/superhashlist.tex}
+	\pagebreak
+	\input{sections/file.tex}
+	\pagebreak
+	\input{sections/cracker.tex}
+	\pagebreak
+	\input{sections/config.tex}
+	\pagebreak
+    \input{sections/user.text}
+	\pagebreak
+    \input{sections/group.tex}
+    \pagebreak
+    \input{sections/access.tex}
+    \pagebreak
+    \input{sections/account.tex}
+
+
+
+
+		
+%\subsection*{\textit{temporary}}
+%	TODO
+%	{
+%		\color{blue}
+%		\begin{verbatim}
+%		{
+%		"section": "agent",
+%		"request": "deleteVoucher",
+%		"voucher": "Gjawgidkr4",
+%		"accessKey": "mykey"
+%		}
+%		\end{verbatim}
+%	}
+%	{
+%		\color{OliveGreen}
+%		\begin{verbatim}
+%		{
+%		"section": "agent",
+%		"request": "deleteVoucher",
+%		"response": "OK"
+%		}
+%		\end{verbatim}
+%	}
+\end{document}

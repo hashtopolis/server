@@ -44,3 +44,29 @@ td {
 .btn-light {
     border-color: #c3c3c3;
 }
+
+tr {
+    height: 25px;
+}
+
+.popover {
+    max-width: 50%;
+}
+
+@media (min-width: 992px) {
+    .modal-lg {
+        max-width: 80%;
+    }
+}
+
+@media only screen and (min-width : 1200px) {
+    .container {
+        min-width: 1100px;
+    }
+}
+
+@media only screen and (min-width : 1500px) {
+    .container {
+        min-width: 1400px;
+    }
+}

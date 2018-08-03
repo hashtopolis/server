@@ -55,7 +55,8 @@ class APIGetFile extends APIBasic {
         PResponseGetFile::FILENAME => $filename,
         PResponseGetFile::EXTENSION => $extension,
         PResponseGetFile::RESPONSE => PValues::SUCCESS,
-        PResponseGetFile::URL => "getFile.php?file=" . $file->getId() . "&token=" . $this->agent->getToken()
+        PResponseGetFile::URL => "getFile.php?file=" . $file->getId() . "&token=" . $this->agent->getToken(),
+        PResponseGetFile::FILESIZE => (int)$file->getSize()
       )
     );
   }

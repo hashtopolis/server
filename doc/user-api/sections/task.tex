@@ -1,0 +1,630 @@
+	\section*{Tasks (\textit{task})}
+		Used to access all functions around tasks. Please note that the user must have access to the groups where a task is belonging to, to retrieve it and to be able to apply changes.
+		\subsection*{\textit{listTasks}}
+			List all tasks on the server. There are two task types:
+			\begin{description}
+				\item[0] Normal Task
+				\item[1] Supertask
+			\end{description}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listTasks",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listTasks",
+				  "response": "OK",
+				  "tasks": [
+				    {
+				      "taskId": 7587,
+				      "name": "test 2",
+				      "type": 0,
+				      "hashlistId": 1,
+				      "priority": 5
+				    },
+				    {
+				      "supertaskId": 33,
+				      "name": "Increment ?a",
+				      "type": 1,
+				      "hashlistId": 1,
+				      "priority": 3
+				    },
+				    {
+				      "supertaskId": 32,
+				      "name": "Supertask Test",
+				      "type": 1,
+				      "hashlistId": 1,
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7580,
+				      "name": "test 1",
+				      "type": 0,
+				      "hashlistId": 1,
+				      "priority": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getTask}}
+			Get the details for a specific task. Note that this request can only be done with tasks or subtasks, but not with supertasks.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getTask",
+				  "taskId": 7587,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getTask",
+				  "response": "OK",
+				  "taskId": 7587,
+				  "name": "testing",
+				  "attack": "#HL# -a 0 top10000.txt -r dive.rule",
+				  "cunksize": 600,
+				  "color": null,
+				  "benchmarkType": "speed",
+				  "statusTimer": 5,
+				  "priority": 0,
+				  "isCpuOnly": false,
+				  "isSmall": false,
+				  "skipKeyspace": 0,
+				  "keyspace": 10000,
+				  "dispatched": 10000,
+				  "hashlistId": 1,
+				  "imageUrl": "http:\/\/localhost\/hashtopolis\/src\/api\/taskimg.php?task=7587",
+				  "files": [
+				    {
+				      "fileId": 2,
+				      "filename": "dive.rule",
+				      "size": 887155
+				    },
+				    {
+				      "fileId": 3653,
+				      "filename": "top10000.txt",
+				      "size": 76508
+				    }
+				  ],
+				  "speed": 0,
+				  "searched": 10000,
+				  "chunkIds": [
+				    31
+				  ],
+				  "agents": [
+				    {
+				      "agentId": 2,
+				      "benchmark": "0",
+				      "speed": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{listSubtasks}}
+			List all subtasks of a given running supertask.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listSubtasks",
+				  "supertaskId": 33,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "listSubtasks",
+				  "response": "OK",
+				  "subtasks": [
+				    {
+				      "taskId": 7582,
+				      "name": "?a?a?a",
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7583,
+				      "name": "?a?a?a?a",
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7584,
+				      "name": "?a?a?a?a?a",
+				      "priority": 0
+				    },
+				    {
+				      "taskId": 7585,
+				      "name": "?a?a?a?a?a?a",
+				      "priority": 0
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getChunk}}
+			Get details about a specific chunk. Progress is given in percents, start/length/checkpoint are in relation to the keyspace.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getChunk",
+				  "chunkId": 30,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "getChunk",
+				  "response": "OK",
+				  "chunkId": 30,
+				  "start": 23141360,
+				  "length": 5785340,
+				  "checkpoint": 28926700,
+				  "progress": 100,
+				  "taskId": 7585,
+				  "agentId": 2,
+				  "dispatchTime": 1531313146,
+				  "lastActivity": 1531313738,
+				  "state": 4,
+				  "cracked": 0,
+				  "speed": 0
+				}
+				\end{verbatim}
+			}
+			\subsection*{\textit{createTask}}
+				Create a new task (one example with files and one without).
+				{
+					\color{blue}
+					\begin{verbatim}
+					{
+					  "section": "task",
+					  "request": "createTask",
+					  "name": "API Task",
+					  "hashlistId": 1,
+					  "attackCmd": "#HL# -a 0 -r dive.rule example.dict",
+					  "chunksize": 600,
+					  "statusTimer": 5,
+					  "benchmarkType": "speed",
+					  "color": "5D5D5D",
+					  "isCpuOnly": false,
+					  "isSmall": false,
+					  "skip": 0,
+					  "crackerVersionId": 2,
+					  "files": [
+					    1,
+					    2
+					  ],
+					  "priority": 100,
+					  "accessKey": "mykey"
+					}
+					\end{verbatim}
+				}
+				{
+					\color{blue}
+					\begin{verbatim}
+					{
+					  "section": "task",
+					  "request": "createTask",
+					  "name": "API Task BF",
+					  "hashlistId": 1,
+					  "attackCmd": "#HL# -a 3 ?l?l?l?l?l?l",
+					  "chunksize": 600,
+					  "statusTimer": 5,
+					  "benchmarkType": "speed",
+					  "color": "5D5D5D",
+					  "isCpuOnly": false,
+					  "isSmall": true,
+					  "skip": 0,
+					  "crackerVersionId": 2,
+					  "files": [],
+					  "priority": 99,
+					  "accessKey": "mykey"
+					}
+					\end{verbatim}
+				}
+				{
+					\color{OliveGreen}
+					\begin{verbatim}
+					{
+					  "section": "task",
+					  "request": "createTask",
+					  "response": "OK"
+					}
+					\end{verbatim}
+				}
+		\subsection*{\textit{runPretask}}
+			Create a task based on a preconfigured task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "runPretask",
+				  "name": "API Run pretask",
+				  "hashlistId": 1,
+				  "pretaskId": 1,
+				  "crackerVersionId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "runPretask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}		
+		\subsection*{\textit{runSupertask}}
+			Create a supertask out of a configured preconfigured task collection.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "runSupertask",
+				  "hashlistId": 1,
+				  "supertaskId": 1,
+				  "crackerVersionId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "runSupertask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}	
+		\subsection*{\textit{setTaskPriority}}
+			Set the priority for a task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskPriority",
+				  "taskId": 7580,
+				  "priority": 9000,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskPriority",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}		
+		\subsection*{\textit{setSupertaskPriority}}
+			Set the priority for a supertask.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskPriority",
+				  "supertaskId": 42,
+				  "supertaskPriority": 9000,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskPriority",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskName}}
+			Set the name for a task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskName",
+				  "taskId": 7580,
+				  "name": "New Task Name",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskName",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskColor}}
+			Set the color of a task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskColor",
+				  "taskId": 7580,
+				  "color": "78ABCD",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskColor",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskCpuOnly}}
+			Set if a task is a CPU only task or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskCpuOnly",
+				  "taskId": 7580,
+				  "isCpuOnly": false,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskCpuOnly",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskSmall}}
+			Set if a task is small or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskSmall",
+				  "taskId": 7580,
+				  "isSmall": false,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskSmall",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{taskUnassignAgent}}
+			Unassign an agent from his task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskUnassignAgent",
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskUnassignAgent",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{deleteTask}}
+			Completely delete a task.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deleteTask",
+				  "taskId": 7580,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deleteTask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}		
+		\subsection*{\textit{purgeTask}}
+			Purge all task data and reset it to initial state.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "purgeTask",
+				  "taskId": 7591,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "purgeTask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setSupertaskName}}
+			Set the name of a running supertask.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskName",
+				  "supertaskId": 43,
+				  "name": "New Supertask Name",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskName",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{deleteSupertask}}
+			Delete a running supertask. This includes all contained subtasks.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deleteSupertask",
+				  "supertaskId": 43,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "deleteSupertask",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+\subsection*{\textit{archiveTask}}
+	Archive a task.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "task",
+		  "request": "archiveTask",
+		  "taskId": 7601,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "task",
+		  "request": "archiveTask",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{archiveSupertask}}
+	Archive a supertask (including all subtasks).
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "task",
+		  "request": "archiveSupertask",
+		  "supertaskId": 54,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "task",
+		  "request": "archiveSupertask",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+
+
+
+
+
+
+
+
+
+
+
+

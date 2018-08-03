@@ -1,0 +1,399 @@
+	\section*{Agents (\textit{agent})}
+		Used to access all functions around agents. Please note that the user must have access to the groups where an agent is member of to retrieve it and to be able to apply changes.
+		\subsection*{\textit{listAgents}}
+			List all agents with some basic informations.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "listAgents",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "listAgents",
+				  "response": "OK",
+				  "agents": [
+				    {
+				      "agentId": "2",
+				      "name": "cracker1",
+				      "devices": [
+				        "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",
+				        "NVIDIA Quadro 600"
+				      ]
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{get}}
+			Retrieve all the informations about a specific agent by providing its ID. The last action time is a UNIX timestamp and if the configuration on the server is set to hide the IP of the agents, the value will just be \textit{Hidden} instead of the IP.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "get",
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "get",
+				  "response": "OK",
+				  "name": "cracker1",
+				  "devices": [
+				    "Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz",
+				    "NVIDIA Quadro 600"
+				  ],
+				  "owner": {
+				    "userId": 1,
+				    "username": "htp"
+				  },
+				  "isCpuOnly": false,
+				  "isTrusted": true,
+				  "isActive": true,
+				  "token": "0lBfAp7YQh",
+				  "extraParameters": "--force",
+				  "errorFlag": 2,
+				  "lastActivity": {
+				    "action": "getTask",
+				    "time": 1531316240,
+				    "ip": "127.0.0.1"
+				  }
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setActive}}
+			Set an agent active/inactive. 
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setActive",
+				  "active": false,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setActive",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{changeOwner}}
+			Either set an owner for an agent or remove the owner from it. The user can either be specified by providing the user ID or the username. If no owner should be specified, the user value must be \textit{null}.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "user": 1,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "user": "testuser",
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "user": null,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "changeOwner",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setName}}
+			Set the name of the agent.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setName",
+				  "name": "cracker1",
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setName",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setCpuOnly}}
+			Set if an agent is CPU only or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setCpuOnly",
+				  "cpuOnly": true,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setCpuOnly",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setExtraParams}}
+			Set agent specific command line parameters for the agent which are included in the cracker command line call on the agent.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setExtraParams",
+				  "extraParameters": "-d 1,2",
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setExtraParams",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setErrorFlag}}
+			Set how errors on the agent should be handled on the server. Following values can be given as \textit{ignoreErrors} value:
+			\begin{description}
+				\item[0] In case of an error, the error message gets saved on the server and the agent will be put into inactive state.
+				\item[1] In case of an error, the error message gets saved on the server, but the agent will be given further chunks to work on if he requests so.
+				\item[2] In case of an error, nothing will be saved on the server and the agent can continue to work and will not put into inactive state.
+			\end{description}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setErrorFlag",
+				  "ignoreErrors": 0,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setErrorFlag",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTrusted}}
+			Set if an agent is trusted or not.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setTrusted",
+				  "trusted": false,
+				  "agentId": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "setTrusted",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		
+		\subsection*{\textit{listVouchers}}
+			Lists all currently existing vouchers on the server which can be used to register new agents.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "listVouchers",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "getBinaries",
+				  "response": "OK",
+				  "vouchers": [
+				    "sM2q6CwiPY",
+				    "xkw782a3x9",
+				    "2drg6Vsqor",
+				    "AZyY8dK1ao"
+				  ]
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{createVoucher}}
+			Create a new voucher on the server. It is optional to specify a voucher code otherwise the server will just generate a random one. The server always sends back the created voucher.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "createVoucher",
+				  "voucher": "mySpecificVoucher",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "createVoucher",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "createVoucher",
+				  "response": "OK",
+				  "voucher": "Gjawgidkr4"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{deleteVoucher}}
+			Delete a voucher from the server.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "deleteVoucher",
+				  "voucher": "Gjawgidkr4",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "deleteVoucher",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{getBinaries}}
+			Lists which agent binaries are available on the server to be used for agents.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "getBinaries",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "agent",
+				  "request": "getBinaries",
+				  "response": "OK",
+				   "apiUrl": "http:\/\/localhost\/hashtopolis\/src\/api\/api\/server.php",
+				  "binaries": [
+				    {
+				      "name": "csharp",
+				      "os": "Windows, Linux(mono), OS X(mono)",
+				      "url": "http:\/\/localhost\/hashtopolis\/src\/api\/agents.php?download=1",
+				      "version": "0.52.2",
+				      "filename": "hashtopolis.exe"
+				    },
+				    {
+				      "name": "python",
+				      "os": "Windows, Linux, OS X",
+				      "url": "http:\/\/localhost\/hashtopolis\/src\/api\/agents.php?download=2",
+				      "version": "0.1.4",
+				      "filename": "hashtopolis.zip"
+				    }
+				  ]
+				}
+				\end{verbatim}
+			}

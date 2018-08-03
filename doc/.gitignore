@@ -1,3 +1,4 @@
-/protocol.aux
-/protocol.log
-/protocol.synctex.gz
+*.aux
+*.log
+*.synctex.gz
+

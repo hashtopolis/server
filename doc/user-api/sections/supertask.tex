@@ -1,0 +1,203 @@
+\section*{Supertasks (\textit{supertask})}
+	Used to access all functions around prepared supertasks. 
+	\subsection*{\textit{importSupertask}}
+		Create a supertask configuration with a given list of masks.
+		{
+			\color{blue}
+			\begin{verbatim}
+			{
+			  "section": "supertask",
+			  "request": "importSupertask",
+			  "name": "Mask Supertask",
+			  "isCpuOnly": false,
+			  "isSmall": false,
+			  "masks": [
+			    "?d?d?d?d",
+			    "?l?d?d?d?d",
+			    "?d?d?d?d?d",
+			    "?u?d?d?d?d"
+			  ],
+			  "optimizedFlag": true,
+			  "crackerTypeId": 1,
+			  "accessKey": "mykey"
+			}
+			\end{verbatim}
+		}
+		{
+			\color{OliveGreen}
+			\begin{verbatim}
+			{
+			  "section": "supertask",
+			  "request": "importSupertask",
+			  "response": "OK"
+			}
+			\end{verbatim}
+		}	
+	\subsection*{\textit{listSupertasks}}
+		Lists the available supertasks on the server which group preconfigured tasks together.
+		{
+			\color{blue}
+			\begin{verbatim}
+			{
+			  "section": "supertask",
+			  "request": "listSupertasks",
+			  "accessKey": "mykey"
+			}
+			\end{verbatim}
+		}
+		{
+			\color{OliveGreen}
+			\begin{verbatim}
+			{
+			  "section": "supertask",
+			  "request": "listSupertasks",
+			  "response": "OK",
+			  "supertasks": [
+			    {
+			      "supertaskId": 1,
+			      "name": "Supertask Test"
+			    },
+			    {
+			      "supertaskId": 2,
+			      "name": "Increment ?a"
+			    }
+			  ]
+			}
+			\end{verbatim}
+		}
+	\subsection*{\textit{getSupertask}}
+		Get detail information of a supertask.
+		{
+			\color{blue}
+			\begin{verbatim}
+			{
+			  "section": "supertask",
+			  "request": "getSupertask",
+			  "supertaskId": 2,
+			  "accessKey": "mykey"
+			}
+			\end{verbatim}
+		}
+		{
+			\color{OliveGreen}
+			\begin{verbatim}
+			{
+			  "section": "supertask",
+			  "request": "getSupertask",
+			  "response": "OK",
+			  "supertaskId": 2,
+			  "name": "Increment ?a",
+			  "pretasks": [
+			    {
+			      "pretaskId": 2,
+			      "name": "?a?a?a",
+			      "priority": 6
+			    },
+			    {
+			      "pretaskId": 3,
+			      "name": "?a?a?a?a",
+			      "priority": 5
+			    },
+			    {
+			      "pretaskId": 4,
+			      "name": "?a?a?a?a?a",
+			      "priority": 4
+			    },
+			    {
+			      "pretaskId": 5,
+			      "name": "?a?a?a?a?a?a",
+			      "priority": 3
+			    },
+			    {
+			      "pretaskId": 6,
+			      "name": "?a?a?a?a?a?a?a",
+			      "priority": 2
+			    },
+			    {
+			      "pretaskId": 1,
+			      "name": "Test Pre",
+			      "priority": 0
+			    }
+			  ]
+			}
+			\end{verbatim}
+		}
+\subsection*{\textit{createSupertask}}
+	Create a new supertask out of existing preconfigured tasks.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "createSupertask",
+		  "name": "Mixed Supertask",
+		  "pretasks": [
+		    7,
+		    8
+		  ],
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "createSupertask",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{setSupertaskName}}
+	Rename a supertask to a new name.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "setSupertaskName",
+		  "supertaskId": 4,
+		  "name": "Other Name",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "setSupertaskName",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteSupertask}}
+	Delete a supertask.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "deleteSupertask",
+		  "supertaskId": 4,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "deleteSupertask",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+
+
+
+
+

@@ -30,7 +30,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 $view = "dict";
-if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule'))) {
+if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule', 'other'))) {
   $view = $_GET['view'];
 }
 
@@ -46,9 +46,15 @@ if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::MANAG
   }
 }
 else {
-  $qF = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule')), "=");
+  $qF = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule', 'other')), "=");
   $oF = new OrderFilter(File::FILENAME, "ASC");
-  $OBJECTS['fileType'] = ($view == "dict") ? "Wordlists" : "Rules";
+  $OBJECTS['fileType'] = "Other Files";
+  if($view == 'dict'){
+    $OBJECTS['fileType'] = "Wordlists";
+  }
+  else if($view == 'rule'){
+    $OBJECTS['fileType'] = "Rules";
+  }
   $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));;
   $OBJECTS['impfiles'] = Util::scanImportDirectory();
   $OBJECTS['pageTitle'] = "Files";

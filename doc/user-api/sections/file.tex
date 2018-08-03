@@ -1,0 +1,242 @@
+\section*{Files (\textit{file})}
+	Used to access all functions around files. There are currently following file types available:
+	\begin{description}
+		\item[0] Wordlist
+		\item[1] Rule
+	\end{description}
+	
+\subsection*{\textit{listFiles}}
+	List all available files.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "listFiles",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "listFiles",
+		  "response": "OK",
+		  "files": [
+		    {
+		      "fileId": 1,
+		      "fileType": 0,
+		      "filename": "example.dict"
+		    },
+		    {
+		      "fileId": 2,
+		      "fileType": 1,
+		      "filename": "dive.rule"
+		    },
+		    {
+		      "fileId": 3,
+		      "fileType": 1,
+		      "filename": "generated.rule"
+		    },
+		    {
+		      "fileId": 3653,
+		      "fileType": 0,
+		      "filename": "top10000.txt"
+		    },
+		    {
+		      "fileId": 3654,
+		      "fileType": 1,
+		      "filename": "toggles4.rule"
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{getFile}}
+	Get detailed informations of a file and also get a link to download it.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "getFile",
+		  "fileId": 1,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "getFile",
+		  "response": "OK",
+		  "fileId": 1,
+		  "fileType": 0,
+		  "filename": "example.dict",
+		  "isSecret": true,
+		  "size": 1080240,
+		  "url": "getFile.php?file=1&apiKey=mykey"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{renameFile}}
+	Rename an existing file. ATTENTION: this can affect tasks using this file! It is only recommended to change the name when the file is not used by any task!
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "renameFile",
+		  "fileId": 1,
+		  "filename": "example.txt",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "renameFile",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{setSecret}}
+	Set if an existing file is secret or not.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "setSecret",
+		  "fileId": 1,
+		  "isSecret": false,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "setSecret",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteFile}}
+	Deletes a file from the server. This is only possible if the file is not used in any task.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "deleteFile",
+		  "fileId": 3654,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "deleteFile",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{setFileType}}
+	Switch the file type of an existing file.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "setFileType",
+		  "fileId": 1,
+		  "fileType": 1,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "setFileType",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+\subsection*{\textit{addFile}}
+	There are multiple ways to add a file, either from an URL, from the import directory or inline. The filename is only relevant if it is added inline. Otherwise it will take the original filename. In case of the inline upload, the data must be base64 encoded (using UTF-8).
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "addFile",
+		  "filename": "api_test_inline.txt",
+		  "fileType": 0,
+		  "source": "inline",
+		  "data": "MTIzNA0KNTY3OA0KcGFzc3dvcmQNCmFiYw==",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "addFile",
+		  "filename": "doesnt-matter.txt",
+		  "fileType": 0,
+		  "source": "import",
+		  "data": "otherlist.txt",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "addFile",
+		  "filename": "doesnt-matter.txt",
+		  "fileType": 1,
+		  "source": "url",
+		  "data": "https://github.com/hashcat/hashcat/raw/master/rules/best64.rule",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "file",
+		  "request": "addFile",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+
+
+
+
+
+
+
+

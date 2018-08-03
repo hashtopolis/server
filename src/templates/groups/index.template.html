@@ -23,17 +23,17 @@
 				  <td>[[htmlentities([[group.getGroupName()]], ENT_QUOTES, "UTF-8")]]</td>
 				  <td>[[users.getVal([[group.getId()]])]]</td>
 				  <td>[[agents.getVal([[group.getId()]])]]</td>
-				  <td>
-					  <div style='float: left; padding-right: 5px;'>
-						  <a class='btn btn-primary' href="groups.php?id=[[group.getId()]]">Manage</a>
-					  </div>
-					  <form style='float: left;' action="groups.php" method="POST" onSubmit="if (!confirm('Really delete access group [[htmlentities([[group.getGroupName()]], ENT_QUOTES, 'UTF-8')]]?')) return false;">
-						  <input type="hidden" name="action" value="[[$DAccessGroupAction::DELETE_GROUP]]">
-						  <input type="hidden" name="csrf" value="[[csrf]]">
-						  <input type="hidden" name="groupId" value="[[group.getId()]]">
-						  <input type="submit" class='btn btn-danger' value="Delete">
-					  </form>
-				  </td>
+          <td>
+            <form class="float-right mx-1" action="groups.php" method="POST" onSubmit="if (!confirm('Really delete access group [[htmlentities([[group.getGroupName()]], ENT_QUOTES, 'UTF-8')]]?')) return false;">
+              <input type="hidden" name="action" value="[[$DAccessGroupAction::DELETE_GROUP]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="hidden" name="groupId" value="[[group.getId()]]">
+              <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+            </form>
+            <div class="float-right mx-1">
+              <a class='btn btn-primary' href="groups.php?id=[[group.getId()]]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+            </div>
+          </td>
 			  </tr>
 		  {{ENDFOREACH}}
 	  </table>

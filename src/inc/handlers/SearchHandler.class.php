@@ -14,24 +14,31 @@ class SearchHandler implements Handler {
   public function handle($action) {
     global $ACCESS_CONTROL;
     
-    switch ($action) {
-      case DSearchAction::SEARCH:
-        $ACCESS_CONTROL->checkPermission(DSearchAction::SEARCH_PERM);
-        $this->search();
-        break;
-      default:
-        UI::addMessage(UI::ERROR, "Invalid action!");
-        break;
+    try {
+      switch ($action) {
+        case DSearchAction::SEARCH:
+          $ACCESS_CONTROL->checkPermission(DSearchAction::SEARCH_PERM);
+          $this->search();
+          break;
+        default:
+          UI::addMessage(UI::ERROR, "Invalid action!");
+          break;
+      }
+    }
+    catch (HTException $e) {
+      UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
   
+  /**
+   * @throws HTException
+   */
   private function search() {
     global $FACTORIES, $OBJECTS;
     
     $query = $_POST['search'];
     if (strlen($query) == 0) {
-      UI::addMessage(UI::ERROR, "Search query cannot be empty!");
-      return;
+      throw new HTException("Search query cannot be empty!");
     }
     $query = str_replace("\r\n", "\n", $query);
     $query = explode("\n", $query);

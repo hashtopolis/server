@@ -11,6 +11,12 @@ class DAgentBinaryAction {
   const DELETE_BINARY_PERM = DAccessControl::CRACKER_BINARY_ACCESS;
 }
 
+class DAgentIgnoreErrors {
+  const NO            = 0;
+  const IGNORE_SAVE   = 1;
+  const IGNORE_NOSAVE = 2;
+}
+
 class DAgentAction {
   const CLEAR_ERRORS      = "clearErrors";
   const CLEAR_ERRORS_PERM = DAccessControl::MANAGE_AGENT_ACCESS;

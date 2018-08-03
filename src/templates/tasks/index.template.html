@@ -1,44 +1,69 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Tasks ([[sizeof([[taskList]])]])</h2>
+<h2>{{IF [[showArchived]]}}Archived {{ENDIF}}Tasks ([[sizeof([[taskList]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <div style='overflow: auto;'>
-	{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
+	{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]] && ![[showArchived]]}}
 		<form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all finished tasks?')) return false;">
 			<input type='hidden' name='action' value='[[$DTaskAction::DELETE_FINISHED]]'>
 			<input type="hidden" name="csrf" value="[[csrf]]">
 			<input type="submit" value="Delete finished" class='btn btn-light'>
 		</form>
 	{{ENDIF}}
+  {{IF ![[showArchived]]}}
+    <a style="float: left; margin-right: 5px;" href="tasks.php?archived=true" class="btn btn-light">Show archived</a>
+  {{ENDIF}}
 	{%TEMPLATE->tasks/autorefresh%}
 	<br>
 </div>
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-bordered">
-      <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Hashlist</th>
-        <th>Chunks</th>
-        <th>Dispatched</th>
-        <th>Searched</th>
-        <th>Cracked</th>
-        <th>Agents</th>
-        <th>Files</th>
-        <th>Task Priority</th>
-        <th style="min-width: 170px;">Action</th>
-      </tr>
-      {{FOREACH set;[[taskList]]}}
-        {{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
-          <!-- normal task -->
-          {%TEMPLATE->tasks/normal%}
-        {{ELSE}}
-          <!-- supertask -->
-          {%TEMPLATE->tasks/supertask%}
-        {{ENDIF}}
-      {{ENDFOREACH}}
+    <table class="table table-bordered table-sm" id="tasks">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Hashlist</th>
+          <th>Dispatched/Searched</th>
+          <th>Cracked</th>
+          <th>Agents</th>
+          <th>Files</th>
+          <th>Task Priority</th>
+          <th style="min-width: 170px;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{FOREACH set;[[taskList]]}}
+          {{IF [[set.getVal('taskType')]] == [[$DTaskTypes::NORMAL]]}}
+            <!-- normal task -->
+            {%TEMPLATE->tasks/normal%}
+          {{ELSE}}
+            <!-- supertask -->
+            {%TEMPLATE->tasks/supertask%}
+          {{ENDIF}}
+        {{ENDFOREACH}}
+      </tbody>
     </table>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#tasks').DataTable({
+          pageLength: 50,
+          "order": [ [7, 'desc'], [0, 'asc'] ],
+          "columnDefs": [
+            { "orderable": false, "targets": [3, 8] },
+            { "orderable": true, "targets": [0, 1, 2, 4, 5, 6, 7] }
+          ]
+        });
+      });
+      $(document).ready(function () {
+        $('td[rel=popover]').popover({
+          html: true,
+          trigger: 'hover',
+          container: 'body',
+          content: function () { return '<img style="width: 100%; height: 6px; padding: 0px;" src="' + $(this).data('img') + '">'; }
+        });
+      });
+    </script>
   </div>
 </div>
 {%TEMPLATE->struct/foot%}

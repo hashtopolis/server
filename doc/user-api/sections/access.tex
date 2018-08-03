@@ -1,0 +1,164 @@
+\section*{Access Management (\textit{access})}
+	Used to manage permissions for user groups.
+
+\subsection*{\textit{listGroups}}
+	List all user groups.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "listGroups",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "listGroups",
+  "response": "OK",
+  "rightGroups": [
+    {
+      "rightGroupId": 1,
+      "name": "Administrator"
+    },
+    {
+      "rightGroupId": 6,
+      "name": "Testing Group"
+    }
+  ]
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{getGroup}}
+	Get detailed information about a group. If it is the administrators group, the permissions will just be set to \textit{ALL}.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "getGroup",
+  "rightGroupId": 6,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "getGroup",
+  "response": "OK",
+  "rightGroupId": 6,
+  "name": "Testing Group",
+  "permissions": {
+    "viewHashlistAccess": false,
+    "manageHashlistAccess": false,
+    "createHashlistAccess": false,
+    "createSuperhashlistAccess": false,
+    "viewHashesAccess": false,
+    "viewAgentsAccess": false,
+    "manageAgentAccess": false,
+    "createAgentAccess": false,
+    "viewTaskAccess": false,
+    "runTaskAccess": true,
+    "createTaskAccess": false,
+    "manageTaskAccess": false,
+    "viewPretaskAccess": true,
+    "createPretaskAccess": false,
+    "managePretaskAccess": false,
+    "viewSupertaskAccess": false,
+    "createSupertaskAccess": false,
+    "manageSupertaskAccess": false,
+    "viewFileAccess": false,
+    "manageFileAccess": false,
+    "addFileAccess": false,
+    "crackerBinaryAccess": false,
+    "serverConfigAccess": false,
+    "userConfigAccess": false
+  },
+  "members": [
+    2,
+    3
+  ]
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{createGroup}}
+	Creates a new group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "createGroup",
+  "name": "read only users",
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "createGroup",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{deleteGroup}}
+	Delete a group. This is only possible if no user is associated with this group.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "deleteGroup",
+  "rightGroupId": 7,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "deleteGroup",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{setPermissions}}
+	Change some permissions on this group. Note that all the permissions which are not included in the request will be set to false.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "setPermissions",
+  "rightGroupId": 6,
+  "permissions": {
+    "viewHashlistAccess": true
+  },
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "access",
+  "request": "setPermissions",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+
+

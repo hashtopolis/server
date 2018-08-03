@@ -70,7 +70,7 @@ CREATE TABLE `AccessGroupUser` (
 
 CREATE TABLE `Agent` (
   `agentId`         INT(11)                      NOT NULL,
-  `agentName`       VARCHAR(50)
+  `agentName`       VARCHAR(100)
                     COLLATE utf8_unicode_ci      NOT NULL,
   `uid`             VARCHAR(100)
                     COLLATE utf8_unicode_ci      NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE `AgentBinary` (
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
   (1, 'csharp', '0.52.2', 'Windows, Linux(mono), OS X(mono)', 'hashtopolis.exe'),
-  (2, 'python', '0.1.4', 'Windows, Linux, OS X', 'hashtopolis.zip');
+  (2, 'python', '0.1.5', 'Windows, Linux, OS X', 'hashtopolis.zip');
 
 -- --------------------------------------------------------
 
@@ -245,7 +245,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (10, 1, 'hashlistAlias', '#HL#'),
   (11, 1, 'statustimer', '5'),
   (12, 4, 'timefmt', 'd.m.Y, H:i:s'),
-  (13, 1, 'blacklistChars', '&|`\"\'{}()[]$<>'),
+  (13, 1, 'blacklistChars', '&|`\"\'{}()[]$<>;'),
   (14, 3, 'numLogEntries', '5000'),
   (15, 1, 'disptolerance', '20'),
   (16, 3, 'batchSize', '50000'),
@@ -267,7 +267,11 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (33, 4, 'hashesPerPage', '1000'),
   (34, 4, 'hideIpInfo', '0'),
   (35, 1, 'defaultBenchmark', '1'),
-  (36, 4, 'showTaskPerformance', '0');
+  (36, 4, 'showTaskPerformance', '0'),
+  (37, 1, 'ruleSplitSmallTasks', '0'),
+  (38, 1, 'ruleSplitAlways', '0'),
+  (39, 1, 'ruleSplitDisable', '0'),
+  (40, 1, 'princeLink', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
 
 -- --------------------------------------------------------
 
@@ -315,6 +319,9 @@ CREATE TABLE `CrackerBinary` (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
+INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
+  (1, 1, '4.1.0', 'https://hashcat.net/files/hashcat-4.1.0.7z', 'hashcat');
+
 -- --------------------------------------------------------
 
 --
@@ -330,6 +337,9 @@ CREATE TABLE `CrackerBinaryType` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
+
+INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingAvailable`) VALUES
+  (1, 'hashcat', 1);
 
 -- --------------------------------------------------------
 
@@ -776,7 +786,7 @@ CREATE TABLE `Pretask` (
   `chunkTime`           INT(11)                 NOT NULL,
   `statusTimer`         INT(11)                 NOT NULL,
   `color`               VARCHAR(20)
-                        COLLATE utf8_unicode_ci NOT NULL,
+                        COLLATE utf8_unicode_ci NULL,
   `isSmall`             INT(11)                 NOT NULL,
   `isCpuTask`           INT(11)                 NOT NULL,
   `useNewBench`         INT(11)                 NOT NULL,
@@ -901,7 +911,7 @@ CREATE TABLE `SupertaskPretask` (
 
 CREATE TABLE `Task` (
   `taskId`              INT(11)                 NOT NULL,
-  `taskName`            VARCHAR(100)
+  `taskName`            VARCHAR(256)
                         COLLATE utf8_unicode_ci NOT NULL,
   `attackCmd`           VARCHAR(256)
                         COLLATE utf8_unicode_ci NOT NULL,
@@ -918,7 +928,9 @@ CREATE TABLE `Task` (
   `skipKeyspace`        BIGINT(20)              NOT NULL,
   `crackerBinaryId`     INT(11) DEFAULT NULL,
   `crackerBinaryTypeId` INT(11)                 NULL,
-  `taskWrapperId`       INT(11)                 NOT NULL
+  `taskWrapperId`       INT(11)                 NOT NULL,
+  `isArchived`          INT(11)                 NOT NULL,
+  `isPrince`            INT(11)                 NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -936,7 +948,8 @@ CREATE TABLE `TaskWrapper` (
   `taskType`        INT(11)      NOT NULL,
   `hashlistId`      INT(11)      NOT NULL,
   `accessGroupId`   INT(11) DEFAULT NULL,
-  `taskWrapperName` VARCHAR(100) NOT NULL
+  `taskWrapperName` VARCHAR(100) NOT NULL,
+  `isArchived`      INT(11)      NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
@@ -996,6 +1009,36 @@ CREATE TABLE `Zap` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
+
+
+
+CREATE TABLE `ApiKey` (
+  `apiKeyId` int(11) NOT NULL,
+  `startValid` bigint(20) NOT NULL,
+  `endValid` bigint(20) NOT NULL,
+  `accessKey` varchar(256) NOT NULL,
+  `accessCount` int(11) NOT NULL,
+  `userId` int(11) NOT NULL,
+  `apiGroupId` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `ApiGroup` (
+  `apiGroupId` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `permissions` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `ApiGroup` ( `name`, `permissions`) VALUES ('Administrators', 'ALL');
+
+--
+-- Indexes for table `ApiKey`
+--
+ALTER TABLE `ApiKey`
+  ADD PRIMARY KEY (`apiKeyId`);
+
+ALTER TABLE `ApiGroup`
+  ADD PRIMARY KEY (`apiGroupId`);
+
 
 --
 -- Indizes der exportierten Tabellen
@@ -1254,6 +1297,12 @@ ALTER TABLE `Zap`
 --
 -- AUTO_INCREMENT für exportierte Tabellen
 --
+
+ALTER TABLE `ApiKey`
+  MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `ApiGroup`
+  MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`

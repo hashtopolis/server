@@ -1,5 +1,5 @@
 <tr style="background-color: rgba(0,0,0,0.1);">
-  <td>&nbsp;</td>
+  <td rel="popover" data-img="api/taskimg.php?supertask=[[set.getVal('taskWrapperId')]]&x=1200&y=6">&nbsp;</td>
   <td>
     [[set.getVal('supertaskName')]]
     [[Util::tickdone([[set.getVal('tasksDone')]], [[set.getVal('numTasks')]])]]
@@ -22,7 +22,7 @@
       [[Util::tickdone(0, 1)]]
     {{ENDIF}}
   </td>
-  <td colspan="3">Supertask</td>
+  <td>&nbsp;</td>
   <td class='num'>
     {{IF [[set.getVal('cracked')]] > 0}}
       [[set.getVal('cracked')]]
@@ -33,7 +33,7 @@
       [[set.getVal('numAssignments')]]
     {{ENDIF}}
   </td>
-  <td style='min-width: 95px'>
+  <td style='min-width: 95px' data-sort="[[set.getVal('filesSize')]]">
     {{IF [[set.getVal('numFiles')]] > 0}}
       [[set.getVal('numFiles')]]
     {{ENDIF}}
@@ -44,67 +44,91 @@
       <br>([[Util::nicenum([[set.getVal('filesSize')]])]]B)
     {{ENDIF}}
   </td>
-  <td style='min-width: 130px'>
+  <td style='min-width: 130px' data-sort="[[set.getVal('priority')]]">
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
       <form class="form-inline" action="tasks.php" method="POST">
         <input type='hidden' name='action' value='[[$DTaskAction::SET_SUPERTASK_PRIORITY]]'>
         <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
         <input type="hidden" name="csrf" value="[[csrf]]">
         <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[set.getVal('priority')]]" title="Priority">&nbsp;&nbsp;
-        <input type="submit" class='btn btn-light' value="Set">
+        <button type="submit" class='btn btn-light'><i class="fas fa-save" aria-hidden="true"></i></button>
       </form>
     {{ELSE}}
       [[set.getVal('priority')]]
     {{ENDIF}}
   </td>
   <td style='min-width: 120px'>
-    {{IF [[set.getVal('taskType')]] == 1}}
-      <form style ='float: left; padding-right: 5px;'>
-        <a class="btn btn-primary accordion-toggle" onclick="expansionCheck('#task[[set.getVal('taskWrapperId')]]')" role="button" href="#" data-toggle="collapse" data-target="#task[[set.getVal('taskWrapperId')]]">Show/Hide</a>
-      </form>
-      <script type="text/javascript">
-          $( document ).ready(function() {
-              checkOnLoading("#task[[set.getVal('taskWrapperId')]]");
-          });
-      </script>
-    {{ENDIF}}
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-      <form style ='float: left;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
+      <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete supertask [[set.getVal('taskWrapperId')]]?')) return false;">
         <input type="hidden" name="action" value="[[$DTaskAction::DELETE_SUPERTASK]]">
         <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
         <input type="hidden" name="csrf" value="[[csrf]]">
-        <input type="submit" class='btn btn-danger' value="X">
+        <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+      </form>
+      {{IF ![[showArchived]]}}
+        <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskWrapperId')]]?')) return false;">
+          <input type="hidden" name="action" value="[[$DTaskAction::ARCHIVE_SUPERTASK]]">
+          <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
+          <input type="hidden" name="csrf" value="[[csrf]]">
+          <button type="submit" class='btn btn-warning'><i class="fas fa-archive" aria-hidden="true"></i></button>
+        </form>
+      {{ENDIF}}
+    {{ENDIF}}
+    {{IF [[set.getVal('taskType')]] == 1}}
+      <form class="float-right mx-1">
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#task[[set.getVal('taskWrapperId')]]"><i class="fas fa-info-circle" aria-hidden="true"></i></button>
       </form>
     {{ENDIF}}
-  </td>
-</tr>
-<tr style="background-color: rgba(0,0,0,0.1);" data-toggle="collapse" data-target="#task[[set.getVal('taskWrapperId')]]" class="accordion-toggle">
-  <td colspan="11" style="padding: 0px 1px;">
-    <img style="width: 100%; height: 6px; padding: 0px;" src="api/taskimg.php?supertask=[[set.getVal('taskWrapperId')]]&x=1200&y=6">
-  </td>
-</tr>
-<tr>
-  <td colspan="11" class="hiddenRow">
-    <div id="task[[set.getVal('taskWrapperId')]]" class="accordian-body collapse" style="margin: 10px;" aria-expanded="false">
-      <div class="card">
-        <div class="table-nonfluid">
-          <table class="table table-bordered table-subtask-border" style="margin-bottom: 0;">
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Chunks</th>
-              <th>Dispatched</th>
-              <th>Searched</th>
-              <th>Cracked</th>
-              <th>Agents</th>
-              <th>Files</th>
-              <th>Subtask Priority</th>
-              <th>Action</th>
-            </tr>
-            {%TEMPLATE->tasks/subtasks%}
-          </table>
+
+    <div class="modal fade" id="task[[set.getVal('taskWrapperId')]]" tabindex="-1" role="dialog" aria-labelledby="subtasks" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Subtasks (Hashlist '[[set.getVal('hashlistName')]]')</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="card">
+              <div class="table-nonfluid">
+                <table class="table table-bordered table-subtask-border table-sm" style="margin-bottom: 0;" id="subtasks[[set.getVal('taskWrapperId')]]">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Dispatched / Searched</th>
+                      <th>Cracked</th>
+                      <th>Agents</th>
+                      <th>Files</th>
+                      <th>Subtask Priority</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {%TEMPLATE->tasks/subtasks%}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light" data-dismiss="modal">Close</button>
+          </div>
         </div>
       </div>
     </div>
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable({
+          pageLength: 25,
+          "order": [ [6, 'desc'], [0, 'asc'] ],
+          "columnDefs": [
+            { "orderable": false, "targets": [2, 7] },
+            { "orderable": true, "targets": [0, 1, 3, 4, 5, 6] }
+          ]
+        });
+      });
+    </script>
   </td>
 </tr>

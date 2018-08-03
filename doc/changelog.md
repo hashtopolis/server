@@ -1,3 +1,27 @@
+# v0.6.0 -> v0.7.0
+
+## Features
+
+- Tasks which are recognized containing large rule files and not giving good benchmarks result in splitting into subtasks
+- Most of the tables can now be easily ordered and searched with the datatables plugin
+- Agent Errors can be handled better
+- New User API allowing access to all functions without the webinterface via simple JSON commands.
+- Added new filetype (Other) for all non rules/wordlist files like hashcat charsets etc.
+- File types can be edited of existing files.
+- Tasks can now be archived instead of being deleted.
+
+## Enhancements
+
+- Width of the container is increased to have more space on large screens.
+- Standard buttons have now icons instead of text to use less space.
+- Hashcat is configured already as crack to make it easier for users to get started.
+
+## Bugfixes
+
+- Using correct function to get superhashlistId on zapping from webinterface.
+- Zapping from the website will now also issue zaps for non-salted hashlists.
+- Fixed zapping querying on progress sending from agent to also match for agent null values.
+
 # v0.5.1 -> v0.6.0
 
 ## Features

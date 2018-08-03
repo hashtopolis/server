@@ -1,0 +1,57 @@
+\section*{Test (\textit{test})}
+		This section is used to do testing queries, e.g. to test connectivity or availability of this API. The test section is the only one which allows to make requests without an access key.
+		\subsection*{\textit{connection}}
+			Used to test if the URL is a valid API endpoint.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section":"test",
+				  "request":"connection"
+				}
+				\end{verbatim}
+		    }
+			
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "test",
+				  "request": "connection",
+				  "response": "SUCCESS"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{access}}
+			Used to check if a given API key is still valid and can be used.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "test",
+				  "request": "access",
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "test",
+				  "request": "access",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{BrickRed}
+				\begin{verbatim}
+				{
+				  "section": "test",
+				  "request": "access",
+				  "response": "ERROR",
+				  "message": "API key was not found!"
+				}
+				\end{verbatim}
+			}

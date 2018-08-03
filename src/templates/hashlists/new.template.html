@@ -30,106 +30,104 @@
 <form class='form-inline' action="hashlists.php" method="POST" enctype="multipart/form-data">
 	<input type='hidden' name='action' value='[[$DHashlistAction::CREATE_HASHLIST]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
-	<div class="card">
-    <div class="table-responsive">
-      <table class="table table-bordered">
-			  <tr>
-				  <th>Property</th>
-				  <th>Value</th>
-			  </tr>
-			  <tr>
-				  <td>Name:</td>
-				  <td>
-					  <input type="text" class='form-control' name="name" size="35" title="Name">
-				  </td>
-			  </tr>
-			  <tr>
-				  <td>Hashtype:</td>
-				  <td>
-					  <select name="hashtype" class='form-control' id="hashtype" onchange="hashtypeChange()" title="Hashtype">
-						  <option value=''>&nbsp;</option>
-						  {{FOREACH type;[[hashtypes]]}}
-							  <option value="[[type.getId()]]"> [[type.getId()]] - [[htmlentities([[type.getDescription()]], ENT_QUOTES, "UTF-8")]]</option>
-						  {{ENDFOREACH}}
-					  </select>
-				  </td>
-			  </tr>
-			  <tr>
-				  <td>Hashlist format:</td>
-				  <td>
-					  <select class='form-control' name="format" onChange="formatChange(this.value);" title="Hashlist Format">
-						  <option value="0">Text file</option>
-						  <option value="1">HCCAPX file</option>
-						  <option value="2">Binary file (single hash)</option>
-					  </select>
-					  <span class="textopt">
-						  <br>
-						  <input type="checkbox" name="salted" id="salted" value="1" title="Is Salted"> Salted hashes, separator
-						  <input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1" title="Separator">
-					  </span>
-					  <span class="textopt">
-						  <br>
-						  <input type="checkbox" name="hexsalted" value="1" title="Salt in HEX"> Salt is in hex (only when salted hashes)
-					  </span>
-				  </td>
-			  </tr>
-			  <tr>
-				  <td>
-					  Hash source<br>
-					  <i>(make sure it's sorted!)</i>
-				  </td>
-				  <td>
-					  <input type="radio" name="source" onChange="sourceChange(this.value);" value="paste" title="Pasting"> Paste<br>
-            <input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked title="Upload"> Upload<br>
-            <input type="radio" name="source" onChange="sourceChange(this.value);" value="import" title="Import"> Import<br>
-            <input type="radio" name="source" onChange="sourceChange(this.value);" value="url" title="Download"> URL download
-				  </td>
-			  </tr>
-			  <tr>
-				  <td>Access group where the task belongs to:</td>
-				  <td>
-					  <select name="accessGroupId" class="form-control" title="accessGroupId">
-						  {{FOREACH accessGroup;[[accessGroups]]}}
-						  <option value="[[accessGroup.getId()]]">[[accessGroup.getGroupName()]]</option>
-						  {{ENDFOREACH}}
-					  </select>
-				  </td>
-			  </tr>
-			  <tr id="pasteLine" style="display: none;">
-				  <td>Input field:</td>
-				  <td>
-					  <textarea class='form-control' name="hashfield" cols="60" rows="10" title="Hashes"></textarea>
-				  </td>
-			  </tr>
-			  <tr id="uploadLine">
-				  <td>File to upload:</td>
-				  <td>
-					  <input type="file" class='form-control' name="hashfile">
-				  </td>
-			  </tr>
-			  <tr id="importLine" style="display: none;">
-				  <td>File to import:</td>
-				  <td>
-					  <select class='form-control' name="importfile" title="Import File">
-						  {{FOREACH impfile;[[impfiles]]}}
-							  <option value="[[impfile.getVal('file')]]">[[impfile.getVal('file')]]</option>
-						  {{ENDFOREACH}}
-					  </select>
-				  </td>
-			  </tr>
-			  <tr id="downloadLine" style="display: none;">
-				  <td>File URL:</td>
-				  <td>
-					  <input type="text" class='form-control' name="url" size="35" title="Download URL">
-				  </td>
-			  </tr>
-			  <tr>
-				  <td colspan="3">
-					  <input type="submit" class='btn btn-light' value="Create hashlist">
-				  </td>
-			  </tr>
-		  </table>
-    </div>
-	</div>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+			<tr>
+				<th>Property</th>
+				<th>Value</th>
+			</tr>
+			<tr>
+				<td>Name:</td>
+				<td>
+					<input type="text" class='form-control' name="name" size="35" title="Name">
+				</td>
+			</tr>
+			<tr>
+				<td>Hashtype:</td>
+				<td>
+					<select name="hashtype" class='form-control' id="hashtype" onchange="hashtypeChange()" title="Hashtype">
+						<option value=''>&nbsp;</option>
+						{{FOREACH type;[[hashtypes]]}}
+							<option value="[[type.getId()]]"> [[type.getId()]] - [[htmlentities([[type.getDescription()]], ENT_QUOTES, "UTF-8")]]</option>
+						{{ENDFOREACH}}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Hashlist format:</td>
+				<td>
+					<select class='form-control' name="format" onChange="formatChange(this.value);" title="Hashlist Format">
+						<option value="0">Text file</option>
+						<option value="1">HCCAPX file</option>
+						<option value="2">Binary file (single hash)</option>
+					</select>
+					<span class="textopt">
+						<br>
+						<input type="checkbox" name="salted" id="salted" value="1" title="Is Salted"> Salted hashes, separator
+						<input type="text" class='form-control' name="separator" value="[[config.getVal('fieldseparator')]]" size="1" title="Separator">
+					</span>
+					<span class="textopt">
+						<br>
+						<input type="checkbox" name="hexsalted" value="1" title="Salt in HEX"> Salt is in hex (only when salted hashes)
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Hash source<br>
+					<i>(make sure it's sorted!)</i>
+				</td>
+				<td>
+					<input type="radio" name="source" onChange="sourceChange(this.value);" value="paste" title="Pasting"> Paste<br>
+          <input type="radio" name="source" onChange="sourceChange(this.value);" value="upload" checked title="Upload"> Upload<br>
+          <input type="radio" name="source" onChange="sourceChange(this.value);" value="import" title="Import"> Import<br>
+          <input type="radio" name="source" onChange="sourceChange(this.value);" value="url" title="Download"> URL download
+				</td>
+			</tr>
+			<tr>
+				<td>Access group where the task belongs to:</td>
+				<td>
+					<select name="accessGroupId" class="form-control" title="accessGroupId">
+						{{FOREACH accessGroup;[[accessGroups]]}}
+						<option value="[[accessGroup.getId()]]">[[accessGroup.getGroupName()]]</option>
+						{{ENDFOREACH}}
+					</select>
+				</td>
+			</tr>
+			<tr id="pasteLine" style="display: none;">
+				<td>Input field:</td>
+				<td>
+					<textarea class='form-control' name="hashfield" cols="60" rows="10" title="Hashes"></textarea>
+				</td>
+			</tr>
+			<tr id="uploadLine">
+				<td>File to upload:</td>
+				<td>
+					<input type="file" class='form-control' name="hashfile">
+				</td>
+			</tr>
+			<tr id="importLine" style="display: none;">
+				<td>File to import:</td>
+				<td>
+					<select class='form-control' name="importfile" title="Import File">
+						{{FOREACH impfile;[[impfiles]]}}
+							<option value="[[impfile.getVal('file')]]">[[impfile.getVal('file')]]</option>
+						{{ENDFOREACH}}
+					</select>
+				</td>
+			</tr>
+			<tr id="downloadLine" style="display: none;">
+				<td>File URL:</td>
+				<td>
+					<input type="text" class='form-control' name="url" size="35" title="Download URL">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<input type="submit" class='btn btn-light' value="Create hashlist">
+				</td>
+			</tr>
+		</table>
+  </div>
 </form>
 {%TEMPLATE->struct/foot%}

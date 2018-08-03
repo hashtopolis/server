@@ -212,7 +212,9 @@ $CONF['Task'] = array(
   'skipKeyspace',
   'crackerBinaryId',
   'crackerBinaryTypeId',
-  'taskWrapperId'
+  'taskWrapperId',
+  'isArchived',
+  'isPrince'
 );
 $CONF['TaskWrapper'] = array(
   'taskWrapperId',
@@ -220,7 +222,8 @@ $CONF['TaskWrapper'] = array(
   'taskType',
   'hashlistId',
   'accessGroupId',
-  'taskWrapperName'
+  'taskWrapperName',
+  'isArchived'
 );
 $CONF['User'] = array(
   'userId',
@@ -246,6 +249,20 @@ $CONF['Zap'] = array(
   'solveTime',
   'agentId',
   'hashlistId'
+);
+$CONF['ApiKey'] = array(
+  'apiKeyId',
+  'startValid',
+  'endValid',
+  'accessKey',
+  'accessCount',
+  'userId',
+  'apiGroupId'
+);
+$CONF['ApiGroup'] = array(
+  'apiGroupId',
+  'permissions',
+  'name'
 );
 
 // relations

@@ -1,14 +1,5 @@
 <?php
 
-use DBA\File;
-use DBA\FilePretask;
-use DBA\FileTask;
-use DBA\JoinFilter;
-use DBA\Pretask;
-use DBA\QueryFilter;
-use DBA\Task;
-use DBA\TaskFile;
-
 class FileHandler implements Handler {
   public function __construct($fileId = null) {
     //we need nothing to load
@@ -17,220 +8,34 @@ class FileHandler implements Handler {
   public function handle($action) {
     global $ACCESS_CONTROL;
     
-    switch ($action) {
-      case DFileAction::DELETE_FILE:
-        $ACCESS_CONTROL->checkPermission(DFileAction::DELETE_FILE_PERM);
-        $this->delete($_POST['file']);
-        break;
-      case DFileAction::SET_SECRET:
-        $ACCESS_CONTROL->checkPermission(DFileAction::SET_SECRET_PERM);
-        $this->switchSecret($_POST['file'], $_POST["secret"]);
-        break;
-      case DFileAction::ADD_FILE:
-        $ACCESS_CONTROL->checkPermission(DFileAction::ADD_FILE_PERM);
-        $this->add();
-        break;
-      case DFileAction::EDIT_FILE:
-        $ACCESS_CONTROL->checkPermission(DFileAction::EDIT_FILE_PERM);
-        $this->saveChanges($_POST['fileId'], $_POST['filename']);
-        break;
-      default:
-        UI::addMessage(UI::ERROR, "Invalid action!");
-        break;
-    }
-  }
-  
-  private function saveChanges($fileId, $filename) {
-    global $FACTORIES;
-    
-    $file = $FACTORIES::getFileFactory()->get($fileId);
-    if ($file == null) {
-      UI::addMessage(UI::ERROR, "Invalid file ID!");
-      return;
-    }
-    $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
-    $newName = str_replace("/", "_", str_replace("\\", "_", $newName));
-    if (strlen($newName) == 0) {
-      UI::addMessage(UI::ERROR, "Filename cannot be empty!");
-      return;
-    }
-    if ($newName[0] == '.') {
-      $newName[0] = "_";
-    }
-    $qF = new QueryFilter(File::FILENAME, $newName, "=");
-    $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
-    if (sizeof($files) > 0) {
-      UI::addMessage(UI::ERROR, "This filename is already used!");
-      return;
-    }
-    
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    
-    //check where the file is used and replace the filename in all the tasks
-    $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=", $FACTORIES::getFileTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), Task::TASK_ID, FileTask::TASK_ID);
-    $joined = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joined[$FACTORIES::getTaskFactory()->getModelName()] as $task) {
-      /** @var $task Task */
-      $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
-      $FACTORIES::getTaskFactory()->update($task);
-    }
-    
-    //check where the file is used and replace the filename in all the preconfigured tasks
-    $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=", $FACTORIES::getFilePretaskFactory());
-    $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), Pretask::PRETASK_ID, FilePretask::PRETASK_ID);
-    $joined = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    foreach ($joined[$FACTORIES::getPretaskFactory()->getModelName()] as $pretask) {
-      /** @var $pretask Pretask */
-      $pretask->setAttackCmd(str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
-      $FACTORIES::getPretaskFactory()->update($pretask);
-    }
-    
-    $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
-    if (!$success) {
-      UI::addMessage(UI::ERROR, "Failed to rename file!");
-      return;
-    }
-    $file->setFilename($newName);
-    $FACTORIES::getFileFactory()->update($file);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-  }
-  
-  private function add() {
-    $fileCount = 0;
-    $source = $_POST["source"];
-    if (!file_exists(dirname(__FILE__) . "/../../files")) {
-      mkdir(dirname(__FILE__) . "/../../files");
-    }
-    
-    switch ($source) {
-      case "upload":
-        // from http upload
-        $uploaded = $_FILES["upfile"];
-        $numFiles = count($_FILES["upfile"]["name"]);
-        for ($i = 0; $i < $numFiles; $i++) {
-          // copy all uploaded attached files to proper directory
-          $realname = str_replace(" ", "_", htmlentities(basename($uploaded["name"][$i]), ENT_QUOTES, "UTF-8"));
-          if ($realname == "") {
-            continue;
-          }
-          
-          $toMove = array();
-          foreach ($uploaded as $key => $upload) {
-            $toMove[$key] = $upload[$i];
-          }
-          if ($realname[0] == '.') {
-            $realname[0] = "_";
-          }
-          $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
-          $resp = Util::uploadFile($tmpfile, $source, $toMove);
-          if ($resp[0]) {
-            $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
-            if ($resp) {
-              $fileCount++;
-            }
-            else {
-              UI::addMessage(UI::ERROR, "Failed to insert file $realname into DB!");
-            }
-          }
-          else {
-            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
-          }
-        }
-        break;
-      
-      case "import":
-        // from import dir
-        $imports = $_POST["imfile"];
-        if (!$imports) {
+    try {
+      switch ($action) {
+        case DFileAction::DELETE_FILE:
+          $ACCESS_CONTROL->checkPermission(DFileAction::DELETE_FILE_PERM);
+          FileUtils::delete($_POST['file']);
+          UI::addMessage(UI::SUCCESS, "Successfully deleted file!");
           break;
-        }
-        foreach ($imports as $import) {
-          if ($import[0] == '.') {
-            continue;
-          }
-          // copy all uploaded attached files to proper directory
-          $realname = str_replace(" ", "_", htmlentities(basename($import), ENT_QUOTES, "UTF-8"));
-          if ($realname[0] == '.') {
-            $realname[0] = "_";
-          }
-          $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
-          $resp = Util::uploadFile($tmpfile, $source, $realname);
-          if ($resp[0]) {
-            $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
-            if ($resp) {
-              $fileCount++;
-            }
-            else {
-              UI::addMessage(UI::ERROR, "Failed to insert file $realname into DB!");
-            }
-          }
-          else {
-            UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
-          }
-        }
-        break;
-      
-      case "url":
-        // from url
-        $realname = str_replace(" ", "_", htmlentities(basename($_POST["url"]), ENT_QUOTES, "UTF-8"));
-        if ($realname[0] == '.') {
-          $realname[0] = "_";
-        }
-        $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
-        if (stripos($_POST["url"], "https://") !== 0 && stripos($_POST["url"], "http://") !== 0 && stripos($_POST["url"], "ftp://") !== 0) {
-          UI::addMessage(UI::ERROR, "Only downloads from http://, https:// and ftp:// are allowed!");
+        case DFileAction::SET_SECRET:
+          $ACCESS_CONTROL->checkPermission(DFileAction::SET_SECRET_PERM);
+          FileUtils::switchSecret($_POST['file'], $_POST["secret"]);
           break;
-        }
-        $resp = Util::uploadFile($tmpfile, $source, $_POST["url"]);
-        if ($resp[0]) {
-          $resp = Util::insertFile($tmpfile, $realname, @$_GET['view']);
-          if ($resp) {
-            $fileCount++;
-          }
-          else {
-            UI::addMessage(UI::ERROR, "Failed to insert file $realname into DB!");
-          }
-        }
-        else {
-          UI::addMessage(UI::ERROR, "Failed to copy file $realname to the right place! " . $resp[1]);
-        }
-        break;
+        case DFileAction::ADD_FILE:
+          $ACCESS_CONTROL->checkPermission(DFileAction::ADD_FILE_PERM);
+          $fileCount = FileUtils::add($_POST['source'], $_FILES, $_POST, @$_GET['view']);
+          UI::addMessage(UI::SUCCESS, "Successfully added $fileCount files!");
+          break;
+        case DFileAction::EDIT_FILE:
+          $ACCESS_CONTROL->checkPermission(DFileAction::EDIT_FILE_PERM);
+          FileUtils::saveChanges($_POST['fileId'], $_POST['filename']);
+          FileUtils::setFileType($_POST['fileId'], $_POST['filetype']);
+          break;
+        default:
+          UI::addMessage(UI::ERROR, "Invalid action!");
+          break;
+      }
     }
-    UI::addMessage(UI::SUCCESS, "Successfully added $fileCount files!");
-  }
-  
-  private function switchSecret($fileId, $isSecret) {
-    global $FACTORIES;
-    
-    // switch global file secret state
-    $file = $FACTORIES::getFileFactory()->get($fileId);
-    $secret = intval($isSecret);
-    $file->setIsSecret($secret);
-    $FACTORIES::getFileFactory()->update($file);
-  }
-  
-  private function delete($fileId) {
-    global $FACTORIES;
-    
-    $file = $FACTORIES::getFileFactory()->get($fileId);
-    if ($file == null) {
-      UI::printError("ERROR", "File does not exist!");
-    }
-    $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=");
-    $tasks = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $qF = new QueryFilter(FilePretask::FILE_ID, $file->getId(), "=");
-    $pretasks = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-    if (sizeof($tasks) > 0) {
-      UI::addMessage(UI::ERROR, "This file is currently used in a task!");
-    }
-    else if (sizeof($pretasks) > 0) {
-      UI::addMessage(UI::ERROR, "This file is currently used in a preconfigured task!");
-    }
-    else {
-      $FACTORIES::getFileFactory()->delete($file);
-      unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
-      UI::addMessage(UI::SUCCESS, "Successfully deleted file!");
+    catch (HTException $e) {
+      UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
 }
