@@ -44,7 +44,7 @@ class AgentUtils {
       }
       $data = explode(",", $entry->getValue());
       for($i = 0; $i < sizeof($data); $i++){
-        $pos = (int)($i*sizeof($data) + array_search($entry->getStatType(), $types));
+        $pos = (int)($i + sizeof($data)*array_search($entry->getStatType(), $types));
         if(!isset($datasets[$pos])){
           $datasets[$pos] = array(
             "label" => "Dev #" . ($i + 1) . " - " . $yLabels[$entry->getStatType()],
