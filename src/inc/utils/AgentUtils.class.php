@@ -56,7 +56,7 @@ class AgentUtils {
         if(!in_array(date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()), $xlabels)){
           array_unshift($xlabels, date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()));
         }
-        array_unshift($datasets[$i]['data'], (int)$data[$i]);
+        array_unshift($datasets[$pos]['data'], (int)$data[$i]);
       }
     }
     return array("xlabels" => $xlabels, "sets" => $datasets, "axes" => $axes);
