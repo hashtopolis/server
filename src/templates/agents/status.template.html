@@ -4,7 +4,7 @@
 {%TEMPLATE->struct/messages%}
 <div class="row">
   {{FOREACH agent;[[agentIds]]}}
-    <div class="col col-1 text-center" style="background-color: #CCCCCC; border: 1px solid #000000;">
+    <div class="col col-1 text-center" style="background-color: [[AgentUtils::getUtilStatusColor([[stats.getVal([[agent]])]])]]; border: 1px solid #000000;">
       <a href="agents.php?id=[[agent]]">[[agent]]</a>
     </div>
   {{ENDFOREACH}}

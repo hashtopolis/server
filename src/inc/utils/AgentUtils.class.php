@@ -16,6 +16,34 @@ use DBA\OrderFilter;
 use DBA\ContainFilter;
 
 class AgentUtils {
+  /**
+   * @param string $util 
+   * @return string
+   */
+  public static function getUtilStatusColor($util){
+    if($util === false){
+      return "#CCCCCC";
+    }
+    $util = explode(",", $util);
+    $sum = 0;
+    foreach($util as $u){
+      $sum += $u;
+    }
+    if($sum == 0){
+      return "#FF0000"; // either util 0 for all or an error occurred
+    }
+    $avg = $sum/sizeof($util);
+    if($avg > 90){
+      return "#009933";
+    }
+    else if($avg > 75){
+      return "#ff9900";
+    }
+    else{
+      return "#800000";
+    }
+  }
+
   public static function getGraphData($agent, $types){
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
