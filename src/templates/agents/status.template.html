@@ -2,6 +2,7 @@
 {%TEMPLATE->struct/menu%}
 <h2>Agents Status ([[sizeof([[agentIds]])]])</h2>
 {%TEMPLATE->struct/messages%}
+<h3>GPU Util</h3>
 <div class="container">
   <div class="row">
     {{FOREACH agent;[[agentIds]]}}
@@ -11,4 +12,6 @@
     {{ENDFOREACH}}
   </div>
 </div>
+<h3>GPU Temperatures</h3>
+TODO:
 {%TEMPLATE->struct/foot%}
