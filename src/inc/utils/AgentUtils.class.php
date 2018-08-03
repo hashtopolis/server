@@ -39,7 +39,7 @@ class AgentUtils {
         }
       }
       if(!$found){
-        $axes[] = ["id" => $entry->getStatType(), 'type' => 'linear', 'position' => $position, "display" => true, 'labelString' => $yLabels[$entry->getStatType()]];
+        $axes[] = ["id" => $entry->getStatType(), 'type' => 'linear', 'position' => $position, "display" => true];
         $position = ($position == 'left')?'right':'left';
       }
       $data = explode(",", $entry->getValue());
@@ -47,7 +47,7 @@ class AgentUtils {
         $pos = (int)($i + sizeof($data)*array_search($entry->getStatType(), $types));
         if(!isset($datasets[$pos])){
           $datasets[$pos] = array(
-            "label" => "Device #" . ($i + 1),
+            "label" => "Device #" . ($i + 1) . " - " . $yLabels[$entry->getStatType()],
             "fill" => false,
             "yAxisID" => $entry->getStatType(),
             "backgroundColor" => $colors[$pos%sizeof($colors)],
