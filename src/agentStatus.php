@@ -61,7 +61,6 @@ foreach($stats as $stat){
   }
 }
 $OBJECTS['stats'] = $agentStats;
-print_r($agentStats);
 
 echo $TEMPLATE->render($OBJECTS);
 
