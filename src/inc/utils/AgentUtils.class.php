@@ -24,6 +24,7 @@ class AgentUtils {
     $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
     $xlabels = [];
     $datasets = [];
+    $colors = ["#FF0000", "#00FFFF", "#008000", "#FFFF00", "#FF9333", "#800080", "#0000FF"];
     foreach($entries as $entry){
       $data = explode(",", $entry->getValue());
       for($i = 0; $i < sizeof($data); $i++){
@@ -31,6 +32,8 @@ class AgentUtils {
           $datasets[$i] = array(
             "label" => "Device #" . ($i + 1),
             "fill" => false,
+            "backgroundColor" => $colors[$i%sizeof($colors)],
+					  "borderColor" => $colors[$i%sizeof($colors)],
             "data" => []
           );
         }

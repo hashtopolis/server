@@ -37,22 +37,6 @@
         }
     };
 
-    var count = 0;
-    var colors = [
-        window.chartColors.red,
-        window.chartColors.blue,
-        window.chartColors.green,
-        window.chartColors.yellow,
-        window.chartColors.orange,
-        window.chartColors.purple,
-        window.chartColors.grey
-    ];
-    config.data.datasets.forEach(function (element){
-        element['backgroundColor'] = colors[count % sizeof(colors)];
-        element['borderColor'] = colors[count % sizeof(colors)];
-        count++;
-    });
-
     window.onload = function () {
         var ctx = document.getElementById('gpuTemp').getContext('2d');
         window.myLine = new Chart(ctx, config);
