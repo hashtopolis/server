@@ -24,7 +24,6 @@ class AgentUtils {
     $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
     $xlabels = [];
     $datasets = [];
-    $colors = ["red", "blue", "green", "yellow", "orange", "purple", "grey"];
     foreach($entries as $entry){
       $data = explode(",", $entry->getValue());
       for($i = 0; $i < sizeof($data); $i++){
@@ -32,15 +31,13 @@ class AgentUtils {
           $datasets[$i] = array(
             "label" => "Device #" . ($i + 1),
             "fill" => false,
-            "backgroundColor" => "window.chartColors." . $colors[$i%sizeof($colors)],
-					  "borderColor" => "window.chartColors." . $colors[$i%sizeof($colors)],
             "data" => []
           );
         }
         if(!in_array(date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()), $xlabels)){
           array_unshift($xlabels, date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()));
         }
-        array_unshift($datasets[$i]['data'], $data[$i]);
+        array_unshift($datasets[$i]['data'], (int)$data[$i]);
       }
     }
     return array("xlabels" => $xlabels, "sets" => $datasets);
