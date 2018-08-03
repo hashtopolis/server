@@ -17,13 +17,14 @@ use DBA\ContainFilter;
 
 class AgentUtils {
   /**
-   * @param string $util 
+   * @param AgentStat $util
    * @return string
    */
   public static function getUtilStatusColor($util){
     if($util === false){
       return "#CCCCCC";
     }
+    $util = $util->getValue();
     $util = explode(",", $util);
     $sum = 0;
     foreach($util as $u){
