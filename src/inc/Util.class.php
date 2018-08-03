@@ -22,6 +22,7 @@ use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\Zap;
 use DBA\AgentBinary;
+use DBA\AgentStat;
 
 /**
  *
@@ -415,6 +416,23 @@ class Util {
       }
     }
     return true;
+  }
+
+  public static function agentStatCleaning() {
+    global $FACTORIES;
+
+    $entry = $FACTORIES::getStoredValueFactory()->get(DStats::LAST_STAT_CLEANING);
+    if ($entry == null) {
+      $entry = new StoredValue(DStats::LAST_STAT_CLEANING, 0);
+      $FACTORIES::getStoredValueFactory()->save($entry);
+    }
+    if (time() - $entry->getVal() > 3600) { // TODO: make configurable
+      $qF = new QueryFilter(AgentStat::TIME, time() - 3600, "<=");
+      $FACTORIES::getAgentStatFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+
+      $entry->setVal(time());
+      $FACTORIES::getStoredValueFactory()->update($entry);
+    }
   }
 
   /**

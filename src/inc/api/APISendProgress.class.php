@@ -390,11 +390,10 @@ class APISendProgress extends APIBasic {
         if ($agentZap->getLastZapId() > 0) {
           $FACTORIES::getAgentZapFactory()->update($agentZap);
         }
-        
-        // update hashList age for agent to this task
         break;
     }
     Util::zapCleaning();
+    Util::agentStatCleaning();
     $this->sendResponse(array(
         PResponseSendProgress::ACTION => PActions::SEND_PROGRESS,
         PResponseSendProgress::RESPONSE => PValues::SUCCESS,

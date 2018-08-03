@@ -8,6 +8,10 @@ class DZaps {
 	const LAST_ZAP_CLEANING = "lastZapCleaning";
 }
 
+class DStats {
+  const LAST_STAT_CLEANING = "lastStatCleaning";
+}
+
 // log entry types
 class DLogEntry {
   const WARN  = "warning";
