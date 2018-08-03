@@ -11,6 +11,7 @@ use DBA\Hashlist;
 use DBA\QueryFilter;
 use DBA\Zap;
 use DBA\QueryFilterWithNull;
+use DBA\AgentStat;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
@@ -62,6 +63,27 @@ class APISendProgress extends APIBasic {
       if ($hashlist->getIsSecret() > $this->agent->getIsTrusted()) {
         $this->sendErrorResponse(PActions::SEND_PROGRESS, "Unknown Error. The API does not trust you with more information");
       }
+    }
+
+    if(isset($QUERY[PQuerySendProgress::GPU_TEMP])){
+      for($i =0; $i < sizeof($QUERY[PQuerySendProgress::GPU_TEMP]); $i++){
+        if(!is_numeric($QUERY[PQuerySendProgress::GPU_TEMP][$i]) || $QUERY[PQuerySendProgress::GPU_TEMP][$i] <= 0){
+          unset($QUERY[PQuerySendProgress::GPU_TEMP][$i]);
+        }
+      }
+      $data = implode(",", $QUERY[PQuerySendProgress::GPU_TEMP]);
+      $agentStat = new AgentStat(0, $this->agent->getId(), DAgentStatsType::GPU_TEMP, time(), $data);
+      $FACTORIES::getAgentStatFactory()->save($agentStat);
+    }
+    if(isset($QUERY[PQuerySendProgress::GPU_UTIL])){
+      for($i =0; $i < sizeof($QUERY[PQuerySendProgress::GPU_UTIL]); $i++){
+        if(!is_numeric($QUERY[PQuerySendProgress::GPU_UTIL][$i]) || $QUERY[PQuerySendProgress::GPU_UTIL][$i] < 0){
+          unset($QUERY[PQuerySendProgress::GPU_UTIL][$i]);
+        }
+      }
+      $data = implode(",", $QUERY[PQuerySendProgress::GPU_UTIL]);
+      $agentStat = new AgentStat(0, $this->agent->getId(), DAgentStatsType::GPU_UTIL, time(), $data);
+      $FACTORIES::getAgentStatFactory()->save($agentStat);
     }
     
     // agent is assigned to this chunk (not necessarily task!)
