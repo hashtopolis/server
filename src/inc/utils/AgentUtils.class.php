@@ -13,25 +13,40 @@ use DBA\RegVoucher;
 use DBA\Zap;
 use DBA\AgentStat;
 use DBA\OrderFilter;
+use DBA\ContainFilter;
 
 class AgentUtils {
-  public static function getGraphData($agent, $type){
+  public static function getGraphData($agent, $types){
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
 
-    $qF = new QueryFilter(AgentStat::STAT_TYPE, $type, "=");
-    $oF = new OrderFilter(AgentStat::TIME, "DESC LIMIT 100");
+    $qF = new ContainFilter(AgentStat::STAT_TYPE, $types);
+    $oF = new OrderFilter(AgentStat::TIME, "DESC LIMIT 100"); // TODO: make this configurable
     $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
     $xlabels = [];
     $datasets = [];
+    $axes = [];
+    $position = 'left';
     $colors = ["#FF0000", "#00FFFF", "#008000", "#FFFF00", "#FF9333", "#800080", "#0000FF"];
     foreach($entries as $entry){
+      $found = false;
+      foreach($axes as $axis){
+        if($axis['id'] == $entry->getStatType()){
+          $found = true;
+          break;
+        }
+      }
+      if(!$found){
+        $axes[] = ["id" => $entry->getStatType(), 'type' => 'linear', 'position' => $position];
+        $position = ($position == 'left')?'right':'left';
+      }
       $data = explode(",", $entry->getValue());
       for($i = 0; $i < sizeof($data); $i++){
         if(!isset($datasets[$i])){
           $datasets[$i] = array(
             "label" => "Device #" . ($i + 1),
             "fill" => false,
+            "yAxisID" => $entry->getStatType(),
             "backgroundColor" => $colors[$i%sizeof($colors)],
 					  "borderColor" => $colors[$i%sizeof($colors)],
             "data" => []
@@ -43,7 +58,7 @@ class AgentUtils {
         array_unshift($datasets[$i]['data'], (int)$data[$i]);
       }
     }
-    return array("xlabels" => $xlabels, "sets" => $datasets);
+    return array("xlabels" => $xlabels, "sets" => $datasets, "axes" => $axes);
   }
 
   /**
