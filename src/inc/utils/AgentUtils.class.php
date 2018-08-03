@@ -29,7 +29,7 @@ class AgentUtils {
     $axes = [];
     $yLabels = [DAgentStatsType::GPU_TEMP => 'Temp (Celsius)', DAgentStatsType::GPU_UTIL => 'Util (%)'];
     $position = 'left';
-    $colors = ["#FF0000", "#00FFFF", "#008000", "#FFFF00", "#FF9333", "#800080", "#0000FF"];
+    $colors = ["#FF0000", "#00CCCC", "#008000", "#CCCC00", "#FF9333", "#800080", "#0000FF"];
     foreach($entries as $entry){
       $found = false;
       foreach($axes as $axis){
