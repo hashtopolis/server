@@ -30,7 +30,6 @@ class AgentUtils {
         if(!isset($datasets[$i])){
           $datasets[$i] = array(
             "label" => "Device #" . ($i + 1),
-            "fill" => false,
             "data" => []
           );
         }
