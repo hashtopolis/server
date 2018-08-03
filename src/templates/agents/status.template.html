@@ -1,10 +1,10 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Agents Status ([[numAgents]])</h2>
+<h2>Agents Status ([[sizeof([[agentIds]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <div class="row">
   {{FOREACH agent;[[agentIds]]}}
-    <div class="col col-1 text-center" style="background-color: #CCCCCC">
+    <div class="col col-1 text-center" style="background-color: #CCCCCC; border: 1px solid #000000;">
       <a href="agents.php?id=[[agent]]">[[agent]]</a>
     </div>
   {{ENDFOREACH}}
