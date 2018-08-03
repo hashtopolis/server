@@ -20,7 +20,7 @@ class AgentUtils {
     global $FACTORIES, $CONFIG;
 
     $qF = new QueryFilter(AgentStat::STAT_TYPE, $type, "=");
-    $oF = new OrderFilter(AgentStat::TIME, "DESC LIMIT 30");
+    $oF = new OrderFilter(AgentStat::TIME, "DESC LIMIT 100");
     $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
     $xlabels = [];
     $datasets = [];
