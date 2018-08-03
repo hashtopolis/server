@@ -50,8 +50,8 @@ class AgentUtils {
             "label" => "Device #" . ($i + 1),
             "fill" => false,
             "yAxisID" => $entry->getStatType(),
-            "backgroundColor" => $colors[$i%sizeof($colors)],
-					  "borderColor" => $colors[$i%sizeof($colors)],
+            "backgroundColor" => $colors[$pos%sizeof($colors)],
+					  "borderColor" => $colors[$pos%sizeof($colors)],
             "data" => []
           );
         }
