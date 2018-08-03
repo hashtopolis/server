@@ -51,7 +51,7 @@ $oF1 = new OrderFilter(AgentStat::TIME, "DESC");
 $oF2 = new OrderFilter(AgentStat::AGENT_ID, "ASC LIMIT ".sizeof($agentIds));
 $qF1 = new ContainFilter(AgentStat::AGENT_ID, $agentIds);
 $qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_UTIL, "=");
-$stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2], $FACTORIES::ORDER => [$of1, $oF2]));
+$stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2], $FACTORIES::ORDER => [$oF1, $oF2]));
 $OBJECTS['agentStats'] = $stats;
 
 print_r($stats);
