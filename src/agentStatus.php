@@ -38,7 +38,7 @@ foreach ($userGroups as $userGroup) {
 }
 
 $OBJECTS['pageTitle'] = "Agents Status";
-  
+
 // load all agents which are in an access group the user has access to
 $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds);
 $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -46,15 +46,22 @@ $agentIds = array();
 foreach ($accessGroupAgents as $accessGroupAgent) {
   $agentIds[] = $accessGroupAgent->getAgentId();
 }
-  
-$oF1 = new OrderFilter(AgentStat::TIME, "DESC");
-$oF2 = new OrderFilter(AgentStat::AGENT_ID, "ASC LIMIT ".sizeof($agentIds));
+
+$oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
+$oF2 = new OrderFilter(AgentStat::TIME, "DESC");
 $qF1 = new ContainFilter(AgentStat::AGENT_ID, $agentIds);
 $qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_UTIL, "=");
-$stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2], $FACTORIES::ORDER => [$oF1, $oF2]));
-$OBJECTS['agentStats'] = $stats;
-
-print_r($stats);
+$qF3 = new QueryFilter(AgentStat::TIME, time() - $CONFIG->getVal(DConfig::AGENT_TIMEOUT), ">");
+$stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2, $qF3], $FACTORIES::ORDER => [$oF1, $oF2]));
+$OBJECTS['agentIds'] = $agentIds;
+$agentStats = new DataSet();
+foreach($stats as $stat){
+  if($agentStats->getVal($stat->getAgentId()) === false){
+    $agentStats->addValue($stat->getAgentId(), $stat);
+  }
+}
+$OBJECTS['stats'] = $agentStats;
+print_r($agentStats);
 
 echo $TEMPLATE->render($OBJECTS);
 
