@@ -27,7 +27,7 @@ class AgentUtils {
     $xlabels = [];
     $datasets = [];
     $axes = [];
-    $yLabels = [DAgentStatsType::GPU_TEMP => 'Temperature (&deg;C)', DAgentStatsType::GPU_UTIL => 'Util (%)'];
+    $yLabels = [DAgentStatsType::GPU_TEMP => 'Temperature (\xB0C)', DAgentStatsType::GPU_UTIL => 'Util (%)'];
     $position = 'left';
     $colors = ["#FF0000", "#00FFFF", "#008000", "#FFFF00", "#FF9333", "#800080", "#0000FF"];
     foreach($entries as $entry){
