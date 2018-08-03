@@ -49,7 +49,7 @@ class AgentUtils {
           $datasets[$pos] = array(
             "label" => "Dev #" . ($i + 1) . " - " . $yLabels[$entry->getStatType()],
             "fill" => false,
-            "lineTension" => 0,
+            // "lineTension" => 0, TODO: maybe let the user decide about style
             "yAxisID" => $entry->getStatType(),
             "backgroundColor" => $colors[$pos%sizeof($colors)],
 					  "borderColor" => $colors[$pos%sizeof($colors)],
