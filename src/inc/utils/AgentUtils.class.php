@@ -28,7 +28,7 @@ class AgentUtils {
       $data = explode(",", $entry->getValue());
       for($i = 0; $i < sizeof($data); $i++){
         if(!isset($datasets[$i])){
-          $dataset[$i] = array(
+          $datasets[$i] = array(
             "label" => "Device #" . ($i + 1),
             "fill" => false,
             "data" => []
