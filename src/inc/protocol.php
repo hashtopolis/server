@@ -260,6 +260,7 @@ class PResponseGetFile extends PResponse {
   const FILENAME  = "filename";
   const EXTENSION = "extension";
   const URL       = "url";
+  const FILESIZE  = "filesize";
 }
 
 class PResponseGetTask extends PResponse {
