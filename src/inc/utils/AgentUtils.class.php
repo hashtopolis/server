@@ -42,8 +42,9 @@ class AgentUtils {
       }
       $data = explode(",", $entry->getValue());
       for($i = 0; $i < sizeof($data); $i++){
-        if(!isset($datasets[$i])){
-          $datasets[$i] = array(
+        $pos = $i + sizeof($data)*array_search($entry->getStatType(), $types);
+        if(!isset($datasets[$pos])){
+          $datasets[$pos] = array(
             "label" => "Device #" . ($i + 1),
             "fill" => false,
             "yAxisID" => $entry->getStatType(),
