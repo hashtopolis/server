@@ -220,7 +220,7 @@
   </div>
 </div>
 {{IF [[sizeof([[gpuTemp]])]] > 0}}
-  {%TEMPLATE->agents/temperature%}
+  {%TEMPLATE->agents/detail.temperature%}
 {{ENDIF}}
 {{IF [[sizeof([[errors]])]] > 0}}
   <h3>Error messages:</h3>
