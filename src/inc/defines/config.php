@@ -59,6 +59,7 @@ class DConfig {
   const HASHES_PER_PAGE       = "hashesPerPage";
   const HIDE_IP_INFO          = "hideIpInfo";
   const SHOW_TASK_PERFORMANCE = "showTaskPerformance";
+  const AGENT_STAT_LIMIT      = "agentStatLimit";
 
   // Section: Server
   const BASE_URL           = "baseUrl";
@@ -144,6 +145,8 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::PRINCE_LINK:
         return DConfigType::STRING_INPUT;
+      case DConfig::AGENT_STAT_LIMIT:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -226,6 +229,8 @@ class DConfig {
         return "Disable automatic task splitting with large rule files.";
       case DConfig::PRINCE_LINK:
         return "Download link for the prince preprocessor binaries.";
+      case DConfig::AGENT_STAT_LIMIT:
+        return "Maximal number of data points showing of agent gpu data.";
     }
     return $config;
   }

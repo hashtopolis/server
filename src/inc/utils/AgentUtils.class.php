@@ -91,9 +91,14 @@ class AgentUtils {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
 
+    $limit = intval($CONFIG->getVal(DConfig::AGENT_STAT_LIMIT));
+    if($limit <= 0){
+      $limit = 100;
+    }
+
     $qF = new ContainFilter(AgentStat::STAT_TYPE, $types);
     $oF1 = new OrderFilter(AgentStat::TIME, "DESC");
-    $oF2 = new OrderFilter(AgentStat::STAT_TYPE, "ASC LIMIT 100"); // TODO: make this configurable
+    $oF2 = new OrderFilter(AgentStat::STAT_TYPE, "ASC LIMIT $limit");
     $entries = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => array($oF1, $oF2)));
     $xlabels = [];
     $datasets = [];
