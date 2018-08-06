@@ -17,6 +17,11 @@ class DAgentIgnoreErrors {
   const IGNORE_NOSAVE = 2;
 }
 
+class DAgentStatsType {
+  const GPU_TEMP = 1;
+  const GPU_UTIL = 2;
+}
+
 class DAgentAction {
   const CLEAR_ERRORS      = "clearErrors";
   const CLEAR_ERRORS_PERM = DAccessControl::MANAGE_AGENT_ACCESS;

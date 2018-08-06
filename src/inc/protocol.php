@@ -45,6 +45,10 @@ class PQuerySendProgress extends PQuery {
   const SPEED             = "speed";
   const HASHCAT_STATE     = "state";
   const CRACKED_HASHES    = "cracks";
+
+  // optional
+  const GPU_TEMP = "gpuTemp";
+  const GPU_UTIL = "gpuUtil";
 }
 
 class PQuerySendBenchmark extends PQuery {
