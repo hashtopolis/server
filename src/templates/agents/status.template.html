@@ -1,0 +1,65 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Agents Status ([[sizeof([[agents]])]])</h2>
+{%TEMPLATE->struct/messages%}
+<h3>Devices Util</h3>
+<div class="container">
+  <div class="row">
+    {{FOREACH agent;[[agents]]}}
+      <div class="col col-1 text-center" style="background-color: [[AgentUtils::getUtilStatusColor([[stats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+        <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent"><i class="fas fa-eye" aria-hidden="true"></i></a>
+      </div>
+    {{ENDFOREACH}}
+  </div>
+  <div class="row">
+    <div class="col-2">
+      <span style="color: #009933;">■</span> Utility is good<br>(> 90%)
+    </div>
+    <div class="col-2">
+      <span style="color: #ff9900;">■</span> Utility not ideal<br>(<= 90%)
+    </div>
+    <div class="col-2">
+      <span style="color: #800000;">■</span> Utility low<br>(<= 75%)
+    </div>
+    <div class="col-2">
+      <span style="color: #CCCCCC;">■</span> Agent is not active
+    </div>
+    <div class="col-2">
+      <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing data
+    </div>
+    <div class="col-2">
+      <span style="color: #FF0000;">■</span> Invalid data from agent or values being 0
+    </div>
+  </div>
+</div>
+<h3>Devices Temperatures</h3>
+<div class="container">
+  <div class="row">
+    {{FOREACH agent;[[agents]]}}
+    <div class="col col-1 text-center" style="background-color: [[AgentUtils::getTempStatusColor([[temps.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+      <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent"><i class="fas fa-eye" aria-hidden="true"></i></a>
+    </div>
+    {{ENDFOREACH}}
+  </div>
+  <div class="row">
+    <div class="col-2">
+      <span style="color: #009933;">■</span> Temperature good<br>(<= 70°C)
+    </div>
+    <div class="col-2">
+      <span style="color: #ff9900;">■</span> Temperature acceptable<br>(<= 80°C)
+    </div>
+    <div class="col-2">
+      <span style="color: #800000;">■</span> Temperature too high<br>(> 80°C)
+    </div>
+    <div class="col-2">
+      <span style="color: #CCCCCC;">■</span> Agent is not active
+    </div>
+    <div class="col-2">
+      <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing data
+    </div>
+    <div class="col-2">
+      <span style="color: #FF0000;">■</span> Invalid data from agent or values being 0
+    </div>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}
