@@ -29,7 +29,7 @@
               <button type="submit" class='btn btn-danger' {{IF [[users.getVal([[group.getId()]])]] > 0}} disabled{{ENDIF}}><i class="fas fa-trash" aria-hidden="true"></i></button>
             </form>
             <div class="float-right mx-1">
-              <a class='btn btn-primary' href="access.php?id=[[group.getId()]]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+              <a class='btn btn-primary' href="access.php?id=[[group.getId()]]" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
             </div>
           </td>
 			  </tr>

@@ -82,7 +82,7 @@
                   <input type='hidden' name='action' value='[[$DAgentAction::DELETE_AGENT]]'>
                   <input type="hidden" name="agentId" value="[[agent.getId()]]">
                   <input type="hidden" name="csrf" value="[[csrf]]">
-                  <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+                  <button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
                 </form>
               </td>
             {{ELSE}}
