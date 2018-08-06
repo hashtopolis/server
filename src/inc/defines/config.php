@@ -38,6 +38,7 @@ class DConfig {
   const RULE_SPLIT_ALWAYS      = "ruleSplitAlways";
   const RULE_SPLIT_DISABLE     = "ruleSplitDisable";
   const PRINCE_LINK            = "princeLink";
+  const AGENT_DATA_LIFETIME    = "agentDataLifetime";
 
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -147,6 +148,8 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::AGENT_STAT_LIMIT:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::AGENT_DATA_LIFETIME:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -231,6 +234,8 @@ class DConfig {
         return "Download link for the prince preprocessor binaries.";
       case DConfig::AGENT_STAT_LIMIT:
         return "Maximal number of data points showing of agent gpu data.";
+      case DConfig::AGENT_DATA_LIFETIME:
+        return "Minimum time in seconds how long agent data about gpu temperature and utility is kept on the server.";
     }
     return $config;
   }

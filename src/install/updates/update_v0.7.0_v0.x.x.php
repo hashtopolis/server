@@ -25,6 +25,8 @@ echo "OK\n";
 echo "Add new config entries... ";
 $config = new Config(0, 4, DConfig::AGENT_STAT_LIMIT, 100);
 $FACTORIES::getConfigFactory()->save($config);
+$config = new Config(0, 1, DConfig::AGENT_DATA_LIFETIME, 3600);
+$FACTORIES::getConfigFactory()->save($config);
 echo "OK\n";
 
 echo "Update complete!\n";

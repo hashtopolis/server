@@ -419,7 +419,8 @@ class Util {
   }
 
   public static function agentStatCleaning() {
-    global $FACTORIES;
+    /** @var $CONFIG DataSet */
+    global $FACTORIES, $CONFIG;
 
     $entry = $FACTORIES::getStoredValueFactory()->get(DStats::LAST_STAT_CLEANING);
     if ($entry == null) {
@@ -427,7 +428,11 @@ class Util {
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
-      $qF = new QueryFilter(AgentStat::TIME, time() - 3600, "<="); // TODO: make configurable
+      $lifetime = intval($CONFIG->getVal(DConfig::AGENT_DATA_LIFETIME));
+      if($lifetime <= 0){
+        $lifetime = 3600;
+      }
+      $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
       $FACTORIES::getAgentStatFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
 
       $entry->setVal(time());
