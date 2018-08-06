@@ -33,7 +33,7 @@
 				  <td>[[entry.getVal('user').getSessionLifetime()]]</td>
 				  <td>[[entry.getVal('group').getGroupName()]]</td>
           <td>
-            <a class='btn btn-primary float-right' href="users.php?id=[[entry.getVal('user').getId()]]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+            <a class='btn btn-primary float-right' href="users.php?id=[[entry.getVal('user').getId()]]" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
           </td>
 			  </tr>
 		  {{ENDFOREACH}}

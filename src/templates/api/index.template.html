@@ -30,7 +30,7 @@
               <button type="submit" class='btn btn-danger' value="Delete" {{IF [[apis.getVal([[group.getId()]])]] > 0}} disabled{{ENDIF}}><i class="fas fa-trash" aria-hidden="true"></i></button>
             </form>
             <div class="float-right mx-1">
-              <a class='btn btn-primary' href="api.php?id=[[group.getId()]]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+              <a class='btn btn-primary' href="api.php?id=[[group.getId()]]" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
             </div>
           </td>
         </tr>
@@ -63,10 +63,10 @@
               <input type="hidden" name="action" value="[[$DApiAction::DELETE_KEY]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="hidden" name="keyId" value="[[key.getId()]]">
-              <button type="submit" class='btn btn-danger' value="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
+              <button type="submit" class='btn btn-danger' value="Delete" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
             </form>
             <div class="float-right mx-1">
-              <a class='btn btn-primary' href="api.php?keyId=[[key.getId()]]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+              <a class='btn btn-primary' href="api.php?keyId=[[key.getId()]]" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
             </div>
           </td>
         </tr>

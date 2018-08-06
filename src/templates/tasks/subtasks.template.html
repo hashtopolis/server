@@ -66,7 +66,7 @@
           <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
           <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[subTask.getVal('priority')]]" title="Priority">
-          <button type="submit" class='btn btn-light mx-1'><i class="fas fa-save" aria-hidden="true"></i></button>
+          <button type="submit" class='btn btn-light mx-1' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
         </form>
       {{ELSE}}
         [[subTask.getVal('priority')]]
@@ -78,18 +78,18 @@
           <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
           <input type="hidden" name="csrf" value="[[csrf]]">
           <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
-          <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+          <button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
         </form>
         {{IF ![[showArchived]]}}
           <form class="float-right mx-1" action="tasks.php" method="POST" onSubmit="if (!confirm('Really archive task [[set.getVal('taskId')]]?')) return false;">
             <input type="hidden" name="action" value="[[$DTaskAction::ARCHIVE_TASK]]">
             <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
             <input type="hidden" name="csrf" value="[[csrf]]">
-            <button type="submit" class='btn btn-warning'><i class="fas fa-archive" aria-hidden="true"></i></button>
+            <button type="submit" class='btn btn-warning' data-toggle="tooltip" data-placement="top" title="Archive Task"><i class="fas fa-archive" aria-hidden="true"></i></button>
           </form>
         {{ENDIF}}
         <form class="float-right mx-1" action="tasks.php?new=true&copy=[[subTask.getVal('taskId')]]" method="post">
-          <button type="submit" class='btn btn-light'><i class="fas fa-copy" aria-hidden="true"></i></button>
+          <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy"><i class="fas fa-copy" aria-hidden="true"></i></button>
         </form>
       {{ENDIF}}
     </td>

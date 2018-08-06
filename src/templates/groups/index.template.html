@@ -28,10 +28,10 @@
               <input type="hidden" name="action" value="[[$DAccessGroupAction::DELETE_GROUP]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="hidden" name="groupId" value="[[group.getId()]]">
-              <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+              <button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
             </form>
             <div class="float-right mx-1">
-              <a class='btn btn-primary' href="groups.php?id=[[group.getId()]]"><i class="fas fa-edit" aria-hidden="true"></i></a>
+              <a class='btn btn-primary' href="groups.php?id=[[group.getId()]]" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
             </div>
           </td>
 			  </tr>

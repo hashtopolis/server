@@ -70,10 +70,10 @@
                               <input type="hidden" name="action" value="[[$DFileAction::DELETE_FILE]]">
                               <input type="hidden" name="csrf" value="[[csrf]]">
                               <input type="hidden" name="file" value="[[file.getId()]]">
-                              <button type="submit" class='btn btn-danger'><i class="fas fa-trash" aria-hidden="true"></i></button>
+                              <button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
                              </form>
                             <form class="float-right mx-1" action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
-                              <button type="submit" class='btn btn-primary'><i class="fas fa-edit" aria-hidden="true"></i></button>
+                              <button type="submit" class='btn btn-primary' data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></button>
                             </form>
                           {{ENDIF}}
                       </td>
