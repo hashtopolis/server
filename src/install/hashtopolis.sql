@@ -273,7 +273,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (39, 1, 'ruleSplitDisable', '0'),
   (40, 1, 'princeLink', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z'),
   (41, 4, 'agentStatLimit', '100'),
-  (42, 1, 'agentDataLifetime', '3600');
+  (42, 1, 'agentDataLifetime', '3600'),
+  (43, 4, 'agentStatTension', '0');
 
 -- --------------------------------------------------------
 

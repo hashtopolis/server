@@ -61,6 +61,7 @@ class DConfig {
   const HIDE_IP_INFO          = "hideIpInfo";
   const SHOW_TASK_PERFORMANCE = "showTaskPerformance";
   const AGENT_STAT_LIMIT      = "agentStatLimit";
+  const AGENT_STAT_TENSION    = "agentStatTension";
 
   // Section: Server
   const BASE_URL           = "baseUrl";
@@ -150,6 +151,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::AGENT_DATA_LIFETIME:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::AGENT_STAT_TENSION:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -236,6 +239,8 @@ class DConfig {
         return "Maximal number of data points showing of agent gpu data.";
       case DConfig::AGENT_DATA_LIFETIME:
         return "Minimum time in seconds how long agent data about gpu temperature and utility is kept on the server.";
+      case DConfig::AGENT_STAT_TENSION:
+        return "Draw straigth lines in agent data graph  instead of bezier curves.";
     }
     return $config;
   }
