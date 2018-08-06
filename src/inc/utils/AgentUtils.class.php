@@ -18,10 +18,17 @@ use DBA\ContainFilter;
 class AgentUtils {
   /**
    * @param AgentStat $util
+   * @param Agent $agent
    * @return string
    */
-  public static function getUtilStatusColor($util){
+  public static function getUtilStatusColor($util, $agent){
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+
     if($util === false){
+      if(time() - $agent->getLastTime() < $CONFIG->getVal(DConfig::AGENT_TIMEOUT)){
+        return "#42d4f4";
+      }
       return "#CCCCCC";
     }
     $util = $util->getValue();

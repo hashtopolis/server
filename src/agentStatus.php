@@ -1,17 +1,12 @@
 <?php
 
-use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
-use DBA\Agent;
-use DBA\AgentError;
-use DBA\Assignment;
-use DBA\Chunk;
 use DBA\ContainFilter;
-use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\AgentStat;
+use DBA\Agent;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -47,13 +42,17 @@ foreach ($accessGroupAgents as $accessGroupAgent) {
   $agentIds[] = $accessGroupAgent->getAgentId();
 }
 
+$oF = new OrderFilter(Agent::AGENT_ID, "ASC");
+$qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
+$agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+$OBJECTS['agents'] = $agents;
+
 $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
 $qF1 = new ContainFilter(AgentStat::AGENT_ID, $agentIds);
 $qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_UTIL, "=");
 $qF3 = new QueryFilter(AgentStat::TIME, time() - $CONFIG->getVal(DConfig::AGENT_TIMEOUT), ">");
 $stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2, $qF3], $FACTORIES::ORDER => [$oF1, $oF2]));
-$OBJECTS['agentIds'] = $agentIds;
 $agentStats = new DataSet();
 foreach($stats as $stat){
   if($agentStats->getVal($stat->getAgentId()) === false){
