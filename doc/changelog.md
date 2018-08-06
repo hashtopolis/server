@@ -1,3 +1,9 @@
+# v0.7.0 -> v0.x.x
+
+## Features
+
+- Agent data about device temperature and util is collected and can be viewed on the server.
+
 # v0.6.0 -> v0.7.0
 
 ## Features
