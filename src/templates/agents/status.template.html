@@ -16,13 +16,13 @@
 <div class="container">
   <div class="row">
     <div class="col-2">
-      <span class="background-color: #009933;">&nbsp;&nbsp;</span> Temperature good (<= 70�C)
+      <span class="background-color: #009933;">■</span> Temperature good (<= 70°C)
     </div>
     <div class="col-2">
-      <span class="background-color: #ff9900;">&nbsp;&nbsp;</span> Temperature acceptable (<= 80�C)
+      <span class="background-color: #ff9900;">■</span> Temperature acceptable (<= 80°C)
     </div>
     <div class="col-2">
-      <span class="background-color: #800000;">&nbsp;&nbsp;</span> Temperature too high (> 80�C)
+      <span class="background-color: #800000;">■</span> Temperature too high (> 80°C)
     </div>
     {{FOREACH agent;[[agents]]}}
     <div class="col col-1 text-center" style="background-color: [[AgentUtils::getTempStatusColor([[temps.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
