@@ -2,7 +2,7 @@
 {%TEMPLATE->struct/menu%}
 <h2>Agents Status ([[sizeof([[agents]])]])</h2>
 {%TEMPLATE->struct/messages%}
-<h3>GPU Util</h3>
+<h3>Devices Util</h3>
 <div class="container">
   <div class="row">
     {{FOREACH agent;[[agents]]}}
@@ -12,6 +12,14 @@
     {{ENDFOREACH}}
   </div>
 </div>
-<h3>GPU Temperatures</h3>
-TODO:
+<h3>Devices Temperatures</h3>
+<div class="container">
+  <div class="row">
+    {{FOREACH agent;[[agents]]}}
+      <div class="col col-1 text-center" style="background-color: [[AgentUtils::getTempStatusColor([[temps.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+        <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1"><i class="fas fa-eye" aria-hidden="true"></i></a>
+      </div>
+    {{ENDFOREACH}}
+  </div>
+</div>
 {%TEMPLATE->struct/foot%}

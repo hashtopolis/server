@@ -61,6 +61,20 @@ foreach($stats as $stat){
 }
 $OBJECTS['stats'] = $agentStats;
 
+$oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
+$oF2 = new OrderFilter(AgentStat::TIME, "DESC");
+$qF1 = new ContainFilter(AgentStat::AGENT_ID, $agentIds);
+$qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_TEMP, "=");
+$qF3 = new QueryFilter(AgentStat::TIME, time() - $CONFIG->getVal(DConfig::AGENT_TIMEOUT), ">");
+$stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2, $qF3], $FACTORIES::ORDER => [$oF1, $oF2]));
+$agentStats = new DataSet();
+foreach($stats as $stat){
+  if($agentStats->getVal($stat->getAgentId()) === false){
+    $agentStats->addValue($stat->getAgentId(), $stat);
+  }
+}
+$OBJECTS['temps'] = $agentStats;
+
 echo $TEMPLATE->render($OBJECTS);
 
 

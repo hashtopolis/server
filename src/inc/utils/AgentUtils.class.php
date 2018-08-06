@@ -17,6 +17,41 @@ use DBA\ContainFilter;
 
 class AgentUtils {
   /**
+   * @param AgentStat $temp
+   * @param Agent $agent
+   * @return string
+   */
+  public static function getTempStatusColor($temp, $agent){
+    /** @var $CONFIG DataSet */
+    global $CONFIG;
+
+    if($temp === false){
+      if(time() - $agent->getLastTime() < $CONFIG->getVal(DConfig::AGENT_TIMEOUT)){
+        return "#42d4f4";
+      }
+      return "#CCCCCC";
+    }
+    $temp = $temp->getValue();
+    $temp = explode(",", $temp);
+    $max = 0;
+    foreach($temp as $t){
+      $max = ($t > $max)?$t:$max;
+    }
+    if($max == 0){
+      return "#FF0000"; // either util 0 for all or an error occurred
+    }
+    if($max <= 70){
+      return "#009933";
+    }
+    else if($max <= 80){
+      return "#ff9900";
+    }
+    else{
+      return "#800000";
+    }
+  }
+
+  /**
    * @param AgentStat $util
    * @param Agent $agent
    * @return string
