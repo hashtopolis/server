@@ -320,7 +320,7 @@ CREATE TABLE `CrackerBinary` (
   COLLATE = utf8_unicode_ci;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '4.2.0', 'https://hashcat.net/files/hashcat-4.2.0.7z', 'hashcat');
+  (1, 1, '4.2.1', 'https://hashcat.net/files/hashcat-4.2.1.7z', 'hashcat');
 
 -- --------------------------------------------------------
 
