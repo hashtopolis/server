@@ -31,4 +31,15 @@ $config = new Config(0, 4, DConfig::AGENT_STAT_TENSION, 0);
 $FACTORIES::getConfigFactory()->save($config);
 echo "OK\n";
 
+echo "Add file distribution tables... ";
+$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `FileDownload` (
+  `fileDownloadId` int(11) NOT NULL,
+  `time` int(11) NOT NULL,
+  `fileId` int(11) NOT NULL,
+  `status` int(11) NOT NULL
+) ENGINE=InnoDB");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `FileDownload` ADD PRIMARY KEY (`fileDownloadId`)");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `FileDownload` MODIFY `fileDownloadId` int(11) NOT NULL AUTO_INCREMENT");
+echo "OK\n";
+
 echo "Update complete!\n";

@@ -264,6 +264,12 @@ $CONF['ApiGroup'] = array(
   'permissions',
   'name'
 );
+$CONF['FileDownload'] = array(
+  'fileDownloadId',
+  'time',
+  'fileId',
+  'status'
+);
 
 // relations
 $CONF['AccessGroupUser'] = array(
