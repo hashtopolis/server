@@ -2,6 +2,7 @@
 
 use DBA\Factory;
 use DBA\Config;
+use DBA\ConfigSection;
 
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
@@ -28,6 +29,17 @@ $FACTORIES::getConfigFactory()->save($config);
 $config = new Config(0, 1, DConfig::AGENT_DATA_LIFETIME, 3600);
 $FACTORIES::getConfigFactory()->save($config);
 $config = new Config(0, 4, DConfig::AGENT_STAT_TENSION, 0);
+$FACTORIES::getConfigFactory()->save($config);
+
+$configSection = new ConfigSection(6, 'Multicast');
+$FACTORIES::getConfigSectionFactory()->save($configSection);
+$config = new Config(0, 6, DConfig::MULTICAST_ENABLE, 0);
+$FACTORIES::getConfigFactory()->save($config);
+$config = new Config(0, 6, DConfig::MULTICAST_DEVICE, 'eth0');
+$FACTORIES::getConfigFactory()->save($config);
+$config = new Config(0, 6, DConfig::MULTICAST_TR_ENABLE, 0);
+$FACTORIES::getConfigFactory()->save($config);
+$config = new Config(0, 6, DConfig::MULTICAST_TR, 50000);
 $FACTORIES::getConfigFactory()->save($config);
 echo "OK\n";
 
