@@ -252,7 +252,11 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (40, 1, 'princeLink', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z'),
   (41, 4, 'agentStatLimit', '100'),
   (42, 1, 'agentDataLifetime', '3600'),
-  (43, 4, 'agentStatTension', '0');
+  (43, 4, 'agentStatTension', '0'),
+  (44, 6, 'multicastEnable', '0'),
+  (45, 6, 'multicastDevice', 'eth0'),
+  (46, 6, 'multicastTransferRateEnable', '0'),
+  (47, 6, 'multicastTranserRate', '500000');
 
 -- --------------------------------------------------------
 
