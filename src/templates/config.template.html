@@ -16,6 +16,12 @@
 
 <br>
 
+{{IF [[configSectionId]] == 6}}
+  <div class="alert alert-neutral">
+    Service runner status: [[RunnerUtils::getStatus()]]
+  </div>
+{{ENDIF}}
+
 <form action="" method="POST">
 	<input type='hidden' name='action' value='[[$DConfigAction::UPDATE_CONFIG]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
