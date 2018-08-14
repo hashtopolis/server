@@ -75,3 +75,4 @@ ETH: 0x06B3Ae7561AD763eF58Df9C37deB6757bDA2BC0c
 * atom for [hashcat](https://github.com/hashcat/hashcat)
 * curlyboi for the original [Hashtopus](https://github.com/curlyboi/hashtopus) code
 * 7zip binaries are compiled from [here](https://sourceforge.net/projects/sevenzip/files/7-Zip/16.04/)
+* uftp binaries are compiled from [here](http://uftp-multicast.sourceforge.net/)

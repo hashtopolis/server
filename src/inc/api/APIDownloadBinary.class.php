@@ -24,6 +24,16 @@ class APIDownloadBinary extends APIBasic {
           )
         );
         break;
+      case PValuesDownloadBinaryType::UFTPD:
+        $filename = "uftpd" . Util::getFileExtension($this->agent->getOs());
+        $path = Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/static/" . $filename;
+        $this->sendResponse(array(
+            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponseBinaryDownload::EXECUTABLE => $path
+          )
+        );
+        break;
       case PValuesDownloadBinaryType::CRACKER:
         $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[PQueryDownloadBinary::BINARY_VERSION_ID]);
         if ($crackerBinary == null) {

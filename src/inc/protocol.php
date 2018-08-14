@@ -195,6 +195,7 @@ class PValuesDownloadBinaryType extends PValues {
   const EXTRACTOR = "7zr";
   const CRACKER   = "cracker";
   const PRINCE    = "prince";
+  const UFTPD     = "uftpd";
 }
 
 class PValuesBenchmarkType extends PValues {
