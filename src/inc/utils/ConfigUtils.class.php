@@ -24,7 +24,7 @@ class ConfigUtils {
     }
     else if($config->getItem() == DConfig::MULTICAST_ENABLE && !$config->getValue()){
       // multicast was ticked to disable -> stop runner
-      RunnerUtils::startService();
+      RunnerUtils::stopService();
     }
 
     if ($new) {
