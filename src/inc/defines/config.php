@@ -256,7 +256,7 @@ class DConfig {
       case DConfig::AGENT_STAT_TENSION:
         return "Draw straigth lines in agent data graph  instead of bezier curves.";
       case DConfig::MULTICAST_ENABLE:
-        return "Enable UDP multicast distribution of files to agents. (Make sure you did all the preparation before activating)";
+        return "Enable UDP multicast distribution of files to agents. (Make sure you did all the preparation before activating)<br>You can read more informations here: <a href='https://github.com/s3inlc/hashtopolis-runner/blob/master/README.md' target='_blank'>https://github.com/s3inlc/hashtopolis-runner</a>";
       case DConfig::MULTICAST_DEVICE:
         return "Network device of the server to be used for the multicast distribution.";
       case DConfig::MULTICAST_TR_ENABLE:
