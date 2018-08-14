@@ -35,13 +35,14 @@ if (!$LOGIN->isLoggedin()) {
   if (isset($_GET['apiKey'])) {
     $qF = new QueryFilter(ApiKey::ACCESS_KEY, $_GET['apiKey'], "=");
     $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    $apiFile = new UserAPIFile();
     if ($apiKey == null) {
       die("Invalid access key!");
     }
     else if ($apiKey->getStartValid() > time() || $apiKey->getEndValid() < time()) {
       die("Expired access key!");
     }
-    else if (!$this->hasPermission(USection::FILE, USectionFile::GET_FILE, $apiKey)) {
+    else if (!$apiFile->hasPermission(USection::FILE, USectionFile::GET_FILE, $apiKey)) {
       die("Permission denied!");
     }
   }
@@ -91,12 +92,12 @@ header("Content-Description: " . $line->getFilename());
 header("Content-Disposition: attachment; filename=\"" . $line->getFilename() . "\"");
 
 if (isset($_SERVER['HTTP_RANGE'])) {
-  
+
   $c_start = $start;
   $c_end = $end;
-  
+
   list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-  
+
   if (strpos($range, ',') !== false) {
     header('HTTP/1.1 416 Requested Range Not Satisfiable');
     header("Content-Range: bytes $start-$end/$size");
@@ -135,7 +136,7 @@ header("Content-Length: " . $length);
 
 $buffer = 1024 * 100;
 while (!feof($fp) && ($p = ftell($fp)) <= $end) {
-  
+
   if ($p + $buffer > $end) {
     $buffer = $end - $p + 1;
   }
