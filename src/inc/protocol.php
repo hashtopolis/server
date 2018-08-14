@@ -45,6 +45,8 @@ class PQuerySendProgress extends PQuery {
   const SPEED             = "speed";
   const HASHCAT_STATE     = "state";
   const CRACKED_HASHES    = "cracks";
+
+  const DEBUG_OUTPUT      = "debugOutput"; // optional
 }
 
 class PQuerySendBenchmark extends PQuery {

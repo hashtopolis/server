@@ -1,3 +1,14 @@
+# v0.7.0 -> v0.x.x
+
+## Features
+
+- The server can store sent debug output from Hashcat sent by the agent.
+- Files now also are associated to an Access Group to control the visibility of files.
+
+## Bugfixes
+
+- New task creation page now also shows the other file type.
+
 # v0.6.0 -> v0.7.0
 
 ## Features

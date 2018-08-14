@@ -197,7 +197,7 @@ class HashlistUtils {
     fclose($wordlistFile);
 
     //add file to files list
-    $file = new File(0, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0);
+    $file = new File(0, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
     $FACTORIES::getFileFactory()->save($file);
     return [$wordCount, $wordlistName, $file];
   }
@@ -692,7 +692,7 @@ class HashlistUtils {
     fclose($file);
     usleep(1000000);
 
-    $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0);
+    $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
     $file = $FACTORIES::getFileFactory()->save($file);
     return $file;
   }
@@ -1019,7 +1019,7 @@ class HashlistUtils {
     fclose($file);
     usleep(1000000);
 
-    $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0);
+    $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
     $file = $FACTORIES::getFileFactory()->save($file);
     return $file;
   }

@@ -163,8 +163,9 @@
     <div class='col-md-4'>
       <div class='btn-toolbar'>
         <div class='btn-group'>
-          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles()">Rules</button>
-          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles()">Wordlists</button>
+          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
+          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
+          <button id="otherButton" class='btn btn-light active' onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
       <br>
@@ -220,29 +221,73 @@
           </div>
         </div>
       </div>
+      <div id="other">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[other]]}}
+              <tr>
+                <td>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                  [[file.getVal('file').getFilename()]]
+                  {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                    <span class="fas fa-lock" aria-hidden="true"></span>
+                  {{ENDIF}}
+                </td>
+                <td>
+                  [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                </td>
+              </tr>
+              {{ENDFOREACH}}
+            </table>
+          </div>
+        </div>
+      </div>
       <script type='text/javascript'>
-        var show = "rules";
-        toggleFiles();
+        toggleFiles('wordlists');
 
-        function toggleFiles() {
+        function toggleFiles(show) {
           var wordlist = document.getElementById('wordlists');
           var rule = document.getElementById('rules');
-          if (show === 'wordlists') {
+          var other = document.getElementById('other');
+          if (show === 'rules') {
             wordlist.style.visibility = "hidden"; // or
             wordlist.style.display = "none";
+            other.style.visibility = "hidden"; // or
+            other.style.display = "none";
             rule.style.visibility = "visible"; // or
             rule.style.display = "inline";
             document.getElementById("ruleButton").className = "btn btn-light active";
             document.getElementById("wordlistButton").className = "btn btn-light";
+            document.getElementById("otherButton").className = "btn btn-light";
             show = "rules";
           }
-          else {
+          else if(show === 'wordlists'){
             wordlist.style.visibility = "visible"; // or
             wordlist.style.display = "inline";
             rule.style.visibility = "hidden"; // or
             rule.style.display = "none";
+            other.style.visibility = "hidden"; // or
+            other.style.display = "none";
             document.getElementById("ruleButton").className = "btn btn-light";
             document.getElementById("wordlistButton").className = "btn btn-light active";
+            document.getElementById("otherButton").className = "btn btn-light";
+            show = "wordlists";
+          }
+          else if (show === 'other') {
+            other.style.visibility = "visible"; // or
+            other.style.display = "inline";
+            rule.style.visibility = "hidden"; // or
+            rule.style.display = "none";
+            wordlist.style.visibility = "hidden"; // or
+            wordlist.style.display = "none";
+            document.getElementById("ruleButton").className = "btn btn-light";
+            document.getElementById("wordlistButton").className = "btn btn-light";
+            document.getElementById("otherButton").className = "btn btn-light active";
             show = "wordlists";
           }
           return false;

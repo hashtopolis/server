@@ -98,7 +98,8 @@ $CONF['File'] = array(
   'filename',
   'size',
   'isSecret',
-  'fileType'
+  'fileType',
+  'accessGroupId'
 );
 $CONF['Hash'] = array(
   'hashId',
@@ -215,6 +216,11 @@ $CONF['Task'] = array(
   'taskWrapperId',
   'isArchived',
   'isPrince'
+);
+$CONF['TaskDebugOutput'] = array(
+  'taskDebugOutputId',
+  'taskId',
+  'output'
 );
 $CONF['TaskWrapper'] = array(
   'taskWrapperId',

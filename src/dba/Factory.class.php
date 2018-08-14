@@ -29,6 +29,7 @@ class Factory {
   private static $storedValueFactory = null;
   private static $supertaskFactory = null;
   private static $taskFactory = null;
+  private static $taskDebugOutputFactory = null;
   private static $taskWrapperFactory = null;
   private static $userFactory = null;
   private static $zapFactory = null;
@@ -298,6 +299,16 @@ class Factory {
       return $f;
     } else {
       return self::$taskFactory;
+    }
+  }
+  
+  public static function getTaskDebugOutputFactory() {
+    if (self::$taskDebugOutputFactory == null) {
+      $f = new TaskDebugOutputFactory();
+      self::$taskDebugOutputFactory = $f;
+      return $f;
+    } else {
+      return self::$taskDebugOutputFactory;
     }
   }
   

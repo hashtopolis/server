@@ -11,6 +11,7 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\ContainFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -71,6 +72,11 @@ if (isset($_GET['id'])) {
   $OBJECTS['task'] = $task;
   $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
   $OBJECTS['taskWrapper'] = $taskWrapper;
+
+  $fileInfo = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfUser($LOGIN->getUser()));
+  if($fileInfo[4]){
+    UI::printError("ERROR", "No access to this task!");
+  }
 
   $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
   $OBJECTS['hashlist'] = $hashlist;
@@ -277,22 +283,22 @@ else if (isset($_GET['new'])) {
       $orig = $copy->getId();
       $origType = 2;
       $copy = new Task(
-        0, 
-        $copy->getTaskName(), 
-        $copy->getAttackCmd(), 
-        $copy->getChunkTime(), 
-        $copy->getStatusTimer(), 
-        0, 
-        0, 
-        $copy->getPriority(), 
-        $copy->getColor(), 
-        $copy->getIsSmall(), 
-        $copy->getIsCpuTask(), 
-        $copy->getUseNewBench(), 
-        0, 
-        0, 
-        $copy->getCrackerBinaryTypeId(), 
-        0, 
+        0,
+        $copy->getTaskName(),
+        $copy->getAttackCmd(),
+        $copy->getChunkTime(),
+        $copy->getStatusTimer(),
+        0,
+        0,
+        $copy->getPriority(),
+        $copy->getColor(),
+        $copy->getIsSmall(),
+        $copy->getIsCpuTask(),
+        $copy->getUseNewBench(),
+        0,
+        0,
+        $copy->getCrackerBinaryTypeId(),
+        0,
         0,
         0
       );
@@ -300,22 +306,22 @@ else if (isset($_GET['new'])) {
   }
   if ($copy === null) {
     $copy = new Task(
-      0, 
-      "", 
-      "", 
-      $CONFIG->getVal(DConfig::CHUNK_DURATION), 
-      $CONFIG->getVal(DConfig::STATUS_TIMER), 
-      0, 
-      0, 
-      0, 
-      "", 
-      0, 
-      0, 
-      $CONFIG->getVal(DConfig::DEFAULT_BENCH), 
-      0, 
-      0, 
-      0, 
-      0, 
+      0,
+      "",
+      "",
+      $CONFIG->getVal(DConfig::CHUNK_DURATION),
+      $CONFIG->getVal(DConfig::STATUS_TIMER),
+      0,
+      0,
+      0,
+      "",
+      0,
+      0,
+      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
+      0,
+      0,
+      0,
+      0,
       0,
       0
     );
@@ -325,6 +331,7 @@ else if (isset($_GET['new'])) {
   }
 
   $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
 
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
@@ -359,9 +366,11 @@ else if (isset($_GET['new'])) {
     }
   }
   $oF = new OrderFilter(File::FILENAME, "ASC");
+  $qF = new ContainFilter(File::ACCESS_GROUP_ID, $accessGroupIds);
   $allFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::ORDER => $oF));
-  $rules = array();
-  $wordlists = array();
+  $rules = [];
+  $wordlists = [];
+  $other = [];
   foreach ($allFiles as $singleFile) {
     $set = new DataSet();
     $checked = "0";
@@ -376,9 +385,13 @@ else if (isset($_GET['new'])) {
     else if($singleFile->getFileType() == DFileType::WORDLIST){
       $wordlists[] = $set;
     }
+    else if($singleFile->getFileType() == DFileType::OTHER){
+      $other[] = $set;
+    }
   }
   $OBJECTS['wordlists'] = $wordlists;
   $OBJECTS['rules'] = $rules;
+  $OBJECTS['other'] = $other;
 
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());

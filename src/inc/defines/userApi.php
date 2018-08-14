@@ -92,6 +92,7 @@ class UQueryFile extends UQuery {
   const DATA = "data";
 
   const SET_SECRET = "isSecret";
+  const ACCESS_GROUP_ID = "accessGroupId";
 }
 
 class UQueryCracker extends UQuery {
