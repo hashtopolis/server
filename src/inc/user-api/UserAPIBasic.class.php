@@ -86,7 +86,7 @@ abstract class UserAPIBasic {
    * @param string $request
    * @param ApiKey $apiKey
    */
-  private function hasPermission($section, $request, $apiKey) {
+  public function hasPermission($section, $request, $apiKey) {
     global $FACTORIES;
     
     $apiGroup = $FACTORIES::getApiGroupFactory()->get($apiKey->getApiGroupId());
