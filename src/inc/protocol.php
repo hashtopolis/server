@@ -242,7 +242,8 @@ class PResponseGetHashlist extends PResponse {
 }
 
 class PResponseLogin extends PResponse {
-  const TIMEOUT = "timeout";
+  const TIMEOUT   = "timeout";
+  const MULTICAST = "multicastEnabled";
 }
 
 class PResponseClientUpdate extends PResponse {

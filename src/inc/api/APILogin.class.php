@@ -15,7 +15,8 @@ class APILogin extends APIBasic {
     $this->sendResponse(array(
         PResponseLogin::ACTION => PActions::LOGIN,
         PResponseLogin::RESPONSE => PValues::SUCCESS,
-        PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
+        PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT),
+        PResponseLogin::MULTICAST => ($CONFIG->getVal(DConfig::MULTICAST_ENABLE))?true:false
       )
     );
   }
