@@ -171,6 +171,7 @@ class TaskUtils {
     foreach ($pretaskFiles as $pretaskFile) {
       $fileTask = new FileTask(0, $pretaskFile->getFileId(), $task->getId());
       $FACTORIES::getFileTaskFactory()->save($fileTask);
+      FileDownloadUtils::addDownload($fileTask->getFileId());
     }
   }
 
@@ -648,6 +649,7 @@ class TaskUtils {
       foreach ($files as $fileId) {
         $taskFile = new FileTask(0, $fileId, $task->getId());
         $FACTORIES::getFileTaskFactory()->save($taskFile);
+        FileDownloadUtils::addDownload($taskFile->getFileId());
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->commit();
@@ -726,6 +728,7 @@ class TaskUtils {
       $taskFiles[] = new FileTask(0, $newFile->getId(), $newTask->getId());
       foreach ($files as $f) {
         $taskFiles[] = new FileTask(0, $f->getId(), $newTask->getId());
+        FileDownloadUtils::addDownload($f->getId());
       }
       $FACTORIES::getFileTaskFactory()->massSave($taskFiles);
       $prio--;
