@@ -3,6 +3,7 @@
 use DBA\File;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\ContainFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -35,7 +36,7 @@ if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule', 'other
 }
 
 if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::MANAGE_FILE_ACCESS)) {
-  $file = $FACTORIES::getFileFactory()->get($_GET['edit']);
+  $file = FileUtils::getFile($_GET['edit'], $LOGIN->getUser());
   if ($file == null) {
     UI::addMessage(UI::ERROR, "Invalid file ID!");
   }
@@ -43,10 +44,12 @@ if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::MANAG
     $OBJECTS['file'] = $file;
     $TEMPLATE = new Template("files/edit");
     $OBJECTS['pageTitle'] = "Edit File " . $file->getFilename();
+    $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
   }
 }
 else {
-  $qF = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule', 'other')), "=");
+  $qF1 = new QueryFilter(File::FILE_TYPE, array_search($view, array('dict', 'rule', 'other')), "=");
+  $qF2 = new ContainFilter(File::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($LOGIN->getUser())));
   $oF = new OrderFilter(File::FILENAME, "ASC");
   $OBJECTS['fileType'] = "Other Files";
   if($view == 'dict'){
@@ -55,9 +58,16 @@ else {
   else if($view == 'rule'){
     $OBJECTS['fileType'] = "Rules";
   }
-  $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));;
+  $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2], $FACTORIES::ORDER => $oF));;
   $OBJECTS['impfiles'] = Util::scanImportDirectory();
   $OBJECTS['pageTitle'] = "Files";
+  $accessGroups = $FACTORIES::getAccessGroupFactory()->filter([]);
+  $groups = new DataSet();
+  foreach($accessGroups as $accessGroup){
+    $groups->addValue($accessGroup->getId(), $accessGroup);
+  }
+  $OBJECTS['accessGroups'] = $groups;
+  $OBJECTS['allAccessGroups'] = $accessGroups;
 }
 $OBJECTS['view'] = $view;
 

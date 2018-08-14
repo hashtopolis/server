@@ -47,6 +47,7 @@ class PQuerySendProgress extends PQuery {
   const CRACKED_HASHES    = "cracks";
 
   // optional
+  const DEBUG_OUTPUT      = "debugOutput";
   const GPU_TEMP = "gpuTemp";
   const GPU_UTIL = "gpuUtil";
 }

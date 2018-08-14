@@ -11,6 +11,7 @@ use DBA\Hashlist;
 use DBA\QueryFilter;
 use DBA\Zap;
 use DBA\QueryFilterWithNull;
+use DBA\TaskDebugOutput;
 use DBA\AgentStat;
 
 class APISendProgress extends APIBasic {
@@ -99,6 +100,20 @@ class APISendProgress extends APIBasic {
     }
     if ($keyspaceProgress > $length + $skip) {
       $keyspaceProgress = $length + $skip;
+    }
+
+    /*
+     * Save Debug output if provided
+     */
+    if(isset($QUERY[PQuerySendProgress::DEBUG_OUTPUT])){
+      $lines = $QUERY[PQuerySendProgress::DEBUG_OUTPUT];
+      $taskDebugOutputs = [];
+      foreach($lines as $line){
+        $taskDebugOutputs[] = new TaskDebugOutput(0, $chunk->getTaskId(), $line);
+      }
+      if(sizeof($taskDebugOutputs) > 0){
+        $FACTORIES::getTaskDebugOutputFactory()->massSave($taskDebugOutputs);
+      }
     }
 
     /*
@@ -391,6 +406,8 @@ class APISendProgress extends APIBasic {
         if ($agentZap->getLastZapId() > 0) {
           $FACTORIES::getAgentZapFactory()->update($agentZap);
         }
+
+        // update hashList age for agent to this task
         break;
     }
     Util::zapCleaning();

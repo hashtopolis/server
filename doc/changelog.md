@@ -2,7 +2,13 @@
 
 ## Features
 
+- The server can store sent debug output from Hashcat sent by the agent.
+- Files now also are associated to an Access Group to control the visibility of files.
 - Agent data about device temperature and util is collected and can be viewed on the server.
+
+## Bugfixes
+
+- New task creation page now also shows the other file type.
 
 # v0.6.0 -> v0.7.0
 

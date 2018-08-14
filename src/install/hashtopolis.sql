@@ -939,6 +939,12 @@ CREATE TABLE `Task` (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
+CREATE TABLE `TaskDebugOutput` (
+  `taskDebugOutputId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `output` varchar(256) NOT NULL
+) ENGINE=InnoDB;
+
 -- --------------------------------------------------------
 
 --
@@ -1273,6 +1279,9 @@ ALTER TABLE `Task`
   ADD PRIMARY KEY (`taskId`),
   ADD KEY `crackerBinaryId` (`crackerBinaryId`);
 
+ALTER TABLE `TaskDebugOutput`
+  ADD PRIMARY KEY (`taskDebugOutputId`);
+
 --
 -- Indizes für die Tabelle `TaskWrapper`
 --
@@ -1461,6 +1470,10 @@ ALTER TABLE `SupertaskPretask`
 --
 ALTER TABLE `Task`
   MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `TaskDebugOutput`
+  MODIFY `taskDebugOutputId` int(11) NOT NULL AUTO_INCREMENT;
+  
 --
 -- AUTO_INCREMENT für Tabelle `TaskWrapper`
 --

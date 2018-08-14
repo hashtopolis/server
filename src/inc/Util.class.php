@@ -137,9 +137,10 @@ class Util {
    * @param $path string
    * @param $name string
    * @param $type string
+   * @param $accessGroupId int
    * @return bool true if the save of the file model succeeded
    */
-  public static function insertFile($path, $name, $type) {
+  public static function insertFile($path, $name, $type, $accessGroupId) {
     global $FACTORIES;
 
     $fileType = DFileType::OTHER;
@@ -149,7 +150,7 @@ class Util {
     else if ($type == 'dict'){
       $fileType = DFileType::WORDLIST;
     }
-    $file = new File(0, $name, Util::filesize($path), 1, $fileType);
+    $file = new File(0, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
     $file = $FACTORIES::getFileFactory()->save($file);
     if ($file == null) {
       return false;
@@ -194,9 +195,10 @@ class Util {
 
   /**
    * @param $task Task
+   * @param $accessGroups AccessGroup[]
    * @return array
    */
-  public static function getFileInfo($task) {
+  public static function getFileInfo($task, $accessGroups) {
     global $FACTORIES;
 
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
@@ -206,13 +208,17 @@ class Util {
     $files = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
     $sizeFiles = 0;
     $fileSecret = false;
+    $noAccess = false;
     foreach ($files as $file) {
       if ($file->getIsSecret() == 1) {
         $fileSecret = true;
       }
+      if(!in_array($file->getAccessGroupId(), Util::arrayOfIds($accessGroups))){
+        $noAccess = true;
+      }
       $sizeFiles += $file->getSize();
     }
-    return array(sizeof($files), $fileSecret, $sizeFiles, $files);
+    return array(sizeof($files), $fileSecret, $sizeFiles, $files, $noAccess);
   }
 
   /**
@@ -255,6 +261,7 @@ class Util {
     global $FACTORIES, $OBJECTS, $LOGIN;
 
     $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
+    $accessGroups = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
 
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
     $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, ($archived)?1:0, "=");
@@ -310,8 +317,12 @@ class Util {
 
 
           $taskInfo = Util::getTaskInfo($task);
-          $fileInfo = Util::getFileInfo($task);
+          $fileInfo = Util::getFileInfo($task, $accessGroups);
           $chunkInfo = Util::getChunkInfo($task);
+
+          if($fileInfo[4]){
+            continue;
+          }
 
           $subSet->addValue('sumProgress', $taskInfo[0]);
           $subSet->addValue('numFiles', $fileInfo[0]);
@@ -355,7 +366,11 @@ class Util {
           continue;
         }
         $taskInfo = Util::getTaskInfo($task);
-        $fileInfo = Util::getFileInfo($task);
+        $fileInfo = Util::getFileInfo($task, $accessGroups);
+        if($fileInfo[4]){
+          continue;
+        }
+
         $chunkInfo = Util::getChunkInfo($task);
         $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
         $set->addValue('taskId', $task->getId());

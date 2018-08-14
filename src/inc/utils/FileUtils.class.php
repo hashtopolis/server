@@ -8,17 +8,20 @@ use DBA\JoinFilter;
 use DBA\FilePretask;
 use DBA\Pretask;
 use DBA\OrderFilter;
+use DBA\User;
+use DBA\ContainFilter;
 
 class FileUtils {
   /**
    * @param int $fileId
    * @param int $fileType
+   * @param User $user
    * @throws HTException
    */
-  public static function setFileType($fileId, $fileType) {
+  public static function setFileType($fileId, $fileType, $user) {
     global $FACTORIES;
 
-    $file = FileUtils::getFile($fileId);
+    $file = FileUtils::getFile($fileId, $user);
     if ($fileType < DFileType::WORDLIST || $fileType > DFileType::OTHER) {
       throw new HTException("Invalid file type!");
     }
@@ -27,24 +30,29 @@ class FileUtils {
   }
 
   /**
+   * @param User $user
    * @return File[]
    */
-  public static function getFiles() {
+  public static function getFiles($user) {
     global $FACTORIES;
 
+    $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+
     $oF = new OrderFilter(File::FILE_ID, "ASC");
-    $qF = new QueryFilter(File::FILE_TYPE, DFileType::TEMPORARY, "<>");
-    return $FACTORIES::getFileFactory()->filter(array($FACTORIES::ORDER => $oF, $FACTORIES::FILTER => $qF));
+    $qF1 = new ContainFilter(File::ACCESS_GROUP_ID, $accessGroupIds);
+    $qF2 = new QueryFilter(File::FILE_TYPE, DFileType::TEMPORARY, "<>");
+    return $FACTORIES::getFileFactory()->filter(array($FACTORIES::ORDER => $oF, $FACTORIES::FILTER => [$qF1, $qF2]));
   }
 
   /**
    * @param int $fileId
+   * @param User $user
    * @throws HTException
    */
-  public static function delete($fileId) {
+  public static function delete($fileId, $user) {
     global $FACTORIES;
 
-    $file = FileUtils::getFile($fileId);
+    $file = FileUtils::getFile($fileId, $user);
 
     $qF = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=");
     $tasks = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -69,9 +77,16 @@ class FileUtils {
    * @return integer
    */
   public static function add($source, $file, $post, $view) {
+    global $FACTORIES;
+
     $fileCount = 0;
     if (!file_exists(dirname(__FILE__) . "/../../files")) {
       mkdir(dirname(__FILE__) . "/../../files");
+    }
+
+    $accessGroup = $FACTORIES::getAccessGroupFactory()->get($post['accessGroupId']);
+    if($accessGroup == null){
+      throw new HTException("Invalid access group selected!");
     }
 
     switch ($source) {
@@ -83,7 +98,7 @@ class FileUtils {
         $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
         $resp = Util::uploadFile($tmpfile, 'paste', $post['data']);
         if ($resp[0]) {
-          $resp = Util::insertFile($tmpfile, $realname, $view);
+          $resp = Util::insertFile($tmpfile, $realname, $view, $accessGroup->getId());
           if ($resp) {
             $fileCount++;
           }
@@ -116,7 +131,7 @@ class FileUtils {
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $toMove);
           if ($resp[0]) {
-            $resp = Util::insertFile($tmpfile, $realname, $view);
+            $resp = Util::insertFile($tmpfile, $realname, $view, $accessGroup->getId());
             if ($resp) {
               $fileCount++;
             }
@@ -147,7 +162,7 @@ class FileUtils {
           $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $import);
           if ($resp[0]) {
-            $resp = Util::insertFile($tmpfile, $realname, $view);
+            $resp = Util::insertFile($tmpfile, $realname, $view, $accessGroup->getId());
             if ($resp) {
               $fileCount++;
             }
@@ -175,7 +190,7 @@ class FileUtils {
         }
         $resp = Util::uploadFile($tmpfile, $source, $post["url"]);
         if ($resp[0]) {
-          $resp = Util::insertFile($tmpfile, $realname, $view);
+          $resp = Util::insertFile($tmpfile, $realname, $view, $accessGroup->getId());
           if ($resp) {
             $fileCount++;
           }
@@ -194,13 +209,14 @@ class FileUtils {
   /**
    * @param int $fileId
    * @param int $isSecret
+   * @param User $user
    * @throws HTException
    */
-  public static function switchSecret($fileId, $isSecret) {
+  public static function switchSecret($fileId, $isSecret, $user) {
     global $FACTORIES;
 
     // switch global file secret state
-    $file = FileUtils::getFile($fileId);
+    $file = FileUtils::getFile($fileId, $user);
     $secret = intval($isSecret);
     $file->setIsSecret($secret);
     $FACTORIES::getFileFactory()->update($file);
@@ -209,12 +225,14 @@ class FileUtils {
   /**
    * @param int $fileId
    * @param string $filename
+   * @param int $accessGroupId
+   * @param User $user
    * @throws HTException
    */
-  public static function saveChanges($fileId, $filename) {
+  public static function saveChanges($fileId, $filename, $accessGroupId, $user) {
     global $FACTORIES;
 
-    $file = FileUtils::getFile($fileId);
+    $file = FileUtils::getFile($fileId, $user);
     $newName = str_replace(" ", "_", htmlentities($filename, ENT_QUOTES, "UTF-8"));
     $newName = str_replace("/", "_", str_replace("\\", "_", $newName));
     if (strlen($newName) == 0) {
@@ -228,6 +246,15 @@ class FileUtils {
     $files = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     if (sizeof($files) > 0) {
       throw new HTException("This filename is already used!");
+    }
+
+    if($accessGroupId > 0){
+      $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
+      if($accessGroup == null){
+        throw new HTException("Invalid access group Id!");
+      }
+      $file->setAccessGroupId($accessGroup->getId());
+      $FACTORIES::getFileFactory()->update($file);
     }
 
     if($file->getFilename() == $newName){
@@ -268,15 +295,22 @@ class FileUtils {
 
   /**
    * @param int $fileId
+   * @param User $user
    * @throws HTException
    * @return File
    */
-  public static function getFile($fileId) {
+  public static function getFile($fileId, $user) {
     global $FACTORIES;
+
+    $accessGroups = AccessUtils::getAccessGroupsOfUser($user);
+    $accessGroupIds = Util::arrayOfIds($accessGroups);
 
     $file = $FACTORIES::getFileFactory()->get($fileId);
     if ($file == null) {
       throw new HTException("Invalid file ID!");
+    }
+    else if(!in_array($file->getAccessGroupId(), $accessGroupIds)){
+      throw new HTException("No access to this file!");
     }
     return $file;
   }

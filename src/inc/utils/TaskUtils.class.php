@@ -21,6 +21,7 @@ use DBA\Pretask;
 use DBA\User;
 use DBA\Hashlist;
 use DBA\AccessGroupUser;
+use DBA\TaskDebugOutput;
 
 class TaskUtils {
   /**
@@ -684,7 +685,7 @@ class TaskUtils {
         $copy[] = $content[$j];
       }
       file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy));
-      $f = new File(0, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY);
+      $f = new File(0, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
       $f = $FACTORIES::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
@@ -795,6 +796,9 @@ class TaskUtils {
           if ($file->getIsSecret() > $agent->getIsTrusted()) {
             $permitted = false;
           }
+          else if(!in_array($file->getAccessGroupId(), $accessGroups)){
+            $permitted = false;
+          }
         }
         if (!$permitted) {
           continue; // at least one of the files required for this task is secret and the agent not, so this task cannot be used
@@ -855,6 +859,8 @@ class TaskUtils {
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(TaskDebugOutput::TASK_ID, $task->getId(), "=");
+    $FACTORIES::getTaskDebugOutputFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
 
     // test if this task used temporary files
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
