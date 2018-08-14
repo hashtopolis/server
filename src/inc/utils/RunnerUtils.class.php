@@ -44,7 +44,7 @@ class RunnerUtils {
     $out = [];
     exec("cd '$dir' && python3 runner.zip stop", $out);
     if(sizeof($out) > 0){
-      throw new HTException("There maybe was trouble stopping the runner: [" . implode(", ", $out) . "]");
+      //throw new HTException("There maybe was trouble stopping the runner: [" . implode(", ", $out) . "]");
     }
   }
 
