@@ -14,3 +14,7 @@ function checkOnLoading(elementId) {
         $(elementId).collapse("show");
     }
 }
+
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})

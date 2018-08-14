@@ -46,7 +46,10 @@ class PQuerySendProgress extends PQuery {
   const HASHCAT_STATE     = "state";
   const CRACKED_HASHES    = "cracks";
 
-  const DEBUG_OUTPUT      = "debugOutput"; // optional
+  // optional
+  const DEBUG_OUTPUT      = "debugOutput";
+  const GPU_TEMP = "gpuTemp";
+  const GPU_UTIL = "gpuUtil";
 }
 
 class PQuerySendBenchmark extends PQuery {
