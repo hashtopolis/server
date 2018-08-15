@@ -29,7 +29,7 @@ class HashlistHandler implements Handler {
       switch ($action) {
         case DHashlistAction::APPLY_PRECONFIGURED_TASKS:
           $ACCESS_CONTROL->checkPermission(DHashlistAction::APPLY_PRECONFIGURED_TASKS_PERM);
-          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['tasks'])) ? $_POST['tasks'] : [], $ACCESS_CONTROL->getUser());
+          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['task'])) ? $_POST['task'] : [], $ACCESS_CONTROL->getUser());
           UI::addMessage(UI::SUCCESS, "Successfully created $count new tasks! You will be forward to the tasks page in 5 seconds.");
           UI::setForward("tasks.php", 5);
           break;
