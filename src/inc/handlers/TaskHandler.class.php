@@ -100,6 +100,7 @@ class TaskHandler implements Handler {
         case DTaskAction::CHANGE_ATTACK:
           $ACCESS_CONTROL->checkPermission(DTaskAction::CHANGE_ATTACK_PERM);
           TaskUtils::changeAttackCmd($_POST['task'], $_POST['attackCmd'], $ACCESS_CONTROL->getUser());
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
