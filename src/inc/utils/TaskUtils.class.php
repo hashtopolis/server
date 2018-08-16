@@ -622,7 +622,7 @@ class TaskUtils {
    * @param int $hashlistId
    * @param string $name
    * @param string $attackCmd
-   * @param int $chunksize
+   * @param int $chunkTime
    * @param int $status
    * @param string $benchtype
    * @param string $color
@@ -635,7 +635,7 @@ class TaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "") {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
 
@@ -661,10 +661,16 @@ class TaskUtils {
     else if (strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command does not contain hashlist alias!");
     }
+    else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
+      throw new HTException("Invalid static chunk setting!");
+    }
+    else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
+      throw new HTException("Invalid chunk size / number of chunks for static chunking!");
+    }
     else if (Util::containsBlacklistedChars($attackCmd)) {
       throw new HTException("Attack command contains blacklisted characters!");
     }
-    else if (!is_numeric($chunksize) || $chunksize < 1) {
+    else if (!is_numeric($chunkTime) || $chunkTime < 1) {
       throw new HTException("Invalid chunk size!");
     }
     else if (!is_numeric($status) || $status < 1) {
@@ -699,7 +705,7 @@ class TaskUtils {
       0,
       $name,
       $attackCmd,
-      $chunksize,
+      $chunkTime,
       $status,
       0,
       0,
@@ -715,7 +721,9 @@ class TaskUtils {
       0,
       0,
       $isPrince,
-      $notes
+      $notes,
+      $staticChunking,
+      $chunkSize
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
 
@@ -795,7 +803,9 @@ class TaskUtils {
         $newWrapper->getId(),
         0,
         0,
-        ''
+        '',
+        0,
+        0
       );
       $newTask = $FACTORIES::getTaskFactory()->save($newTask);
       $taskFiles = [];

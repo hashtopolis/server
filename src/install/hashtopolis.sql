@@ -940,7 +940,9 @@ CREATE TABLE `Task` (
   `taskWrapperId`       INT(11)                 NOT NULL,
   `isArchived`          INT(11)                 NOT NULL,
   `isPrince`            INT(11)                 NOT NULL,
-  `notes`               TEXT                    NOT NULL
+  `notes`               TEXT                    NOT NULL,
+  `staticChunks`        INT(11)                 NOT NULL,
+  `chunkSize`           BIGINT(20)              NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

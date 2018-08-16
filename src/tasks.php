@@ -301,7 +301,9 @@ else if (isset($_GET['new'])) {
         0,
         0,
         0,
-        ''
+        '',
+        0,
+        0
       );
     }
   }
@@ -325,7 +327,9 @@ else if (isset($_GET['new'])) {
       0,
       0,
       0,
-      ''
+      '',
+      0,
+      0
     );
   }
   if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {

@@ -138,6 +138,8 @@ class TaskHandler implements Handler {
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
     $color = @$_POST["color"];
+    $staticChunking = intval(@$_POST['staticChunking']);
+    $chunkSize = intval(@$_POST['chunkSize']);
 
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
@@ -150,6 +152,14 @@ class TaskHandler implements Handler {
     }
     else if ($accessGroup == null) {
       UI::addMessage(UI::ERROR, "Invalid access group!");
+      return;
+    }
+    else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
+      UI::addMessage(UI::ERROR, "Invalid static chunking value selected!");
+      return;
+    }
+    else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
+      UI::addMessage(UI::ERROR, "Invalid chunk size / number of chunks for static chunking selected!");
       return;
     }
     else if (Util::containsBlacklistedChars($cmdline)) {
@@ -224,7 +234,9 @@ class TaskHandler implements Handler {
         $taskWrapper->getId(),
         0,
         $isPrince,
-        $notes
+        $notes,
+        $staticChunking,
+        $chunkSize
       );
     }
     else {
@@ -253,7 +265,9 @@ class TaskHandler implements Handler {
         $taskWrapper->getId(),
         0,
         0,
-        $notes
+        $notes,
+        0,
+        0
       );
       $forward = "pretasks.php";
     }

@@ -107,6 +107,17 @@
             </td>
           </tr>
           <tr>
+            <td>Use static chunking:</td>
+            <td>
+              <select name="staticChunking" class="form-control mx-1" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                <option value="0"{{IF [[copy.getStaticChunks()]] == 0}} selected{{ENDIF}}>No</option>
+                <option value="1"{{IF [[copy.getStaticChunks()]] == 1}} selected{{ENDIF}}>Fixed chunk size</option>
+                <option value="2"{{IF [[copy.getStaticChunks()]] == 2}} selected{{ENDIF}}>Fixed number of chunks</option>
+              </select>
+              <input type="number" class="form-control mx-1" name="chunkSize" title="Chunk Size / Number of Chunks" value="[[copy.getChunkSize()]]" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+            </td>
+          </tr>
+          <tr>
             <td>Task notes:</td>
             <td>
               <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here..."></textarea>

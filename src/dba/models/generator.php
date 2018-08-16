@@ -216,7 +216,9 @@ $CONF['Task'] = array(
   'taskWrapperId',
   'isArchived',
   'isPrince',
-  'notes'
+  'notes',
+  'staticChunks',
+  'chunkSize'
 );
 $CONF['TaskDebugOutput'] = array(
   'taskDebugOutputId',
