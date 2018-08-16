@@ -58,7 +58,7 @@ echo "Add file deletetion table... ";
 $FACTORIES::getAgentFactory()->getDB()->query("
 CREATE TABLE `FileDelete` (
   `fileDeleteId` int(11) NOT NULL,
-  `filename` int(11) NOT NULL,
+  `filename` varchar(256) NOT NULL,
   `time` int(11) NOT NULL
 ) ENGINE=InnoDB");
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `FileDelete` ADD PRIMARY KEY (`fileDeleteId`)");

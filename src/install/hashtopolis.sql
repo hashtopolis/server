@@ -394,7 +394,7 @@ CREATE TABLE `FileTask` (
 
 CREATE TABLE `FileDelete` (
   `fileDeleteId` int(11) NOT NULL,
-  `filename` int(11) NOT NULL,
+  `filename` varchar(256) NOT NULL,
   `time` int(11) NOT NULL
 ) ENGINE=InnoDB;
 
