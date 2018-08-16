@@ -102,4 +102,7 @@ class DTaskAction {
 
   const DELETE_ARCHIVED      = "deleteArchived";
   const DELETE_ARCHIVED_PERM = DAccessControl::CREATE_TASK_ACCESS;
+
+  const EDIT_NOTES      = "editNotes";
+  const EDIT_NOTES_PERM = DAccessControl::MANAGE_TASK_ACCESS;
 }

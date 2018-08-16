@@ -25,7 +25,21 @@ use DBA\TaskDebugOutput;
 
 class TaskUtils {
   /**
+   * @param int $taskId 
+   * @param string $notes 
    * @param User $user 
+   */
+  public static function editNotes($taskId, $notes, $user){
+    global $FACTORIES;
+
+    $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
+    $task = TaskUtils::getTask($taskId, $user);
+    $task->setNotes($notes);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+
+  /**
+   * @param User $user
    */
   public static function deleteArchived($user) {
     global $FACTORIES;
