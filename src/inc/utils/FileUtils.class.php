@@ -10,6 +10,7 @@ use DBA\Pretask;
 use DBA\OrderFilter;
 use DBA\User;
 use DBA\ContainFilter;
+use DBA\FileDelete;
 
 class FileUtils {
   /**
@@ -64,6 +65,8 @@ class FileUtils {
     else if (sizeof($pretasks) > 0) {
       throw new HTException("This file is currently used in a preconfigured task!");
     }
+    $fileDelete = new FileDelete(0, $file->getFilename(), time());
+    $FACTORIES::getFileDeleteFactory()->save($fileDelete);
     $FACTORIES::getFileFactory()->delete($file);
     unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
   }
@@ -289,6 +292,11 @@ class FileUtils {
       throw new HTException("Failed to rename file!");
     }
     $file->setFilename($newName);
+
+    // check if there are old deletion requests with the same name
+    $qF = new QueryFilter(FileDelete::FILENAME, $newName, "=");
+    $FACTORIES::getFileDeleteFactory()->massDeletion([$FACTORIES::FILTER => $qF]);
+
     $FACTORIES::getFileFactory()->update($file);
     $FACTORIES::getAgentFactory()->getDB()->commit();
   }

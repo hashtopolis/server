@@ -430,4 +430,23 @@
 	  ]
 	}
 	\end{verbatim}
+
+	\subsection*{Get deleted files}
+	The client can request a list of deleted filenames from the server to be able to clean up unused files.
+	\begin{verbatim}
+	{
+	  "action":"getFileStatus",
+	  "token":"GHhgdf(/&",
+	}
+	\end{verbatim}
+	The server will then provide a list of filenames:
+	\begin{verbatim}
+	{
+	  "action": "getFileStatus",
+	  "response": "SUCCESS",
+	  "filenames": [
+	    "top10000.txt"
+	  ]
+	}
+	\end{verbatim}
 \end{document}
