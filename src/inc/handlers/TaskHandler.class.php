@@ -126,6 +126,7 @@ class TaskHandler implements Handler {
 
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
+    $notes = htmlentities($_POST["notes"], ENT_QUOTES, "UTF-8");
     $cmdline = @$_POST["cmdline"];
     $chunk = intval(@$_POST["chunk"]);
     $status = intval(@$_POST["status"]);
@@ -223,7 +224,7 @@ class TaskHandler implements Handler {
         $taskWrapper->getId(),
         0,
         $isPrince,
-        ''
+        $notes
       );
     }
     else {
@@ -252,7 +253,7 @@ class TaskHandler implements Handler {
         $taskWrapper->getId(),
         0,
         0,
-        ''
+        $notes
       );
       $forward = "pretasks.php";
     }

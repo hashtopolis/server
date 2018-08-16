@@ -635,7 +635,7 @@ class TaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "") {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
 
@@ -715,7 +715,7 @@ class TaskUtils {
       0,
       0,
       $isPrince,
-      ''
+      $notes
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
 
