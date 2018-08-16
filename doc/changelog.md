@@ -1,16 +1,17 @@
 # v0.7.0 -> v0.x.x
 
-## Enhancements
-
-- Task attack commands can be changed after creation, e.g. to fix typos
-- Switch between tasks and archived ones is easier
-- Archived tasks can be deleted at once
-
 ## Features
 
 - The server can store sent debug output from Hashcat sent by the agent.
 - Files now also are associated to an Access Group to control the visibility of files.
 - Agent data about device temperature and util is collected and can be viewed on the server.
+- Notes can be added to tasks
+
+## Enhancements
+
+- Task attack commands can be changed after creation, e.g. to fix typos
+- Switch between tasks and archived ones is easier
+- Archived tasks can be deleted at once
 
 ## Bugfixes
 
