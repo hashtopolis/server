@@ -125,7 +125,7 @@ class APIGetChunk extends APIBasic {
         )
       );
     }
-    $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
+    $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $start = $task->getKeyspaceProgress();
     $length = $agentChunkSize;
     if ($remaining / $length <= $disptolerance && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
@@ -169,8 +169,8 @@ class APIGetChunk extends APIBasic {
     
     $disptolerance = 1 + $CONFIG->getVal(DConfig::DISP_TOLERANCE) / 100;
     
-    $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1);
-    $agentChunkSizeMax = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance);
+    $agentChunkSize = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
+    $agentChunkSizeMax = $this->calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
     if ($chunk->getCheckpoint() == $chunk->getSkip() && $agentChunkSizeMax > $chunk->getLength()) {
       //chunk has not started yet
       $chunk->setProgress(0);
@@ -212,13 +212,33 @@ class APIGetChunk extends APIBasic {
     }
   }
   
-  protected function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1) {
+  protected function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1, $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     /** @var DataSet $CONFIG */
     global $CONFIG, $QUERY;
     
     if ($chunkTime <= 0) {
       $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
     }
+    else if($staticChunking > DTaskStaticChunking::NORMAL){
+      switch($staticChunking){
+        case DTaskStaticChunking::CHUNK_SIZE:
+          if($chunkSize == 0){
+            throw new HTException("Invalid chunk size for static chunk size set!");
+          }
+          return $chunkSize;
+        case DTaskStaticChunking::NUM_CHUNKS:
+          if($chunkSize == 0){
+            throw new HTException("Invalid number of static chunks set!");
+          }
+          else if($chunkSize > 10000){ // just protection to avoid millions or whatever chunk number
+            throw new HTException("Too large number of static chunks, most likely because of misconfiguration!");
+          }
+          return ceil($keyspace/$chunkSize);
+        default:
+          throw new HTException("Unknown static chunking method!");
+      }
+    }
+
     if (strpos($benchmark, ":") === false) {
       // old benchmarking method
       if ($benchmark == 0) {
