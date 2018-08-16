@@ -25,7 +25,21 @@ use DBA\TaskDebugOutput;
 
 class TaskUtils {
   /**
+   * @param int $taskId 
+   * @param string $notes 
    * @param User $user 
+   */
+  public static function editNotes($taskId, $notes, $user){
+    global $FACTORIES;
+
+    $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
+    $task = TaskUtils::getTask($taskId, $user);
+    $task->setNotes($notes);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+
+  /**
+   * @param User $user
    */
   public static function deleteArchived($user) {
     global $FACTORIES;
@@ -621,7 +635,7 @@ class TaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "") {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
 
@@ -700,7 +714,8 @@ class TaskUtils {
       $taskWrapper->getId(),
       0,
       0,
-      $isPrince
+      $isPrince,
+      $notes
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
 
@@ -779,7 +794,8 @@ class TaskUtils {
         $task->getCrackerBinaryTypeId(),
         $newWrapper->getId(),
         0,
-        0
+        0,
+        ''
       );
       $newTask = $FACTORIES::getTaskFactory()->save($newTask);
       $taskFiles = [];

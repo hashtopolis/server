@@ -50,4 +50,8 @@ $config = new Config(0, 4, DConfig::AGENT_STAT_TENSION, 0);
 $FACTORIES::getConfigFactory()->save($config);
 echo "OK\n";
 
+echo "Add task notes... ";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `notes` TEXT");
+echo "OK\n";
+
 echo "Update complete!\n";

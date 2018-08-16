@@ -215,7 +215,8 @@ $CONF['Task'] = array(
   'crackerBinaryTypeId',
   'taskWrapperId',
   'isArchived',
-  'isPrince'
+  'isPrince',
+  'notes'
 );
 $CONF['TaskDebugOutput'] = array(
   'taskDebugOutputId',
