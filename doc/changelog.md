@@ -6,6 +6,7 @@
 - Files now also are associated to an Access Group to control the visibility of files.
 - Agent data about device temperature and util is collected and can be viewed on the server.
 - Notes can be added to tasks
+- The server can provide a list of deleted filenames to the agent when he asks for.
 
 ## Enhancements
 

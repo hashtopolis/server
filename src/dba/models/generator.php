@@ -271,6 +271,11 @@ $CONF['ApiGroup'] = array(
   'permissions',
   'name'
 );
+$CONF['FileDelete'] = array(
+  'fileDeleteId',
+  'filename',
+  'time'
+);
 
 // relations
 $CONF['AccessGroupUser'] = array(
