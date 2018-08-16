@@ -101,6 +101,10 @@ class TaskHandler implements Handler {
           $ACCESS_CONTROL->checkPermission(DTaskAction::CHANGE_ATTACK_PERM);
           TaskUtils::changeAttackCmd($_POST['task'], $_POST['attackCmd'], $ACCESS_CONTROL->getUser());
           break;
+        case DTaskAction::DELETE_ARCHIVED:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_ARCHIVED_PERM);
+          TaskUtils::deleteArchived($ACCESS_CONTROL->getUser());
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;

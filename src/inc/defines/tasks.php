@@ -99,4 +99,7 @@ class DTaskAction {
 
   const CHANGE_ATTACK      = "changeAttack";
   const CHANGE_ATTACK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+
+  const DELETE_ARCHIVED      = "deleteArchived";
+  const DELETE_ARCHIVED_PERM = DAccountAction::CREATE_TASK_ACCESS;
 }

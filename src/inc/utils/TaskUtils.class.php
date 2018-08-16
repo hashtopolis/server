@@ -25,9 +25,30 @@ use DBA\TaskDebugOutput;
 
 class TaskUtils {
   /**
-   * @param int $taskId 
-   * @param string $attackCmd 
    * @param User $user 
+   */
+  public static function deleteArchived($user) {
+    global $FACTORIES;
+
+    $accessGroups = AccessUtils::getAccessGroupsOfUser($user);
+    $qF1 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 1, "=");
+    $qF2 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, Util::arrayOfIds($accessGroups));
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter([$FACTORIES::FILTER => [$qF1, $qF2]]);
+    foreach ($taskWrappers as $taskWrapper) {
+      $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+      $tasks = TaskUtils::getTasksOfWrapper($taskWrapper->getId());
+      foreach ($tasks as $task) {
+        TaskUtils::deleteTask($task);
+      }
+      $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+      $FACTORIES::getAgentFactory()->getDB()->commit();
+    }
+  }
+
+  /**
+   * @param int $taskId
+   * @param string $attackCmd
+   * @param User $user
    * @throws HTException
    * @return void
    */
@@ -107,6 +128,17 @@ class TaskUtils {
 
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapperId, "=");
     return $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+  }
+
+  /**
+   * @param int $taskWrapperId
+   * @return Task[]
+   */
+  public static function getTasksOfWrapper($taskWrapperId) {
+    global $FACTORIES;
+
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapperId, "=");
+    return $FACTORIES::getTaskFactory()->filter([$FACTORIES::FILTER => $qF]);
   }
 
   /**
