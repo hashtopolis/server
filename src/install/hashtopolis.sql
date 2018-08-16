@@ -933,7 +933,8 @@ CREATE TABLE `Task` (
   `crackerBinaryTypeId` INT(11)                 NULL,
   `taskWrapperId`       INT(11)                 NOT NULL,
   `isArchived`          INT(11)                 NOT NULL,
-  `isPrince`            INT(11)                 NOT NULL
+  `isPrince`            INT(11)                 NOT NULL,
+  `notes`               TEXT                    NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8

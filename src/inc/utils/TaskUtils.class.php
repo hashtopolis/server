@@ -700,7 +700,8 @@ class TaskUtils {
       $taskWrapper->getId(),
       0,
       0,
-      $isPrince
+      $isPrince,
+      ''
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
 
@@ -779,7 +780,8 @@ class TaskUtils {
         $task->getCrackerBinaryTypeId(),
         $newWrapper->getId(),
         0,
-        0
+        0,
+        ''
       );
       $newTask = $FACTORIES::getTaskFactory()->save($newTask);
       $taskFiles = [];

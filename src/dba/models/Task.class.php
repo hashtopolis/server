@@ -21,8 +21,9 @@ class Task extends AbstractModel {
   private $taskWrapperId;
   private $isArchived;
   private $isPrince;
+  private $notes;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $isPrince) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $isPrince, $notes) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -41,6 +42,7 @@ class Task extends AbstractModel {
     $this->taskWrapperId = $taskWrapperId;
     $this->isArchived = $isArchived;
     $this->isPrince = $isPrince;
+    $this->notes = $notes;
   }
   
   function getKeyValueDict() {
@@ -63,6 +65,7 @@ class Task extends AbstractModel {
     $dict['taskWrapperId'] = $this->taskWrapperId;
     $dict['isArchived'] = $this->isArchived;
     $dict['isPrince'] = $this->isPrince;
+    $dict['notes'] = $this->notes;
     
     return $dict;
   }
@@ -218,6 +221,14 @@ class Task extends AbstractModel {
   function setIsPrince($isPrince){
     $this->isPrince = $isPrince;
   }
+  
+  function getNotes(){
+    return $this->notes;
+  }
+  
+  function setNotes($notes){
+    $this->notes = $notes;
+  }
 
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
@@ -237,4 +248,5 @@ class Task extends AbstractModel {
   const TASK_WRAPPER_ID = "taskWrapperId";
   const IS_ARCHIVED = "isArchived";
   const IS_PRINCE = "isPrince";
+  const NOTES = "notes";
 }

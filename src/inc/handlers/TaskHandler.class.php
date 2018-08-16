@@ -218,7 +218,8 @@ class TaskHandler implements Handler {
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
         0,
-        $isPrince
+        $isPrince,
+        ''
       );
     }
     else {
@@ -246,7 +247,8 @@ class TaskHandler implements Handler {
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
         0,
-        0
+        0,
+        ''
       );
       $forward = "pretasks.php";
     }

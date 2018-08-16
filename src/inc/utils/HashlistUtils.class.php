@@ -121,7 +121,8 @@ class HashlistUtils {
           $task->getCrackerBinaryTypeId(), 
           $taskWrapper->getId(), 
           0,
-          0
+          0,
+          ''
         );
         $newTask = $FACTORIES::getTaskFactory()->save($newTask);
         $addCount++;
