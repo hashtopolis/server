@@ -97,6 +97,9 @@ class TaskHandler implements Handler {
           $ACCESS_CONTROL->checkPermission(DTaskAction::ARCHIVE_SUPERTASK_PERM);
           TaskUtils::archiveSupertask($_POST['supertaskId'], $ACCESS_CONTROL->getUser());
           break;
+        case DTaskAction::CHANGE_ATTACK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::CHANGE_ATTACK_PERM);
+          TaskUtils::changeAttackCmd($_POST['task'], $_POST['attackCmd'], $ACCESS_CONTROL->getUser());
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;

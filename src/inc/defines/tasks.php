@@ -96,4 +96,7 @@ class DTaskAction {
 
   const ARCHIVE_SUPERTASK      = "archiveSupertask";
   const ARCHIVE_SUPERTASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
+
+  const CHANGE_ATTACK      = "changeAttack";
+  const CHANGE_ATTACK_PERM = DAccessControl::CREATE_TASK_ACCESS;
 }
