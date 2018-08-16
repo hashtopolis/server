@@ -23,6 +23,7 @@ use DBA\TaskWrapper;
 use DBA\Zap;
 use DBA\AgentBinary;
 use DBA\AgentStat;
+use DBA\FileDelete;
 
 /**
  *
@@ -150,6 +151,11 @@ class Util {
     else if ($type == 'dict'){
       $fileType = DFileType::WORDLIST;
     }
+
+    // check if there is an old deletion request for the same filename
+    $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
+    $FACTORIES::getFileDeleteFactory()->massDeletion([$FACTORIES::FILTER => $qF]);
+
     $file = new File(0, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
     $file = $FACTORIES::getFileFactory()->save($file);
     if ($file == null) {

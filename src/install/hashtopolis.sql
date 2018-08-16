@@ -392,6 +392,12 @@ CREATE TABLE `FileTask` (
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
 
+CREATE TABLE `FileDelete` (
+  `fileDeleteId` int(11) NOT NULL,
+  `filename` int(11) NOT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB;
+
 -- --------------------------------------------------------
 
 --
@@ -1050,6 +1056,9 @@ ALTER TABLE `ApiGroup`
   ADD PRIMARY KEY (`apiGroupId`);
 
 
+ALTER TABLE `FileDelete`
+  ADD PRIMARY KEY (`fileDeleteId`);
+
 --
 -- Indizes der exportierten Tabellen
 --
@@ -1316,6 +1325,9 @@ ALTER TABLE `ApiKey`
 
 ALTER TABLE `ApiGroup`
   MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `FileDelete`
+  MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`

@@ -35,6 +35,7 @@ class Factory {
   private static $zapFactory = null;
   private static $apiKeyFactory = null;
   private static $apiGroupFactory = null;
+  private static $fileDeleteFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
@@ -359,6 +360,16 @@ class Factory {
       return $f;
     } else {
       return self::$apiGroupFactory;
+    }
+  }
+  
+  public static function getFileDeleteFactory() {
+    if (self::$fileDeleteFactory == null) {
+      $f = new FileDeleteFactory();
+      self::$fileDeleteFactory = $f;
+      return $f;
+    } else {
+      return self::$fileDeleteFactory;
     }
   }
   
