@@ -25,6 +25,33 @@ use DBA\TaskDebugOutput;
 
 class TaskUtils {
   /**
+   * @param int $taskId 
+   * @param string $attackCmd 
+   * @param User $user 
+   * @throws HTException
+   * @return void
+   */
+  public static function changeAttackCmd($taskId, $attackCmd, $user){
+    global $FACTORIES, $CONFIG;
+
+    if(strlen($attackCmd) == 0){
+      throw new HTException("Attack command cannot be empty!");
+    }
+    else if(strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false){
+      throw new HTException("Attack command must contain the hashlist alias!");
+    }
+
+    $task = TaskUtils::getTask($taskId, $user);
+    if($task->getAttackCmd() == $attackCmd){
+      // no change required, we avoid all the overhead
+      return;
+    }
+    TaskUtils::purgeTask($task->getId(), $user);
+    $task->setAttackCmd($attackCmd);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+
+  /**
    * @param int $supertaskId
    * @param User $user
    */
