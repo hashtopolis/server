@@ -31,6 +31,12 @@ class DTaskTypes {
   const SUPERTASK = 1;
 }
 
+class DTaskStaticChunking {
+  const NORMAL     = 0;
+  const CHUNK_SIZE = 1;
+  const NUM_CHUNKS = 2;
+}
+
 class DSupertaskAction {
   const DELETE_SUPERTASK      = "deleteSupertask";
   const DELETE_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;

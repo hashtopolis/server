@@ -36,7 +36,7 @@ class APIGetChunk extends APIBasic {
         )
       );
     }
-    else if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0) { // benchmark only required on non-small tasks
+    else if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) { // benchmark only required on non-small tasks and on non-special chunk tasks
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
