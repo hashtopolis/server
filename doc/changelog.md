@@ -3,6 +3,8 @@
 ## Enhancements
 
 - Task attack commands can be changed after creation, e.g. to fix typos
+- Switch between tasks and archived ones is easier
+- Archived tasks can be deleted at once
 
 ## Features
 
