@@ -715,7 +715,9 @@ class TaskUtils {
       0,
       0,
       $isPrince,
-      $notes
+      $notes,
+      0,
+      0
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
 
@@ -795,7 +797,9 @@ class TaskUtils {
         $newWrapper->getId(),
         0,
         0,
-        ''
+        '',
+        0,
+        0
       );
       $newTask = $FACTORIES::getTaskFactory()->save($newTask);
       $taskFiles = [];

@@ -224,7 +224,9 @@ class TaskHandler implements Handler {
         $taskWrapper->getId(),
         0,
         $isPrince,
-        $notes
+        $notes,
+        0,
+        0
       );
     }
     else {
@@ -253,7 +255,9 @@ class TaskHandler implements Handler {
         $taskWrapper->getId(),
         0,
         0,
-        $notes
+        $notes,
+        0,
+        0
       );
       $forward = "pretasks.php";
     }

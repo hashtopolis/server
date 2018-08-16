@@ -54,4 +54,8 @@ echo "Add task notes... ";
 $FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `notes` TEXT");
 echo "OK\n";
 
+echo "Add static chunking to tasks... ";
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `task` ADD `staticChunks` INT NOT NULL, ADD `chunkSize` INT NOT NULL");
+echo "OK\n";
+
 echo "Update complete!\n";
