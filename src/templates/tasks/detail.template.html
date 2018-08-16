@@ -58,6 +58,22 @@
         </td>
       </tr>
       <tr>
+        <td>
+          Task Notes
+        </td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+              <input type="hidden" name="action" value="[[$DTaskAction::EDIT_NOTES]]">
+              <input type="hidden" name="task" value="[[task.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here...">[[task.getNotes()]]</textarea>
+              <button type="submit" class='btn btn-light my-1' data-toggle="tooltip" data-placement="top" title="Save"><i class="fas fa-save" aria-hidden="true"></i></button>
+            </form>
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
         <td>Chunk size:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
@@ -252,22 +268,6 @@
               {{ENDIF}}
             {{ELSE}}
               [[hashlist.getHashlistName()]]
-            {{ENDIF}}
-          </td>
-        </tr>
-      <tr>
-          <td>
-            Task Notes
-          </td>
-          <td>
-            {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-              <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
-                <input type="hidden" name="action" value="[[$DTaskAction::EDIT_NOTES]]">
-                <input type="hidden" name="task" value="[[task.getId()]]">
-                <input type="hidden" name="csrf" value="[[csrf]]">
-                <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here...">[[task.getNotes()]]</textarea>
-                <button type="submit" class='btn btn-light my-1' data-toggle="tooltip" data-placement="top" title="Save"><i class="fas fa-save" aria-hidden="true"></i></button>
-              </form>
             {{ENDIF}}
           </td>
         </tr>
