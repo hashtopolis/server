@@ -1,5 +1,9 @@
 # v0.7.0 -> v0.x.x
 
+## Enhancements
+
+- Task attack commands can be changed after creation, e.g. to fix typos
+
 ## Features
 
 - The server can store sent debug output from Hashcat sent by the agent.
