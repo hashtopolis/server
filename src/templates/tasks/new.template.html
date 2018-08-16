@@ -19,24 +19,23 @@
           <tr>
             <td>Name:</td>
             <td>
-              <input type="text" class='form-control' name="name" value="[[copy.getTaskName()]]">
+              <input type="text" class='form-control full-width' name="name" value="[[copy.getTaskName()]]">
             </td>
           </tr>
           <tr>
             <td>Hashlist:</td>
             <td>
-              <select class='form-control' name="hashlist">
+              <select class='form-control full-width' name="hashlist">
                 {{FOREACH list;[[lists]]}}
                 <option value="[[list.getVal('id')]]" {{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
                 {{ENDFOREACH}}
-              </select> (hashlist needs to be created before task)
+              </select>
             </td>
           </tr>
           <tr>
             <td>Command line:</td>
             <td>
-              <textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
-              <br>
+              <textarea name="cmdline" class='form-control my-1 full-width' id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
               Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
               If you have Linux agents, please mind the filename case sensitivity!
             </td>
@@ -146,7 +145,7 @@
             </th>
           </tr>
           <tr>
-            <td>This is a PRINCE task (the command line is passed to prince which will be piped to the cracker):</td>
+            <td>This is a PRINCE task:</td>
             <td>
               <select name="isPrince" class="form-control" title="Is PRINCE" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
                 <option value="0" {{IF [[copy.getIsPrince()]] == 0}} selected{{ENDIF}}>No</option>
