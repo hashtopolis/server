@@ -1,3 +1,11 @@
+# v0.7.0 -> v0.x.x
+
+## Bugfixes
+
+- Fixed permission check for file downloads with URLs from the user API
+- Fixed issue with creating supertasks from preconfigured task list
+- Fixed creation of tasks from preconfigured tasks out of the hashlist view
+
 # v0.6.0 -> v0.7.0
 
 ## Features
