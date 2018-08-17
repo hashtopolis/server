@@ -8,6 +8,7 @@
 - Notes can be added to tasks
 - Static chunking (if for some reasone a fixed number of chunks or static chunk size should be used for a task)
 - The server can provide a list of deleted filenames to the agent when he asks for.
+- Tasks can now be copied to preconfigured tasks and preconfigured tasks can also be copied to preconfigured tasks.
 
 ## Enhancements
 
