@@ -17,13 +17,13 @@
 				    <tr>
 					    <td>Name:</td>
 					    <td>
-						    <input type="text" class='form-control full-width' name="name" title="Name">
+						    <input type="text" class='form-control full-width' name="name" title="Name" value="[[copy.getTaskName()]]">
 					    </td>
 				    </tr>
 				    <tr>
 					    <td>Command line:</td>
 					    <td>
-						    <textarea name="cmdline" class='form-control full-width my-1' id="cmdLine" title="Attack Command"></textarea>
+                <textarea name="cmdline" class='form-control full-width my-1' id="cmdLine" title="Attack Command">[[copy.getAttackCmd()]]</textarea>
       					Use <b>[[config.getVal([[$DConfig::HASHLIST_ALIAS]])]]</b> for hash list and assume all files in current directory.<br>
       					If you have Linux agents, please mind the filename case sensitivity!
       		    </td>
@@ -31,27 +31,27 @@
       		  <tr>
       			  <td>Color:</td>
       			  <td>
-      				  #<input type="text" class='form-control color {required:false}' name="color" size="6" title="Color">
+      				  #<input type="text" class='form-control color {required:false}' name="color" size="6" title="Color" value="[[copy.getColor()]]">
       			  </td>
       		  </tr>
       		  <tr>
       			  <td>Chunk size:</td>
       			  <td>
-      				  <input type="text" class='form-control' name="chunk" title="Chunk Size" value="[[config.getVal([[$DConfig::CHUNK_DURATION]])]]"> seconds
+      				  <input type="text" class='form-control' name="chunk" title="Chunk Size" value="[[copy.getChunkTime()]]"> seconds
       			  </td>
       		  </tr>
       		  <tr>
       			  <td>Status timer:</td>
       			  <td>
-      				  <input type="text" class='form-control' name="status" title="Status Timer" value="[[config.getVal([[$DConfig::STATUS_TIMER]])]]"> seconds
+      				  <input type="text" class='form-control' name="status" title="Status Timer" value="[[copy.getStatusTimer()]]"> seconds
       			  </td>
       		  </tr>
 					  <tr>
 						  <td>Benchmark Type (Hashcat only): </td>
 						  <td>
                 <select name="benchType" class="form-control" title="benchmarkType">
-                  <option value="0">Runtime Benchmark</option>
-                  <option value="1">Speed Test</option>
+                  <option value="0" {{IF [[copy.getUseNewBench()]] == 0}} selected{{ENDIF}}>Runtime Benchmark</option>
+                  <option value="1" {{IF [[copy.getUseNewBench()]] == 1}} selected{{ENDIF}}>Speed Test</option>
                 </select>
 						  </td>
 					  </tr>
@@ -59,8 +59,8 @@
               <td>Task is CPU only (gets only CPU agents assigned):</td>
               <td>
                 <select name="cpuOnly" class="form-control" title="CPU Only">
-                  <option value="0">No</option>
-                  <option value="1">Yes</option>
+                  <option value="0" {{IF [[copy.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
+                  <option value="1" {{IF [[copy.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
                 </select>
               </td>
             </tr>
@@ -68,8 +68,8 @@
               <td>Task is small (only one agent gets assigned to it):</td>
               <td>
                 <select name="isSmall" class="form-control" title="Small Task">
-                  <option value="0">No</option>
-                  <option value="1">Yes</option>
+                  <option value="0" {{IF [[copy.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
+                  <option value="1" {{IF [[copy.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
                 </select>
               </td>
             </tr>
@@ -77,8 +77,8 @@
               <td>Cracker Binary which is used to run this task:</td>
               <td>
                 <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
-                  {{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
-                    <option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+                  {{FOREACH binary;[[binaries]]}}
+                    <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}} selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
                 </select>
               </td>
@@ -93,14 +93,13 @@
 		  </div>
 	  </div>
     <div class='col-md-4'>
-      <div class='btn-toolbar'>
+      <div class='btn-toolbar my-1'>
         <div class='btn-group'>
           <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
           <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
           <button id="otherButton" class='btn btn-light active' onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
-      <br>
       <div id="rules">
         <div class="card">
           <div class="table-responsive">

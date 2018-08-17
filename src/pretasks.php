@@ -62,8 +62,47 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
 
   $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
   $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
-  $origFiles = array();
+
   $orig = 0;
+  $origType = 0;
+  $hashlistId = 0;
+  $copy = null;
+  if (isset($_GET["copy"])) {
+    //copied from a task
+    $copy = $FACTORIES::getPretaskFactory()->get($_GET['copy']);
+    if ($copy != null) {
+      $orig = $copy->getId();
+      $origType = 2;
+      $copy->setId(0);
+      $match = array();
+      if (preg_match('/\(copy([0-9]+)\)/i', $copy->getTaskName(), $match)) {
+        $name = $copy->getTaskName();
+        $name = str_replace($match[0], "(copy" . (++$match[1]) . ")", $name);
+        $copy->setTaskName($name);
+      }
+      else {
+        $copy->setTaskName($copy->getTaskName() . " (copy1)");
+      }
+    }
+  }
+  if ($copy === null) {
+    $copy = new Pretask(
+      0,
+      '',
+      $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." ",
+      $CONFIG->getVal(DConfig::CHUNK_DURATION),
+      $CONFIG->getVal(DConfig::STATUS_TIMER),
+      '',
+      0,
+      0,
+      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
+      0,
+      0,
+      0
+    );
+  }
+
+  $origFiles = array();
   if ($orig > 0) {
     if ($origType == 1) {
       $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
