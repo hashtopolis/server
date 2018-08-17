@@ -95,9 +95,9 @@ class APIGetChunk extends APIBasic {
       }
     }
     $chunk = ChunkUtils::createNewChunk($task, $assignment);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
-    LockUtils::release(Lock::CHUNKING);
     if($chunk == null){
+      $FACTORIES::getAgentFactory()->getDB()->commit();
+      LockUtils::release(Lock::CHUNKING);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
