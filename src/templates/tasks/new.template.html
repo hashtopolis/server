@@ -41,6 +41,12 @@
             </td>
           </tr>
           <tr>
+            <td>Priority:</td>
+            <td>
+              <input type="number" class='form-control' name="priority" value="[[copy.getPriority()]]" title="Priority">
+            </td>
+          </tr>
+          <tr>
             <td>Task notes:</td>
             <td>
               <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here..."></textarea>
@@ -55,14 +61,14 @@
           <tr>
             <td>Chunk size:</td>
             <td>
-              <input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              <input type="number" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
               seconds
             </td>
           </tr>
           <tr>
             <td>Status timer:</td>
             <td>
-              <input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              <input type="number" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
               seconds
             </td>
           </tr>

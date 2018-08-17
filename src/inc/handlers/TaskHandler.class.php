@@ -140,6 +140,7 @@ class TaskHandler implements Handler {
     $color = @$_POST["color"];
     $staticChunking = intval(@$_POST['staticChunking']);
     $chunkSize = intval(@$_POST['chunkSize']);
+    $priority = intval(@$_POST['priority']);
 
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
@@ -194,6 +195,9 @@ class TaskHandler implements Handler {
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
+    if($priority < 0){
+      $priority = 0;
+    }
     if($isPrince && !$useNewBench){
       // enforce speed benchmark when using prince
       $useNewBench = 1;
@@ -211,7 +215,7 @@ class TaskHandler implements Handler {
     }
 
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
+    $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
     if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
@@ -223,7 +227,7 @@ class TaskHandler implements Handler {
         $status,
         0,
         0,
-        0,
+        $priority,
         $color,
         $isSmall,
         $isCpuTask,
@@ -254,7 +258,7 @@ class TaskHandler implements Handler {
         $copy->getStatusTimer(),
         0,
         0,
-        0,
+        $priority,
         $copy->getColor(),
         $copy->getIsSmall(),
         $copy->getIsCpuTask(),
