@@ -127,6 +127,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
 
   $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
   $OBJECTS['pageTitle'] = "Create preconfigured Task";
+  $OBJECTS['copy'] = $copy;
 }
 else {
   $queryFilters = array();
