@@ -11,7 +11,6 @@ use DBA\QueryFilter;
 require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
-/** @var DataSet $CONFIG */
 /** @var array $OBJECTS */
 
 $ACCESS_CONTROL->checkPermission(DViewControl::GETHASHLIST_VIEW_PERM);
@@ -52,13 +51,13 @@ switch ($format) {
     header('Content-Type: text/plain');
     foreach ($hashlists as $hashlist) {
       $limit = 0;
-      $size = $CONFIG->getVal(DConfig::BATCH_SIZE);
+      $size = SConfig::getInstance()->getVal(DConfig::BATCH_SIZE);
       do {
         $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
         $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
         $qF2 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
         $current = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
-        
+
         $output = "";
         $count += sizeof($current);
         foreach ($current as $entry) {
@@ -69,7 +68,7 @@ switch ($format) {
           $output .= $lineDelimiter;
         }
         echo $output;
-        
+
         $limit += $size;
       } while (sizeof($current) > 0);
     }

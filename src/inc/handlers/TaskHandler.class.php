@@ -120,9 +120,8 @@ class TaskHandler implements Handler {
   }
 
   private function create() {
-    /** @var DataSet $CONFIG */
     /** @var $LOGIN Login */
-    global $FACTORIES, $CONFIG, $LOGIN, $ACCESS_CONTROL;
+    global $FACTORIES, $LOGIN, $ACCESS_CONTROL;
 
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
@@ -147,8 +146,8 @@ class TaskHandler implements Handler {
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
     $accessGroup = $FACTORIES::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
 
-    if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-      UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
+    if (strpos($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+      UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }
     else if ($accessGroup == null) {

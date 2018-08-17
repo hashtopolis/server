@@ -16,8 +16,7 @@ use DBA\AgentStat;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     if (!PQuerySendProgress::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Invalid progress query!");
@@ -150,7 +149,7 @@ class APISendProgress extends APIBasic {
       if ($crackedHash == "") {
         continue;
       }
-      $splitLine = explode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
+      $splitLine = explode(SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
       switch ($format) {
         case DHashlistFormat::PLAIN:
           $qF1 = new QueryFilter(Hash::HASH, $splitLine[0], "=");
@@ -164,11 +163,11 @@ class APISendProgress extends APIBasic {
           $salt = $hashes[0]->getSalt();
           if (strlen($salt) == 0) {
             // unsalted hashes
-            $plain = str_ireplace($hashes[0]->getHash() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
           }
           else {
             // salted hashes
-            $plain = str_ireplace($hashes[0]->getHash() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $hashes[0]->getSalt() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
+            $plain = str_ireplace($hashes[0]->getHash() . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $hashes[0]->getSalt() . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
           }
 
           foreach ($hashes as $hash) {
@@ -203,9 +202,9 @@ class APISendProgress extends APIBasic {
           for ($t = 4; $t < sizeof($splitLine); $t++) {
             $plain[] = $splitLine[$t];
           }
-          $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $plain);
+          $plain = implode(SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), $plain);
           //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
-          $qF1 = new QueryFilter(HashBinary::ESSID, $mac_ap . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $essid, "=");
+          $qF1 = new QueryFilter(HashBinary::ESSID, $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $essid, "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
           if (sizeof($hashes) == 0) {
@@ -221,7 +220,7 @@ class APISendProgress extends APIBasic {
           break;
         case DHashlistFormat::BINARY:
           // save binary password
-          $plain = implode($CONFIG->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
+          $plain = implode(SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
           $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $totalHashlist->getId(), "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = $FACTORIES::getHashBinaryFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));

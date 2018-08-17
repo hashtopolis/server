@@ -2,8 +2,7 @@
 
 class APIDownloadBinary extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
@@ -16,7 +15,7 @@ class APIDownloadBinary extends APIBasic {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
         $filename = "7zr" . Util::getFileExtension($this->agent->getOs());
-        $path = Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/static/" . $filename;
+        $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
@@ -42,7 +41,7 @@ class APIDownloadBinary extends APIBasic {
         );
         break;
       case PValuesDownloadBinaryType::PRINCE:
-        $url = $CONFIG->getVal(DConfig::PRINCE_LINK);
+        $url = SConfig::getInstance()->getVal(DConfig::PRINCE_LINK);
         if(strlen($url) == 0){
           $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "No prince binary URL is configured on the server!");
         }

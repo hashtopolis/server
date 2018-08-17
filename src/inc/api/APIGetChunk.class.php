@@ -7,8 +7,7 @@ use DBA\QueryFilter;
 
 class APIGetChunk extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     if (!PQueryGetChunk::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid chunk query!");
@@ -89,7 +88,7 @@ class APIGetChunk extends APIBasic {
       if ($chunk->getAgentId() == $this->agent->getId()) {
         $this->sendChunk(ChunkUtils::handleExistingChunk($chunk, $task, $assignment));
       }
-      $timeoutTime = time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT);
+      $timeoutTime = time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT);
       if ($chunk->getState() == DHashcatStatus::ABORTED || $chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME || max($chunk->getDispatchTime(), $chunk->getSolveTime()) < $timeoutTime) {
         $this->sendChunk(ChunkUtils::handleExistingChunk($chunk, $task, $assignment));
       }

@@ -10,7 +10,7 @@ use DBA\SupertaskPretask;
 
 class PretaskUtils {
   /**
-   * @param Task $copy 
+   * @param Task $copy
    * @return Pretask
    */
   public static function getFromTask($copy){
@@ -34,18 +34,16 @@ class PretaskUtils {
    * @return Pretask
    */
   public static function getDefault(){
-    global $CONFIG;
-
     return new Pretask(
       0,
       '',
-      $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." ",
-      $CONFIG->getVal(DConfig::CHUNK_DURATION),
-      $CONFIG->getVal(DConfig::STATUS_TIMER),
+      SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)." ",
+      SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
+      SConfig::getInstance()->getVal(DConfig::STATUS_TIMER),
       '',
       0,
       0,
-      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
+      SConfig::getInstance()->getVal(DConfig::DEFAULT_BENCH),
       0,
       0,
       0
@@ -284,15 +282,14 @@ class PretaskUtils {
    * @throws HTException
    */
   public static function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $files, $crackerBinaryTypeId, $priority = 0) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
 
     if (strlen($name) == 0) {
       throw new HTException("Name cannot be empty!");
     }
-    else if (strpos($cmdLine, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    else if (strpos($cmdLine, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("The attack command does not contain the hashlist alias!");
     }
     else if (Util::containsBlacklistedChars($cmdLine)) {
@@ -316,10 +313,10 @@ class PretaskUtils {
       throw new HTException("Invalid benchmark type!");
     }
     else if ($chunkTime <= 0) {
-      $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
+      $chunkTime = SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION);
     }
     else if ($statusTimer <= 0) {
-      $statusTimer = $CONFIG->getVal(DConfig::STATUS_TIMER);
+      $statusTimer = SConfig::getInstance()->getVal(DConfig::STATUS_TIMER);
     }
     $pretask = new Pretask(0,
       htmlentities($name, ENT_QUOTES, "UTF-8"),

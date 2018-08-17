@@ -104,22 +104,22 @@ class HashlistUtils {
         $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
         $newTask = new Task(
-          0, 
-          $task->getTaskName(), 
-          $task->getAttackCmd(), 
-          $task->getChunkTime(), 
-          $task->getStatusTimer(), 
-          0, 
-          0, 
-          $taskPriority, 
-          $task->getColor(), 
-          $task->getIsSmall(), 
-          $task->getIsCpuTask(), 
-          $task->getUseNewBench(), 
-          0, 
-          CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(), 
-          $task->getCrackerBinaryTypeId(), 
-          $taskWrapper->getId(), 
+          0,
+          $task->getTaskName(),
+          $task->getAttackCmd(),
+          $task->getChunkTime(),
+          $task->getStatusTimer(),
+          0,
+          0,
+          $taskPriority,
+          $task->getColor(),
+          $task->getIsSmall(),
+          $task->getIsCpuTask(),
+          $task->getUseNewBench(),
+          0,
+          CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(),
+          $task->getCrackerBinaryTypeId(),
+          $taskWrapper->getId(),
           0,
           0,
           '',
@@ -149,8 +149,7 @@ class HashlistUtils {
    * @return array
    */
   public static function createWordlists($hashlistId, $user) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     // create wordlist from hashlist cracked hashes
     $hashlist = HashlistUtils::getHashlist($hashlistId);
@@ -170,8 +169,8 @@ class HashlistUtils {
     }
     $wordCount = 0;
     $pagingSize = 5000;
-    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
-      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     foreach ($lists as $list) {
       $hashFactory = $FACTORIES::getHashFactory();
@@ -269,8 +268,7 @@ class HashlistUtils {
    * @return int[]
    */
   public static function processZap($hashlistId, $separator, $source, $post, $files, $user) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     // pre-crack hashes processor
     $hashlist = HashlistUtils::getHashlist($hashlistId);
@@ -377,7 +375,7 @@ class HashlistUtils {
           continue;
         }
         $plain = str_replace($hash . $separator . $hashEntry->getSalt() . $separator, "", $data);
-        if (strlen($plain) > $CONFIG->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
+        if (strlen($plain) > SConfig::getInstance()->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
           $tooLong++;
           continue;
         }
@@ -421,7 +419,7 @@ class HashlistUtils {
             continue;
           }
           $plain = str_replace($hash . $separator, "", $data);
-          if (strlen($plain) > $CONFIG->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
+          if (strlen($plain) > SConfig::getInstance()->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
             $tooLong++;
             continue;
           }
@@ -631,8 +629,7 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function export($hashlistId, $user) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     // export cracked hashes to a file
     $hashlist = HashlistUtils::getHashlist($hashlistId);
@@ -664,10 +661,10 @@ class HashlistUtils {
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
     $count = $factory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     $pagingSize = 5000;
-    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
-      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
-    $separator = $CONFIG->getVal(DConfig::FIELD_SEPARATOR);
+    $separator = SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR);
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter($orderObject, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
       $entries = $factory->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
@@ -718,8 +715,7 @@ class HashlistUtils {
    * @return Hashlist
    */
   public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $salted = ($isSalted) ? "1" : "0";
@@ -773,7 +769,7 @@ class HashlistUtils {
       $FACTORIES::getAgentFactory()->getDB()->rollback();
       throw new HTException("Required file does not exist!");
     }
-    else if (Util::countLines($tmpfile) > $CONFIG->getVal(DConfig::MAX_HASHLIST_SIZE)) {
+    else if (Util::countLines($tmpfile) > SConfig::getInstance()->getVal(DConfig::MAX_HASHLIST_SIZE)) {
       $FACTORIES::getAgentFactory()->getDB()->rollback();
       throw new HTException("Hashlist has too many lines!");
     }
@@ -877,7 +873,7 @@ class HashlistUtils {
           }
           $mac_cli = Util::bintohex($mac_cli);
           // we cannot save the network name here, as on the submission we don't get this
-          $hash = new HashBinary(0, $hashlist->getId(), $mac_ap . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
+          $hash = new HashBinary(0, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
           $FACTORIES::getHashBinaryFactory()->save($hash);
           $added++;
         }
@@ -971,8 +967,7 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function leftlist($hashlistId, $user) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if ($hashlist->getFormat() == DHashlistFormat::WPA || $hashlist->getFormat() == DHashlistFormat::BINARY) {
@@ -1003,8 +998,8 @@ class HashlistUtils {
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
     $count = $FACTORIES::getHashFactory()->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
     $pagingSize = 5000;
-    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
-      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
@@ -1013,7 +1008,7 @@ class HashlistUtils {
       foreach ($entries as $entry) {
         $buffer .= $entry->getHash();
         if ($hashlist->getIsSalted()) {
-          $buffer .= $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $entry->getSalt();
+          $buffer .= SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $entry->getSalt();
         }
         $buffer .= "\n";
       }

@@ -12,7 +12,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -51,7 +50,7 @@ $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
 $qF1 = new ContainFilter(AgentStat::AGENT_ID, $agentIds);
 $qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_UTIL, "=");
-$qF3 = new QueryFilter(AgentStat::TIME, time() - $CONFIG->getVal(DConfig::AGENT_TIMEOUT), ">");
+$qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT), ">");
 $stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2, $qF3], $FACTORIES::ORDER => [$oF1, $oF2]));
 $agentStats = new DataSet();
 foreach($stats as $stat){
@@ -65,7 +64,7 @@ $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
 $qF1 = new ContainFilter(AgentStat::AGENT_ID, $agentIds);
 $qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_TEMP, "=");
-$qF3 = new QueryFilter(AgentStat::TIME, time() - $CONFIG->getVal(DConfig::AGENT_TIMEOUT), ">");
+$qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT), ">");
 $stats = $FACTORIES::getAgentStatFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2, $qF3], $FACTORIES::ORDER => [$oF1, $oF2]));
 $agentStats = new DataSet();
 foreach($stats as $stat){

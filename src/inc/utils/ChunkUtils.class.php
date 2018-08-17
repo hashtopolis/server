@@ -10,10 +10,9 @@ class ChunkUtils{
    * @param $assignment Assignment
    */
   public static function handleExistingChunk($chunk, $task, $assignment) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
-    $disptolerance = 1 + $CONFIG->getVal(DConfig::DISP_TOLERANCE) / 100;
+    $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
 
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
@@ -63,10 +62,9 @@ class ChunkUtils{
    * @return DBA\Chunk|null
    */
   public static function createNewChunk($task, $assignment){
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
-    $disptolerance = 1 + $CONFIG->getVal(DConfig::DISP_TOLERANCE) / 100;
+    $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
 
     // if we have set a skip keyspace we set the the current progress to the skip which was set initially
     if ($task->getSkipKeyspace() > $task->getKeyspaceProgress()) {
@@ -103,11 +101,10 @@ class ChunkUtils{
    * @return int
    */
   public static function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1, $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
-    /** @var DataSet $CONFIG */
-    global $CONFIG, $QUERY;
+    global $QUERY;
 
     if ($chunkTime <= 0) {
-      $chunkTime = $CONFIG->getVal(DConfig::CHUNK_DURATION);
+      $chunkTime = SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION);
     }
     else if($staticChunking > DTaskStaticChunking::NORMAL){
       switch($staticChunking){

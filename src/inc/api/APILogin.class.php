@@ -2,9 +2,6 @@
 
 class APILogin extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var DataSet $CONFIG */
-    global $CONFIG;
-    
     if (!PQueryLogin::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::LOGIN, "Invalid login query!");
     }
@@ -15,7 +12,7 @@ class APILogin extends APIBasic {
     $this->sendResponse(array(
         PResponseLogin::ACTION => PActions::LOGIN,
         PResponseLogin::RESPONSE => PValues::SUCCESS,
-        PResponseLogin::TIMEOUT => $CONFIG->getVal(DConfig::AGENT_TIMEOUT)
+        PResponseLogin::TIMEOUT => SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)
       )
     );
   }

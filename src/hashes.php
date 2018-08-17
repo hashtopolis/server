@@ -13,7 +13,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -174,8 +173,8 @@ else if ($filter == "uncracked") {
 }
 
 $count = $hashFactory->countFilter(array($FACTORIES::FILTER => $queryFilters));
-$numPages = $count / $CONFIG->getVal(DConfig::HASHES_PER_PAGE);
-if ($numPages * $CONFIG->getVal(DConfig::HASHES_PER_PAGE) != $count) {
+$numPages = $count / SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE);
+if ($numPages * SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) != $count) {
   $numPages++;
 }
 $OBJECTS['count'] = $count;
@@ -197,7 +196,7 @@ $OBJECTS['nextPage'] = $nextPage;
 $OBJECTS['previousPage'] = $previousPage;
 $OBJECTS['currentPage'] = $currentPage;
 
-$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . ($CONFIG->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . $CONFIG->getVal(DConfig::HASHES_PER_PAGE));
+$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
 $hashes = $hashFactory->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => $oF));
 
 $output = "";

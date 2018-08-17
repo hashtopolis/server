@@ -5,8 +5,7 @@ use DBA\QueryFilter;
 
 class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     if (!PQuerySendBenchmark::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
@@ -40,13 +39,13 @@ class APISendBenchmark extends APIBasic {
         }
 
         // Here we check if the benchmark result would require to split the task and check if the task can be split
-        if($CONFIG->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+        if(SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
           // test if we have a large rule file
           $files = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfAgent($this->agent))[3];
           foreach($files as $file){
             if($file->getFileType() == DFileType::RULE){
               // test if splitting makes sense here
-              if(Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || $CONFIG->getVal(DConfig::RULE_SPLIT_ALWAYS)){
+              if(Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_ALWAYS)){
                 // --> split
                 TaskUtils::splitByRules($task, $taskWrapper, $files, $file, $split);
                 $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Task was split due to benchmark!");
@@ -63,7 +62,7 @@ class APISendBenchmark extends APIBasic {
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
-        $benchmark = $benchmark / $CONFIG->getVal(DConfig::BENCHMARK_TIME) * 100;
+        $benchmark = $benchmark / SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME) * 100;
         break;
       default:
         $this->agent->setIsActive(0);

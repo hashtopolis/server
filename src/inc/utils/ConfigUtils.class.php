@@ -17,7 +17,7 @@ class ConfigUtils {
    */
   public static function set($config, $new) {
     global $FACTORIES;
-    
+
     if ($new) {
       $FACTORIES::getConfigFactory()->save($config);
     }
@@ -25,7 +25,7 @@ class ConfigUtils {
       $FACTORIES::getConfigFactory()->update($config);
     }
   }
-  
+
   /**
    * @param string $item
    * @throws HTException
@@ -33,7 +33,7 @@ class ConfigUtils {
    */
   public static function get($item) {
     global $FACTORIES;
-    
+
     $qF = new QueryFilter(Config::ITEM, $item, "=");
     $config = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF), true);
     if ($config == null) {
@@ -41,40 +41,39 @@ class ConfigUtils {
     }
     return $config;
   }
-  
+
   /**
    * @return ConfigSection[]
    */
   public static function getSections() {
     global $FACTORIES;
-    
+
     return $FACTORIES::getConfigSectionFactory()->filter([]);
   }
-  
+
   /**
    * @return Config[]
    */
   public static function getAll() {
     global $FACTORIES;
-    
+
     return $FACTORIES::getConfigFactory()->filter([]);
   }
-  
+
   /**
    * @param array $arr
    * @throws HTException
    */
   public static function updateConfig($arr) {
     global $OBJECTS, $FACTORIES;
-    
-    $CONFIG = SConfig::getInstance();
+
     foreach ($arr as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
-        if ($CONFIG->getVal($name) == $val) {
+        if (SConfig::getInstance()->getVal($name) == $val) {
           continue; // the value was not changed, so we don't need to update it
         }
-        
+
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
         if ($config == null) {
@@ -94,37 +93,37 @@ class ConfigUtils {
               throw new HTException("Failed to update max plaintext length!");
             }
           }
-          $CONFIG->addValue($name, $val);
+          SConfig::getInstance()->addValue($name, $val);
           $config->setValue($val);
           $FACTORIES::getConfigFactory()->update($config);
         }
       }
     }
     SConfig::reload();
-    $OBJECTS['config'] = $CONFIG;
+    $OBJECTS['config'] = SConfig::getInstance();
   }
-  
+
   /**
    * @return int[]
    */
   public static function rebuildCache() {
     global $FACTORIES;
-    
+
     $correctedChunks = 0;
     $correctedHashlists = 0;
-    
+
     //check chunks
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array());
     foreach ($taskWrappers as $taskWrapper) {
       $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId()));
-      
+
       $jF = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=", $FACTORIES::getTaskFactory());
       $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::JOIN => $jF, $FACTORIES::FILTER => $qF));
       /** @var $chunks Chunk[] */
       $chunks = $joined[$FACTORIES::getChunkFactory()->getModelName()];
-      
+
       foreach ($chunks as $chunk) {
         $hashFactory = ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) ? $FACTORIES::getHashFactory() : $FACTORIES::getHashBinaryFactory();
         $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
@@ -138,7 +137,7 @@ class ConfigUtils {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->commit();
-    
+
     //check hashlists
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
@@ -158,7 +157,7 @@ class ConfigUtils {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->commit();
-    
+
     //check superhashlists
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
@@ -176,16 +175,16 @@ class ConfigUtils {
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->commit();
-    
+
     return [$correctedChunks, $correctedHashlists];
   }
-  
+
   /**
    * @throws HTMessages
    */
   public static function scanFiles() {
     global $FACTORIES;
-    
+
     $allOk = true;
     $messages = [];
     $files = $FACTORIES::getFileFactory()->filter(array());
@@ -212,13 +211,13 @@ class ConfigUtils {
       throw new HTMessages($messages);
     }
   }
-  
+
   /**
    * @param User $user
    */
   public static function clearAll($user) {
     global $FACTORIES;
-    
+
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $FACTORIES::getHashFactory()->massDeletion(array());
     $FACTORIES::getHashBinaryFactory()->massDeletion(array());

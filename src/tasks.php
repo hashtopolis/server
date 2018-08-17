@@ -14,7 +14,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -89,7 +88,7 @@ if (isset($_GET['id'])) {
   $agentsSpeed = new DataSet();
   $currentSpeed = 0;
   foreach ($chunks as $chunk) {
-    if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
+    if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getProgress() < 10000) {
       $isActive = 1;
       $activeChunks[] = $chunk;
       $activeChunksIds->addValue($chunk->getId(), true);
@@ -288,8 +287,8 @@ else if (isset($_GET['new'])) {
   if ($copy === null) {
     $copy = TaskUtils::getDefault();
   }
-  if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-    $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
+  if (strpos($copy->getAttackCmd(), SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    $copy->setAttackCmd(SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
 
   $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());

@@ -1,18 +1,7 @@
 <?php
 
-use DBA\AccessGroupAgent;
 use DBA\Agent;
-use DBA\Assignment;
-use DBA\Chunk;
-use DBA\ContainFilter;
-use DBA\File;
-use DBA\FileTask;
-use DBA\Hashlist;
-use DBA\JoinFilter;
-use DBA\OrderFilter;
 use DBA\QueryFilter;
-use DBA\Task;
-use DBA\TaskWrapper;
 
 abstract class APIBasic {
   /** @var Agent */
@@ -25,7 +14,7 @@ abstract class APIBasic {
   
   protected function sendResponse($RESPONSE) {
     header("Content-Type: application/json");
-    echo json_encode($RESPONSE, true);
+    echo json_encode($RESPONSE);
     die();
   }
   
@@ -44,7 +33,7 @@ abstract class APIBasic {
     $ANS[PResponseErrorMessage::RESPONSE] = PValues::ERROR;
     $ANS[PResponseErrorMessage::MESSAGE] = $msg;
     header("Content-Type: application/json");
-    echo json_encode($ANS, true);
+    echo json_encode($ANS);
     die();
   }
   

@@ -25,7 +25,7 @@ use DBA\TaskDebugOutput;
 
 class TaskUtils {
   /**
-   * @param Pretask $copy 
+   * @param Pretask $copy
    * @return Task
    */
   public static function getFromPretask($copy){
@@ -58,21 +58,19 @@ class TaskUtils {
    * @return Task
    */
   public static function getDefault(){
-    global $CONFIG;
-
     return new Task(
       0,
       "",
       "",
-      $CONFIG->getVal(DConfig::CHUNK_DURATION),
-      $CONFIG->getVal(DConfig::STATUS_TIMER),
+      SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
+      SConfig::getInstance()->getVal(DConfig::STATUS_TIMER),
       0,
       0,
       0,
       "",
       0,
       0,
-      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
+      SConfig::getInstance()->getVal(DConfig::DEFAULT_BENCH),
       0,
       0,
       0,
@@ -128,12 +126,12 @@ class TaskUtils {
    * @return void
    */
   public static function changeAttackCmd($taskId, $attackCmd, $user){
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     if(strlen($attackCmd) == 0){
       throw new HTException("Attack command cannot be empty!");
     }
-    else if(strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false){
+    else if(strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false){
       throw new HTException("Attack command must contain the hashlist alias!");
     }
 
@@ -697,8 +695,7 @@ class TaskUtils {
    * @throws HTException
    */
   public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     $hashlist = $FACTORIES::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
@@ -719,7 +716,7 @@ class TaskUtils {
     if ($cracker == null) {
       throw new HTException("Invalid cracker ID!");
     }
-    else if (strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+    else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command does not contain hashlist alias!");
     }
     else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
@@ -809,8 +806,7 @@ class TaskUtils {
    * @param array $split
    */
   public static function splitByRules($task, $taskWrapper, $files, $splitFile, $split) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     // calculate how much we need to split
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
@@ -855,7 +851,7 @@ class TaskUtils {
         0,
         $prio,
         $task->getColor(),
-        ($CONFIG->getVal(DConfig::RULE_SPLIT_SMALL_TASKS) == 0) ? 0 : 1,
+        (SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_SMALL_TASKS) == 0) ? 0 : 1,
         $task->getIsCpuTask(),
         $task->getUseNewBench(),
         $task->getSkipKeyspace(),
@@ -1066,8 +1062,7 @@ class TaskUtils {
    * @return Task null if the task is completed or fully dispatched
    */
   public static function checkTask($task, $agent = null) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     if($task->getIsArchived() == 1){
       return null;
@@ -1092,7 +1087,7 @@ class TaskUtils {
       else if ($chunk->getAgentId() == null) {
         return $task; // at least one chunk is not assigned
       }
-      else if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) > $CONFIG->getVal(DConfig::AGENT_TIMEOUT)) {
+      else if (time() - max($chunk->getSolveTime(), $chunk->getDispatchTime()) > SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)) {
         // this chunk timed out, so we remove the agent from it and therefore this task is not complete yet
         //$chunk->setAgentId(null);
         //$FACTORIES::getChunkFactory()->update($chunk);

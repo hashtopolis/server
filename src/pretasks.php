@@ -12,7 +12,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -118,7 +117,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
 }
 else {
   $queryFilters = array();
-  if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
+  if (SConfig::getInstance()->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
     $queryFilters[] = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   }
   $oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");

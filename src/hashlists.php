@@ -15,7 +15,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -93,7 +92,7 @@ else if (isset($_GET['id'])) {
     foreach ($chunks as $chunk) {
       $sum['searched'] += $chunk->getProgress();
       $sum['cracked'] += $chunk->getCracked();
-      if (time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) < max($chunk->getDispatchTime(), $chunk->getSolveTime())) {
+      if (time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) < max($chunk->getDispatchTime(), $chunk->getSolveTime())) {
         $isActive = true;
       }
     }
@@ -103,7 +102,7 @@ else if (isset($_GET['id'])) {
   $OBJECTS['tasks'] = $hashlistTasks;
 
   //load list of available preconfigured tasks
-  if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
+  if (SConfig::getInstance()->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
     $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
     $OBJECTS['preTasks'] = $FACTORIES::getPretaskFactory()->filter([$FACTORIES::FILTER => $qF]);
   }
