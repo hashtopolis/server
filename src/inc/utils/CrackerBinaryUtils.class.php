@@ -2,14 +2,12 @@
 
 use DBA\CrackerBinary;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 class CrackerBinaryUtils {
-  
   public static function getNewestVersion($crackerBinaryTypeId) {
-    global $FACTORIES;
-    
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $crackerBinaryTypeId, "=");
-    $binaries = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     /** @var $newest CrackerBinary */
     $newest = null;
     foreach ($binaries as $binary) {

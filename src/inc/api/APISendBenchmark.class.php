@@ -2,26 +2,25 @@
 
 use DBA\Assignment;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
     if (!PQuerySendBenchmark::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark query!");
     }
     $this->checkToken(PActions::SEND_BENCHMARK, $QUERY);
     $this->updateAgent(PActions::SEND_BENCHMARK);
 
-    $task = $FACTORIES::getTaskFactory()->get($QUERY[PQuerySendBenchmark::TASK_ID]);
+    $task = Factory::getTaskFactory()->get($QUERY[PQuerySendBenchmark::TASK_ID]);
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid task ID!");
     }
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
 
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+    $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($assignment == null) {
       $this->sendErrorResponse(PActions::SEND_BENCHMARK, "You are not assigned to this task!");
     }
@@ -34,7 +33,7 @@ class APISendBenchmark extends APIBasic {
         $split = explode(":", $benchmark);
         if (sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <= 0 || $split[1] <= 0) {
           $this->agent->setIsActive(0);
-          $FACTORIES::getAgentFactory()->update($this->agent);
+          Factory::getAgentFactory()->update($this->agent);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
 
@@ -58,7 +57,7 @@ class APISendBenchmark extends APIBasic {
       case PValuesBenchmarkType::RUN_TIME:
         if (!is_numeric($benchmark) || $benchmark <= 0) {
           $this->agent->setIsActive(0);
-          $FACTORIES::getAgentFactory()->update($this->agent);
+          Factory::getAgentFactory()->update($this->agent);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
@@ -66,12 +65,12 @@ class APISendBenchmark extends APIBasic {
         break;
       default:
         $this->agent->setIsActive(0);
-        $FACTORIES::getAgentFactory()->update($this->agent);
+        Factory::getAgentFactory()->update($this->agent);
         $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
     }
 
     $assignment->setBenchmark($benchmark);
-    $FACTORIES::getAssignmentFactory()->update($assignment);
+    Factory::getAssignmentFactory()->update($assignment);
     $this->sendResponse(array(
         PResponseSendBenchmark::ACTION => PActions::SEND_BENCHMARK,
         PResponseSendBenchmark::RESPONSE => PValues::SUCCESS,

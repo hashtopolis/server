@@ -15,6 +15,7 @@ use DBA\Pretask;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
 use DBA\User;
+use DBA\Factory;
 
 ini_set("memory_limit", "2G");
 
@@ -117,7 +118,7 @@ $DB->exec("SET @tables = NULL;
 SELECT GROUP_CONCAT(table_schema, '.', table_name) INTO @tables
   FROM information_schema.tables
   WHERE table_schema = '" . $CONN['db'] . "';
-  
+
 SET @tables = CONCAT('DROP TABLE ', @tables);
 PREPARE stmt FROM @tables;
 EXECUTE stmt;
@@ -146,13 +147,13 @@ echo "OK\n";
 echo "Save hash types... ";
 $t = [];
 foreach ($hashTypes as $hashType) {
-  $ht = $FACTORIES::getHashTypeFactory()->get($hashType['hashTypeId']);
+  $ht = Factory::getHashTypeFactory()->get($hashType['hashTypeId']);
   if ($ht == null) {
     $t[] = new HashType($hashType['hashTypeId'], $hashType['description'], $hashType['isSalted']);
   }
 }
 if (sizeof($t) > 0) {
-  $FACTORIES::getHashTypeFactory()->massSave($t);
+  Factory::getHashTypeFactory()->massSave($t);
 }
 echo "OK\n";
 
@@ -164,8 +165,8 @@ foreach ($users as $user) {
   $ug[] = new AccessGroupUser(0, 1, $user['userId']);
 }
 if (sizeof($u) > 0) {
-  $FACTORIES::getUserFactory()->massSave($u);
-  $FACTORIES::getAccessGroupUserFactory()->massSave($ug);
+  Factory::getUserFactory()->massSave($u);
+  Factory::getAccessGroupUserFactory()->massSave($ug);
 }
 echo "OK\n";
 
@@ -177,8 +178,8 @@ foreach ($agents as $agent) {
   $ag[] = new AccessGroupAgent(0, 1, $agent['agentId']);
 }
 if (sizeof($a) > 0) {
-  $FACTORIES::getAgentFactory()->massSave($a);
-  $FACTORIES::getAccessGroupAgentFactory()->massSave($ag);
+  Factory::getAgentFactory()->massSave($a);
+  Factory::getAccessGroupAgentFactory()->massSave($ag);
 }
 echo "OK\n";
 
@@ -190,7 +191,7 @@ foreach ($files as $file) {
   $f[] = new File($file['fileId'], $file['filename'], $file['size'], $file['secret'], $file['fileType']);
 }
 if (sizeof($f) > 0) {
-  $FACTORIES::getFileFactory()->massSave($f);
+  Factory::getFileFactory()->massSave($f);
 }
 echo "OK\n";
 
@@ -200,7 +201,7 @@ foreach ($hashlists as $hashlist) {
   $h[] = new Hashlist($hashlist['hashlistId'], $hashlist['hashlistName'], $hashlist['format'], $hashlist['hashTypeId'], $hashlist['hashCount'], $hashlist['saltSeparator'], $hashlist['cracked'], $hashlist['secret'], $hashlist['hexSalt'], $hashlist['isSalted'], 1);
 }
 if (sizeof($h) > 0) {
-  $FACTORIES::getHashlistFactory()->massSave($h);
+  Factory::getHashlistFactory()->massSave($h);
 }
 echo "OK\n";
 
@@ -210,7 +211,7 @@ foreach ($superhashlistsHashlists as $superhashlistsHashlist) {
   $h[] = new HashlistHashlist($superhashlistsHashlist['superHashlistHashlistId'], $superhashlistsHashlist['superHashlistId'], $superhashlistsHashlist['hashlistId']);
 }
 if (sizeof($h) > 0) {
-  $FACTORIES::getHashlistHashlistFactory()->massSave($h);
+  Factory::getHashlistHashlistFactory()->massSave($h);
 }
 echo "OK\n";
 
@@ -219,12 +220,12 @@ $h = [];
 foreach ($hashes as $hash) {
   $h[] = new Hash($hash['hashId'], $hash['hashlistId'], $hash['hash'], $hash['salt'], $hash['plaintext'], $hash['time'], null, $hash['isCracked']);
   if (sizeof($h) >= 1000) {
-    $FACTORIES::getHashFactory()->massSave($h);
+    Factory::getHashFactory()->massSave($h);
     $h = [];
   }
 }
 if (sizeof($h) > 0) {
-  $FACTORIES::getHashFactory()->massSave($h);
+  Factory::getHashFactory()->massSave($h);
 }
 echo "OK\n";
 
@@ -234,7 +235,7 @@ foreach ($binaryHashes as $binaryHash) {
   $h[] = new HashBinary($binaryHash['hashBinaryId'], $binaryHash['hashlistId'], $binaryHash['essid'], $binaryHash['hash'], $binaryHash['plaintext'], $binaryHash['time'], null, $binaryHash['isCracked']);
 }
 if (sizeof($h) > 0) {
-  $FACTORIES::getHashBinaryFactory()->massSave($h);
+  Factory::getHashBinaryFactory()->massSave($h);
 }
 echo "OK\n";
 
@@ -253,7 +254,7 @@ foreach ($tasks as $task) {
   $t[] = new Pretask($task['taskId'], $task['taskName'], $task['attackCmd'], $task['chunkTime'], $task['statusTimer'], $task['color'], $task['isSmall'], $task['isCpuTask'], $task['useNewBench'], $task['priority'], $isMask, 1);
 }
 if (sizeof($t) > 0) {
-  $FACTORIES::getPretaskFactory()->massSave($t);
+  Factory::getPretaskFactory()->massSave($t);
 }
 echo "OK\n";
 
@@ -266,7 +267,7 @@ foreach ($taskFiles as $taskFile) {
   $f[] = new FilePretask($taskFile['taskFileId'], $taskFile['fileId'], $taskFile['taskId']);
 }
 if (sizeof($f) > 0) {
-  $FACTORIES::getFilePretaskFactory()->massSave($f);
+  Factory::getFilePretaskFactory()->massSave($f);
 }
 echo "OK\n";
 
@@ -276,7 +277,7 @@ foreach ($supertasks as $supertask) {
   $s[] = new Supertask($supertask['supertaskId'], $supertask['supertaskName']);
 }
 if (sizeof($s) > 0) {
-  $FACTORIES::getSupertaskFactory()->massSave($s);
+  Factory::getSupertaskFactory()->massSave($s);
 }
 echo "OK\n";
 
@@ -286,7 +287,7 @@ foreach ($supertaskTasks as $supertaskTask) {
   $s[] = new SupertaskPretask($supertaskTask['supertaskTaskId'], $supertaskTask['supertaskId'], $supertaskTask['taskId']);
 }
 if (sizeof($s) > 0) {
-  $FACTORIES::getSupertaskPretaskFactory()->massSave($s);
+  Factory::getSupertaskPretaskFactory()->massSave($s);
 }
 echo "OK\n";
 

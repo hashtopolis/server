@@ -3,6 +3,7 @@
 use DBA\LogEntry;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -29,12 +30,12 @@ $OBJECTS['level'] = $level;
 $qF = new QueryFilter(LogEntry::LEVEL, $level, "=");
 $oF = new OrderFilter(LogEntry::TIME, "DESC LIMIT 100");
 
-$filter = array($FACTORIES::ORDER => $oF);
+$filter = array(Factory::ORDER => $oF);
 if ($level !== "0") {
-  $filter[$FACTORIES::FILTER] = $qF;
+  $filter[Factory::FILTER] = $qF;
 }
 
-$entries = $FACTORIES::getLogEntryFactory()->filter($filter);
+$entries = Factory::getLogEntryFactory()->filter($filter);
 $OBJECTS['entries'] = $entries;
 
 echo $TEMPLATE->render($OBJECTS);

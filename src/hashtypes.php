@@ -25,7 +25,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-$hashtypes = $FACTORIES::getHashTypeFactory()->filter(array());
+$hashtypes = Factory::getHashTypeFactory()->filter([]);
 
 $OBJECTS['hashtypes'] = $hashtypes;
 $OBJECTS['message'] = $message;

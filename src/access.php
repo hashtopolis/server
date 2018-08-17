@@ -2,6 +2,7 @@
 
 use DBA\QueryFilter;
 use DBA\User;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -32,7 +33,7 @@ if (isset($_GET['new'])) {
   $OBJECTS['pageTitle'] = "Create new Permission Group";
 }
 else if (isset($_GET['id'])) {
-  $group = $FACTORIES::getRightGroupFactory()->get($_GET['id']);
+  $group = Factory::getRightGroupFactory()->get($_GET['id']);
   if ($group == null) {
     UI::printError("ERROR", "Invalid permission group!");
   }
@@ -44,9 +45,9 @@ else if (isset($_GET['id'])) {
     else {
       $OBJECTS['perm'] = new DataSet(json_decode($group->getPermissions(), true));
     }
-    
+
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $group->getId(), "=");
-    $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $OBJECTS['users'] = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
     $constants = DAccessControl::getConstants();
     $constantsChecked = [];
     foreach ($constants as $constant) {
@@ -61,25 +62,25 @@ else if (isset($_GET['id'])) {
       }
     }
     $OBJECTS['constants'] = $constantsChecked;
-    
+
     $TEMPLATE = new Template("access/detail");
     $OBJECTS['pageTitle'] = "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
   }
 }
 else {
   // determine members and agents
-  $groups = $FACTORIES::getRightGroupFactory()->filter(array());
-  
+  $groups = Factory::getRightGroupFactory()->filter(array());
+
   $users = array();
   foreach ($groups as $group) {
     $users[$group->getId()] = 0;
   }
-  
-  $allUsers = $FACTORIES::getUserFactory()->filter(array());
+
+  $allUsers = Factory::getUserFactory()->filter(array());
   foreach ($allUsers as $user) {
     $users[$user->getRightGroupId()]++;
   }
-  
+
   $OBJECTS['users'] = new DataSet($users);
   $OBJECTS['groups'] = $groups;
   $OBJECTS['pageTitle'] = "Permission Groups";

@@ -2,6 +2,7 @@
 use DBA\Chunk;
 use DBA\Task;
 use DBA\Assignment;
+use DBA\Factory;
 
 class ChunkUtils{
   /**
@@ -10,8 +11,6 @@ class ChunkUtils{
    * @param $assignment Assignment
    */
   public static function handleExistingChunk($chunk, $task, $assignment) {
-    global $FACTORIES;
-
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
 
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
@@ -23,7 +22,7 @@ class ChunkUtils{
       $chunk->setSolveTime(0);
       $chunk->setState(DHashcatStatus::INIT);
       $chunk->setAgentId($assignment->getAgentId());
-      $FACTORIES::getChunkFactory()->update($chunk);
+      Factory::getChunkFactory()->update($chunk);
       return $chunk;
     }
     else if ($chunk->getCheckpoint() == $chunk->getSkip()) {
@@ -36,9 +35,9 @@ class ChunkUtils{
       $firstPart->setSolveTime(0);
       $firstPart->setState(DHashcatStatus::INIT);
       $firstPart->setProgress(0);
-      $FACTORIES::getChunkFactory()->update($firstPart);
+      Factory::getChunkFactory()->update($firstPart);
       $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), 0, DHashcatStatus::INIT, 0, 0);
-      $FACTORIES::getChunkFactory()->save($secondPart);
+      Factory::getChunkFactory()->save($secondPart);
       return $firstPart;
     }
     else {
@@ -50,8 +49,8 @@ class ChunkUtils{
       $chunk->setLength($chunk->getCheckpoint() - $chunk->getSkip());
       $chunk->setProgress(10000);
       $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
-      $FACTORIES::getChunkFactory()->update($chunk);
-      $newChunk = $FACTORIES::getChunkFactory()->save($newChunk);
+      Factory::getChunkFactory()->update($chunk);
+      $newChunk = Factory::getChunkFactory()->save($newChunk);
       return $newChunk;
     }
   }
@@ -62,14 +61,12 @@ class ChunkUtils{
    * @return DBA\Chunk|null
    */
   public static function createNewChunk($task, $assignment){
-    global $FACTORIES;
-
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
 
     // if we have set a skip keyspace we set the the current progress to the skip which was set initially
     if ($task->getSkipKeyspace() > $task->getKeyspaceProgress()) {
       $task->setKeyspaceProgress($task->getSkipKeyspace());
-      $FACTORIES::getTaskFactory()->update($task);
+      Factory::getTaskFactory()->update($task);
     }
 
     $remaining = $task->getKeyspace() - $task->getKeyspaceProgress();
@@ -84,9 +81,9 @@ class ChunkUtils{
     }
     $newProgress = $task->getKeyspaceProgress() + $length;
     $task->setKeyspaceProgress($newProgress);
-    $FACTORIES::getTaskFactory()->update($task);
+    Factory::getTaskFactory()->update($task);
     $chunk = new Chunk(0, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, 0, DHashcatStatus::INIT, 0, 0);
-    $FACTORIES::getChunkFactory()->save($chunk);
+    Factory::getChunkFactory()->save($chunk);
     return $chunk;
   }
 

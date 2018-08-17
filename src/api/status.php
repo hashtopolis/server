@@ -19,7 +19,7 @@ $activeAgents = array();
 $totalSpeed = 0;
 foreach ($onlineAgents as $agent) {
   $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-  $assignments = $FACTORIES::getAssignmentFactory()->filter(array(Factory::FILTER => array($qF)));
+  $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
   if (sizeof($assignments) > 0) {
     $assignment = $assignments[0];
     $qF = new QueryFilter(Chunk::TASK_ID, $assignment->getTaskId(), "=");

@@ -1,26 +1,25 @@
 <?php
+use DBA\Factory;
 
 class AccountHandler implements Handler {
   private $user;
-  
+
   public function __construct($userId = null) {
-    global $FACTORIES;
-    
     if ($userId == null) {
       $this->user = null;
       return;
     }
-    
-    $this->user = $FACTORIES::getUserFactory()->get($userId);
+
+    $this->user = Factory::getUserFactory()->get($userId);
     if ($this->user == null) {
       UI::printError("FATAL", "User with ID $userId not found!");
     }
   }
-  
+
   public function handle($action) {
     /** @var $LOGIN Login */
     global $OBJECTS, $LOGIN, $ACCESS_CONTROL;
-    
+
     try {
       switch ($action) {
         case DAccountAction::SET_EMAIL:
@@ -76,7 +75,7 @@ class AccountHandler implements Handler {
     catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
-    
+
     $OBJECTS['user'] = $LOGIN->getUser();
   }
 }

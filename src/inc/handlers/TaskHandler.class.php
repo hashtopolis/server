@@ -5,19 +5,18 @@ use DBA\FileTask;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
+use DBA\Factory;
 
 class TaskHandler implements Handler {
   private $task;
 
   public function __construct($taskId = null) {
-    global $FACTORIES;
-
     if ($taskId == null) {
       $this->task = null;
       return;
     }
 
-    $this->task = $FACTORIES::getAgentFactory()->get($taskId);
+    $this->task = Factory::getAgentFactory()->get($taskId);
     if ($this->task == null) {
       UI::printError("FATAL", "Task with ID $taskId not found!");
     }
@@ -121,7 +120,7 @@ class TaskHandler implements Handler {
 
   private function create() {
     /** @var $LOGIN Login */
-    global $FACTORIES, $LOGIN, $ACCESS_CONTROL;
+    global $LOGIN, $ACCESS_CONTROL;
 
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
@@ -141,10 +140,10 @@ class TaskHandler implements Handler {
     $chunkSize = intval(@$_POST['chunkSize']);
     $priority = intval(@$_POST['priority']);
 
-    $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
-    $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
-    $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
-    $accessGroup = $FACTORIES::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
+    $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
+    $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
+    $hashlist = Factory::getHashlistFactory()->get($_POST["hashlist"]);
+    $accessGroup = Factory::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
 
     if (strpos($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
@@ -185,7 +184,7 @@ class TaskHandler implements Handler {
 
     $qF1 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
     $qF2 = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
-    $accessGroupUser = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+    $accessGroupUser = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($accessGroupUser == null) {
       UI::addMessage(UI::ERROR, "No access to this access group!");
       return;
@@ -213,9 +212,9 @@ class TaskHandler implements Handler {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
 
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    Factory::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
+    $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
     if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
       $task = new Task(
@@ -243,7 +242,7 @@ class TaskHandler implements Handler {
       );
     }
     else {
-      $copy = $FACTORIES::getPretaskFactory()->get($_POST['copy']);
+      $copy = Factory::getPretaskFactory()->get($_POST['copy']);
       if ($copy == null) {
         UI::addMessage(UI::ERROR, "Invalid preconfigured task used!");
         return;
@@ -275,15 +274,15 @@ class TaskHandler implements Handler {
       $forward = "pretasks.php";
     }
 
-    $task = $FACTORIES::getTaskFactory()->save($task);
+    $task = Factory::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
         $taskFile = new FileTask(0, $fileId, $task->getId());
-        $FACTORIES::getFileTaskFactory()->save($taskFile);
+        Factory::getFileTaskFactory()->save($taskFile);
         FileDownloadUtils::addDownload($taskFile->getFileId());
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
+    Factory::getAgentFactory()->getDB()->commit();
 
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);

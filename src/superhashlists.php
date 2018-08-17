@@ -4,6 +4,7 @@ use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -24,26 +25,26 @@ if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE
   $TEMPLATE = new Template("superhashlists/new");
   $MENU->setActive("lists_snew");
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
-  $OBJECTS['lists'] = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $OBJECTS['lists'] = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
   $OBJECTS['pageTitle'] = "Create Superhashlist";
 }
 else {
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
-  $lists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $lists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
   $OBJECTS['lists'] = $lists;
   $subLists = new DataSet();
   foreach ($lists as $list) {
-    $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $list->getId(), "=", $FACTORIES::getHashlistHashlistFactory());
-    $jF = new JoinFilter($FACTORIES::getHashlistHashlistFactory(), HashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
-    $ll = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $subLists->addValue($list->getId(), $ll[$FACTORIES::getHashlistFactory()->getModelName()]);
+    $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $list->getId(), "=", Factory::getHashlistHashlistFactory());
+    $jF = new JoinFilter(Factory::getHashlistHashlistFactory(), HashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $ll = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $subLists->addValue($list->getId(), $ll[Factory::getHashlistFactory()->getModelName()]);
   }
   $OBJECTS['subLists'] = $subLists;
   $OBJECTS['pageTitle'] = "Superhashlists";
 }
 
 $hashtypes = new DataSet();
-$types = $FACTORIES::getHashTypeFactory()->filter(array());
+$types = Factory::getHashTypeFactory()->filter([]);
 foreach ($types as $type) {
   $hashtypes->addValue($type->getId(), $type->getDescription());
 }

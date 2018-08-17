@@ -2,12 +2,13 @@
 
 use DBA\QueryFilter;
 use DBA\User;
+use DBA\Factory;
 
 class ForgotHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load
   }
-  
+
   public function handle($action) {
     switch ($action) {
       case DForgotAction::RESET:
@@ -18,13 +19,11 @@ class ForgotHandler implements Handler {
         break;
     }
   }
-  
+
   private function forgot($username, $email) {
-    global $FACTORIES;
-    
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
     $qF = new QueryFilter(User::USERNAME, $username, "=");
-    $res = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+    $res = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
     if ($res == null || sizeof($res) == 0) {
       UI::addMessage(UI::ERROR, "No such user!");
       return;
@@ -44,7 +43,7 @@ class ForgotHandler implements Handler {
     $tmplPlain = new Template("email/forgot.plain");
     $obj = array('username' => $user->getUsername(), 'password' => $newPass);
     if (Util::sendMail($user->getEmail(), "Password reset", $tmpl->render($obj), $tmplPlain->render($obj))) {
-      $FACTORIES::getUserFactory()->update($user);
+      Factory::getUserFactory()->update($user);
       UI::addMessage(UI::SUCCESS, "Password reset! You should receive an email soon.");
     }
     else {

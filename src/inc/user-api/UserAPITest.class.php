@@ -2,6 +2,7 @@
 
 use DBA\ApiKey;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 class UserAPITest extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -16,7 +17,7 @@ class UserAPITest extends UserAPIBasic {
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
   }
-  
+
   private function connectionTest($QUERY) {
     $this->sendResponse(array(
         UResponse::SECTION => USection::TEST,
@@ -25,12 +26,10 @@ class UserAPITest extends UserAPIBasic {
       )
     );
   }
-  
+
   private function accessTest($QUERY) {
-    global $FACTORIES;
-    
     $qF = new QueryFilter(ApiKey::ACCESS_KEY, $QUERY[UQuery::ACCESS_KEY], "=");
-    $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    $apiKey = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF], true);
     if ($apiKey == null) {
       $this->sendResponse(array(
           UResponseErrorMessage::SECTION => USection::TEST,

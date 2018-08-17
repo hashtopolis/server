@@ -3,6 +3,7 @@
 use DBA\QueryFilter;
 use DBA\Session;
 use DBA\User;
+use DBA\Factory;
 
 /**
  * Handles the login sessions
@@ -12,6 +13,7 @@ use DBA\User;
 class Login {
   private $user    = null;
   private $valid   = false;
+  /** @var Session $session*/
   private $session = null;
 
   public function setUser($user) {
@@ -23,8 +25,6 @@ class Login {
    * running. It updates the session lifetime again up to the session limit.
    */
   public function __construct() {
-    global $FACTORIES;
-
     $this->user = null;
     $this->session = null;
     $this->valid = false;
@@ -33,13 +33,13 @@ class Login {
       $filter1 = new QueryFilter(Session::SESSION_KEY, $session, "=");
       $filter2 = new QueryFilter(Session::IS_OPEN, "1", "=");
       $filter3 = new QueryFilter(Session::LAST_ACTION_DATE, time() - 10000, ">");
-      $check = $FACTORIES::getSessionFactory()->filter(array($FACTORIES::FILTER => array($filter1, $filter2, $filter3)));
+      $check = Factory::getSessionFactory()->filter([Factory::FILTER => [$filter1, $filter2, $filter3]]);
       if ($check === null || sizeof($check) == 0) {
         setcookie("session", "", time() - 600); //delete invalid or old cookie
         return;
       }
       $s = $check[0];
-      $this->user = $FACTORIES::getUserFactory()->get($s->getUserId());
+      $this->user = Factory::getUserFactory()->get($s->getUserId());
       if ($this->user !== null) {
         if ($s->getLastActionDate() < time() - $this->user->getSessionLifetime()) {
           setcookie("session", "", time() - 600); //delete invalid or old cookie
@@ -48,7 +48,7 @@ class Login {
         $this->valid = true;
         $this->session = $s;
         $s->setLastActionDate(time());
-        $FACTORIES::getSessionFactory()->update($s);
+        Factory::getSessionFactory()->update($s);
         setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime(), null, null, null, true);
       }
     }
@@ -65,10 +65,8 @@ class Login {
    * Logs the current user out and closes his session
    */
   public function logout() {
-    global $FACTORIES;
-
     $this->session->setIsOpen(0);
-    $FACTORIES::getSessionFactory()->update($this->session);
+    Factory::getSessionFactory()->update($this->session);
     setcookie("session", "", time() - 600);
   }
 
@@ -93,15 +91,13 @@ class Login {
    * @return true on success and false on failure
    */
   public function login($username, $password, $otp = NULL) {
-    global $FACTORIES;
-
     /****** Check password ******/
     if ($this->valid == true) {
       return false;
     }
     $filter = new QueryFilter(User::USERNAME, $username, "=");
 
-    $check = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => array($filter)));
+    $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);
     if ($check === null || sizeof($check) == 0) {
       return false;
     }
@@ -164,16 +160,16 @@ class Login {
     /****** Create session ******/
     $startTime = time();
     $s = new Session(0, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
-    $s = $FACTORIES::getSessionFactory()->save($s);
+    $s = Factory::getSessionFactory()->save($s);
     if ($s === null) {
       return false;
     }
     $sessionKey = Encryption::sessionHash($s->getId(), $startTime, $user->getEmail());
     $s->setSessionKey($sessionKey);
-    $FACTORIES::getSessionFactory()->update($s);
+    Factory::getSessionFactory()->update($s);
 
     $this->user->setLastLoginDate(time());
-    $FACTORIES::getUserFactory()->update($this->user);
+    Factory::getUserFactory()->update($this->user);
 
     $this->valid = true;
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Successful login!");

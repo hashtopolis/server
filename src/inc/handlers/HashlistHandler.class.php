@@ -1,30 +1,29 @@
 <?php
 
 use DBA\Hashlist;
+use DBA\Factory;
 
 class HashlistHandler implements Handler {
   /**
    * @var Hashlist $hashlist
    */
   private $hashlist;
-  
+
   public function __construct($hashlistId = null) {
-    global $FACTORIES;
-    
     if ($hashlistId == null) {
       $this->hashlist = null;
       return;
     }
-    
-    $this->hashlist = $FACTORIES::getHashlistFactory()->get($hashlistId);
+
+    $this->hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($this->hashlist == null) {
       UI::printError("FATAL", "Hashlist with ID $hashlistId not found!");
     }
   }
-  
+
   public function handle($action) {
     global $ACCESS_CONTROL;
-    
+
     try {
       switch ($action) {
         case DHashlistAction::APPLY_PRECONFIGURED_TASKS:
@@ -111,16 +110,16 @@ class HashlistHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-  
+
   /**
    * @throws HTException
    */
   private function zap() {
-    global $FACTORIES, $OBJECTS;
-    
+    global $OBJECTS;
+
     $this->hashlist = HashlistUtils::getHashlist($_POST['hashlist']);
-    $type = $FACTORIES::getHashTypeFactory()->get($this->hashlist->getHashTypeId());
-    
+    $type = Factory::getHashTypeFactory()->get($this->hashlist->getHashTypeId());
+
     $OBJECTS['list'] = new DataSet(array('hashlist' => $this->hashlist, 'hashtype' => $type));
     $OBJECTS['zap'] = true;
     $OBJECTS['impfiles'] = Util::scanImportDirectory();

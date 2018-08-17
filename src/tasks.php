@@ -9,6 +9,7 @@ use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -61,12 +62,12 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 if (isset($_GET['id'])) {
   $ACCESS_CONTROL->checkPermission(DViewControl::TASKS_VIEW_PERM);
   $TEMPLATE = new Template("tasks/detail");
-  $task = $FACTORIES::getTaskFactory()->get($_GET['id']);
+  $task = Factory::getTaskFactory()->get($_GET['id']);
   if ($task == null) {
     UI::printError("ERROR", "Invalid task ID!");
   }
   $OBJECTS['task'] = $task;
-  $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+  $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
   $OBJECTS['taskWrapper'] = $taskWrapper;
 
   $fileInfo = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfUser($LOGIN->getUser()));
@@ -74,16 +75,16 @@ if (isset($_GET['id'])) {
     UI::printError("ERROR", "No access to this task!");
   }
 
-  $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
+  $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
   $OBJECTS['hashlist'] = $hashlist;
-  $hashtype = $FACTORIES::getHashTypeFactory()->get($hashlist->getHashtypeId());
+  $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashtypeId());
   $OBJECTS['hashtype'] = $hashtype;
 
   $isActive = 0;
   $activeChunks = array();
   $activeChunksIds = new DataSet();
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   $activeAgents = new DataSet();
   $agentsSpeed = new DataSet();
   $currentSpeed = 0;
@@ -105,7 +106,7 @@ if (isset($_GET['id'])) {
 
   $agentsBench = new DataSet();
   $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-  $assignments = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
   foreach ($assignments as $assignment) {
     $agentsBench->addValue($assignment->getAgentId(), $assignment->getBenchmark());
   }
@@ -116,7 +117,7 @@ if (isset($_GET['id'])) {
   $agentsSpent = new DataSet();
   $agentsCracked = new DataSet();
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   foreach ($chunks as $chunk) {
     if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
       $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime());
@@ -161,26 +162,26 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeLeft'] = -1;
   }
 
-  $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
-  $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
-  $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-  $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
+  $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
+  $jF = new JoinFilter(Factory::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
+  $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+  $OBJECTS['attachedFiles'] = $joinedFiles[Factory::getFileFactory()->getModelName()];
 
-  $jF = new JoinFilter($FACTORIES::getAssignmentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
-  $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", $FACTORIES::getAssignmentFactory());
-  $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  $jF = new JoinFilter(Factory::getAssignmentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
+  $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", Factory::getAssignmentFactory());
+  $joinedAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
   $assignedAgents = array();
-  foreach ($joinedAgents[$FACTORIES::getAgentFactory()->getModelName()] as $agent) {
+  foreach ($joinedAgents[Factory::getAgentFactory()->getModelName()] as $agent) {
     /** @var $agent Agent */
     $assignedAgents[] = $agent->getId();
   }
-  $OBJECTS['agents'] = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()];
+  $OBJECTS['agents'] = $joinedAgents[Factory::getAgentFactory()->getModelName()];
   $OBJECTS['activeAgents'] = $activeAgents;
   $OBJECTS['agentsBench'] = $agentsBench;
   $OBJECTS['agentsSpeed'] = $agentsSpeed;
 
   $assignAgents = array();
-  $allAgents = $FACTORIES::getAgentFactory()->filter(array());
+  $allAgents = Factory::getAgentFactory()->filter([]);
   foreach ($allAgents as $agent) {
     if (!in_array($agent->getId(), $assignedAgents)) {
       $assignAgents[] = $agent;
@@ -189,7 +190,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['assignAgents'] = $assignAgents;
 
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  $OBJECTS['numChunks'] = $FACTORIES::getChunkFactory()->countFilter(array($FACTORIES::FILTER => $qF));
+  $OBJECTS['numChunks'] = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
 
   $OBJECTS['showAllAgents'] = false;
   if (isset($_GET['allagents'])) {
@@ -197,14 +198,14 @@ if (isset($_GET['id'])) {
     $allAgentsSpent = new DataSet();
     $allAgents = new DataSet();
     $agentObjects = array();
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=", $FACTORIES::getChunkFactory());
-    $jF = new JoinFilter($FACTORIES::getChunkFactory(), Chunk::AGENT_ID, Agent::AGENT_ID);
-    $joinedAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    for ($i = 0; $i < sizeof($joinedAgents[$FACTORIES::getAgentFactory()->getModelName()]); $i++) {
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=", Factory::getChunkFactory());
+    $jF = new JoinFilter(Factory::getChunkFactory(), Chunk::AGENT_ID, Agent::AGENT_ID);
+    $joinedAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    for ($i = 0; $i < sizeof($joinedAgents[Factory::getAgentFactory()->getModelName()]); $i++) {
       /** @var $chunk Chunk */
-      $chunk = $joinedAgents[$FACTORIES::getChunkFactory()->getModelName()][$i];
+      $chunk = $joinedAgents[Factory::getChunkFactory()->getModelName()][$i];
       /** @var $agent Agent */
-      $agent = $joinedAgents[$FACTORIES::getAgentFactory()->getModelName()][$i];
+      $agent = $joinedAgents[Factory::getAgentFactory()->getModelName()][$i];
       if ($allAgents->getVal($agent->getId()) == null) {
         $allAgents->addValue($agent->getId(), $agent);
         $agentObjects[] = $agent;
@@ -226,7 +227,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['chunkFilter'] = 1;
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT 100");
-    $OBJECTS['chunks'] = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+    $OBJECTS['chunks'] = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
     $OBJECTS['activeChunks'] = $activeChunksIds;
   }
   else {
@@ -235,7 +236,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['activeChunks'] = $activeChunksIds;
   }
 
-  $agents = $FACTORIES::getAgentFactory()->filter(array());
+  $agents = Factory::getAgentFactory()->filter([]);
   $fullAgents = new DataSet();
   foreach ($agents as $agent) {
     $fullAgents->addValue($agent->getId(), $agent);
@@ -256,12 +257,12 @@ else if (isset($_GET['new'])) {
     $ACCESS_CONTROL->checkPermission(DAccessControl::CREATE_TASK_ACCESS); // enforce additional permission for this
 
     //copied from a task
-    $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
+    $copy = Factory::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
       $origTask = $copy;
       $origType = 1;
-      $hashlistId = $FACTORIES::getTaskWrapperFactory()->get($copy->getTaskWrapperId())->getHashlistId();
+      $hashlistId = Factory::getTaskWrapperFactory()->get($copy->getTaskWrapperId())->getHashlistId();
       $copy->setId(0);
       $match = array();
       if (preg_match('/\(copy([0-9]+)\)/i', $copy->getTaskName(), $match)) {
@@ -276,7 +277,7 @@ else if (isset($_GET['new'])) {
   }
   else if (isset($_GET["copyPre"])) {
     //copied from a task
-    $copy = $FACTORIES::getPretaskFactory()->get($_GET['copyPre']);
+    $copy = Factory::getPretaskFactory()->get($_GET['copyPre']);
     if ($copy != null) {
       $orig = $copy->getId();
       $origTask = $copy;
@@ -300,7 +301,7 @@ else if (isset($_GET['new'])) {
   $OBJECTS['hashlistId'] = $hashlistId;
 
   $lists = array();
-  $res = $FACTORIES::getHashlistFactory()->filter(array());
+  $res = Factory::getHashlistFactory()->filter([]);
   foreach ($res as $list) {
     $set = new DataSet();
     $set->addValue('id', $list->getId());
@@ -323,8 +324,8 @@ else if (isset($_GET['new'])) {
   $OBJECTS['other'] = $arr[2];
 
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
-  $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
-  $versions = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::ORDER => $oF));
+  $OBJECTS['binaries'] = Factory::getCrackerBinaryTypeFactory()->filter([]);
+  $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
   usort($versions, array("Util", "versionComparisonBinary"));
   $OBJECTS['versions'] = $versions;
   $OBJECTS['pageTitle'] = "Create Task";

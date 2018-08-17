@@ -2,6 +2,7 @@
 
 use DBA\QueryFilter;
 use DBA\Config;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -30,7 +31,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 $configuration = array();
 $configSectionId = (isset($_GET['view'])) ? $_GET['view'] : 1;
 $qF = new QueryFilter(Config::CONFIG_SECTION_ID, $configSectionId, "=");
-$entries = $FACTORIES::getConfigFactory()->filter(array($FACTORIES::FILTER => $qF));
+$entries = Factory::getConfigFactory()->filter([Factory::FILTER => $qF]);
 $OBJECTS['configSectionId'] = 0;
 foreach ($entries as $entry) {
   $set = new DataSet();

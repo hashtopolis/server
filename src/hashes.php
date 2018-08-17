@@ -8,6 +8,7 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -37,7 +38,7 @@ $hashClass = null;
 $queryFilters = array();
 $OBJECTS['pageTitle'] = " Hashes";
 if (isset($_GET['hashlist'])) {
-  $list = $FACTORIES::getHashlistFactory()->get($_GET["hashlist"]);
+  $list = Factory::getHashlistFactory()->get($_GET["hashlist"]);
   if ($list == null) {
     UI::printError("ERROR", "Invalid hashlist!");
   }
@@ -56,11 +57,11 @@ if (isset($_GET['hashlist'])) {
     $queryFilters[] = new QueryFilter(Hash::HASHLIST_ID, $list->getId(), "=");
   }
   if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
-    $hashFactory = $FACTORIES::getHashFactory();
+    $hashFactory = Factory::getHashFactory();
     $hashClass = \DBA\Hash::class;
   }
   else {
-    $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $hashFactory = Factory::getHashBinaryFactory();
     $binaryFormat = true;
     if ($hashlist->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
@@ -72,21 +73,21 @@ if (isset($_GET['hashlist'])) {
   $OBJECTS['pageTitle'] = "Hashes of Hashlist " . $list->getHashlistName();
 }
 else if (isset($_GET['chunk'])) {
-  $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
-  $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", $FACTORIES::getChunkFactory());
-  $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF1));
-  if (sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]) == null) {
+  $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, Factory::getChunkFactory());
+  $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", Factory::getChunkFactory());
+  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF1]);
+  if (sizeof($joined[Factory::getChunkFactory()->getModelName()]) == null) {
     UI::printError("ERROR", "Invalid chunk!");
   }
   /** @var $chunk Chunk */
-  $chunk = $joined[$FACTORIES::getChunkFactory()->getModelName()][0];
-  $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($FACTORIES::getTaskWrapperFactory()->get($FACTORIES::getTaskFactory()->get($chunk->getTaskId())->getTaskWrapperId())->getHashlistId()));
+  $chunk = $joined[Factory::getChunkFactory()->getModelName()][0];
+  $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get(Factory::getTaskWrapperFactory()->get(Factory::getTaskFactory()->get($chunk->getTaskId())->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
-    $hashFactory = $FACTORIES::getHashFactory();
+    $hashFactory = Factory::getHashFactory();
     $hashClass = \DBA\Hash::class;
   }
   else {
-    $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $hashFactory = Factory::getHashBinaryFactory();
     $hashClass = \DBA\HashBinary::class;
     if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
@@ -100,17 +101,17 @@ else if (isset($_GET['chunk'])) {
   $OBJECTS['pageTitle'] = "Hashes of Chunk " . $chunk->getId();
 }
 else if (isset($_GET['task'])) {
-  $task = $FACTORIES::getTaskFactory()->get($_GET['task']);
+  $task = Factory::getTaskFactory()->get($_GET['task']);
   if ($task == null) {
     UI::printError("ERROR", "Invalid task!");
   }
-  $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId())->getHashlistId()));
+  $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get(Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
-    $hashFactory = $FACTORIES::getHashFactory();
+    $hashFactory = Factory::getHashFactory();
     $hashClass = \DBA\Hash::class;
   }
   else {
-    $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $hashFactory = Factory::getHashBinaryFactory();
     $binaryFormat = true;
     if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
@@ -118,7 +119,7 @@ else if (isset($_GET['task'])) {
     $hashClass = \DBA\HashBinary::class;
   }
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   $chunkIds = array();
   foreach ($chunks as $chunk) {
     $chunkIds[] = $chunk->getId();
@@ -172,7 +173,7 @@ else if ($filter == "uncracked") {
   $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, 0, "=");
 }
 
-$count = $hashFactory->countFilter(array($FACTORIES::FILTER => $queryFilters));
+$count = $hashFactory->countFilter([Factory::FILTER => $queryFilters]);
 $numPages = $count / SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE);
 if ($numPages * SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) != $count) {
   $numPages++;
@@ -197,7 +198,7 @@ $OBJECTS['previousPage'] = $previousPage;
 $OBJECTS['currentPage'] = $currentPage;
 
 $oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
-$hashes = $hashFactory->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => $oF));
+$hashes = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::ORDER => $oF]);
 
 $output = "";
 foreach ($hashes as $hash) {

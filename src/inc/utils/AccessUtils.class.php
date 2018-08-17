@@ -10,6 +10,7 @@ use DBA\Task;
 use DBA\User;
 use DBA\TaskWrapper;
 use DBA\Hashlist;
+use DBA\Factory;
 
 class AccessUtils {
   /**
@@ -21,7 +22,7 @@ class AccessUtils {
     if (!is_array($hashlists)) {
       $hashlists = array($hashlists);
     }
-    
+
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
     foreach ($hashlists as $hashlist) {
       if (!in_array($hashlist->getAccessGroupId(), $accessGroupIds)) {
@@ -30,30 +31,28 @@ class AccessUtils {
     }
     return true;
   }
-  
+
   /**
    * @param $agent Agent
    * @param $user User
    * @return bool true if user has access to agent
    */
   public static function userCanAccessAgent($agent, $user) {
-    global $FACTORIES;
-    
-    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $accessGroupsAgent AccessGroup[] */
-    $accessGroupsAgent = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
-    
-    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $accessGroupsAgent = $joined[Factory::getAccessGroupFactory()->getModelName()];
+
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $accessGroupsUser AccessGroup[] */
-    $accessGroupsUser = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
-    
+    $accessGroupsUser = $joined[Factory::getAccessGroupFactory()->getModelName()];
+
     return sizeof(AccessUtils::intersection($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
-  
+
   /**
    * @param TaskWrapper $taskWrapper
    * @param User $user
@@ -66,7 +65,7 @@ class AccessUtils {
     }
     return true;
   }
-  
+
   /**
    * @param $accessGroupsAgent AccessGroup[]
    * @param $accessGroupsUser AccessGroup[]
@@ -87,70 +86,62 @@ class AccessUtils {
     }
     return $intersect;
   }
-  
+
   /**
    * @param $user User
    * @return AccessGroup[]
    */
   public static function getAccessGroupsOfUser($user) {
-    global $FACTORIES;
-    
-    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $accessGroupsUser AccessGroup[] */
-    return $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+    return $joined[Factory::getAccessGroupFactory()->getModelName()];
   }
-  
+
   /**
    * @param $agent Agent
    * @return AccessGroup[]
    */
   public static function getAccessGroupsOfAgent($agent) {
-    global $FACTORIES;
-    
-    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $accessGroupsUser AccessGroup[] */
-    return $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+    return $joined[Factory::getAccessGroupFactory()->getModelName()];
   }
-  
+
   /**
    * Gets the first access group (which is the default access group. If it does not exist, it created the default access group.
    *
    * @return AccessGroup
    */
   public static function getOrCreateDefaultAccessGroup() {
-    global $FACTORIES;
-    
-    $accessGroup = $FACTORIES::getAccessGroupFactory()->get(1);
+    $accessGroup = Factory::getAccessGroupFactory()->get(1);
     if ($accessGroup == null) {
       $accessGroup = new AccessGroup(1, "Default Group");
-      $accessGroup = $FACTORIES::getAccessGroupFactory()->save($accessGroup);
+      $accessGroup = Factory::getAccessGroupFactory()->save($accessGroup);
     }
     return $accessGroup;
   }
-  
+
   /**
    * @param $agent Agent
    * @param $task Task
    * @return bool true if agent is allowed to access task
    */
   public static function agentCanAccessTask($agent, $task) {
-    global $FACTORIES;
-    
     // load access groups of agent
     $accessGroups = AccessUtils::getAccessGroupsOfAgent($agent);
     $accessGroupsIds = Util::arrayOfIds($accessGroups);
-    
+
     // load task info
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if (!in_array($taskWrapper->getAccessGroupId(), $accessGroupsIds)) {
       return false; // task is in an access group which agent is not allowed to access
     }
-    
-    $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId()));
+
+    $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get($taskWrapper->getHashlistId()));
     foreach ($hashlists as $hashlist) {
       if ($hashlist->getIsSecret() > $agent->getIsTrusted()) {
         return false; // hashlist is secret and agent is not trusted
@@ -159,7 +150,7 @@ class AccessUtils {
         return false; // agent is not in the access group to which the hashlist is assigned
       }
     }
-    
+
     $files = TaskUtils::getFilesOfTask($task);
     foreach ($files as $file) {
       if ($file->getIsSecret() > $agent->getIsTrusted()) {

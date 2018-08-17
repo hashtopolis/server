@@ -11,6 +11,7 @@ use DBA\ContainFilter;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -48,7 +49,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 // load groups for user
 $qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
-$userGroups = $FACTORIES::getAccessGroupUserFactory()->filter(array($FACTORIES::FILTER => $qF));
+$userGroups = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => $qF]);
 $accessGroupIds = array();
 foreach ($userGroups as $userGroup) {
   $accessGroupIds[] = $userGroup->getAccessGroupId();
@@ -57,7 +58,7 @@ foreach ($userGroups as $userGroup) {
 if (isset($_GET['id'])) {
   //show agent detail
   $TEMPLATE = new Template("agents/detail");
-  $agent = $FACTORIES::getAgentFactory()->get($_GET['id']);
+  $agent = Factory::getAgentFactory()->get($_GET['id']);
   if (!$agent) {
     UI::printError("ERROR", "Agent not found!");
   }
@@ -66,16 +67,16 @@ if (isset($_GET['id'])) {
   }
   else {
     $OBJECTS['agent'] = $agent;
-    $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array());
+    $OBJECTS['users'] = Factory::getUserFactory()->filter([]);
     $OBJECTS['pageTitle'] .= "Agent details for " . $agent->getAgentName();
-    
+
     // load all tasks which are valid for this agent
     $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent, true);
-    
-    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $OBJECTS['accessGroups'] = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $OBJECTS['accessGroups'] = $joined[Factory::getAccessGroupFactory()->getModelName()];
 
     // load agent detail data
     $data = AgentUtils::getGraphData($agent, [DAgentStatsType::GPU_TEMP, DAgentStatsType::GPU_UTIL]);
@@ -83,20 +84,20 @@ if (isset($_GET['id'])) {
     $OBJECTS['gpuTempAvailable'] = (sizeof($data['sets']) > 0)?true:false;
     $OBJECTS['gpuTempXLabels'] = json_encode($data['xlabels']);
     $OBJECTS['gpuAxes'] = json_encode($data['axes']);
-    
+
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
     $currentTask = 0;
     if ($assignment != null) {
       $currentTask = $assignment->getTaskId();
     }
     $OBJECTS['currentTask'] = $currentTask;
-    
+
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
-    $OBJECTS['errors'] = $FACTORIES::getAgentErrorFactory()->filter(array($FACTORIES::FILTER => $qF));
-    
+    $OBJECTS['errors'] = Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF]);
+
     $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
     $timeSpent = 0;
     foreach ($chunks as $chunk) {
       $timeSpent += max($chunk->getSolveTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
@@ -109,11 +110,11 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
   $OBJECTS['pageTitle'] = "New Agent";
-  $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
+  $vouchers = Factory::getRegVoucherFactory()->filter([]);
   $OBJECTS['vouchers'] = $vouchers;
-  $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
+  $binaries = Factory::getAgentBinaryFactory()->filter([]);
   $OBJECTS['agentBinaries'] = $binaries;
-  
+
   $url = explode("/", $_SERVER['PHP_SELF']);
   unset($url[sizeof($url) - 1]);
   $OBJECTS['apiUrl'] = Util::buildServerUrl() . implode("/", $url) . "/api/server.php";
@@ -121,27 +122,27 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
 }
 else {
   $OBJECTS['pageTitle'] = "Agents";
-  
+
   // load all agents which are in an access group the user has access to
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds);
-  $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $accessGroupAgents = Factory::getAccessGroupAgentFactory()->filter([Factory::FILTER => $qF]);
   $agentIds = array();
   foreach ($accessGroupAgents as $accessGroupAgent) {
     $agentIds[] = $accessGroupAgent->getAgentId();
   }
-  
-  $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
+
+  $oF = new OrderFilter(Agent::AGENT_ID, "ASC", Factory::getAgentFactory());
   $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
-  $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+  $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
   $accessGroupAgents = new DataSet();
   foreach ($agents as $agent) {
-    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", $FACTORIES::getAccessGroupAgentFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
-    $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $accessGroupAgents->addValue($agent->getId(), $joined[$FACTORIES::getAccessGroupFactory()->getModelName()]);
+    $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+    $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $accessGroupAgents->addValue($agent->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()]);
     $agent->setDevices(Util::compressDevices(explode("\n", $agent->getDevices())));
   }
-  
+
   $OBJECTS['accessGroupAgents'] = $accessGroupAgents;
   $OBJECTS['agents'] = $agents;
   $OBJECTS['numAgents'] = sizeof($agents);

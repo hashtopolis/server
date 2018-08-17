@@ -4,6 +4,7 @@ use DBA\Agent;
 use DBA\ContainFilter;
 use DBA\AccessGroupAgent;
 use DBA\OrderFilter;
+use DBA\Factory;
 
 class UserAPIAgent extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -173,20 +174,18 @@ class UserAPIAgent extends UserAPIBasic {
   }
 
   private function listAgents($QUERY) {
-    global $FACTORIES;
-
     $accessGroups = AccessUtils::getAccessGroupsOfUser($this->user);
 
     $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, Util::arrayOfIds($accessGroups));
-    $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $accessGroupAgents = Factory::getAccessGroupAgentFactory()->filter([Factory::FILTER => $qF]);
     $agentIds = array();
     foreach ($accessGroupAgents as $accessGroupAgent) {
       $agentIds[] = $accessGroupAgent->getAgentId();
     }
 
-    $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
+    $oF = new OrderFilter(Agent::AGENT_ID, "ASC", Factory::getAgentFactory());
     $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
-    $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+    $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
     $arr = [];
     foreach ($agents as $agent) {
       $arr[] = array(
@@ -217,9 +216,7 @@ class UserAPIAgent extends UserAPIBasic {
   }
 
   private function listVouchers($QUERY) {
-    global $FACTORIES;
-
-    $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
+    $vouchers = Factory::getRegVoucherFactory()->filter([]);
     $arr = [];
     foreach ($vouchers as $voucher) {
       $arr[] = $voucher->getVoucher();
@@ -234,8 +231,6 @@ class UserAPIAgent extends UserAPIBasic {
   }
 
   private function getBinaries($QUERY) {
-    global $FACTORIES;
-
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
     unset($url[sizeof($url) - 1]);
@@ -249,7 +244,7 @@ class UserAPIAgent extends UserAPIBasic {
     );
 
     $arr = [];
-    $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
+    $binaries = Factory::getAgentBinaryFactory()->filter([]);
     foreach ($binaries as $binary) {
       $arr[] = array(
         UResponseAgent::BINARIES_NAME => $binary->getType(),

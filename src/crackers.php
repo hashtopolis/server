@@ -4,6 +4,7 @@ use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -30,7 +31,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new']) && isset($_GET['id']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
-  $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
+  $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
     $OBJECTS['binaryType'] = $binaryType;
     $TEMPLATE = new Template("crackers/newVersion");
@@ -43,32 +44,32 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   $OBJECTS['pageTitle'] = "Add Cracker Binary";
 }
 else if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
-  $binary = $FACTORIES::getCrackerBinaryFactory()->get($_GET['id']);
+  $binary = Factory::getCrackerBinaryFactory()->get($_GET['id']);
   if ($binary !== null) {
     $OBJECTS['binary'] = $binary;
     $TEMPLATE = new Template("crackers/editVersion");
     $MENU->setActive("crackers_edit");
-    $OBJECTS['binaryType'] = $FACTORIES::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
+    $OBJECTS['binaryType'] = Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
     $OBJECTS['pageTitle'] = "Edit Cracker Binary Version for " . $OBJECTS['binaryType']->getTypeName();
   }
 }
 else if (isset($_GET['id'])) {
-  $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
+  $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
     $OBJECTS['binaryType'] = $binaryType;
     $TEMPLATE = new Template("crackers/detail");
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
-    $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $OBJECTS['binaries'] = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     $OBJECTS['pageTitle'] = "Cracker Binary details for " . $binaryType->getTypeName();
   }
 }
 else {
   $oF = new OrderFilter(CrackerBinaryType::TYPE_NAME, "ASC");
-  $OBJECTS['binaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array($FACTORIES::ORDER => $oF));
+  $OBJECTS['binaryTypes'] = Factory::getCrackerBinaryTypeFactory()->filter([Factory::ORDER => $oF]);
   $binariesVersions = new DataSet();
   foreach ($OBJECTS['binaryTypes'] as $binaryType) {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
-    $binaries = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     $arr = array();
     usort($binaries, array("Util", "versionComparisonBinary"));
     foreach ($binaries as $binary) {

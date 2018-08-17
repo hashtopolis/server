@@ -4,25 +4,24 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 class APIGetChunk extends APIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
     if (!PQueryGetChunk::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid chunk query!");
     }
     $this->checkToken(PActions::GET_CHUNK, $QUERY);
     $this->updateAgent(PActions::GET_CHUNK);
 
-    $task = $FACTORIES::getTaskFactory()->get($QUERY[PQueryGetChunk::TASK_ID]);
+    $task = Factory::getTaskFactory()->get($QUERY[PQueryGetChunk::TASK_ID]);
     if ($task == null) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid task ID!");
     }
 
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+    $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($assignment == null) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "You are not assigned to this task!");
     }
@@ -47,11 +46,11 @@ class APIGetChunk extends APIBasic {
     }
 
     LockUtils::get(Lock::CHUNKING);
-    $task = $FACTORIES::getTaskFactory()->get($task->getId());
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    $task = Factory::getTaskFactory()->get($task->getId());
+    Factory::getAgentFactory()->getDB()->beginTransaction();
     $task = TaskUtils::checkTask($task, $this->agent);
     if ($task == null) { // agent needs a new task
-      $FACTORIES::getAgentFactory()->getDB()->commit();
+      Factory::getAgentFactory()->getDB()->commit();
       LockUtils::release(Lock::CHUNKING);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
@@ -65,7 +64,7 @@ class APIGetChunk extends APIBasic {
     if ($bestTask == null) {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
       if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
-        $FACTORIES::getAgentFactory()->getDB()->commit();
+        Factory::getAgentFactory()->getDB()->commit();
         LockUtils::release(Lock::CHUNKING);
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
@@ -74,7 +73,7 @@ class APIGetChunk extends APIBasic {
     // if the best task is not the one we are working on, we should switch
     $bestTask = TaskUtils::getImportantTask($bestTask, $task);
     if ($bestTask->getId() != $task->getId()) {
-      $FACTORIES::getAgentFactory()->getDB()->commit();
+      Factory::getAgentFactory()->getDB()->commit();
       LockUtils::release(Lock::CHUNKING);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
     }
@@ -83,7 +82,7 @@ class APIGetChunk extends APIBasic {
     $qF1 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
     $qF2 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SKIP, "ASC");
-    $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => $oF));
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
     foreach ($chunks as $chunk) {
       if ($chunk->getAgentId() == $this->agent->getId()) {
         $this->sendChunk(ChunkUtils::handleExistingChunk($chunk, $task, $assignment));
@@ -95,7 +94,7 @@ class APIGetChunk extends APIBasic {
     }
     $chunk = ChunkUtils::createNewChunk($task, $assignment);
     if($chunk == null){
-      $FACTORIES::getAgentFactory()->getDB()->commit();
+      Factory::getAgentFactory()->getDB()->commit();
       LockUtils::release(Lock::CHUNKING);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
@@ -111,9 +110,7 @@ class APIGetChunk extends APIBasic {
    * @param $chunk Chunk
    */
   protected function sendChunk($chunk) {
-    global $FACTORIES;
-
-    $FACTORIES::getAgentFactory()->getDB()->commit();
+    Factory::getAgentFactory()->getDB()->commit();
     LockUtils::release(Lock::CHUNKING);
     $this->sendResponse(array(
         PResponseGetChunk::ACTION => PActions::GET_CHUNK,

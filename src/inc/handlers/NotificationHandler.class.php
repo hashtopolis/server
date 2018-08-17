@@ -2,16 +2,17 @@
 
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 class NotificationHandler implements Handler {
-  
+
   public function __construct($id = null) {
     // nothing required here
   }
-  
+
   public function handle($action) {
     global $ACCESS_CONTROL;
-    
+
     try {
       switch ($action) {
         case DNotificationAction::CREATE_NOTIFICATION:
@@ -35,18 +36,18 @@ class NotificationHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-  
+
   /**
    * @param $action
    * @param $payload DataSet
    */
   public static function checkNotifications($action, $payload) {
     /** @var $NOTIFICATIONS HashtopolisNotification[] */
-    global $FACTORIES, $NOTIFICATIONS;
-    
+    global $NOTIFICATIONS;
+
     $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");
     $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
-    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
     foreach ($notifications as $notification) {
       if ($notification->getObjectId() != null) {
         $obj = 0;

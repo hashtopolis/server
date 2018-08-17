@@ -5,6 +5,7 @@ use DBA\OrderFilter;
 use DBA\JoinFilter;
 use DBA\Task;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -31,23 +32,23 @@ if (!isset($_GET['show'])) {
     $page = intval($_GET['page']);
   }
   $OBJECTS['page'] = $page;
-  $numentries = $FACTORIES::getChunkFactory()->countFilter(array());
+  $numentries = Factory::getChunkFactory()->countFilter([]);
   $OBJECTS['maxpage'] = floor($numentries / $PAGESIZE);
   $limit = $page * $PAGESIZE;
-  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE", $FACTORIES::getChunkFactory());
+  $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $PAGESIZE", Factory::getChunkFactory());
   $OBJECTS['all'] = false;
   $OBJECTS['pageTitle'] = "Chunks Activity (page " . ($page + 1) . ")";
 }
 
-$jF = new JoinFilter($FACTORIES::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
-$qF = new QueryFilter(Task::IS_ARCHIVED, 1, "<>", $FACTORIES::getTaskFactory());
+$jF = new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
+$qF = new QueryFilter(Task::IS_ARCHIVED, 1, "<>", Factory::getTaskFactory());
 if ($oF == null) {
-  $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
 }
 else {
-  $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::ORDER => $oF, $FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+  $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => $qF, Factory::JOIN => $jF]);
 }
-$chunks = $joined[$FACTORIES::getChunkFactory()->getModelName()];
+$chunks = $joined[Factory::getChunkFactory()->getModelName()];
 // TODO: also filter for tasks where access is forbidden because of files from specific group
 
 $spent = new DataSet();
@@ -57,14 +58,14 @@ foreach ($chunks as $chunk) {
 $OBJECTS['chunks'] = $chunks;
 $OBJECTS['spent'] = $spent;
 
-$tasks = $FACTORIES::getTaskFactory()->filter(array());
+$tasks = Factory::getTaskFactory()->filter([]);
 $taskNames = new DataSet();
 foreach ($tasks as $task) {
   $taskNames->addValue($task->getId(), $task->getTaskName());
 }
 $OBJECTS['taskNames'] = $taskNames;
 
-$agents = $FACTORIES::getAgentFactory()->filter(array());
+$agents = Factory::getAgentFactory()->filter([]);
 $agentNames = new DataSet();
 foreach ($agents as $agent) {
   $agentNames->addValue($agent->getId(), $agent->getAgentName());

@@ -6,11 +6,10 @@ use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\Factory;
 
 class APIGetTask extends APIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
     if (!PQueryGetTask::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_TASK, "Invalid task query!");
     }
@@ -28,7 +27,7 @@ class APIGetTask extends APIBasic {
     }
 
     $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
-    $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => array($qF)), true);
+    $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
     $task = TaskUtils::getBestTask($this->agent);
     if ($task == null) {
       if ($assignment == null) {
@@ -37,7 +36,7 @@ class APIGetTask extends APIBasic {
       }
       else {
         // check if the current assignment is fulfilled
-        $currentTask = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+        $currentTask = Factory::getTaskFactory()->get($assignment->getTaskId());
         $currentTask = TaskUtils::checkTask($currentTask);
         if ($currentTask == null) {
           // we checked the task and it is completed
@@ -50,7 +49,7 @@ class APIGetTask extends APIBasic {
     else {
       if ($assignment != null) {
         // check if this assignment has not a high enough priority to be kept
-        $currentTask = $FACTORIES::getTaskFactory()->get($assignment->getTaskId());
+        $currentTask = Factory::getTaskFactory()->get($assignment->getTaskId());
         if ($currentTask == null) {
           // current task is not available anymore, just send the new one
           $this->sendTask($task, $assignment);
@@ -86,37 +85,35 @@ class APIGetTask extends APIBasic {
    * @param $assignment Assignment
    */
   private function sendTask($task, $assignment) {
-    global $FACTORIES;
-
     // check if the assignment is up-to-date and correct if needed
     if ($assignment == null) {
       $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
-      $FACTORIES::getAssignmentFactory()->save($assignment);
+      Factory::getAssignmentFactory()->save($assignment);
     }
     else {
       if ($assignment->getTaskId() != $task->getId()) {
         $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
-        $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+        Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
         $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
-        $FACTORIES::getAssignmentFactory()->save($assignment);
+        Factory::getAssignmentFactory()->save($assignment);
       }
     }
 
-    $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
       $this->sendErrorResponse(PActions::GET_TASK, "Inconsistent TaskWrapper information!");
     }
-    $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
+    $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
     if ($hashlist == null) {
       $this->sendErrorResponse(PActions::GET_TASK, "Inconsistent TaskWrapper-Hashlist information");
     }
 
     $taskFiles = array();
-    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
-    $jF = new JoinFilter($FACTORIES::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
-    $joined = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
+    $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
+    $joined = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $files File[] */
-    $files = $joined[$FACTORIES::getFileFactory()->getModelName()];
+    $files = $joined[Factory::getFileFactory()->getModelName()];
     foreach ($files as $file) {
       $taskFiles[] = $file->getFilename();
     }

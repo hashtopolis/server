@@ -1,4 +1,5 @@
 <?php
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -25,7 +26,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-$group = $FACTORIES::getRightGroupFactory()->get($LOGIN->getUser()->getRightGroupId());
+$group = Factory::getRightGroupFactory()->get($LOGIN->getUser()->getRightGroupId());
 $OBJECTS['group'] = $group;
 
 echo $TEMPLATE->render($OBJECTS);

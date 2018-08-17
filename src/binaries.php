@@ -1,4 +1,5 @@
 <?php
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -32,7 +33,7 @@ if (isset($_GET['new'])) {
   $OBJECTS['pageTitle'] = "New Agent Binary";
 }
 else if (isset($_GET['edit'])) {
-  $bin = $FACTORIES::getAgentBinaryFactory()->get($_GET['edit']);
+  $bin = Factory::getAgentBinaryFactory()->get($_GET['edit']);
   if ($bin == null) {
     UI::printError("ERROR", "Invalid agent binary ID!");
   }
@@ -40,7 +41,7 @@ else if (isset($_GET['edit'])) {
   $OBJECTS['editBinary'] = true;
   $OBJECTS['bin'] = $bin;
 }
-$binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
+$binaries = Factory::getAgentBinaryFactory()->filter([]);
 $OBJECTS['binaries'] = $binaries;
 
 echo $TEMPLATE->render($OBJECTS);

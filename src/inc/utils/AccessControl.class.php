@@ -1,46 +1,43 @@
 <?php
 
 use DBA\User;
+use DBA\Factory;
 
 class AccessControl {
   private $user;
   private $rightGroup;
-  
+
   /**
    * @return User
    */
   public function getUser() {
     return $this->user;
   }
-  
+
   /**
    * AccessControl constructor.
    * @param $user User
    * @param $groupId int
    */
   public function __construct($user = null, $groupId = 0) {
-    global $FACTORIES;
-    
     $this->user = $user;
     if ($this->user != null) {
-      $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
+      $this->rightGroup = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
     else if ($groupId != 0) {
-      $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($groupId);
+      $this->rightGroup = Factory::getRightGroupFactory()->get($groupId);
     }
   }
-  
+
   /**
    * Force a reload of the permissions from the database
    */
   public function reload() {
-    global $FACTORIES;
-    
     if ($this->user != null) {
-      $this->rightGroup = $FACTORIES::getRightGroupFactory()->get($this->user->getRightGroupId());
+      $this->rightGroup = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
   }
-  
+
   /**
    * If access is not granted, permission denied page will be shown
    * @param $perm string|string[]
@@ -50,7 +47,7 @@ class AccessControl {
       UI::permissionError();
     }
   }
-  
+
   /**
    * @param $singlePerm string
    */
@@ -66,7 +63,7 @@ class AccessControl {
     }
     return false;
   }
-  
+
   /**
    * @param $perm string|string[]
    * @return bool true if access is granted
@@ -74,7 +71,7 @@ class AccessControl {
   public function hasPermission($perm) {
     /** @var $LOGIN Login */
     global $LOGIN;
-    
+
     if ($perm == DAccessControl::PUBLIC_ACCESS) {
       return true;
     }

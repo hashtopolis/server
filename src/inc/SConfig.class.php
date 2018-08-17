@@ -1,4 +1,5 @@
 <?php
+use DBA\Factory;
 
 class SConfig{
   private static $instance = null;
@@ -7,10 +8,8 @@ class SConfig{
    * @return DataSet
    */
   public static function getInstance($force = false){
-    global $FACTORIES;
-
     if(self::$instance == null || $force){
-      $res = $FACTORIES::getConfigFactory()->filter([]);
+      $res = Factory::getConfigFactory()->filter([]);
       self::$instance = new DataSet();
       foreach ($res as $entry) {
         self::$instance->addValue($entry->getItem(), $entry->getValue());

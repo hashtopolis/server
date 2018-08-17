@@ -4,6 +4,7 @@ use DBA\File;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\ContainFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -58,10 +59,10 @@ else {
   else if($view == 'rule'){
     $OBJECTS['fileType'] = "Rules";
   }
-  $OBJECTS['files'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => [$qF1, $qF2], $FACTORIES::ORDER => $oF));;
+  $OBJECTS['files'] = Factory::getFileFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);;
   $OBJECTS['impfiles'] = Util::scanImportDirectory();
   $OBJECTS['pageTitle'] = "Files";
-  $accessGroups = $FACTORIES::getAccessGroupFactory()->filter([]);
+  $accessGroups = Factory::getAccessGroupFactory()->filter([]);
   $groups = new DataSet();
   foreach($accessGroups as $accessGroup){
     $groups->addValue($accessGroup->getId(), $accessGroup);

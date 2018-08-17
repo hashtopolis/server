@@ -7,6 +7,7 @@ use DBA\OrderFilter;
 use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\SupertaskPretask;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -33,21 +34,21 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['id'])) {
-  $pretask = $FACTORIES::getPretaskFactory()->get($_GET['id']);
+  $pretask = Factory::getPretaskFactory()->get($_GET['id']);
   if ($pretask === null) {
     UI::printError(UI::ERROR, "Invalid preconfigured task!");
   }
   $TEMPLATE = new Template("pretasks/detail");
   $OBJECTS['pretask'] = $pretask;
 
-  $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
-  $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
-  $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-  $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
+  $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", Factory::getFilePretaskFactory());
+  $jF = new JoinFilter(Factory::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
+  $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+  $OBJECTS['attachedFiles'] = $joinedFiles[Factory::getFileFactory()->getModelName()];
 
   $isUsed = false;
   $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
-  $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $supertaskTasks = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => $qF]);
   if (sizeof($supertaskTasks) > 0) {
     $isUsed = true;
   }
@@ -68,7 +69,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   $copy = null;
   if (isset($_GET["copy"])) {
     //copied from a task
-    $copy = $FACTORIES::getPretaskFactory()->get($_GET['copy']);
+    $copy = Factory::getPretaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
       $origTask = $copy;
@@ -86,7 +87,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
     }
   }
   else if(isset($_GET['copyTask'])){
-    $copy = $FACTORIES::getTaskFactory()->get($_GET['copyTask']);
+    $copy = Factory::getTaskFactory()->get($_GET['copyTask']);
     if ($copy != null) {
       $orig = $copy->getId();
       $origType = 1;
@@ -111,7 +112,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   $OBJECTS['rules'] = $arr[0];
   $OBJECTS['other'] = $arr[2];
 
-  $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
+  $OBJECTS['crackerBinaryTypes'] = Factory::getCrackerBinaryTypeFactory()->filter([]);
   $OBJECTS['pageTitle'] = "Create preconfigured Task";
   $OBJECTS['copy'] = $copy;
 }
@@ -122,18 +123,18 @@ else {
   }
   $oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");
   $oF2 = new OrderFilter(Pretask::PRETASK_ID, "ASC");
-  $taskList = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => array($oF1, $oF2)));
+  $taskList = Factory::getPretaskFactory()->filter([Factory::FILTER => $queryFilters, Factory::ORDER => [$oF1, $oF2]]);
   $tasks = array();
   for ($z = 0; $z < sizeof($taskList); $z++) {
     $set = new DataSet();
     $pretask = $taskList[$z];
     $set->addValue('Task', $taskList[$z]);
 
-    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
-    $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
-    $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
+    $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", Factory::getFilePretaskFactory());
+    $jF = new JoinFilter(Factory::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
+    $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $files File[] */
-    $files = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
+    $files = $joinedFiles[Factory::getFileFactory()->getModelName()];
     $sizes = 0;
     $secret = false;
     foreach ($files as $file) {
@@ -145,7 +146,7 @@ else {
 
     $isUsed = false;
     $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
-    $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $supertaskTasks = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => $qF]);
     if (sizeof($supertaskTasks) > 0) {
       $isUsed = true;
     }

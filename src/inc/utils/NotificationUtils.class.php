@@ -2,6 +2,7 @@
 
 use DBA\NotificationSetting;
 use DBA\User;
+use DBA\Factory;
 
 class NotificationUtils {
   /**
@@ -12,8 +13,8 @@ class NotificationUtils {
    * @throws HTException
    */
   public static function createNotificaton($actionType, $notification, $receiver, $post) {
-    global $FACTORIES, $NOTIFICATIONS, $ACCESS_CONTROL;
-    
+    global $NOTIFICATIONS, $ACCESS_CONTROL;
+
     $receiver = trim($receiver);
     if (!isset($NOTIFICATIONS[$notification])) {
       throw new HTException("This notification is not available!");
@@ -61,11 +62,11 @@ class NotificationUtils {
         $objectId = $task->getId();
         break;
     }
-    
+
     $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, $ACCESS_CONTROL->getUser()->getId(), $receiver, 1);
-    $FACTORIES::getNotificationSettingFactory()->save($notificationSetting);
+    Factory::getNotificationSettingFactory()->save($notificationSetting);
   }
-  
+
   /**
    * @param int $notification
    * @param boolean $isActive
@@ -74,8 +75,6 @@ class NotificationUtils {
    * @throws HTException
    */
   public static function setActive($notification, $isActive, $doToggle, $user) {
-    global $FACTORIES;
-    
     $notification = NotificationUtils::getNotification($notification);
     if ($notification->getUserId() != $user->getId()) {
       throw new HTException("You have no access to this notification!");
@@ -91,33 +90,29 @@ class NotificationUtils {
     else {
       $notification->setIsActive(($isActive) ? 1 : 0);
     }
-    $FACTORIES::getNotificationSettingFactory()->update($notification);
+    Factory::getNotificationSettingFactory()->update($notification);
   }
-  
+
   /**
    * @param int $notification
    * @param User $user
    * @throws HTException
    */
   public static function delete($notification, $user) {
-    global $FACTORIES;
-    
     $notification = NotificationUtils::getNotification($notification);
     if ($notification->getUserId() != $user->getId()) {
       throw new HTException("You are not allowed to delete this notification!");
     }
-    $FACTORIES::getNotificationSettingFactory()->delete($notification);
+    Factory::getNotificationSettingFactory()->delete($notification);
   }
-  
+
   /**
    * @param int $notification
    * @throws HTException
    * @return NotificationSetting
    */
   public static function getNotification($notification) {
-    global $FACTORIES;
-    
-    $notification = $FACTORIES::getNotificationSettingFactory()->get($notification);
+    $notification = Factory::getNotificationSettingFactory()->get($notification);
     if ($notification == null) {
       throw new HTException("Notification not found!");
     }

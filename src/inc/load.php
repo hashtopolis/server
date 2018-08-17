@@ -52,7 +52,6 @@ include(dirname(__FILE__) . "/protocol.php");
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");
 
-$FACTORIES = new Factory();
 $LANG = new Lang();
 
 $gitcommit = "";

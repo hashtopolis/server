@@ -2,6 +2,7 @@
 
 use DBA\APiKey;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -32,13 +33,13 @@ if (isset($_GET['new'])) {
   $OBJECTS['pageTitle'] = "Create new API Group";
 }
 else if (isset($_GET['id'])) {
-  $group = $FACTORIES::getApiGroupFactory()->get($_GET['id']);
+  $group = Factory::getApiGroupFactory()->get($_GET['id']);
   if ($group == null) {
     UI::printError("ERROR", "Invalid api group!");
   }
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
-    $OBJECTS['keys'] = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $OBJECTS['keys'] = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]);
 
     $sectionConstants = USection::getConstants();
     $OBJECTS['sectionConstants'] = $sectionConstants;
@@ -75,36 +76,36 @@ else if (isset($_GET['id'])) {
 }
 else if(isset($_GET['newkey'])){
   $TEMPLATE = new Template("api/newkey");
-  $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter([]);
-  $OBJECTS['groups'] = $FACTORIES::getApiGroupFactory()->filter([]);
+  $OBJECTS['users'] = Factory::getUserFactory()->filter([]);
+  $OBJECTS['groups'] = Factory::getApiGroupFactory()->filter([]);
   $OBJECTS['pageTitle'] = "Create new API key";
 }
 else if(isset($_GET['keyId'])){
-  $key = $FACTORIES::getApiKeyFactory()->get($_GET['keyId']);
+  $key = Factory::getApiKeyFactory()->get($_GET['keyId']);
   if($key == null){
     UI::printError(UI::ERROR, "Invalid API key ID!");
   }
   $OBJECTS['key'] = $key;
-  $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter([]);
-  $OBJECTS['groups'] = $FACTORIES::getApiGroupFactory()->filter([]);
+  $OBJECTS['users'] = Factory::getUserFactory()->filter([]);
+  $OBJECTS['groups'] = Factory::getApiGroupFactory()->filter([]);
   $TEMPLATE = new Template("api/key");
   $OBJECTS['pageTitle'] = "Edit API key";
 }
 else {
   // determine keys and groups
-  $groups = $FACTORIES::getApiGroupFactory()->filter(array());
+  $groups = Factory::getApiGroupFactory()->filter([]);
 
   $apis = array();
   foreach ($groups as $group) {
     $apis[$group->getId()] = 0;
   }
 
-  $allApiKeys = $FACTORIES::getApiKeyFactory()->filter(array());
+  $allApiKeys = Factory::getApiKeyFactory()->filter([]);
   foreach ($allApiKeys as $apiKey) {
     $apis[$apiKey->getApiGroupId()]++;
   }
 
-  $OBJECTS['keys'] = $FACTORIES::getApiKeyFactory()->filter([]);
+  $OBJECTS['keys'] = Factory::getApiKeyFactory()->filter([]);
   $OBJECTS['apis'] = new DataSet($apis);
   $OBJECTS['groups'] = $groups;
   $OBJECTS['pageTitle'] = "Api Groups";

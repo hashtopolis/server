@@ -1,4 +1,5 @@
 <?php
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
@@ -14,18 +15,18 @@ switch ($argv[1]) {
   case "password":
     $newPassword = "EnterPasswordToSetHere";
     $userId = "0"; // fill in the user id of the admin account
-    
-    $user = $FACTORIES::getUserFactory()->get($userId);
+
+    $user = Factory::getUserFactory()->get($userId);
     if ($user == null) {
       die("User not found!\n");
     }
-    
+
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
     $user->setPasswordHash($newHash);
     $user->setPasswordSalt($newSalt);
     $user->setIsComputedPassword(0);
-    $FACTORIES::getUserFactory()->update($user);
+    Factory::getUserFactory()->update($user);
     echo "User " . $user->getUsername() . " has a new password now\n!";
     break;
   case "pepper": // use this if you have overwritten the Encryption class and the pepper values should be generated again.

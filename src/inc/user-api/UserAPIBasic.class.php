@@ -3,24 +3,25 @@
 use DBA\User;
 use DBA\ApiKey;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 abstract class UserAPIBasic {
   /** @var User */
   protected $user = null;
   /** @var ApiKey */
   protected $apiKey = null;
-  
+
   /**
    * @param array $QUERY input query sent to the API
    */
   public abstract function execute($QUERY = array());
-  
+
   protected function sendResponse($RESPONSE) {
     header("Content-Type: application/json");
     echo json_encode($RESPONSE);
     die();
   }
-  
+
   protected function checkForError($QUERY, $error, $response = null) {
     if ($error !== false) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $error);
@@ -30,7 +31,7 @@ abstract class UserAPIBasic {
     }
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * Used to send a generic success response if no additional data is sent
    * @param array $QUERY original query
@@ -43,14 +44,12 @@ abstract class UserAPIBasic {
       )
     );
   }
-  
+
   protected function updateApi() {
-    global $FACTORIES;
-    
     $this->apiKey->setAccessCount($this->apiKey->getAccessCount() + 1);
-    $FACTORIES::getApiKeyFactory()->update($this->apiKey);
+    Factory::getApiKeyFactory()->update($this->apiKey);
   }
-  
+
   public function sendErrorResponse($section, $request, $msg) {
     $ANS = array();
     $ANS[UResponseErrorMessage::SECTION] = $section;
@@ -61,12 +60,10 @@ abstract class UserAPIBasic {
     echo json_encode($ANS);
     die();
   }
-  
+
   public function checkApiKey($section, $request, $QUERY) {
-    global $FACTORIES;
-    
     $qF = new QueryFilter(ApiKey::ACCESS_KEY, $QUERY[UQuery::ACCESS_KEY], "=");
-    $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    $apiKey = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF], true);
     if ($apiKey == null) {
       $this->sendErrorResponse($section, $request, "Invalid access key!");
     }
@@ -77,19 +74,17 @@ abstract class UserAPIBasic {
       $this->sendErrorResponse($section, $request, "Permission denied!");
     }
     $this->apiKey = $apiKey;
-    $this->user = $FACTORIES::getUserFactory()->get($apiKey->getUserId());
+    $this->user = Factory::getUserFactory()->get($apiKey->getUserId());
     $this->updateApi();
   }
-  
+
   /**
    * @param string $section
    * @param string $request
    * @param ApiKey $apiKey
    */
   public function hasPermission($section, $request, $apiKey) {
-    global $FACTORIES;
-    
-    $apiGroup = $FACTORIES::getApiGroupFactory()->get($apiKey->getApiGroupId());
+    $apiGroup = Factory::getApiGroupFactory()->get($apiKey->getApiGroupId());
     if ($apiGroup->getPermissions() == 'ALL') {
       return true;
     }
