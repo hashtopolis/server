@@ -108,21 +108,21 @@
               <tr>
                 <th>Filename</th>
                 <th>Size</th>
-                {{FOREACH file;[[rules]]}}
-              <tr>
-                <td>
-                  <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'rule');" title="Rule">
-                  [[file.getFilename()]]
-                  {{IF [[file.getIsSecret()]] == 1}}
-                  <span class="fas fa-lock" aria-hidden="true"></span>
-                  {{ENDIF}}
-                </td>
-                <td>
-                  [[Util::nicenum([[file.getSize()]])]]B
-                </td>
               </tr>
+              {{FOREACH file;[[rules]]}}
+                <tr>
+                  <td>
+                    <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                    [[file.getVal('file').getFilename()]]
+                    {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                      <span class="fas fa-lock" aria-hidden="true"></span>
+                    {{ENDIF}}
+                  </td>
+                  <td>
+                    [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                  </td>
+                </tr>
               {{ENDFOREACH}}
-              </tr>
             </table>
           </div>
         </div>
@@ -138,14 +138,14 @@
               {{FOREACH file;[[wordlists]]}}
               <tr>
                 <td>
-                  <input type="checkbox" name="adfile[]" value="[[file.getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getFilename()]]', 'wordlist');" title="Wordlist">
-                  [[file.getFilename()]]
-                  {{IF [[file.getIsSecret()]] == 1}}
-                  <span class="fas fa-lock" aria-hidden="true"></span>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                  [[file.getVal('file').getFilename()]]
+                  {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                    <span class="fas fa-lock" aria-hidden="true"></span>
                   {{ENDIF}}
                 </td>
                 <td>
-                  [[Util::nicenum([[file.getSize()]])]]B
+                  [[Util::nicenum([[file.getVal('file').getSize()]])]]B
                 </td>
               </tr>
               {{ENDFOREACH}}
@@ -167,7 +167,7 @@
                   <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getIsSecret()]] == 1}}
-                  <span class="fas fa-lock" aria-hidden="true"></span>
+                    <span class="fas fa-lock" aria-hidden="true"></span>
                   {{ENDIF}}
                 </td>
                 <td>

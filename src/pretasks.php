@@ -8,6 +8,7 @@ use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\SupertaskPretask;
 use DBA\ContainFilter;
+use DBA\FileTask;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -63,6 +64,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
   $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
   $origFiles = array();
+  $orig = 0;
   if ($orig > 0) {
     if ($origType == 1) {
       $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
