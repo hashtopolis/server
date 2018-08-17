@@ -2,8 +2,6 @@
 
 class APIDownloadBinary extends APIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
     }
@@ -15,6 +13,16 @@ class APIDownloadBinary extends APIBasic {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
         $filename = "7zr" . Util::getFileExtension($this->agent->getOs());
+        $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
+        $this->sendResponse(array(
+            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponseBinaryDownload::EXECUTABLE => $path
+          )
+        );
+        break;
+      case PValuesDownloadBinaryType::UFTPD:
+        $filename = "uftpd" . Util::getFileExtension($this->agent->getOs());
         $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,

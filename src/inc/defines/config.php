@@ -73,6 +73,12 @@ class DConfig {
   const VOUCHER_DELETION   = "voucherDeletion";
   const S_NAME             = "jeSuisHashtopussy";
 
+  // Section: Multicast
+  const MULTICAST_ENABLE    = "multicastEnable";
+  const MULTICAST_DEVICE    = "multicastDevice";
+  const MULTICAST_TR_ENABLE = "multicastTransferRateEnable";
+  const MULTICAST_TR        = "multicastTranserRate";
+
 
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
@@ -153,6 +159,14 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::AGENT_STAT_TENSION:
         return DConfigType::TICKBOX;
+      case DConfig::MULTICAST_ENABLE:
+        return DConfigType::TICKBOX;
+      case DConfig::MULTICAST_DEVICE:
+        return DConfigType::STRING_INPUT;
+      case DConfig::MULTICAST_TR_ENABLE:
+        return DConfigType::TICKBOX;
+      case DConfig::MULTICAST_TR:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -241,6 +255,14 @@ class DConfig {
         return "Minimum time in seconds how long agent data about gpu temperature and utility is kept on the server.";
       case DConfig::AGENT_STAT_TENSION:
         return "Draw straigth lines in agent data graph  instead of bezier curves.";
+      case DConfig::MULTICAST_ENABLE:
+        return "Enable UDP multicast distribution of files to agents. (Make sure you did all the preparation before activating)<br>You can read more informations here: <a href='https://github.com/s3inlc/hashtopolis-runner/blob/master/README.md' target='_blank'>https://github.com/s3inlc/hashtopolis-runner</a>";
+      case DConfig::MULTICAST_DEVICE:
+        return "Network device of the server to be used for the multicast distribution.";
+      case DConfig::MULTICAST_TR_ENABLE:
+        return "Instead of the built in UFTP flow control, use a static set transfer rate<br>(Important: Setting this value wrong can affect the functionality, only use this if you are sure this transfer rate is feasible)";
+      case DConfig::MULTICAST_TR:
+        return "Set static transfer rate in case it is activated (in Kbit/s)";
     }
     return $config;
   }

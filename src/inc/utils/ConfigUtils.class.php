@@ -18,6 +18,15 @@ class ConfigUtils {
   public static function set($config, $new) {
     global $FACTORIES;
 
+    if($config->getItem() == DConfig::MULTICAST_ENABLE && $config->getValue()){
+      // multicast was ticked to enable -> start runner
+      RunnerUtils::startService();
+    }
+    else if($config->getItem() == DConfig::MULTICAST_ENABLE && !$config->getValue()){
+      // multicast was ticked to disable -> stop runner
+      RunnerUtils::stopService();
+    }
+
     if ($new) {
       $FACTORIES::getConfigFactory()->save($config);
     }
@@ -95,7 +104,7 @@ class ConfigUtils {
           }
           SConfig::getInstance()->addValue($name, $val);
           $config->setValue($val);
-          $FACTORIES::getConfigFactory()->update($config);
+          ConfigUtils::set($config, false);
         }
       }
     }

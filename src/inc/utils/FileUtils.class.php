@@ -101,6 +101,8 @@ class FileUtils {
     else if (sizeof($pretasks) > 0) {
       throw new HTException("This file is currently used in a preconfigured task!");
     }
+
+    FileDownloadUtils::removeFile($file->getId());
     $fileDelete = new FileDelete(0, $file->getFilename(), time());
     $FACTORIES::getFileDeleteFactory()->save($fileDelete);
     $FACTORIES::getFileFactory()->delete($file);

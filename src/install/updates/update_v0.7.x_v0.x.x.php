@@ -48,6 +48,28 @@ $config = new Config(0, 1, DConfig::AGENT_DATA_LIFETIME, 3600);
 $FACTORIES::getConfigFactory()->save($config);
 $config = new Config(0, 4, DConfig::AGENT_STAT_TENSION, 0);
 $FACTORIES::getConfigFactory()->save($config);
+
+$configSection = new ConfigSection(6, 'Multicast');
+$FACTORIES::getConfigSectionFactory()->save($configSection);
+$config = new Config(0, 6, DConfig::MULTICAST_ENABLE, 0);
+$FACTORIES::getConfigFactory()->save($config);
+$config = new Config(0, 6, DConfig::MULTICAST_DEVICE, 'eth0');
+$FACTORIES::getConfigFactory()->save($config);
+$config = new Config(0, 6, DConfig::MULTICAST_TR_ENABLE, 0);
+$FACTORIES::getConfigFactory()->save($config);
+$config = new Config(0, 6, DConfig::MULTICAST_TR, 50000);
+$FACTORIES::getConfigFactory()->save($config);
+echo "OK\n";
+
+echo "Add file distribution tables... ";
+$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `FileDownload` (
+  `fileDownloadId` int(11) NOT NULL,
+  `time` int(11) NOT NULL,
+  `fileId` int(11) NOT NULL,
+  `status` int(11) NOT NULL
+) ENGINE=InnoDB");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `FileDownload` ADD PRIMARY KEY (`fileDownloadId`)");
+$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `FileDownload` MODIFY `fileDownloadId` int(11) NOT NULL AUTO_INCREMENT");
 echo "OK\n";
 
 echo "Add task notes... ";

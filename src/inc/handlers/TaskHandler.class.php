@@ -280,6 +280,7 @@ class TaskHandler implements Handler {
       foreach ($_POST["adfile"] as $fileId) {
         $taskFile = new FileTask(0, $fileId, $task->getId());
         $FACTORIES::getFileTaskFactory()->save($taskFile);
+        FileDownloadUtils::addDownload($taskFile->getFileId());
       }
     }
     $FACTORIES::getAgentFactory()->getDB()->commit();
