@@ -89,8 +89,13 @@
           </form>
         {{ENDIF}}
         <form class="float-right mx-1" action="tasks.php?new=true&copy=[[subTask.getVal('taskId')]]" method="post">
-          <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy"><i class="fas fa-copy" aria-hidden="true"></i></button>
+          <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy to Task"><i class="fas fa-copy" aria-hidden="true"></i></button>
         </form>
+        {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
+				  <form class="float-right mx-1" action="pretasks.php?new=true&copyTask=[[subTask.getVal('taskId')]]" method="POST">
+            <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy to Pretask"><i class="fas fa-bookmark" aria-hidden="true"></i></button>
+				  </form>
+			  {{ENDIF}}
       {{ENDIF}}
     </td>
   </tr>
