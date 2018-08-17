@@ -85,6 +85,27 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
       }
     }
   }
+  else if(isset($_GET['copyTask'])){
+    $copy = $FACTORIES::getTaskFactory()->get($_GET['copyTask']);
+    if ($copy != null) {
+      $orig = $copy->getId();
+      $origType = 1;
+      $copy = new Pretask(
+        0,
+        $copy->getTaskName(),
+        $copy->getAttackCmd(),
+        $copy->getChunkTime(),
+        $copy->getStatusTimer(),
+        $copy->getColor(),
+        $copy->getIsSmall(),
+        $copy->getIsCpuTask(),
+        $copy->getUseNewBench(),
+        0,
+        0,
+        $copy->getCrackerBinaryTypeId()
+      );
+    }
+  }
   if ($copy === null) {
     $copy = new Pretask(
       0,
