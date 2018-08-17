@@ -6,6 +6,7 @@
 - Fixed issue with creating supertasks from preconfigured task list
 - Fixed creation of tasks from preconfigured tasks out of the hashlist view
 - Fixed mask import
+- Fixed hiding of mask imports in preconfigured task list on hashlist page
 
 # v0.6.0 -> v0.7.0
 
