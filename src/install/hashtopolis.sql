@@ -123,7 +123,7 @@ CREATE TABLE `AgentBinary` (
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
   (1, 'csharp', '0.52.2', 'Windows, Linux(mono), OS X(mono)', 'hashtopolis.exe'),
-  (2, 'python', '0.1.6', 'Windows, Linux, OS X', 'hashtopolis.zip');
+  (2, 'python', '0.1.7', 'Windows, Linux, OS X', 'hashtopolis.zip');
 
 -- --------------------------------------------------------
 
@@ -323,7 +323,7 @@ CREATE TABLE `CrackerBinary` (
   COLLATE = utf8_unicode_ci;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '4.1.0', 'https://hashcat.net/files/hashcat-4.1.0.7z', 'hashcat');
+  (1, 1, '4.2.1', 'https://hashcat.net/files/hashcat-4.2.1.7z', 'hashcat');
 
 -- --------------------------------------------------------
 

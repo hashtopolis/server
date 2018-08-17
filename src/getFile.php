@@ -37,13 +37,14 @@ if (!$LOGIN->isLoggedin()) {
   if (isset($_GET['apiKey'])) {
     $qF = new QueryFilter(ApiKey::ACCESS_KEY, $_GET['apiKey'], "=");
     $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    $apiFile = new UserAPIFile();
     if ($apiKey == null) {
       die("Invalid access key!");
     }
     else if ($apiKey->getStartValid() > time() || $apiKey->getEndValid() < time()) {
       die("Expired access key!");
     }
-    else if (!$ACCESS_CONTROL->hasPermission(USection::FILE, USectionFile::GET_FILE, $apiKey)) {
+    else if (!$apiFile->hasPermission(USection::FILE, USectionFile::GET_FILE, $apiKey)) {
       die("Permission denied!");
     }
     $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($FACTORIES::getUserFactory()->get($apiKey->getUserId())));

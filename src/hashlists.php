@@ -6,6 +6,7 @@ use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\HashType;
 use DBA\JoinFilter;
+use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\TaskWrapper;
@@ -63,7 +64,7 @@ else if (isset($_GET['id'])) {
   $list = new DataSet(array('hashlist' => $joined[$FACTORIES::getHashlistFactory()->getModelName()][0], 'hashtype' => $joined[$FACTORIES::getHashTypeFactory()->getModelName()][0]));
   $OBJECTS['list'] = $list;
   $OBJECTS['accessGroup'] = $FACTORIES::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId());
-  
+
   //check if the list is a superhashlist
   $OBJECTS['sublists'] = array();
   if ($list->getVal('hashlist')->getFormat() == DHashlistFormat::SUPERHASHLIST) {
@@ -76,7 +77,7 @@ else if (isset($_GET['id'])) {
     }
     $OBJECTS['sublists'] = $sublists;
   }
-  
+
   //load tasks assigned to hashlist
   $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", $FACTORIES::getTaskWrapperFactory());
   $jF = new JoinFilter($FACTORIES::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
@@ -100,19 +101,19 @@ else if (isset($_GET['id'])) {
     $hashlistTasks[] = $set;
   }
   $OBJECTS['tasks'] = $hashlistTasks;
-  
+
   //load list of available preconfigured tasks
-  $preTasks = $FACTORIES::getPretaskFactory()->filter(array());
-  for ($i = 0; $i < sizeof($preTasks); $i++) {
-    if ($preTasks[$i]->getIsMaskImport() == 1) {
-      unset($preTasks[$i]);
-    }
+  if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
+    $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
+    $OBJECTS['preTasks'] = $FACTORIES::getPretaskFactory()->filter([$FACTORIES::FILTER => $qF]);
   }
-  $OBJECTS['preTasks'] = $preTasks;
-  
+  else{
+    $OBJECTS['preTasks'] = $FACTORIES::getPretaskFactory()->filter([]);
+  }
+
   // load list of available supertasks
   $OBJECTS['superTasks'] = $FACTORIES::getSupertaskFactory()->filter(array());
-  
+
   $TEMPLATE = new Template("hashlists/detail");
   $OBJECTS['pageTitle'] = "Hashlist details for " . $list->getVal('hashlist')->getHashlistName();
 }

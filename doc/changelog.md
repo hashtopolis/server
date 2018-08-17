@@ -1,4 +1,4 @@
-# v0.7.0 -> v0.x.x
+# v0.7.1 -> v0.x.x
 
 ## Features
 
@@ -19,6 +19,16 @@
 ## Bugfixes
 
 - New task creation page now also shows the other file type.
+
+# v0.7.0 -> v0.7.1
+
+## Bugfixes
+
+- Fixed permission check for file downloads with URLs from the user API
+- Fixed issue with creating supertasks from preconfigured task list
+- Fixed creation of tasks from preconfigured tasks out of the hashlist view
+- Fixed mask import
+- Fixed hiding of mask imports in preconfigured task list on hashlist page
 
 # v0.6.0 -> v0.7.0
 
