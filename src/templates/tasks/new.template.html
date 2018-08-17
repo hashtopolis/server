@@ -3,7 +3,7 @@
 <h2>New task</h2>
 {%TEMPLATE->struct/messages%}
 <form class='form-inline' action="tasks.php{{IF [[orig]] > 0 && [[origType]] == 2}}?new=true&copyPre=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data">
-  <div class="row">
+  <div class="row" style="width: 110%">
     <div class='col-md-8'>
       <input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
       {{IF [[orig]] > 0 && [[origType]] == 2}}
@@ -179,14 +179,13 @@
       </div>
     </div>
     <div class='col-md-4'>
-      <div class='btn-toolbar'>
+      <div class='btn-toolbar my-1'>
         <div class='btn-group'>
           <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
           <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
           <button id="otherButton" class='btn btn-light active' onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
-      <br>
       <div id="rules">
         <div class="card">
           <div class="table-responsive">
@@ -196,18 +195,18 @@
                 <th>Size</th>
               </tr>
               {{FOREACH file;[[rules]]}}
-              <tr>
-                <td>
-                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
-                  [[file.getVal('file').getFilename()]]
-                  {{IF [[file.getVal('file').getIsSecret()]] == 1}}
-                    <span class="fas fa-lock" aria-hidden="true"></span>
-                  {{ENDIF}}
-                </td>
-                <td>
-                  [[Util::nicenum([[file.getVal('file').getSize()]])]]B
-                </td>
-              </tr>
+                <tr>
+                  <td>
+                    <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                    [[file.getVal('file').getFilename()]]
+                    {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                      <span class="fas fa-lock" aria-hidden="true"></span>
+                    {{ENDIF}}
+                  </td>
+                  <td>
+                    [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                  </td>
+                </tr>
               {{ENDFOREACH}}
             </table>
           </div>
