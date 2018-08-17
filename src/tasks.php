@@ -372,8 +372,8 @@ else if (isset($_GET['new'])) {
   }
 
   $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
-  $OBJECTS['wordlists'] = $arr[0];
-  $OBJECTS['rules'] = $arr[1];
+  $OBJECTS['wordlists'] = $arr[1];
+  $OBJECTS['rules'] = $arr[0];
   $OBJECTS['other'] = $arr[2];
 
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");

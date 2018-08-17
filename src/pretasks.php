@@ -142,8 +142,8 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   }
 
   $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
-  $OBJECTS['wordlists'] = $arr[0];
-  $OBJECTS['rules'] = $arr[1];
+  $OBJECTS['wordlists'] = $arr[1];
+  $OBJECTS['rules'] = $arr[0];
   $OBJECTS['other'] = $arr[2];
 
   $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());

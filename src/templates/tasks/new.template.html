@@ -183,7 +183,7 @@
         <div class='btn-group'>
           <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
           <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
-          <button id="otherButton" class='btn btn-light active' onclick="return toggleFiles('other')">Other</button>
+          <button id="otherButton" class='btn btn-light' onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
       <div id="rules">
@@ -281,7 +281,6 @@
             document.getElementById("ruleButton").className = "btn btn-light active";
             document.getElementById("wordlistButton").className = "btn btn-light";
             document.getElementById("otherButton").className = "btn btn-light";
-            show = "rules";
           }
           else if(show === 'wordlists'){
             wordlist.style.visibility = "visible"; // or
@@ -293,7 +292,6 @@
             document.getElementById("ruleButton").className = "btn btn-light";
             document.getElementById("wordlistButton").className = "btn btn-light active";
             document.getElementById("otherButton").className = "btn btn-light";
-            show = "wordlists";
           }
           else if (show === 'other') {
             other.style.visibility = "visible"; // or
@@ -305,7 +303,6 @@
             document.getElementById("ruleButton").className = "btn btn-light";
             document.getElementById("wordlistButton").className = "btn btn-light";
             document.getElementById("otherButton").className = "btn btn-light active";
-            show = "wordlists";
           }
           return false;
         }
