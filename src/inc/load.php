@@ -81,7 +81,7 @@ if ($INSTALL) {
 
   $OBJECTS['config'] = SConfig::getInstance();
 
-  define("APP_NAME", ($CONFIG->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
+  define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
 
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
