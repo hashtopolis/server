@@ -5,12 +5,10 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\CrackerBinary;
 use DBA\File;
-use DBA\FilePretask;
 use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
-use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 

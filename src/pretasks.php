@@ -7,7 +7,6 @@ use DBA\OrderFilter;
 use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\SupertaskPretask;
-use DBA\FileTask;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
