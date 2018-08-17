@@ -2,6 +2,8 @@
 
 class APIDownloadBinary extends APIBasic {
   public function execute($QUERY = array()) {
+    global $FACTORIES;
+
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
     }
