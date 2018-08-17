@@ -77,7 +77,7 @@
               <td>Cracker Binary which is used to run this task:</td>
               <td>
                 <select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
-                  {{FOREACH binary;[[binaries]]}}
+                  {{FOREACH binary;[[crackerBinaryTypes]]}}
                     <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}} selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
                 </select>
