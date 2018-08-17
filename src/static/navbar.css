@@ -70,3 +70,7 @@ tr {
         min-width: 1400px;
     }
 }
+
+.full-width {
+    width: 100% !important;
+}

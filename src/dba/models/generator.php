@@ -98,7 +98,8 @@ $CONF['File'] = array(
   'filename',
   'size',
   'isSecret',
-  'fileType'
+  'fileType',
+  'accessGroupId'
 );
 $CONF['Hash'] = array(
   'hashId',
@@ -214,7 +215,15 @@ $CONF['Task'] = array(
   'crackerBinaryTypeId',
   'taskWrapperId',
   'isArchived',
-  'isPrince'
+  'isPrince',
+  'notes',
+  'staticChunks',
+  'chunkSize'
+);
+$CONF['TaskDebugOutput'] = array(
+  'taskDebugOutputId',
+  'taskId',
+  'output'
 );
 $CONF['TaskWrapper'] = array(
   'taskWrapperId',
@@ -263,6 +272,11 @@ $CONF['ApiGroup'] = array(
   'apiGroupId',
   'permissions',
   'name'
+);
+$CONF['FileDelete'] = array(
+  'fileDeleteId',
+  'filename',
+  'time'
 );
 
 // relations

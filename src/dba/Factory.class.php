@@ -29,11 +29,13 @@ class Factory {
   private static $storedValueFactory = null;
   private static $supertaskFactory = null;
   private static $taskFactory = null;
+  private static $taskDebugOutputFactory = null;
   private static $taskWrapperFactory = null;
   private static $userFactory = null;
   private static $zapFactory = null;
   private static $apiKeyFactory = null;
   private static $apiGroupFactory = null;
+  private static $fileDeleteFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
@@ -301,6 +303,16 @@ class Factory {
     }
   }
   
+  public static function getTaskDebugOutputFactory() {
+    if (self::$taskDebugOutputFactory == null) {
+      $f = new TaskDebugOutputFactory();
+      self::$taskDebugOutputFactory = $f;
+      return $f;
+    } else {
+      return self::$taskDebugOutputFactory;
+    }
+  }
+  
   public static function getTaskWrapperFactory() {
     if (self::$taskWrapperFactory == null) {
       $f = new TaskWrapperFactory();
@@ -348,6 +360,16 @@ class Factory {
       return $f;
     } else {
       return self::$apiGroupFactory;
+    }
+  }
+  
+  public static function getFileDeleteFactory() {
+    if (self::$fileDeleteFactory == null) {
+      $f = new FileDeleteFactory();
+      self::$fileDeleteFactory = $f;
+      return $f;
+    } else {
+      return self::$fileDeleteFactory;
     }
   }
   

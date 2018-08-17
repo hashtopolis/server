@@ -11,24 +11,26 @@ use DBA\Hashlist;
 use DBA\QueryFilter;
 use DBA\Zap;
 use DBA\QueryFilterWithNull;
+use DBA\TaskDebugOutput;
+use DBA\AgentStat;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
     /** @var DataSet $CONFIG */
     global $FACTORIES, $CONFIG;
-    
+
     if (!PQuerySendProgress::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Invalid progress query!");
     }
     $this->checkToken(PActions::SEND_PROGRESS, $QUERY);
     $this->updateAgent(PActions::SEND_PROGRESS);
-    
+
     // upload cracked hashes to server
     $keyspaceProgress = $QUERY[PQuerySendProgress::KEYSPACE_PROGRESS];
     $relativeProgress = intval($QUERY[PQuerySendProgress::RELATIVE_PROGRESS]);//Normalized between 1-10k
     $speed = intval($QUERY[PQuerySendProgress::SPEED]);
     $state = intval($QUERY[PQuerySendProgress::HASHCAT_STATE]);
-    
+
     $chunk = $FACTORIES::getChunkFactory()->get(intval($QUERY[PQuerySendProgress::CHUNK_ID]));
     if ($chunk == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Invalid chunk id " . intval($QUERY[PQuerySendProgress::CHUNK_ID]));
@@ -39,7 +41,7 @@ class APISendProgress extends APIBasic {
     else if ($chunk->getAgentId() != $this->agent->getId()) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "You are not assigned to this chunk");
     }
-    
+
     $task = $FACTORIES::getTaskFactory()->get($chunk->getTaskId());
     if ($task == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "No task exists for the given chunk");
@@ -51,7 +53,7 @@ class APISendProgress extends APIBasic {
     if ($taskWrapper == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Inconsistency error on taskWrapper");
     }
-    
+
     $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
     if ($hashlist == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "The given task does not have a corresponding hashlist!");
@@ -63,13 +65,35 @@ class APISendProgress extends APIBasic {
         $this->sendErrorResponse(PActions::SEND_PROGRESS, "Unknown Error. The API does not trust you with more information");
       }
     }
-    
+
+    $dataTime = time();
+    if(isset($QUERY[PQuerySendProgress::GPU_TEMP])){
+      for($i =0; $i < sizeof($QUERY[PQuerySendProgress::GPU_TEMP]); $i++){
+        if(!is_numeric($QUERY[PQuerySendProgress::GPU_TEMP][$i]) || $QUERY[PQuerySendProgress::GPU_TEMP][$i] <= 0){
+          unset($QUERY[PQuerySendProgress::GPU_TEMP][$i]);
+        }
+      }
+      $data = implode(",", $QUERY[PQuerySendProgress::GPU_TEMP]);
+      $agentStat = new AgentStat(0, $this->agent->getId(), DAgentStatsType::GPU_TEMP, $dataTime, $data);
+      $FACTORIES::getAgentStatFactory()->save($agentStat);
+    }
+    if(isset($QUERY[PQuerySendProgress::GPU_UTIL])){
+      for($i =0; $i < sizeof($QUERY[PQuerySendProgress::GPU_UTIL]); $i++){
+        if(!is_numeric($QUERY[PQuerySendProgress::GPU_UTIL][$i]) || $QUERY[PQuerySendProgress::GPU_UTIL][$i] < 0){
+          unset($QUERY[PQuerySendProgress::GPU_UTIL][$i]);
+        }
+      }
+      $data = implode(",", $QUERY[PQuerySendProgress::GPU_UTIL]);
+      $agentStat = new AgentStat(0, $this->agent->getId(), DAgentStatsType::GPU_UTIL, $dataTime, $data);
+      $FACTORIES::getAgentStatFactory()->save($agentStat);
+    }
+
     // agent is assigned to this chunk (not necessarily task!)
     // it can be already assigned to other task, but is still computing this chunk until it realizes it
     $skip = $chunk->getSkip();
     $length = $chunk->getLength();
     $taskID = $task->getId();
-    
+
     //if by accident the number of the combinationProgress overshoots the limit
     if ($relativeProgress > 10000) {
       $relativeProgress = 10000;
@@ -77,7 +101,21 @@ class APISendProgress extends APIBasic {
     if ($keyspaceProgress > $length + $skip) {
       $keyspaceProgress = $length + $skip;
     }
-    
+
+    /*
+     * Save Debug output if provided
+     */
+    if(isset($QUERY[PQuerySendProgress::DEBUG_OUTPUT])){
+      $lines = $QUERY[PQuerySendProgress::DEBUG_OUTPUT];
+      $taskDebugOutputs = [];
+      foreach($lines as $line){
+        $taskDebugOutputs[] = new TaskDebugOutput(0, $chunk->getTaskId(), $line);
+      }
+      if(sizeof($taskDebugOutputs) > 0){
+        $FACTORIES::getTaskDebugOutputFactory()->massSave($taskDebugOutputs);
+      }
+    }
+
     /*
      * Save chunk updates
      */
@@ -91,22 +129,22 @@ class APISendProgress extends APIBasic {
     $chunk->setState($state);
     $FACTORIES::getChunkFactory()->update($chunk);
     $format = $hashlists[0]->getFormat();
-    
+
     // reset values
     $skipped = 0;
     $cracked = array();
     foreach ($hashlists as $hashlist) {
       $cracked[$hashlist->getId()] = 0;
     }
-    
+
     // process solved hashes, should there be any
     $crackedHashes = $QUERY[PQuerySendProgress::CRACKED_HASHES];
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    
+
     $plainUpdates = array();
     $crackHashes = array();
     $zaps = array();
-    
+
     for ($i = 0; $i < sizeof($crackedHashes); $i++) {
       $crackedHash = $crackedHashes[$i];
       if ($crackedHash == "") {
@@ -132,14 +170,14 @@ class APISendProgress extends APIBasic {
             // salted hashes
             $plain = str_ireplace($hashes[0]->getHash() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $hashes[0]->getSalt() . $CONFIG->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
           }
-          
+
           foreach ($hashes as $hash) {
             $cracked[$hash->getHashlistId()]++;
             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
             $crackHashes[] = $hash->getId();
             $zaps[] = new Zap(0, $hash->getHash(), time(), $this->agent->getId(), $totalHashlist->getId());
           }
-          
+
           if (sizeof($plainUpdates) >= 1000) {
             $uS1 = new UpdateSet(Hash::CHUNK_ID, $chunk->getId());
             $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
@@ -209,9 +247,9 @@ class APISendProgress extends APIBasic {
       $FACTORIES::getHashFactory()->massUpdate(array($FACTORIES::UPDATE => $uS2, $FACTORIES::FILTER => $qF));
       $FACTORIES::getZapFactory()->massSave($zaps);
     }
-    
+
     $FACTORIES::getAgentFactory()->getDB()->commit();
-    
+
     //insert #Cracked hashes and update in hashlist how many hashes were cracked
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $sumCracked = 0;
@@ -225,7 +263,7 @@ class APISendProgress extends APIBasic {
     $chunk->setCracked($chunk->getCracked() + $sumCracked);
     $FACTORIES::getChunkFactory()->update($chunk);
     $FACTORIES::getAgentFactory()->getDB()->commit();
-    
+
     if ($chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME) {
       // the chunk was manually interrupted
       $chunk->setState(DHashcatStatus::ABORTED);
@@ -244,12 +282,12 @@ class APISendProgress extends APIBasic {
         $taskdone = true;
       }
     }
-    
+
     if ($taskdone) {
       // task is fully dispatched and this last chunk is done, deprioritize it
       $task->setPriority(0);
       $FACTORIES::getTaskFactory()->update($task);
-      
+
       if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
         // check if the task wrapper is a supertask and is completed
         if (Util::checkTaskWrapperCompleted($taskWrapper)) {
@@ -261,25 +299,25 @@ class APISendProgress extends APIBasic {
         $taskWrapper->setPriority(0);
         $FACTORIES::getTaskWrapperFactory()->update($taskWrapper);
       }
-      
+
       $payload = new DataSet(array(DPayloadKeys::TASK => $task));
       NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
     }
-    
+
     $toZap = array();
-    
+
     if ($sumCracked > 0) {
       $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $this->agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $totalHashlist));
       NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
     }
-    
+
     if ($aborting) {
       $chunk->setSpeed(0);
       $chunk->setState(DHashcatStatus::ABORTED);
       $FACTORIES::getChunkFactory()->update($chunk);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was aborted!");
     }
-    
+
     switch ($state) {
       case DHashcatStatus::EXHAUSTED:
         // the chunk has finished (exhausted)
@@ -295,10 +333,10 @@ class APISendProgress extends APIBasic {
         $chunk->setProgress(10000);
         $chunk->setSpeed(0);
         $FACTORIES::getChunkFactory()->update($chunk);
-        
+
         TaskUtils::depriorizeAllTasks($hashlists);
         TaskUtils::unassignAllAgents($hashlists);
-        
+
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $totalHashlist));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
         break;
@@ -318,20 +356,20 @@ class APISendProgress extends APIBasic {
         if ($count == 0) {
           $payload = new DataSet(array(DPayloadKeys::HASHLIST => $totalHashlist));
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
-          
+
           $task->setPriority(0);
           $chunk->setCheckpoint($chunk->getSkip() + $chunk->getLength());
           $chunk->setProgress(10000);
           $chunk->setSpeed(0);
-          
+
           TaskUtils::depriorizeAllTasks($hashlists);
-          
+
           $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
           $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-          
+
           $FACTORIES::getChunkFactory()->update($chunk);
           $FACTORIES::getTaskFactory()->update($task);
-          
+
           //stop agent
           $this->sendResponse(array(
               PResponseSendProgress::ACTION => PActions::SEND_PROGRESS,
@@ -344,14 +382,14 @@ class APISendProgress extends APIBasic {
         }
         $chunk->setSpeed($speed);
         $FACTORIES::getChunkFactory()->update($chunk);
-        
+
         $qF = new QueryFilter(AgentZap::AGENT_ID, $this->agent->getId(), "=");
         $agentZap = $FACTORIES::getAgentZapFactory()->filter(array($FACTORIES::FILTER => $qF), true);
         if ($agentZap == null) {
           $agentZap = new AgentZap(0, $this->agent->getId(), null);
           $FACTORIES::getAgentZapFactory()->save($agentZap);
         }
-        
+
         $qF1 = new ContainFilter(Zap::HASHLIST_ID, Util::arrayOfIds($hashlists));
         $qF2 = new QueryFilter(Zap::ZAP_ID, ($agentZap->getLastZapId() == null) ? 0 : $agentZap->getLastZapId(), ">");
         $qF3 = new QueryFilterWithNull(Zap::AGENT_ID, $this->agent->getId(), "<>", true);
@@ -364,15 +402,16 @@ class APISendProgress extends APIBasic {
         }
         $this->agent->setLastTime(time());
         $FACTORIES::getAgentFactory()->update($this->agent);
-        
+
         if ($agentZap->getLastZapId() > 0) {
           $FACTORIES::getAgentZapFactory()->update($agentZap);
         }
-        
+
         // update hashList age for agent to this task
         break;
     }
     Util::zapCleaning();
+    Util::agentStatCleaning();
     $this->sendResponse(array(
         PResponseSendProgress::ACTION => PActions::SEND_PROGRESS,
         PResponseSendProgress::RESPONSE => PValues::SUCCESS,

@@ -97,6 +97,18 @@ class TaskHandler implements Handler {
           $ACCESS_CONTROL->checkPermission(DTaskAction::ARCHIVE_SUPERTASK_PERM);
           TaskUtils::archiveSupertask($_POST['supertaskId'], $ACCESS_CONTROL->getUser());
           break;
+        case DTaskAction::CHANGE_ATTACK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::CHANGE_ATTACK_PERM);
+          TaskUtils::changeAttackCmd($_POST['task'], $_POST['attackCmd'], $ACCESS_CONTROL->getUser());
+          break;
+        case DTaskAction::DELETE_ARCHIVED:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_ARCHIVED_PERM);
+          TaskUtils::deleteArchived($ACCESS_CONTROL->getUser());
+          break;
+        case DTaskAction::EDIT_NOTES:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::EDIT_NOTES_PERM);
+          TaskUtils::editNotes($_POST['task'], $_POST['notes'], $ACCESS_CONTROL->getUser());
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
@@ -114,6 +126,7 @@ class TaskHandler implements Handler {
 
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
+    $notes = htmlentities($_POST["notes"], ENT_QUOTES, "UTF-8");
     $cmdline = @$_POST["cmdline"];
     $chunk = intval(@$_POST["chunk"]);
     $status = intval(@$_POST["status"]);
@@ -125,6 +138,8 @@ class TaskHandler implements Handler {
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
     $color = @$_POST["color"];
+    $staticChunking = intval(@$_POST['staticChunking']);
+    $chunkSize = intval(@$_POST['chunkSize']);
 
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
@@ -137,6 +152,14 @@ class TaskHandler implements Handler {
     }
     else if ($accessGroup == null) {
       UI::addMessage(UI::ERROR, "Invalid access group!");
+      return;
+    }
+    else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
+      UI::addMessage(UI::ERROR, "Invalid static chunking value selected!");
+      return;
+    }
+    else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
+      UI::addMessage(UI::ERROR, "Invalid chunk size / number of chunks for static chunking selected!");
       return;
     }
     else if (Util::containsBlacklistedChars($cmdline)) {
@@ -210,7 +233,10 @@ class TaskHandler implements Handler {
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
         0,
-        $isPrince
+        $isPrince,
+        $notes,
+        $staticChunking,
+        $chunkSize
       );
     }
     else {
@@ -237,6 +263,9 @@ class TaskHandler implements Handler {
         $crackerBinary->getId(),
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
+        0,
+        0,
+        $notes,
         0,
         0
       );

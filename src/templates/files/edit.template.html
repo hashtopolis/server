@@ -37,6 +37,16 @@
         </td>
       </tr>
       <tr>
+        <th>Associated Access Group (only members of this group can access the file)</th>
+        <td>
+          <select class="form-control" name="accessGroupId" title="Access Group">
+            {{FOREACH accessGroup;[[accessGroups]]}}
+              <option value="[[accessGroup.getId()]]"{{IF [[file.getAccessGroupId()]] == [[accessGroup.getId()]]}} selected{{ENDIF}}>[[accessGroup.getGroupName()]]</option>
+            {{ENDFOREACH}}
+          </select>
+        </td>
+      </tr>
+      <tr>
         <td colspan="2">
           <button type="submit" class="btn btn-success">Save</button>
         </td>

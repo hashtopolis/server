@@ -31,6 +31,15 @@ class PQueryLogin extends PQuery {
   const CLIENT_SIGNATURE = "clientSignature";
 }
 
+class PQueryGetFileStatus extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN])) {
+      return false;
+    }
+    return true;
+  }
+}
+
 class PQuerySendProgress extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CHUNK_ID]) || !isset($QUERY[self::KEYSPACE_PROGRESS]) || !isset($QUERY[self::KEYSPACE_PROGRESS]) || !isset($QUERY[self::RELATIVE_PROGRESS]) || !isset($QUERY[self::SPEED]) || !isset($QUERY[self::HASHCAT_STATE]) || !isset($QUERY[self::CRACKED_HASHES])) {
@@ -45,6 +54,11 @@ class PQuerySendProgress extends PQuery {
   const SPEED             = "speed";
   const HASHCAT_STATE     = "state";
   const CRACKED_HASHES    = "cracks";
+
+  // optional
+  const DEBUG_OUTPUT      = "debugOutput";
+  const GPU_TEMP = "gpuTemp";
+  const GPU_UTIL = "gpuUtil";
 }
 
 class PQuerySendBenchmark extends PQuery {
@@ -225,6 +239,10 @@ abstract class PResponse {
   const RESPONSE = "response";
 }
 
+class PResponseGetFileStatus extends PResponse {
+  const FILENAMES = "filenames";
+}
+
 class PResponseErrorMessage extends PResponse {
   const MESSAGE = "message";
 }
@@ -320,4 +338,5 @@ class PActions {
   const SEND_BENCHMARK            = "sendBenchmark";
   const SEND_PROGRESS             = "sendProgress";
   const TEST_CONNECTION           = "testConnection";
+  const GET_FILE_STATUS           = "getFileStatus";
 }

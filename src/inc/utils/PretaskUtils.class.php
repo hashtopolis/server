@@ -10,13 +10,56 @@ use DBA\SupertaskPretask;
 
 class PretaskUtils {
   /**
+   * @param Task $copy 
+   * @return Pretask
+   */
+  public static function getFromTask($copy){
+    return new Pretask(
+        0,
+        $copy->getTaskName(),
+        $copy->getAttackCmd(),
+        $copy->getChunkTime(),
+        $copy->getStatusTimer(),
+        $copy->getColor(),
+        $copy->getIsSmall(),
+        $copy->getIsCpuTask(),
+        $copy->getUseNewBench(),
+        0,
+        0,
+        $copy->getCrackerBinaryTypeId()
+      );
+  }
+
+  /**
+   * @return Pretask
+   */
+  public static function getDefault(){
+    global $CONFIG;
+
+    return new Pretask(
+      0,
+      '',
+      $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." ",
+      $CONFIG->getVal(DConfig::CHUNK_DURATION),
+      $CONFIG->getVal(DConfig::STATUS_TIMER),
+      '',
+      0,
+      0,
+      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
+      0,
+      0,
+      0
+    );
+  }
+
+  /**
    * @param int $pretaskId
    * @param int $isCpuOnly
    * @throws HTException
    */
   public static function setCpuOnlyTask($pretaskId, $isCpuOnly) {
     global $FACTORIES;
-    
+
     $pretask = PretaskUtils::getPretask($pretaskId);
     $isCpuOnly = intval($isCpuOnly);
     if ($isCpuOnly < 0 || $isCpuOnly > 1) {
@@ -25,7 +68,7 @@ class PretaskUtils {
     $pretask->setIsCpuTask($isCpuOnly);
     $FACTORIES::getPretaskFactory()->update($pretask);
   }
-  
+
   /**
    * @param int $pretaskId
    * @param int $isSmall
@@ -33,7 +76,7 @@ class PretaskUtils {
    */
   public static function setSmallTask($pretaskId, $isSmall) {
     global $FACTORIES;
-    
+
     $pretask = PretaskUtils::getPretask($pretaskId);
     $isSmall = intval($isSmall);
     if ($isSmall < 0 || $isSmall > 1) {
@@ -42,7 +85,7 @@ class PretaskUtils {
     $pretask->setIsSmall($isSmall);
     $FACTORIES::getPretaskFactory()->update($pretask);
   }
-  
+
   /**
    * @param int $pretaskId
    * @param int $priority
@@ -50,7 +93,7 @@ class PretaskUtils {
    */
   public static function setPriority($pretaskId, $priority) {
     global $FACTORIES;
-    
+
     $pretask = PretaskUtils::getPretask($pretaskId);
     $priority = intval($priority);
     if ($priority < 0) {
@@ -59,7 +102,7 @@ class PretaskUtils {
     $pretask->setPriority($priority);
     $FACTORIES::getPretaskFactory()->update($pretask);
   }
-  
+
   /**
    * @param int $pretaskId
    * @param string $color
@@ -67,7 +110,7 @@ class PretaskUtils {
    */
   public static function setColor($pretaskId, $color) {
     global $FACTORIES;
-    
+
     $pretask = PretaskUtils::getPretask($pretaskId);
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
       $color = "";
@@ -75,7 +118,7 @@ class PretaskUtils {
     $pretask->setColor($color);
     $FACTORIES::getPretaskFactory()->update($pretask);
   }
-  
+
   /**
    * @param int $pretaskId
    * @param int $chunkTime
@@ -83,7 +126,7 @@ class PretaskUtils {
    */
   public static function setChunkTime($pretaskId, $chunkTime) {
     global $FACTORIES;
-    
+
     $pretask = PretaskUtils::getPretask($pretaskId);
     $chunkTime = intval($chunkTime);
     if ($chunkTime <= 0) {
@@ -92,7 +135,7 @@ class PretaskUtils {
     $pretask->setChunkTime($chunkTime);
     $FACTORIES::getPretaskFactory()->update($pretask);
   }
-  
+
   /**
    * @param int $pretaskId
    * @param string $newName
@@ -100,7 +143,7 @@ class PretaskUtils {
    */
   public static function renamePretask($pretaskId, $newName) {
     global $FACTORIES;
-    
+
     $pretask = PretaskUtils::getPretask($pretaskId);
     if (strlen($newName) == 0) {
       throw new HTException("Name cannot be empty!");
@@ -108,34 +151,34 @@ class PretaskUtils {
     $pretask->setTaskName(htmlentities($newName, ENT_QUOTES, "UTF-8"));
     $FACTORIES::getPretaskFactory()->update($pretask);
   }
-  
+
   /**
    * @param int $pretaskId
    * @throws HTException
    */
   public static function deletePretask($pretaskId) {
     global $FACTORIES;
-    
+
     $pretask = PretaskUtils::getPretask($pretaskId);
-    
+
     // delete connections to supertasks
     $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
     $FACTORIES::getSupertaskPretaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    
+
     // delete connections to files
     $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=");
     $FACTORIES::getFilePretaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
-    
+
     $FACTORIES::getPretaskFactory()->delete($pretask);
   }
-  
+
   /**
    * @param boolean $includeMaskImports
    * @return Pretask[]
    */
   public static function getPretasks($includeMaskImports = false) {
     global $FACTORIES;
-    
+
     $oF = new OrderFilter(Pretask::PRIORITY, "DESC");
     if ($includeMaskImports) {
       $pretasks = $FACTORIES::getPretaskFactory()->filter(array($FACTORIES::ORDER => $oF));
@@ -146,7 +189,7 @@ class PretaskUtils {
     }
     return $pretasks;
   }
-  
+
   /**
    * @param int $pretaskId
    * @throws HTException
@@ -154,14 +197,14 @@ class PretaskUtils {
    */
   public static function getPretask($pretaskId) {
     global $FACTORIES;
-    
+
     $pretask = $FACTORIES::getPretaskFactory()->get($pretaskId);
     if ($pretask == null) {
       throw new HTException("Invalid preconfigured task!");
     }
     return $pretask;
   }
-  
+
   /**
    * @param int $pretaskId
    * @param int $hashlistId
@@ -171,7 +214,7 @@ class PretaskUtils {
    */
   public static function runPretask($pretaskId, $hashlistId, $name, $crackerBinaryId) {
     global $FACTORIES;
-    
+
     $pretask = $FACTORIES::getPretaskFactory()->get($pretaskId);
     if ($pretask == null) {
       throw new HTException("Invalid preconfigured task ID!");
@@ -191,11 +234,11 @@ class PretaskUtils {
     else if ($pretask->getCrackerBinaryTypeId() != $cracker->getCrackerBinaryTypeId()) {
       throw new HTException("Provided cracker does not match the type of the pretask!");
     }
-    
+
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(0, $pretask->getPriority(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
-    
+
     $task = new Task(
       0,
       $name,
@@ -214,16 +257,19 @@ class PretaskUtils {
       $cracker->getCrackerBinaryTypeId(),
       $taskWrapper->getId(),
       0,
+      0,
+      '',
+      0,
       0
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
     TaskUtils::copyPretaskFiles($pretask, $task);
     $FACTORIES::getAgentFactory()->getDB()->commit();
-    
+
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
   }
-  
+
   /**
    * @param string $name
    * @param string $cmdLine
@@ -240,9 +286,9 @@ class PretaskUtils {
   public static function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $files, $crackerBinaryTypeId, $priority = 0) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
-    
+
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
-    
+
     if (strlen($name) == 0) {
       throw new HTException("Name cannot be empty!");
     }
@@ -289,7 +335,7 @@ class PretaskUtils {
       $crackerBinaryType->getId()
     );
     $pretask = $FACTORIES::getPretaskFactory()->save($pretask);
-    
+
     // handle files
     foreach ($files as $fileId) {
       $file = $FACTORIES::getFileFactory()->get($fileId);

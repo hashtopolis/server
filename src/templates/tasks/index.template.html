@@ -10,7 +10,16 @@
 			<input type="submit" value="Delete finished" class='btn btn-light'>
 		</form>
 	{{ENDIF}}
-  {{IF ![[showArchived]]}}
+  {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]] && [[showArchived]]}}
+		<form style ='float: left; padding-right: 5px;' action="tasks.php?archived=true" class='form-inline' method="POST" onSubmit="if (!confirm('Really delete all archived tasks?')) return false;">
+			<input type='hidden' name='action' value='[[$DTaskAction::DELETE_ARCHIVED]]'>
+			<input type="hidden" name="csrf" value="[[csrf]]">
+			<input type="submit" value="Delete archived" class='btn btn-light'>
+		</form>
+	{{ENDIF}}
+  {{IF [[showArchived]]}}
+    <a style="float: left; margin-right: 5px;" href="tasks.php" class="btn btn-light">Show current</a>
+  {{ELSE}}
     <a style="float: left; margin-right: 5px;" href="tasks.php?archived=true" class="btn btn-light">Show archived</a>
   {{ENDIF}}
 	{%TEMPLATE->tasks/autorefresh%}

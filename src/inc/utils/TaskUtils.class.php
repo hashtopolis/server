@@ -21,8 +21,132 @@ use DBA\Pretask;
 use DBA\User;
 use DBA\Hashlist;
 use DBA\AccessGroupUser;
+use DBA\TaskDebugOutput;
 
 class TaskUtils {
+  /**
+   * @param Pretask $copy 
+   * @return Task
+   */
+  public static function getFromPretask($copy){
+    return new Task(
+        0,
+        $copy->getTaskName(),
+        $copy->getAttackCmd(),
+        $copy->getChunkTime(),
+        $copy->getStatusTimer(),
+        0,
+        0,
+        $copy->getPriority(),
+        $copy->getColor(),
+        $copy->getIsSmall(),
+        $copy->getIsCpuTask(),
+        $copy->getUseNewBench(),
+        0,
+        0,
+        $copy->getCrackerBinaryTypeId(),
+        0,
+        0,
+        0,
+        '',
+        0,
+        0
+      );
+  }
+
+  /**
+   * @return Task
+   */
+  public static function getDefault(){
+    global $CONFIG;
+
+    return new Task(
+      0,
+      "",
+      "",
+      $CONFIG->getVal(DConfig::CHUNK_DURATION),
+      $CONFIG->getVal(DConfig::STATUS_TIMER),
+      0,
+      0,
+      0,
+      "",
+      0,
+      0,
+      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      '',
+      0,
+      0
+    );
+  }
+
+  /**
+   * @param int $taskId
+   * @param string $notes
+   * @param User $user
+   */
+  public static function editNotes($taskId, $notes, $user){
+    global $FACTORIES;
+
+    $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
+    $task = TaskUtils::getTask($taskId, $user);
+    $task->setNotes($notes);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+
+  /**
+   * @param User $user
+   */
+  public static function deleteArchived($user) {
+    global $FACTORIES;
+
+    $accessGroups = AccessUtils::getAccessGroupsOfUser($user);
+    $qF1 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 1, "=");
+    $qF2 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, Util::arrayOfIds($accessGroups));
+    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter([$FACTORIES::FILTER => [$qF1, $qF2]]);
+    foreach ($taskWrappers as $taskWrapper) {
+      $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+      $tasks = TaskUtils::getTasksOfWrapper($taskWrapper->getId());
+      foreach ($tasks as $task) {
+        TaskUtils::deleteTask($task);
+      }
+      $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+      $FACTORIES::getAgentFactory()->getDB()->commit();
+    }
+  }
+
+  /**
+   * @param int $taskId
+   * @param string $attackCmd
+   * @param User $user
+   * @throws HTException
+   * @return void
+   */
+  public static function changeAttackCmd($taskId, $attackCmd, $user){
+    global $FACTORIES, $CONFIG;
+
+    if(strlen($attackCmd) == 0){
+      throw new HTException("Attack command cannot be empty!");
+    }
+    else if(strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false){
+      throw new HTException("Attack command must contain the hashlist alias!");
+    }
+
+    $task = TaskUtils::getTask($taskId, $user);
+    if($task->getAttackCmd() == $attackCmd){
+      // no change required, we avoid all the overhead
+      return;
+    }
+    TaskUtils::purgeTask($task->getId(), $user);
+    $task->setAttackCmd($attackCmd);
+    $FACTORIES::getTaskFactory()->update($task);
+  }
+
   /**
    * @param int $supertaskId
    * @param User $user
@@ -79,6 +203,17 @@ class TaskUtils {
 
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapperId, "=");
     return $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+  }
+
+  /**
+   * @param int $taskWrapperId
+   * @return Task[]
+   */
+  public static function getTasksOfWrapper($taskWrapperId) {
+    global $FACTORIES;
+
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapperId, "=");
+    return $FACTORIES::getTaskFactory()->filter([$FACTORIES::FILTER => $qF]);
   }
 
   /**
@@ -548,7 +683,7 @@ class TaskUtils {
    * @param int $hashlistId
    * @param string $name
    * @param string $attackCmd
-   * @param int $chunksize
+   * @param int $chunkTime
    * @param int $status
    * @param string $benchtype
    * @param string $color
@@ -561,7 +696,7 @@ class TaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunksize, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     /** @var $CONFIG DataSet */
     global $FACTORIES, $CONFIG;
 
@@ -587,10 +722,16 @@ class TaskUtils {
     else if (strpos($attackCmd, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command does not contain hashlist alias!");
     }
+    else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
+      throw new HTException("Invalid static chunk setting!");
+    }
+    else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
+      throw new HTException("Invalid chunk size / number of chunks for static chunking!");
+    }
     else if (Util::containsBlacklistedChars($attackCmd)) {
       throw new HTException("Attack command contains blacklisted characters!");
     }
-    else if (!is_numeric($chunksize) || $chunksize < 1) {
+    else if (!is_numeric($chunkTime) || $chunkTime < 1) {
       throw new HTException("Invalid chunk size!");
     }
     else if (!is_numeric($status) || $status < 1) {
@@ -625,7 +766,7 @@ class TaskUtils {
       0,
       $name,
       $attackCmd,
-      $chunksize,
+      $chunkTime,
       $status,
       0,
       0,
@@ -640,7 +781,10 @@ class TaskUtils {
       $taskWrapper->getId(),
       0,
       0,
-      $isPrince
+      $isPrince,
+      $notes,
+      $staticChunking,
+      $chunkSize
     );
     $task = $FACTORIES::getTaskFactory()->save($task);
 
@@ -684,7 +828,7 @@ class TaskUtils {
         $copy[] = $content[$j];
       }
       file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy));
-      $f = new File(0, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY);
+      $f = new File(0, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
       $f = $FACTORIES::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
@@ -718,6 +862,9 @@ class TaskUtils {
         $task->getCrackerBinaryId(),
         $task->getCrackerBinaryTypeId(),
         $newWrapper->getId(),
+        0,
+        0,
+        '',
         0,
         0
       );
@@ -795,6 +942,9 @@ class TaskUtils {
           if ($file->getIsSecret() > $agent->getIsTrusted()) {
             $permitted = false;
           }
+          else if(!in_array($file->getAccessGroupId(), $accessGroups)){
+            $permitted = false;
+          }
         }
         if (!$permitted) {
           continue; // at least one of the files required for this task is secret and the agent not, so this task cannot be used
@@ -855,6 +1005,8 @@ class TaskUtils {
     $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
     $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    $qF = new QueryFilter(TaskDebugOutput::TASK_ID, $task->getId(), "=");
+    $FACTORIES::getTaskDebugOutputFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
 
     // test if this task used temporary files
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());

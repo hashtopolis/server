@@ -271,7 +271,10 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (37, 1, 'ruleSplitSmallTasks', '0'),
   (38, 1, 'ruleSplitAlways', '0'),
   (39, 1, 'ruleSplitDisable', '0'),
-  (40, 1, 'princeLink', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
+  (40, 1, 'princeLink', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z'),
+  (41, 4, 'agentStatLimit', '100'),
+  (42, 1, 'agentDataLifetime', '3600'),
+  (43, 4, 'agentStatTension', '0');
 
 -- --------------------------------------------------------
 
@@ -388,6 +391,12 @@ CREATE TABLE `FileTask` (
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
+
+CREATE TABLE `FileDelete` (
+  `fileDeleteId` int(11) NOT NULL,
+  `filename` varchar(256) NOT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
 
@@ -930,11 +939,20 @@ CREATE TABLE `Task` (
   `crackerBinaryTypeId` INT(11)                 NULL,
   `taskWrapperId`       INT(11)                 NOT NULL,
   `isArchived`          INT(11)                 NOT NULL,
-  `isPrince`            INT(11)                 NOT NULL
+  `isPrince`            INT(11)                 NOT NULL,
+  `notes`               TEXT                    NOT NULL,
+  `staticChunks`        INT(11)                 NOT NULL,
+  `chunkSize`           BIGINT(20)              NOT NULL
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8
   COLLATE = utf8_unicode_ci;
+
+CREATE TABLE `TaskDebugOutput` (
+  `taskDebugOutputId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `output` varchar(256) NOT NULL
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
 
@@ -1039,6 +1057,9 @@ ALTER TABLE `ApiKey`
 ALTER TABLE `ApiGroup`
   ADD PRIMARY KEY (`apiGroupId`);
 
+
+ALTER TABLE `FileDelete`
+  ADD PRIMARY KEY (`fileDeleteId`);
 
 --
 -- Indizes der exportierten Tabellen
@@ -1270,6 +1291,9 @@ ALTER TABLE `Task`
   ADD PRIMARY KEY (`taskId`),
   ADD KEY `crackerBinaryId` (`crackerBinaryId`);
 
+ALTER TABLE `TaskDebugOutput`
+  ADD PRIMARY KEY (`taskDebugOutputId`);
+
 --
 -- Indizes für die Tabelle `TaskWrapper`
 --
@@ -1303,6 +1327,9 @@ ALTER TABLE `ApiKey`
 
 ALTER TABLE `ApiGroup`
   MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `FileDelete`
+  MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`
@@ -1458,6 +1485,10 @@ ALTER TABLE `SupertaskPretask`
 --
 ALTER TABLE `Task`
   MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `TaskDebugOutput`
+  MODIFY `taskDebugOutputId` int(11) NOT NULL AUTO_INCREMENT;
+  
 --
 -- AUTO_INCREMENT für Tabelle `TaskWrapper`
 --

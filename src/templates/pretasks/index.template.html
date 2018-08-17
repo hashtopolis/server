@@ -58,7 +58,12 @@
 					    {{ENDIF}}
 					    {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
 						    <form class="float-right mx-1" action="tasks.php?new=true&copyPre=[[task.getVal('Task').getId()]]" method="POST">
-                  <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy"><i class="fas fa-copy" aria-hidden="true"></i></button>
+                  <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy to Task"><i class="fas fa-copy" aria-hidden="true"></i></button>
+						    </form>
+					    {{ENDIF}}
+              {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
+						    <form class="float-right mx-1" action="pretasks.php?new=true&copy=[[task.getVal('Task').getId()]]" method="POST">
+                  <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy to Pretask"><i class="fas fa-bookmark" aria-hidden="true"></i></button>
 						    </form>
 					    {{ENDIF}}
 				    </td>

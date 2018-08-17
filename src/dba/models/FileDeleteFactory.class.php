@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class FileFactory extends AbstractModelFactory {
+class FileDeleteFactory extends AbstractModelFactory {
   function getModelName() {
-    return "File";
+    return "FileDelete";
   }
   
   function getModelTable() {
-    return "File";
+    return "FileDelete";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class FileFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return File
+   * @return FileDelete
    */
   function getNullObject() {
-    $o = new File(-1, null, null, null, null, null);
+    $o = new FileDelete(-1, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return File
+   * @return FileDelete
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId']);
+    $o = new FileDelete($dict['fileDeleteId'], $dict['filename'], $dict['time']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return File|File[]
+   * @return FileDelete|FileDelete[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class FileFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), File::class);
+      return Util::cast(parent::filter($options, $single), FileDelete::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class FileFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, File::class);
+      $models[] = Util::cast($object, FileDelete::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return File
+   * @return FileDelete
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), File::class);
+    return Util::cast(parent::get($pk), FileDelete::class);
   }
 
   /**
-   * @param File $model
-   * @return File
+   * @param FileDelete $model
+   * @return FileDelete
    */
   function save($model) {
-    return Util::cast(parent::save($model), File::class);
+    return Util::cast(parent::save($model), FileDelete::class);
   }
 }

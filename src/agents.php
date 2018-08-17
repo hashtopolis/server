@@ -77,6 +77,13 @@ if (isset($_GET['id'])) {
     $jF = new JoinFilter($FACTORIES::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
     $OBJECTS['accessGroups'] = $joined[$FACTORIES::getAccessGroupFactory()->getModelName()];
+
+    // load agent detail data
+    $data = AgentUtils::getGraphData($agent, [DAgentStatsType::GPU_TEMP, DAgentStatsType::GPU_UTIL]);
+    $OBJECTS['gpuTemp'] = json_encode($data['sets']);
+    $OBJECTS['gpuTempAvailable'] = (sizeof($data['sets']) > 0)?true:false;
+    $OBJECTS['gpuTempXLabels'] = json_encode($data['xlabels']);
+    $OBJECTS['gpuAxes'] = json_encode($data['axes']);
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::FILTER => $qF), true);

@@ -5,12 +5,10 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\CrackerBinary;
 use DBA\File;
-use DBA\FilePretask;
 use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
-use DBA\Task;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -71,6 +69,11 @@ if (isset($_GET['id'])) {
   $OBJECTS['task'] = $task;
   $taskWrapper = $FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId());
   $OBJECTS['taskWrapper'] = $taskWrapper;
+
+  $fileInfo = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfUser($LOGIN->getUser()));
+  if($fileInfo[4]){
+    UI::printError("ERROR", "No access to this task!");
+  }
 
   $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
   $OBJECTS['hashlist'] = $hashlist;
@@ -246,6 +249,7 @@ else if (isset($_GET['new'])) {
   $TEMPLATE = new Template("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
+  $origTask = null;
   $origType = 0;
   $hashlistId = 0;
   $copy = null;
@@ -256,6 +260,7 @@ else if (isset($_GET['new'])) {
     $copy = $FACTORIES::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
+      $origTask = $copy;
       $origType = 1;
       $hashlistId = $FACTORIES::getTaskWrapperFactory()->get($copy->getTaskWrapperId())->getHashlistId();
       $copy->setId(0);
@@ -275,56 +280,20 @@ else if (isset($_GET['new'])) {
     $copy = $FACTORIES::getPretaskFactory()->get($_GET['copyPre']);
     if ($copy != null) {
       $orig = $copy->getId();
+      $origTask = $copy;
       $origType = 2;
-      $copy = new Task(
-        0, 
-        $copy->getTaskName(), 
-        $copy->getAttackCmd(), 
-        $copy->getChunkTime(), 
-        $copy->getStatusTimer(), 
-        0, 
-        0, 
-        $copy->getPriority(), 
-        $copy->getColor(), 
-        $copy->getIsSmall(), 
-        $copy->getIsCpuTask(), 
-        $copy->getUseNewBench(), 
-        0, 
-        0, 
-        $copy->getCrackerBinaryTypeId(), 
-        0, 
-        0,
-        0
-      );
+      $copy = TaskUtils::getFromPretask($copy);
     }
   }
   if ($copy === null) {
-    $copy = new Task(
-      0, 
-      "", 
-      "", 
-      $CONFIG->getVal(DConfig::CHUNK_DURATION), 
-      $CONFIG->getVal(DConfig::STATUS_TIMER), 
-      0, 
-      0, 
-      0, 
-      "", 
-      0, 
-      0, 
-      $CONFIG->getVal(DConfig::DEFAULT_BENCH), 
-      0, 
-      0, 
-      0, 
-      0, 
-      0,
-      0
-    );
+    $copy = TaskUtils::getDefault();
   }
   if (strpos($copy->getAttackCmd(), $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
     $copy->setAttackCmd($CONFIG->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
 
   $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
 
   $OBJECTS['orig'] = $orig;
   $OBJECTS['copy'] = $copy;
@@ -342,43 +311,17 @@ else if (isset($_GET['new'])) {
   $OBJECTS['lists'] = $lists;
 
   $origFiles = array();
-  if ($orig > 0) {
-    if ($origType == 1) {
-      $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
-      $ff = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-      foreach ($ff as $f) {
-        $origFiles[] = $f->getFileId();
-      }
-    }
-    else {
-      $qF = new QueryFilter(FilePretask::PRETASK_ID, $orig, "=");
-      $ff = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-      foreach ($ff as $f) {
-        $origFiles[] = $f->getFileId();
-      }
-    }
+  if ($origType == 1) {
+    $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfTask($origTask));
   }
-  $oF = new OrderFilter(File::FILENAME, "ASC");
-  $allFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::ORDER => $oF));
-  $rules = array();
-  $wordlists = array();
-  foreach ($allFiles as $singleFile) {
-    $set = new DataSet();
-    $checked = "0";
-    if (in_array($singleFile->getId(), $origFiles)) {
-      $checked = "1";
-    }
-    $set->addValue('checked', $checked);
-    $set->addValue('file', $singleFile);
-    if ($singleFile->getFileType() == DFileType::RULE) {
-      $rules[] = $set;
-    }
-    else if($singleFile->getFileType() == DFileType::WORDLIST){
-      $wordlists[] = $set;
-    }
+  else if($origType == 2){
+    $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfPretask($origTask));
   }
-  $OBJECTS['wordlists'] = $wordlists;
-  $OBJECTS['rules'] = $rules;
+
+  $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
+  $OBJECTS['wordlists'] = $arr[1];
+  $OBJECTS['rules'] = $arr[0];
+  $OBJECTS['other'] = $arr[2];
 
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());

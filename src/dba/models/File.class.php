@@ -8,13 +8,15 @@ class File extends AbstractModel {
   private $size;
   private $isSecret;
   private $fileType;
+  private $accessGroupId;
   
-  function __construct($fileId, $filename, $size, $isSecret, $fileType) {
+  function __construct($fileId, $filename, $size, $isSecret, $fileType, $accessGroupId) {
     $this->fileId = $fileId;
     $this->filename = $filename;
     $this->size = $size;
     $this->isSecret = $isSecret;
     $this->fileType = $fileType;
+    $this->accessGroupId = $accessGroupId;
   }
   
   function getKeyValueDict() {
@@ -24,6 +26,7 @@ class File extends AbstractModel {
     $dict['size'] = $this->size;
     $dict['isSecret'] = $this->isSecret;
     $dict['fileType'] = $this->fileType;
+    $dict['accessGroupId'] = $this->accessGroupId;
     
     return $dict;
   }
@@ -75,10 +78,19 @@ class File extends AbstractModel {
   function setFileType($fileType){
     $this->fileType = $fileType;
   }
+  
+  function getAccessGroupId(){
+    return $this->accessGroupId;
+  }
+  
+  function setAccessGroupId($accessGroupId){
+    $this->accessGroupId = $accessGroupId;
+  }
 
   const FILE_ID = "fileId";
   const FILENAME = "filename";
   const SIZE = "size";
   const IS_SECRET = "isSecret";
   const FILE_TYPE = "fileType";
+  const ACCESS_GROUP_ID = "accessGroupId";
 }

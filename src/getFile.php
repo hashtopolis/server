@@ -28,6 +28,8 @@ if (!$line) {
   die("ERR5 - file not found");
 }
 
+$accessGroupIds = [];
+
 //check user rights to download here:
 //if the user is logged in, he need to have the rights to
 //if agent provides his voucher, check it.
@@ -45,6 +47,7 @@ if (!$LOGIN->isLoggedin()) {
     else if (!$apiFile->hasPermission(USection::FILE, USectionFile::GET_FILE, $apiKey)) {
       die("Permission denied!");
     }
+    $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($FACTORIES::getUserFactory()->get($apiKey->getUserId())));
   }
   else {
     $token = @$_GET['token'];
@@ -56,10 +59,18 @@ if (!$LOGIN->isLoggedin()) {
     if ($agent->getIsTrusted() < $line->getIsSecret()) {
       die("No access!");
     }
+    $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
   }
 }
 else if (!$ACCESS_CONTROL->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
   die("No access!");
+}
+else{
+  $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($LOGIN->getUser()));
+}
+
+if(!in_array($line->getAccessGroupId(), $accessGroupIds)){
+  die("Access denied to file because of access groups!");
 }
 
 $filename = dirname(__FILE__) . "/files/" . $line->getFilename();

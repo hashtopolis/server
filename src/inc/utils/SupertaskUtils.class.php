@@ -188,6 +188,9 @@ class SupertaskUtils {
         $cracker->getCrackerBinaryTypeId(), 
         $taskWrapper->getId(), 
         0,
+        0,
+        '',
+        0,
         0
       );
       if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
