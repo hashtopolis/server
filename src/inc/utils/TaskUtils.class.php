@@ -25,9 +25,70 @@ use DBA\TaskDebugOutput;
 
 class TaskUtils {
   /**
-   * @param int $taskId 
-   * @param string $notes 
-   * @param User $user 
+   * @param Pretask $copy 
+   * @return Task
+   */
+  public static function getFromPretask($copy){
+    return new Task(
+        0,
+        $copy->getTaskName(),
+        $copy->getAttackCmd(),
+        $copy->getChunkTime(),
+        $copy->getStatusTimer(),
+        0,
+        0,
+        $copy->getPriority(),
+        $copy->getColor(),
+        $copy->getIsSmall(),
+        $copy->getIsCpuTask(),
+        $copy->getUseNewBench(),
+        0,
+        0,
+        $copy->getCrackerBinaryTypeId(),
+        0,
+        0,
+        0,
+        '',
+        0,
+        0
+      );
+  }
+
+  /**
+   * @return Task
+   */
+  public static function getDefault(){
+    global $CONFIG;
+
+    return new Task(
+      0,
+      "",
+      "",
+      $CONFIG->getVal(DConfig::CHUNK_DURATION),
+      $CONFIG->getVal(DConfig::STATUS_TIMER),
+      0,
+      0,
+      0,
+      "",
+      0,
+      0,
+      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      '',
+      0,
+      0
+    );
+  }
+
+  /**
+   * @param int $taskId
+   * @param string $notes
+   * @param User $user
    */
   public static function editNotes($taskId, $notes, $user){
     global $FACTORIES;

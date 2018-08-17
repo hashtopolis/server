@@ -64,6 +64,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
 
   $orig = 0;
+  $origTask = null;
   $origType = 0;
   $hashlistId = 0;
   $copy = null;
@@ -72,6 +73,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
     $copy = $FACTORIES::getPretaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
+      $origTask = $copy;
       $origType = 2;
       $copy->setId(0);
       $match = array();
@@ -90,55 +92,20 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
     if ($copy != null) {
       $orig = $copy->getId();
       $origType = 1;
-      $copy = new Pretask(
-        0,
-        $copy->getTaskName(),
-        $copy->getAttackCmd(),
-        $copy->getChunkTime(),
-        $copy->getStatusTimer(),
-        $copy->getColor(),
-        $copy->getIsSmall(),
-        $copy->getIsCpuTask(),
-        $copy->getUseNewBench(),
-        0,
-        0,
-        $copy->getCrackerBinaryTypeId()
-      );
+      $origTask = $copy;
+      $copy = PretaskUtils::getFromTask($copy);
     }
   }
   if ($copy === null) {
-    $copy = new Pretask(
-      0,
-      '',
-      $CONFIG->getVal(DConfig::HASHLIST_ALIAS)." ",
-      $CONFIG->getVal(DConfig::CHUNK_DURATION),
-      $CONFIG->getVal(DConfig::STATUS_TIMER),
-      '',
-      0,
-      0,
-      $CONFIG->getVal(DConfig::DEFAULT_BENCH),
-      0,
-      0,
-      0
-    );
+    $copy = PretaskUtils::getDefault();
   }
 
   $origFiles = array();
-  if ($orig > 0) {
-    if ($origType == 1) {
-      $qF = new QueryFilter(FileTask::TASK_ID, $orig, "=");
-      $ff = $FACTORIES::getFileTaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-      foreach ($ff as $f) {
-        $origFiles[] = $f->getFileId();
-      }
-    }
-    else {
-      $qF = new QueryFilter(FilePretask::PRETASK_ID, $orig, "=");
-      $ff = $FACTORIES::getFilePretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
-      foreach ($ff as $f) {
-        $origFiles[] = $f->getFileId();
-      }
-    }
+  if ($origType == 1) {
+    $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfTask($origTask));
+  }
+  else if($origType == 2){
+    $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfPretask($origTask));
   }
 
   $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
