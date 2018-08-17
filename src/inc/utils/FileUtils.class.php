@@ -14,6 +14,42 @@ use DBA\FileDelete;
 
 class FileUtils {
   /**
+   * @param User $user 
+   * @param int[] $checkedFilesIds 
+   * @return array
+   */
+  public static function loadFilesByCategory($user, $checkedFilesIds){
+    global $FACTORIES;
+
+    $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+    $oF = new OrderFilter(File::FILENAME, "ASC");
+    $qF = new ContainFilter(File::ACCESS_GROUP_ID, $accessGroupIds);
+    $allFiles = $FACTORIES::getFileFactory()->filter([$FACTORIES::ORDER => $oF, $FACTORIES::FILTER => $qF]);
+    $rules = [];
+    $wordlists = [];
+    $other = [];
+    foreach ($allFiles as $singleFile) {
+      $set = new DataSet();
+      $checked = "0";
+      if (in_array($singleFile->getId(), $checkedFilesIds)) {
+        $checked = "1";
+      }
+      $set->addValue('checked', $checked);
+      $set->addValue('file', $singleFile);
+      if ($singleFile->getFileType() == DFileType::RULE) {
+        $rules[] = $set;
+      }
+      else if($singleFile->getFileType() == DFileType::WORDLIST){
+        $wordlists[] = $set;
+      }
+      else if($singleFile->getFileType() == DFileType::OTHER){
+        $other[] = $set;
+      }
+    }
+    return [$rules, $wordlists, $other];
+  }
+
+  /**
    * @param int $fileId
    * @param int $fileType
    * @param User $user

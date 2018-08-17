@@ -11,7 +11,6 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
-use DBA\ContainFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -371,33 +370,11 @@ else if (isset($_GET['new'])) {
       }
     }
   }
-  $oF = new OrderFilter(File::FILENAME, "ASC");
-  $qF = new ContainFilter(File::ACCESS_GROUP_ID, $accessGroupIds);
-  $allFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::ORDER => $oF));
-  $rules = [];
-  $wordlists = [];
-  $other = [];
-  foreach ($allFiles as $singleFile) {
-    $set = new DataSet();
-    $checked = "0";
-    if (in_array($singleFile->getId(), $origFiles)) {
-      $checked = "1";
-    }
-    $set->addValue('checked', $checked);
-    $set->addValue('file', $singleFile);
-    if ($singleFile->getFileType() == DFileType::RULE) {
-      $rules[] = $set;
-    }
-    else if($singleFile->getFileType() == DFileType::WORDLIST){
-      $wordlists[] = $set;
-    }
-    else if($singleFile->getFileType() == DFileType::OTHER){
-      $other[] = $set;
-    }
-  }
-  $OBJECTS['wordlists'] = $wordlists;
-  $OBJECTS['rules'] = $rules;
-  $OBJECTS['other'] = $other;
+
+  $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
+  $OBJECTS['wordlists'] = $arr[0];
+  $OBJECTS['rules'] = $arr[1];
+  $OBJECTS['other'] = $arr[2];
 
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
   $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
