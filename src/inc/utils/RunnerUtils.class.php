@@ -22,8 +22,11 @@ class RunnerUtils {
    * @throws HTException 
    * @return string
    */
-  public static function getStatus(){
+  public static function getStatus($exception = true){
     if(!self::isAvailable()){
+      if(!$exception){
+        return "Not available!";
+      }
       throw new HTException("Cannot get status of runner because it's not available!");
     }
     $dir = self::getDir();
