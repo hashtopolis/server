@@ -79,12 +79,7 @@ if ($INSTALL) {
     $ACCESS_CONTROL = new AccessControl($LOGIN->getUser());
   }
 
-  $res = $FACTORIES::getConfigFactory()->filter(array());
-  $CONFIG = new DataSet();
-  foreach ($res as $entry) {
-    $CONFIG->addValue($entry->getItem(), $entry->getValue());
-  }
-  $OBJECTS['config'] = $CONFIG;
+  $OBJECTS['config'] = SConfig::getInstance();
 
   define("APP_NAME", ($CONFIG->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
 

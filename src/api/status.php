@@ -7,11 +7,9 @@ use DBA\QueryFilter;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
-/** @var $CONFIG DataSet */
-
 $answer = array();
 
-$qF = new QueryFilter(Agent::LAST_TIME, time() - $CONFIG->getVal(DConfig::AGENT_TIMEOUT), ">");
+$qF = new QueryFilter(Agent::LAST_TIME, time() - SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT), ">");
 $onlineAgents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
 
 $answer[DStats::AGENTS_ONLINE] = sizeof($onlineAgents);
@@ -26,7 +24,7 @@ foreach ($onlineAgents as $agent) {
     $qF = new QueryFilter(Chunk::TASK_ID, $assignment->getTaskId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array());
     foreach ($chunks as $chunk) {
-      if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getAgentId() == $agent->getId()) {
+      if (max($chunk->getDispatchTime(), $chunk->getSolveTime()) > time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && $chunk->getAgentId() == $agent->getId()) {
         $activeAgents[] = $agent;
         $totalSpeed += $chunk->getSpeed();
         break;
@@ -59,4 +57,4 @@ $answer[DStats::TASKS_RUNNING] = sizeof($runningTasks);
 $answer[DStats::TASKS_QUEUED] = sizeof($queuedTasks);
 
 header("Content-Type: application/json");
-echo json_encode($answer, true);
+echo json_encode($answer);

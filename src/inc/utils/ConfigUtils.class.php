@@ -67,8 +67,7 @@ class ConfigUtils {
   public static function updateConfig($arr) {
     global $OBJECTS, $FACTORIES;
     
-    /** @var DataSet $CONFIG */
-    $CONFIG = $OBJECTS['config'];
+    $CONFIG = SConfig::getInstance();
     foreach ($arr as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
@@ -101,6 +100,7 @@ class ConfigUtils {
         }
       }
     }
+    SConfig::reload();
     $OBJECTS['config'] = $CONFIG;
   }
   
