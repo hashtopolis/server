@@ -16,7 +16,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (isset($_GET['download'])) {
   $agentHandler = new AgentHandler();

@@ -9,7 +9,7 @@ session_start();
 
 $OBJECTS = array();
 
-$VERSION = "0.7.0-rc1";
+$VERSION = "0.x.x";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
@@ -79,14 +79,9 @@ if ($INSTALL) {
     $ACCESS_CONTROL = new AccessControl($LOGIN->getUser());
   }
 
-  $res = $FACTORIES::getConfigFactory()->filter(array());
-  $CONFIG = new DataSet();
-  foreach ($res as $entry) {
-    $CONFIG->addValue($entry->getItem(), $entry->getValue());
-  }
-  $OBJECTS['config'] = $CONFIG;
+  $OBJECTS['config'] = SConfig::getInstance();
 
-  define("APP_NAME", ($CONFIG->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
+  define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
 
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;

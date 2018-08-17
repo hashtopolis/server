@@ -23,6 +23,7 @@ use DBA\TaskWrapper;
 use DBA\Zap;
 use DBA\AgentBinary;
 use DBA\AgentStat;
+use DBA\FileDelete;
 
 /**
  *
@@ -51,18 +52,15 @@ class Util {
 	}
 
   public static function isYubikeyEnabled() {
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-
-    $clientId = $CONFIG->getVal(DConfig::YUBIKEY_ID);
+    $clientId = SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID);
     if (!is_numeric($clientId) || $clientId <= 0) {
       return false;
     }
-    $secretKey = $CONFIG->getVal(DConfig::YUBIKEY_KEY);
+    $secretKey = SConfig::getInstance()->getVal(DConfig::YUBIKEY_KEY);
     if (!base64_decode($secretKey)) {
       return false;
     }
-    $apiUrl = $CONFIG->getVal(DConfig::YUBIKEY_URL);
+    $apiUrl = SConfig::getInstance()->getVal(DConfig::YUBIKEY_URL);
     if (filter_var($apiUrl, FILTER_VALIDATE_URL) === false) {
       return false;
     }
@@ -76,13 +74,12 @@ class Util {
    * @param $message string
    */
   public static function createLogEntry($issuer, $issuerId, $level, $message) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     $count = $FACTORIES::getLogEntryFactory()->countFilter(array());
-    if ($count > $CONFIG->getVal(DConfig::NUMBER_LOGENTRIES) * 1.2) {
+    if ($count > SConfig::getInstance()->getVal(DConfig::NUMBER_LOGENTRIES) * 1.2) {
       // if we have exceeded the log entry limit by 20%, delete the oldest ones
-      $toDelete = floor($CONFIG->getVal(DConfig::NUMBER_LOGENTRIES) * 0.2);
+      $toDelete = floor(SConfig::getInstance()->getVal(DConfig::NUMBER_LOGENTRIES) * 0.2);
       $oF = new OrderFilter(LogEntry::TIME, "ASC LIMIT $toDelete");
       $FACTORIES::getLogEntryFactory()->massDeletion(array($FACTORIES::ORDER => $oF));
     }
@@ -137,9 +134,10 @@ class Util {
    * @param $path string
    * @param $name string
    * @param $type string
+   * @param $accessGroupId int
    * @return bool true if the save of the file model succeeded
    */
-  public static function insertFile($path, $name, $type) {
+  public static function insertFile($path, $name, $type, $accessGroupId) {
     global $FACTORIES;
 
     $fileType = DFileType::OTHER;
@@ -149,7 +147,12 @@ class Util {
     else if ($type == 'dict'){
       $fileType = DFileType::WORDLIST;
     }
-    $file = new File(0, $name, Util::filesize($path), 1, $fileType);
+
+    // check if there is an old deletion request for the same filename
+    $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
+    $FACTORIES::getFileDeleteFactory()->massDeletion([$FACTORIES::FILTER => $qF]);
+
+    $file = new File(0, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
     $file = $FACTORIES::getFileFactory()->save($file);
     if ($file == null) {
       return false;
@@ -162,8 +165,7 @@ class Util {
    * @return array
    */
   public static function getTaskInfo($task) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -186,7 +188,7 @@ class Util {
     }
 
     $isActive = false;
-    if (time() - $maxTime < $CONFIG->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
+    if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
     return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
@@ -194,9 +196,10 @@ class Util {
 
   /**
    * @param $task Task
+   * @param $accessGroups AccessGroup[]
    * @return array
    */
-  public static function getFileInfo($task) {
+  public static function getFileInfo($task, $accessGroups) {
     global $FACTORIES;
 
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", $FACTORIES::getFileTaskFactory());
@@ -206,13 +209,17 @@ class Util {
     $files = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
     $sizeFiles = 0;
     $fileSecret = false;
+    $noAccess = false;
     foreach ($files as $file) {
       if ($file->getIsSecret() == 1) {
         $fileSecret = true;
       }
+      if(!in_array($file->getAccessGroupId(), Util::arrayOfIds($accessGroups))){
+        $noAccess = true;
+      }
       $sizeFiles += $file->getSize();
     }
-    return array(sizeof($files), $fileSecret, $sizeFiles, $files);
+    return array(sizeof($files), $fileSecret, $sizeFiles, $files, $noAccess);
   }
 
   /**
@@ -255,6 +262,7 @@ class Util {
     global $FACTORIES, $OBJECTS, $LOGIN;
 
     $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
+    $accessGroups = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
 
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
     $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, ($archived)?1:0, "=");
@@ -310,8 +318,12 @@ class Util {
 
 
           $taskInfo = Util::getTaskInfo($task);
-          $fileInfo = Util::getFileInfo($task);
+          $fileInfo = Util::getFileInfo($task, $accessGroups);
           $chunkInfo = Util::getChunkInfo($task);
+
+          if($fileInfo[4]){
+            continue;
+          }
 
           $subSet->addValue('sumProgress', $taskInfo[0]);
           $subSet->addValue('numFiles', $fileInfo[0]);
@@ -355,7 +367,11 @@ class Util {
           continue;
         }
         $taskInfo = Util::getTaskInfo($task);
-        $fileInfo = Util::getFileInfo($task);
+        $fileInfo = Util::getFileInfo($task, $accessGroups);
+        if($fileInfo[4]){
+          continue;
+        }
+
         $chunkInfo = Util::getChunkInfo($task);
         $hashlist = $FACTORIES::getHashlistFactory()->get($taskWrapper->getHashlistId());
         $set->addValue('taskId', $task->getId());
@@ -419,8 +435,7 @@ class Util {
   }
 
   public static function agentStatCleaning() {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     $entry = $FACTORIES::getStoredValueFactory()->get(DStats::LAST_STAT_CLEANING);
     if ($entry == null) {
@@ -428,7 +443,7 @@ class Util {
       $FACTORIES::getStoredValueFactory()->save($entry);
     }
     if (time() - $entry->getVal() > 600) {
-      $lifetime = intval($CONFIG->getVal(DConfig::AGENT_DATA_LIFETIME));
+      $lifetime = intval(SConfig::getInstance()->getVal(DConfig::AGENT_DATA_LIFETIME));
       if($lifetime <= 0){
         $lifetime = 3600;
       }
@@ -652,11 +667,8 @@ class Util {
    * @return bool true if at least one character is in the blacklist
    */
   public static function containsBlacklistedChars($string) {
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-
-    for ($i = 0; $i < strlen($CONFIG->getVal(DConfig::BLACKLIST_CHARS)); $i++) {
-      if (strpos($string, $CONFIG->getVal(DConfig::BLACKLIST_CHARS)[$i]) !== false) {
+    for ($i = 0; $i < strlen(SConfig::getInstance()->getVal(DConfig::BLACKLIST_CHARS)); $i++) {
+      if (strpos($string, SConfig::getInstance()->getVal(DConfig::BLACKLIST_CHARS)[$i]) !== false) {
         return true;
       }
     }
@@ -928,12 +940,9 @@ class Util {
    * @return string basic server url
    */
   public static function buildServerUrl() {
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-
     // when the server hostname is set on the config, use this
-    if (strlen($CONFIG->getVal(DConfig::BASE_HOST)) > 0) {
-      return $CONFIG->getVal(DConfig::BASE_HOST);
+    if (strlen(SConfig::getInstance()->getVal(DConfig::BASE_HOST)) > 0) {
+      return SConfig::getInstance()->getVal(DConfig::BASE_HOST);
     }
 
     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "http://";
@@ -1042,13 +1051,10 @@ class Util {
    * @return true on success, false on failure
    */
   public static function sendMail($address, $subject, $text, $plaintext) {
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-
     $boundary = uniqid('np');
 
     $headers = "MIME-Version: 1.0\r\n";
-    $headers .= "From: " . $CONFIG->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . $CONFIG->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
+    $headers .= "From: " . SConfig::getInstance()->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . SConfig::getInstance()->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
     $headers .= "To: " . $address . "\r\n";
     $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
 

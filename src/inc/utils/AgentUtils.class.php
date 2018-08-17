@@ -22,11 +22,8 @@ class AgentUtils {
    * @return string
    */
   public static function getTempStatusColor($temp, $agent){
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-
     if($temp === false){
-      if(time() - $agent->getLastTime() < $CONFIG->getVal(DConfig::AGENT_TIMEOUT)){
+      if(time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)){
         return "#42d4f4";
       }
       return "#CCCCCC";
@@ -57,11 +54,8 @@ class AgentUtils {
    * @return string
    */
   public static function getUtilStatusColor($util, $agent){
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-
     if($util === false){
-      if(time() - $agent->getLastTime() < $CONFIG->getVal(DConfig::AGENT_TIMEOUT)){
+      if(time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)){
         return "#42d4f4";
       }
       return "#CCCCCC";
@@ -88,10 +82,9 @@ class AgentUtils {
   }
 
   public static function getGraphData($agent, $types){
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
-    $limit = intval($CONFIG->getVal(DConfig::AGENT_STAT_LIMIT));
+    $limit = intval(SConfig::getInstance()->getVal(DConfig::AGENT_STAT_LIMIT));
     if($limit <= 0){
       $limit = 100;
     }
@@ -125,15 +118,15 @@ class AgentUtils {
           $datasets[$pos] = array(
             "label" => "Dev #" . ($i + 1) . " - " . $yLabels[$entry->getStatType()],
             "fill" => false,
-            "lineTension" => ($CONFIG->getVal(DConfig::AGENT_STAT_TENSION) == 1)?0:1, 
+            "lineTension" => (SConfig::getInstance()->getVal(DConfig::AGENT_STAT_TENSION) == 1)?0:1,
             "yAxisID" => $entry->getStatType(),
             "backgroundColor" => $colors[$pos%sizeof($colors)],
 					  "borderColor" => $colors[$pos%sizeof($colors)],
             "data" => []
           );
         }
-        if(!in_array(date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()), $xlabels)){
-          array_unshift($xlabels, date($CONFIG->getVal(DConfig::TIME_FORMAT), $entry->getTime()));
+        if(!in_array(date(SConfig::getInstance()->getVal(DConfig::TIME_FORMAT), $entry->getTime()), $xlabels)){
+          array_unshift($xlabels, date(SConfig::getInstance()->getVal(DConfig::TIME_FORMAT), $entry->getTime()));
         }
         array_unshift($datasets[$pos]['data'], (int)$data[$i]);
       }

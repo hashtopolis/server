@@ -7,8 +7,7 @@ use DBA\RegVoucher;
 
 class APIRegisterAgent extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     //check required values
     if (!PQueryRegister::isValid($QUERY)) {
@@ -27,7 +26,7 @@ class APIRegisterAgent extends APIBasic {
     $token = Util::randomString(10);
     $agent = new Agent(0, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, 0, "");
     
-    if ($CONFIG->getVal(DConfig::VOUCHER_DELETION) == 0) {
+    if (SConfig::getInstance()->getVal(DConfig::VOUCHER_DELETION) == 0) {
       $FACTORIES::getRegVoucherFactory()->delete($voucher);
     }
     $agent = $FACTORIES::getAgentFactory()->save($agent);

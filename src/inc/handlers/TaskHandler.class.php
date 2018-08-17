@@ -97,6 +97,18 @@ class TaskHandler implements Handler {
           $ACCESS_CONTROL->checkPermission(DTaskAction::ARCHIVE_SUPERTASK_PERM);
           TaskUtils::archiveSupertask($_POST['supertaskId'], $ACCESS_CONTROL->getUser());
           break;
+        case DTaskAction::CHANGE_ATTACK:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::CHANGE_ATTACK_PERM);
+          TaskUtils::changeAttackCmd($_POST['task'], $_POST['attackCmd'], $ACCESS_CONTROL->getUser());
+          break;
+        case DTaskAction::DELETE_ARCHIVED:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_ARCHIVED_PERM);
+          TaskUtils::deleteArchived($ACCESS_CONTROL->getUser());
+          break;
+        case DTaskAction::EDIT_NOTES:
+          $ACCESS_CONTROL->checkPermission(DTaskAction::EDIT_NOTES_PERM);
+          TaskUtils::editNotes($_POST['task'], $_POST['notes'], $ACCESS_CONTROL->getUser());
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
@@ -108,12 +120,12 @@ class TaskHandler implements Handler {
   }
 
   private function create() {
-    /** @var DataSet $CONFIG */
     /** @var $LOGIN Login */
-    global $FACTORIES, $CONFIG, $LOGIN, $ACCESS_CONTROL;
+    global $FACTORIES, $LOGIN, $ACCESS_CONTROL;
 
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
+    $notes = htmlentities($_POST["notes"], ENT_QUOTES, "UTF-8");
     $cmdline = @$_POST["cmdline"];
     $chunk = intval(@$_POST["chunk"]);
     $status = intval(@$_POST["status"]);
@@ -125,18 +137,29 @@ class TaskHandler implements Handler {
     $crackerBinaryTypeId = intval($_POST['crackerBinaryTypeId']);
     $crackerBinaryVersionId = intval($_POST['crackerBinaryVersionId']);
     $color = @$_POST["color"];
+    $staticChunking = intval(@$_POST['staticChunking']);
+    $chunkSize = intval(@$_POST['chunkSize']);
+    $priority = intval(@$_POST['priority']);
 
     $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
     $hashlist = $FACTORIES::getHashlistFactory()->get($_POST["hashlist"]);
     $accessGroup = $FACTORIES::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
 
-    if (strpos($cmdline, $CONFIG->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-      UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . $CONFIG->getVal(DConfig::HASHLIST_ALIAS) . ")!");
+    if (strpos($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+      UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
     }
     else if ($accessGroup == null) {
       UI::addMessage(UI::ERROR, "Invalid access group!");
+      return;
+    }
+    else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
+      UI::addMessage(UI::ERROR, "Invalid static chunking value selected!");
+      return;
+    }
+    else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
+      UI::addMessage(UI::ERROR, "Invalid chunk size / number of chunks for static chunking selected!");
       return;
     }
     else if (Util::containsBlacklistedChars($cmdline)) {
@@ -171,6 +194,9 @@ class TaskHandler implements Handler {
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
+    if($priority < 0){
+      $priority = 0;
+    }
     if($isPrince && !$useNewBench){
       // enforce speed benchmark when using prince
       $useNewBench = 1;
@@ -188,7 +214,7 @@ class TaskHandler implements Handler {
     }
 
     $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, 0, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
+    $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
     $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
 
     if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
@@ -200,7 +226,7 @@ class TaskHandler implements Handler {
         $status,
         0,
         0,
-        0,
+        $priority,
         $color,
         $isSmall,
         $isCpuTask,
@@ -210,7 +236,10 @@ class TaskHandler implements Handler {
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
         0,
-        $isPrince
+        $isPrince,
+        $notes,
+        $staticChunking,
+        $chunkSize
       );
     }
     else {
@@ -228,7 +257,7 @@ class TaskHandler implements Handler {
         $copy->getStatusTimer(),
         0,
         0,
-        0,
+        $priority,
         $copy->getColor(),
         $copy->getIsSmall(),
         $copy->getIsCpuTask(),
@@ -237,6 +266,9 @@ class TaskHandler implements Handler {
         $crackerBinary->getId(),
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
+        0,
+        0,
+        $notes,
         0,
         0
       );

@@ -5,8 +5,7 @@ use DBA\QueryFilter;
 
 class APICheckClientVersion extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
     
     // check if provided hash is the same as script and send file contents if not
     if (!PQueryCheckClientVersion::isValid($QUERY)) {
@@ -29,7 +28,7 @@ class APICheckClientVersion extends APIBasic {
           PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
           PResponseClientUpdate::RESPONSE => PValues::SUCCESS,
           PResponseClientUpdate::VERSION => PValuesUpdateVersion::NEW_VERSION,
-          PResponseClientUpdate::URL => Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/agents.php?download=" . $result->getId()
+          PResponseClientUpdate::URL => Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/agents.php?download=" . $result->getId()
         )
       );
     }

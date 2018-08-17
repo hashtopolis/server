@@ -113,7 +113,7 @@ CREATE TABLE `AgentBinary` (
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
   (1, 'csharp', '0.52.2', 'Windows, Linux(mono), OS X(mono)', 'hashtopolis.exe'),
-  (2, 'python', '0.1.6', 'Windows, Linux, OS X', 'hashtopolis.zip');
+  (2, 'python', '0.1.7', 'Windows, Linux, OS X', 'hashtopolis.zip');
 
 -- --------------------------------------------------------
 
@@ -301,7 +301,7 @@ CREATE TABLE `CrackerBinary` (
   ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '4.1.0', 'https://hashcat.net/files/hashcat-4.1.0.7z', 'hashcat');
+  (1, 1, '4.2.1', 'https://hashcat.net/files/hashcat-4.2.1.7z', 'hashcat');
 
 -- --------------------------------------------------------
 
@@ -361,6 +361,12 @@ CREATE TABLE `FileTask` (
   `taskId`     INT(11) NOT NULL
 )
   ENGINE = InnoDB;
+
+CREATE TABLE `FileDelete` (
+  `fileDeleteId` int(11) NOT NULL,
+  `filename` varchar(256) NOT NULL,
+  `time` int(11) NOT NULL
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
 
@@ -875,9 +881,18 @@ CREATE TABLE `Task` (
   `crackerBinaryTypeId` INT(11)                 NULL,
   `taskWrapperId`       INT(11)                 NOT NULL,
   `isArchived`          INT(11)                 NOT NULL,
-  `isPrince`            INT(11)                 NOT NULL
+  `isPrince`            INT(11)                 NOT NULL,
+  `notes`               TEXT                    NOT NULL,
+  `staticChunks`        INT(11)                 NOT NULL,
+  `chunkSize`           BIGINT(20)              NOT NULL
 )
   ENGINE = InnoDB;
+
+CREATE TABLE `TaskDebugOutput` (
+  `taskDebugOutputId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `output` varchar(256) NOT NULL
+) ENGINE=InnoDB;
 
 -- --------------------------------------------------------
 
@@ -986,6 +1001,9 @@ ALTER TABLE `ApiGroup`
 ALTER TABLE `FileDownload`
   ADD PRIMARY KEY (`fileDownloadId`);
 
+
+ALTER TABLE `FileDelete`
+  ADD PRIMARY KEY (`fileDeleteId`);
 
 --
 -- Indizes der exportierten Tabellen
@@ -1217,6 +1235,9 @@ ALTER TABLE `Task`
   ADD PRIMARY KEY (`taskId`),
   ADD KEY `crackerBinaryId` (`crackerBinaryId`);
 
+ALTER TABLE `TaskDebugOutput`
+  ADD PRIMARY KEY (`taskDebugOutputId`);
+
 --
 -- Indizes für die Tabelle `TaskWrapper`
 --
@@ -1253,6 +1274,10 @@ ALTER TABLE `ApiGroup`
 
 ALTER TABLE `FileDownload`
   MODIFY `fileDownloadId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `FileDelete`
+  MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
+
 
 --
 -- AUTO_INCREMENT für Tabelle `AccessGroup`
@@ -1408,6 +1433,10 @@ ALTER TABLE `SupertaskPretask`
 --
 ALTER TABLE `Task`
   MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `TaskDebugOutput`
+  MODIFY `taskDebugOutputId` int(11) NOT NULL AUTO_INCREMENT;
+  
 --
 -- AUTO_INCREMENT für Tabelle `TaskWrapper`
 --

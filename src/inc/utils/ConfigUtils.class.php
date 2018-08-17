@@ -76,12 +76,10 @@ class ConfigUtils {
   public static function updateConfig($arr) {
     global $OBJECTS, $FACTORIES;
 
-    /** @var DataSet $CONFIG */
-    $CONFIG = $OBJECTS['config'];
     foreach ($arr as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
-        if ($CONFIG->getVal($name) == $val) {
+        if (SConfig::getInstance()->getVal($name) == $val) {
           continue; // the value was not changed, so we don't need to update it
         }
 
@@ -104,13 +102,14 @@ class ConfigUtils {
               throw new HTException("Failed to update max plaintext length!");
             }
           }
-          $CONFIG->addValue($name, $val);
+          SConfig::getInstance()->addValue($name, $val);
           $config->setValue($val);
           ConfigUtils::set($config, false);
         }
       }
     }
-    $OBJECTS['config'] = $CONFIG;
+    SConfig::reload();
+    $OBJECTS['config'] = SConfig::getInstance();
   }
 
   /**

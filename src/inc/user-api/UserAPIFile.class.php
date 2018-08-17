@@ -33,7 +33,7 @@ class UserAPIFile extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -42,10 +42,10 @@ class UserAPIFile extends UserAPIBasic {
     if (!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::FILE_TYPE])) {
       throw new HTException("Invalid query!");
     }
-    FileUtils::setFileType($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILE_TYPE]);
+    FileUtils::setFileType($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILE_TYPE], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -54,10 +54,10 @@ class UserAPIFile extends UserAPIBasic {
     if (!isset($QUERY[UQueryFile::FILE_ID])) {
       throw new HTException("Invalid query!");
     }
-    FileUtils::delete($QUERY[UQueryFile::FILE_ID]);
+    FileUtils::delete($QUERY[UQueryFile::FILE_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -66,10 +66,10 @@ class UserAPIFile extends UserAPIBasic {
     if (!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::SET_SECRET])) {
       throw new HTException("Invalid query!");
     }
-    FileUtils::switchSecret($QUERY[UQueryFile::FILE_ID], ($QUERY[UQueryFile::SET_SECRET]) ? 1 : 0);
+    FileUtils::switchSecret($QUERY[UQueryFile::FILE_ID], ($QUERY[UQueryFile::SET_SECRET]) ? 1 : 0, $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -78,10 +78,10 @@ class UserAPIFile extends UserAPIBasic {
     if (!isset($QUERY[UQueryFile::FILE_ID]) || !isset($QUERY[UQueryFile::FILENAME])) {
       throw new HTException("Invalid query!");
     }
-    FileUtils::saveChanges($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILENAME]);
+    FileUtils::saveChanges($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILENAME], 0, $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -110,20 +110,20 @@ class UserAPIFile extends UserAPIBasic {
     }
     switch ($QUERY[UQueryFile::SOURCE]) {
       case 'url':
-        FileUtils::add('url', [], ['url' => $QUERY[UQueryFile::DATA]], $type);
+        FileUtils::add('url', [], ['url' => $QUERY[UQueryFile::DATA], 'accessGroupId' => $QUERY[UQueryFile::ACCESS_GROUP_ID]], $type);
         break;
       case 'import':
-        FileUtils::add('import', [], ['imfile' => [$QUERY[UQueryFile::DATA]]], $type);
+        FileUtils::add('import', [], ['imfile' => [$QUERY[UQueryFile::DATA]], 'accessGroupId' => $QUERY[UQueryFile::ACCESS_GROUP_ID]], $type);
         break;
       case 'inline':
-        FileUtils::add('inline', [], ['filename' => $QUERY[UQueryFile::FILENAME], 'data' => base64_decode($QUERY[UQueryFile::DATA])], $type);
+        FileUtils::add('inline', [], ['filename' => $QUERY[UQueryFile::FILENAME], 'data' => base64_decode($QUERY[UQueryFile::DATA]), 'accessGroupId' => $QUERY[UQueryFile::ACCESS_GROUP_ID]], $type);
         break;
       default:
         throw new HTException("Invalid source!");
     }
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -132,7 +132,7 @@ class UserAPIFile extends UserAPIBasic {
     if (!isset($QUERY[UQueryFile::FILE_ID])) {
       throw new HTException("Invalid query!");
     }
-    $file = FileUtils::getFile($QUERY[UQueryFile::FILE_ID]);
+    $file = FileUtils::getFile($QUERY[UQueryFile::FILE_ID], $this->user);
     $response = [
       UResponseFile::SECTION => $QUERY[UQueryFile::SECTION],
       UResponseFile::REQUEST => $QUERY[UQueryFile::REQUEST],
@@ -146,13 +146,13 @@ class UserAPIFile extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
    */
   private function listFiles($QUERY) {
-    $files = FileUtils::getFiles();
+    $files = FileUtils::getFiles($this->user);
     $all = [];
     $response = [
       UResponseFile::SECTION => $QUERY[UQueryFile::SECTION],

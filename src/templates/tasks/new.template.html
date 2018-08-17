@@ -3,7 +3,7 @@
 <h2>New task</h2>
 {%TEMPLATE->struct/messages%}
 <form class='form-inline' action="tasks.php{{IF [[orig]] > 0 && [[origType]] == 2}}?new=true&copyPre=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data">
-  <div class="row">
+  <div class="row" style="width: 110%">
     <div class='col-md-8'>
       <input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
       {{IF [[orig]] > 0 && [[origType]] == 2}}
@@ -19,42 +19,56 @@
           <tr>
             <td>Name:</td>
             <td>
-              <input type="text" class='form-control' name="name" value="[[copy.getTaskName()]]">
+              <input type="text" class='form-control full-width' name="name" value="[[copy.getTaskName()]]">
             </td>
           </tr>
           <tr>
             <td>Hashlist:</td>
             <td>
-              <select class='form-control' name="hashlist">
+              <select class='form-control full-width' name="hashlist">
                 {{FOREACH list;[[lists]]}}
                 <option value="[[list.getVal('id')]]" {{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
                 {{ENDFOREACH}}
-              </select> (hashlist needs to be created before task)
+              </select>
             </td>
           </tr>
           <tr>
             <td>Command line:</td>
             <td>
-              <textarea name="cmdline" class='form-control' cols="64" id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
-              <br>
+              <textarea name="cmdline" class='form-control my-1 full-width' id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
               Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
-              If you have Linux agents, please mind the filename case sensitivity!<br>
-              Also, don't use any of these parameters, they will be invoked automatically:<br>
-              hash-type, limit, outfile-check-dir, outfile-check-timer, potfile-disable, remove,<br>
-              remove-timer, separator, session, skip, status, status-timer
+              If you have Linux agents, please mind the filename case sensitivity!
+            </td>
+          </tr>
+          <tr>
+            <td>Priority:</td>
+            <td>
+              <input type="number" class='form-control' name="priority" value="[[copy.getPriority()]]" title="Priority">
+            </td>
+          </tr>
+          <tr>
+            <td>Task notes:</td>
+            <td>
+              <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here..."></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td>Color:</td>
+            <td>
+              #<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
             </td>
           </tr>
           <tr>
             <td>Chunk size:</td>
             <td>
-              <input type="text" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              <input type="number" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
               seconds
             </td>
           </tr>
           <tr>
             <td>Status timer:</td>
             <td>
-              <input type="text" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              <input type="number" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
               seconds
             </td>
           </tr>
@@ -65,12 +79,6 @@
                 <option value="0" {{IF [[copy.getUseNewBench()]] == 0}} selected{{ENDIF}}>Runtime Benchmark</option>
                 <option value="1" {{IF [[copy.getUseNewBench()]] == 1}} selected{{ENDIF}}>Speed Test</option>
               </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Color:</td>
-            <td>
-              #<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
             </td>
           </tr>
           <tr>
@@ -92,26 +100,11 @@
             </td>
           </tr>
           <tr>
-            <td>This is a PRINCE task (the command line is passed to prince which will be piped to the cracker):</td>
-            <td>
-              <select name="isPrince" class="form-control" title="Is PRINCE" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-                <option value="0" {{IF [[copy.getIsPrince()]] == 0}} selected{{ENDIF}}>No</option>
-                <option value="1" {{IF [[copy.getIsPrince()]] == 1}} selected{{ENDIF}}>Yes</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Skip a given keyspace at the beginning of the task:</td>
-            <td>
-              <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-            </td>
-          </tr>
-          <tr>
             <td>Binary type to run task:</td>
             <td>
               <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
                 {{FOREACH binary;[[binaries]]}}
-                <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}} selected{{ENDIF}}>[[binary.getTypeName()]]</option>
+                  <option value="[[binary.getId()]]" {{IF [[binary.getId()]] == [[copy.getCrackerBinaryTypeId()]]}} selected{{ENDIF}}>[[binary.getTypeName()]]</option>
                 {{ENDFOREACH}}
               </select>
               <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
@@ -153,6 +146,37 @@
             </td>
           </tr>
           <tr>
+            <th colspan="2" class="text-center">
+              Advanced Section
+            </th>
+          </tr>
+          <tr>
+            <td>This is a PRINCE task:</td>
+            <td>
+              <select name="isPrince" class="form-control" title="Is PRINCE" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                <option value="0" {{IF [[copy.getIsPrince()]] == 0}} selected{{ENDIF}}>No</option>
+                <option value="1" {{IF [[copy.getIsPrince()]] == 1}} selected{{ENDIF}}>Yes</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Skip a given keyspace at the beginning of the task:</td>
+            <td>
+              <input type="number" name="skipKeyspace" class="form-control" value="[[copy.getSkipKeyspace()]]" title="Skip Keyspace" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+            </td>
+          </tr>
+          <tr>
+            <td>Use static chunking:</td>
+            <td>
+              <select name="staticChunking" class="form-control mx-1" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                <option value="0" {{IF [[copy.getStaticChunks()]] == 0}} selected{{ENDIF}}>No</option>
+                <option value="1" {{IF [[copy.getStaticChunks()]] == 1}} selected{{ENDIF}}>Fixed chunk size</option>
+                <option value="2" {{IF [[copy.getStaticChunks()]] == 2}} selected{{ENDIF}}>Fixed number of chunks</option>
+              </select>
+              <input type="number" class="form-control mx-1" name="chunkSize" title="Chunk Size / Number of Chunks" value="[[copy.getChunkSize()]]" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+            </td>
+          </tr>
+          <tr>
             <td colspan="2">
               <input type="submit" class='btn btn-light' value="Create task">
             </td>
@@ -161,13 +185,13 @@
       </div>
     </div>
     <div class='col-md-4'>
-      <div class='btn-toolbar'>
+      <div class='btn-toolbar my-1'>
         <div class='btn-group'>
-          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles()">Rules</button>
-          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles()">Wordlists</button>
+          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
+          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
+          <button id="otherButton" class='btn btn-light' onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
-      <br>
       <div id="rules">
         <div class="card">
           <div class="table-responsive">
@@ -177,18 +201,18 @@
                 <th>Size</th>
               </tr>
               {{FOREACH file;[[rules]]}}
-              <tr>
-                <td>
-                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
-                  [[file.getVal('file').getFilename()]]
-                  {{IF [[file.getVal('file').getIsSecret()]] == 1}}
-                    <span class="fas fa-lock" aria-hidden="true"></span>
-                  {{ENDIF}}
-                </td>
-                <td>
-                  [[Util::nicenum([[file.getVal('file').getSize()]])]]B
-                </td>
-              </tr>
+                <tr>
+                  <td>
+                    <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                    [[file.getVal('file').getFilename()]]
+                    {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                      <span class="fas fa-lock" aria-hidden="true"></span>
+                    {{ENDIF}}
+                  </td>
+                  <td>
+                    [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                  </td>
+                </tr>
               {{ENDFOREACH}}
             </table>
           </div>
@@ -220,30 +244,71 @@
           </div>
         </div>
       </div>
+      <div id="other">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[other]]}}
+              <tr>
+                <td>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                  [[file.getVal('file').getFilename()]]
+                  {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                    <span class="fas fa-lock" aria-hidden="true"></span>
+                  {{ENDIF}}
+                </td>
+                <td>
+                  [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                </td>
+              </tr>
+              {{ENDFOREACH}}
+            </table>
+          </div>
+        </div>
+      </div>
       <script type='text/javascript'>
-        var show = "rules";
-        toggleFiles();
+        toggleFiles('wordlists');
 
-        function toggleFiles() {
+        function toggleFiles(show) {
           var wordlist = document.getElementById('wordlists');
           var rule = document.getElementById('rules');
-          if (show === 'wordlists') {
+          var other = document.getElementById('other');
+          if (show === 'rules') {
             wordlist.style.visibility = "hidden"; // or
             wordlist.style.display = "none";
+            other.style.visibility = "hidden"; // or
+            other.style.display = "none";
             rule.style.visibility = "visible"; // or
             rule.style.display = "inline";
             document.getElementById("ruleButton").className = "btn btn-light active";
             document.getElementById("wordlistButton").className = "btn btn-light";
-            show = "rules";
+            document.getElementById("otherButton").className = "btn btn-light";
           }
-          else {
+          else if(show === 'wordlists'){
             wordlist.style.visibility = "visible"; // or
             wordlist.style.display = "inline";
             rule.style.visibility = "hidden"; // or
             rule.style.display = "none";
+            other.style.visibility = "hidden"; // or
+            other.style.display = "none";
             document.getElementById("ruleButton").className = "btn btn-light";
             document.getElementById("wordlistButton").className = "btn btn-light active";
-            show = "wordlists";
+            document.getElementById("otherButton").className = "btn btn-light";
+          }
+          else if (show === 'other') {
+            other.style.visibility = "visible"; // or
+            other.style.display = "inline";
+            rule.style.visibility = "hidden"; // or
+            rule.style.display = "none";
+            wordlist.style.visibility = "hidden"; // or
+            wordlist.style.display = "none";
+            document.getElementById("ruleButton").className = "btn btn-light";
+            document.getElementById("wordlistButton").className = "btn btn-light";
+            document.getElementById("otherButton").className = "btn btn-light active";
           }
           return false;
         }

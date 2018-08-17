@@ -99,6 +99,12 @@ switch ($QUERY[PQuery::ACTION]) {
   case PActions::SEND_PROGRESS:
     $api = new APISendProgress();
     break;
+  /**
+   * The client requests a list of filenames which are deleted on the server to check if he should clean up some files
+   */
+  case PActions::GET_FILE_STATUS:
+    $api = new APIGetFileStatus();
+    break;
 }
 
 if ($api == null) {

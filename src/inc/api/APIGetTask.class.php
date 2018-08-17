@@ -86,8 +86,7 @@ class APIGetTask extends APIBasic {
    * @param $assignment Assignment
    */
   private function sendTask($task, $assignment) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
+    global $FACTORIES;
 
     // check if the assignment is up-to-date and correct if needed
     if ($assignment == null) {
@@ -127,14 +126,14 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::RESPONSE => PValues::SUCCESS,
         PResponseGetTask::TASK_ID => (int)$task->getId(),
         PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
-        PResponseGetTask::CMD_PARAMETERS => " -p " . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
+        PResponseGetTask::CMD_PARAMETERS => " -p " . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
         PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
-        PResponseGetTask::BENCHMARK => (int)$CONFIG->getVal(DConfig::BENCHMARK_TIME),
+        PResponseGetTask::BENCHMARK => (int)SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME),
         PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),
         PResponseGetTask::FILES => $taskFiles,
         PResponseGetTask::CRACKER_ID => $task->getCrackerBinaryId(),
         PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run", // TODO: this need to be adapted also for generic
-        PResponseGetTask::HASHLIST_ALIAS => $CONFIG->getVal(DConfig::HASHLIST_ALIAS),
+        PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
         PResponseGetTask::KEYSPACE => $task->getKeyspace(),
         PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false
       )

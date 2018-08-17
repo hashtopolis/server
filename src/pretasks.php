@@ -12,7 +12,6 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var Login $LOGIN */
 /** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
 
 if (!$LOGIN->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -40,12 +39,12 @@ if (isset($_GET['id'])) {
   }
   $TEMPLATE = new Template("pretasks/detail");
   $OBJECTS['pretask'] = $pretask;
-  
+
   $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
   $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
   $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
   $OBJECTS['attachedFiles'] = $joinedFiles[$FACTORIES::getFileFactory()->getModelName()];
-  
+
   $isUsed = false;
   $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
   $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
@@ -58,19 +57,67 @@ if (isset($_GET['id'])) {
 else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
   $TEMPLATE = new Template("pretasks/new");
   $MENU->setActive("tasks_prenew");
-  
-  $qF = new QueryFilter(File::FILE_TYPE, DFileType::RULE, "=");
-  $OBJECTS['rules'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
-  
-  $qF = new QueryFilter(File::FILE_TYPE, DFileType::WORDLIST, "=");
-  $OBJECTS['wordlists'] = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF));
-  
+
+  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
+
+  $orig = 0;
+  $origTask = null;
+  $origType = 0;
+  $hashlistId = 0;
+  $copy = null;
+  if (isset($_GET["copy"])) {
+    //copied from a task
+    $copy = $FACTORIES::getPretaskFactory()->get($_GET['copy']);
+    if ($copy != null) {
+      $orig = $copy->getId();
+      $origTask = $copy;
+      $origType = 2;
+      $copy->setId(0);
+      $match = array();
+      if (preg_match('/\(copy([0-9]+)\)/i', $copy->getTaskName(), $match)) {
+        $name = $copy->getTaskName();
+        $name = str_replace($match[0], "(copy" . (++$match[1]) . ")", $name);
+        $copy->setTaskName($name);
+      }
+      else {
+        $copy->setTaskName($copy->getTaskName() . " (copy1)");
+      }
+    }
+  }
+  else if(isset($_GET['copyTask'])){
+    $copy = $FACTORIES::getTaskFactory()->get($_GET['copyTask']);
+    if ($copy != null) {
+      $orig = $copy->getId();
+      $origType = 1;
+      $origTask = $copy;
+      $copy = PretaskUtils::getFromTask($copy);
+    }
+  }
+  if ($copy === null) {
+    $copy = PretaskUtils::getDefault();
+  }
+
+  $origFiles = array();
+  if ($origType == 1) {
+    $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfTask($origTask));
+  }
+  else if($origType == 2){
+    $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfPretask($origTask));
+  }
+
+  $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
+  $OBJECTS['wordlists'] = $arr[1];
+  $OBJECTS['rules'] = $arr[0];
+  $OBJECTS['other'] = $arr[2];
+
   $OBJECTS['crackerBinaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array());
   $OBJECTS['pageTitle'] = "Create preconfigured Task";
+  $OBJECTS['copy'] = $copy;
 }
 else {
   $queryFilters = array();
-  if ($CONFIG->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
+  if (SConfig::getInstance()->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
     $queryFilters[] = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   }
   $oF1 = new OrderFilter(Pretask::PRIORITY, "DESC");
@@ -81,7 +128,7 @@ else {
     $set = new DataSet();
     $pretask = $taskList[$z];
     $set->addValue('Task', $taskList[$z]);
-    
+
     $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", $FACTORIES::getFilePretaskFactory());
     $jF = new JoinFilter($FACTORIES::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
     $joinedFiles = $FACTORIES::getFileFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
@@ -95,19 +142,19 @@ else {
         $secret = true;
       }
     }
-    
+
     $isUsed = false;
     $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
     $supertaskTasks = $FACTORIES::getSupertaskPretaskFactory()->filter(array($FACTORIES::FILTER => $qF));
     if (sizeof($supertaskTasks) > 0) {
       $isUsed = true;
     }
-    
+
     $set->addValue('numFiles', sizeof($files));
     $set->addValue('filesSize', $sizes);
     $set->addValue('fileSecret', $secret);
     $set->addValue('isUsed', $isUsed);
-    
+
     $tasks[] = $set;
   }
   $OBJECTS['tasks'] = $tasks;
