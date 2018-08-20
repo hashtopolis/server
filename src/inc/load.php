@@ -9,7 +9,7 @@ session_start();
 
 $OBJECTS = array();
 
-$VERSION = "0.x.x";
+$VERSION = "0.7.1+dev";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
@@ -64,18 +64,16 @@ if (file_exists($gitfolder) && is_dir($gitfolder)) {
 }
 $OBJECTS['gitcommit'] = $gitcommit;
 
-$LOGIN = null;
 $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
 $OBJECTS['messages'] = array();
 $OBJECTS['pageTitle'] = "";
 $ACCESS_CONTROL = new AccessControl();
 if ($INSTALL) {
-  $LOGIN = new Login();
-  $OBJECTS['login'] = $LOGIN;
-  if ($LOGIN->isLoggedin()) {
-    $OBJECTS['user'] = $LOGIN->getUser();
-    $ACCESS_CONTROL = new AccessControl($LOGIN->getUser());
+  $OBJECTS['login'] = Login::getInstance();
+  if (Login::getInstance()->isLoggedin()) {
+    $OBJECTS['user'] = Login::getInstance()->getUser();
+    $ACCESS_CONTROL = new AccessControl(Login::getInstance()->getUser());
   }
 
   $OBJECTS['config'] = SConfig::getInstance();

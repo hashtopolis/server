@@ -13,10 +13,9 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
@@ -70,7 +69,7 @@ if (isset($_GET['id'])) {
   $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
   $OBJECTS['taskWrapper'] = $taskWrapper;
 
-  $fileInfo = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfUser($LOGIN->getUser()));
+  $fileInfo = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
   if($fileInfo[4]){
     UI::printError("ERROR", "No access to this task!");
   }
@@ -292,7 +291,7 @@ else if (isset($_GET['new'])) {
     $copy->setAttackCmd(SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
 
-  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
   $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
 
   $OBJECTS['orig'] = $orig;
@@ -318,7 +317,7 @@ else if (isset($_GET['new'])) {
     $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfPretask($origTask));
   }
 
-  $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
+  $arr = FileUtils::loadFilesByCategory(Login::getInstance()->getUser(), $origFiles);
   $OBJECTS['wordlists'] = $arr[1];
   $OBJECTS['rules'] = $arr[0];
   $OBJECTS['other'] = $arr[2];

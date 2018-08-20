@@ -2,7 +2,6 @@
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
 $ACCESS_CONTROL->checkPermission(DViewControl::LOGIN_VIEW_PERM);
@@ -24,9 +23,9 @@ if (strlen($username) == 0 || strlen($password) == 0) {
   die();
 }
 
-$LOGIN->login($username, $password, $otp);
+Login::getInstance()->login($username, $password, $otp);
 
-if ($LOGIN->isLoggedin()) {
+if (Login::getInstance()->isLoggedin()) {
   if (strlen($fw) > 0) {
     $fw = urldecode($fw);
     $url = Util::buildServerUrl() . ((Util::startsWith($fw, '/')) ? "" : "/") . $fw;

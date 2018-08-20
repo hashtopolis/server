@@ -23,7 +23,6 @@ class TaskHandler implements Handler {
   }
 
   public function handle($action) {
-    /** @var $LOGIN Login */
     global $ACCESS_CONTROL;
 
     try {
@@ -119,8 +118,7 @@ class TaskHandler implements Handler {
   }
 
   private function create() {
-    /** @var $LOGIN Login */
-    global $LOGIN, $ACCESS_CONTROL;
+    global $ACCESS_CONTROL;
 
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
@@ -183,7 +181,7 @@ class TaskHandler implements Handler {
     }
 
     $qF1 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
-    $qF2 = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
+    $qF2 = new QueryFilter(AccessGroupUser::USER_ID, Login::getInstance()->getUserID(), "=");
     $accessGroupUser = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($accessGroupUser == null) {
       UI::addMessage(UI::ERROR, "No access to this access group!");

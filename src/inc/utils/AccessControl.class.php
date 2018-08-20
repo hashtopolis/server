@@ -69,13 +69,10 @@ class AccessControl {
    * @return bool true if access is granted
    */
   public function hasPermission($perm) {
-    /** @var $LOGIN Login */
-    global $LOGIN;
-
     if ($perm == DAccessControl::PUBLIC_ACCESS) {
       return true;
     }
-    else if ($perm == DAccessControl::LOGIN_ACCESS && $LOGIN->isLoggedin()) {
+    else if ($perm == DAccessControl::LOGIN_ACCESS && Login::getInstance()->isLoggedin()) {
       return true;
     }
     else if ($this->rightGroup == null) {

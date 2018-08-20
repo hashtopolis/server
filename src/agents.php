@@ -15,7 +15,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
 if (isset($_GET['download'])) {
@@ -28,7 +27,7 @@ if (isset($_GET['download'])) {
   }
 }
 
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
@@ -48,7 +47,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 // load groups for user
-$qF = new QueryFilter(AccessGroupUser::USER_ID, $LOGIN->getUserID(), "=");
+$qF = new QueryFilter(AccessGroupUser::USER_ID, Login::getInstance()->getUserID(), "=");
 $userGroups = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => $qF]);
 $accessGroupIds = array();
 foreach ($userGroups as $userGroup) {
@@ -62,7 +61,7 @@ if (isset($_GET['id'])) {
   if (!$agent) {
     UI::printError("ERROR", "Agent not found!");
   }
-  else if (!AccessUtils::userCanAccessAgent($agent, $LOGIN->getUser())) {
+  else if (!AccessUtils::userCanAccessAgent($agent, Login::getInstance()->getUser())) {
     UI::printError("ERROR", "No access to this agent!");
   }
   else {

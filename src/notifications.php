@@ -11,11 +11,10 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
 /** @var array $OBJECTS */
 /** @var array $NOTIFICATIONS */
 
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
@@ -35,7 +34,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-$qF = new QueryFilter(NotificationSetting::USER_ID, $LOGIN->getUserID(), "=");
+$qF = new QueryFilter(NotificationSetting::USER_ID, Login::getInstance()->getUserID(), "=");
 $oF = new OrderFilter(NotificationSetting::ACTION, "ASC");
 $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 $OBJECTS['notifications'] = $notifications;
@@ -46,7 +45,7 @@ if ($ACCESS_CONTROL->hasPermission(DAccessControl::SERVER_CONFIG_ACCESS)) {
   $allAgents = Factory::getAgentFactory()->filter([Factory::ORDER => $oF]);
 }
 else {
-  $qF = new QueryFilter(Agent::USER_ID, $LOGIN->getUserID(), "=");
+  $qF = new QueryFilter(Agent::USER_ID, Login::getInstance()->getUserID(), "=");
   $allAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 }
 $OBJECTS['allAgents'] = $allAgents;

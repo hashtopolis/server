@@ -4,11 +4,10 @@ class ConfigHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load
   }
-  
+
   public function handle($action) {
-    /** @var $LOGIN Login */
-    global $ACCESS_CONTROL, $LOGIN;
-    
+    global $ACCESS_CONTROL;
+
     try {
       switch ($action) {
         case DConfigAction::UPDATE_CONFIG:
@@ -28,7 +27,7 @@ class ConfigHandler implements Handler {
           break;
         case DConfigAction::CLEAR_ALL:
           $ACCESS_CONTROL->checkPermission(DConfigAction::CLEAR_ALL_PERM);
-          ConfigUtils::clearAll($LOGIN->getUser());
+          ConfigUtils::clearAll(Login::getInstance()->getUser());
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");

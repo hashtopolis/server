@@ -14,10 +14,9 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
@@ -49,7 +48,7 @@ if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE
   $allHashtypes = "{" . implode(",", $list) . "}";
   $OBJECTS['allHashtypes'] = $allHashtypes;
   $OBJECTS['hashtypes'] = $hashtypes;
-  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
   $TEMPLATE = new Template("hashlists/new");
   $OBJECTS['pageTitle'] = "Add new Hashlist";
 }
@@ -121,7 +120,7 @@ else {
   //load all hashlists
   $jF = new JoinFilter(Factory::getHashTypeFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
   $qF1 = new QueryFilter(Hashlist::FORMAT, "" . DHashlistFormat::SUPERHASHLIST, "<>", Factory::getHashlistFactory());
-  $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($LOGIN->getUser())));
+  $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser())));
   $joinedHashlists = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => [$qF1, $qF2]]);
   $hashlists = array();
   for ($x = 0; $x < sizeof($joinedHashlists[Factory::getHashlistFactory()->getModelName()]); $x++) {

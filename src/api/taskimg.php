@@ -12,10 +12,8 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
-/** @var Login $LOGIN */
-
 //check if there is a session
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   die("No access!");
 }
 

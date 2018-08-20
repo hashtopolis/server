@@ -15,16 +15,29 @@ class Login {
   private $valid   = false;
   /** @var Session $session*/
   private $session = null;
+  
+  private static $instance = null;
 
   public function setUser($user) {
     $this->user = $user;
   }
 
   /**
+   * Get an instance of the Login class
+   * @return Login
+   */
+  public static function getInstance(){
+    if(self::$instance == null){
+      self::$instance = new Login();
+    }
+    return self::$instance;
+  }
+
+  /**
    * Creates a Login-Instance and checks automatically if there is a session
    * running. It updates the session lifetime again up to the session limit.
    */
-  public function __construct() {
+  private function __construct() {
     $this->user = null;
     $this->session = null;
     $this->valid = false;

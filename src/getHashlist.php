@@ -11,7 +11,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
 $ACCESS_CONTROL->checkPermission(DViewControl::GETHASHLIST_VIEW_PERM);

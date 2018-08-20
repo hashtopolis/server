@@ -11,10 +11,9 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
 /** @var array $OBJECTS */
 
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
@@ -59,7 +58,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
   $TEMPLATE = new Template("pretasks/new");
   $MENU->setActive("tasks_prenew");
 
-  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
   $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
 
   $orig = 0;
@@ -107,7 +106,7 @@ else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::C
     $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfPretask($origTask));
   }
 
-  $arr = FileUtils::loadFilesByCategory($LOGIN->getUser(), $origFiles);
+  $arr = FileUtils::loadFilesByCategory(Login::getInstance()->getUser(), $origFiles);
   $OBJECTS['wordlists'] = $arr[1];
   $OBJECTS['rules'] = $arr[0];
   $OBJECTS['other'] = $arr[2];

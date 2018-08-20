@@ -245,11 +245,10 @@ class Util {
   }
 
   public static function loadTasks($archived = false) {
-    /** @var $LOGIN Login */
-    global $OBJECTS, $LOGIN;
+    global $OBJECTS;
 
-    $accessGroupIds = Util::getAccessGroupIds($LOGIN->getUserID());
-    $accessGroups = AccessUtils::getAccessGroupsOfUser($LOGIN->getUser());
+    $accessGroupIds = Util::getAccessGroupIds(Login::getInstance()->getUserID());
+    $accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
 
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
     $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, ($archived)?1:0, "=");
@@ -350,7 +349,7 @@ class Util {
         // normal task
         $task = Factory::getTaskFactory()->filter([Factory::FILTER => $qF], true);
         if ($task == null) {
-          Util::createLogEntry(DLogEntryIssuer::USER, $LOGIN->getUserID(), DLogEntry::WARN, "TaskWrapper (" . $taskWrapper->getId() . ") for normal task existing with containing no task!");
+          Util::createLogEntry(DLogEntryIssuer::USER, Login::getInstance()->getUserID(), DLogEntry::WARN, "TaskWrapper (" . $taskWrapper->getId() . ") for normal task existing with containing no task!");
           continue;
         }
         $taskInfo = Util::getTaskInfo($task);
