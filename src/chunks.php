@@ -16,7 +16,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::CHUNKS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::CHUNKS_VIEW_PERM);
 
 $TEMPLATE = new Template("chunks");
 $MENU->setActive("chunks");

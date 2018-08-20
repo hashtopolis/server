@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var array $OBJECTS */
 
-$ACCESS_CONTROL->checkPermission(DViewControl::FORGOT_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::FORGOT_VIEW_PERM);
 
 $TEMPLATE = new Template("forgot");
 $message = "";

@@ -6,8 +6,6 @@ class HashtypeHandler implements Handler {
   }
   
   public function handle($action) {
-    global $ACCESS_CONTROL;
-    
     try {
       switch ($action) {
         case DHashtypeAction::DELETE_HASHTYPE:
@@ -15,7 +13,7 @@ class HashtypeHandler implements Handler {
           UI::addMessage(UI::SUCCESS, "Hashtype was deleted successfully!");
           break;
         case DHashtypeAction::ADD_HASHTYPE:
-          HashtypeUtils::addHashtype($_POST['id'], $_POST['description'], $_POST['isSalted'], $ACCESS_CONTROL->getUser());
+          HashtypeUtils::addHashtype($_POST['id'], $_POST['description'], $_POST['isSalted'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "New hashtype created successfully!");
           break;
         default:

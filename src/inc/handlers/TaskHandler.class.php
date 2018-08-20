@@ -23,89 +23,87 @@ class TaskHandler implements Handler {
   }
 
   public function handle($action) {
-    global $ACCESS_CONTROL;
-
     try {
       switch ($action) {
         case DTaskAction::SET_BENCHMARK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
-          TaskUtils::setBenchmark($_POST['agentId'], $_POST['bench'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_BENCHMARK_PERM);
+          TaskUtils::setBenchmark($_POST['agentId'], $_POST['bench'], Login::getInstance()->getUser());
           break;
         case DTaskAction::SET_SMALL_TASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
-          TaskUtils::setSmallTask($_POST['task'], $_POST['isSmall'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_SMALL_TASK_PERM);
+          TaskUtils::setSmallTask($_POST['task'], $_POST['isSmall'], Login::getInstance()->getUser());
           break;
         case DTaskAction::SET_CPU_TASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_CPU_TASK_PERM);
-          TaskUtils::setCpuTask($_POST['task'], $_POST['isCpu'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_CPU_TASK_PERM);
+          TaskUtils::setCpuTask($_POST['task'], $_POST['isCpu'], Login::getInstance()->getUser());
           break;
         case DTaskAction::ABORT_CHUNK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
-          TaskUtils::abortChunk($_POST['chunk'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::ABORT_CHUNK_PERM);
+          TaskUtils::abortChunk($_POST['chunk'], Login::getInstance()->getUser());
           break;
         case DTaskAction::RESET_CHUNK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::RESET_CHUNK_PERM);
-          TaskUtils::resetChunk($_POST['chunk'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::RESET_CHUNK_PERM);
+          TaskUtils::resetChunk($_POST['chunk'], Login::getInstance()->getUser());
           break;
         case DTaskAction::PURGE_TASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::PURGE_TASK_PERM);
-          TaskUtils::purgeTask($_POST['task'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::PURGE_TASK_PERM);
+          TaskUtils::purgeTask($_POST['task'], Login::getInstance()->getUser());
           break;
         case DTaskAction::SET_COLOR:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_COLOR_PERM);
-          TaskUtils::updateColor($_POST['task'], $_POST['color'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_COLOR_PERM);
+          TaskUtils::updateColor($_POST['task'], $_POST['color'], Login::getInstance()->getUser());
           break;
         case DTaskAction::SET_TIME:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_TIME_PERM);
-          TaskUtils::changeChunkTime($_POST['task'], $_POST['chunktime'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_TIME_PERM);
+          TaskUtils::changeChunkTime($_POST['task'], $_POST['chunktime'], Login::getInstance()->getUser());
           break;
         case DTaskAction::RENAME_TASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::RENAME_TASK_PERM);
-          TaskUtils::rename($_POST['task'], $_POST['name'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::RENAME_TASK_PERM);
+          TaskUtils::rename($_POST['task'], $_POST['name'], Login::getInstance()->getUser());
           break;
         case DTaskAction::DELETE_FINISHED:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
-          TaskUtils::deleteFinished($ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::DELETE_FINISHED_PERM);
+          TaskUtils::deleteFinished(Login::getInstance()->getUser());
           break;
         case DTaskAction::DELETE_TASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_TASK_PERM);
-          TaskUtils::delete($_POST['task'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::DELETE_TASK_PERM);
+          TaskUtils::delete($_POST['task'], Login::getInstance()->getUser());
           break;
         case DTaskAction::SET_PRIORITY:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_PRIORITY_PERM);
-          TaskUtils::updatePriority($_POST["task"], $_POST['priority'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_PRIORITY_PERM);
+          TaskUtils::updatePriority($_POST["task"], $_POST['priority'], Login::getInstance()->getUser());
           break;
         case DTaskAction::CREATE_TASK:
-          $ACCESS_CONTROL->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
+          AccessControl::getInstance()->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
           $this->create();
           break;
         case DTaskAction::DELETE_SUPERTASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
-          TaskUtils::deleteSupertask($_POST['supertaskId'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::DELETE_SUPERTASK_PERM);
+          TaskUtils::deleteSupertask($_POST['supertaskId'], Login::getInstance()->getUser());
           break;
         case DTaskAction::SET_SUPERTASK_PRIORITY:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
-          TaskUtils::setSupertaskPriority($_POST['supertaskId'], $_POST['priority'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
+          TaskUtils::setSupertaskPriority($_POST['supertaskId'], $_POST['priority'], Login::getInstance()->getUser());
           break;
         case DTaskAction::ARCHIVE_TASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::ARCHIVE_TASK_PERM);
-          TaskUtils::archiveTask($_POST['task'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::ARCHIVE_TASK_PERM);
+          TaskUtils::archiveTask($_POST['task'], Login::getInstance()->getUser());
           break;
         case DTaskAction::ARCHIVE_SUPERTASK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::ARCHIVE_SUPERTASK_PERM);
-          TaskUtils::archiveSupertask($_POST['supertaskId'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::ARCHIVE_SUPERTASK_PERM);
+          TaskUtils::archiveSupertask($_POST['supertaskId'], Login::getInstance()->getUser());
           break;
         case DTaskAction::CHANGE_ATTACK:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::CHANGE_ATTACK_PERM);
-          TaskUtils::changeAttackCmd($_POST['task'], $_POST['attackCmd'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::CHANGE_ATTACK_PERM);
+          TaskUtils::changeAttackCmd($_POST['task'], $_POST['attackCmd'], Login::getInstance()->getUser());
           break;
         case DTaskAction::DELETE_ARCHIVED:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::DELETE_ARCHIVED_PERM);
-          TaskUtils::deleteArchived($ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::DELETE_ARCHIVED_PERM);
+          TaskUtils::deleteArchived(Login::getInstance()->getUser());
           break;
         case DTaskAction::EDIT_NOTES:
-          $ACCESS_CONTROL->checkPermission(DTaskAction::EDIT_NOTES_PERM);
-          TaskUtils::editNotes($_POST['task'], $_POST['notes'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DTaskAction::EDIT_NOTES_PERM);
+          TaskUtils::editNotes($_POST['task'], $_POST['notes'], Login::getInstance()->getUser());
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
@@ -118,8 +116,6 @@ class TaskHandler implements Handler {
   }
 
   private function create() {
-    global $ACCESS_CONTROL;
-
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
     $notes = htmlentities($_POST["notes"], ENT_QUOTES, "UTF-8");
@@ -214,7 +210,7 @@ class TaskHandler implements Handler {
     $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
-    if ($ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
+    if (AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
       $task = new Task(
         0,
         $name,

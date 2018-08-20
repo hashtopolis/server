@@ -13,12 +13,10 @@ class SearchHandler implements Handler {
   }
 
   public function handle($action) {
-    global $ACCESS_CONTROL;
-
     try {
       switch ($action) {
         case DSearchAction::SEARCH:
-          $ACCESS_CONTROL->checkPermission(DSearchAction::SEARCH_PERM);
+          AccessControl::getInstance()->checkPermission(DSearchAction::SEARCH_PERM);
           $this->search();
           break;
         default:

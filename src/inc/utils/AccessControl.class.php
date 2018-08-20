@@ -7,6 +7,18 @@ class AccessControl {
   private $user;
   private $rightGroup;
 
+  private static $instance = null;
+  
+  public static function getInstance($user = null, $groupId = 0){
+    if($user != null || $groupId != 0){
+      self::$instance = new AccessControl($user, $groupId);
+    }
+    else if(self::$instance == null){
+      self::$instance = new AccessControl();
+    }
+    return self::$instance;
+  }
+
   /**
    * @return User
    */
@@ -19,7 +31,7 @@ class AccessControl {
    * @param $user User
    * @param $groupId int
    */
-  public function __construct($user = null, $groupId = 0) {
+  private function __construct($user = null, $groupId = 0) {
     $this->user = $user;
     if ($this->user != null) {
       $this->rightGroup = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());

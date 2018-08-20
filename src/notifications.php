@@ -19,7 +19,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::NOTIFICATIONS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::NOTIFICATIONS_VIEW_PERM);
 
 $TEMPLATE = new Template("notifications");
 $OBJECTS['pageTitle'] = "Notifications";
@@ -41,7 +41,7 @@ $OBJECTS['notifications'] = $notifications;
 
 $allAgents = array();
 $oF = new OrderFilter(Agent::AGENT_NAME, "ASC");
-if ($ACCESS_CONTROL->hasPermission(DAccessControl::SERVER_CONFIG_ACCESS)) {
+if (AccessControl::getInstance()->hasPermission(DAccessControl::SERVER_CONFIG_ACCESS)) {
   $allAgents = Factory::getAgentFactory()->filter([Factory::ORDER => $oF]);
 }
 else {
@@ -93,7 +93,7 @@ $OBJECTS['allNotifications'] = $allNotifications;
 $allowedActions = array();
 $actionSettings = array();
 foreach (DNotificationType::getAll() as $notificationType) {
-  if ($ACCESS_CONTROL->hasPermission(DNotificationType::getRequiredPermission($notificationType))) {
+  if (AccessControl::getInstance()->hasPermission(DNotificationType::getRequiredPermission($notificationType))) {
     $allowedActions[] = $notificationType;
     $actionSettings[] = "\"" . $notificationType . "\":\"" . DNotificationType::getObjectType($notificationType) . "\"";
   }
@@ -106,7 +106,7 @@ $oF = new OrderFilter(Task::TASK_NAME, "ASC");
 $OBJECTS['allTasks'] = Factory::getTaskFactory()->filter([Factory::ORDER => $oF]);
 $oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
 $OBJECTS['allHashlists'] = Factory::getHashlistFactory()->filter([Factory::ORDER => $oF]);
-if ($ACCESS_CONTROL->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
+if (AccessControl::getInstance()->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
   $oF = new OrderFilter(User::USERNAME, "ASC");
   $OBJECTS['allUsers'] = Factory::getUserFactory()->filter([Factory::ORDER => $oF]);
 }

@@ -13,7 +13,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 /** @var array $OBJECTS */
 
-$ACCESS_CONTROL->checkPermission(DViewControl::GETHASHLIST_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::GETHASHLIST_VIEW_PERM);
 
 // TODO: configure max memory usage here
 ini_set("max_execution_time", 100000);

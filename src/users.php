@@ -15,7 +15,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::USERS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::USERS_VIEW_PERM);
 
 $TEMPLATE = new Template("users/index");
 $MENU->setActive("users_list");

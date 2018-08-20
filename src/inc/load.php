@@ -1,7 +1,5 @@
 <?php
 
-use DBA\Factory;
-
 // set to 1 for debugging
 ini_set("display_errors", "0");
 
@@ -68,12 +66,11 @@ $MENU = new Menu();
 $OBJECTS['menu'] = $MENU;
 $OBJECTS['messages'] = array();
 $OBJECTS['pageTitle'] = "";
-$ACCESS_CONTROL = new AccessControl();
 if ($INSTALL) {
   $OBJECTS['login'] = Login::getInstance();
   if (Login::getInstance()->isLoggedin()) {
     $OBJECTS['user'] = Login::getInstance()->getUser();
-    $ACCESS_CONTROL = new AccessControl(Login::getInstance()->getUser());
+    AccessControl::getInstance(Login::getInstance()->getUser());
   }
 
   $OBJECTS['config'] = SConfig::getInstance();
@@ -83,7 +80,7 @@ if ($INSTALL) {
   //set autorefresh to false for all pages
   $OBJECTS['autorefresh'] = -1;
 }
-$OBJECTS['accessControl'] = $ACCESS_CONTROL;
+$OBJECTS['accessControl'] = AccessControl::getInstance();
 
 // CSRF setup
 CSRF::init();

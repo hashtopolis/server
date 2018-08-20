@@ -32,7 +32,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::AGENTS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
 $TEMPLATE = new Template("agents/index");
 $MENU->setActive("agents_list");
@@ -105,7 +105,7 @@ if (isset($_GET['id'])) {
     $OBJECTS['timeSpent'] = $timeSpent;
   }
 }
-else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_AGENT_ACCESS)) {
+else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_AGENT_ACCESS)) {
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
   $OBJECTS['pageTitle'] = "New Agent";

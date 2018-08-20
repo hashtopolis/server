@@ -15,12 +15,12 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::SUPERHASHLISTS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::SUPERHASHLISTS_VIEW_PERM);
 
 $TEMPLATE = new Template("superhashlists/index");
 $MENU->setActive("lists_super");
 
-if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_SUPERHASHLIST_ACCESS)) {
+if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERHASHLIST_ACCESS)) {
   $TEMPLATE = new Template("superhashlists/new");
   $MENU->setActive("lists_snew");
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");

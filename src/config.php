@@ -13,7 +13,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::CONFIG_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::CONFIG_VIEW_PERM);
 
 $TEMPLATE = new Template("config");
 $MENU->setActive("config_server");

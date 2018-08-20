@@ -17,52 +17,52 @@ class AccountHandler implements Handler {
   }
 
   public function handle($action) {
-    global $OBJECTS, $ACCESS_CONTROL;
+    global $OBJECTS;
 
     try {
       switch ($action) {
         case DAccountAction::SET_EMAIL:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::SET_EMAIL_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::SET_EMAIL_PERM);
           AccountUtils::setEmail($_POST['email'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Email updated successfully!");
           break;
         case DAccountAction::YUBIKEY_DISABLE:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::YUBIKEY_DISABLE_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::YUBIKEY_DISABLE_PERM);
           AccountUtils::setOTP(-1, $action, Login::getInstance()->getUser(), [$_POST['otp1'], $_POST['otp2'], $_POST['otp3'], $_POST['otp4']]);
           UI::addMessage(UI::SUCCESS, "OTP updated successfully!");
           break;
         case DAccountAction::YUBIKEY_ENABLE:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::YUBIKEY_ENABLE_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::YUBIKEY_ENABLE_PERM);
           AccountUtils::setOTP(0, $action, Login::getInstance()->getUser(), [$_POST['otp1'], $_POST['otp2'], $_POST['otp3'], $_POST['otp4']]);
           UI::addMessage(UI::SUCCESS, "OTP updated successfully!");
           break;
         case DAccountAction::SET_OTP1:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP1_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::SET_OTP1_PERM);
           AccountUtils::setOTP(1, $action, Login::getInstance()->getUser(), [$_POST['otp1'], $_POST['otp2'], $_POST['otp3'], $_POST['otp4']]);
           UI::addMessage(UI::SUCCESS, "OTP updated successfully!");
           break;
         case DAccountAction::SET_OTP2:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP2_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::SET_OTP2_PERM);
           AccountUtils::setOTP(2, $action, Login::getInstance()->getUser(), [$_POST['otp1'], $_POST['otp2'], $_POST['otp3'], $_POST['otp4']]);
           UI::addMessage(UI::SUCCESS, "OTP updated successfully!");
           break;
         case DAccountAction::SET_OTP3:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP3_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::SET_OTP3_PERM);
           AccountUtils::setOTP(3, $action, Login::getInstance()->getUser(), [$_POST['otp1'], $_POST['otp2'], $_POST['otp3'], $_POST['otp4']]);
           UI::addMessage(UI::SUCCESS, "OTP updated successfully!");
           break;
         case DAccountAction::SET_OTP4:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::SET_OTP4_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::SET_OTP4_PERM);
           AccountUtils::setOTP(4, $action, Login::getInstance()->getUser(), [$_POST['otp1'], $_POST['otp2'], $_POST['otp3'], $_POST['otp4']]);
           UI::addMessage(UI::SUCCESS, "OTP updated successfully!");
           break;
         case DAccountAction::UPDATE_LIFETIME:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::UPDATE_LIFETIME_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::UPDATE_LIFETIME_PERM);
           AccountUtils::updateSessionLifetime($_POST['lifetime'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Updated session lifetime successfully!");
           break;
         case DAccountAction::CHANGE_PASSWORD:
-          $ACCESS_CONTROL->checkPermission(DAccountAction::CHANGE_PASSWORD_PERM);
+          AccessControl::getInstance()->checkPermission(DAccountAction::CHANGE_PASSWORD_PERM);
           AccountUtils::changePassword($_POST['oldpass'], $_POST['newpass'], $_POST['reppass'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Password was updated successfully!");
           break;

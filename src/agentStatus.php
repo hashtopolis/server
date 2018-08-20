@@ -18,7 +18,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::AGENTS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
 $TEMPLATE = new Template("agents/status");
 $MENU->setActive("agents_status");

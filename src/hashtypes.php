@@ -9,7 +9,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::HASHTYPES_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::HASHTYPES_VIEW_PERM);
 
 $TEMPLATE = new Template("hashtypes");
 $MENU->setActive("config_hashtypes");

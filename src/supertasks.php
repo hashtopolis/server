@@ -16,7 +16,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::SUPERTASKS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::SUPERTASKS_VIEW_PERM);
 
 $TEMPLATE = new Template("supertasks/index");
 $MENU->setActive("tasks_super");
@@ -30,21 +30,21 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['create']) && $_GET['create'] == "new" && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
+if (isset($_GET['create']) && $_GET['create'] == "new" && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
   $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   $OBJECTS['preTasks'] = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]);
   $OBJECTS['pageTitle'] = "Create Supertask";
 }
-else if (isset($_GET['create']) && $_GET['create'] == "import" && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
+else if (isset($_GET['create']) && $_GET['create'] == "import" && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
   $MENU->setActive("tasks_superimport");
   $TEMPLATE = new Template("supertasks/import");
 
   $OBJECTS['crackerBinaryTypes'] = Factory::getCrackerBinaryTypeFactory()->filter([]);
   $OBJECTS['pageTitle'] = "Import Supertask from Masks";
 }
-else if (isset($_GET['id']) && isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::RUN_TASK_ACCESS)) {
+else if (isset($_GET['id']) && isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::RUN_TASK_ACCESS)) {
   $TEMPLATE = new Template("supertasks/new");
   $supertask = Factory::getSupertaskFactory()->get($_GET['id']);
   $OBJECTS['orig'] = $supertask->getId();

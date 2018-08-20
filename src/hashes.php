@@ -19,7 +19,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::HASHES_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::HASHES_VIEW_PERM);
 
 $TEMPLATE = new Template("hashes/index");
 $MENU->setActive("hashes");

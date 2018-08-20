@@ -15,7 +15,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::CRACKERS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::CRACKERS_VIEW_PERM);
 
 $TEMPLATE = new Template("crackers/index");
 $MENU->setActive("crackers_list");
@@ -29,7 +29,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new']) && isset($_GET['id']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
+if (isset($_GET['new']) && isset($_GET['id']) && AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
   $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
     $OBJECTS['binaryType'] = $binaryType;
@@ -37,12 +37,12 @@ if (isset($_GET['new']) && isset($_GET['id']) && $ACCESS_CONTROL->hasPermission(
     $OBJECTS['pageTitle'] = "Add new Cracker Binary Version";
   }
 }
-else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
+else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
   $TEMPLATE = new Template("crackers/new");
   $MENU->setActive("crackers_new");
   $OBJECTS['pageTitle'] = "Add Cracker Binary";
 }
-else if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
+else if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
   $binary = Factory::getCrackerBinaryFactory()->get($_GET['id']);
   if ($binary !== null) {
     $OBJECTS['binary'] = $binary;

@@ -13,7 +13,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::API_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::API_VIEW_PERM);
 
 $TEMPLATE = new Template("api/index");
 $MENU->setActive("users_api");

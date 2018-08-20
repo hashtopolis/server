@@ -14,7 +14,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::LOG_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::LOG_VIEW_PERM);
 
 $TEMPLATE = new Template("log");
 $OBJECTS['pageTitle'] = "Log";

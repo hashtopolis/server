@@ -11,21 +11,19 @@ class NotificationHandler implements Handler {
   }
 
   public function handle($action) {
-    global $ACCESS_CONTROL;
-
     try {
       switch ($action) {
         case DNotificationAction::CREATE_NOTIFICATION:
-          $ACCESS_CONTROL->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
+          AccessControl::getInstance()->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
           NotificationUtils::createNotificaton($_POST['actionType'], $_POST['notification'], $_POST['receiver'], $_POST);
           break;
         case DNotificationAction::SET_ACTIVE:
-          $ACCESS_CONTROL->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
-          NotificationUtils::setActive($_POST['notification'], false, true, $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
+          NotificationUtils::setActive($_POST['notification'], false, true, Login::getInstance()->getUser());
           break;
         case DNotificationAction::DELETE_NOTIFICATION:
-          $ACCESS_CONTROL->checkPermission(DNotificationAction::DELETE_NOTIFICATION_PERM);
-          NotificationUtils::delete($_POST['notification'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DNotificationAction::DELETE_NOTIFICATION_PERM);
+          NotificationUtils::delete($_POST['notification'], Login::getInstance()->getUser());
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");

@@ -22,49 +22,47 @@ class HashlistHandler implements Handler {
   }
 
   public function handle($action) {
-    global $ACCESS_CONTROL;
-
     try {
       switch ($action) {
         case DHashlistAction::APPLY_PRECONFIGURED_TASKS:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::APPLY_PRECONFIGURED_TASKS_PERM);
-          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['task'])) ? $_POST['task'] : [], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::APPLY_PRECONFIGURED_TASKS_PERM);
+          $count = HashlistUtils::applyPreconfTasks($_POST['hashlist'], (isset($_POST['task'])) ? $_POST['task'] : [], AccessControl::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Successfully created $count new tasks! You will be forward to the tasks page in 5 seconds.");
           UI::setForward("tasks.php", 5);
           break;
         case DHashlistAction::CREATE_WORDLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::CREATE_WORDLIST_PERM);
-          $data = HashlistUtils::createWordlists($_POST['hashlist'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::CREATE_WORDLIST_PERM);
+          $data = HashlistUtils::createWordlists($_POST['hashlist'], AccessControl::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Exported " . $data[0] . " found plains to " . $data[1] . " successfully!");
           break;
         case DHashlistAction::SET_SECRET:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::SET_SECRET_PERM);
-          HashlistUtils::setSecret($_POST['hashlistId'], $_POST['secret'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::SET_SECRET_PERM);
+          HashlistUtils::setSecret($_POST['hashlistId'], $_POST['secret'], AccessControl::getInstance()->getUser());
           break;
         case DHashlistAction::RENAME_HASHLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::RENAME_HASHLIST_PERM);
-          HashlistUtils::rename($_POST['hashlist'], $_POST['name'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::RENAME_HASHLIST_PERM);
+          HashlistUtils::rename($_POST['hashlist'], $_POST['name'], AccessControl::getInstance()->getUser());
           break;
         case DHashlistAction::PROCESS_ZAP:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::PROCESS_ZAP_PERM);
-          $data = HashlistUtils::processZap($_POST['hashlist'], $_POST['separator'], $_POST['source'], $_POST, $_FILES, $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::PROCESS_ZAP_PERM);
+          $data = HashlistUtils::processZap($_POST['hashlist'], $_POST['separator'], $_POST['source'], $_POST, $_FILES, AccessControl::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Processed pre-cracked hashes: " . $data[0] . " total lines, " . $data[1] . " new cracked hashes, " . $data[2] . " were already cracked, " . $data[3] . " invalid lines, " . $data[4] . " not matching entries (" . $data[5] . "s)!");
           if ($data[6] > 0) {
             UI::addMessage(UI::WARN, $data[6] . " entries with too long plaintext");
           }
           break;
         case DHashlistAction::EXPORT_HASHLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::EXPORT_HASHLIST_PERM);
-          HashlistUtils::export($_POST['hashlist'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::EXPORT_HASHLIST_PERM);
+          HashlistUtils::export($_POST['hashlist'], AccessControl::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Cracked hashes from hashlist exported successfully!");
           break;
         case DHashlistAction::ZAP_HASHLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::ZAP_HASHLIST_PERM);
+          AccessControl::getInstance()->checkPermission(DHashlistAction::ZAP_HASHLIST_PERM);
           $this->zap();
           break;
         case DHashlistAction::DELETE_HASHLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::DELETE_HASHLIST_PERM);
-          $format = HashlistUtils::delete($_POST['hashlist'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::DELETE_HASHLIST_PERM);
+          $format = HashlistUtils::delete($_POST['hashlist'], AccessControl::getInstance()->getUser());
           if ($format > DHashlistFormat::BINARY) {
             header("Location: superhashlists.php");
           }
@@ -73,7 +71,7 @@ class HashlistHandler implements Handler {
           }
           die();
         case DHashlistAction::CREATE_HASHLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::CREATE_HASHLIST_PERM);
+          AccessControl::getInstance()->checkPermission(DHashlistAction::CREATE_HASHLIST_PERM);
           $hashlist = HashlistUtils::createHashlist(
             $_POST['name'],
             (isset($_POST["salted"]) && intval($_POST["salted"]) == 1) ? true : false,
@@ -87,18 +85,18 @@ class HashlistHandler implements Handler {
             $_POST['source'],
             $_POST,
             $_FILES,
-            $ACCESS_CONTROL->getUser()
+            AccessControl::getInstance()->getUser()
           );
           header("Location: hashlists.php?id=" . $hashlist->getId());
           die();
         case DHashlistAction::CREATE_SUPERHASHLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::CREATE_SUPERHASHLIST_PERM);
-          HashlistUtils::createSuperhashlist($_POST['hlist'], $_POST['name'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::CREATE_SUPERHASHLIST_PERM);
+          HashlistUtils::createSuperhashlist($_POST['hlist'], $_POST['name'], Login::getInstance()->getUser());
           header("Location: superhashlists.php");
           die();
         case DHashlistAction::CREATE_LEFTLIST:
-          $ACCESS_CONTROL->checkPermission(DHashlistAction::CREATE_LEFTLIST_PERM);
-          $file = HashlistUtils::leftlist($_POST['hashlist'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DHashlistAction::CREATE_LEFTLIST_PERM);
+          $file = HashlistUtils::leftlist($_POST['hashlist'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Created left list: " . $file->getFilename());
           break;
         default:

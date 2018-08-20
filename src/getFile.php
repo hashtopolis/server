@@ -62,7 +62,7 @@ if (!Login::getInstance()->isLoggedin()) {
     $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
   }
 }
-else if (!$ACCESS_CONTROL->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
+else if (!AccessControl::getInstance()->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
   die("No access!");
 }
 else{

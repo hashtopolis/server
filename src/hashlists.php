@@ -21,7 +21,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::HASHLISTS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::HASHLISTS_VIEW_PERM);
 
 $TEMPLATE = new Template("hashlists/index");
 $MENU->setActive("lists_norm");
@@ -36,7 +36,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_HASHLIST_ACCESS)) {
+if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_HASHLIST_ACCESS)) {
   //new hashlist
   $MENU->setActive("lists_new");
   $OBJECTS['impfiles'] = Util::scanImportDirectory();

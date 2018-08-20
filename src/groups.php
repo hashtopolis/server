@@ -18,7 +18,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::GROUPS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::GROUPS_VIEW_PERM);
 
 $TEMPLATE = new Template("groups/index");
 $MENU->setActive("users_groups");

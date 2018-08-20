@@ -15,7 +15,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::FILES_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::FILES_VIEW_PERM);
 
 $TEMPLATE = new Template("files/index");
 $MENU->setActive("files");
@@ -35,7 +35,7 @@ if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule', 'other
   $view = $_GET['view'];
 }
 
-if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::MANAGE_FILE_ACCESS)) {
+if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessControl::MANAGE_FILE_ACCESS)) {
   $file = FileUtils::getFile($_GET['edit'], Login::getInstance()->getUser());
   if ($file == null) {
     UI::addMessage(UI::ERROR, "Invalid file ID!");

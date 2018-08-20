@@ -13,7 +13,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::ACCESS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::ACCESS_VIEW_PERM);
 
 $TEMPLATE = new Template("access/index");
 $MENU->setActive("users_access");

@@ -18,7 +18,7 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::PRETASKS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::PRETASKS_VIEW_PERM);
 
 $TEMPLATE = new Template("pretasks/index");
 $MENU->setActive("tasks_pre");
@@ -54,7 +54,7 @@ if (isset($_GET['id'])) {
   $OBJECTS['isUsed'] = $isUsed;
   $OBJECTS['pageTitle'] = "Preconfigured task details for " . $pretask->getTaskName();
 }
-else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
+else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
   $TEMPLATE = new Template("pretasks/new");
   $MENU->setActive("tasks_prenew");
 
