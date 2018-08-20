@@ -11,8 +11,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $NOTIFICATIONS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -84,7 +82,7 @@ foreach ($notifications as $notification) {
 UI::add('allApplies', $allApplies);
 
 $allNotifications = array();
-foreach ($NOTIFICATIONS as $name => $notification) {
+foreach (HashtopolisNotification::getInstances() as $name => $notification) {
   $allNotifications[] = $name;
 }
 UI::add('allNotifications', $allNotifications);

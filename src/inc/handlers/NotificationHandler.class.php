@@ -40,9 +40,6 @@ class NotificationHandler implements Handler {
    * @param $payload DataSet
    */
   public static function checkNotifications($action, $payload) {
-    /** @var $NOTIFICATIONS HashtopolisNotification[] */
-    global $NOTIFICATIONS;
-
     $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");
     $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -72,7 +69,7 @@ class NotificationHandler implements Handler {
           continue;
         }
       }
-      $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification);
+      HashtopolisNotification::getInstances()[$notification->getNotification()]->execute($action, $payload, $notification);
     }
   }
 }

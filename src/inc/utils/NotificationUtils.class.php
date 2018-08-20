@@ -13,10 +13,8 @@ class NotificationUtils {
    * @throws HTException
    */
   public static function createNotificaton($actionType, $notification, $receiver, $post) {
-    global $NOTIFICATIONS;
-
     $receiver = trim($receiver);
-    if (!isset($NOTIFICATIONS[$notification])) {
+    if (!isset(HashtopolisNotification::getInstances()[$notification])) {
       throw new HTException("This notification is not available!");
     }
     else if (!in_array($actionType, DNotificationType::getAll())) {

@@ -9,6 +9,16 @@ abstract class HashtopolisNotification {
   /** @var  $notification NotificationSetting */
   protected $notification;
 
+  private static $instances = [];
+
+  public static function add($name, $instance){
+    self::$instances[$name] = $instance;
+  }
+
+  public static function getInstances(){
+    return self::$instances;
+  }
+
   /**
    * @param $notificationType string
    * @param $payload DataSet
