@@ -155,10 +155,10 @@ switch ($STEP) {
 
       //do checks
       if (strlen($username) == 0 || strlen($password) == 0 || strlen($email) == 0 || strlen($repeat) == 0) {
-        $message = Util::getMessage('danger', "You need to fill in all fields!");
+        $message = "<div class='alert alert-danger'>You need to fill in all fields!</div>";
       }
       else if ($password != $repeat) {
-        $message = Util::getMessage('danger', "Your entered passwords do not match!");
+        $message = "<div class='alert alert-danger'>Your entered passwords do not match!</div>";
       }
       else {
         Factory::getAgentFactory()->getDB()->beginTransaction();

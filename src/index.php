@@ -11,7 +11,6 @@ AccessControl::getInstance()->checkPermission(DViewControl::INDEX_VIEW_PERM);
 
 Template::loadInstance("static/index");
 UI::add('pageTitle', "Welcome");
-$message = "";
 
 // TODO: rewrite these messages to use the messages template
 if (isset($_GET['err'])) {
@@ -20,16 +19,16 @@ if (isset($_GET['err'])) {
   if (time() - $time < 10) {
     switch ($err[0]) {
       case '1':
-        $message = "<div class='alert alert-danger'>Invalid form submission!</div>";
+        UI::addMessage(UI::ERROR, "Invalid form submission!");
         break;
       case '2':
-        $message = "<div class='alert alert-danger'>You need to fill in both fields!</div>";
+        UI::addMessage(UI::ERROR, "You need to fill in both fields!");
         break;
       case '3':
-        $message = "<div class='alert alert-danger'>Wrong username/password/OTP!</div>";
+        UI::addMessage(UI::ERROR, "Wrong username/password/OTP!");
         break;
       case '4':
-        $message = "<div class='alert alert-warning'>You need to be logged in to view this! Please log in again.</div>";
+        UI::addMessage(UI::ERROR, "You need to be logged in to view this! Please log in again.");
         break;
     }
   }
@@ -38,11 +37,10 @@ else if (isset($_GET['logout'])) {
   $logout = $_GET['logout'];
   $time = substr($logout, 1);
   if (time() - $time < 10) {
-    $message = "<div class='alert alert-success'>You logged out successfully!</div>";
+    UI::addMessage(UI::SUCCESS, "You logged out successfully!");
   }
 }
 
-UI::add('message', $message);
 $fw = "";
 if (isset($_GET['fw'])) {
   $fw = $_GET['fw'];

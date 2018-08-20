@@ -1101,17 +1101,6 @@ class Util {
   }
 
   /**
-   * Get an alert div with type and msg
-   * TODO: should not be in util. better use the struct/messages template
-   * @param $type
-   * @param $msg
-   * @return string
-   */
-  public static function getMessage($type, $msg) {
-    return "<div class='alert alert-$type'>$msg</div>";
-  }
-
-  /**
    * @note dev
    * Sets the max length of hashes in the database
    * @param $limit int limit for hash length

@@ -2,7 +2,7 @@
 {%TEMPLATE->struct/menu%}
 {{IF ![[login.isLoggedin()]]}}
   <h2>Login</h2>
-  [[message]]
+  {%TEMPLATE->struct/messages%}
   <div class='alert alert-neutral'>
       <div class="row">
           <div class='col-md-3'></div>
