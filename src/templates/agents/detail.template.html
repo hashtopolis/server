@@ -318,7 +318,7 @@
                 [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[chunk.getSolveTime()]])]]
               </td>
               <td class='num'>
-                [[Util::sectotime(0)]] <!--TODO: get spent time on chunk-->
+                [[Util::sectotime([[chunk.getSolveTime()]] - [[chunk.getDispatchTime()]])]]
             {{ENDIF}}
           </td>
           <td>
