@@ -117,7 +117,7 @@ class AgentUtils {
           $datasets[$pos] = array(
             "label" => "Dev #" . ($i + 1) . " - " . $yLabels[$entry->getStatType()],
             "fill" => false,
-            "lineTension" => (SConfig::getInstance()->getVal(DConfig::AGENT_STAT_TENSION) == 1)?0:0.2,
+            "lineTension" => (SConfig::getInstance()->getVal(DConfig::AGENT_STAT_TENSION) == 1)?0:0.5,
             "yAxisID" => $entry->getStatType(),
             "backgroundColor" => $colors[$pos%sizeof($colors)],
 					  "borderColor" => $colors[$pos%sizeof($colors)],
