@@ -4,11 +4,11 @@ class UI {
   private static $objects = [];
 
   public static function printError($level, $message) {
-    $TEMPLATE = new Template("errors/error");
+    Template::loadInstance("errors/error");
     UI::add('message', $message);
     UI::add('level', $level);
     UI::add('pageTitle', "Error");
-    echo $TEMPLATE->render(UI::getObjects());
+    echo Template::getInstance()->render(UI::getObjects());
     die();
   }
 
@@ -28,9 +28,9 @@ class UI {
   }
 
   public static function permissionError() {
-    $TEMPLATE = new Template("errors/restricted");
+    Template::loadInstance("errors/restricted");
     UI::add('pageTitle', "Restricted");
-    echo $TEMPLATE->render(UI::getObjects());
+    echo Template::getInstance()->render(UI::getObjects());
     die();
   }
 

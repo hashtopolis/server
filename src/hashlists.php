@@ -21,7 +21,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::HASHLISTS_VIEW_PERM);
 
-$TEMPLATE = new Template("hashlists/index");
+Template::loadInstance("hashlists/index");
 $MENU->setActive("lists_norm");
 UI::add('zap', false);
 
@@ -47,8 +47,8 @@ if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessCo
   UI::add('allHashtypes', $allHashtypes);
   UI::add('hashtypes', $hashtypes);
   UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
-  $TEMPLATE = new Template("hashlists/new");
   UI::add('pageTitle', "Add new Hashlist");
+  Template::loadInstance("hashlists/new");
 }
 else if (isset($_GET['id'])) {
   //show hashlist detail page
@@ -111,8 +111,8 @@ else if (isset($_GET['id'])) {
   // load list of available supertasks
   UI::add('superTasks', Factory::getSupertaskFactory()->filter([]));
 
-  $TEMPLATE = new Template("hashlists/detail");
   UI::add('pageTitle', "Hashlist details for " . $list->getVal('hashlist')->getHashlistName());
+  Template::loadInstance("hashlists/detail");
 }
 else {
   //load all hashlists
@@ -129,7 +129,7 @@ else {
   UI::add('pageTitle', "Hashlists");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

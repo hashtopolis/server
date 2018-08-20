@@ -15,11 +15,11 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::SUPERHASHLISTS_VIEW_PERM);
 
-$TEMPLATE = new Template("superhashlists/index");
+Template::loadInstance("superhashlists/index");
 $MENU->setActive("lists_super");
 
 if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERHASHLIST_ACCESS)) {
-  $TEMPLATE = new Template("superhashlists/new");
+  Template::loadInstance("superhashlists/new");
   $MENU->setActive("lists_snew");
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
   UI::add('lists', Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]));
@@ -47,7 +47,7 @@ foreach ($types as $type) {
 }
 UI::add('hashtypes', $hashtypes);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

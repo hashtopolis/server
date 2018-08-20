@@ -15,7 +15,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::FILES_VIEW_PERM);
 
-$TEMPLATE = new Template("files/index");
+Template::loadInstance("files/index");
 $MENU->setActive("files");
 
 //catch actions here...
@@ -39,7 +39,7 @@ if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessC
   }
   else {
     UI::add('file', $file);
-    $TEMPLATE = new Template("files/edit");
+    Template::loadInstance("files/edit");
     UI::add('pageTitle', "Edit File " . $file->getFilename());
     UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
   }
@@ -68,7 +68,7 @@ else {
 }
 UI::add('view', $view);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

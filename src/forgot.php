@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . "/inc/load.php");
 
 AccessControl::getInstance()->checkPermission(DViewControl::FORGOT_VIEW_PERM);
 
-$TEMPLATE = new Template("forgot");
+Template::loadInstance("forgot");
 
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $forgotHandler = new ForgotHandler();
@@ -16,7 +16,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 UI::add('pageTitle', "Forgot Password");
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

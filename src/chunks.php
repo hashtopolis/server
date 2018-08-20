@@ -16,7 +16,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::CHUNKS_VIEW_PERM);
 
-$TEMPLATE = new Template("chunks");
+Template::loadInstance("chunks");
 $MENU->setActive("chunks");
 
 $oF = null;
@@ -69,7 +69,7 @@ foreach ($agents as $agent) {
 }
 UI::add('agentNames', $agentNames);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

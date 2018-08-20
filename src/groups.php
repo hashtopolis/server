@@ -18,7 +18,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::GROUPS_VIEW_PERM);
 
-$TEMPLATE = new Template("groups/index");
+Template::loadInstance("groups/index");
 $MENU->setActive("users_groups");
 
 //catch actions here...
@@ -31,7 +31,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new'])) {
-  $TEMPLATE = new Template("groups/new");
+  Template::loadInstance("groups/new");
   UI::add('pageTitle', "Create Group");
 }
 else if (isset($_GET['id'])) {
@@ -62,7 +62,7 @@ else if (isset($_GET['id'])) {
     UI::add('allUsers', Factory::getUserFactory()->filter([Factory::FILTER => $qF]));
     $qF = new ContainFilter(Agent::AGENT_ID, $excludedAgents, Factory::getAgentFactory(), true);
     UI::add('allAgents', Factory::getAgentFactory()->filter([Factory::FILTER => $qF]));
-    $TEMPLATE = new Template("groups/detail");
+    Template::loadInstance("groups/detail");
     UI::add('pageTitle', "Details of Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8"));
   }
 }
@@ -95,7 +95,7 @@ else {
   UI::add('pageTitle', "Groups");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

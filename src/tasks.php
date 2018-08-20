@@ -19,7 +19,7 @@ if (!Login::getInstance()->isLoggedin()) {
 }
 AccessControl::getInstance()->checkPermission(array_merge(DViewControl::TASKS_VIEW_PERM, DAccessControl::RUN_TASK_ACCESS));
 
-$TEMPLATE = new Template("tasks/index");
+Template::loadInstance("tasks/index");
 $MENU->setActive("tasks_list");
 
 //catch actions here...
@@ -58,7 +58,7 @@ if (isset($_GET['id']) || !isset($_GET['new'])) {
 
 if (isset($_GET['id'])) {
   AccessControl::getInstance()->checkPermission(DViewControl::TASKS_VIEW_PERM);
-  $TEMPLATE = new Template("tasks/detail");
+  Template::loadInstance("tasks/detail");
   $task = Factory::getTaskFactory()->get($_GET['id']);
   if ($task == null) {
     UI::printError("ERROR", "Invalid task ID!");
@@ -243,7 +243,7 @@ if (isset($_GET['id'])) {
 }
 else if (isset($_GET['new'])) {
   AccessControl::getInstance()->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
-  $TEMPLATE = new Template("tasks/new");
+  Template::loadInstance("tasks/new");
   $MENU->setActive("tasks_new");
   $orig = 0;
   $origTask = null;
@@ -341,7 +341,7 @@ else {
   }
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

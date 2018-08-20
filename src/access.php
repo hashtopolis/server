@@ -13,7 +13,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::ACCESS_VIEW_PERM);
 
-$TEMPLATE = new Template("access/index");
+Template::loadInstance("access/index");
 $MENU->setActive("users_access");
 
 //catch actions here...
@@ -26,7 +26,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new'])) {
-  $TEMPLATE = new Template("access/new");
+  Template::loadInstance("access/new");
   UI::add('pageTitle', "Create new Permission Group");
 }
 else if (isset($_GET['id'])) {
@@ -59,9 +59,8 @@ else if (isset($_GET['id'])) {
       }
     }
     UI::add('constants', $constantsChecked);
-
-    $TEMPLATE = new Template("access/detail");
     UI::add('pageTitle', "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8"));
+    Template::loadInstance("access/detail");
   }
 }
 else {
@@ -83,7 +82,7 @@ else {
   UI::add('pageTitle', "Permission Groups");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

@@ -18,7 +18,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
-$TEMPLATE = new Template("agents/status");
+Template::loadInstance("agents/status");
 $MENU->setActive("agents_status");
 
 // load groups for user
@@ -71,7 +71,7 @@ foreach($stats as $stat){
 }
 UI::add('temps', $agentStats);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

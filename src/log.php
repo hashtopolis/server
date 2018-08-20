@@ -14,7 +14,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::LOG_VIEW_PERM);
 
-$TEMPLATE = new Template("log");
+Template::loadInstance("log");
 UI::add('pageTitle', "Log");
 $MENU->setActive("config_log");
 
@@ -35,7 +35,7 @@ if ($level !== "0") {
 $entries = Factory::getLogEntryFactory()->filter($filter);
 UI::add('entries', $entries);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

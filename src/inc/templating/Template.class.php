@@ -3,6 +3,16 @@
 class Template {
   private $content;
   private $statements;
+
+  private static $instance = null;
+
+  public static function loadInstance($template){
+    self::$instance = new Template($template);
+  }
+
+  public static function getInstance(){
+    return self::$instance;
+  }
   
   public function __construct($template, $direct = false) {
     if ($direct) {

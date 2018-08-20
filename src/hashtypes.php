@@ -10,7 +10,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::HASHTYPES_VIEW_PERM);
 
-$TEMPLATE = new Template("hashtypes");
+Template::loadInstance("hashtypes");
 $MENU->setActive("config_hashtypes");
 
 //catch actions here...
@@ -27,7 +27,7 @@ $hashtypes = Factory::getHashTypeFactory()->filter([]);
 UI::add('hashtypes', $hashtypes);
 UI::add('pageTitle', "Hashtypes");
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

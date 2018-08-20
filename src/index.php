@@ -9,7 +9,7 @@ if (!$INSTALL) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::INDEX_VIEW_PERM);
 
-$TEMPLATE = new Template("static/index");
+Template::loadInstance("static/index");
 UI::add('pageTitle', "Welcome");
 $message = "";
 
@@ -49,7 +49,7 @@ if (isset($_GET['fw'])) {
 }
 UI::add('fw', htmlentities($fw, ENT_QUOTES, "UTF-8"));
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

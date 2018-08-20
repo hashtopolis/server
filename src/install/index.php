@@ -46,8 +46,8 @@ switch ($STEP) {
       header("Location: index.php");
       die();
     }
-    $TEMPLATE = new Template("install/0");
-    echo $TEMPLATE->render(UI::getObjects());
+    Template::loadInstance("install/0");
+    echo Template::getInstance()->render(UI::getObjects());
     break;
   case 1: //clean installation was selected
     if (isset($_GET['next'])) {
@@ -65,8 +65,8 @@ switch ($STEP) {
       header("Location: index.php");
       die();
     }
-    $TEMPLATE = new Template("install/1");
-    echo $TEMPLATE->render([]);
+    Template::loadInstance("install/1");
+    echo Template::getInstance()->render([]);
     break;
   case 2: //installation should be finished now and user should be able to log in
     $load = file_get_contents(dirname(__FILE__) . "/../inc/db.php");
@@ -79,8 +79,8 @@ switch ($STEP) {
     setcookie("step", "", time() - 10);
     setcookie("prev", "", time() - 10);
     sleep(1);
-    $TEMPLATE = new Template("install/2");
-    echo $TEMPLATE->render(array());
+    Template::loadInstance("install/2");
+    echo Template::getInstance()->render([]);
     break;
   case 50: //one or more files/dir is not writeable
     if (isset($_GET['check'])) {
@@ -90,8 +90,8 @@ switch ($STEP) {
         die();
       }
     }
-    $TEMPLATE = new Template("install/50");
-    echo $TEMPLATE->render([]);
+    Template::loadInstance("install/50");
+    echo Template::getInstance()->render([]);
     break;
   case 51: //enter database connection details
     $fail = false;
@@ -130,8 +130,8 @@ switch ($STEP) {
         die();
       }
     }
-    $TEMPLATE = new Template("install/51");
-    echo $TEMPLATE->render(['failed' => $fail]);
+    Template::loadInstance("install/51");
+    echo Template::getInstance()->render(['failed' => $fail]);
     break;
   case 52: //database is filled with initial data now we create the user now
     // create pepper (this is required here that when we create the user, the included file already contains the right peppers
@@ -182,8 +182,8 @@ switch ($STEP) {
         die();
       }
     }
-    $TEMPLATE = new Template("install/52");
-    echo $TEMPLATE->render(['message' => $message]);
+    Template::loadInstance("install/52");
+    echo Template::getInstance()->render(['message' => $message]);
     break;
   default:
     die("Some error with steps happened, please start again!");

@@ -10,7 +10,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::ACCOUNT_VIEW_PERM);
 
-$TEMPLATE = new Template("account");
+Template::loadInstance("account");
 $MENU->setActive("account_settings");
 UI::add('pageTitle', "Account Settings");
 
@@ -26,7 +26,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 $group = Factory::getRightGroupFactory()->get(Login::getInstance()->getUser()->getRightGroupId());
 UI::add('group', $group);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

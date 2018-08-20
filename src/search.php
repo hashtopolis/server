@@ -9,7 +9,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::SEARCH_VIEW_PERM);
 
-$TEMPLATE = new Template("search");
+Template::loadInstance("search");
 UI::add('pageTitle', "Search Hashes");
 $MENU->setActive("lists_search");
 
@@ -24,7 +24,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

@@ -20,7 +20,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::NOTIFICATIONS_VIEW_PERM);
 
-$TEMPLATE = new Template("notifications");
+Template::loadInstance("notifications");
 UI::add('pageTitle', "Notifications");
 $MENU->setActive("account_notifications");
 
@@ -110,7 +110,7 @@ if (AccessControl::getInstance()->hasPermission(DAccessControl::USER_CONFIG_ACCE
   UI::add('allUsers', Factory::getUserFactory()->filter([Factory::ORDER => $oF]));
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

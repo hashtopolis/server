@@ -16,7 +16,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::SUPERTASKS_VIEW_PERM);
 
-$TEMPLATE = new Template("supertasks/index");
+Template::loadInstance("supertasks/index");
 $MENU->setActive("tasks_super");
 
 //catch actions here...
@@ -30,20 +30,20 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 if (isset($_GET['create']) && $_GET['create'] == "new" && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
   $MENU->setActive("tasks_supernew");
-  $TEMPLATE = new Template("supertasks/create");
+  Template::loadInstance("supertasks/create");
   $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
   UI::add('preTasks', Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]));
   UI::add('pageTitle', "Create Supertask");
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import" && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
   $MENU->setActive("tasks_superimport");
-  $TEMPLATE = new Template("supertasks/import");
+  Template::loadInstance("supertasks/import");
 
   UI::add('crackerBinaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([]));
   UI::add('pageTitle', "Import Supertask from Masks");
 }
 else if (isset($_GET['id']) && isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::RUN_TASK_ACCESS)) {
-  $TEMPLATE = new Template("supertasks/new");
+  Template::loadInstance("supertasks/new");
   $supertask = Factory::getSupertaskFactory()->get($_GET['id']);
   UI::add('orig', $supertask->getId());
   UI::add('lists', Factory::getHashlistFactory()->filter([]));
@@ -54,7 +54,7 @@ else if (isset($_GET['id']) && isset($_GET['new']) && AccessControl::getInstance
   UI::add('pageTitle', "Issue Supertask");
 }
 else if (isset($_GET['id'])) {
-  $TEMPLATE = new Template("supertasks/detail");
+  Template::loadInstance("supertasks/detail");
   $supertask = Factory::getSupertaskFactory()->get($_GET['id']);
   if ($supertask == null) {
     UI::printError("ERROR", "Invalid supertask ID!");
@@ -82,7 +82,7 @@ else {
   UI::add('pageTitle', "Supertasks");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

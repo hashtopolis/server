@@ -32,7 +32,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
-$TEMPLATE = new Template("agents/index");
+Template::loadInstance("agents/index");
 $MENU->setActive("agents_list");
 
 //catch actions here...
@@ -54,7 +54,7 @@ foreach ($userGroups as $userGroup) {
 
 if (isset($_GET['id'])) {
   //show agent detail
-  $TEMPLATE = new Template("agents/detail");
+  Template::loadInstance("agents/detail");
   $agent = Factory::getAgentFactory()->get($_GET['id']);
   if (!$agent) {
     UI::printError("ERROR", "Agent not found!");
@@ -105,7 +105,7 @@ if (isset($_GET['id'])) {
 }
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_AGENT_ACCESS)) {
   $MENU->setActive("agents_new");
-  $TEMPLATE = new Template("agents/new");
+  Template::loadInstance("agents/new");
   UI::add('pageTitle', "New Agent");
   UI::add('vouchers', Factory::getRegVoucherFactory()->filter([]));
   UI::add('agentBinaries', Factory::getAgentBinaryFactory()->filter([]));
@@ -143,7 +143,7 @@ else {
   UI::add('numAgents', sizeof($agents));
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

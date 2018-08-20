@@ -15,7 +15,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::USERS_VIEW_PERM);
 
-$TEMPLATE = new Template("users/index");
+Template::loadInstance("users/index");
 $MENU->setActive("users_list");
 
 //catch actions here...
@@ -28,7 +28,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new'])) {
-  $TEMPLATE = new Template("users/new");
+  Template::loadInstance("users/new");
   $MENU->setActive("users_new");
   UI::add('groups', Factory::getRightGroupFactory()->filter([]));
   UI::add('pageTitle', "Create User");
@@ -47,7 +47,7 @@ else if (isset($_GET['id'])) {
     $joinedGroups = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     UI::add('accessGroups', $joinedGroups[Factory::getAccessGroupFactory()->getModelName()]);
 
-    $TEMPLATE = new Template("users/detail");
+    Template::loadInstance("users/detail");
     UI::add('pageTitle', "User details for " . $user->getUsername());
   }
 }
@@ -66,7 +66,7 @@ else {
   UI::add('pageTitle', "Users");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

@@ -19,7 +19,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::HASHES_VIEW_PERM);
 
-$TEMPLATE = new Template("hashes/index");
+Template::loadInstance("hashes/index");
 $MENU->setActive("hashes");
 
 // show hashes based on provided criteria
@@ -238,7 +238,7 @@ foreach ($hashes as $hash) {
 }
 UI::add('output', $output);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

@@ -13,7 +13,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::API_VIEW_PERM);
 
-$TEMPLATE = new Template("api/index");
+Template::loadInstance("api/index");
 $MENU->setActive("users_api");
 
 //catch actions here...
@@ -26,7 +26,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new'])) {
-  $TEMPLATE = new Template("api/new");
+  Template::loadInstance("api/new");
   UI::add('pageTitle', "Create new API Group");
 }
 else if (isset($_GET['id'])) {
@@ -65,12 +65,12 @@ else if (isset($_GET['id'])) {
       UI::add('perm', new DataSet($json));
     }
 
-    $TEMPLATE = new Template("api/detail");
+    Template::loadInstance("api/detail");
     UI::add('pageTitle', "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8"));
   }
 }
 else if(isset($_GET['newkey'])){
-  $TEMPLATE = new Template("api/newkey");
+  Template::loadInstance("api/newkey");
   UI::add('users', Factory::getUserFactory()->filter([]));
   UI::add('groups', Factory::getApiGroupFactory()->filter([]));
   UI::add('pageTitle', "Create new API key");
@@ -83,8 +83,8 @@ else if(isset($_GET['keyId'])){
   UI::add('key', $key);
   UI::add('users', Factory::getUserFactory()->filter([]));
   UI::add('groups', Factory::getApiGroupFactory()->filter([]));
-  $TEMPLATE = new Template("api/key");
   UI::add('pageTitle', "Edit API key");
+  Template::loadInstance("api/key");
 }
 else {
   // determine keys and groups
@@ -106,7 +106,7 @@ else {
   UI::add('pageTitle', "Api Groups");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

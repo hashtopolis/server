@@ -18,7 +18,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::PRETASKS_VIEW_PERM);
 
-$TEMPLATE = new Template("pretasks/index");
+Template::loadInstance("pretasks/index");
 $MENU->setActive("tasks_pre");
 
 //catch actions here...
@@ -35,7 +35,7 @@ if (isset($_GET['id'])) {
   if ($pretask === null) {
     UI::printError(UI::ERROR, "Invalid preconfigured task!");
   }
-  $TEMPLATE = new Template("pretasks/detail");
+  Template::loadInstance("pretasks/detail");
   UI::add('pretask', $pretask);
 
   $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", Factory::getFilePretaskFactory());
@@ -53,7 +53,7 @@ if (isset($_GET['id'])) {
   UI::add('pageTitle', "Preconfigured task details for " . $pretask->getTaskName());
 }
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
-  $TEMPLATE = new Template("pretasks/new");
+  Template::loadInstance("pretasks/new");
   $MENU->setActive("tasks_prenew");
 
   UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
@@ -159,7 +159,7 @@ else {
   UI::add('pageTitle', "Preconfigured Tasks");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

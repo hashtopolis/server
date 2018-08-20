@@ -13,7 +13,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::CONFIG_VIEW_PERM);
 
-$TEMPLATE = new Template("config");
+Template::loadInstance("config");
 $MENU->setActive("config_server");
 
 //catch actions here...
@@ -41,7 +41,7 @@ foreach ($entries as $entry) {
 UI::add('pageTitle', "Configuration");
 UI::add('configuration', $configuration);
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

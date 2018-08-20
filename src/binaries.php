@@ -13,7 +13,7 @@ AccessControl::getInstance()->checkPermission(DViewControl::BINARIES_VIEW_PERM);
 UI::add('newBinary', false);
 UI::add('editBinary', false);
 
-$TEMPLATE = new Template("binaries");
+Template::loadInstance("binaries");
 $MENU->setActive("config_binaries");
 
 //catch actions here...
@@ -41,7 +41,7 @@ else if (isset($_GET['edit'])) {
 }
 UI::add('binaries', Factory::getAgentBinaryFactory()->filter([]));
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

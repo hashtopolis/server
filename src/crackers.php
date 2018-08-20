@@ -15,7 +15,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::CRACKERS_VIEW_PERM);
 
-$TEMPLATE = new Template("crackers/index");
+Template::loadInstance("crackers/index");
 $MENU->setActive("crackers_list");
 
 //catch actions here...
@@ -31,12 +31,12 @@ if (isset($_GET['new']) && isset($_GET['id']) && AccessControl::getInstance()->h
   $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
     UI::add('binaryType', $binaryType);
-    $TEMPLATE = new Template("crackers/newVersion");
     UI::add('pageTitle', "Add new Cracker Binary Version");
+    Template::loadInstance("crackers/newVersion");
   }
 }
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
-  $TEMPLATE = new Template("crackers/new");
+  Template::loadInstance("crackers/new");
   $MENU->setActive("crackers_new");
   UI::add('pageTitle', "Add Cracker Binary");
 }
@@ -44,7 +44,7 @@ else if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAc
   $binary = Factory::getCrackerBinaryFactory()->get($_GET['id']);
   if ($binary !== null) {
     UI::add('binary', $binary);
-    $TEMPLATE = new Template("crackers/editVersion");
+    Template::loadInstance("crackers/editVersion");
     $MENU->setActive("crackers_edit");
     UI::add('binaryType', Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId()));
     UI::add('pageTitle', "Edit Cracker Binary Version for " . UI::get('binaryType')->getTypeName());
@@ -54,7 +54,7 @@ else if (isset($_GET['id'])) {
   $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
     UI::add('binaryType', $binaryType);
-    $TEMPLATE = new Template("crackers/detail");
+    Template::loadInstance("crackers/detail");
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
     UI::add('binaries', Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]));
     UI::add('pageTitle', "Cracker Binary details for " . $binaryType->getTypeName());
@@ -80,7 +80,7 @@ else {
   UI::add('pageTitle', "Cracker Binaries");
 }
 
-echo $TEMPLATE->render(UI::getObjects());
+echo Template::getInstance()->render(UI::getObjects());
 
 
 
