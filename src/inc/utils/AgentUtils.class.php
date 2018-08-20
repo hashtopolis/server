@@ -107,7 +107,7 @@ class AgentUtils {
         }
       }
       if(!$found){
-        $axes[] = ["id" => $entry->getStatType(), 'type' => 'linear', 'position' => $position, "display" => true];
+        $axes[] = ["id" => $entry->getStatType(), 'type' => 'linear', 'position' => $position, "display" => true, 'labelString' => $yLabels[$entry->getStatType()]];
         $position = ($position == 'left')?'right':'left';
       }
       $data = explode(",", $entry->getValue());
