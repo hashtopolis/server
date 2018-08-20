@@ -11,9 +11,6 @@ if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
 }
 
-UI::add('version', $VERSION);
-UI::add('host', $HOST);
-
 $INSTALL = false;
 @include(dirname(__FILE__) . "/db.php");
 
@@ -49,6 +46,8 @@ include(dirname(__FILE__) . "/protocol.php");
 require_once(dirname(__FILE__) . "/../dba/init.php");
 
 $LANG = new Lang();
+UI::add('version', $VERSION);
+UI::add('host', $HOST);
 
 $gitcommit = "";
 $gitfolder = dirname(__FILE__) . "/../../.git";
