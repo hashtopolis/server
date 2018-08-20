@@ -11,7 +11,7 @@ AccessControl::getInstance()->checkPermission(DViewControl::SEARCH_VIEW_PERM);
 
 Template::loadInstance("search");
 UI::add('pageTitle', "Search Hashes");
-$MENU->setActive("lists_search");
+Menu::get()->setActive("lists_search");
 
 UI::add('result', false);
 

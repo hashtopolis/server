@@ -20,7 +20,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::HASHES_VIEW_PERM);
 
 Template::loadInstance("hashes/index");
-$MENU->setActive("hashes");
+Menu::get()->setActive("hashes");
 
 // show hashes based on provided criteria
 $hlist = 0;

@@ -22,7 +22,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::HASHLISTS_VIEW_PERM);
 
 Template::loadInstance("hashlists/index");
-$MENU->setActive("lists_norm");
+Menu::get()->setActive("lists_norm");
 UI::add('zap', false);
 
 //catch actions here...
@@ -36,7 +36,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_HASHLIST_ACCESS)) {
   //new hashlist
-  $MENU->setActive("lists_new");
+  Menu::get()->setActive("lists_new");
   UI::add('impfiles', Util::scanImportDirectory());
   $hashtypes = Factory::getHashTypeFactory()->filter([]);
   $list = array();

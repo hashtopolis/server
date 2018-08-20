@@ -14,7 +14,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::CONFIG_VIEW_PERM);
 
 Template::loadInstance("config");
-$MENU->setActive("config_server");
+Menu::get()->setActive("config_server");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {

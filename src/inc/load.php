@@ -59,8 +59,7 @@ if (file_exists($gitfolder) && is_dir($gitfolder)) {
 }
 UI::add('gitcommit', $gitcommit);
 
-$MENU = new Menu();
-UI::add('menu', $MENU);
+UI::add('menu', Menu::get());
 UI::add('messages', []);
 UI::add('pageTitle', "");
 if ($INSTALL) {

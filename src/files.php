@@ -16,7 +16,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::FILES_VIEW_PERM);
 
 Template::loadInstance("files/index");
-$MENU->setActive("files");
+Menu::get()->setActive("files");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {

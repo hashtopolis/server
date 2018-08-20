@@ -16,7 +16,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::USERS_VIEW_PERM);
 
 Template::loadInstance("users/index");
-$MENU->setActive("users_list");
+Menu::get()->setActive("users_list");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -29,7 +29,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 if (isset($_GET['new'])) {
   Template::loadInstance("users/new");
-  $MENU->setActive("users_new");
+  Menu::get()->setActive("users_new");
   UI::add('groups', Factory::getRightGroupFactory()->filter([]));
   UI::add('pageTitle', "Create User");
 }

@@ -16,7 +16,7 @@ AccessControl::getInstance()->checkPermission(DViewControl::LOG_VIEW_PERM);
 
 Template::loadInstance("log");
 UI::add('pageTitle', "Log");
-$MENU->setActive("config_log");
+Menu::get()->setActive("config_log");
 
 $level = "0";
 if (isset($_POST['show'])) {

@@ -33,7 +33,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
 Template::loadInstance("agents/index");
-$MENU->setActive("agents_list");
+Menu::get()->setActive("agents_list");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -104,7 +104,7 @@ if (isset($_GET['id'])) {
   }
 }
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_AGENT_ACCESS)) {
-  $MENU->setActive("agents_new");
+  Menu::get()->setActive("agents_new");
   Template::loadInstance("agents/new");
   UI::add('pageTitle', "New Agent");
   UI::add('vouchers', Factory::getRegVoucherFactory()->filter([]));

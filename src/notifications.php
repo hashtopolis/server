@@ -22,7 +22,7 @@ AccessControl::getInstance()->checkPermission(DViewControl::NOTIFICATIONS_VIEW_P
 
 Template::loadInstance("notifications");
 UI::add('pageTitle', "Notifications");
-$MENU->setActive("account_notifications");
+Menu::get()->setActive("account_notifications");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {

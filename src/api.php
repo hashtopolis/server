@@ -14,7 +14,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::API_VIEW_PERM);
 
 Template::loadInstance("api/index");
-$MENU->setActive("users_api");
+Menu::get()->setActive("users_api");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {

@@ -11,7 +11,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::ACCOUNT_VIEW_PERM);
 
 Template::loadInstance("account");
-$MENU->setActive("account_settings");
+Menu::get()->setActive("account_settings");
 UI::add('pageTitle', "Account Settings");
 
 //catch actions here...

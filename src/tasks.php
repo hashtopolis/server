@@ -20,7 +20,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(array_merge(DViewControl::TASKS_VIEW_PERM, DAccessControl::RUN_TASK_ACCESS));
 
 Template::loadInstance("tasks/index");
-$MENU->setActive("tasks_list");
+Menu::get()->setActive("tasks_list");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -244,7 +244,7 @@ if (isset($_GET['id'])) {
 else if (isset($_GET['new'])) {
   AccessControl::getInstance()->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
   Template::loadInstance("tasks/new");
-  $MENU->setActive("tasks_new");
+  Menu::get()->setActive("tasks_new");
   $orig = 0;
   $origTask = null;
   $origType = 0;

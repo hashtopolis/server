@@ -19,7 +19,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
 Template::loadInstance("agents/status");
-$MENU->setActive("agents_status");
+Menu::get()->setActive("agents_status");
 
 // load groups for user
 $qF = new QueryFilter(AccessGroupUser::USER_ID, Login::getInstance()->getUserID(), "=");

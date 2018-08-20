@@ -14,7 +14,7 @@ UI::add('newBinary', false);
 UI::add('editBinary', false);
 
 Template::loadInstance("binaries");
-$MENU->setActive("config_binaries");
+Menu::get()->setActive("config_binaries");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {

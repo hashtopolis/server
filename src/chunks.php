@@ -17,7 +17,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::CHUNKS_VIEW_PERM);
 
 Template::loadInstance("chunks");
-$MENU->setActive("chunks");
+Menu::get()->setActive("chunks");
 
 $oF = null;
 UI::add('all', true);

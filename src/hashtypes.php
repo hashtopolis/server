@@ -11,7 +11,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::HASHTYPES_VIEW_PERM);
 
 Template::loadInstance("hashtypes");
-$MENU->setActive("config_hashtypes");
+Menu::get()->setActive("config_hashtypes");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {

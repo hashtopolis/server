@@ -19,7 +19,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::PRETASKS_VIEW_PERM);
 
 Template::loadInstance("pretasks/index");
-$MENU->setActive("tasks_pre");
+Menu::get()->setActive("tasks_pre");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -54,7 +54,7 @@ if (isset($_GET['id'])) {
 }
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
   Template::loadInstance("pretasks/new");
-  $MENU->setActive("tasks_prenew");
+  Menu::get()->setActive("tasks_prenew");
 
   UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
   $accessGroupIds = Util::arrayOfIds(UI::get('accessGroups'));

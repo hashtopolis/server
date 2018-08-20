@@ -19,7 +19,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::GROUPS_VIEW_PERM);
 
 Template::loadInstance("groups/index");
-$MENU->setActive("users_groups");
+Menu::get()->setActive("users_groups");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
