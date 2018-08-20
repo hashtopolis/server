@@ -3,8 +3,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -14,7 +12,7 @@ AccessControl::getInstance()->checkPermission(DViewControl::ACCOUNT_VIEW_PERM);
 
 $TEMPLATE = new Template("account");
 $MENU->setActive("account_settings");
-$OBJECTS['pageTitle'] = "Account Settings";
+UI::add('pageTitle', "Account Settings");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -26,9 +24,9 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 $group = Factory::getRightGroupFactory()->get(Login::getInstance()->getUser()->getRightGroupId());
-$OBJECTS['group'] = $group;
+UI::add('group', $group);
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

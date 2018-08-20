@@ -33,8 +33,6 @@ class SearchHandler implements Handler {
    * @throws HTException
    */
   private function search() {
-    global $OBJECTS;
-
     $query = $_POST['search'];
     if (strlen($query) == 0) {
       throw new HTException("Search query cannot be empty!");
@@ -98,9 +96,9 @@ class SearchHandler implements Handler {
       }
       $resultEntries[] = $resultEntry;
     }
-    $OBJECTS['resultEntries'] = $resultEntries;
-    $OBJECTS['hashlists'] = $hashlists;
-    $OBJECTS['result'] = true;
+    UI::add('resultEntries', $resultEntries);
+    UI::add('hashlists', $hashlists);
+    UI::add('result', true);
     UI::addMessage(UI::SUCCESS, "Searched for " . sizeof($resultEntries) . " entries!");
   }
 }

@@ -67,8 +67,6 @@ class ConfigUtils {
    * @throws HTException
    */
   public static function updateConfig($arr) {
-    global $OBJECTS;
-
     foreach ($arr as $item => $val) {
       if (substr($item, 0, 7) == "config_") {
         $name = substr($item, 7);
@@ -102,7 +100,7 @@ class ConfigUtils {
       }
     }
     SConfig::reload();
-    $OBJECTS['config'] = SConfig::getInstance();
+    UI::add('config', SConfig::getInstance());
   }
 
   /**

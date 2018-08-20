@@ -12,8 +12,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -35,13 +33,13 @@ $isWpa = false;
 $hashFactory = null;
 $hashClass = null;
 $queryFilters = array();
-$OBJECTS['pageTitle'] = " Hashes";
+UI::add('pageTitle', " Hashes");
 if (isset($_GET['hashlist'])) {
   $list = Factory::getHashlistFactory()->get($_GET["hashlist"]);
   if ($list == null) {
     UI::printError("ERROR", "Invalid hashlist!");
   }
-  $OBJECTS['list'] = $list;
+  UI::add('list', $list);
   if ($list->getFormat() == DHashlistFormat::SUPERHASHLIST) {
     $lists = Util::checkSuperHashlist($list);
     $listIds = array();
@@ -69,7 +67,7 @@ if (isset($_GET['hashlist'])) {
   }
   $src = "hashlist";
   $srcId = $list->getId();
-  $OBJECTS['pageTitle'] = "Hashes of Hashlist " . $list->getHashlistName();
+  UI::add('pageTitle', "Hashes of Hashlist " . $list->getHashlistName());
 }
 else if (isset($_GET['chunk'])) {
   $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, Factory::getChunkFactory());
@@ -95,9 +93,9 @@ else if (isset($_GET['chunk'])) {
   }
   $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
   $src = "chunk";
-  $OBJECTS['chunk'] = $chunk;
+  UI::add('chunk', $chunk);
   $srcId = $chunk->getId();
-  $OBJECTS['pageTitle'] = "Hashes of Chunk " . $chunk->getId();
+  UI::add('pageTitle', "Hashes of Chunk " . $chunk->getId());
 }
 else if (isset($_GET['task'])) {
   $task = Factory::getTaskFactory()->get($_GET['task']);
@@ -125,24 +123,24 @@ else if (isset($_GET['task'])) {
   }
   $queryFilters[] = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
   $src = "task";
-  $OBJECTS['task'] = $task;
+  UI::add('task', $task);
   $srcId = $task->getId();
-  $OBJECTS['pageTitle'] = "Hashes of Task " . $task->getId();
+  UI::add('pageTitle', "Hashes of Task " . $task->getId());
 }
 
-$OBJECTS['src'] = $src;
-$OBJECTS['srcId'] = $srcId;
+UI::add('src', $src);
+UI::add('srcId', $srcId);
 
 $displaying = "";
 if (isset($_GET['display'])) {
   $displaying = $_GET["display"];
 }
-$OBJECTS['displaying'] = htmlentities($displaying, ENT_QUOTES, "UTF-8");
+UI::add('displaying', htmlentities($displaying, ENT_QUOTES, "UTF-8"));
 $filter = "";
 if (isset($_GET['filter'])) {
   $filter = $_GET['filter'];
 }
-$OBJECTS['filtering'] = htmlentities($filter, ENT_QUOTES, "UTF-8");
+UI::add('filtering', htmlentities($filter, ENT_QUOTES, "UTF-8"));
 
 $displays = array("hash" => "Hashes only", "" => "Hashes + plaintexts", "plain" => "Plaintexts only");
 $filters = array("cracked" => "Cracked", "uncracked" => "Uncracked", "" => "All");
@@ -154,7 +152,7 @@ foreach ($displays as $id => $text) {
   $set->addValue('text', $text);
   $displaysSet[] = $set;
 }
-$OBJECTS['displays'] = $displaysSet;
+UI::add('displays', $displaysSet);
 
 $filtersSet = array();
 foreach ($filters as $id => $text) {
@@ -163,7 +161,7 @@ foreach ($filters as $id => $text) {
   $set->addValue('text', $text);
   $filtersSet[] = $set;
 }
-$OBJECTS['filters'] = $filtersSet;
+UI::add('filters', $filtersSet);
 
 if ($filter == "cracked") {
   $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, 1, "=");
@@ -177,7 +175,7 @@ $numPages = $count / SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE);
 if ($numPages * SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) != $count) {
   $numPages++;
 }
-$OBJECTS['count'] = $count;
+UI::add('count', $count);
 
 $currentPage = 0;
 $nextPage = -1;
@@ -191,10 +189,10 @@ if ($currentPage > 0) {
 if ($currentPage < $numPages - 1) {
   $nextPage = $currentPage + 1;
 }
-$OBJECTS['numPages'] = $numPages;
-$OBJECTS['nextPage'] = $nextPage;
-$OBJECTS['previousPage'] = $previousPage;
-$OBJECTS['currentPage'] = $currentPage;
+UI::add('numPages', $numPages);
+UI::add('nextPage', $nextPage);
+UI::add('previousPage', $previousPage);
+UI::add('currentPage', $currentPage);
 
 $oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
 $hashes = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::ORDER => $oF]);
@@ -238,9 +236,9 @@ foreach ($hashes as $hash) {
   }
   $output .= "\n";
 }
-$OBJECTS['output'] = $output;
+UI::add('output', $output);
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

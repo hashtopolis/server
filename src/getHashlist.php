@@ -11,8 +11,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 AccessControl::getInstance()->checkPermission(DViewControl::GETHASHLIST_VIEW_PERM);
 
 // TODO: configure max memory usage here

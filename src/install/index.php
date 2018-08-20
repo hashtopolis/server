@@ -35,8 +35,7 @@ switch ($STEP) {
       die();
     }
 
-    $OBJECTS = array();
-    $OBJECTS['32bit'] = (PHP_INT_SIZE == 4) ? true : false;
+    UI::add('32bit', (PHP_INT_SIZE == 4) ? true : false);
     if (isset($_GET['type'])) {
       $type = $_GET['type'];
       if ($type == 'install') {
@@ -48,7 +47,7 @@ switch ($STEP) {
       die();
     }
     $TEMPLATE = new Template("install/0");
-    echo $TEMPLATE->render($OBJECTS);
+    echo $TEMPLATE->render(UI::getObjects());
     break;
   case 1: //clean installation was selected
     if (isset($_GET['next'])) {
@@ -67,7 +66,7 @@ switch ($STEP) {
       die();
     }
     $TEMPLATE = new Template("install/1");
-    echo $TEMPLATE->render(array());
+    echo $TEMPLATE->render([]);
     break;
   case 2: //installation should be finished now and user should be able to log in
     $load = file_get_contents(dirname(__FILE__) . "/../inc/db.php");
@@ -92,7 +91,7 @@ switch ($STEP) {
       }
     }
     $TEMPLATE = new Template("install/50");
-    echo $TEMPLATE->render(array());
+    echo $TEMPLATE->render([]);
     break;
   case 51: //enter database connection details
     $fail = false;
@@ -132,7 +131,7 @@ switch ($STEP) {
       }
     }
     $TEMPLATE = new Template("install/51");
-    echo $TEMPLATE->render(array('failed' => $fail));
+    echo $TEMPLATE->render(['failed' => $fail]);
     break;
   case 52: //database is filled with initial data now we create the user now
     // create pepper (this is required here that when we create the user, the included file already contains the right peppers
@@ -184,7 +183,7 @@ switch ($STEP) {
       }
     }
     $TEMPLATE = new Template("install/52");
-    echo $TEMPLATE->render(array('message' => $message));
+    echo $TEMPLATE->render(['message' => $message]);
     break;
   default:
     die("Some error with steps happened, please start again!");

@@ -8,8 +8,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -24,13 +22,13 @@ if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessCo
   $TEMPLATE = new Template("superhashlists/new");
   $MENU->setActive("lists_snew");
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
-  $OBJECTS['lists'] = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
-  $OBJECTS['pageTitle'] = "Create Superhashlist";
+  UI::add('lists', Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]));
+  UI::add('pageTitle', "Create Superhashlist");
 }
 else {
   $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
   $lists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
-  $OBJECTS['lists'] = $lists;
+  UI::add('lists', $lists);
   $subLists = new DataSet();
   foreach ($lists as $list) {
     $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $list->getId(), "=", Factory::getHashlistHashlistFactory());
@@ -38,8 +36,8 @@ else {
     $ll = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $subLists->addValue($list->getId(), $ll[Factory::getHashlistFactory()->getModelName()]);
   }
-  $OBJECTS['subLists'] = $subLists;
-  $OBJECTS['pageTitle'] = "Superhashlists";
+  UI::add('subLists', $subLists);
+  UI::add('pageTitle', "Superhashlists");
 }
 
 $hashtypes = new DataSet();
@@ -47,9 +45,9 @@ $types = Factory::getHashTypeFactory()->filter([]);
 foreach ($types as $type) {
   $hashtypes->addValue($type->getId(), $type->getDescription());
 }
-$OBJECTS['hashtypes'] = $hashtypes;
+UI::add('hashtypes', $hashtypes);
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

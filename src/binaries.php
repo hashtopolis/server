@@ -3,8 +3,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -12,8 +10,8 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::BINARIES_VIEW_PERM);
 
-$OBJECTS['newBinary'] = false;
-$OBJECTS['editBinary'] = false;
+UI::add('newBinary', false);
+UI::add('editBinary', false);
 
 $TEMPLATE = new Template("binaries");
 $MENU->setActive("config_binaries");
@@ -26,24 +24,24 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
     Util::refresh();
   }
 }
-$OBJECTS['pageTitle'] = "Agent Binaries";
+UI::add('pageTitle', "Agent Binaries");
+
 if (isset($_GET['new'])) {
-  $OBJECTS['newBinary'] = true;
-  $OBJECTS['pageTitle'] = "New Agent Binary";
+  UI::add('newBinary', true);
+  UI::add('pageTitle', "New Agent Binary");
 }
 else if (isset($_GET['edit'])) {
   $bin = Factory::getAgentBinaryFactory()->get($_GET['edit']);
   if ($bin == null) {
     UI::printError("ERROR", "Invalid agent binary ID!");
   }
-  $OBJECTS['pageTitle'] = "Edit Agent Binary of type " . $bin->getType();
-  $OBJECTS['editBinary'] = true;
-  $OBJECTS['bin'] = $bin;
+  UI::add('pageTitle', "Edit Agent Binary of type " . $bin->getType());
+  UI::add('editBinary', true);
+  UI::add('bin', $bin);
 }
-$binaries = Factory::getAgentBinaryFactory()->filter([]);
-$OBJECTS['binaries'] = $binaries;
+UI::add('binaries', Factory::getAgentBinaryFactory()->filter([]));
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

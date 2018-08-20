@@ -15,8 +15,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (isset($_GET['download'])) {
   $agentHandler = new AgentHandler();
   try {
@@ -65,24 +63,24 @@ if (isset($_GET['id'])) {
     UI::printError("ERROR", "No access to this agent!");
   }
   else {
-    $OBJECTS['agent'] = $agent;
-    $OBJECTS['users'] = Factory::getUserFactory()->filter([]);
-    $OBJECTS['pageTitle'] .= "Agent details for " . $agent->getAgentName();
+    UI::add('agent', $agent);
+    UI::add('users', Factory::getUserFactory()->filter([]));
+    UI::add('pageTitle', "Agent details for " . $agent->getAgentName());
 
     // load all tasks which are valid for this agent
-    $OBJECTS['allTasks'] = TaskUtils::getBestTask($agent, true);
+    UI::add('allTasks', TaskUtils::getBestTask($agent, true));
 
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    $OBJECTS['accessGroups'] = $joined[Factory::getAccessGroupFactory()->getModelName()];
+    UI::add('accessGroups', $joined[Factory::getAccessGroupFactory()->getModelName()]);
 
     // load agent detail data
     $data = AgentUtils::getGraphData($agent, [DAgentStatsType::GPU_TEMP, DAgentStatsType::GPU_UTIL]);
-    $OBJECTS['gpuTemp'] = json_encode($data['sets']);
-    $OBJECTS['gpuTempAvailable'] = (sizeof($data['sets']) > 0)?true:false;
-    $OBJECTS['gpuTempXLabels'] = json_encode($data['xlabels']);
-    $OBJECTS['gpuAxes'] = json_encode($data['axes']);
+    UI::add('gpuTemp', json_encode($data['sets']));
+    UI::add('gpuTempAvailable', (sizeof($data['sets']) > 0)?true:false);
+    UI::add('gpuTempXLabels', json_encode($data['xlabels']));
+    UI::add('gpuAxes', json_encode($data['axes']));
 
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
@@ -90,10 +88,10 @@ if (isset($_GET['id'])) {
     if ($assignment != null) {
       $currentTask = $assignment->getTaskId();
     }
-    $OBJECTS['currentTask'] = $currentTask;
+    UI::add('currentTask', $currentTask);
 
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
-    $OBJECTS['errors'] = Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF]);
+    UI::add('errors', Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF]));
 
     $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
@@ -101,26 +99,24 @@ if (isset($_GET['id'])) {
     foreach ($chunks as $chunk) {
       $timeSpent += max($chunk->getSolveTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
     }
-    $OBJECTS['chunks'] = $chunks;
-    $OBJECTS['timeSpent'] = $timeSpent;
+    UI::add('chunks', $chunks);
+    UI::add('timeSpent', $timeSpent);
   }
 }
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_AGENT_ACCESS)) {
   $MENU->setActive("agents_new");
   $TEMPLATE = new Template("agents/new");
-  $OBJECTS['pageTitle'] = "New Agent";
-  $vouchers = Factory::getRegVoucherFactory()->filter([]);
-  $OBJECTS['vouchers'] = $vouchers;
-  $binaries = Factory::getAgentBinaryFactory()->filter([]);
-  $OBJECTS['agentBinaries'] = $binaries;
+  UI::add('pageTitle', "New Agent");
+  UI::add('vouchers', Factory::getRegVoucherFactory()->filter([]));
+  UI::add('agentBinaries', Factory::getAgentBinaryFactory()->filter([]));
 
   $url = explode("/", $_SERVER['PHP_SELF']);
   unset($url[sizeof($url) - 1]);
-  $OBJECTS['apiUrl'] = Util::buildServerUrl() . implode("/", $url) . "/api/server.php";
-  $OBJECTS['agentUrl'] = Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=";
+  UI::add('apiUrl', Util::buildServerUrl() . implode("/", $url) . "/api/server.php");
+  UI::add('agentUrl', Util::buildServerUrl() . implode("/", $url) . "/agents.php?download=");
 }
 else {
-  $OBJECTS['pageTitle'] = "Agents";
+  UI::add('pageTitle', "Agents");
 
   // load all agents which are in an access group the user has access to
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds);
@@ -142,12 +138,12 @@ else {
     $agent->setDevices(Util::compressDevices(explode("\n", $agent->getDevices())));
   }
 
-  $OBJECTS['accessGroupAgents'] = $accessGroupAgents;
-  $OBJECTS['agents'] = $agents;
-  $OBJECTS['numAgents'] = sizeof($agents);
+  UI::add('accessGroupAgents', $accessGroupAgents);
+  UI::add('agents', $agents);
+  UI::add('numAgents', sizeof($agents));
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

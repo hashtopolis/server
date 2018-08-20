@@ -17,8 +17,6 @@ class AccountHandler implements Handler {
   }
 
   public function handle($action) {
-    global $OBJECTS;
-
     try {
       switch ($action) {
         case DAccountAction::SET_EMAIL:
@@ -75,6 +73,6 @@ class AccountHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
 
-    $OBJECTS['user'] = Login::getInstance()->getUser();
+    UI::add('user', Login::getInstance()->getUser());
   }
 }

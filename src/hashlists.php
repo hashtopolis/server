@@ -14,8 +14,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -25,13 +23,13 @@ AccessControl::getInstance()->checkPermission(DViewControl::HASHLISTS_VIEW_PERM)
 
 $TEMPLATE = new Template("hashlists/index");
 $MENU->setActive("lists_norm");
-$OBJECTS['zap'] = false;
+UI::add('zap', false);
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $hashlistHandler = new HashlistHandler();
   $hashlistHandler->handle($_POST['action']);
-  if (UI::getNumMessages() == 0 && !$OBJECTS['zap']) {
+  if (UI::getNumMessages() == 0 && !UI::get('zap')) {
     Util::refresh();
   }
 }
@@ -39,18 +37,18 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_HASHLIST_ACCESS)) {
   //new hashlist
   $MENU->setActive("lists_new");
-  $OBJECTS['impfiles'] = Util::scanImportDirectory();
+  UI::add('impfiles', Util::scanImportDirectory());
   $hashtypes = Factory::getHashTypeFactory()->filter([]);
   $list = array();
   foreach ($hashtypes as $hashtype) {
     $list[] = $hashtype->getId() . ": " . $hashtype->getIsSalted();
   }
   $allHashtypes = "{" . implode(",", $list) . "}";
-  $OBJECTS['allHashtypes'] = $allHashtypes;
-  $OBJECTS['hashtypes'] = $hashtypes;
-  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
+  UI::add('allHashtypes', $allHashtypes);
+  UI::add('hashtypes', $hashtypes);
+  UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
   $TEMPLATE = new Template("hashlists/new");
-  $OBJECTS['pageTitle'] = "Add new Hashlist";
+  UI::add('pageTitle', "Add new Hashlist");
 }
 else if (isset($_GET['id'])) {
   //show hashlist detail page
@@ -61,20 +59,20 @@ else if (isset($_GET['id'])) {
     UI::printError("ERROR", "Hashlist not found!");
   }
   $list = new DataSet(array('hashlist' => $joined[Factory::getHashlistFactory()->getModelName()][0], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][0]));
-  $OBJECTS['list'] = $list;
-  $OBJECTS['accessGroup'] = Factory::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId());
+  UI::add('list', $list);
+  UI::add('accessGroup', Factory::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId()));
 
   //check if the list is a superhashlist
-  $OBJECTS['sublists'] = array();
+  UI::add('sublists', []);
   if ($list->getVal('hashlist')->getFormat() == DHashlistFormat::SUPERHASHLIST) {
     $jF = new JoinFilter(Factory::getHashlistHashlistFactory(), HashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
     $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", Factory::getHashlistHashlistFactory());
     $joined = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
     $sublists = array();
     for ($x = 0; $x < sizeof($joined[Factory::getHashlistFactory()->getModelName()]); $x++) {
-      $sublists[] = new DataSet(array('hashlist' => $joined[Factory::getHashlistFactory()->getModelName()][$x], 'superhashlist' => $joined[Factory::getHashlistHashlistFactory()->getModelName()][$x]));
+      $sublists[] = new DataSet(['hashlist' => $joined[Factory::getHashlistFactory()->getModelName()][$x], 'superhashlist' => $joined[Factory::getHashlistHashlistFactory()->getModelName()][$x]]);
     }
-    $OBJECTS['sublists'] = $sublists;
+    UI::add('sublists', $sublists);
   }
 
   //load tasks assigned to hashlist
@@ -88,7 +86,7 @@ else if (isset($_GET['id'])) {
     $isActive = false;
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $sum = array('dispatched' => $task->getKeyspaceProgress(), 'searched' => 0, 'cracked' => 0);
+    $sum = ['dispatched' => $task->getKeyspaceProgress(), 'searched' => 0, 'cracked' => 0];
     foreach ($chunks as $chunk) {
       $sum['searched'] += $chunk->getProgress();
       $sum['cracked'] += $chunk->getCracked();
@@ -96,25 +94,25 @@ else if (isset($_GET['id'])) {
         $isActive = true;
       }
     }
-    $set = new DataSet(array('task' => $task, 'isActive' => $isActive, 'searched' => $sum['searched'], 'dispatched' => $sum['dispatched'], 'cracked' => $sum['cracked']));
+    $set = new DataSet(['task' => $task, 'isActive' => $isActive, 'searched' => $sum['searched'], 'dispatched' => $sum['dispatched'], 'cracked' => $sum['cracked']]);
     $hashlistTasks[] = $set;
   }
-  $OBJECTS['tasks'] = $hashlistTasks;
+  UI::add('tasks', $hashlistTasks);
 
   //load list of available preconfigured tasks
   if (SConfig::getInstance()->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
     $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
-    $OBJECTS['preTasks'] = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]);
+    UI::add('preTasks', Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]));
   }
   else{
-    $OBJECTS['preTasks'] = Factory::getPretaskFactory()->filter([]);
+    UI::add('preTasks', Factory::getPretaskFactory()->filter([]));
   }
 
   // load list of available supertasks
-  $OBJECTS['superTasks'] = Factory::getSupertaskFactory()->filter([]);
+  UI::add('superTasks', Factory::getSupertaskFactory()->filter([]));
 
   $TEMPLATE = new Template("hashlists/detail");
-  $OBJECTS['pageTitle'] = "Hashlist details for " . $list->getVal('hashlist')->getHashlistName();
+  UI::add('pageTitle', "Hashlist details for " . $list->getVal('hashlist')->getHashlistName());
 }
 else {
   //load all hashlists
@@ -124,14 +122,14 @@ else {
   $joinedHashlists = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => [$qF1, $qF2]]);
   $hashlists = array();
   for ($x = 0; $x < sizeof($joinedHashlists[Factory::getHashlistFactory()->getModelName()]); $x++) {
-    $hashlists[] = new DataSet(array('hashlist' => $joinedHashlists[Factory::getHashlistFactory()->getModelName()][$x], 'hashtype' => $joinedHashlists[Factory::getHashTypeFactory()->getModelName()][$x]));
+    $hashlists[] = new DataSet(['hashlist' => $joinedHashlists[Factory::getHashlistFactory()->getModelName()][$x], 'hashtype' => $joinedHashlists[Factory::getHashTypeFactory()->getModelName()][$x]]);
   }
-  $OBJECTS['hashlists'] = $hashlists;
-  $OBJECTS['numHashlists'] = sizeof($hashlists);
-  $OBJECTS['pageTitle'] = "Hashlists";
+  UI::add('hashlists', $hashlists);
+  UI::add('numHashlists', sizeof($hashlists));
+  UI::add('pageTitle', "Hashlists");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

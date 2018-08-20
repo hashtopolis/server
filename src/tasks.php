@@ -13,8 +13,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -52,10 +50,10 @@ if (isset($_POST['toggleautorefresh'])) {
 if ($autorefresh > 0) { //renew cookie
   setcookie("autorefresh", "1", time() + 3600 * 24);
 }
-$OBJECTS['autorefresh'] = 0;
+UI::add('autorefresh', 0);
 if (isset($_GET['id']) || !isset($_GET['new'])) {
-  $OBJECTS['autorefresh'] = $autorefresh;
-  $OBJECTS['autorefreshUrl'] = "";
+  UI::add('autorefresh', $autorefresh);
+  UI::add('autorefreshUrl', "");
 }
 
 if (isset($_GET['id'])) {
@@ -65,9 +63,9 @@ if (isset($_GET['id'])) {
   if ($task == null) {
     UI::printError("ERROR", "Invalid task ID!");
   }
-  $OBJECTS['task'] = $task;
+  UI::add('task', $task);
   $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
-  $OBJECTS['taskWrapper'] = $taskWrapper;
+  UI::add('taskWrapper', $taskWrapper);
 
   $fileInfo = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
   if($fileInfo[4]){
@@ -75,12 +73,12 @@ if (isset($_GET['id'])) {
   }
 
   $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
-  $OBJECTS['hashlist'] = $hashlist;
+  UI::add('hashlist', $hashlist);
   $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashtypeId());
-  $OBJECTS['hashtype'] = $hashtype;
+  UI::add('hashtype', $hashtype);
 
   $isActive = 0;
-  $activeChunks = array();
+  $activeChunks = [];
   $activeChunksIds = new DataSet();
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
@@ -100,8 +98,8 @@ if (isset($_GET['id'])) {
       $activeChunksIds->addValue($chunk->getId(), false);
     }
   }
-  $OBJECTS['isActive'] = $isActive;
-  $OBJECTS['currentSpeed'] = $currentSpeed;
+  UI::add('isActive', $isActive);
+  UI::add('currentSpeed', $currentSpeed);
 
   $agentsBench = new DataSet();
   $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
@@ -111,7 +109,7 @@ if (isset($_GET['id'])) {
   }
 
   $cProgress = 0;
-  $chunkIntervals = array();
+  $chunkIntervals = [];
   $agentsProgress = new DataSet();
   $agentsSpent = new DataSet();
   $agentsCracked = new DataSet();
@@ -119,7 +117,7 @@ if (isset($_GET['id'])) {
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   foreach ($chunks as $chunk) {
     if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
-      $chunkIntervals[] = array("start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime());
+      $chunkIntervals[] = ["start" => $chunk->getDispatchTime(), "stop" => $chunk->getSolveTime()];
     }
     $cProgress += $chunk->getCheckpoint() - $chunk->getSkip();
     if (!$agentsProgress->getVal($chunk->getAgentId())) {
@@ -133,10 +131,10 @@ if (isset($_GET['id'])) {
       $agentsSpent->addValue($chunk->getAgentId(), $agentsSpent->getVal($chunk->getAgentId()) + max($chunk->getSolveTime() - $chunk->getDispatchTime(), 0));
     }
   }
-  $OBJECTS['agentsProgress'] = $agentsProgress;
-  $OBJECTS['agentsSpent'] = $agentsSpent;
-  $OBJECTS['agentsCracked'] = $agentsCracked;
-  $OBJECTS['cProgress'] = $cProgress;
+  UI::add('agentsProgress', $agentsProgress);
+  UI::add('agentsSpent', $agentsSpent);
+  UI::add('agentsCracked', $agentsCracked);
+  UI::add('cProgress', $cProgress);
 
   $timeChunks = $chunks;
   usort($timeChunks, "Util::compareChunksTime");
@@ -152,19 +150,19 @@ if (isset($_GET['id'])) {
       $current = $c->getSolveTime();
     }
   }
-  $OBJECTS['timeSpent'] = $timeSpent;
+  UI::add('timeSpent', $timeSpent);
 
   if ($task->getKeyspace() != 0 && ($cProgress / $task->getKeyspace()) != 0) {
-    $OBJECTS['timeLeft'] = round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent);
+    UI::add('timeLeft', round($timeSpent / ($cProgress / $task->getKeyspace()) - $timeSpent));
   }
   else {
-    $OBJECTS['timeLeft'] = -1;
+    UI::add('timeLeft', -1);
   }
 
   $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
   $jF = new JoinFilter(Factory::getFileTaskFactory(), FileTask::FILE_ID, File::FILE_ID);
   $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-  $OBJECTS['attachedFiles'] = $joinedFiles[Factory::getFileFactory()->getModelName()];
+  UI::add('attachedFiles', $joinedFiles[Factory::getFileFactory()->getModelName()]);
 
   $jF = new JoinFilter(Factory::getAssignmentFactory(), Assignment::AGENT_ID, Agent::AGENT_ID);
   $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=", Factory::getAssignmentFactory());
@@ -174,10 +172,10 @@ if (isset($_GET['id'])) {
     /** @var $agent Agent */
     $assignedAgents[] = $agent->getId();
   }
-  $OBJECTS['agents'] = $joinedAgents[Factory::getAgentFactory()->getModelName()];
-  $OBJECTS['activeAgents'] = $activeAgents;
-  $OBJECTS['agentsBench'] = $agentsBench;
-  $OBJECTS['agentsSpeed'] = $agentsSpeed;
+  UI::add('agents', $joinedAgents[Factory::getAgentFactory()->getModelName()]);
+  UI::add('activeAgents', $activeAgents);
+  UI::add('agentsBench', $agentsBench);
+  UI::add('agentsSpeed', $agentsSpeed);
 
   $assignAgents = array();
   $allAgents = Factory::getAgentFactory()->filter([]);
@@ -186,14 +184,14 @@ if (isset($_GET['id'])) {
       $assignAgents[] = $agent;
     }
   }
-  $OBJECTS['assignAgents'] = $assignAgents;
+  UI::add('assignAgents', $assignAgents);
 
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  $OBJECTS['numChunks'] = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
+  UI::add('numChunks', Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]));
 
-  $OBJECTS['showAllAgents'] = false;
+  UI::add('showAllAgents', false);
   if (isset($_GET['allagents'])) {
-    $OBJECTS['showAllAgents'] = true;
+    UI::add('showAllAgents', true);
     $allAgentsSpent = new DataSet();
     $allAgents = new DataSet();
     $agentObjects = array();
@@ -218,21 +216,21 @@ if (isset($_GET['id'])) {
         }
       }
     }
-    $OBJECTS['agentObjects'] = $agentObjects;
-    $OBJECTS['allAgentsSpent'] = $allAgentsSpent;
+    UI::add('agentObjects', $agentObjects);
+    UI::add('allAgentsSpent', $allAgentsSpent);
   }
 
   if (isset($_GET['all'])) {
-    $OBJECTS['chunkFilter'] = 1;
+    UI::add('chunkFilter', 1);
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT 100");
-    $OBJECTS['chunks'] = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-    $OBJECTS['activeChunks'] = $activeChunksIds;
+    UI::add('chunks', Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]));
+    UI::add('activeChunks', $activeChunksIds);
   }
   else {
-    $OBJECTS['chunkFilter'] = 0;
-    $OBJECTS['chunks'] = $activeChunks;
-    $OBJECTS['activeChunks'] = $activeChunksIds;
+    UI::add('chunkFilter', 0);
+    UI::add('chunks', $activeChunks);
+    UI::add('activeChunks', $activeChunksIds);
   }
 
   $agents = Factory::getAgentFactory()->filter([]);
@@ -240,8 +238,8 @@ if (isset($_GET['id'])) {
   foreach ($agents as $agent) {
     $fullAgents->addValue($agent->getId(), $agent);
   }
-  $OBJECTS['fullAgents'] = $fullAgents;
-  $OBJECTS['pageTitle'] = "Task details for " . $task->getTaskName();
+  UI::add('fullAgents', $fullAgents);
+  UI::add('pageTitle', "Task details for " . $task->getTaskName());
 }
 else if (isset($_GET['new'])) {
   AccessControl::getInstance()->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
@@ -291,13 +289,13 @@ else if (isset($_GET['new'])) {
     $copy->setAttackCmd(SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " " . $copy->getAttackCmd());
   }
 
-  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
-  $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
+  UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
+  $accessGroupIds = Util::arrayOfIds(UI::get('accessGroups'));
 
-  $OBJECTS['orig'] = $orig;
-  $OBJECTS['copy'] = $copy;
-  $OBJECTS['origType'] = $origType;
-  $OBJECTS['hashlistId'] = $hashlistId;
+  UI::add('orig', $orig);
+  UI::add('copy', $copy);
+  UI::add('origType', $origType);
+  UI::add('hashlistId', $hashlistId);
 
   $lists = array();
   $res = Factory::getHashlistFactory()->filter([]);
@@ -307,7 +305,7 @@ else if (isset($_GET['new'])) {
     $set->addValue('name', $list->getHashlistName());
     $lists[] = $set;
   }
-  $OBJECTS['lists'] = $lists;
+  UI::add('lists', $lists);
 
   $origFiles = array();
   if ($origType == 1) {
@@ -318,32 +316,32 @@ else if (isset($_GET['new'])) {
   }
 
   $arr = FileUtils::loadFilesByCategory(Login::getInstance()->getUser(), $origFiles);
-  $OBJECTS['wordlists'] = $arr[1];
-  $OBJECTS['rules'] = $arr[0];
-  $OBJECTS['other'] = $arr[2];
+  UI::add('wordlists', $arr[1]);
+  UI::add('rules', $arr[0]);
+  UI::add('other', $arr[2]);
 
   $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
-  $OBJECTS['binaries'] = Factory::getCrackerBinaryTypeFactory()->filter([]);
+  UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
-  usort($versions, array("Util", "versionComparisonBinary"));
-  $OBJECTS['versions'] = $versions;
-  $OBJECTS['pageTitle'] = "Create Task";
+  usort($versions, ["Util", "versionComparisonBinary"]);
+  UI::add('versions', $versions);
+  UI::add('pageTitle', "Create Task");
 }
 else {
   AccessControl::getInstance()->checkPermission(DViewControl::TASKS_VIEW_PERM);
-  $OBJECTS['showArchived'] = false;
-  $OBJECTS['pageTitle'] = "Tasks";
+  UI::add('showArchived', false);
+  UI::add('pageTitle', "Tasks");
   if(isset($_GET['archived']) && $_GET['archived'] == 'true'){
     Util::loadTasks(true);
-    $OBJECTS['showArchived'] = true;
-    $OBJECTS['pageTitle'] = "Archived Tasks";
+    UI::add('showArchived', true);
+    UI::add('pageTitle', "Archived Tasks");
   }
   else{
     Util::loadTasks(false);
   }
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

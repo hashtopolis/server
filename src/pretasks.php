@@ -11,8 +11,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -38,12 +36,12 @@ if (isset($_GET['id'])) {
     UI::printError(UI::ERROR, "Invalid preconfigured task!");
   }
   $TEMPLATE = new Template("pretasks/detail");
-  $OBJECTS['pretask'] = $pretask;
+  UI::add('pretask', $pretask);
 
   $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", Factory::getFilePretaskFactory());
   $jF = new JoinFilter(Factory::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
   $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-  $OBJECTS['attachedFiles'] = $joinedFiles[Factory::getFileFactory()->getModelName()];
+  UI::add('attachedFiles', $joinedFiles[Factory::getFileFactory()->getModelName()]);
 
   $isUsed = false;
   $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
@@ -51,15 +49,15 @@ if (isset($_GET['id'])) {
   if (sizeof($supertaskTasks) > 0) {
     $isUsed = true;
   }
-  $OBJECTS['isUsed'] = $isUsed;
-  $OBJECTS['pageTitle'] = "Preconfigured task details for " . $pretask->getTaskName();
+  UI::add('isUsed', $isUsed);
+  UI::add('pageTitle', "Preconfigured task details for " . $pretask->getTaskName());
 }
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
   $TEMPLATE = new Template("pretasks/new");
   $MENU->setActive("tasks_prenew");
 
-  $OBJECTS['accessGroups'] = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
-  $accessGroupIds = Util::arrayOfIds($OBJECTS['accessGroups']);
+  UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
+  $accessGroupIds = Util::arrayOfIds(UI::get('accessGroups'));
 
   $orig = 0;
   $origTask = null;
@@ -107,13 +105,13 @@ else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAcc
   }
 
   $arr = FileUtils::loadFilesByCategory(Login::getInstance()->getUser(), $origFiles);
-  $OBJECTS['wordlists'] = $arr[1];
-  $OBJECTS['rules'] = $arr[0];
-  $OBJECTS['other'] = $arr[2];
+  UI::add('wordlists', $arr[1]);
+  UI::add('rules', $arr[0]);
+  UI::add('other', $arr[2]);
 
-  $OBJECTS['crackerBinaryTypes'] = Factory::getCrackerBinaryTypeFactory()->filter([]);
-  $OBJECTS['pageTitle'] = "Create preconfigured Task";
-  $OBJECTS['copy'] = $copy;
+  UI::add('crackerBinaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([]));
+  UI::add('pageTitle', "Create preconfigured Task");
+  UI::add('copy', $copy);
 }
 else {
   $queryFilters = array();
@@ -157,11 +155,11 @@ else {
 
     $tasks[] = $set;
   }
-  $OBJECTS['tasks'] = $tasks;
-  $OBJECTS['pageTitle'] = "Preconfigured Tasks";
+  UI::add('tasks', $tasks);
+  UI::add('pageTitle', "Preconfigured Tasks");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

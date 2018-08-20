@@ -7,8 +7,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -17,14 +15,14 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::LOG_VIEW_PERM);
 
 $TEMPLATE = new Template("log");
-$OBJECTS['pageTitle'] = "Log";
+UI::add('pageTitle', "Log");
 $MENU->setActive("config_log");
 
 $level = "0";
 if (isset($_POST['show'])) {
   $level = $_POST['level'];
 }
-$OBJECTS['level'] = $level;
+UI::add('level', $level);
 
 $qF = new QueryFilter(LogEntry::LEVEL, $level, "=");
 $oF = new OrderFilter(LogEntry::TIME, "DESC LIMIT 100");
@@ -35,9 +33,9 @@ if ($level !== "0") {
 }
 
 $entries = Factory::getLogEntryFactory()->filter($filter);
-$OBJECTS['entries'] = $entries;
+UI::add('entries', $entries);
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

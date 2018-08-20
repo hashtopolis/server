@@ -11,7 +11,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
 /** @var array $NOTIFICATIONS */
 
 if (!Login::getInstance()->isLoggedin()) {
@@ -22,7 +21,7 @@ if (!Login::getInstance()->isLoggedin()) {
 AccessControl::getInstance()->checkPermission(DViewControl::NOTIFICATIONS_VIEW_PERM);
 
 $TEMPLATE = new Template("notifications");
-$OBJECTS['pageTitle'] = "Notifications";
+UI::add('pageTitle', "Notifications");
 $MENU->setActive("account_notifications");
 
 //catch actions here...
@@ -37,7 +36,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 $qF = new QueryFilter(NotificationSetting::USER_ID, Login::getInstance()->getUserID(), "=");
 $oF = new OrderFilter(NotificationSetting::ACTION, "ASC");
 $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-$OBJECTS['notifications'] = $notifications;
+UI::add('notifications', $notifications);
 
 $allAgents = array();
 $oF = new OrderFilter(Agent::AGENT_NAME, "ASC");
@@ -48,13 +47,13 @@ else {
   $qF = new QueryFilter(Agent::USER_ID, Login::getInstance()->getUserID(), "=");
   $allAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 }
-$OBJECTS['allAgents'] = $allAgents;
+UI::add('allAgents', $allAgents);
 
 $agentNames = new DataSet();
 foreach ($allAgents as $agent) {
   $agentNames->addValue($agent->getId(), $agent->getAgentName());
 }
-$OBJECTS['agentNames'] = $agentNames;
+UI::add('agentNames', $agentNames);
 
 $allApplies = new DataSet();
 foreach ($notifications as $notification) {
@@ -82,13 +81,13 @@ foreach ($notifications as $notification) {
   }
   $allApplies->addValue($notification->getId(), $appliedTo);
 }
-$OBJECTS['allApplies'] = $allApplies;
+UI::add('allApplies', $allApplies);
 
 $allNotifications = array();
 foreach ($NOTIFICATIONS as $name => $notification) {
   $allNotifications[] = $name;
 }
-$OBJECTS['allNotifications'] = $allNotifications;
+UI::add('allNotifications', $allNotifications);
 
 $allowedActions = array();
 $actionSettings = array();
@@ -99,19 +98,19 @@ foreach (DNotificationType::getAll() as $notificationType) {
   }
 }
 sort($allowedActions);
-$OBJECTS['allowedActions'] = $allowedActions;
-$OBJECTS['actionSettings'] = "{" . implode(",", $actionSettings) . "}";;
+UI::add('allowedActions', $allowedActions);
+UI::add('actionSettings', "{" . implode(",", $actionSettings) . "}");
 
 $oF = new OrderFilter(Task::TASK_NAME, "ASC");
-$OBJECTS['allTasks'] = Factory::getTaskFactory()->filter([Factory::ORDER => $oF]);
+UI::add('allTasks', Factory::getTaskFactory()->filter([Factory::ORDER => $oF]));
 $oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
-$OBJECTS['allHashlists'] = Factory::getHashlistFactory()->filter([Factory::ORDER => $oF]);
+UI::add('allHashlists', Factory::getHashlistFactory()->filter([Factory::ORDER => $oF]));
 if (AccessControl::getInstance()->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
   $oF = new OrderFilter(User::USERNAME, "ASC");
-  $OBJECTS['allUsers'] = Factory::getUserFactory()->filter([Factory::ORDER => $oF]);
+  UI::add('allUsers', Factory::getUserFactory()->filter([Factory::ORDER => $oF]));
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

@@ -1,23 +1,36 @@
 <?php
 
 class UI {
+  private static $objects = [];
+
   public static function printError($level, $message) {
-    global $OBJECTS;
-    
     $TEMPLATE = new Template("errors/error");
-    $OBJECTS['message'] = $message;
-    $OBJECTS['level'] = $level;
-    $OBJECTS['pageTitle'] = "Error";
-    echo $TEMPLATE->render($OBJECTS);
+    UI::add('message', $message);
+    UI::add('level', $level);
+    UI::add('pageTitle', "Error");
+    echo $TEMPLATE->render(UI::getObjects());
     die();
+  }
+
+  public static function add($key, $value){
+    self::$objects[$key] = $value;
+  }
+
+  public static function get($key){
+    if(!isset(self::$objects[$key])){
+      return false;
+    }
+    return self::$objects[$key];
+  }
+
+  public static function getObjects(){
+    return self::$objects;
   }
   
   public static function permissionError() {
-    global $OBJECTS;
-    
     $TEMPLATE = new Template("errors/restricted");
-    $OBJECTS['pageTitle'] = "Restricted";
-    echo $TEMPLATE->render($OBJECTS);
+    UI::add('pageTitle', "Restricted");
+    echo $TEMPLATE->render(UI::getObjects());
     die();
   }
   
@@ -27,16 +40,12 @@ class UI {
   }
   
   public static function addMessage($type, $message) {
-    global $OBJECTS;
-    
-    $OBJECTS['messages'][] = new DataSet(array('type' => $type, 'message' => $message));
+    UI::get('messages')[] = new DataSet(['type' => $type, 'message' => $message]);
   }
   
   public static function getNumMessages($type = "ALL") {
-    global $OBJECTS;
-    
     $count = 0;
-    foreach ($OBJECTS['messages'] as $message) {
+    foreach (UI::get('messages') as $message) {
       /** @var $message DataSet */
       if ($message->getVal('type') == $type || $type == "ALL") {
         $count++;
@@ -46,10 +55,8 @@ class UI {
   }
   
   public static function setForward($url, $delay) {
-    global $OBJECTS;
-    
-    $OBJECTS['autorefresh'] = $delay;
-    $OBJECTS['autorefreshUrl'] = $url;
+    UI::add('autorefresh', $delay);
+    UI::add('autorefreshUrl', $url);
   }
   
   const ERROR   = "danger";

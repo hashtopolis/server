@@ -11,8 +11,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -31,7 +29,7 @@ foreach ($userGroups as $userGroup) {
   $accessGroupIds[] = $userGroup->getAccessGroupId();
 }
 
-$OBJECTS['pageTitle'] = "Agents Status";
+UI::add('pageTitle', "Agents Status");
 
 // load all agents which are in an access group the user has access to
 $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds);
@@ -43,8 +41,7 @@ foreach ($accessGroupAgents as $accessGroupAgent) {
 
 $oF = new OrderFilter(Agent::AGENT_ID, "ASC");
 $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
-$agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-$OBJECTS['agents'] = $agents;
+UI::add('agents', Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]));
 
 $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
@@ -58,7 +55,7 @@ foreach($stats as $stat){
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
-$OBJECTS['stats'] = $agentStats;
+UI::add('stats', $agentStats);
 
 $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
@@ -72,9 +69,9 @@ foreach($stats as $stat){
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
-$OBJECTS['temps'] = $agentStats;
+UI::add('temps', $agentStats);
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

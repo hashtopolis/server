@@ -15,13 +15,11 @@ abstract class HashtopolisNotification {
    * @param $notification NotificationSetting
    */
   public function execute($notificationType, $payload, $notification) {
-    global $OBJECTS;
-
     $this->receiver = $notification->getReceiver();
     $this->notification = $notification;
     $template = new Template($this->getTemplateName());
     $obj = $this->getObjects();
-    $subject = APP_NAME . " on [" . $OBJECTS['host'] . "] - ";
+    $subject = APP_NAME . " on [" . UI::get('host') . "] - ";
     switch ($notificationType) {
       case DNotificationType::TASK_COMPLETE:
         $task = $payload->getVal(DPayloadKeys::TASK);

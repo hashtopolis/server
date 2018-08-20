@@ -2,8 +2,6 @@
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 AccessControl::getInstance()->checkPermission(DViewControl::LOGIN_VIEW_PERM);
 
 if (!isset($_POST['username']) || !isset($_POST['password'])) {

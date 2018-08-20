@@ -245,8 +245,6 @@ class Util {
   }
 
   public static function loadTasks($archived = false) {
-    global $OBJECTS;
-
     $accessGroupIds = Util::getAccessGroupIds(Login::getInstance()->getUserID());
     $accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
 
@@ -389,7 +387,7 @@ class Util {
         $taskList[] = $set;
       }
     }
-    $OBJECTS['taskList'] = $taskList;
+    UI::add('taskList', $taskList);
   }
 
   /**

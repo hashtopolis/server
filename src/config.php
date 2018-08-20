@@ -6,8 +6,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -31,20 +29,19 @@ $configuration = array();
 $configSectionId = (isset($_GET['view'])) ? $_GET['view'] : 1;
 $qF = new QueryFilter(Config::CONFIG_SECTION_ID, $configSectionId, "=");
 $entries = Factory::getConfigFactory()->filter([Factory::FILTER => $qF]);
-$OBJECTS['configSectionId'] = 0;
+UI::add('configSectionId', 0);
 foreach ($entries as $entry) {
   $set = new DataSet();
   $set->addValue('item', $entry->getItem());
   $set->addValue('value', $entry->getValue());
   $configuration[] = $set;
-  $OBJECTS['configSectionId'] = $configSectionId;
+  UI::add('configSectionId', $configSectionId);
 }
 
-$OBJECTS['pageTitle'] = "Configuration";
+UI::add('pageTitle', "Configuration");
+UI::add('configuration', $configuration);
 
-$OBJECTS['configuration'] = $configuration;
-
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

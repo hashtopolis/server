@@ -9,8 +9,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -34,26 +32,26 @@ if (isset($_GET['create']) && $_GET['create'] == "new" && AccessControl::getInst
   $MENU->setActive("tasks_supernew");
   $TEMPLATE = new Template("supertasks/create");
   $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
-  $OBJECTS['preTasks'] = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]);
-  $OBJECTS['pageTitle'] = "Create Supertask";
+  UI::add('preTasks', Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]));
+  UI::add('pageTitle', "Create Supertask");
 }
 else if (isset($_GET['create']) && $_GET['create'] == "import" && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_SUPERTASK_ACCESS)) {
   $MENU->setActive("tasks_superimport");
   $TEMPLATE = new Template("supertasks/import");
 
-  $OBJECTS['crackerBinaryTypes'] = Factory::getCrackerBinaryTypeFactory()->filter([]);
-  $OBJECTS['pageTitle'] = "Import Supertask from Masks";
+  UI::add('crackerBinaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([]));
+  UI::add('pageTitle', "Import Supertask from Masks");
 }
 else if (isset($_GET['id']) && isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::RUN_TASK_ACCESS)) {
   $TEMPLATE = new Template("supertasks/new");
   $supertask = Factory::getSupertaskFactory()->get($_GET['id']);
-  $OBJECTS['orig'] = $supertask->getId();
-  $OBJECTS['lists'] = Factory::getHashlistFactory()->filter([]);
-  $OBJECTS['binaries'] = Factory::getCrackerBinaryTypeFactory()->filter([]);
+  UI::add('orig', $supertask->getId());
+  UI::add('lists', Factory::getHashlistFactory()->filter([]));
+  UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([]);
-  usort($versions, array("Util", "versionComparisonBinary"));
-  $OBJECTS['versions'] = $versions;
-  $OBJECTS['pageTitle'] = "Issue Supertask";
+  usort($versions, ["Util", "versionComparisonBinary"]);
+  UI::add('versions', $versions);
+  UI::add('pageTitle', "Issue Supertask");
 }
 else if (isset($_GET['id'])) {
   $TEMPLATE = new Template("supertasks/detail");
@@ -64,9 +62,9 @@ else if (isset($_GET['id'])) {
   $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertask->getId(), "=", Factory::getSupertaskPretaskFactory());
   $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), SupertaskPretask::PRETASK_ID, Pretask::PRETASK_ID);
   $tasks = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-  $OBJECTS['tasks'] = $tasks[Factory::getPretaskFactory()->getModelName()];
-  $OBJECTS['supertask'] = $supertask;
-  $OBJECTS['pageTitle'] = "Supertask details for " . $supertask->getSupertaskName();
+  UI::add('tasks', $tasks[Factory::getPretaskFactory()->getModelName()]);
+  UI::add('supertask', $supertask);
+  UI::add('pageTitle', "Supertask details for " . $supertask->getSupertaskName());
 }
 else {
   $supertasks = Factory::getSupertaskFactory()->filter([]);
@@ -79,12 +77,12 @@ else {
     $tasks = $joinedTasks[Factory::getPretaskFactory()->getModelName()];
     $supertaskTasks->addValue($supertask->getId(), $tasks);
   }
-  $OBJECTS['tasks'] = $supertaskTasks;
-  $OBJECTS['supertasks'] = $supertasks;
-  $OBJECTS['pageTitle'] = "Supertasks";
+  UI::add('tasks', $supertaskTasks);
+  UI::add('supertasks', $supertasks);
+  UI::add('pageTitle', "Supertasks");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

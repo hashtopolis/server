@@ -6,8 +6,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
@@ -29,7 +27,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 if (isset($_GET['new'])) {
   $TEMPLATE = new Template("api/new");
-  $OBJECTS['pageTitle'] = "Create new API Group";
+  UI::add('pageTitle', "Create new API Group");
 }
 else if (isset($_GET['id'])) {
   $group = Factory::getApiGroupFactory()->get($_GET['id']);
@@ -38,10 +36,8 @@ else if (isset($_GET['id'])) {
   }
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
-    $OBJECTS['keys'] = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]);
-
-    $sectionConstants = USection::getConstants();
-    $OBJECTS['sectionConstants'] = $sectionConstants;
+    UI::add('keys', Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]));
+    UI::add('sectionConstants', USection::getConstants());
 
     $section = USection::TEST;
     if (isset($_GET['section'])) {
@@ -51,12 +47,12 @@ else if (isset($_GET['id'])) {
     if ($currentSection == null) {
       UI::printError("ERROR", "Invalid section!");
     }
-    $OBJECTS['currentConstants'] = $currentSection->getConstants();
-    $OBJECTS['currentSection'] = $section;
+    UI::add('currentConstants', $currentSection->getConstants());
+    UI::add('currentSection', $section);
 
-    $OBJECTS['group'] = $group;
+    UI::add('group', $group);
     if ($group->getPermissions() == 'ALL') {
-      $OBJECTS['perm'] = 'ALL';
+      UI::add('perm', 'ALL');
     }
     else {
       $json = json_decode($group->getPermissions(), true);
@@ -66,29 +62,29 @@ else if (isset($_GET['id'])) {
       else {
         $json = "{}";
       }
-      $OBJECTS['perm'] = new DataSet($json);
+      UI::add('perm', new DataSet($json));
     }
 
     $TEMPLATE = new Template("api/detail");
-    $OBJECTS['pageTitle'] = "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8");
+    UI::add('pageTitle', "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8"));
   }
 }
 else if(isset($_GET['newkey'])){
   $TEMPLATE = new Template("api/newkey");
-  $OBJECTS['users'] = Factory::getUserFactory()->filter([]);
-  $OBJECTS['groups'] = Factory::getApiGroupFactory()->filter([]);
-  $OBJECTS['pageTitle'] = "Create new API key";
+  UI::add('users', Factory::getUserFactory()->filter([]));
+  UI::add('groups', Factory::getApiGroupFactory()->filter([]));
+  UI::add('pageTitle', "Create new API key");
 }
 else if(isset($_GET['keyId'])){
   $key = Factory::getApiKeyFactory()->get($_GET['keyId']);
   if($key == null){
     UI::printError(UI::ERROR, "Invalid API key ID!");
   }
-  $OBJECTS['key'] = $key;
-  $OBJECTS['users'] = Factory::getUserFactory()->filter([]);
-  $OBJECTS['groups'] = Factory::getApiGroupFactory()->filter([]);
+  UI::add('key', $key);
+  UI::add('users', Factory::getUserFactory()->filter([]));
+  UI::add('groups', Factory::getApiGroupFactory()->filter([]));
   $TEMPLATE = new Template("api/key");
-  $OBJECTS['pageTitle'] = "Edit API key";
+  UI::add('pageTitle', "Edit API key");
 }
 else {
   // determine keys and groups
@@ -104,13 +100,13 @@ else {
     $apis[$apiKey->getApiGroupId()]++;
   }
 
-  $OBJECTS['keys'] = Factory::getApiKeyFactory()->filter([]);
-  $OBJECTS['apis'] = new DataSet($apis);
-  $OBJECTS['groups'] = $groups;
-  $OBJECTS['pageTitle'] = "Api Groups";
+  UI::add('keys', Factory::getApiKeyFactory()->filter([]));
+  UI::add('apis', new DataSet($apis));
+  UI::add('groups', $groups);
+  UI::add('pageTitle', "Api Groups");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 

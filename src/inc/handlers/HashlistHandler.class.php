@@ -113,13 +113,11 @@ class HashlistHandler implements Handler {
    * @throws HTException
    */
   private function zap() {
-    global $OBJECTS;
-
     $this->hashlist = HashlistUtils::getHashlist($_POST['hashlist']);
     $type = Factory::getHashTypeFactory()->get($this->hashlist->getHashTypeId());
 
-    $OBJECTS['list'] = new DataSet(array('hashlist' => $this->hashlist, 'hashtype' => $type));
-    $OBJECTS['zap'] = true;
-    $OBJECTS['impfiles'] = Util::scanImportDirectory();
+    UI::add('list', new DataSet(['hashlist' => $this->hashlist, 'hashtype' => $type]));
+    UI::add('zap', true);
+    UI::add('impfiles', Util::scanImportDirectory());
   }
 }

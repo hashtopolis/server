@@ -7,8 +7,6 @@ use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 ini_set("max_execution_time", 100000);
 
 if (!isset($_GET['file'])) {

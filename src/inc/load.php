@@ -5,16 +5,14 @@ ini_set("display_errors", "0");
 
 session_start();
 
-$OBJECTS = array();
-
 $VERSION = "0.7.1+dev";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
 }
 
-$OBJECTS['version'] = $VERSION;
-$OBJECTS['host'] = $HOST;
+UI::add('version', $VERSION);
+UI::add('host', $HOST);
 
 $INSTALL = false;
 @include(dirname(__FILE__) . "/db.php");
@@ -60,27 +58,27 @@ if (file_exists($gitfolder) && is_dir($gitfolder)) {
   $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
   $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
 }
-$OBJECTS['gitcommit'] = $gitcommit;
+UI::add('gitcommit', $gitcommit);
 
 $MENU = new Menu();
-$OBJECTS['menu'] = $MENU;
-$OBJECTS['messages'] = array();
-$OBJECTS['pageTitle'] = "";
+UI::add('menu', $MENU);
+UI::add('messages', []);
+UI::add('pageTitle', "");
 if ($INSTALL) {
-  $OBJECTS['login'] = Login::getInstance();
+  UI::add('login', Login::getInstance());
   if (Login::getInstance()->isLoggedin()) {
-    $OBJECTS['user'] = Login::getInstance()->getUser();
+    UI::add('user', Login::getInstance()->getUser());
     AccessControl::getInstance(Login::getInstance()->getUser());
   }
 
-  $OBJECTS['config'] = SConfig::getInstance();
+  UI::add('config', SConfig::getInstance());
 
   define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
 
   //set autorefresh to false for all pages
-  $OBJECTS['autorefresh'] = -1;
+  UI::add('autorefresh', -1);
 }
-$OBJECTS['accessControl'] = AccessControl::getInstance();
+UI::add('accessControl', AccessControl::getInstance());
 
 // CSRF setup
 CSRF::init();

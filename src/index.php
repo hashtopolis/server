@@ -2,8 +2,6 @@
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var array $OBJECTS */
-
 if (!$INSTALL) {
   header("Location: install/");
   die("Forward to <a href='install'>Install</a>");
@@ -12,9 +10,10 @@ if (!$INSTALL) {
 AccessControl::getInstance()->checkPermission(DViewControl::INDEX_VIEW_PERM);
 
 $TEMPLATE = new Template("static/index");
-$OBJECTS['pageTitle'] = "Welcome";
+UI::add('pageTitle', "Welcome");
 $message = "";
 
+// TODO: rewrite these messages to use the messages template
 if (isset($_GET['err'])) {
   $err = $_GET['err'];
   $time = substr($err, 1);
@@ -43,14 +42,14 @@ else if (isset($_GET['logout'])) {
   }
 }
 
-$OBJECTS['message'] = $message;
+UI::add('message', $message);
 $fw = "";
 if (isset($_GET['fw'])) {
   $fw = $_GET['fw'];
 }
-$OBJECTS['fw'] = htmlentities($fw, ENT_QUOTES, "UTF-8");
+UI::add('fw', htmlentities($fw, ENT_QUOTES, "UTF-8"));
 
-echo $TEMPLATE->render($OBJECTS);
+echo $TEMPLATE->render(UI::getObjects());
 
 
 
