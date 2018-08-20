@@ -6,7 +6,7 @@
 <div class="container">
   <div class="row">
     {{FOREACH agent;[[agents]]}}
-      <div class="col col-1 text-center" style="background-color: [[AgentUtils::getUtilStatusColor([[stats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+      <div class="col col-md-1 col-sm-2 col-sx-12 text-center" style="background-color: [[AgentUtils::getUtilStatusColor([[stats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
         <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent"><i class="fas fa-eye" aria-hidden="true"></i></a>
       </div>
     {{ENDFOREACH}}
