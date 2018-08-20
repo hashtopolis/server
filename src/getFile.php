@@ -3,11 +3,9 @@
 use DBA\Agent;
 use DBA\QueryFilter;
 use DBA\ApiKey;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
-
-/** @var Login $LOGIN */
-/** @var array $OBJECTS */
 
 ini_set("max_execution_time", 100000);
 
@@ -21,7 +19,7 @@ if (!$FILEID) {
   die("ERR2 - no file provided");
 }
 
-$line = $FACTORIES::getFileFactory()->get($FILEID);
+$line = Factory::getFileFactory()->get($FILEID);
 
 //no file found
 if (!$line) {
@@ -33,10 +31,10 @@ $accessGroupIds = [];
 //check user rights to download here:
 //if the user is logged in, he need to have the rights to
 //if agent provides his voucher, check it.
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   if (isset($_GET['apiKey'])) {
     $qF = new QueryFilter(ApiKey::ACCESS_KEY, $_GET['apiKey'], "=");
-    $apiKey = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    $apiKey = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF], true);
     $apiFile = new UserAPIFile();
     if ($apiKey == null) {
       die("Invalid access key!");
@@ -47,12 +45,12 @@ if (!$LOGIN->isLoggedin()) {
     else if (!$apiFile->hasPermission(USection::FILE, USectionFile::GET_FILE, $apiKey)) {
       die("Permission denied!");
     }
-    $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($FACTORIES::getUserFactory()->get($apiKey->getUserId())));
+    $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Factory::getUserFactory()->get($apiKey->getUserId())));
   }
   else {
     $token = @$_GET['token'];
     $qF = new QueryFilter(Agent::TOKEN, $token, "=");
-    $agent = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+    $agent = Factory::getAgentFactory()->filter([Factory::FILTER => $qF], true);
     if (!$agent) {
       die("No access!");
     }
@@ -62,11 +60,11 @@ if (!$LOGIN->isLoggedin()) {
     $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfAgent($agent));
   }
 }
-else if (!$ACCESS_CONTROL->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
+else if (!AccessControl::getInstance()->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
   die("No access!");
 }
 else{
-  $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($LOGIN->getUser()));
+  $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
 }
 
 if(!in_array($line->getAccessGroupId(), $accessGroupIds)){

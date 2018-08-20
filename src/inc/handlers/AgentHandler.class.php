@@ -1,79 +1,75 @@
 <?php
+use DBA\Factory;
 
 class AgentHandler implements Handler {
   private $agent;
-  
+
   public function __construct($agentId = null) {
-    global $FACTORIES;
-    
     if ($agentId == null) {
       $this->agent = null;
       return;
     }
-    
-    $this->agent = $FACTORIES::getAgentFactory()->get($agentId);
+
+    $this->agent = Factory::getAgentFactory()->get($agentId);
     if ($this->agent == null) {
       UI::printError("FATAL", "Agent with ID $agentId not found!");
     }
   }
-  
+
   public function handle($action) {
-    /** @var $LOGIN Login */
-    global $ACCESS_CONTROL, $LOGIN;
-    
     try {
       switch ($action) {
         case DAgentAction::CLEAR_ERRORS:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
-          AgentUtils::clearErrors($_POST['agentId'], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
+          AgentUtils::clearErrors($_POST['agentId'], Login::getInstance()->getUser());
           break;
         case DAgentAction::RENAME_AGENT:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::RENAME_AGENT_PERM);
-          AgentUtils::rename($_POST['agentId'], $_POST['name'], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::RENAME_AGENT_PERM);
+          AgentUtils::rename($_POST['agentId'], $_POST['name'], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_OWNER:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_OWNER_PERM);
-          AgentUtils::changeOwner($_POST['agentId'], $_POST['owner'], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::SET_OWNER_PERM);
+          AgentUtils::changeOwner($_POST['agentId'], $_POST['owner'], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_TRUSTED:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_TRUSTED_PERM);
-          AgentUtils::setTrusted($_POST['agentId'], $_POST["trusted"], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::SET_TRUSTED_PERM);
+          AgentUtils::setTrusted($_POST['agentId'], $_POST["trusted"], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_IGNORE:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_IGNORE_PERM);
-          AgentUtils::changeIgnoreErrors($_POST['agentId'], $_POST['ignore'], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::SET_IGNORE_PERM);
+          AgentUtils::changeIgnoreErrors($_POST['agentId'], $_POST['ignore'], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_PARAMETERS:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
-          AgentUtils::changeCmdParameters($_POST['agentId'], $_POST["cmdpars"], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
+          AgentUtils::changeCmdParameters($_POST['agentId'], $_POST["cmdpars"], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_ACTIVE:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_ACTIVE_PERM);
-          AgentUtils::setActive($_POST['agentId'], false, $LOGIN->getUser(), true);
+          AccessControl::getInstance()->checkPermission(DAgentAction::SET_ACTIVE_PERM);
+          AgentUtils::setActive($_POST['agentId'], false, Login::getInstance()->getUser(), true);
           break;
         case DAgentAction::DELETE_AGENT:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_AGENT_PERM);
-          AgentUtils::delete($_POST['agentId'], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::DELETE_AGENT_PERM);
+          AgentUtils::delete($_POST['agentId'], Login::getInstance()->getUser());
           break;
         case DAgentAction::ASSIGN_AGENT:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::ASSIGN_AGENT_PERM);
-          AgentUtils::assign($_POST['agentId'], $_POST['task'], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::ASSIGN_AGENT_PERM);
+          AgentUtils::assign($_POST['agentId'], $_POST['task'], Login::getInstance()->getUser());
           break;
         case DAgentAction::CREATE_VOUCHER:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
+          AccessControl::getInstance()->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
           AgentUtils::createVoucher($_POST["newvoucher"]);
           break;
         case DAgentAction::DELETE_VOUCHER:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::DELETE_VOUCHER_PERM);
+          AccessControl::getInstance()->checkPermission(DAgentAction::DELETE_VOUCHER_PERM);
           AgentUtils::deleteVoucher($_POST['voucher']);
           break;
         case DAgentAction::DOWNLOAD_AGENT:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::DOWNLOAD_AGENT_PERM);
+          AccessControl::getInstance()->checkPermission(DAgentAction::DOWNLOAD_AGENT_PERM);
           $this->downloadAgent($_POST['binary']);
           break;
         case DAgentAction::SET_CPU:
-          $ACCESS_CONTROL->checkPermission(DAgentAction::SET_CPU_PERM);
-          AgentUtils::setAgentCpu($_POST['agentId'], $_POST['cpuOnly'], $LOGIN->getUser());
+          AccessControl::getInstance()->checkPermission(DAgentAction::SET_CPU_PERM);
+          AgentUtils::setAgentCpu($_POST['agentId'], $_POST['cpuOnly'], Login::getInstance()->getUser());
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
@@ -84,15 +80,13 @@ class AgentHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-  
+
   /**
    * @param int $binaryId
    * @throws HTException
    */
   public function downloadAgent($binaryId) {
-    global $FACTORIES;
-    
-    $agentBinary = $FACTORIES::getAgentBinaryFactory()->get($binaryId);
+    $agentBinary = Factory::getAgentBinaryFactory()->get($binaryId);
     if ($agentBinary == null) {
       throw new HTException("Invalid Agent Binary!");
     }

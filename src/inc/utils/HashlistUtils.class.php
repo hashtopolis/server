@@ -18,6 +18,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\AgentError;
 use DBA\Zap;
+use DBA\Factory;
 
 class HashlistUtils {
   /**
@@ -26,10 +27,8 @@ class HashlistUtils {
    * @return Hash
    */
   public static function getHash($hash, $user){
-    global $FACTORIES;
-
     $qF = new QueryFilter(Hash::HASH, $hash, "=");
-    $hashes = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
     foreach($hashes as $hash){
       if($hash->getIsCracked() != 1){
         continue;
@@ -48,11 +47,9 @@ class HashlistUtils {
    * @return Hashlist[]
    */
   public static function getHashlists($user) {
-    global $FACTORIES;
-
     $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
-    return $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
   }
 
   /**
@@ -60,11 +57,9 @@ class HashlistUtils {
    * @return Hashlist[]
    */
   public static function getSuperhashlists($user) {
-    global $FACTORIES;
-
     $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
     $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
-    return $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
   }
 
   /**
@@ -75,23 +70,21 @@ class HashlistUtils {
    * @return int
    */
   public static function applyPreconfTasks($hashlistId, $pretasks, $user) {
-    global $FACTORIES;
-
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
 
     $addCount = 0;
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    Factory::getAgentFactory()->getDB()->beginTransaction();
     $oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT 1");
-    $highest = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::ORDER => array($oF)), true);
+    $highest = Factory::getTaskFactory()->filter([Factory::ORDER => $oF], true);
     $priorityBase = 1;
     if ($highest != null) {
       $priorityBase = $highest->getPriority() + 1;
     }
     foreach ($pretasks as $pretask) {
-      $task = $FACTORIES::getPretaskFactory()->get($pretask);
+      $task = Factory::getPretaskFactory()->get($pretask);
       if ($task != null) {
         if ($hashlist->getHexSalt() == 1 && strpos($task->getAttackCmd(), "--hex-salt") === false) {
           $task->setAttackCmd("--hex-salt " . $task->getAttackCmd());
@@ -101,32 +94,32 @@ class HashlistUtils {
           $taskPriority = $priorityBase + $task->getPriority();
         }
         $taskWrapper = new TaskWrapper(0, $taskPriority, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
-        $taskWrapper = $FACTORIES::getTaskWrapperFactory()->save($taskWrapper);
+        $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
         $newTask = new Task(
-          0, 
-          $task->getTaskName(), 
-          $task->getAttackCmd(), 
-          $task->getChunkTime(), 
-          $task->getStatusTimer(), 
-          0, 
-          0, 
-          $taskPriority, 
-          $task->getColor(), 
-          $task->getIsSmall(), 
-          $task->getIsCpuTask(), 
-          $task->getUseNewBench(), 
-          0, 
-          CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(), 
-          $task->getCrackerBinaryTypeId(), 
-          $taskWrapper->getId(), 
+          0,
+          $task->getTaskName(),
+          $task->getAttackCmd(),
+          $task->getChunkTime(),
+          $task->getStatusTimer(),
+          0,
+          0,
+          $taskPriority,
+          $task->getColor(),
+          $task->getIsSmall(),
+          $task->getIsCpuTask(),
+          $task->getUseNewBench(),
+          0,
+          CrackerBinaryUtils::getNewestVersion($task->getCrackerBinaryTypeId())->getId(),
+          $task->getCrackerBinaryTypeId(),
+          $taskWrapper->getId(),
           0,
           0,
           '',
           0,
           0
         );
-        $newTask = $FACTORIES::getTaskFactory()->save($newTask);
+        $newTask = Factory::getTaskFactory()->save($newTask);
         $addCount++;
 
         TaskUtils::copyPretaskFiles($task, $newTask);
@@ -135,7 +128,7 @@ class HashlistUtils {
         NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
+    Factory::getAgentFactory()->getDB()->commit();
     if ($addCount == 0) {
       throw new HTException("Didn't create any tasks!");
     }
@@ -149,9 +142,6 @@ class HashlistUtils {
    * @return array
    */
   public static function createWordlists($hashlistId, $user) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
-
     // create wordlist from hashlist cracked hashes
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $lists = Util::checkSuperHashlist($hashlist);
@@ -170,22 +160,22 @@ class HashlistUtils {
     }
     $wordCount = 0;
     $pagingSize = 5000;
-    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
-      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     foreach ($lists as $list) {
-      $hashFactory = $FACTORIES::getHashFactory();
+      $hashFactory = Factory::getHashFactory();
       if ($list->getFormat() != 0) {
-        $hashFactory = $FACTORIES::getHashBinaryFactory();
+        $hashFactory = Factory::getHashBinaryFactory();
       }
       //get number of hashes we need to export
       $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list->getId(), "=");
       $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
-      $size = $hashFactory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+      $size = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
       for ($x = 0; $x * $pagingSize < $size; $x++) {
         $buffer = "";
         $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ", $pagingSize");
-        $hashes = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
+        $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
         foreach ($hashes as $hash) {
           $plain = $hash->getPlaintext();
           if (strlen($plain) >= 8 && substr($plain, 0, 5) == "\$HEX[" && substr($plain, strlen($plain) - 1, 1) == "]") {
@@ -201,7 +191,7 @@ class HashlistUtils {
 
     //add file to files list
     $file = new File(0, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
-    $FACTORIES::getFileFactory()->save($file);
+    Factory::getFileFactory()->save($file);
     return [$wordCount, $wordlistName, $file];
   }
 
@@ -212,8 +202,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function setSecret($hashlistId, $isSecret, $user) {
-    global $FACTORIES;
-
     // switch hashlist secret state
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
@@ -221,19 +209,19 @@ class HashlistUtils {
     }
     $secret = intval($isSecret);
     $hashlist->setIsSecret($secret);
-    $FACTORIES::getHashlistFactory()->update($hashlist);
+    Factory::getHashlistFactory()->update($hashlist);
     if ($secret == 1) {
       //handle agents which are assigned to hashlists which are secret now
       //TODO: not sure if this code works
-      $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID, $FACTORIES::getAssignmentFactory());
-      $jF2 = new JoinFilter($FACTORIES::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, $FACTORIES::getTaskWrapperFactory());
-      $jF3 = new JoinFilter($FACTORIES::getHashlistFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID, $FACTORIES::getTaskWrapperFactory());
-      $joined = $FACTORIES::getAssignmentFactory()->filter(array($FACTORIES::JOIN => array($jF1, $jF2, $jF3)));
-      for ($x = 0; $x < sizeof($joined[$FACTORIES::getAssignmentFactory()->getModelName()]); $x++) {
+      $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID, Factory::getAssignmentFactory());
+      $jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskWrapperFactory());
+      $jF3 = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID, Factory::getTaskWrapperFactory());
+      $joined = Factory::getAssignmentFactory()->filter([Factory::JOIN => [$jF1, $jF2, $jF3]]);
+      for ($x = 0; $x < sizeof($joined[Factory::getAssignmentFactory()->getModelName()]); $x++) {
         /** @var $hashlist Hashlist */
-        $hashlist = $joined[$FACTORIES::getHashlistFactory()->getModelName()][$x];
+        $hashlist = $joined[Factory::getHashlistFactory()->getModelName()][$x];
         if ($hashlist->getId() == $hashlist->getId()) {
-          $FACTORIES::getAssignmentFactory()->delete($joined[$FACTORIES::getAssignmentFactory()->getModelName()][$x]);
+          Factory::getAssignmentFactory()->delete($joined[Factory::getAssignmentFactory()->getModelName()][$x]);
         }
       }
     }
@@ -246,8 +234,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function rename($hashlistId, $name, $user) {
-    global $FACTORIES;
-
     // change hashlist name
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
@@ -255,7 +241,7 @@ class HashlistUtils {
     }
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $hashlist->setHashlistName($name);
-    $FACTORIES::getHashlistFactory()->update($hashlist);
+    Factory::getHashlistFactory()->update($hashlist);
   }
 
   /**
@@ -269,9 +255,6 @@ class HashlistUtils {
    * @return int[]
    */
   public static function processZap($hashlistId, $separator, $source, $post, $files, $user) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
-
     // pre-crack hashes processor
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
@@ -322,17 +305,17 @@ class HashlistUtils {
       }
     }
     rewind($file);
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    Factory::getAgentFactory()->getDB()->beginTransaction();
     $hashlists = Util::checkSuperHashlist($hashlist);
     $inSuperHashlists = array();
     $hashlist = $hashlists[0];
     if (sizeof($hashlists) == 1 && $hashlist->getId() == $hashlist->getId()) {
       $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=");
-      $inSuperHashlists = $FACTORIES::getHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
+      $inSuperHashlists = Factory::getHashlistHashlistFactory()->filter([Factory::FILTER => $qF]);
     }
-    $hashFactory = $FACTORIES::getHashFactory();
+    $hashFactory = Factory::getHashFactory();
     if ($hashlist->getFormat() != DHashlistFormat::PLAIN) {
-      $hashFactory = $FACTORIES::getHashBinaryFactory();
+      $hashFactory = Factory::getHashBinaryFactory();
     }
     //start inserting
     $totalLines = 0;
@@ -367,7 +350,7 @@ class HashlistUtils {
         $hash = $split[0];
         $qF1 = new QueryFilter(Hash::HASH, $hash, "=");
         $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-        $hashEntry = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)), true);
+        $hashEntry = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2]], true);
         if ($hashEntry == null) {
           $notFound++;
           continue;
@@ -377,7 +360,7 @@ class HashlistUtils {
           continue;
         }
         $plain = str_replace($hash . $separator . $hashEntry->getSalt() . $separator, "", $data);
-        if (strlen($plain) > $CONFIG->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
+        if (strlen($plain) > SConfig::getInstance()->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
           $tooLong++;
           continue;
         }
@@ -403,13 +386,13 @@ class HashlistUtils {
           $hash = $split[0] . $separator . $split[1] . $separator . $split[2];
           $qF1 = new QueryFilter(HashBinary::ESSID, $hash, "=");
           $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-          $hashEntries = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+          $hashEntries = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2]]);
         }
         else {
           $hash = $split[0];
           $qF1 = new QueryFilter(Hash::HASH, $hash, "=");
           $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-          $hashEntries = $hashFactory->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+          $hashEntries = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2]]);
         }
         if (sizeof($hashEntries) == 0) {
           $notFound++;
@@ -421,7 +404,7 @@ class HashlistUtils {
             continue;
           }
           $plain = str_replace($hash . $separator, "", $data);
-          if (strlen($plain) > $CONFIG->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
+          if (strlen($plain) > SConfig::getInstance()->getVal(DConfig::PLAINTEXT_MAX_LENGTH)) {
             $tooLong++;
             continue;
           }
@@ -438,16 +421,16 @@ class HashlistUtils {
       $bufferCount++;
       if ($bufferCount > 1000) {
         foreach ($hashlists as $l) {
-          $ll = $FACTORIES::getHashlistFactory()->get($l->getId());
+          $ll = Factory::getHashlistFactory()->get($l->getId());
           $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
-          $FACTORIES::getHashlistFactory()->update($ll);
+          Factory::getHashlistFactory()->update($ll);
         }
-        $FACTORIES::getAgentFactory()->getDB()->commit();
-        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+        Factory::getAgentFactory()->getDB()->commit();
+        Factory::getAgentFactory()->getDB()->beginTransaction();
         $crackedIn = array();
         $bufferCount = 0;
         if (sizeof($zaps) > 0) {
-          $FACTORIES::getZapFactory()->massSave($zaps);
+          Factory::getZapFactory()->massSave($zaps);
         }
         $zaps = array();
       }
@@ -460,29 +443,29 @@ class HashlistUtils {
 
     //finish
     foreach ($hashlists as $l) {
-      $ll = $FACTORIES::getHashlistFactory()->get($l->getId());
+      $ll = Factory::getHashlistFactory()->get($l->getId());
       $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
-      $FACTORIES::getHashlistFactory()->update($ll);
+      Factory::getHashlistFactory()->update($ll);
     }
     if (sizeof($zaps) > 0) {
-      $FACTORIES::getZapFactory()->massSave($zaps);
+      Factory::getZapFactory()->massSave($zaps);
     }
 
     if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       $total = array_sum($crackedIn);
-      $hashlist = $FACTORIES::getHashlistFactory()->get($hashlist->getId());
+      $hashlist = Factory::getHashlistFactory()->get($hashlist->getId());
       $hashlist->setCracked($hashlist->getCracked() + $total);
-      $FACTORIES::getHashlistFactory()->update($hashlist);
+      Factory::getHashlistFactory()->update($hashlist);
     }
     if (sizeof($inSuperHashlists) > 0) {
       $total = array_sum($crackedIn);
       foreach ($inSuperHashlists as $super) {
-        $superHashlist = $FACTORIES::getHashlistFactory()->get($super->getParentHashlistId());
+        $superHashlist = Factory::getHashlistFactory()->get($super->getParentHashlistId());
         $superHashlist->setCracked($superHashlist->getCracked() + $total);
-        $FACTORIES::getHashlistFactory()->update($superHashlist);
+        Factory::getHashlistFactory()->update($superHashlist);
       }
     }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
+    Factory::getAgentFactory()->getDB()->commit();
     return [$totalLines, $newCracked, $alreadyCracked, $invalid, $notFound, ($endTime - $startTime), $tooLong];
   }
 
@@ -493,20 +476,18 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function delete($hashlistId, $user) {
-    global $FACTORIES;
-
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to this hashlist!");
     }
 
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    Factory::getAgentFactory()->getDB()->beginTransaction();
 
-    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=", $FACTORIES::getHashlistHashlistFactory());
-    $jF = new JoinFilter($FACTORIES::getHashlistFactory(), HashlistHashlist::PARENT_HASHLIST_ID, Hashlist::HASHLIST_ID, $FACTORIES::getHashlistHashlistFactory());
-    $joined = $FACTORIES::getHashlistHashlistFactory()->filter(array($FACTORIES::FILTER => array($qF), $FACTORIES::JOIN => array($jF)));
+    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=", Factory::getHashlistHashlistFactory());
+    $jF = new JoinFilter(Factory::getHashlistFactory(), HashlistHashlist::PARENT_HASHLIST_ID, Hashlist::HASHLIST_ID, Factory::getHashlistHashlistFactory());
+    $joined = Factory::getHashlistHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $superHashlists Hashlist[] */
-    $superHashlists = $joined[$FACTORIES::getHashlistFactory()->getModelName()];
+    $superHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
     $toDelete = array();
     $toUpdate = array();
     foreach ($superHashlists as $superHashlist) {
@@ -521,28 +502,28 @@ class HashlistUtils {
         $toUpdate = $superHashlist;
       }
     }
-    $FACTORIES::getHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+    Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
 
     $qF = new QueryFilter(Zap::HASHLIST_ID, $hashlist->getId(), "=");
-    $FACTORIES::getZapFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+    Factory::getZapFactory()->massDeletion([Factory::FILTER => $qF]);
 
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
 
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $hashlist->getId(), "=");
-    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF]);
     foreach ($notifications as $notification) {
       if (DNotificationType::getObjectType($notification->getAction()) == DNotificationObjectType::HASHLIST) {
-        $FACTORIES::getNotificationSettingFactory()->delete($notification);
+        Factory::getNotificationSettingFactory()->delete($notification);
       }
     }
 
     $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
-    $taskWrappers = $FACTORIES::getTaskWrapperFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF]);
     $taskList = array();
     foreach ($taskWrappers as $taskWrapper) {
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
-      $tasks = $FACTORIES::getTaskFactory()->filter(array($FACTORIES::FILTER => array($qF)));
+      $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
       foreach ($tasks as $task) {
         $taskList[] = $task;
       }
@@ -550,62 +531,62 @@ class HashlistUtils {
 
     switch ($hashlist->getFormat()) {
       case 0:
-        $count = $FACTORIES::getHashlistFactory()->countFilter(array());
+        $count = Factory::getHashlistFactory()->countFilter([]);
         if ($count > 1) {
           $deleted = 1;
           $qF = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
           $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT 20000");
           while ($deleted > 0) {
-            $result = $FACTORIES::getHashFactory()->massDeletion(array($FACTORIES::FILTER => array($qF), $FACTORIES::ORDER => array($oF)));
+            $result = Factory::getHashFactory()->massDeletion([Factory::FILTER => $qF, Factory::ORDER => $oF]);
             $deleted = $result->rowCount();
-            $FACTORIES::getAgentFactory()->getDB()->commit();
-            $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+            Factory::getAgentFactory()->getDB()->commit();
+            Factory::getAgentFactory()->getDB()->beginTransaction();
           }
         }
         else {
-          $FACTORIES::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
+          Factory::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
         }
         break;
       case 1:
       case 2:
         $qF = new QueryFilter(HashBinary::HASHLIST_ID, $hashlist->getId(), "=");
-        $FACTORIES::getHashBinaryFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+        Factory::getHashBinaryFactory()->massDeletion([Factory::FILTER => $qF]);
         break;
       case 3:
         $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
-        $FACTORIES::getHashlistHashlistFactory()->massDeletion(array($FACTORIES::FILTER => array($qF)));
+        Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
         break;
     }
 
     if (sizeof($taskList) > 0) {
       $qF = new ContainFilter(FileTask::TASK_ID, Util::arrayOfIds($taskList));
-      $FACTORIES::getFileTaskFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      Factory::getFileTaskFactory()->massDeletion([Factory::FILTER => $qF]);
       $qF = new ContainFilter(Assignment::TASK_ID, Util::arrayOfIds($taskList));
-      $FACTORIES::getAssignmentFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
       $qF = new ContainFilter(Chunk::TASK_ID, Util::arrayOfIds($taskList));
-      $FACTORIES::getChunkFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      Factory::getChunkFactory()->massDeletion([Factory::FILTER => $qF]);
       $qF = new ContainFilter(AgentError::TASK_ID, Util::arrayOfIds($taskList));
-      $FACTORIES::getAgentErrorFactory()->massDeletion(array($FACTORIES::FILTER => $qF));
+      Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
     }
     foreach ($taskList as $task) {
-      $FACTORIES::getTaskFactory()->delete($task);
+      Factory::getTaskFactory()->delete($task);
     }
 
     foreach ($taskWrappers as $taskWrapper) {
-      $FACTORIES::getTaskWrapperFactory()->delete($taskWrapper);
+      Factory::getTaskWrapperFactory()->delete($taskWrapper);
     }
 
     // update/delete superhashlists (this must wait until here because of constraints
     foreach ($toDelete as $hl) {
-      $FACTORIES::getHashlistFactory()->delete($hl);
+      Factory::getHashlistFactory()->delete($hl);
     }
     foreacH ($toUpdate as $hl) {
-      $FACTORIES::getHashlistFactory()->update($hl);
+      Factory::getHashlistFactory()->update($hl);
     }
 
-    $FACTORIES::getHashlistFactory()->delete($hashlist);
+    Factory::getHashlistFactory()->delete($hashlist);
 
-    $FACTORIES::getAgentFactory()->getDB()->commit();
+    Factory::getAgentFactory()->getDB()->commit();
     return $hashlist->getFormat();
   }
 
@@ -615,9 +596,7 @@ class HashlistUtils {
    * @return Hashlist
    */
   public static function getHashlist($hashlistId) {
-    global $FACTORIES;
-
-    $hashlist = $FACTORIES::getHashlistFactory()->get($hashlistId);
+    $hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist!");
     }
@@ -631,9 +610,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function export($hashlistId, $user) {
-    /** @var DataSet $CONFIG */
-    global $FACTORIES, $CONFIG;
-
     // export cracked hashes to a file
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $hashlists = Util::checkSuperHashlist($hashlist);
@@ -644,11 +620,11 @@ class HashlistUtils {
 
     $tmpname = "Pre-cracked_" . $hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
     $tmpfile = dirname(__FILE__) . "/../../files/$tmpname";
-    $factory = $FACTORIES::getHashFactory();
-    $format = $FACTORIES::getHashlistFactory()->get($hashlists[0]->getId());
+    $factory = Factory::getHashFactory();
+    $format = Factory::getHashlistFactory()->get($hashlists[0]->getId());
     $orderObject = Hash::HASH_ID;
     if ($format->getFormat() != 0) {
-      $factory = $FACTORIES::getHashBinaryFactory();
+      $factory = Factory::getHashBinaryFactory();
       $orderObject = HashBinary::HASH_BINARY_ID;
     }
     $file = fopen($tmpfile, "wb");
@@ -662,15 +638,15 @@ class HashlistUtils {
     }
     $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
-    $count = $factory->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $count = $factory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
     $pagingSize = 5000;
-    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
-      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
-    $separator = $CONFIG->getVal(DConfig::FIELD_SEPARATOR);
+    $separator = SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR);
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter($orderObject, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = $factory->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
+      $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
       $buffer = "";
       foreach ($entries as $entry) {
         switch ($format->getFormat()) {
@@ -696,7 +672,7 @@ class HashlistUtils {
     usleep(1000000);
 
     $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
-    $file = $FACTORIES::getFileFactory()->save($file);
+    $file = Factory::getFileFactory()->save($file);
     return $file;
   }
 
@@ -718,16 +694,13 @@ class HashlistUtils {
    * @return Hashlist
    */
   public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
-
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
     $hexsalted = ($isHexSalted) ? "1" : "0";
     $format = intval($format);
     $hashtype = intval($hashtype);
-    $accessGroup = $FACTORIES::getAccessGroupFactory()->get($accessGroupId);
+    $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
 
     if ($format < DHashlistFormat::PLAIN || $format > DHashlistFormat::BINARY) {
       throw new HTException("Invalid hashlist format!");
@@ -745,9 +718,9 @@ class HashlistUtils {
       throw new HTException("Salt separator cannot be empty when hashes are salted!");
     }
 
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+    Factory::getAgentFactory()->getDB()->beginTransaction();
     $hashlist = new Hashlist(0, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId());
-    $hashlist = $FACTORIES::getHashlistFactory()->save($hashlist);
+    $hashlist = Factory::getHashlistFactory()->save($hashlist);
 
     $dataSource = "";
     switch ($source) {
@@ -766,22 +739,22 @@ class HashlistUtils {
     }
     $tmpfile = dirname(__FILE__) . "/../../tmp/hashlist_" . $hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $dataSource) && file_exists($tmpfile)) {
-      $FACTORIES::getAgentFactory()->getDB()->rollback();
+      Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Failed to process file!");
     }
     else if (!file_exists($tmpfile)) {
-      $FACTORIES::getAgentFactory()->getDB()->rollback();
+      Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Required file does not exist!");
     }
-    else if (Util::countLines($tmpfile) > $CONFIG->getVal(DConfig::MAX_HASHLIST_SIZE)) {
-      $FACTORIES::getAgentFactory()->getDB()->rollback();
+    else if (Util::countLines($tmpfile) > SConfig::getInstance()->getVal(DConfig::MAX_HASHLIST_SIZE)) {
+      Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Hashlist has too many lines!");
     }
     $file = fopen($tmpfile, "rb");
     if (!$file) {
       throw new HTException("Failed to open file!");
     }
-    $FACTORIES::getAgentFactory()->getDB()->commit();
+    Factory::getAgentFactory()->getDB()->commit();
     $added = 0;
 
     switch ($format) {
@@ -798,7 +771,7 @@ class HashlistUtils {
           $saltSeparator = "";
         }
         rewind($file);
-        $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+        Factory::getAgentFactory()->getDB()->beginTransaction();
         $values = array();
         $bufferCount = 0;
         while (!feof($file)) {
@@ -822,23 +795,23 @@ class HashlistUtils {
           $values[] = new Hash(0, $hashlist->getId(), $hash, $salt, "", 0, null, 0);
           $bufferCount++;
           if ($bufferCount >= 10000) {
-            $result = $FACTORIES::getHashFactory()->massSave($values);
+            $result = Factory::getHashFactory()->massSave($values);
             $added += $result->rowCount();
-            $FACTORIES::getAgentFactory()->getDB()->commit();
-            $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
+            Factory::getAgentFactory()->getDB()->commit();
+            Factory::getAgentFactory()->getDB()->beginTransaction();
             $values = array();
             $bufferCount = 0;
           }
         }
         if (sizeof($values) > 0) {
-          $result = $FACTORIES::getHashFactory()->massSave($values);
+          $result = Factory::getHashFactory()->massSave($values);
           $added += $result->rowCount();
         }
         fclose($file);
         unlink($tmpfile);
         $hashlist->setHashCount($added);
-        $FACTORIES::getHashlistFactory()->update($hashlist);
-        $FACTORIES::getAgentFactory()->getDB()->commit();
+        Factory::getHashlistFactory()->update($hashlist);
+        Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
 
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -877,14 +850,14 @@ class HashlistUtils {
           }
           $mac_cli = Util::bintohex($mac_cli);
           // we cannot save the network name here, as on the submission we don't get this
-          $hash = new HashBinary(0, $hashlist->getId(), $mac_ap . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
-          $FACTORIES::getHashBinaryFactory()->save($hash);
+          $hash = new HashBinary(0, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
+          Factory::getHashBinaryFactory()->save($hash);
           $added++;
         }
         fclose($file);
         unlink($tmpfile);
         $hashlist->setHashCount($added);
-        $FACTORIES::getHashlistFactory()->update($hashlist);
+        Factory::getHashlistFactory()->update($hashlist);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
 
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -893,12 +866,12 @@ class HashlistUtils {
         if (!feof($file)) {
           $data = fread($file, Util::filesize($tmpfile));
           $hash = new HashBinary(0, $hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0);
-          $FACTORIES::getHashBinaryFactory()->save($hash);
+          Factory::getHashBinaryFactory()->save($hash);
         }
         fclose($file);
         unlink($tmpfile);
         $hashlist->setHashCount(1);
-        $FACTORIES::getHashlistFactory()->update($hashlist);
+        Factory::getHashlistFactory()->update($hashlist);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
 
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -913,8 +886,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function createSuperhashlist($hashlists, $name, $user) {
-    global $FACTORIES;
-
     for ($i = 0; $i < sizeof($hashlists); $i++) {
       if (intval($hashlists[$i]) <= 0) {
         unset($hashlists[$i]);
@@ -925,8 +896,8 @@ class HashlistUtils {
     }
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $qF = new ContainFilter(Hashlist::HASHLIST_ID, $hashlists);
-    $FACTORIES::getAgentFactory()->getDB()->beginTransaction();
-    $lists = $FACTORIES::getHashlistFactory()->filter(array($FACTORIES::FILTER => $qF));
+    Factory::getAgentFactory()->getDB()->beginTransaction();
+    $lists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
     if (strlen($name) == 0) {
       $name = "SHL_" . $lists[0]->getHashtypeId();
     }
@@ -955,13 +926,13 @@ class HashlistUtils {
     }
 
     $superhashlist = new Hashlist(0, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId);
-    $superhashlist = $FACTORIES::getHashlistFactory()->save($superhashlist);
+    $superhashlist = Factory::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {
       $relations[] = new HashlistHashlist(0, $superhashlist->getId(), $list->getId());
     }
-    $FACTORIES::getHashlistHashlistFactory()->massSave($relations);
-    $FACTORIES::getAgentFactory()->getDB()->commit();
+    Factory::getHashlistHashlistFactory()->massSave($relations);
+    Factory::getAgentFactory()->getDB()->commit();
   }
 
   /**
@@ -971,9 +942,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function leftlist($hashlistId, $user) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
-
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     if ($hashlist->getFormat() == DHashlistFormat::WPA || $hashlist->getFormat() == DHashlistFormat::BINARY) {
       throw new HTException("You cannot create left lists for binary hashes!");
@@ -1001,19 +969,19 @@ class HashlistUtils {
 
     $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
     $qF2 = new QueryFilter(Hash::IS_CRACKED, "0", "=");
-    $count = $FACTORIES::getHashFactory()->countFilter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $count = Factory::getHashFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
     $pagingSize = 5000;
-    if ($CONFIG->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
-      $pagingSize = $CONFIG->getVal(DConfig::HASHES_PAGE_SIZE);
+    if (SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE) !== false) {
+      $pagingSize = SConfig::getInstance()->getVal(DConfig::HASHES_PAGE_SIZE);
     }
     for ($x = 0; $x * $pagingSize < $count; $x++) {
       $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . ($x * $pagingSize) . ",$pagingSize");
-      $entries = $FACTORIES::getHashFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2), $FACTORIES::ORDER => array($oF)));
+      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
       $buffer = "";
       foreach ($entries as $entry) {
         $buffer .= $entry->getHash();
         if ($hashlist->getIsSalted()) {
-          $buffer .= $CONFIG->getVal(DConfig::FIELD_SEPARATOR) . $entry->getSalt();
+          $buffer .= SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $entry->getSalt();
         }
         $buffer .= "\n";
       }
@@ -1023,7 +991,6 @@ class HashlistUtils {
     usleep(1000000);
 
     $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
-    $file = $FACTORIES::getFileFactory()->save($file);
-    return $file;
+    return Factory::getFileFactory()->save($file);
   }
 }

@@ -1,10 +1,9 @@
 <?php
+use DBA\Factory;
 
 class APIGetFileStatus extends APIBasic {
   public function execute($QUERY = array()) {
-    global $FACTORIES;
-
-    $deleteRequests = $FACTORIES::getFileDeleteFactory()->filter([]);
+    $deleteRequests = Factory::getFileDeleteFactory()->filter([]);
     $files = [];
     foreach($deleteRequests as $deleteRequest){
       $files[] = $deleteRequest->getFilename();

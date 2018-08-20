@@ -4,21 +4,19 @@ use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
-/** @var array $OBJECTS */
-
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::CRACKERS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::CRACKERS_VIEW_PERM);
 
-$TEMPLATE = new Template("crackers/index");
-$MENU->setActive("crackers_list");
+Template::loadInstance("crackers/index");
+Menu::get()->setActive("crackers_list");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -29,48 +27,48 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new']) && isset($_GET['id']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
-  $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
+if (isset($_GET['new']) && isset($_GET['id']) && AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
+  $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
-    $OBJECTS['binaryType'] = $binaryType;
-    $TEMPLATE = new Template("crackers/newVersion");
-    $OBJECTS['pageTitle'] = "Add new Cracker Binary Version";
+    UI::add('binaryType', $binaryType);
+    UI::add('pageTitle', "Add new Cracker Binary Version");
+    Template::loadInstance("crackers/newVersion");
   }
 }
-else if (isset($_GET['new']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
-  $TEMPLATE = new Template("crackers/new");
-  $MENU->setActive("crackers_new");
-  $OBJECTS['pageTitle'] = "Add Cracker Binary";
+else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
+  Template::loadInstance("crackers/new");
+  Menu::get()->setActive("crackers_new");
+  UI::add('pageTitle', "Add Cracker Binary");
 }
-else if (isset($_GET['edit']) && $ACCESS_CONTROL->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
-  $binary = $FACTORIES::getCrackerBinaryFactory()->get($_GET['id']);
+else if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
+  $binary = Factory::getCrackerBinaryFactory()->get($_GET['id']);
   if ($binary !== null) {
-    $OBJECTS['binary'] = $binary;
-    $TEMPLATE = new Template("crackers/editVersion");
-    $MENU->setActive("crackers_edit");
-    $OBJECTS['binaryType'] = $FACTORIES::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
-    $OBJECTS['pageTitle'] = "Edit Cracker Binary Version for " . $OBJECTS['binaryType']->getTypeName();
+    UI::add('binary', $binary);
+    Template::loadInstance("crackers/editVersion");
+    Menu::get()->setActive("crackers_edit");
+    UI::add('binaryType', Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId()));
+    UI::add('pageTitle', "Edit Cracker Binary Version for " . UI::get('binaryType')->getTypeName());
   }
 }
 else if (isset($_GET['id'])) {
-  $binaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($_GET['id']);
+  $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
   if ($binaryType !== null) {
-    $OBJECTS['binaryType'] = $binaryType;
-    $TEMPLATE = new Template("crackers/detail");
+    UI::add('binaryType', $binaryType);
+    Template::loadInstance("crackers/detail");
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
-    $OBJECTS['binaries'] = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
-    $OBJECTS['pageTitle'] = "Cracker Binary details for " . $binaryType->getTypeName();
+    UI::add('binaries', Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]));
+    UI::add('pageTitle', "Cracker Binary details for " . $binaryType->getTypeName());
   }
 }
 else {
   $oF = new OrderFilter(CrackerBinaryType::TYPE_NAME, "ASC");
-  $OBJECTS['binaryTypes'] = $FACTORIES::getCrackerBinaryTypeFactory()->filter(array($FACTORIES::ORDER => $oF));
+  UI::add('binaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([Factory::ORDER => $oF]));
   $binariesVersions = new DataSet();
-  foreach ($OBJECTS['binaryTypes'] as $binaryType) {
+  foreach (UI::get('binaryTypes') as $binaryType) {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
-    $binaries = $FACTORIES::getCrackerBinaryFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     $arr = array();
-    usort($binaries, array("Util", "versionComparisonBinary"));
+    usort($binaries, ["Util", "versionComparisonBinary"]);
     foreach ($binaries as $binary) {
       if (!isset($arr[$binary->getVersion()])) {
         $arr[$binary->getVersion()] = $binary->getVersion();
@@ -78,11 +76,11 @@ else {
     }
     $binariesVersions->addValue($binaryType->getId(), implode("<br>", $arr));
   }
-  $OBJECTS['versions'] = $binariesVersions;
-  $OBJECTS['pageTitle'] = "Cracker Binaries";
+  UI::add('versions', $binariesVersions);
+  UI::add('pageTitle', "Cracker Binaries");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

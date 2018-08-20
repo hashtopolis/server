@@ -273,6 +273,12 @@ $CONF['ApiGroup'] = array(
   'permissions',
   'name'
 );
+$CONF['FileDownload'] = array(
+  'fileDownloadId',
+  'time',
+  'fileId',
+  'status'
+);
 $CONF['FileDelete'] = array(
   'fileDeleteId',
   'filename',

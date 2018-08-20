@@ -10,7 +10,7 @@ require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
 require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
 
-$FACTORIES = new Factory();
+Factory = new Factory();
 
 echo "Apply updates...\n";
 
@@ -20,26 +20,26 @@ Util::checkAgentVersion("csharp", "0.52.2");
 echo "\n";
 
 echo "Create new permissions... ";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `User` CHANGE `rightGroupId` `rightGroupId` INT(11) NULL");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `User` CHANGE `rightGroupId` `rightGroupId` INT(11) NULL");
 // load all users and set permission group to null
-$users = $FACTORIES::getUserFactory()->filter(array());
+$users = Factory::getUserFactory()->filter([]);
 $uS = new UpdateSet(User::RIGHT_GROUP_ID, null);
 $qF = new QueryFilter(User::USER_ID, 0, ">");
-$FACTORIES::getUserFactory()->massUpdate(array($FACTORIES::FILTER => $qF, $FACTORIES::UPDATE => $uS));
+Factory::getUserFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
 // apply table changes
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `RightGroup` ADD `permissions` TEXT NOT NULL");
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `RightGroup` DROP `level`");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `RightGroup` ADD `permissions` TEXT NOT NULL");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `RightGroup` DROP `level`");
 $qF = new QueryFilter(RightGroup::GROUP_NAME, 'Administrator', "=");
-$adminGroup = $FACTORIES::getRightGroupFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+$adminGroup = Factory::getRightGroupFactory()->filter([Factory::FILTER => $qF], true);
 // delete all right groups
 $qF = new QueryFilter(RightGroup::RIGHT_GROUP_ID, 0, ">");
-$FACTORIES::getRightGroupFactory()->massDeletion(array($qF));
+Factory::getRightGroupFactory()->massDeletion([Factory::FILTER => $qF]);
 // add administrator group
 $admins = new RightGroup(0, 'Administrators', 'ALL');
-$admins = $FACTORIES::getRightGroupFactory()->save($admins);
+$admins = Factory::getRightGroupFactory()->save($admins);
 // add other default group (with no permissions)
 $others = new RightGroup(0, 'Other Users', '{}');
-$others = $FACTORIES::getRightGroupFactory()->save($others);
+$others = Factory::getRightGroupFactory()->save($others);
 // go through users and assign them to correct group
 foreach ($users as $user) {
   if ($user->getRightGroupId() == $adminGroup->getId()) {
@@ -49,7 +49,7 @@ foreach ($users as $user) {
   else {
     $user->setRightGroupId($others->getId());
   }
-  $FACTORIES::getUserFactory()->update($user);
+  Factory::getUserFactory()->update($user);
 }
 echo "OK\n";
 

@@ -26,19 +26,16 @@ class UserAPIConfig extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
    */
   private function setConfig($QUERY) {
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-    
     if (!isset($QUERY[UQueryConfig::CONFIG_ITEM]) || !isset($QUERY[UQueryConfig::CONFIG_VALUE]) || !isset($QUERY[UQueryConfig::CONFIG_FORCE])) {
       throw new HTException("Invalid query!");
     }
-    $value = $CONFIG->getVal($QUERY[UQueryConfig::CONFIG_ITEM]);
+    $value = SConfig::getInstance()->getVal($QUERY[UQueryConfig::CONFIG_ITEM]);
     $new = false;
     if ($value === false && $QUERY[UQueryConfig::CONFIG_FORCE] !== true) {
       throw new HTException("Unknown config item!");
@@ -79,20 +76,17 @@ class UserAPIConfig extends UserAPIBasic {
     ConfigUtils::set($config, $new);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
    */
   private function getConfig($QUERY) {
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-    
     if (!isset($QUERY[UQueryConfig::CONFIG_ITEM])) {
       throw new HTException("Invalid query!");
     }
-    
-    $value = $CONFIG->getVal($QUERY[UQueryConfig::CONFIG_ITEM]);
+
+    $value = SConfig::getInstance()->getVal($QUERY[UQueryConfig::CONFIG_ITEM]);
     if ($value === false) {
       throw new HTException("Unknown config item!");
     }
@@ -117,7 +111,7 @@ class UserAPIConfig extends UserAPIBasic {
     }
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param mixed $QUERY
    */
@@ -138,7 +132,7 @@ class UserAPIConfig extends UserAPIBasic {
     $response[UResponseConfig::SECTIONS] = $list;
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param mixed $QUERY
    */

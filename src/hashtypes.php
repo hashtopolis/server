@@ -1,20 +1,17 @@
 <?php
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
-/** @var array $OBJECTS */
-
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::HASHTYPES_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::HASHTYPES_VIEW_PERM);
 
-$TEMPLATE = new Template("hashtypes");
-$MENU->setActive("config_hashtypes");
-$message = "";
+Template::loadInstance("hashtypes");
+Menu::get()->setActive("config_hashtypes");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -25,13 +22,12 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-$hashtypes = $FACTORIES::getHashTypeFactory()->filter(array());
+$hashtypes = Factory::getHashTypeFactory()->filter([]);
 
-$OBJECTS['hashtypes'] = $hashtypes;
-$OBJECTS['message'] = $message;
-$OBJECTS['pageTitle'] = "Hashtypes";
+UI::add('hashtypes', $hashtypes);
+UI::add('pageTitle', "Hashtypes");
 
-echo $TEMPLATE->render($OBJECTS);
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

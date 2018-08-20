@@ -1,10 +1,8 @@
 <?php
+use DBA\Factory;
 
 class APIDownloadBinary extends APIBasic {
   public function execute($QUERY = array()) {
-    /** @var $CONFIG DataSet */
-    global $FACTORIES, $CONFIG;
-
     if (!PQueryDownloadBinary::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid download query!");
     }
@@ -16,7 +14,17 @@ class APIDownloadBinary extends APIBasic {
       case PValuesDownloadBinaryType::EXTRACTOR:
         // downloading 7zip
         $filename = "7zr" . Util::getFileExtension($this->agent->getOs());
-        $path = Util::buildServerUrl() . $CONFIG->getVal(DConfig::BASE_URL) . "/static/" . $filename;
+        $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
+        $this->sendResponse(array(
+            PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
+            PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
+            PResponseBinaryDownload::EXECUTABLE => $path
+          )
+        );
+        break;
+      case PValuesDownloadBinaryType::UFTPD:
+        $filename = "uftpd" . Util::getFileExtension($this->agent->getOs());
+        $path = Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL) . "/static/" . $filename;
         $this->sendResponse(array(
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
@@ -25,11 +33,11 @@ class APIDownloadBinary extends APIBasic {
         );
         break;
       case PValuesDownloadBinaryType::CRACKER:
-        $crackerBinary = $FACTORIES::getCrackerBinaryFactory()->get($QUERY[PQueryDownloadBinary::BINARY_VERSION_ID]);
+        $crackerBinary = Factory::getCrackerBinaryFactory()->get($QUERY[PQueryDownloadBinary::BINARY_VERSION_ID]);
         if ($crackerBinary == null) {
           $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid cracker binary type id!");
         }
-        $crackerBinaryType = $FACTORIES::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
+        $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinary->getCrackerBinaryTypeId());
 
         $ext = Util::getFileExtension($this->agent->getOs());
         $this->sendResponse(array(
@@ -42,7 +50,7 @@ class APIDownloadBinary extends APIBasic {
         );
         break;
       case PValuesDownloadBinaryType::PRINCE:
-        $url = $CONFIG->getVal(DConfig::PRINCE_LINK);
+        $url = SConfig::getInstance()->getVal(DConfig::PRINCE_LINK);
         if(strlen($url) == 0){
           $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "No prince binary URL is configured on the server!");
         }

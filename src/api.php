@@ -2,21 +2,19 @@
 
 use DBA\APiKey;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
-/** @var array $OBJECTS */
-
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::API_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::API_VIEW_PERM);
 
-$TEMPLATE = new Template("api/index");
-$MENU->setActive("users_api");
+Template::loadInstance("api/index");
+Menu::get()->setActive("users_api");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -28,20 +26,18 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new'])) {
-  $TEMPLATE = new Template("api/new");
-  $OBJECTS['pageTitle'] = "Create new API Group";
+  Template::loadInstance("api/new");
+  UI::add('pageTitle', "Create new API Group");
 }
 else if (isset($_GET['id'])) {
-  $group = $FACTORIES::getApiGroupFactory()->get($_GET['id']);
+  $group = Factory::getApiGroupFactory()->get($_GET['id']);
   if ($group == null) {
     UI::printError("ERROR", "Invalid api group!");
   }
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
-    $OBJECTS['keys'] = $FACTORIES::getApiKeyFactory()->filter(array($FACTORIES::FILTER => $qF));
-
-    $sectionConstants = USection::getConstants();
-    $OBJECTS['sectionConstants'] = $sectionConstants;
+    UI::add('keys', Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]));
+    UI::add('sectionConstants', USection::getConstants());
 
     $section = USection::TEST;
     if (isset($_GET['section'])) {
@@ -51,12 +47,12 @@ else if (isset($_GET['id'])) {
     if ($currentSection == null) {
       UI::printError("ERROR", "Invalid section!");
     }
-    $OBJECTS['currentConstants'] = $currentSection->getConstants();
-    $OBJECTS['currentSection'] = $section;
+    UI::add('currentConstants', $currentSection->getConstants());
+    UI::add('currentSection', $section);
 
-    $OBJECTS['group'] = $group;
+    UI::add('group', $group);
     if ($group->getPermissions() == 'ALL') {
-      $OBJECTS['perm'] = 'ALL';
+      UI::add('perm', 'ALL');
     }
     else {
       $json = json_decode($group->getPermissions(), true);
@@ -66,51 +62,51 @@ else if (isset($_GET['id'])) {
       else {
         $json = "{}";
       }
-      $OBJECTS['perm'] = new DataSet($json);
+      UI::add('perm', new DataSet($json));
     }
 
-    $TEMPLATE = new Template("api/detail");
-    $OBJECTS['pageTitle'] = "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8");
+    Template::loadInstance("api/detail");
+    UI::add('pageTitle', "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8"));
   }
 }
 else if(isset($_GET['newkey'])){
-  $TEMPLATE = new Template("api/newkey");
-  $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter([]);
-  $OBJECTS['groups'] = $FACTORIES::getApiGroupFactory()->filter([]);
-  $OBJECTS['pageTitle'] = "Create new API key";
+  Template::loadInstance("api/newkey");
+  UI::add('users', Factory::getUserFactory()->filter([]));
+  UI::add('groups', Factory::getApiGroupFactory()->filter([]));
+  UI::add('pageTitle', "Create new API key");
 }
 else if(isset($_GET['keyId'])){
-  $key = $FACTORIES::getApiKeyFactory()->get($_GET['keyId']);
+  $key = Factory::getApiKeyFactory()->get($_GET['keyId']);
   if($key == null){
     UI::printError(UI::ERROR, "Invalid API key ID!");
   }
-  $OBJECTS['key'] = $key;
-  $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter([]);
-  $OBJECTS['groups'] = $FACTORIES::getApiGroupFactory()->filter([]);
-  $TEMPLATE = new Template("api/key");
-  $OBJECTS['pageTitle'] = "Edit API key";
+  UI::add('key', $key);
+  UI::add('users', Factory::getUserFactory()->filter([]));
+  UI::add('groups', Factory::getApiGroupFactory()->filter([]));
+  UI::add('pageTitle', "Edit API key");
+  Template::loadInstance("api/key");
 }
 else {
   // determine keys and groups
-  $groups = $FACTORIES::getApiGroupFactory()->filter(array());
+  $groups = Factory::getApiGroupFactory()->filter([]);
 
   $apis = array();
   foreach ($groups as $group) {
     $apis[$group->getId()] = 0;
   }
 
-  $allApiKeys = $FACTORIES::getApiKeyFactory()->filter(array());
+  $allApiKeys = Factory::getApiKeyFactory()->filter([]);
   foreach ($allApiKeys as $apiKey) {
     $apis[$apiKey->getApiGroupId()]++;
   }
 
-  $OBJECTS['keys'] = $FACTORIES::getApiKeyFactory()->filter([]);
-  $OBJECTS['apis'] = new DataSet($apis);
-  $OBJECTS['groups'] = $groups;
-  $OBJECTS['pageTitle'] = "Api Groups";
+  UI::add('keys', Factory::getApiKeyFactory()->filter([]));
+  UI::add('apis', new DataSet($apis));
+  UI::add('groups', $groups);
+  UI::add('pageTitle', "Api Groups");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

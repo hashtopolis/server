@@ -4,6 +4,7 @@ use DBA\Agent;
 use DBA\ContainFilter;
 use DBA\AccessGroupAgent;
 use DBA\OrderFilter;
+use DBA\Factory;
 
 class UserAPIAgent extends UserAPIBasic {
   public function execute($QUERY = array()) {
@@ -56,15 +57,12 @@ class UserAPIAgent extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQuery::SECTION], $QUERY[UQuery::REQUEST], $e->getMessage());
     }
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
    */
   private function getAgent($QUERY) {
-    /** @var $CONFIG DataSet */
-    global $CONFIG;
-    
     $agent = AgentUtils::getAgent($QUERY[UQueryAgent::AGENT_ID], $this->user);
     $response = [
       UResponseAgent::SECTION => $QUERY[UQueryAgent::SECTION],
@@ -85,12 +83,12 @@ class UserAPIAgent extends UserAPIBasic {
       UResponseAgent::AGENT_ACTIVITY => [
         UResponseAgent::AGENT_ACTIVITY_ACTION => $agent->getLastAct(),
         UResponseAgent::AGENT_ACTIVITY_TIME => (int)$agent->getLastTime(),
-        UResponseAgent::AGENT_ACTIVITY_IP => ($CONFIG->getVal(DConfig::HIDE_IP_INFO) == 1) ? "Hidden" : $agent->getLastIp()
+        UResponseAgent::AGENT_ACTIVITY_IP => (SConfig::getInstance()->getVal(DConfig::HIDE_IP_INFO) == 1) ? "Hidden" : $agent->getLastIp()
       ]
     ];
     $this->sendResponse($response);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -102,7 +100,7 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::setTrusted($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::TRUSTED], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -114,7 +112,7 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::changeIgnoreErrors($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::IGNORE_ERRORS], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -126,7 +124,7 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::changeCmdParameters($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::EXTRA_PARAMS], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -138,7 +136,7 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::setAgentCpu($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::CPU_ONLY], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -150,7 +148,7 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::rename($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::NAME], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -162,7 +160,7 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::changeOwner($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::USER], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -174,22 +172,20 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::setActive($QUERY[UQueryAgent::AGENT_ID], $QUERY[UQueryAgent::ACTIVE], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   private function listAgents($QUERY) {
-    global $FACTORIES;
-    
     $accessGroups = AccessUtils::getAccessGroupsOfUser($this->user);
-    
+
     $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, Util::arrayOfIds($accessGroups));
-    $accessGroupAgents = $FACTORIES::getAccessGroupAgentFactory()->filter(array($FACTORIES::FILTER => $qF));
+    $accessGroupAgents = Factory::getAccessGroupAgentFactory()->filter([Factory::FILTER => $qF]);
     $agentIds = array();
     foreach ($accessGroupAgents as $accessGroupAgent) {
       $agentIds[] = $accessGroupAgent->getAgentId();
     }
-    
-    $oF = new OrderFilter(Agent::AGENT_ID, "ASC", $FACTORIES::getAgentFactory());
+
+    $oF = new OrderFilter(Agent::AGENT_ID, "ASC", Factory::getAgentFactory());
     $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
-    $agents = $FACTORIES::getAgentFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::ORDER => $oF));
+    $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
     $arr = [];
     foreach ($agents as $agent) {
       $arr[] = array(
@@ -206,7 +202,7 @@ class UserAPIAgent extends UserAPIBasic {
       )
     );
   }
-  
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -218,11 +214,9 @@ class UserAPIAgent extends UserAPIBasic {
     AgentUtils::deleteVoucher($QUERY[UQueryAgent::VOUCHER]);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
   private function listVouchers($QUERY) {
-    global $FACTORIES;
-    
-    $vouchers = $FACTORIES::getRegVoucherFactory()->filter(array());
+    $vouchers = Factory::getRegVoucherFactory()->filter([]);
     $arr = [];
     foreach ($vouchers as $voucher) {
       $arr[] = $voucher->getVoucher();
@@ -235,10 +229,8 @@ class UserAPIAgent extends UserAPIBasic {
       )
     );
   }
-  
+
   private function getBinaries($QUERY) {
-    global $FACTORIES;
-    
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
     unset($url[sizeof($url) - 1]);
@@ -250,9 +242,9 @@ class UserAPIAgent extends UserAPIBasic {
       UResponseAgent::RESPONSE => UValues::OK,
       UResponseAgent::AGENT_URL => $agentUrl
     );
-    
+
     $arr = [];
-    $binaries = $FACTORIES::getAgentBinaryFactory()->filter(array());
+    $binaries = Factory::getAgentBinaryFactory()->filter([]);
     foreach ($binaries as $binary) {
       $arr[] = array(
         UResponseAgent::BINARIES_NAME => $binary->getType(),
@@ -265,7 +257,7 @@ class UserAPIAgent extends UserAPIBasic {
     $response[UResponseAgent::BINARIES] = $arr;
     $this->sendResponse($response);
   }
-  
+
   private function createVoucher($QUERY) {
     $voucher = Util::randomString(10);
     if (isset($QUERY[UQueryAgent::VOUCHER])) {

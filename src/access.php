@@ -2,21 +2,19 @@
 
 use DBA\QueryFilter;
 use DBA\User;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
-/** @var array $OBJECTS */
-
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::ACCESS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::ACCESS_VIEW_PERM);
 
-$TEMPLATE = new Template("access/index");
-$MENU->setActive("users_access");
+Template::loadInstance("access/index");
+Menu::get()->setActive("users_access");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -28,25 +26,25 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new'])) {
-  $TEMPLATE = new Template("access/new");
-  $OBJECTS['pageTitle'] = "Create new Permission Group";
+  Template::loadInstance("access/new");
+  UI::add('pageTitle', "Create new Permission Group");
 }
 else if (isset($_GET['id'])) {
-  $group = $FACTORIES::getRightGroupFactory()->get($_GET['id']);
+  $group = Factory::getRightGroupFactory()->get($_GET['id']);
   if ($group == null) {
     UI::printError("ERROR", "Invalid permission group!");
   }
   else {
-    $OBJECTS['group'] = $group;
+    UI::add('group', $group);
     if ($group->getPermissions() == 'ALL') {
-      $OBJECTS['perm'] = 'ALL';
+      UI::add('perm', 'ALL');
     }
     else {
-      $OBJECTS['perm'] = new DataSet(json_decode($group->getPermissions(), true));
+      UI::add('perm', new DataSet(json_decode($group->getPermissions(), true)));
     }
-    
+
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $group->getId(), "=");
-    $OBJECTS['users'] = $FACTORIES::getUserFactory()->filter(array($FACTORIES::FILTER => $qF));
+    UI::add('users', Factory::getUserFactory()->filter([Factory::FILTER => $qF]));
     $constants = DAccessControl::getConstants();
     $constantsChecked = [];
     foreach ($constants as $constant) {
@@ -60,32 +58,31 @@ else if (isset($_GET['id'])) {
         $constantsChecked[] = $constant;
       }
     }
-    $OBJECTS['constants'] = $constantsChecked;
-    
-    $TEMPLATE = new Template("access/detail");
-    $OBJECTS['pageTitle'] = "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8");
+    UI::add('constants', $constantsChecked);
+    UI::add('pageTitle', "Details of Permission Group " . htmlentities($group->getGroupName(), ENT_QUOTES, "UTF-8"));
+    Template::loadInstance("access/detail");
   }
 }
 else {
   // determine members and agents
-  $groups = $FACTORIES::getRightGroupFactory()->filter(array());
-  
+  $groups = Factory::getRightGroupFactory()->filter([]);
+
   $users = array();
   foreach ($groups as $group) {
     $users[$group->getId()] = 0;
   }
-  
-  $allUsers = $FACTORIES::getUserFactory()->filter(array());
+
+  $allUsers = Factory::getUserFactory()->filter([]);
   foreach ($allUsers as $user) {
     $users[$user->getRightGroupId()]++;
   }
-  
-  $OBJECTS['users'] = new DataSet($users);
-  $OBJECTS['groups'] = $groups;
-  $OBJECTS['pageTitle'] = "Permission Groups";
+
+  UI::add('users', new DataSet($users));
+  UI::add('groups', $groups);
+  UI::add('pageTitle', "Permission Groups");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

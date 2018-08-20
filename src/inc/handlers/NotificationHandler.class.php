@@ -2,29 +2,28 @@
 
 use DBA\NotificationSetting;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 class NotificationHandler implements Handler {
-  
+
   public function __construct($id = null) {
     // nothing required here
   }
-  
+
   public function handle($action) {
-    global $ACCESS_CONTROL;
-    
     try {
       switch ($action) {
         case DNotificationAction::CREATE_NOTIFICATION:
-          $ACCESS_CONTROL->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
+          AccessControl::getInstance()->checkPermission(DNotificationAction::CREATE_NOTIFICATION_PERM);
           NotificationUtils::createNotificaton($_POST['actionType'], $_POST['notification'], $_POST['receiver'], $_POST);
           break;
         case DNotificationAction::SET_ACTIVE:
-          $ACCESS_CONTROL->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
-          NotificationUtils::setActive($_POST['notification'], false, true, $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DNotificationAction::SET_ACTIVE_PERM);
+          NotificationUtils::setActive($_POST['notification'], false, true, Login::getInstance()->getUser());
           break;
         case DNotificationAction::DELETE_NOTIFICATION:
-          $ACCESS_CONTROL->checkPermission(DNotificationAction::DELETE_NOTIFICATION_PERM);
-          NotificationUtils::delete($_POST['notification'], $ACCESS_CONTROL->getUser());
+          AccessControl::getInstance()->checkPermission(DNotificationAction::DELETE_NOTIFICATION_PERM);
+          NotificationUtils::delete($_POST['notification'], Login::getInstance()->getUser());
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
@@ -35,18 +34,15 @@ class NotificationHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-  
+
   /**
    * @param $action
    * @param $payload DataSet
    */
   public static function checkNotifications($action, $payload) {
-    /** @var $NOTIFICATIONS HashtopolisNotification[] */
-    global $FACTORIES, $NOTIFICATIONS;
-    
     $qF1 = new QueryFilter(NotificationSetting::ACTION, $action, "=");
     $qF2 = new QueryFilter(NotificationSetting::IS_ACTIVE, "1", "=");
-    $notifications = $FACTORIES::getNotificationSettingFactory()->filter(array($FACTORIES::FILTER => array($qF1, $qF2)));
+    $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
     foreach ($notifications as $notification) {
       if ($notification->getObjectId() != null) {
         $obj = 0;
@@ -73,7 +69,7 @@ class NotificationHandler implements Handler {
           continue;
         }
       }
-      $NOTIFICATIONS[$notification->getNotification()]->execute($action, $payload, $notification);
+      HashtopolisNotification::getInstances()[$notification->getNotification()]->execute($action, $payload, $notification);
     }
   }
 }

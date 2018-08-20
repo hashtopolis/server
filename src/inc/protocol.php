@@ -205,6 +205,7 @@ class PValuesDownloadBinaryType extends PValues {
   const EXTRACTOR = "7zr";
   const CRACKER   = "cracker";
   const PRINCE    = "prince";
+  const UFTPD     = "uftpd";
 }
 
 class PValuesBenchmarkType extends PValues {
@@ -256,7 +257,8 @@ class PResponseGetHashlist extends PResponse {
 }
 
 class PResponseLogin extends PResponse {
-  const TIMEOUT = "timeout";
+  const TIMEOUT   = "timeout";
+  const MULTICAST = "multicastEnabled";
 }
 
 class PResponseClientUpdate extends PResponse {

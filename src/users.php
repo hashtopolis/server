@@ -4,21 +4,19 @@ use DBA\QueryFilter;
 use DBA\AccessGroupUser;
 use DBA\AccessGroup;
 use DBA\JoinFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
-/** @var array $OBJECTS */
-
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::USERS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::USERS_VIEW_PERM);
 
-$TEMPLATE = new Template("users/index");
-$MENU->setActive("users_list");
+Template::loadInstance("users/index");
+Menu::get()->setActive("users_list");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
@@ -30,45 +28,45 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 }
 
 if (isset($_GET['new'])) {
-  $TEMPLATE = new Template("users/new");
-  $MENU->setActive("users_new");
-  $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
-  $OBJECTS['pageTitle'] = "Create User";
+  Template::loadInstance("users/new");
+  Menu::get()->setActive("users_new");
+  UI::add('groups', Factory::getRightGroupFactory()->filter([]));
+  UI::add('pageTitle', "Create User");
 }
 else if (isset($_GET['id'])) {
-  $user = $FACTORIES::getUserFactory()->get($_GET['id']);
+  $user = Factory::getUserFactory()->get($_GET['id']);
   if ($user == null) {
     UI::printError("ERROR", "Invalid user!");
   }
   else {
-    $OBJECTS['user'] = $user;
-    $OBJECTS['groups'] = $FACTORIES::getRightGroupFactory()->filter(array());
-    
-    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", $FACTORIES::getAccessGroupUserFactory());
-    $jF = new JoinFilter($FACTORIES::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
-    $joinedGroups = $FACTORIES::getAccessGroupFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF));
-    $OBJECTS['accessGroups'] = $joinedGroups[$FACTORIES::getAccessGroupFactory()->getModelName()];
-    
-    $TEMPLATE = new Template("users/detail");
-    $OBJECTS['pageTitle'] = "User details for " . $user->getUsername();
+    UI::add('user', $user);
+    UI::add('groups', Factory::getRightGroupFactory()->filter([]));
+
+    $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
+    $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+    $joinedGroups = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    UI::add('accessGroups', $joinedGroups[Factory::getAccessGroupFactory()->getModelName()]);
+
+    Template::loadInstance("users/detail");
+    UI::add('pageTitle', "User details for " . $user->getUsername());
   }
 }
 else {
   $users = array();
-  $res = $FACTORIES::getUserFactory()->filter(array());
+  $res = Factory::getUserFactory()->filter([]);
   foreach ($res as $entry) {
     $set = new DataSet();
     $set->addValue('user', $entry);
-    $set->addValue('group', $FACTORIES::getRightGroupFactory()->get($entry->getRightGroupId()));
+    $set->addValue('group', Factory::getRightGroupFactory()->get($entry->getRightGroupId()));
     $users[] = $set;
   }
-  
-  $OBJECTS['allUsers'] = $users;
-  $OBJECTS['numUsers'] = sizeof($users);
-  $OBJECTS['pageTitle'] = "Users";
+
+  UI::add('allUsers', $users);
+  UI::add('numUsers', sizeof($users));
+  UI::add('pageTitle', "Users");
 }
 
-echo $TEMPLATE->render($OBJECTS);
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

@@ -2,36 +2,37 @@
 
 use DBA\AgentBinary;
 use DBA\QueryFilter;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
 
 echo "Apply updates...\n";
 
 echo "Add new config... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'disptolerance', '20'), (NULL, 'batchSize', '10000'), (NULL, 'donateOff', '0')");
+Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'disptolerance', '20'), (NULL, 'batchSize', '10000'), (NULL, 'donateOff', '0')");
 echo "OK\n";
 
 echo "Change zap table... ";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Zap` CHANGE `agentId` `agentId` INT(11) NULL");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Zap` CHANGE `agentId` `agentId` INT(11) NULL");
 echo "OK\n";
 
 echo "Add hash index... ";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` ADD INDEX(`hash`);");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` ADD INDEX(`hash`);");
 echo "OK\n";
 
 echo "Increase hash length... ";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` CHANGE `hash` `hash` VARCHAR(1024) NOT NULL;");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` CHANGE `hash` `hash` VARCHAR(1024) NOT NULL;");
 echo "OK\n";
 
 echo "Add Yubikey... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_id', '')");
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_key', '')");
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_url', 'https://api.yubico.com/wsapi/2.0/verify')");
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `User` ADD yubikey INT(1) NOT NULL, ADD otp1 VARCHAR(50) NOT NULL, ADD otp2 VARCHAR(50) NOT NULL, ADD otp3 VARCHAR(50) NOT NULL, ADD otp4 VARCHAR(50) NOT NULL;");
+Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_id', '')");
+Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_key', '')");
+Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'yubikey_url', 'https://api.yubico.com/wsapi/2.0/verify')");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `User` ADD yubikey INT(1) NOT NULL, ADD otp1 VARCHAR(50) NOT NULL, ADD otp2 VARCHAR(50) NOT NULL, ADD otp3 VARCHAR(50) NOT NULL, ADD otp4 VARCHAR(50) NOT NULL;");
 echo "OK\n";
 
 echo "Add new Hashtypes... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO HashType (hashTypeId, description, isSalted) VALUES
+Factory::getAgentFactory()->getDB()->query("INSERT INTO HashType (hashTypeId, description, isSalted) VALUES
   (600,'BLAKE2b-512',0),
   (9710,'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1',0),
   (9720,'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2',0),
@@ -64,34 +65,34 @@ $FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO HashType (hashTypeId,
 echo "OK\n";
 
 echo "Update Task table... ";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD taskType INT(11);");
-$FACTORIES::getAgentFactory()->getDB()->query("UPDATE `Task` SET taskType=1 WHERE 1");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD taskType INT(11);");
+Factory::getAgentFactory()->getDB()->query("UPDATE `Task` SET taskType=1 WHERE 1");
 echo "OK\n";
 
 echo "Create TaskTask table... ";
-$FACTORIES::getAgentFactory()->getDB()->query("CREATE TABLE `TaskTask` (`taskTaskId` INT(11) NOT NULL, `taskId` INT(11) NOT NULL, `subtaskId` INT(11) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
+Factory::getAgentFactory()->getDB()->query("CREATE TABLE `TaskTask` (`taskTaskId` INT(11) NOT NULL, `taskId` INT(11) NOT NULL, `subtaskId` INT(11) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;");
 echo ".";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD PRIMARY KEY (`taskTaskId`), ADD KEY `taskId` (`taskId`), ADD KEY `subtaskId` (`subtaskId`);");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD PRIMARY KEY (`taskTaskId`), ADD KEY `taskId` (`taskId`), ADD KEY `subtaskId` (`subtaskId`);");
 echo ".";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` MODIFY `taskTaskId` INT(11) NOT NULL AUTO_INCREMENT;");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` MODIFY `taskTaskId` INT(11) NOT NULL AUTO_INCREMENT;");
 echo ".";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`subtaskId`) REFERENCES `Task` (`taskId`);");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`subtaskId`) REFERENCES `Task` (`taskId`);");
 echo ".";
-$FACTORIES::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `TaskTask` ADD CONSTRAINT FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);");
 echo "OK\n";
 
 echo "Update config... ";
-$FACTORIES::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'baseHost', '')");
+Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `item`, `value`) VALUES (NULL, 'baseHost', '')");
 echo "OK\n";
 
 echo "Check csharp binary... ";
 $qF = new QueryFilter(AgentBinary::TYPE, "csharp", "=");
-$binary = $FACTORIES::getAgentBinaryFactory()->filter(array($FACTORIES::FILTER => $qF), true);
+$binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
 if ($binary != null) {
   if (Util::versionComparison($binary->getVersion(), "0.46.2") == 1) {
     echo "update version... ";
     $binary->setVersion("0.46.2");
-    $FACTORIES::getAgentBinaryFactory()->update($binary);
+    Factory::getAgentBinaryFactory()->update($binary);
     echo "OK";
   }
 }

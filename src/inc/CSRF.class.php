@@ -4,8 +4,6 @@ class CSRF {
   const CSRF_SECRET = "__CSRF__";
   
   public static function init() {
-    global $OBJECTS;
-    
     if (!isset($_SESSION[CSRF::CSRF_SECRET])) {
       // generate a secret
       $_SESSION[CSRF::CSRF_SECRET] = Util::randomString(40);
@@ -13,7 +11,7 @@ class CSRF {
     
     // set a token
     $key = Util::randomString(30);
-    $OBJECTS['csrf'] = $key . ":" . base64_encode(hash("sha256", $key . $_SESSION[CSRF::CSRF_SECRET] . $key, true));
+    UI::add('csrf', $key . ":" . base64_encode(hash("sha256", $key . $_SESSION[CSRF::CSRF_SECRET] . $key, true)));
   }
   
   public static function check($csrf) {

@@ -2,6 +2,7 @@
 
 use DBA\NotificationSetting;
 use DBA\User;
+use DBA\Factory;
 
 class NotificationUtils {
   /**
@@ -12,10 +13,8 @@ class NotificationUtils {
    * @throws HTException
    */
   public static function createNotificaton($actionType, $notification, $receiver, $post) {
-    global $FACTORIES, $NOTIFICATIONS, $ACCESS_CONTROL;
-    
     $receiver = trim($receiver);
-    if (!isset($NOTIFICATIONS[$notification])) {
+    if (!isset(HashtopolisNotification::getInstances()[$notification])) {
       throw new HTException("This notification is not available!");
     }
     else if (!in_array($actionType, DNotificationType::getAll())) {
@@ -24,13 +23,13 @@ class NotificationUtils {
     else if (strlen($receiver) == 0) {
       throw new HTException("You need to fill in a receiver!");
     }
-    else if (!$ACCESS_CONTROL->hasPermission(DNotificationType::getRequiredPermission($actionType))) {
+    else if (!AccessControl::getInstance()->hasPermission(DNotificationType::getRequiredPermission($actionType))) {
       throw new HTException("You are not allowed to use this action type!");
     }
     $objectId = null;
     switch (DNotificationType::getObjectType($actionType)) {
       case DNotificationObjectType::USER:
-        if (!$ACCESS_CONTROL->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
+        if (!AccessControl::getInstance()->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
           throw new HTException("You are not allowed to use user action types!");
         }
         if ($post['users'] == "ALL") {
@@ -57,15 +56,15 @@ class NotificationUtils {
         if ($post['tasks'] == "ALL") {
           break;
         }
-        $task = TaskUtils::getTask($post['tasks'], $ACCESS_CONTROL->getUser());
+        $task = TaskUtils::getTask($post['tasks'], Login::getInstance()->getUser());
         $objectId = $task->getId();
         break;
     }
-    
-    $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, $ACCESS_CONTROL->getUser()->getId(), $receiver, 1);
-    $FACTORIES::getNotificationSettingFactory()->save($notificationSetting);
+
+    $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, Login::getInstance()->getUser()->getId(), $receiver, 1);
+    Factory::getNotificationSettingFactory()->save($notificationSetting);
   }
-  
+
   /**
    * @param int $notification
    * @param boolean $isActive
@@ -74,8 +73,6 @@ class NotificationUtils {
    * @throws HTException
    */
   public static function setActive($notification, $isActive, $doToggle, $user) {
-    global $FACTORIES;
-    
     $notification = NotificationUtils::getNotification($notification);
     if ($notification->getUserId() != $user->getId()) {
       throw new HTException("You have no access to this notification!");
@@ -91,33 +88,29 @@ class NotificationUtils {
     else {
       $notification->setIsActive(($isActive) ? 1 : 0);
     }
-    $FACTORIES::getNotificationSettingFactory()->update($notification);
+    Factory::getNotificationSettingFactory()->update($notification);
   }
-  
+
   /**
    * @param int $notification
    * @param User $user
    * @throws HTException
    */
   public static function delete($notification, $user) {
-    global $FACTORIES;
-    
     $notification = NotificationUtils::getNotification($notification);
     if ($notification->getUserId() != $user->getId()) {
       throw new HTException("You are not allowed to delete this notification!");
     }
-    $FACTORIES::getNotificationSettingFactory()->delete($notification);
+    Factory::getNotificationSettingFactory()->delete($notification);
   }
-  
+
   /**
    * @param int $notification
    * @throws HTException
    * @return NotificationSetting
    */
   public static function getNotification($notification) {
-    global $FACTORIES;
-    
-    $notification = $FACTORIES::getNotificationSettingFactory()->get($notification);
+    $notification = Factory::getNotificationSettingFactory()->get($notification);
     if ($notification == null) {
       throw new HTException("Notification not found!");
     }

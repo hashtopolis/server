@@ -8,22 +8,19 @@ use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use DBA\Task;
+use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-/** @var Login $LOGIN */
-/** @var array $OBJECTS */
-/** @var DataSet $CONFIG */
-
-if (!$LOGIN->isLoggedin()) {
+if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
   die();
 }
 
-$ACCESS_CONTROL->checkPermission(DViewControl::HASHES_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::HASHES_VIEW_PERM);
 
-$TEMPLATE = new Template("hashes/index");
-$MENU->setActive("hashes");
+Template::loadInstance("hashes/index");
+Menu::get()->setActive("hashes");
 
 // show hashes based on provided criteria
 $hlist = 0;
@@ -36,13 +33,13 @@ $isWpa = false;
 $hashFactory = null;
 $hashClass = null;
 $queryFilters = array();
-$OBJECTS['pageTitle'] = " Hashes";
+UI::add('pageTitle', " Hashes");
 if (isset($_GET['hashlist'])) {
-  $list = $FACTORIES::getHashlistFactory()->get($_GET["hashlist"]);
+  $list = Factory::getHashlistFactory()->get($_GET["hashlist"]);
   if ($list == null) {
     UI::printError("ERROR", "Invalid hashlist!");
   }
-  $OBJECTS['list'] = $list;
+  UI::add('list', $list);
   if ($list->getFormat() == DHashlistFormat::SUPERHASHLIST) {
     $lists = Util::checkSuperHashlist($list);
     $listIds = array();
@@ -57,11 +54,11 @@ if (isset($_GET['hashlist'])) {
     $queryFilters[] = new QueryFilter(Hash::HASHLIST_ID, $list->getId(), "=");
   }
   if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
-    $hashFactory = $FACTORIES::getHashFactory();
+    $hashFactory = Factory::getHashFactory();
     $hashClass = \DBA\Hash::class;
   }
   else {
-    $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $hashFactory = Factory::getHashBinaryFactory();
     $binaryFormat = true;
     if ($hashlist->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
@@ -70,24 +67,24 @@ if (isset($_GET['hashlist'])) {
   }
   $src = "hashlist";
   $srcId = $list->getId();
-  $OBJECTS['pageTitle'] = "Hashes of Hashlist " . $list->getHashlistName();
+  UI::add('pageTitle', "Hashes of Hashlist " . $list->getHashlistName());
 }
 else if (isset($_GET['chunk'])) {
-  $jF1 = new JoinFilter($FACTORIES::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, $FACTORIES::getChunkFactory());
-  $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", $FACTORIES::getChunkFactory());
-  $joined = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF, $FACTORIES::JOIN => $jF1));
-  if (sizeof($joined[$FACTORIES::getChunkFactory()->getModelName()]) == null) {
+  $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, Factory::getChunkFactory());
+  $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", Factory::getChunkFactory());
+  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF1]);
+  if (sizeof($joined[Factory::getChunkFactory()->getModelName()]) == null) {
     UI::printError("ERROR", "Invalid chunk!");
   }
   /** @var $chunk Chunk */
-  $chunk = $joined[$FACTORIES::getChunkFactory()->getModelName()][0];
-  $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($FACTORIES::getTaskWrapperFactory()->get($FACTORIES::getTaskFactory()->get($chunk->getTaskId())->getTaskWrapperId())->getHashlistId()));
+  $chunk = $joined[Factory::getChunkFactory()->getModelName()][0];
+  $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get(Factory::getTaskWrapperFactory()->get(Factory::getTaskFactory()->get($chunk->getTaskId())->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
-    $hashFactory = $FACTORIES::getHashFactory();
+    $hashFactory = Factory::getHashFactory();
     $hashClass = \DBA\Hash::class;
   }
   else {
-    $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $hashFactory = Factory::getHashBinaryFactory();
     $hashClass = \DBA\HashBinary::class;
     if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
@@ -96,22 +93,22 @@ else if (isset($_GET['chunk'])) {
   }
   $queryFilters[] = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
   $src = "chunk";
-  $OBJECTS['chunk'] = $chunk;
+  UI::add('chunk', $chunk);
   $srcId = $chunk->getId();
-  $OBJECTS['pageTitle'] = "Hashes of Chunk " . $chunk->getId();
+  UI::add('pageTitle', "Hashes of Chunk " . $chunk->getId());
 }
 else if (isset($_GET['task'])) {
-  $task = $FACTORIES::getTaskFactory()->get($_GET['task']);
+  $task = Factory::getTaskFactory()->get($_GET['task']);
   if ($task == null) {
     UI::printError("ERROR", "Invalid task!");
   }
-  $hashlists = Util::checkSuperHashlist($FACTORIES::getHashlistFactory()->get($FACTORIES::getTaskWrapperFactory()->get($task->getTaskWrapperId())->getHashlistId()));
+  $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get(Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
-    $hashFactory = $FACTORIES::getHashFactory();
+    $hashFactory = Factory::getHashFactory();
     $hashClass = \DBA\Hash::class;
   }
   else {
-    $hashFactory = $FACTORIES::getHashBinaryFactory();
+    $hashFactory = Factory::getHashBinaryFactory();
     $binaryFormat = true;
     if ($hashlists[0]->getFormat() == DHashlistFormat::WPA) {
       $isWpa = true;
@@ -119,31 +116,31 @@ else if (isset($_GET['task'])) {
     $hashClass = \DBA\HashBinary::class;
   }
   $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-  $chunks = $FACTORIES::getChunkFactory()->filter(array($FACTORIES::FILTER => $qF));
+  $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   $chunkIds = array();
   foreach ($chunks as $chunk) {
     $chunkIds[] = $chunk->getId();
   }
   $queryFilters[] = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
   $src = "task";
-  $OBJECTS['task'] = $task;
+  UI::add('task', $task);
   $srcId = $task->getId();
-  $OBJECTS['pageTitle'] = "Hashes of Task " . $task->getId();
+  UI::add('pageTitle', "Hashes of Task " . $task->getId());
 }
 
-$OBJECTS['src'] = $src;
-$OBJECTS['srcId'] = $srcId;
+UI::add('src', $src);
+UI::add('srcId', $srcId);
 
 $displaying = "";
 if (isset($_GET['display'])) {
   $displaying = $_GET["display"];
 }
-$OBJECTS['displaying'] = htmlentities($displaying, ENT_QUOTES, "UTF-8");
+UI::add('displaying', htmlentities($displaying, ENT_QUOTES, "UTF-8"));
 $filter = "";
 if (isset($_GET['filter'])) {
   $filter = $_GET['filter'];
 }
-$OBJECTS['filtering'] = htmlentities($filter, ENT_QUOTES, "UTF-8");
+UI::add('filtering', htmlentities($filter, ENT_QUOTES, "UTF-8"));
 
 $displays = array("hash" => "Hashes only", "" => "Hashes + plaintexts", "plain" => "Plaintexts only");
 $filters = array("cracked" => "Cracked", "uncracked" => "Uncracked", "" => "All");
@@ -155,7 +152,7 @@ foreach ($displays as $id => $text) {
   $set->addValue('text', $text);
   $displaysSet[] = $set;
 }
-$OBJECTS['displays'] = $displaysSet;
+UI::add('displays', $displaysSet);
 
 $filtersSet = array();
 foreach ($filters as $id => $text) {
@@ -164,7 +161,7 @@ foreach ($filters as $id => $text) {
   $set->addValue('text', $text);
   $filtersSet[] = $set;
 }
-$OBJECTS['filters'] = $filtersSet;
+UI::add('filters', $filtersSet);
 
 if ($filter == "cracked") {
   $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, 1, "=");
@@ -173,12 +170,12 @@ else if ($filter == "uncracked") {
   $queryFilters[] = new QueryFilter(Hash::IS_CRACKED, 0, "=");
 }
 
-$count = $hashFactory->countFilter(array($FACTORIES::FILTER => $queryFilters));
-$numPages = $count / $CONFIG->getVal(DConfig::HASHES_PER_PAGE);
-if ($numPages * $CONFIG->getVal(DConfig::HASHES_PER_PAGE) != $count) {
+$count = $hashFactory->countFilter([Factory::FILTER => $queryFilters]);
+$numPages = $count / SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE);
+if ($numPages * SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) != $count) {
   $numPages++;
 }
-$OBJECTS['count'] = $count;
+UI::add('count', $count);
 
 $currentPage = 0;
 $nextPage = -1;
@@ -192,13 +189,13 @@ if ($currentPage > 0) {
 if ($currentPage < $numPages - 1) {
   $nextPage = $currentPage + 1;
 }
-$OBJECTS['numPages'] = $numPages;
-$OBJECTS['nextPage'] = $nextPage;
-$OBJECTS['previousPage'] = $previousPage;
-$OBJECTS['currentPage'] = $currentPage;
+UI::add('numPages', $numPages);
+UI::add('nextPage', $nextPage);
+UI::add('previousPage', $previousPage);
+UI::add('currentPage', $currentPage);
 
-$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . ($CONFIG->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . $CONFIG->getVal(DConfig::HASHES_PER_PAGE));
-$hashes = $hashFactory->filter(array($FACTORIES::FILTER => $queryFilters, $FACTORIES::ORDER => $oF));
+$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+$hashes = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::ORDER => $oF]);
 
 $output = "";
 foreach ($hashes as $hash) {
@@ -239,9 +236,9 @@ foreach ($hashes as $hash) {
   }
   $output .= "\n";
 }
-$OBJECTS['output'] = $output;
+UI::add('output', $output);
 
-echo $TEMPLATE->render($OBJECTS);
+echo Template::getInstance()->render(UI::getObjects());
 
 
 

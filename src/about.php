@@ -2,12 +2,11 @@
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-$ACCESS_CONTROL->checkPermission(DViewControl::ABOUT_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DViewControl::ABOUT_VIEW_PERM);
 
-$TEMPLATE = new Template("static/about");
-$OBJECTS['pageTitle'] = "About";
-
-echo $TEMPLATE->render($OBJECTS);
+UI::add('pageTitle', "About");
+Template::loadInstance("static/about");
+echo Template::getInstance()->render(UI::getObjects());
 
 
 
