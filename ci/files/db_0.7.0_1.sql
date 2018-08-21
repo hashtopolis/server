@@ -1028,4 +1028,4 @@ CREATE TABLE `ApiGroup` (
   `permissions` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `ApiGroup` ( `name`, `permissions`) VALUES ('Administrators', 'ALL');
+INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) VALUES (1, 'Administrators', 'ALL');
