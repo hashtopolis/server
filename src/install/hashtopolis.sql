@@ -987,7 +987,7 @@ CREATE TABLE `FileDownload` (
   `status` int(11) NOT NULL
 ) ENGINE=InnoDB;
 
-INSERT INTO `ApiGroup` ( `name`, `permissions`) VALUES ('Administrators', 'ALL');
+INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) VALUES (1, 'Administrators', 'ALL');
 
 --
 -- Indexes for table `ApiKey`
