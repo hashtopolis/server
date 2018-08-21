@@ -4,7 +4,7 @@
  * This is the entry point to run the full environment
  */
 
-require_once(dirname(__FILE__)."/../../src/inc/load.php");
+require_once(dirname(__FILE__)."/../src/inc/load.php");
 require_once(dirname(__FILE__)."/HashtopolisTest.class.php");
 require_once(dirname(__FILE__)."/HashtopolisTestFramework.class.php");
 
