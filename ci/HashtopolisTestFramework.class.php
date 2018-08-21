@@ -8,6 +8,7 @@ class HashtopolisTestFramework{
    * @var $instance HashtopolisTest[]
    */
   private static $instances = [];
+  public static $logLevel = HashtopolisTestFramework::LOG_INFO;
 
   public static function register($test){
     self::$instances[] = $test;
@@ -66,5 +67,30 @@ class HashtopolisTestFramework{
       return false;
     }
     return json_decode($response, TRUE);
+  }
+
+  const LOG_DEBUG = 0;
+  const LOG_INFO  = 1;
+  const LOG_ERROR = 2;
+
+  public static function log($level, $message){
+    if($level < HashtopolisTestFramework::$logLevel){
+      return;
+    }
+    switch($level){
+      case HashtopolisTestFramework::LOG_DEBUG:
+        $lvl = "DEBUG";
+        break;
+      case HashtopolisTestFramework::LOG_INFO:
+        $lvl = "INFO ";
+        break;
+      case HashtopolisTestFramework::LOG_ERROR:
+        $lvl = "ERROR";
+        break;
+      default:
+        $lvl = "FFFFF";
+        break;
+    }
+    echo "[".date("d.m.Y - H:i:s")."][".$lvl."]: ".$message."\n";
   }
 }
