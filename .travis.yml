@@ -6,8 +6,7 @@ services:
 install:
   - sudo apt update -qq
   - sudo apt install -y apache2 libapache2-mod-fastcgi
-  - ls -lrta
 
 script:
-  - php -f ci/setup.php testing-framework
+  - php -f ci/server/setup.php testing-framework
   - php -f ci/run.php master

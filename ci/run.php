@@ -8,7 +8,7 @@ $CONN = [
   "db" => "hashtopolis",
   "server" => "localhost",
   "user" => "root",
-  "pass" => "root",
+  "pass" => "",
   "port" => 3306
 ];
 require_once(dirname(__FILE__)."/env/src/dba/init.php");
