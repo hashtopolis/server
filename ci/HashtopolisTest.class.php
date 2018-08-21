@@ -13,8 +13,8 @@ abstract class HashtopolisTest{
   protected $user;
   protected $apiKey;
 
-  public const RUN_FULL = 0;
-  public const RUN_FAST = 1;
+  const RUN_FULL = 0;
+  const RUN_FAST = 1;
 
   public function init($version){
     // drop old data and create empty DB
