@@ -25,7 +25,7 @@ abstract class HashtopolisTest{
 
     // load DB
     if($version == "master"){
-      Factory::getAgentFactory()->getDB()->query("/var/www/html/hashtopolis/src/install/hashtopolis.sql"));
+      Factory::getAgentFactory()->getDB()->query(file_get_contents("/var/www/html/hashtopolis/src/install/hashtopolis.sql"));
     }
     else{
       Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/files/db_".$version.".sql"));
