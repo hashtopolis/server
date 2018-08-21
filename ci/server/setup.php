@@ -9,11 +9,6 @@ if(sizeof($argv) != 2){
   die("Invalid number of arguments!\nphp -f setup.php <tag|branch>\n");
 }
 $version = $argv[1];
-
-// clone hashtopolis and checkout requested version
-system("rm -rf '/var/www/html/hashtopolis'");
-system("cd '/var/www/html/' && git clone https://github.com/s3inlc/hashtopolis hashtopolis");
-system("cd '/var/www/html/hashtopolis' && git checkout '$version'");
 $envPath = "/var/www/html/hashtopolis/";
 
 // simulate installation with creating db.php (we just leave the peppers default)
@@ -34,5 +29,3 @@ $db->query(file_get_contents($envPath."src/install/hashtopolis.sql"));
 $load = file_get_contents($envPath."src/inc/load.php");
 $load = str_replace('ini_set("display_errors", "0");','ini_set("display_errors", "1");', $load);
 file_put_contents($envPath."src/inc/load.php", $load);
-
-//system("sudo chown -R www-data '".dirname(__FILE__)."/../env'");
