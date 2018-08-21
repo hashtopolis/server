@@ -49,6 +49,7 @@ class FileTest extends HashtopolisTest {
       "fileType" => 0,
       "source" => "inline",
       "data" => $testFile,
+      "accessGroupId" => 1,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
       $this->testFailed("FileTest:testCreatingInlineFile", "Empty response");
