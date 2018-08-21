@@ -8,7 +8,7 @@ install:
   - sudo apt install -y apache2 libapache2-mod-fastcgi
   - sudo rm -rf /var/www/html/hashtopolis
   - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
-  - sudo ci/files/prepare.sh
+  - sudo /bin/bash ci/files/prepare.sh
   - php -f ci/server/setup.php $TRAVIS_BRANCH
   - sudo cp -f ci/files/apache.conf /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
