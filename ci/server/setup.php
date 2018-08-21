@@ -11,13 +11,20 @@ if(sizeof($argv) != 2){
 $version = $argv[1];
 
 // clone hashtopolis and checkout requested version
+system("rm -rf '".dirname(__FILE__)."/../env'");
 system("cd '".dirname(__FILE__)."/../' && git clone https://github.com/s3inlc/hashtopolis env");
 system("cd '".dirname(__FILE__)."/../env' && git checkout '$version'");
 $envPath = dirname(__FILE__)."/../env/";
 
 // simulate installation with creating db.php (we just leave the peppers default)
 // TODO: fill in pass and maybe correct user
-$DBCONFIG = '$CONN["user"] = "root";\n$CONN["pass"] = "root";\n$CONN["server"] = "localhost";\n$CONN["db"] = "hashtopolis";\n$CONN["port"] = "3306";\n$INSTALL = true;';
+$DBCONFIG = "<?php\n\n";
+$DBCONFIG .= '$CONN["user"] = "root";'. "\n";
+$DBCONFIG .= '$CONN["pass"] = "root";'."\n";
+$DBCONFIG .= '$CONN["server"] = "localhost";'."\n";
+$DBCONFIG .= '$CONN["db"] = "hashtopolis";'."\n";
+$DBCONFIG .= '$CONN["port"] = "3306";'."\n";
+$DBCONFIG .= '$INSTALL = true;';
 file_put_contents($envPath."src/inc/db.php", $DBCONFIG);
 
 system("chown -R www-data '".dirname(__FILE__)."/../env'");
