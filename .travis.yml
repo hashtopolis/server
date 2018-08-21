@@ -1,0 +1,12 @@
+language: php
+php:
+  - '7.0'
+install:
+  - sudo apt update -qq
+  - sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
+  - sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
+  - sudo apt install -qq -y apache2 libapache2-mod-php mysql-server php-pear php-gd php-curl
+
+script:
+  - php -f ci/setup.php testing-framework
+  - php -f ci/run.php master
