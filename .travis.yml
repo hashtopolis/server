@@ -11,4 +11,5 @@ install:
 
 script:
   - php -f ci/server/setup.php $TRAVIS_BRANCH
+  - sudo chown -R www-data ci/env
   - php -f ci/run.php master
