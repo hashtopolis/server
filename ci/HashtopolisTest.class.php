@@ -48,7 +48,7 @@ abstract class HashtopolisTest{
   }
 
   protected function testSuccess($test){
-    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Test '$test' passed!\n");
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Test '$test' passed!");
   }
 
   public function getMinVersion(){

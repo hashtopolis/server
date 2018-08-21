@@ -27,4 +27,8 @@ $DBCONFIG .= '$CONN["port"] = "3306";'."\n";
 $DBCONFIG .= '$INSTALL = true;';
 file_put_contents($envPath."src/inc/db.php", $DBCONFIG);
 
+$load = file_get_contents($envPath."src/inc/load.php");
+$load = str_replace('ini_set("display_errors", "0");','ini_set("display_errors", "1");', $load);
+file_put_contents($envPath."src/inc/load.php", $load);
+
 system("chown -R www-data '".dirname(__FILE__)."/../env'");
