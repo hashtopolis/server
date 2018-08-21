@@ -5,10 +5,8 @@ services:
   - mysql
 install:
   - sudo apt update -qq
-  - sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
-  - sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
   - sudo apt install -y apache2 libapache2-mod-fastcgi
-  - pwd
+  - ls -lrta
 
 script:
   - php -f ci/setup.php testing-framework
