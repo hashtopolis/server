@@ -38,6 +38,7 @@ class HashtopolisTestFramework{
       $instance->init($version);
       $instance->run();
     }
+    return HashtopolisTest::getStatus();
   }
 
   /**

@@ -13,12 +13,16 @@ class FileTest extends HashtopolisTest {
   public function run(){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
     $this->testListFilesEmpty();
-    $this->testCreatingFile();
+    $this->testCreatingInlineFile();
+    $this->testCreatedInlineFile();
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
 
   private function testListFilesEmpty(){
-    $response = HashtopolisTestFramework::doRequest(["section" => "file", "request" => "listFiles", "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "file",
+      "request" => "listFiles",
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
       $this->testFailed("FileTest:testListFilesEmpty", "Empty response");
     }
@@ -36,8 +40,52 @@ class FileTest extends HashtopolisTest {
     }
   }
 
-  private function testCreatingFile(){
-    // TODO:
+  private function testCreatingInlineFile(){
+    $testFile = base64_encode("This is a test file content!");
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "file",
+      "request" => "addFile",
+      "filename" => "test.txt",
+      "fileType" => 0,
+      "source" => "inline",
+      "data" => $testFile,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("FileTest:testCreatingInlineFile", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("FileTest:testCreatingInlineFile", "Response not OK");
+    }
+  }
+
+  private function testCreatedInlineFile(){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "file",
+      "request" => "listFiles",
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("FileTest:testCreatedInlineFile", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("FileTest:testCreatedInlineFile", "Response not OK");
+    }
+    else if(!is_array($response['files'])){
+      $this->testFailed("FileTest:testCreatedInlineFile", "Expected array but got non-array");
+    }
+    else{
+      $found = false;
+      foreach($response['files'] as $file){
+        if($file['filename'] == "test.txt"){
+          $found = true;
+        }
+      }
+      if(!$found){
+        $this->testFailed("FileTest:testCreatedInlineFile", "Created file is not in list");
+      }
+      else{
+        $this->testSuccess("FileTest:testCreatedInlineFile");
+      }
+    }
   }
 
   public function getTestName(){

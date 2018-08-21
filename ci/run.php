@@ -31,4 +31,6 @@ $version = $argv[1];
 HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
-$framework->execute($version, HashtopolisTest::RUN_FULL);
+$resturnStatus = $framework->execute($version, HashtopolisTest::RUN_FULL);
+
+exit($resturnStatus);
