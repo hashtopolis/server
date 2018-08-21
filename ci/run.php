@@ -28,6 +28,7 @@ if(sizeof($argv) != 2){
   die("Invalid number of arguments!\nphp -f run.php <version>\n");
 }
 $version = $argv[1];
+HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
 $framework->execute($version, HashtopolisTest::RUN_FULL);

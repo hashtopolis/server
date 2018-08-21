@@ -19,8 +19,8 @@ class HashtopolisTestFramework{
   }
 
   /**
-   * @param string $version 
-   * @param int $runType 
+   * @param string $version
+   * @param int $runType
    */
   public function execute($version, $runType){
     foreach(self::$instances as $instance){
@@ -41,27 +41,30 @@ class HashtopolisTestFramework{
   }
 
   /**
-   * @param array $request 
-   * @param int $requestType 
+   * @param array $request
+   * @param int $requestType
    * @return array
    */
   public static function doRequest($request, $requestType = HashtopolisTestFramework::REQUEST_CLIENT){
     switch($requestType){
       case HashtopolisTestFramework::REQUEST_CLIENT:
-        $ch = curl_init('http://localhost/api/server.php');
+        $url = 'http://localhost/api/server.php';
         break;
       case HashtopolisTestFramework::REQUEST_UAPI:
-        $ch = curl_init('http://localhost/api/user.php');
+        $url = 'http://localhost/api/user.php';
         break;
       default:
         return false;
     }
+    $ch = curl_init($url);
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_DEBUG, $url. " <- ".json_encode($request));
     curl_setopt_array($ch, array(
         CURLOPT_POST => TRUE,
         CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_POSTFIELDS => json_encode($request)
     ));
     $response = curl_exec($ch);
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_DEBUG, $url. " -> ".$response);
     if($response === FALSE){
       echo "ERROR: Request failed!\n";
       return false;
