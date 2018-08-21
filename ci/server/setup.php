@@ -19,3 +19,5 @@ $envPath = dirname(__FILE__)."/../env/";
 // TODO: fill in pass and maybe correct user
 $DBCONFIG = '$CONN["user"] = "root";\n$CONN["pass"] = "root";\n$CONN["server"] = "localhost";\n$CONN["db"] = "hashtopolis";\n$CONN["port"] = "3306";\n$INSTALL = true;';
 file_put_contents($envPath."src/inc/db.php", $DBCONFIG);
+
+system("chown -R www-data '".dirname(__FILE__)."/../env'");
