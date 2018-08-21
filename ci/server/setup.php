@@ -35,4 +35,5 @@ $load = file_get_contents($envPath."src/inc/load.php");
 $load = str_replace('ini_set("display_errors", "0");','ini_set("display_errors", "1");', $load);
 file_put_contents($envPath."src/inc/load.php", $load);
 
-system("chown -R www-data '".dirname(__FILE__)."/../env'");
+// maybe not needed in travis
+//system("chown -R www-data '".dirname(__FILE__)."/../env'");

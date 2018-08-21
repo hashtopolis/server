@@ -6,7 +6,9 @@ services:
 install:
   - sudo apt update -qq
   - sudo apt install -y apache2 libapache2-mod-fastcgi
+  - sudo cp -f ci/files/apache.conf /etc/apache2/sites-available/000-default.conf
+  - sudo service apache2 restart
 
 script:
-  - php -f ci/server/setup.php testing-framework
+  - php -f ci/server/setup.php $TRAVIS_BRANCH
   - php -f ci/run.php master
