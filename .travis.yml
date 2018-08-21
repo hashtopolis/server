@@ -12,7 +12,6 @@ install:
   - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - sudo sed -i -e "s,www-data,travis,g" /etc/apache2/envvars
   - sudo chown -R travis:travis /var/lib/apache2/fastcgi
-  - ~/.phpenv/versions/$(phpenv version-name)/sbin/php-fpm
   # prepare hashtopolis
   - sudo rm -rf /var/www/html/hashtopolis
   - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
