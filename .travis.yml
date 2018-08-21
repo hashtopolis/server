@@ -6,7 +6,7 @@ services:
 install:
   - sudo apt update -qq
   - sudo apt install -y apache2 libapache2-mod-fastcgi
-  - php -f ci/server/setup.php $TRAVIS_BRANCH
+  - sudo php -f ci/server/setup.php $TRAVIS_BRANCH
   - sudo chown -R www-data /var/www/html/hashtopolis
   - sudo cp -f ci/files/apache.conf /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
