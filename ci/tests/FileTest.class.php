@@ -6,16 +6,19 @@ class FileTest extends HashtopolisTest {
   protected $runType = HashtopolisTest::RUN_FAST;
 
   public function init($version){
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing ".$this->getTestName()."...");
     parent::init($version);
   }
 
   public function run(){
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
     $this->testListFilesEmpty();
     $this->testCreatingFile();
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
 
   private function testListFilesEmpty(){
-    $response = HashtopolisTestFramework::doRequest(["section" => "file", "request" => "listFiles", "accessKey" => "mykey"]);
+    $response = HashtopolisTestFramework::doRequest(["section" => "file", "request" => "listFiles", "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
       $this->testFailed("FileTest:testListFilesEmpty", "Empty response");
     }

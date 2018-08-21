@@ -39,7 +39,7 @@ abstract class HashtopolisTest{
   abstract function getTestName();
 
   protected function testFailed($test, $error){
-    echo "ERROR:  Test '$test' failed: $error\n";
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Test '$test' failed: $error");
     self::$status = -1;
   }
 
@@ -48,7 +48,7 @@ abstract class HashtopolisTest{
   }
 
   protected function testSuccess($test){
-    echo "SUCCESS: Test '$test' passed!\n";
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Test '$test' passed!\n");
   }
 
   public function getMinVersion(){
