@@ -10,6 +10,7 @@ abstract class HashtopolisTest{
   protected $runType;
 
   protected static $status = 0;
+  protected static $testCount = 0;
 
   protected $user;
   protected $apiKey;
@@ -52,6 +53,10 @@ abstract class HashtopolisTest{
 
   public static function getStatus(){
     return self::$status;
+  }
+  
+  public static function getTestCount(){
+    return self::$testCount;
   }
 
   protected function testSuccess($test){
