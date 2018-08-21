@@ -48,6 +48,7 @@ abstract class HashtopolisTest{
 
   protected function testFailed($test, $error){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Test '$test' failed: $error");
+    self::$testCount++;
     self::$status = -1;
   }
 
@@ -61,6 +62,7 @@ abstract class HashtopolisTest{
 
   protected function testSuccess($test){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Test '$test' passed!");
+    self::$testCount++;
   }
 
   public function getMinVersion(){
