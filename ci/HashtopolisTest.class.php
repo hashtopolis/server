@@ -20,7 +20,9 @@ abstract class HashtopolisTest{
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
     Factory::getAgentFactory()->getDB()->query("CREATE DATABASE hashtopolis");
-    Factory::getAgentFactory()->getDB()->query("use hashtopolis");
+    Factory::getAgentFactory()->getDB()->query("USE hashtopolis");
+
+    sleep(1);
 
     // load DB
     Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/files/db_".$version.".sql"));
