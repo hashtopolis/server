@@ -2,7 +2,7 @@
 
 class FileTest extends HashtopolisTest {
   protected $minVersion = "0.7.0";
-  protected $maxVersion = "10.10.10";
+  protected $maxVersion = "master";
   protected $runType = HashtopolisTest::RUN_FAST;
 
   public function init($version){

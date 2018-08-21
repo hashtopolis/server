@@ -24,11 +24,11 @@ class HashtopolisTestFramework{
    */
   public function execute($version, $runType){
     foreach(self::$instances as $instance){
-      if(Util::versionComparison($version, $instance->getMinVersion()) > 0){
+      if($version != 'master' && (Util::versionComparison($version, $instance->getMinVersion()) > 0 || $instance->getMinVersion() == 'master')){
         echo "Ignoring ".$instance->getTestName().": minimum ".$instance->getMinVersion()." required, but testing $version...\n";
         continue;
       }
-      else if(Util::versionComparison($version, $instance->getMaxVersion()) < 0){
+      else if($instance->getMaxVersion() != 'master' && (Util::versionComparison($version, $instance->getMaxVersion()) < 0 || $version == 'master')){
         echo "Ignoring ".$instance->getTestName().": maximum ".$instance->getMaxVersion()." required, but testing $version...\n";
         continue;
       }

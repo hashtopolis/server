@@ -23,8 +23,12 @@ abstract class HashtopolisTest{
     Factory::getAgentFactory()->getDB()->query("USE hashtopolis");
 
     // load DB
-    Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/files/db_".$version."_1.sql"));
-    Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/files/db_".$version."_2.sql"));
+    if($version == "master"){
+      Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/env/src/install/hashtopolis.sql"));
+    }
+    else{
+      Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/files/db_".$version.".sql"));
+    }
 
     sleep(1);
 
