@@ -57,6 +57,9 @@ class FileTest extends HashtopolisTest {
     else if($response['response'] != 'OK'){
       $this->testFailed("FileTest:testCreatingInlineFile", "Response not OK");
     }
+    else{
+      $this->testSuccess("FileTest:testCreatingInlineFile");
+    }
   }
 
   private function testCreatedInlineFile(){
