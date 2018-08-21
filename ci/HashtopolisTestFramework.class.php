@@ -1,8 +1,5 @@
 <?php
 
-// TODO: do necessary includes
-require_once(dirname(__FILE__)."/../src/inc/Util.class.php");
-
 class HashtopolisTestFramework{
   const REQUEST_CLIENT = 0;
   const REQUEST_UAPI   = 1;
