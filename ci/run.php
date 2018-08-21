@@ -4,6 +4,13 @@
  * This is the entry point to run the full environment
  */
 
+$CONN = [
+  "db" => "hashtopolis",
+  "server" => "localhost",
+  "user" => "root",
+  "pass" => "root",
+  "port" => 3306
+];
 require_once(dirname(__FILE__)."/env/src/dba/init.php");
 require_once(dirname(__FILE__)."/HashtopolisTest.class.php");
 require_once(dirname(__FILE__)."/HashtopolisTestFramework.class.php");
