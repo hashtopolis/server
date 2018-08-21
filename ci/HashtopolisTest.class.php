@@ -2,6 +2,7 @@
 use DBA\Factory;
 use DBA\User;
 use DBA\ApiKey;
+use DBA\AccessGroupUser;
 
 abstract class HashtopolisTest{
   protected $minVersion;
@@ -35,6 +36,8 @@ abstract class HashtopolisTest{
     // insert user and api key
     $this->user = new User(null, 'testuser', '', '', '', 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
     $this->user = Factory::getUserFactory()->save($this->user);
+    $accessGroup = new AccessGroupUser(null, 1, $this->user->getId());
+    Factory::getAccessGroupUserFactory()->save($accessGroup);
     $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, $this->user->getId(), 1);
     $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
   }
