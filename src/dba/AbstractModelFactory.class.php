@@ -722,7 +722,7 @@ abstract class AbstractModelFactory {
     }
 
     try {
-      self::$dbh = new PDO($dsn, $user, $password, [PDO::MYSQL_ATTR_MAX_BUFFER_SIZE => 1024*1024*50]);
+      self::$dbh = new PDO($dsn, $user, $password);
       self::$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
       return self::$dbh;
     }
