@@ -140,8 +140,8 @@ CREATE TABLE `AgentStat` (
   `agentStatId` INT(11) NOT NULL,
   `agentId`     INT(11) NOT NULL,
   `statType`    INT(11) NOT NULL,
-  `time`        INT(11) NOT NULL,
-  `value`       INT(11) NOT NULL
+  `time`        BIGINT NOT NULL,
+  `value`       VARCHAR(64) NOT NULL
 )
   ENGINE = InnoDB;
 
@@ -332,7 +332,8 @@ CREATE TABLE `File` (
              COLLATE utf8_unicode_ci NOT NULL,
   `size`     BIGINT(20)              NOT NULL,
   `isSecret` INT(11)                 NOT NULL,
-  `fileType` INT(11)                 NOT NULL
+  `fileType` INT(11)                 NOT NULL,
+  `accessGroupId` INT(11)            NOT NULL
 )
   ENGINE = InnoDB;
 
