@@ -11,10 +11,10 @@ if(sizeof($argv) != 2){
 $version = $argv[1];
 
 // clone hashtopolis and checkout requested version
-system("rm -rf '".dirname(__FILE__)."/../env'");
-system("cd '".dirname(__FILE__)."/../' && git clone https://github.com/s3inlc/hashtopolis env");
-system("cd '".dirname(__FILE__)."/../env' && git checkout '$version'");
-$envPath = dirname(__FILE__)."/../env/";
+system("rm -rf '/var/www/html/hashtopolis'");
+system("cd '/var/www/html/' && git clone https://github.com/s3inlc/hashtopolis hashtopolis");
+system("cd '/var/www/html/hashtopolis' && git checkout '$version'");
+$envPath = "/var/www/html/hashtopolis/";
 
 // simulate installation with creating db.php (we just leave the peppers default)
 $DBCONFIG = "<?php\n\n";
@@ -29,7 +29,7 @@ file_put_contents($envPath."src/inc/db.php", $DBCONFIG);
 $db = new PDO("mysql:host=localhost;port=3306", "root", "");
 $db->query("CREATE DATABASE hashtopolis;");
 $db->query("USE hashtopolis;");
-$db->query(file_get_contents(dirname(__FILE__)."/../env/src/install/hashtopolis.sql"));
+$db->query(file_get_contents($envPath."src/install/hashtopolis.sql"));
 
 $load = file_get_contents($envPath."src/inc/load.php");
 $load = str_replace('ini_set("display_errors", "0");','ini_set("display_errors", "1");', $load);

@@ -11,7 +11,7 @@ $CONN = [
   "pass" => "",
   "port" => 3306
 ];
-require_once(dirname(__FILE__)."/env/src/dba/init.php");
+require_once("/var/www/html/hashtopolis/src/dba/init.php");
 require_once(dirname(__FILE__)."/../src/inc/Util.class.php");
 require_once(dirname(__FILE__)."/../src/inc/utils/AccessUtils.class.php");
 require_once(dirname(__FILE__)."/HashtopolisTest.class.php");
