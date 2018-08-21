@@ -15,9 +15,7 @@ class FileTest extends HashtopolisTest {
   }
 
   private function testListFilesEmpty(){
-    $request = ["section" => "file", "request" => "listFiles", "accessKey" => "mykey"];
-    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_DEBUG, $request);
-    $response = HashtopolisTestFramework::doRequest($request);
+    $response = HashtopolisTestFramework::doRequest(["section" => "file", "request" => "listFiles", "accessKey" => "mykey"]);
     if($response === false){
       $this->testFailed("FileTest:testListFilesEmpty", "Empty response");
     }
