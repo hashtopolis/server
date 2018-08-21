@@ -22,11 +22,11 @@ abstract class HashtopolisTest{
     Factory::getAgentFactory()->getDB()->query("CREATE DATABASE hashtopolis");
     Factory::getAgentFactory()->getDB()->query("USE hashtopolis");
 
-    sleep(1);
-
     // load DB
     Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/files/db_".$version."_1.sql"));
     Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__)."/files/db_".$version."_2.sql"));
+
+    sleep(1);
 
     // insert user and api key
     $this->user = new User(0, 'testuser', '', '', '', 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
