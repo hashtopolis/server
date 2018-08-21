@@ -41,3 +41,5 @@ class FileTest extends HashtopolisTest {
     return "File Test";
   }
 }
+
+HashtopolisTestFramework::register(new FileTest());
