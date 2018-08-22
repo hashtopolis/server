@@ -9,6 +9,7 @@
 - Static chunking (if for some reasone a fixed number of chunks or static chunk size should be used for a task)
 - The server can provide a list of deleted filenames to the agent when he asks for.
 - Tasks can now be copied to preconfigured tasks and preconfigured tasks can also be copied to preconfigured tasks.
+- A test framework was added to run automated tests on Travis.
 
 ## Enhancements
 
@@ -20,6 +21,7 @@
 ## Bugfixes
 
 - New task creation page now also shows the other file type.
+- New file creation with the user API now takes the right file type.
 
 # v0.7.0 -> v0.7.1
 
