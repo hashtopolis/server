@@ -425,8 +425,15 @@ class AgentUtils {
 
   /**
    * @param string $newVoucher
+   * @throws HTException
    */
   public static function createVoucher($newVoucher) {
+    $qF = new QueryFilter(RegVoucher::VOUCHER, $newVoucher, "=");
+    $check = Factory::getRegVoucherFactory()->filter([Factory::FILTER => $qF]);
+    if($check != null){
+      throw new HTException("Same voucher already exists!");
+    }
+
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(null, $key, time());
     Factory::getRegVoucherFactory()->save($voucher);
