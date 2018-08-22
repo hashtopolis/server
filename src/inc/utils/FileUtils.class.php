@@ -96,7 +96,7 @@ class FileUtils {
     }
 
     FileDownloadUtils::removeFile($file->getId());
-    $fileDelete = new FileDelete(0, $file->getFilename(), time());
+    $fileDelete = new FileDelete(null, $file->getFilename(), time());
     Factory::getFileDeleteFactory()->save($fileDelete);
     Factory::getFileFactory()->delete($file);
     unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());

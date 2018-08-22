@@ -89,7 +89,7 @@ class ApiUtils {
       $qF = new QueryFilter(ApiKey::ACCESS_KEY, $accessKey, "=");
       $count = Factory::getApiKeyFactory()->countFilter([Factory::FILTER => $qF]);
     } while($count > 0);
-    $key = new ApiKey(0, time(), time() + 3600 * 24 * 30, $accessKey, 0, $user->getId(), $group->getId());
+    $key = new ApiKey(null, time(), time() + 3600 * 24 * 30, $accessKey, 0, $user->getId(), $group->getId());
     Factory::getApiKeyFactory()->save($key);
   }
 
@@ -110,7 +110,7 @@ class ApiUtils {
    */
   public static function createGroup($name){
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
-    $group = new ApiGroup(0, '{}', $name);
+    $group = new ApiGroup(null, '{}', $name);
     Factory::getApiGroupFactory()->save($group);
   }
 

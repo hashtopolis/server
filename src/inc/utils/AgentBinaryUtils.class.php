@@ -26,7 +26,7 @@ class AgentBinaryUtils {
     if ($result != null) {
       throw new HTException("You cannot have two binaries with the same type!");
     }
-    $agentBinary = new AgentBinary(0, $type, $version, $os, $filename);
+    $agentBinary = new AgentBinary(null, $type, $version, $os, $filename);
     Factory::getAgentBinaryFactory()->save($agentBinary);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "New Binary " . $agentBinary->getFilename() . " was added!");
   }

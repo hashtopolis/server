@@ -40,22 +40,22 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentStat` CHANGE `valu
 echo "OK\n";
 
 echo "Add new config entries... ";
-$config = new Config(0, 4, DConfig::AGENT_STAT_LIMIT, 100);
+$config = new Config(null, 4, DConfig::AGENT_STAT_LIMIT, 100);
 Factory::getConfigFactory()->save($config);
-$config = new Config(0, 1, DConfig::AGENT_DATA_LIFETIME, 3600);
+$config = new Config(null, 1, DConfig::AGENT_DATA_LIFETIME, 3600);
 Factory::getConfigFactory()->save($config);
-$config = new Config(0, 4, DConfig::AGENT_STAT_TENSION, 0);
+$config = new Config(null, 4, DConfig::AGENT_STAT_TENSION, 0);
 Factory::getConfigFactory()->save($config);
 
 $configSection = new ConfigSection(6, 'Multicast');
 Factory::getConfigSectionFactory()->save($configSection);
-$config = new Config(0, 6, DConfig::MULTICAST_ENABLE, 0);
+$config = new Config(null, 6, DConfig::MULTICAST_ENABLE, 0);
 Factory::getConfigFactory()->save($config);
-$config = new Config(0, 6, DConfig::MULTICAST_DEVICE, 'eth0');
+$config = new Config(null, 6, DConfig::MULTICAST_DEVICE, 'eth0');
 Factory::getConfigFactory()->save($config);
-$config = new Config(0, 6, DConfig::MULTICAST_TR_ENABLE, 0);
+$config = new Config(null, 6, DConfig::MULTICAST_TR_ENABLE, 0);
 Factory::getConfigFactory()->save($config);
-$config = new Config(0, 6, DConfig::MULTICAST_TR, 50000);
+$config = new Config(null, 6, DConfig::MULTICAST_TR, 50000);
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 

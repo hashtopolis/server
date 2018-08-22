@@ -46,7 +46,7 @@ class UserAPIConfig extends UserAPIBasic {
         $config->setValue($QUERY[UQueryConfig::CONFIG_VALUE]);
       }
       catch (HTException $e) {
-        $config = new Config(0, 1, $QUERY[UQueryConfig::CONFIG_ITEM], $QUERY[UQueryConfig::CONFIG_VALUE]);
+        $config = new Config(null, 1, $QUERY[UQueryConfig::CONFIG_ITEM], $QUERY[UQueryConfig::CONFIG_VALUE]);
         $new = true;
       }
     }

@@ -86,7 +86,7 @@ class AccessControlUtils {
     if ($check !== null) {
       throw new HTException("There is already an permission group with the same name!");
     }
-    $group = new RightGroup(0, $groupName, "[]");
+    $group = new RightGroup(null, $groupName, "[]");
     $group = Factory::getRightGroupFactory()->save($group);
     return $group;
   }

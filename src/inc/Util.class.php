@@ -81,7 +81,7 @@ class Util {
       Factory::getLogEntryFactory()->massDeletion([Factory::ORDER => $oF]);
     }
 
-    $entry = new LogEntry(0, $issuer, $issuerId, $level, $message, time());
+    $entry = new LogEntry(null, $issuer, $issuerId, $level, $message, time());
     Factory::getLogEntryFactory()->save($entry);
 
     switch ($level) {
@@ -147,7 +147,7 @@ class Util {
     $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
 
-    $file = new File(0, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
+    $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
     $file = Factory::getFileFactory()->save($file);
     if ($file == null) {
       return false;

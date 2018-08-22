@@ -172,7 +172,7 @@ class Login {
 
     /****** Create session ******/
     $startTime = time();
-    $s = new Session(0, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
+    $s = new Session(null, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
     $s = Factory::getSessionFactory()->save($s);
     if ($s === null) {
       return false;

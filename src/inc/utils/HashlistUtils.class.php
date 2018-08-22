@@ -93,11 +93,11 @@ class HashlistUtils {
         if ($task->getPriority() > 0) {
           $taskPriority = $priorityBase + $task->getPriority();
         }
-        $taskWrapper = new TaskWrapper(0, $taskPriority, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
+        $taskWrapper = new TaskWrapper(null, $taskPriority, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
         $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
         $newTask = new Task(
-          0,
+          null,
           $task->getTaskName(),
           $task->getAttackCmd(),
           $task->getChunkTime(),
@@ -190,7 +190,7 @@ class HashlistUtils {
     fclose($wordlistFile);
 
     //add file to files list
-    $file = new File(0, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
+    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
     Factory::getFileFactory()->save($file);
     return [$wordCount, $wordlistName, $file];
   }
@@ -370,7 +370,7 @@ class HashlistUtils {
         $newCracked++;
         $crackedIn[$hashEntry->getHashlistId()]++;
         if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
-          $zaps[] = new Zap(0, $hashEntry->getHash(), time(), null, $hashlist->getId());
+          $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
         }
       }
       else {
@@ -413,7 +413,7 @@ class HashlistUtils {
           $hashFactory->update($hashEntry);
           $crackedIn[$hashEntry->getHashlistId()]++;
           if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
-            $zaps[] = new Zap(0, $hashEntry->getHash(), time(), null, $hashlist->getId());
+            $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
           }
           $newCracked++;
         }
@@ -671,7 +671,7 @@ class HashlistUtils {
     fclose($file);
     usleep(1000000);
 
-    $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
     $file = Factory::getFileFactory()->save($file);
     return $file;
   }
@@ -719,7 +719,7 @@ class HashlistUtils {
     }
 
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $hashlist = new Hashlist(0, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId());
+    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId());
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
 
     $dataSource = "";
@@ -792,7 +792,7 @@ class HashlistUtils {
             continue;
           }
           //TODO: check hash length here
-          $values[] = new Hash(0, $hashlist->getId(), $hash, $salt, "", 0, null, 0);
+          $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0);
           $bufferCount++;
           if ($bufferCount >= 10000) {
             $result = Factory::getHashFactory()->massSave($values);
@@ -850,7 +850,7 @@ class HashlistUtils {
           }
           $mac_cli = Util::bintohex($mac_cli);
           // we cannot save the network name here, as on the submission we don't get this
-          $hash = new HashBinary(0, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
+          $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
           Factory::getHashBinaryFactory()->save($hash);
           $added++;
         }
@@ -865,7 +865,7 @@ class HashlistUtils {
       case DHashlistFormat::BINARY:
         if (!feof($file)) {
           $data = fread($file, Util::filesize($tmpfile));
-          $hash = new HashBinary(0, $hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0);
+          $hash = new HashBinary(null, $hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0);
           Factory::getHashBinaryFactory()->save($hash);
         }
         fclose($file);
@@ -925,11 +925,11 @@ class HashlistUtils {
       }
     }
 
-    $superhashlist = new Hashlist(0, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId);
+    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId);
     $superhashlist = Factory::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {
-      $relations[] = new HashlistHashlist(0, $superhashlist->getId(), $list->getId());
+      $relations[] = new HashlistHashlist(null, $superhashlist->getId(), $list->getId());
     }
     Factory::getHashlistHashlistFactory()->massSave($relations);
     Factory::getAgentFactory()->getDB()->commit();
@@ -990,7 +990,7 @@ class HashlistUtils {
     fclose($file);
     usleep(1000000);
 
-    $file = new File(0, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
+    $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
     return Factory::getFileFactory()->save($file);
   }
 }

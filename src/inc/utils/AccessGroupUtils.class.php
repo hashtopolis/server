@@ -49,7 +49,7 @@ class AccessGroupUtils {
     if ($check !== null) {
       throw new HTException("There is already an access group with the same name!");
     }
-    $group = new AccessGroup(0, $groupName);
+    $group = new AccessGroup(null, $groupName);
     $group = Factory::getAccessGroupFactory()->save($group);
     return $group;
   }
@@ -70,7 +70,7 @@ class AccessGroupUtils {
       throw new HTException("Agent is already member of this group!");
     }
 
-    $accessGroupAgent = new AccessGroupAgent(0, $group->getId(), $agent->getId());
+    $accessGroupAgent = new AccessGroupAgent(null, $group->getId(), $agent->getId());
     Factory::getAccessGroupAgentFactory()->save($accessGroupAgent);
   }
 
@@ -90,7 +90,7 @@ class AccessGroupUtils {
       throw new HTException("User is already member of this group!");
     }
 
-    $accessGroupUser = new AccessGroupUser(0, $group->getId(), $user->getId());
+    $accessGroupUser = new AccessGroupUser(null, $group->getId(), $user->getId());
     Factory::getAccessGroupUserFactory()->save($accessGroupUser);
   }
 

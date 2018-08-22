@@ -48,11 +48,11 @@ Factory::getAgentFactory()->getDB()->query("INSERT INTO `ApiGroup` ( `name`, `pe
 echo "OK\n";
 
 echo "Adding new config settings...";
-$entry = new Config(0, 1, 'ruleSplitSmallTasks', '0');
+$entry = new Config(null, 1, 'ruleSplitSmallTasks', '0');
 Factory::getConfigFactory()->save($entry);
-$entry = new Config(0, 1, 'ruleSplitAlways', '0');
+$entry = new Config(null, 1, 'ruleSplitAlways', '0');
 Factory::getConfigFactory()->save($entry);
-$entry = new Config(0, 1, 'ruleSplitDisable', '0');
+$entry = new Config(null, 1, 'ruleSplitDisable', '0');
 Factory::getConfigFactory()->save($entry);
 echo "OK\n";
 
@@ -67,7 +67,7 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `isPrince` IN
 echo "OK\n";
 
 echo "Adding PRINCE settings...";
-$config = new Config(0, 1, DConfig::PRINCE_LINK, 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
+$config = new Config(null, 1, DConfig::PRINCE_LINK, 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z');
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 

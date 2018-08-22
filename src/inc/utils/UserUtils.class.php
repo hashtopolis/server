@@ -139,12 +139,12 @@ class UserUtils {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+    $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
     Factory::getUserFactory()->save($user);
 
     // add user to default group
     $group = AccessUtils::getOrCreateDefaultAccessGroup();
-    $groupMember = new AccessGroupUser(0, $group->getId(), $user->getId());
+    $groupMember = new AccessGroupUser(null, $group->getId(), $user->getId());
     Factory::getAccessGroupUserFactory()->save($groupMember);
 
     $tmpl = new Template("email/creation");

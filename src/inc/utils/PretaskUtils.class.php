@@ -16,7 +16,7 @@ class PretaskUtils {
    */
   public static function getFromTask($copy){
     return new Pretask(
-        0,
+        null,
         $copy->getTaskName(),
         $copy->getAttackCmd(),
         $copy->getChunkTime(),
@@ -36,7 +36,7 @@ class PretaskUtils {
    */
   public static function getDefault(){
     return new Pretask(
-      0,
+      null,
       '',
       SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)." ",
       SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
@@ -215,11 +215,11 @@ class PretaskUtils {
     }
 
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, $pretask->getPriority(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
+    $taskWrapper = new TaskWrapper(null, $pretask->getPriority(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
     $task = new Task(
-      0,
+      null,
       $name,
       $pretask->getAttackCmd(),
       $pretask->getChunkTime(),
@@ -297,7 +297,7 @@ class PretaskUtils {
     else if ($statusTimer <= 0) {
       $statusTimer = SConfig::getInstance()->getVal(DConfig::STATUS_TIMER);
     }
-    $pretask = new Pretask(0,
+    $pretask = new Pretask(null,
       htmlentities($name, ENT_QUOTES, "UTF-8"),
       $cmdLine,
       $chunkTime,
@@ -316,7 +316,7 @@ class PretaskUtils {
     foreach ($files as $fileId) {
       $file = Factory::getFileFactory()->get($fileId);
       if ($file !== null) {
-        $filePretask = new FilePretask(0, $file->getId(), $pretask->getId());
+        $filePretask = new FilePretask(null, $file->getId(), $pretask->getId());
         Factory::getFilePretaskFactory()->save($filePretask);
       }
     }

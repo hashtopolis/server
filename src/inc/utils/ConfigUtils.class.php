@@ -77,7 +77,7 @@ class ConfigUtils {
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
         if ($config == null) {
-          $config = new Config(0, 5, $name, $val);
+          $config = new Config(null, 5, $name, $val);
           Factory::getConfigFactory()->save($config);
         }
         else {

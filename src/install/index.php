@@ -58,7 +58,7 @@ switch ($STEP) {
       if ($baseUrl[sizeof($baseUrl) - 1] == "install") {
         unset($baseUrl[sizeof($baseUrl) - 1]);
       }
-      $urlConfig = new Config(0, 5, DConfig::BASE_URL, implode("/", $baseUrl));
+      $urlConfig = new Config(null, 5, DConfig::BASE_URL, implode("/", $baseUrl));
       Factory::getConfigFactory()->save($urlConfig);
       setcookie("step", "52", time() + 3600);
       setcookie("prev", "2", time() + 3600);
@@ -168,12 +168,12 @@ switch ($STEP) {
         $group = $group[0];
         $newSalt = Util::randomString(20);
         $newHash = Encryption::passwordHash($password, $newSalt);
-        $user = new User(0, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+        $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
         Factory::getUserFactory()->save($user);
 
         // create default group
         $group = AccessUtils::getOrCreateDefaultAccessGroup();
-        $groupUser = new AccessGroupUser(0, $group->getId(), $user->getId());
+        $groupUser = new AccessGroupUser(null, $group->getId(), $user->getId());
         Factory::getAccessGroupUserFactory()->save($groupUser);
 
         Factory::getAgentFactory()->getDB()->commit();

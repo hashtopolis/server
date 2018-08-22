@@ -23,7 +23,7 @@ class APIRegisterAgent extends APIBasic {
 
     //create access token & save agent details
     $token = Util::randomString(10);
-    $agent = new Agent(0, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, 0, "");
+    $agent = new Agent(null, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, 0, "");
 
     if (SConfig::getInstance()->getVal(DConfig::VOUCHER_DELETION) == 0) {
       Factory::getRegVoucherFactory()->delete($voucher);
@@ -35,7 +35,7 @@ class APIRegisterAgent extends APIBasic {
 
       // assign agent to default group
       $accessGroup = AccessUtils::getOrCreateDefaultAccessGroup();
-      $accessGroupAgent = new AccessGroupAgent(0, $accessGroup->getId(), $agent->getId());
+      $accessGroupAgent = new AccessGroupAgent(null, $accessGroup->getId(), $agent->getId());
       Factory::getAccessGroupAgentFactory()->save($accessGroupAgent);
 
       $this->sendResponse(array(
