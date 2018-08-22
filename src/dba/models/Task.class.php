@@ -24,8 +24,9 @@ class Task extends AbstractModel {
   private $notes;
   private $staticChunks;
   private $chunkSize;
+  private $forcePipe;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $isPrince, $notes, $staticChunks, $chunkSize) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $isPrince, $notes, $staticChunks, $chunkSize, $forcePipe) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -47,6 +48,7 @@ class Task extends AbstractModel {
     $this->notes = $notes;
     $this->staticChunks = $staticChunks;
     $this->chunkSize = $chunkSize;
+    $this->forcePipe = $forcePipe;
   }
   
   function getKeyValueDict() {
@@ -72,6 +74,7 @@ class Task extends AbstractModel {
     $dict['notes'] = $this->notes;
     $dict['staticChunks'] = $this->staticChunks;
     $dict['chunkSize'] = $this->chunkSize;
+    $dict['forcePipe'] = $this->forcePipe;
     
     return $dict;
   }
@@ -251,6 +254,14 @@ class Task extends AbstractModel {
   function setChunkSize($chunkSize){
     $this->chunkSize = $chunkSize;
   }
+  
+  function getForcePipe(){
+    return $this->forcePipe;
+  }
+  
+  function setForcePipe($forcePipe){
+    $this->forcePipe = $forcePipe;
+  }
 
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
@@ -273,4 +284,5 @@ class Task extends AbstractModel {
   const NOTES = "notes";
   const STATIC_CHUNKS = "staticChunks";
   const CHUNK_SIZE = "chunkSize";
+  const FORCE_PIPE = "forcePipe";
 }

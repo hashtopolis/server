@@ -117,6 +117,7 @@ class HashlistUtils {
           0,
           '',
           0,
+          0,
           0
         );
         $newTask = Factory::getTaskFactory()->save($newTask);

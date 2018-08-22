@@ -232,7 +232,8 @@ class TaskHandler implements Handler {
         $isPrince,
         $notes,
         $staticChunking,
-        $chunkSize
+        $chunkSize,
+        0
       );
     }
     else {
@@ -262,6 +263,7 @@ class TaskHandler implements Handler {
         0,
         0,
         $notes,
+        0,
         0,
         0
       );

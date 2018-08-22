@@ -239,6 +239,7 @@ class PretaskUtils {
       0,
       '',
       0,
+      0,
       0
     );
     $task = Factory::getTaskFactory()->save($task);

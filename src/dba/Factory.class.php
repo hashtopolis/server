@@ -371,9 +371,9 @@ class Factory {
       return $f;
     } else {
       return self::$fileDownloadFactory;
-	}
+    }
   }
-
+  
   public static function getFileDeleteFactory() {
     if (self::$fileDeleteFactory == null) {
       $f = new FileDeleteFactory();

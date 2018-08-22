@@ -51,6 +51,7 @@ class TaskUtils {
         0,
         '',
         0,
+        0,
         0
       );
   }
@@ -79,6 +80,7 @@ class TaskUtils {
       0,
       0,
       '',
+      0,
       0,
       0
     );
@@ -700,7 +702,8 @@ class TaskUtils {
       $isPrince,
       $notes,
       $staticChunking,
-      $chunkSize
+      $chunkSize,
+      0
     );
     $task = Factory::getTaskFactory()->save($task);
 
@@ -779,6 +782,7 @@ class TaskUtils {
         0,
         0,
         '',
+        0,
         0,
         0
       );
