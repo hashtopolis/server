@@ -47,6 +47,7 @@ class TaskTest extends HashtopolisTest {
 			"crackerVersionId" => 1,
 			"files" => [1,2],
 			"priority" => 1,
+      "isPrince" => false,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
       $this->testFailed("TaskTest:testCreateTask", "Empty response");
