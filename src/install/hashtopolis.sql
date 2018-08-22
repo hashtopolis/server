@@ -885,7 +885,8 @@ CREATE TABLE `Task` (
   `isPrince`            INT(11)                 NOT NULL,
   `notes`               TEXT                    NOT NULL,
   `staticChunks`        INT(11)                 NOT NULL,
-  `chunkSize`           BIGINT(20)              NOT NULL
+  `chunkSize`           BIGINT(20)              NOT NULL,
+  `forcePipe`           INT(11)                 NOT NULL
 )
   ENGINE = InnoDB;
 
