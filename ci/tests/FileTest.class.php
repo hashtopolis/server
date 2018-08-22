@@ -19,8 +19,28 @@ class FileTest extends HashtopolisTest {
     $this->testGetFile();
     $this->testFileDownload();
     $this->testSecret();
-    $this->testGetFile(false);
+    $this->testGetFile(false, 0);
+    $this->testFileType();
+    $this->testGetFile(false, 2);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testFileType(){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "file",
+      "request" => "setFileType",
+      "fileId" => 1,
+      "fileType" => 2,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("FileTest:testFileType", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("FileTest:testFileType", "Response not OK");
+    }
+    else{
+      $this->testSuccess("FileTest:testFileType");
+    }
   }
 
   private function testSecret(){
@@ -87,7 +107,7 @@ class FileTest extends HashtopolisTest {
 
   private function testFileDownload(){
     $testContent = "This is a test file content!";
-    $url = 'getFile.php?file=1&apiKey=mykey';
+    $url = 'http://localhost/getFile.php?file=1&apiKey=mykey';
     $ch = curl_init($url);
     curl_setopt_array($ch, array(
         CURLOPT_RETURNTRANSFER => TRUE
@@ -102,7 +122,7 @@ class FileTest extends HashtopolisTest {
     }
   }
 
-  private function testGetFile($secret = true){
+  private function testGetFile($secret = true, $fileType = 0){
     $testContent = "This is a test file content!";
     $response = HashtopolisTestFramework::doRequest([
       "section" => "file",
@@ -110,25 +130,28 @@ class FileTest extends HashtopolisTest {
       "fileId" => 1,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
-      $this->testFailed("FileTest:testGetFile($secret)", "Empty response");
+      $this->testFailed("FileTest:testGetFile($secret,$fileType)", "Empty response");
     }
     else if($response['response'] != 'OK'){
-      $this->testFailed("FileTest:testGetFile($secret)", "Response not OK");
+      $this->testFailed("FileTest:testGetFile($secret,$fileType)", "Response not OK");
     }
     else if($response['size'] != strlen($testContent)){
-      $this->testFailed("FileTest:testGetFile($secret)", "File size not matching");
+      $this->testFailed("FileTest:testGetFile($secret,$fileType)", "File size not matching");
     }
     else if($response['url'] != 'getFile.php?file=1&apiKey=mykey'){
-      $this->testFailed("FileTest:testGetFile($secret)", "Download url not correct");
+      $this->testFailed("FileTest:testGetFile($secret,$fileType)", "Download url not correct");
+    }
+    else if($response['fileType'] != $fileType){
+      $this->testFailed("FileTest:testGetFile($secret,$fileType)", "File type not correct");
     }
     else if($response['filename'] != 'test.txt'){
-      $this->testFailed("FileTest:testGetFile($secret)", "Filename not matching");
+      $this->testFailed("FileTest:testGetFile($secret,$fileType)", "Filename not matching");
     }
     else if($response['isSecret'] != $secret){
-      $this->testFailed("FileTest:testGetFile($secret)", "Wrong isSecret value of file");
+      $this->testFailed("FileTest:testGetFile($secret,$fileType)", "Wrong isSecret value of file");
     }
     else{
-      $this->testSuccess("FileTest:testGetFile($secret)");
+      $this->testSuccess("FileTest:testGetFile($secret,$fileType)");
     }
   }
 
