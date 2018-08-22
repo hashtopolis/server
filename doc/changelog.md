@@ -22,6 +22,7 @@
 
 - New task creation page now also shows the other file type.
 - New file creation with the user API now takes the right file type.
+- Vouchers are tested for uniqueness on creation to avoid duplicated ones.
 
 # v0.7.0 -> v0.7.1
 
