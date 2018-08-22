@@ -24,7 +24,33 @@ class HashlistTest extends HashtopolisTest {
     $this->testGetHashlist(3, ['name' => 'Hashlist 2', 'hashtypeId' => 6211, 'format' => 2, 'hashCount' => 1, 'cracked' => 0, 'isSecret' => false, 'saltSeparator' => ':']);
     $this->testImportCracked();
     $this->testGetHashlist(1, ['name' => 'Hashlist 0', 'hashtypeId' => 0, 'format' => 0, 'hashCount' => 10, 'cracked' => 3, 'isSecret' => false, 'saltSeparator' => ':']);
+    $this->testGetHash("0028080e7fa8c81268ef340d7d692681", "found1");
+    $this->testGetHash("00112233445566778899aabbccddeeff", false);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testGetHash($hash, $assert){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "hashlist",
+      "request" => "getHash",
+		  "hash" => $hash,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("HashlistTest:testGetHash($hash,$assert)", "Empty response");
+    }
+    else if($assert && $response['response'] != 'OK'){
+      $this->testFailed("HashlistTest:testGetHash($hash,$assert)", "Response not OK");
+    }
+    else if(!$assert && $response['response'] != 'ERROR'){
+      $this->testFailed("HashlistTest:testGetHash($hash,$assert)", "Response not ERROR");
+    }
+    else{
+      if($assert && $assert != $response['plain']){
+        $this->testFailed("HashlistTest:testGetHash($hash,$assert)", "Plain is not correct for hash");
+        return;
+      }
+      $this->testSuccess("HashlistTest:testGetHash($hash,$assert)");
+    }
   }
 
   private function testImportCracked(){
