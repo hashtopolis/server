@@ -87,14 +87,14 @@ class APIGetTask extends APIBasic {
   private function sendTask($task, $assignment) {
     // check if the assignment is up-to-date and correct if needed
     if ($assignment == null) {
-      $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
+      $assignment = new Assignment(null, $task->getId(), $this->agent->getId(), 0);
       Factory::getAssignmentFactory()->save($assignment);
     }
     else {
       if ($assignment->getTaskId() != $task->getId()) {
         $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
         Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
-        $assignment = new Assignment(0, $task->getId(), $this->agent->getId(), 0);
+        $assignment = new Assignment(null, $task->getId(), $this->agent->getId(), 0);
         Factory::getAssignmentFactory()->save($assignment);
       }
     }

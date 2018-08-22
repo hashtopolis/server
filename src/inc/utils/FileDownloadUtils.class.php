@@ -17,7 +17,7 @@ class FileDownloadUtils{
     if($check != null){
       return; // file is already in pending list
     }
-    $fileDownload = new FileDownload(0, time(), $fileId, DFileDownloadStatus::PENDING);
+    $fileDownload = new FileDownload(null, time(), $fileId, DFileDownloadStatus::PENDING);
     Factory::getFileDownloadFactory()->save($fileDownload);
   }
 

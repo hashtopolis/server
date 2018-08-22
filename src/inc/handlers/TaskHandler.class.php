@@ -207,12 +207,12 @@ class TaskHandler implements Handler {
     }
 
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
+    $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
     if (AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
       $task = new Task(
-        0,
+        null,
         $name,
         $cmdline,
         $chunk,
@@ -243,7 +243,7 @@ class TaskHandler implements Handler {
       }
       // force to copy from pretask to make sure user cannot change anything he is not allowed to
       $task = new Task(
-        0,
+        null,
         $name,
         $copy->getAttackCmd(),
         $copy->getChunkTime(),
@@ -271,7 +271,7 @@ class TaskHandler implements Handler {
     $task = Factory::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
-        $taskFile = new FileTask(0, $fileId, $task->getId());
+        $taskFile = new FileTask(null, $fileId, $task->getId());
         Factory::getFileTaskFactory()->save($taskFile);
         FileDownloadUtils::addDownload($taskFile->getFileId());
       }

@@ -61,7 +61,7 @@ class NotificationUtils {
         break;
     }
 
-    $notificationSetting = new NotificationSetting(0, $actionType, $objectId, $notification, Login::getInstance()->getUser()->getId(), $receiver, 1);
+    $notificationSetting = new NotificationSetting(null, $actionType, $objectId, $notification, Login::getInstance()->getUser()->getId(), $receiver, 1);
     Factory::getNotificationSettingFactory()->save($notificationSetting);
   }
 

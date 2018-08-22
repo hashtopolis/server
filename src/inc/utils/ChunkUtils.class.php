@@ -36,7 +36,7 @@ class ChunkUtils{
       $firstPart->setState(DHashcatStatus::INIT);
       $firstPart->setProgress(0);
       Factory::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(0, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), 0, DHashcatStatus::INIT, 0, 0);
+      $secondPart = new Chunk(null, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), 0, DHashcatStatus::INIT, 0, 0);
       Factory::getChunkFactory()->save($secondPart);
       return $firstPart;
     }
@@ -45,7 +45,7 @@ class ChunkUtils{
         // special case when chunk length gets 0
         return ChunkUtils::createNewChunk($task, $assignment);
       }
-      $newChunk = new Chunk(0, $task->getId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $assignment->getAgentId(), time(), 0, $chunk->getCheckpoint(), DHashcatStatus::INIT, 0, 0, 0);
+      $newChunk = new Chunk(null, $task->getId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $assignment->getAgentId(), time(), 0, $chunk->getCheckpoint(), DHashcatStatus::INIT, 0, 0, 0);
       $chunk->setLength($chunk->getCheckpoint() - $chunk->getSkip());
       $chunk->setProgress(10000);
       $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
@@ -82,7 +82,7 @@ class ChunkUtils{
     $newProgress = $task->getKeyspaceProgress() + $length;
     $task->setKeyspaceProgress($newProgress);
     Factory::getTaskFactory()->update($task);
-    $chunk = new Chunk(0, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, 0, DHashcatStatus::INIT, 0, 0);
+    $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, 0, DHashcatStatus::INIT, 0, 0);
     Factory::getChunkFactory()->save($chunk);
     return $chunk;
   }

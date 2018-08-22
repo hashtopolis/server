@@ -34,7 +34,7 @@ class CrackerUtils {
     if ($check !== null) {
       throw new HTException("This binary type already exists!");
     }
-    $binaryType = new CrackerBinaryType(0, $typeName, 1);
+    $binaryType = new CrackerBinaryType(null, $typeName, 1);
     Factory::getCrackerBinaryTypeFactory()->save($binaryType);
   }
 
@@ -51,7 +51,7 @@ class CrackerUtils {
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HTException("Please provide all information!");
     }
-    $binary = new CrackerBinary(0, $binaryType->getId(), $version, $url, $name);
+    $binary = new CrackerBinary(null, $binaryType->getId(), $version, $url, $name);
     Factory::getCrackerBinaryFactory()->save($binary);
     return $binaryType;
   }

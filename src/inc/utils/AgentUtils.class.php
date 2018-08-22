@@ -290,7 +290,7 @@ class AgentUtils {
       Factory::getAssignmentFactory()->update($assignment);
     }
     else {
-      $assignment = new Assignment(0, $task->getId(), $agent->getId(), $benchmark);
+      $assignment = new Assignment(null, $task->getId(), $agent->getId(), $benchmark);
       Factory::getAssignmentFactory()->save($assignment);
     }
     if (isset($_GET['task'])) {
@@ -428,7 +428,7 @@ class AgentUtils {
    */
   public static function createVoucher($newVoucher) {
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
-    $voucher = new RegVoucher(0, $key, time());
+    $voucher = new RegVoucher(null, $key, time());
     Factory::getRegVoucherFactory()->save($voucher);
   }
 

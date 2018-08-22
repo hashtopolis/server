@@ -146,7 +146,7 @@ class SupertaskUtils {
       }
     }
 
-    $taskWrapper = new TaskWrapper(0, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0);
+    $taskWrapper = new TaskWrapper(null, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
     foreach ($pretasks as $pretask) {
@@ -156,7 +156,7 @@ class SupertaskUtils {
       }
 
       $task = new Task(
-        0,
+        null,
         $pretask->getTaskName(),
         $pretask->getAttackCmd(),
         $pretask->getChunkTime(),
@@ -208,11 +208,11 @@ class SupertaskUtils {
     }
 
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $supertask = new Supertask(0, $name);
+    $supertask = new Supertask(null, $name);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
 
     foreach ($tasks as $pretask) {
-      $supertaskPretask = new SupertaskPretask(0, $supertask->getId(), $pretask->getId());
+      $supertaskPretask = new SupertaskPretask(null, $supertask->getId(), $pretask->getId());
       Factory::getSupertaskPretaskFactory()->save($supertaskPretask);
     }
 
@@ -248,10 +248,10 @@ class SupertaskUtils {
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $pretasks = SupertaskUtils::createImportPretasks($masks, $isSmall, $isCpuOnly, $crackerBinaryType, $useOptimized);
 
-    $supertask = new Supertask(0, $name);
+    $supertask = new Supertask(null, $name);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
     foreach ($pretasks as $preTask) {
-      $relation = new SupertaskPretask(0, $supertask->getId(), $preTask->getId());
+      $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId());
       Factory::getSupertaskPretaskFactory()->save($relation);
     }
     Factory::getAgentFactory()->getDB()->commit();
@@ -293,7 +293,7 @@ class SupertaskUtils {
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
 
-      $pretask = new Pretask(0, $preTaskName, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION), SConfig::getInstance()->getVal(DConfig::STATUS_TIMER), "", $isSmall, $isCpu, 0, $priority, 1, $crackerBinaryType->getId());
+      $pretask = new Pretask(null, $preTaskName, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION), SConfig::getInstance()->getVal(DConfig::STATUS_TIMER), "", $isSmall, $isCpu, 0, $priority, 1, $crackerBinaryType->getId());
       $pretask = Factory::getPretaskFactory()->save($pretask);
       $preTasks[] = $pretask;
       $priority--;

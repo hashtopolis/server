@@ -72,7 +72,7 @@ class APISendProgress extends APIBasic {
         }
       }
       $data = implode(",", $QUERY[PQuerySendProgress::GPU_TEMP]);
-      $agentStat = new AgentStat(0, $this->agent->getId(), DAgentStatsType::GPU_TEMP, $dataTime, $data);
+      $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::GPU_TEMP, $dataTime, $data);
       Factory::getAgentStatFactory()->save($agentStat);
     }
     if(isset($QUERY[PQuerySendProgress::GPU_UTIL])){
@@ -82,7 +82,7 @@ class APISendProgress extends APIBasic {
         }
       }
       $data = implode(",", $QUERY[PQuerySendProgress::GPU_UTIL]);
-      $agentStat = new AgentStat(0, $this->agent->getId(), DAgentStatsType::GPU_UTIL, $dataTime, $data);
+      $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::GPU_UTIL, $dataTime, $data);
       Factory::getAgentStatFactory()->save($agentStat);
     }
 
@@ -107,7 +107,7 @@ class APISendProgress extends APIBasic {
       $lines = $QUERY[PQuerySendProgress::DEBUG_OUTPUT];
       $taskDebugOutputs = [];
       foreach($lines as $line){
-        $taskDebugOutputs[] = new TaskDebugOutput(0, $chunk->getTaskId(), $line);
+        $taskDebugOutputs[] = new TaskDebugOutput(null, $chunk->getTaskId(), $line);
       }
       if(sizeof($taskDebugOutputs) > 0){
         Factory::getTaskDebugOutputFactory()->massSave($taskDebugOutputs);
@@ -173,7 +173,7 @@ class APISendProgress extends APIBasic {
             $cracked[$hash->getHashlistId()]++;
             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
             $crackHashes[] = $hash->getId();
-            $zaps[] = new Zap(0, $hash->getHash(), time(), $this->agent->getId(), $totalHashlist->getId());
+            $zaps[] = new Zap(null, $hash->getHash(), time(), $this->agent->getId(), $totalHashlist->getId());
           }
 
           if (sizeof($plainUpdates) >= 1000) {
@@ -384,7 +384,7 @@ class APISendProgress extends APIBasic {
         $qF = new QueryFilter(AgentZap::AGENT_ID, $this->agent->getId(), "=");
         $agentZap = Factory::getAgentZapFactory()->filter([Factory::FILTER => $qF], true);
         if ($agentZap == null) {
-          $agentZap = new AgentZap(0, $this->agent->getId(), null);
+          $agentZap = new AgentZap(null, $this->agent->getId(), null);
           Factory::getAgentZapFactory()->save($agentZap);
         }
 

@@ -31,7 +31,7 @@ class TaskUtils {
    */
   public static function getFromPretask($copy){
     return new Task(
-        0,
+        null,
         $copy->getTaskName(),
         $copy->getAttackCmd(),
         $copy->getChunkTime(),
@@ -60,7 +60,7 @@ class TaskUtils {
    */
   public static function getDefault(){
     return new Task(
-      0,
+      null,
       "",
       "",
       SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
@@ -275,7 +275,7 @@ class TaskUtils {
     $pretaskFiles = Factory::getFilePretaskFactory()->filter([Factory::FILTER => $qF]);
     $subTasks[] = $task;
     foreach ($pretaskFiles as $pretaskFile) {
-      $fileTask = new FileTask(0, $pretaskFile->getFileId(), $task->getId());
+      $fileTask = new FileTask(null, $pretaskFile->getFileId(), $task->getId());
       Factory::getFileTaskFactory()->save($fileTask);
       FileDownloadUtils::addDownload($fileTask->getFileId());
     }
@@ -675,11 +675,11 @@ class TaskUtils {
     }
 
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(0, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0);
+    $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
 
     $task = new Task(
-      0,
+      null,
       $name,
       $attackCmd,
       $chunkTime,
@@ -706,7 +706,7 @@ class TaskUtils {
 
     if (is_array($files) && sizeof($files) > 0) {
       foreach ($files as $fileId) {
-        $taskFile = new FileTask(0, $fileId, $task->getId());
+        $taskFile = new FileTask(null, $fileId, $task->getId());
         Factory::getFileTaskFactory()->save($taskFile);
         FileDownloadUtils::addDownload($taskFile->getFileId());
       }
@@ -742,7 +742,7 @@ class TaskUtils {
         $copy[] = $content[$j];
       }
       file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy));
-      $f = new File(0, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
+      $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
@@ -756,11 +756,11 @@ class TaskUtils {
     }
 
     // create new tasks as supertask
-    $newWrapper = new TaskWrapper(0, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName(), 0);
+    $newWrapper = new TaskWrapper(null, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName(), 0);
     $newWrapper = Factory::getTaskWrapperFactory()->save($newWrapper);
     $prio = sizeof($newFiles) + 1;
     foreach ($newFiles as $newFile) {
-      $newTask = new Task(0,
+      $newTask = new Task(null,
         "Part " . (sizeof($newFiles) + 2 - $prio),
         str_replace($splitFile->getFilename(), $newFile->getFilename(), $task->getAttackCmd()),
         $task->getChunkTime(),
@@ -784,9 +784,9 @@ class TaskUtils {
       );
       $newTask = Factory::getTaskFactory()->save($newTask);
       $taskFiles = [];
-      $taskFiles[] = new FileTask(0, $newFile->getId(), $newTask->getId());
+      $taskFiles[] = new FileTask(null, $newFile->getId(), $newTask->getId());
       foreach ($files as $f) {
-        $taskFiles[] = new FileTask(0, $f->getId(), $newTask->getId());
+        $taskFiles[] = new FileTask(null, $f->getId(), $newTask->getId());
         FileDownloadUtils::addDownload($f->getId());
       }
       Factory::getFileTaskFactory()->massSave($taskFiles);
