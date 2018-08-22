@@ -27,6 +27,7 @@ class FileTest extends HashtopolisTest {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "file",
       "request" => "setSecret",
+      "fileId" => 1,
       "isSecret" => false,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
