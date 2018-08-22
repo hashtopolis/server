@@ -177,6 +177,15 @@
             </td>
           </tr>
           <tr>
+            <td>Enforce piping task (to apply rules before reject):</td>
+            <td>
+              <select name="enforcePipe" class="form-control mx-1" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                <option value="0" {{IF [[copy.getEnforcePipe()]] == 0}} selected{{ENDIF}}>No</option>
+                <option value="1" {{IF [[copy.getEnforcePipe()]] == 1}} selected{{ENDIF}}>Yes</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
             <td colspan="2">
               <input type="submit" class='btn btn-light' value="Create task">
             </td>

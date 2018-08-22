@@ -133,6 +133,7 @@ class TaskHandler implements Handler {
     $staticChunking = intval(@$_POST['staticChunking']);
     $chunkSize = intval(@$_POST['chunkSize']);
     $priority = intval(@$_POST['priority']);
+    $enforcePipe = intval(@$_POST['enforcePipe']);
 
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
@@ -149,6 +150,10 @@ class TaskHandler implements Handler {
     }
     else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
       UI::addMessage(UI::ERROR, "Invalid static chunking value selected!");
+      return;
+    }
+    else if($enforcePipe < 0 || $enforcePipe > 1){
+      UI::addMessage(UI::ERROR, "Invalid enforce pipe value selected!");
       return;
     }
     else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
@@ -233,7 +238,7 @@ class TaskHandler implements Handler {
         $notes,
         $staticChunking,
         $chunkSize,
-        0
+        $enforcePipe
       );
     }
     else {
