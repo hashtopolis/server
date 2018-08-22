@@ -218,7 +218,8 @@ $CONF['Task'] = array(
   'isPrince',
   'notes',
   'staticChunks',
-  'chunkSize'
+  'chunkSize',
+  'forcePipe'
 );
 $CONF['TaskDebugOutput'] = array(
   'taskDebugOutputId',

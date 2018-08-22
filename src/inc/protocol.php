@@ -297,6 +297,7 @@ class PResponseGetTask extends PResponse {
   const KEYSPACE       = "keyspace";
   const REASON         = "reason";
   const PRINCE         = "usePrince";
+  const ENFORCE_PIPE   = "enforcePipe";
 }
 
 class PResponseGetChunk extends PResponse {

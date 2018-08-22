@@ -89,4 +89,8 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `FileDelete` ADD PRIMARY
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `FileDelete` MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT");
 echo "OK\n";
 
+echo "Add force pipe to tasks... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `forcePipe` INT(11)");
+echo "OK\n";
+
 echo "Update complete!\n";

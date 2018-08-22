@@ -132,7 +132,8 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run", // TODO: this need to be adapted also for generic
         PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
         PResponseGetTask::KEYSPACE => $task->getKeyspace(),
-        PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false
+        PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,
+        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe())? true : false
       )
     );
   }
