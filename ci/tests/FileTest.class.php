@@ -22,7 +22,26 @@ class FileTest extends HashtopolisTest {
     $this->testGetFile(false, 0);
     $this->testFileType();
     $this->testGetFile(false, 2);
+    $this->testDelete();
+    $this->testListFilesEmpty();
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testDelete(){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "file",
+      "request" => "deleteFile",
+      "fileId" => 1,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("FileTest:testDelete", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("FileTest:testDelete", "Response not OK");
+    }
+    else{
+      $this->testSuccess("FileTest:testDelete");
+    }
   }
 
   private function testFileType(){
