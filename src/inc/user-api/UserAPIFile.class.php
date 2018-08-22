@@ -100,11 +100,13 @@ class UserAPIFile extends UserAPIBasic {
     }
     switch ($QUERY[UQueryFile::FILE_TYPE]) {
       case DFileType::WORDLIST:
-        $type = 'wordlist';
+        $type = 'dict';
         break;
       case DFileType::RULE:
         $type = 'rule';
         break;
+      case DFileType::OTHER:
+        $type = 'other';
       default:
         throw new HTException("Invalid file type!");
     }
