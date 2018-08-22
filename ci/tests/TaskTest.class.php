@@ -25,7 +25,38 @@ class TaskTest extends HashtopolisTest {
   public function run(){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
     $this->testListTasks();
+    $this->testCreateTask();
+    $this->testListTasks(['Test Task']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testCreateTask(){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+			"request" => "createTask",
+			"name" => "Test Task",
+			"hashlistId" => 1,
+			"attackCmd" => "#HL# -a 0 -r best64.rule example.dict",
+			"chunksize" => 600,
+			"statusTimer" => 5,
+			"benchmarkType" => "speed",
+			"color" => "5D5D5D",
+			"isCpuOnly" => false,
+			"isSmall" => false,
+			"skip" => 0,
+			"crackerVersionId" => 1,
+			"files" => [1,2],
+			"priority" => 1,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("TaskTest:testCreateTask", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("TaskTest:testCreateTask", "Response not OK");
+    }
+    else{
+      $this->testSuccess("TaskTest:testListTasks");
+    }
   }
 
   private function testListTasks($assert = []){
