@@ -69,7 +69,7 @@ else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAcc
     $copy = Factory::getPretaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
-      $origTask = $copy;
+      $origTask = clone $copy;
       $origType = 2;
       $copy->setId(0);
       $match = array();

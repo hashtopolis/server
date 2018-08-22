@@ -257,7 +257,7 @@ else if (isset($_GET['new'])) {
     $copy = Factory::getTaskFactory()->get($_GET['copy']);
     if ($copy != null) {
       $orig = $copy->getId();
-      $origTask = $copy;
+      $origTask = clone $copy;
       $origType = 1;
       $hashlistId = Factory::getTaskWrapperFactory()->get($copy->getTaskWrapperId())->getHashlistId();
       $copy->setId(0);
