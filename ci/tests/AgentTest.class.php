@@ -27,7 +27,7 @@ class AgentTest extends HashtopolisTest {
     $this->testAgentRegister();
     $this->testAgentRegister(false);
     $this->testListAgents(['Test Agent']);
-    $this->testGetAgent(1, ['name' => 'Test Agent']);
+    $this->testGetAgent(1, ['name' => 'Test Agent', 'owner' => ['userId' => 0, 'username' => '-'], 'isTrusted' => false, 'isCpuOnly' => false]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
 
@@ -44,18 +44,31 @@ class AgentTest extends HashtopolisTest {
       $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Response not OK");
     }
     else{
-      foreach($assert as $key => $value){
-        if(!isset($response[$key])){
-          $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Key ($key) from assert not present in response");
-          return;
-        }
-        else if($response[$key] != $value){
-          $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Value ($key,$value) from assert does not match response");
-          return;
-        }
+      if($this->checkAssert($agentId, $response, $assert) === false){
+        return;
       }
       $this->testSuccess("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")");
     }
+  }
+
+  private function checkAssert($agentId, $response, $assert){
+    foreach($assert as $key => $value){
+      if(!isset($response[$key])){
+        $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Key ($key) from assert not present in response");
+        return false;
+      }
+      else if(is_array($value)){
+        $status = $this->checkAssert($agentId, $response[$key], $value);
+        if($status === false){
+          return false;
+        }
+      }
+      else if($response[$key] != $value){
+        $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Value ($key,$value) from assert does not match response");
+        return false;
+      }
+    }
+    return true;
   }
 
   private function testAgentRegister($assert = true, $voucher = 'myvoucher'){
