@@ -58,7 +58,7 @@ class HashtopolisTestFramework{
         return false;
     }
     $ch = curl_init($url);
-    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_DEBUG, $url. " <- ".json_encode($request));
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_DEBUG, $url. " <- ".substr(json_encode($request), 0, 500));
     curl_setopt_array($ch, array(
         CURLOPT_POST => TRUE,
         CURLOPT_RETURNTRANSFER => TRUE,
