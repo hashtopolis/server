@@ -22,7 +22,38 @@ class HashlistTest extends HashtopolisTest {
     $this->testGetHashlist(1, ['name' => 'Hashlist 0', 'hashtypeId' => 0, 'format' => 0, 'hashCount' => 10, 'cracked' => 0, 'isSecret' => false, 'saltSeparator' => ':']);
     $this->testGetHashlist(2, ['name' => 'Hashlist 1', 'hashtypeId' => 2500, 'format' => 1, 'hashCount' => 1, 'cracked' => 0, 'isSecret' => false, 'saltSeparator' => ':']);
     $this->testGetHashlist(3, ['name' => 'Hashlist 2', 'hashtypeId' => 6211, 'format' => 2, 'hashCount' => 1, 'cracked' => 0, 'isSecret' => false, 'saltSeparator' => ':']);
+    $this->testImportCracked();
+    $this->testGetHashlist(1, ['name' => 'Hashlist 0', 'hashtypeId' => 0, 'format' => 0, 'hashCount' => 10, 'cracked' => 3, 'isSecret' => false, 'saltSeparator' => ':']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testImportCracked(){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "hashlist",
+      "request" => "importCracked",
+		  "hashlistId" => 1,
+		  "separator" => ":",
+      // sending 3 founds of the hashlist
+      "data" => "MDAyODA4MGU3ZmE4YzgxMjY4ZWYzNDBkN2Q2OTI2ODE6Zm91bmQxCjAwMmU5NWQ4MmJlMzAzOTZmY2NkMzc1ZmYyM2Y4YjRjOmZvdW5kMgowMDM0YzVlNDE4YWU0ZjJlYmE1OTBhMTY2OTZlZGJiMzpmb3VuZDM=",
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("HashlistTest:testImportCracked", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("HashlistTest:testImportCracked", "Response not OK");
+    }
+    else if($response['linesProcessed'] != 3){
+      $this->testFailed("HashlistTest:testImportCracked", "Not matching number of processed lines");
+    }
+    else if($response['newCracked'] != 3){
+      $this->testFailed("HashlistTest:testImportCracked", "Not matching number of new cracked lines");
+    }
+    else if($response['notFound'] != 0){
+      $this->testFailed("HashlistTest:testImportCracked", "Not matching number of not found lines");
+    }
+    else{
+      $this->testSuccess("HashlistTest:testImportCracked");
+    }
   }
 
   private function testGetHashlist($hashlistId, $assert = []){
