@@ -25,7 +25,37 @@ class AgentTest extends HashtopolisTest {
     // agent section
     $this->testListAgents();
     $this->testAgentRegister();
+    $this->testAgentRegister(false);
+    $this->testListAgents(['Test Agent']);
+    $this->testGetAgent(1, ['name' => 'Test Agent']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testGetAgent($agentId, $assert = []){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "agent",
+      "request" => "get",
+      "agentId" => $agentId,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Response not OK");
+    }
+    else{
+      foreach($assert as $key => $value){
+        if(!isset($response[$key])){
+          $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Key ($key) from assert not present in response");
+          return;
+        }
+        else if($response[$key] != $value){
+          $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Value ($key,$value) from assert does not match response");
+          return;
+        }
+      }
+      $this->testSuccess("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")");
+    }
   }
 
   private function testAgentRegister($assert = true, $voucher = 'myvoucher'){
