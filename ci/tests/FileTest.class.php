@@ -103,16 +103,7 @@ class FileTest extends HashtopolisTest {
   }
 
   private function testCreatingInlineFile(){
-    $testFile = base64_encode("This is a test file content!");
-    $response = HashtopolisTestFramework::doRequest([
-      "section" => "file",
-      "request" => "addFile",
-      "filename" => "test.txt",
-      "fileType" => 0,
-      "source" => "inline",
-      "data" => $testFile,
-      "accessGroupId" => 1,
-      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    $response = $this->fileCreation();
     if($response === false){
       $this->testFailed("FileTest:testCreatingInlineFile", "Empty response");
     }
@@ -174,9 +165,9 @@ class FileTest extends HashtopolisTest {
     }
   }
 
-  private function testCreatingFileTwice(){
+  private function fileCreation(){
     $testFile = base64_encode("This is a test file content!");
-    $response = HashtopolisTestFramework::doRequest([
+    return HashtopolisTestFramework::doRequest([
       "section" => "file",
       "request" => "addFile",
       "filename" => "test.txt",
@@ -185,6 +176,10 @@ class FileTest extends HashtopolisTest {
       "data" => $testFile,
       "accessGroupId" => 1,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+  }
+
+  private function testCreatingFileTwice(){
+    $response = $this->fileCreation();
     if($response === false){
       $this->testFailed("FileTest:testCreatingFileTwice", "Empty response");
     }
