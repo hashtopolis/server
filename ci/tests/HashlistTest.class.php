@@ -18,7 +18,38 @@ class HashlistTest extends HashtopolisTest {
     $this->testHashlistCreate(0);
     $this->testHashlistCreate(1);
     $this->testHashlistCreate(2);
+    $this->testListHashlists(['Hashlist 0', 'Hashlist 1', 'Hashlist 2']);
+    $this->testGetHashlist(1, ['name' => 'Hashlist 0', 'hashtypeId' => 0, 'format' => 0, 'hashCount' => 10, 'cracked' => 0, 'isSecret' => false, 'saltSeparator' => ':']);
+    $this->testGetHashlist(2, ['name' => 'Hashlist 1', 'hashtypeId' => 2500, 'format' => 1, 'hashCount' => 1, 'cracked' => 0, 'isSecret' => false, 'saltSeparator' => ':']);
+    $this->testGetHashlist(3, ['name' => 'Hashlist 2', 'hashtypeId' => 6211, 'format' => 2, 'hashCount' => 1, 'cracked' => 0, 'isSecret' => false, 'saltSeparator' => ':']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testGetHashlist($hashlistId, $assert = []){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "hashlist",
+      "request" => "getHashlist",
+      "hashlistId" => $hashlistId,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("HashlistTest:testGetHashlist($hashlistId," . implode(",", $assert) . ")", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("HashlistTest:testGetHashlist($hashlistId," . implode(",", $assert) . ")", "Response not OK");
+    }
+    else{
+      foreach($assert as $key => $value){
+        if(!isset($response[$key])){
+          $this->testFailed("HashlistTest:testGetHashlist($hashlistId," . implode(",", $assert) . ")", "$key not in response but in assert");
+          return;
+        }
+        else if($response[$key] != $value){
+          $this->testFailed("HashlistTest:testGetHashlist($hashlistId," . implode(",", $assert) . ")", "Value from key ($key) not in response but in assert");
+          return;
+        }
+      }
+      $this->testSuccess("HashlistTest:testGetHashlist($hashlistId," . implode(",", $assert) . ")");
+    }
   }
 
   private function testHashlistCreate($type = 0){
@@ -41,7 +72,7 @@ class HashlistTest extends HashtopolisTest {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "hashlist",
       "request" => "createHashlist",
-		  "name" => "API Hashlist",
+		  "name" => "Hashlist $type",
 		  "isSalted" => false,
 		  "isSecret" => false,
 		  "isHexSalt" => false,
@@ -73,7 +104,16 @@ class HashlistTest extends HashtopolisTest {
     else if($response['response'] != 'OK'){
       $this->testFailed("HashlistTest:testListHashlists(" . implode(", ", $assert) . ")", "Response not OK");
     }
+    else if(sizeof($assert) != sizeof($response['hashlists'])){
+      $this->testFailed("HashlistTest:testListHashlists(" . implode(", ", $assert) . ")", "Not matching number of hashlists");
+    }
     else{
+      foreach($response['hashlists'] as $hashlist){
+        if(!in_array($hashlist['name'], $assert)){
+          $this->testFailed("HashlistTest:testListHashlists(" . implode(", ", $assert) . ")", "Not matching hashlist name");
+          return;
+        }
+      }
       $this->testSuccess("HashlistTest:testListHashlists(" . implode(", ", $assert) . ")");
     }
   }
