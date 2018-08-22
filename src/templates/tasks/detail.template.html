@@ -166,16 +166,6 @@
         </td>
       </tr>
       <tr>
-        <td>Enforce Piping:</td>
-        <td>
-          {{IF [[task.getForcePipe()]] == 1}}
-            Yes
-          {{ELSE}}
-            No
-          {{ENDIF}}
-        </td>
-      </tr>
-      <tr>
         <td>Is small task:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
@@ -195,6 +185,16 @@
             {{ELSE}}
               No
             {{ENDIF}}
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <td>Enforce Piping:</td>
+        <td>
+          {{IF [[task.getForcePipe()]] == 1}}
+            Yes
+          {{ELSE}}
+            No
           {{ENDIF}}
         </td>
       </tr>
