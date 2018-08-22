@@ -5,6 +5,8 @@ class AgentTest extends HashtopolisTest {
   protected $maxVersion = "master";
   protected $runType = HashtopolisTest::RUN_FAST;
 
+  private $token = "";
+
   public function init($version){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing ".$this->getTestName()."...");
     parent::init($version);
@@ -12,6 +14,7 @@ class AgentTest extends HashtopolisTest {
 
   public function run(){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
+    // voucher section
     $this->testListVouchers();
     $this->testCreateVoucher();
     $this->testCreateVoucher('othervoucher');
@@ -19,7 +22,57 @@ class AgentTest extends HashtopolisTest {
     $this->testListVouchers(['myvoucher', 'othervoucher']);
     $this->testDeleteVoucher();
     $this->testListVouchers(['myvoucher']);
+    // agent section
+    $this->testListAgents();
+    $this->testAgentRegister();
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testAgentRegister($assert = true, $voucher = 'myvoucher'){
+    $response = HashtopolisTestFramework::doRequest([
+      "action" => "register",
+      "voucher" => $voucher,
+      "name" => "Test Agent"], HashtopolisTestFramework::REQUEST_CLIENT);
+    if($response === false){
+      $this->testFailed("AgentTest:testAgentRegister($assert)", "Empty response");
+    }
+    else if($assert && $response['response'] != 'SUCCESS'){
+      $this->testFailed("AgentTest:testAgentRegister($assert)", "Response not OK");
+    }
+    else if(!$assert && $response['response'] != 'ERROR'){
+      $this->testFailed("AgentTest:testAgentRegister($assert)", "Response not ERROR");
+    }
+    else{
+      if($assert){
+        $this->token = $response['token']; // save for later tests
+      }
+      $this->testSuccess("AgentTest:testAgentRegister($assert)");
+    }
+  }
+
+  private function testListAgents($assert = []){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "agent",
+      "request" => "listAgents",
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("AgentTest:testListAgents(" . implode(",", $assert) . ")", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("AgentTest:testListAgents(" . implode(",", $assert) . ")", "Response not OK");
+    }
+    else if(sizeof($response['agents']) != sizeof($assert)){
+      $this->testFailed("AgentTest:testListAgents(" . implode(",", $assert) . ")", "Number of agents does not match");
+    }
+    else{
+      foreach($response['agents'] as $agent){
+        if(!in_array($agent['name'], $assert)){
+          $this->testFailed("AgentTest:testListAgents(" . implode(",", $assert) . ")", $agent['name'] . " in response but not in assert");
+          return;
+        }
+      }
+      $this->testSuccess("AgentTest:testListAgents(" . implode(",", $assert) . ")");
+    }
   }
 
   private function testDeleteVoucher($voucher = 'othervoucher'){
