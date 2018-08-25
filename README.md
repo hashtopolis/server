@@ -2,7 +2,6 @@
 
 <img src="https://github.com/s3inlc/hashtopolis/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
 
-[![CodeFactor](https://www.codefactor.io/repository/github/s3inlc/hashtopolis/badge/master)](https://www.codefactor.io/repository/github/s3inlc/hashtopolis/overview/master)
 [![LoC](https://tokei.rs/b1/github/s3inlc/Hashtopolis?category=code)](https://github.com/s3inlc/Hashtopolis)
 [![Test Status](https://travis-ci.org/s3inlc/hashtopolis.svg?branch=master)](https://travis-ci.org/s3inlc/hashtopolis)
 
