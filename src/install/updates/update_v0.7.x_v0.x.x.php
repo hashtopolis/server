@@ -3,6 +3,7 @@
 use DBA\Factory;
 use DBA\File;
 use DBA\Config;
+use DBA\ConfigSection;
 
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
