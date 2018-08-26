@@ -696,6 +696,10 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`) VALUES
   (16400, 'CRAM-MD5 Dovecot', 0),
   (16500, 'JWT (JSON Web Token)', 0),
   (16600, 'Electrum Wallet (Salt-Type 1-3)', 0),
+  (16700, 'FileVault 2', 0),
+  (16800, 'WPA-PMKID-PBKDF2', 0),
+  (16801, 'WPA-PMKID-PMK', 0),
+  (16900, 'Ansible Vault', 0),
   (99999, 'Plaintext', 0);
 
 -- --------------------------------------------------------
