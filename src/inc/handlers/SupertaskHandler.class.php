@@ -14,7 +14,7 @@ class SupertaskHandler implements Handler {
           break;
         case DSupertaskAction::CREATE_SUPERTASK:
           AccessControl::getInstance()->checkPermission(DSupertaskAction::CREATE_SUPERTASK_PERM);
-          SupertaskUtils::createSupertask($_POST['name'], $_POST['task']);
+          SupertaskUtils::createSupertask($_POST['name'], @$_POST['task']);
           break;
         case DSupertaskAction::APPLY_SUPERTASK:
           AccessControl::getInstance()->checkPermission(DSupertaskAction::APPLY_SUPERTASK_PERM);
