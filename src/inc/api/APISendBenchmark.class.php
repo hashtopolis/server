@@ -38,7 +38,7 @@ class APISendBenchmark extends APIBasic {
         }
 
         // Here we check if the benchmark result would require to split the task and check if the task can be split
-        if(SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+        if(SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $task->getIsPrince() == 0 && $split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
           // test if we have a large rule file
           $files = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfAgent($this->agent))[3];
           foreach($files as $file){
