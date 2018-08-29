@@ -25,6 +25,7 @@
 - New file creation with the user API now takes the right file type.
 - Vouchers are tested for uniqueness on creation to avoid duplicated ones.
 - Disabling rule splitting when having a prince task.
+- Fixed non-working secret checkbox for hashlists.
 
 # v0.7.0 -> v0.7.1
 

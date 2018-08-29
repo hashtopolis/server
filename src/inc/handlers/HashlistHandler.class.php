@@ -37,7 +37,7 @@ class HashlistHandler implements Handler {
           break;
         case DHashlistAction::SET_SECRET:
           AccessControl::getInstance()->checkPermission(DHashlistAction::SET_SECRET_PERM);
-          HashlistUtils::setSecret($_POST['hashlistId'], $_POST['secret'], AccessControl::getInstance()->getUser());
+          HashlistUtils::setSecret($_POST['hashlist'], @$_POST['secret'], AccessControl::getInstance()->getUser());
           break;
         case DHashlistAction::RENAME_HASHLIST:
           AccessControl::getInstance()->checkPermission(DHashlistAction::RENAME_HASHLIST_PERM);
