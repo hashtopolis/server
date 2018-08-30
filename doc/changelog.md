@@ -11,6 +11,7 @@
 - Tasks can now be copied to preconfigured tasks and preconfigured tasks can also be copied to preconfigured tasks.
 - A test framework was added to run automated tests on Travis.
 - To make sure rules are applied before rejecting, piping can be enforced.
+- Added Notification type for Slack.
 
 ## Enhancements
 
