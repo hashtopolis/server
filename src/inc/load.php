@@ -53,8 +53,14 @@ $gitfolder = dirname(__FILE__) . "/../../.git";
 if (file_exists($gitfolder) && is_dir($gitfolder)) {
   $head = file_get_contents($gitfolder . "/HEAD");
   $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
-  $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
-  $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
+  if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
+    $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
+    $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
+  }
+  else {
+    $commit = $head;
+    $gitcommit = "commit " . substr($commit, 0, 7);
+  }
 }
 UI::add('gitcommit', $gitcommit);
 
@@ -67,11 +73,11 @@ if ($INSTALL) {
     UI::add('user', Login::getInstance()->getUser());
     AccessControl::getInstance(Login::getInstance()->getUser());
   }
-
+  
   UI::add('config', SConfig::getInstance());
-
+  
   define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
-
+  
   //set autorefresh to false for all pages
   UI::add('autorefresh', -1);
 }
