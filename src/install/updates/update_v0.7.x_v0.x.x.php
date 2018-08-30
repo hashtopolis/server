@@ -14,7 +14,7 @@ require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
 echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.1.8");
+Util::checkAgentVersion("python", "0.2.0");
 Util::checkAgentVersion("csharp", "0.52.4");
 echo "\n";
 
