@@ -49,6 +49,15 @@
 							  <input type="hidden" name="config_[[conf.getVal('item')]]" value="0">
 							  <input title="Config Value" type="checkbox" name="config_[[conf.getVal('item')]]" value="1" {{IF [[conf.getVal('value')]] == 1}}checked{{ENDIF}}>
 						  {{ENDIF}}
+              {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "select"}}
+                <select name="config_[[conf.getVal('item')]]" class="form-control" title="config_[[conf.getVal('item')]]">
+                  {{FOREACH key;[[DConfig::getSelection("config_[[conf.getVal('item')]]")->getKeys()]]}}
+                    <option value="[[key]]"{{IF [[conf.getVal('value')]] == [[DConfig::getSelection('config_[[conf.getVal('item')]]').getVal([[key]])]]}} selected{{ENDIF}}>[[DConfig::getSelection('config_[[conf.getVal('item')]]').getVal([[key]])]]</option>
+                  {{ENDFOREACH}}
+                </select>
+							  <input type="hidden" name="config_[[conf.getVal('item')]]" value="0">
+							  <input title="Config Value" type="checkbox" name="config_[[conf.getVal('item')]]" value="1" {{IF [[conf.getVal('value')]] == 1}}checked{{ENDIF}}>
+						  {{ENDIF}}
 					  </td>
 				  </tr>
 			  {{ENDFOREACH}}

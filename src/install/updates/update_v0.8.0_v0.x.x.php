@@ -29,7 +29,14 @@ if($config != null){ // just to be sure we check
   Factory::getConfigFactory()->update($config);
 }
 
-//$config = new Config(null, 7, DConfig::TELEGRAM_);
+$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_SERVER, '');
+Factory::getConfigFactory()->save($config);
+$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_PORT, '');
+Factory::getConfigFactory()->save($config);
+$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_TYPE, 'CURLPROXY_HTTP');
+Factory::getConfigFactory()->save($config);
+$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_ENABLE, '0');
+Factory::getConfigFactory()->save($config);
 echo "OK\n";
 
 echo "Update complete!\n";
