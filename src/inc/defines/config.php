@@ -96,7 +96,7 @@ class DConfig {
   /**
    * Gives the selection for the configuration values which are selections.
    * @param string $config 
-   * @return array
+   * @return DataSet
    */
   public static function getSelection($config){
     switch($config){
