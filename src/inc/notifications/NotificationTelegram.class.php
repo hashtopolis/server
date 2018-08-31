@@ -13,7 +13,7 @@ class HashtopolisNotificationTelegram extends HashtopolisNotification {
   }
 
   function sendMessage($message, $subject = "") {
-    $botToken = "XX"; // ENTER BOT TOKEN here
+    $botToken = SConfig::getInstance()->getVal(DConfig::TELEGRAM_BOT_TOKEN);
     $data = array(
       "chat_id" => $this->receiver,
       "text" => $message
