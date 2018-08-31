@@ -52,7 +52,7 @@
 						  {{ENDIF}}
               {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "select"}}
                 <select name="config_[[conf.getVal('item')]]" class="form-control" title="config_[[conf.getVal('item')]]">
-                  {{FOREACH key;[[DConfig::getSelection("config_[[conf.getVal('item')]]")->getKeys()]]}}
+                  {{FOREACH key;[[DConfig::getSelection("config_[[conf.getVal('item')]])->getKeys()]]}}
                     <option value="[[key]]"{{IF [[conf.getVal('value')]] == [[DConfig::getSelection('config_[[conf.getVal('item')]]').getVal([[key]])]]}} selected{{ENDIF}}>[[DConfig::getSelection('config_[[conf.getVal('item')]]').getVal([[key]])]]</option>
                   {{ENDFOREACH}}
                 </select>
