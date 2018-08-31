@@ -108,7 +108,7 @@ class DConfig {
           DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
         ]);
     }
-    return ["Not found!"];
+    return new DataSet(["Not found!"]);
   }
 
   /**
