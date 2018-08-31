@@ -87,8 +87,8 @@ class DConfig {
   const MULTICAST_TR        = "multicastTranserRate";
 
   // Section: Notifications
-  const TELEGRAM_BOT_TOKEN    = "telegramBotToken";
   const TELEGRAM_PROXY_ENABLE = "telegramProxyEnable";
+  const TELEGRAM_BOT_TOKEN    = "telegramBotToken";
   const TELEGRAM_PROXY_SERVER = "telegramProxyServer";
   const TELEGRAM_PROXY_PORT   = "telegramProxyPort";
   const TELEGRAM_PROXY_TYPE   = "telegramProxyType";
