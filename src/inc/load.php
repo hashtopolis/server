@@ -5,7 +5,7 @@ ini_set("display_errors", "0");
 
 session_start();
 
-$VERSION = "0.8.0+dev";
+$VERSION = "0.8.0";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
