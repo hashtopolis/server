@@ -11,7 +11,7 @@ if(sizeof($argv) != 2){
 $version = $argv[1];
 $envPath = "/var/www/html/hashtopolis/";
 
-// simulate installation with creating db.php (we just leave the peppers default)
+// simulate installation with creating conf.php (we just put in some peppers)
 $CONFIG = "<?php\n\n";
 $CONFIG .= '$CONN["user"] = "root";'. "\n";
 $CONFIG .= '$CONN["pass"] = "";'."\n";
