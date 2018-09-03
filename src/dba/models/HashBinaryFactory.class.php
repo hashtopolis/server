@@ -23,7 +23,7 @@ class HashBinaryFactory extends AbstractModelFactory {
    * @return HashBinary
    */
   function getNullObject() {
-    $o = new HashBinary(-1, null, null, null, null, null, null, null);
+    $o = new HashBinary(-1, null, null, null, null, null, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class HashBinaryFactory extends AbstractModelFactory {
    * @return HashBinary
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HashBinary($dict['hashBinaryId'], $dict['hashlistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked']);
+    $o = new HashBinary($dict['hashBinaryId'], $dict['hashlistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked'], $dict['crackPos']);
     return $o;
   }
 

@@ -109,7 +109,8 @@ $CONF['Hash'] = array(
   'plaintext',
   'timeCracked',
   'chunkId',
-  'isCracked'
+  'isCracked',
+	'crackPos'
 );
 $CONF['HashBinary'] = array(
   'hashBinaryId',
@@ -119,7 +120,8 @@ $CONF['HashBinary'] = array(
   'plaintext',
   'timeCracked',
   'chunkId',
-  'isCracked'
+  'isCracked',
+	'crackPos'
 );
 $CONF['Hashlist'] = array(
   'hashlistId',
