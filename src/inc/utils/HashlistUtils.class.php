@@ -793,7 +793,7 @@ class HashlistUtils {
             continue;
           }
           //TODO: check hash length here
-          $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0);
+          $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
           $bufferCount++;
           if ($bufferCount >= 10000) {
             $result = Factory::getHashFactory()->massSave($values);
@@ -851,7 +851,7 @@ class HashlistUtils {
           }
           $mac_cli = Util::bintohex($mac_cli);
           // we cannot save the network name here, as on the submission we don't get this
-          $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0);
+          $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0, 0);
           Factory::getHashBinaryFactory()->save($hash);
           $added++;
         }
@@ -866,7 +866,7 @@ class HashlistUtils {
       case DHashlistFormat::BINARY:
         if (!feof($file)) {
           $data = fread($file, Util::filesize($tmpfile));
-          $hash = new HashBinary(null, $hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0);
+          $hash = new HashBinary(null, $hashlist->getId(), "", Util::bintohex($data), "", 0, null, 0, 0);
           Factory::getHashBinaryFactory()->save($hash);
         }
         fclose($file);

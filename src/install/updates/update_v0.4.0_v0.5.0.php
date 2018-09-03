@@ -218,7 +218,7 @@ echo "OK\n";
 echo "Save hashes... ";
 $h = [];
 foreach ($hashes as $hash) {
-  $h[] = new Hash($hash['hashId'], $hash['hashlistId'], $hash['hash'], $hash['salt'], $hash['plaintext'], $hash['time'], null, $hash['isCracked']);
+  $h[] = new Hash($hash['hashId'], $hash['hashlistId'], $hash['hash'], $hash['salt'], $hash['plaintext'], $hash['time'], null, $hash['isCracked'], 0);
   if (sizeof($h) >= 1000) {
     Factory::getHashFactory()->massSave($h);
     $h = [];
@@ -232,7 +232,7 @@ echo "OK\n";
 echo "Save binary hashes... ";
 $h = [];
 foreach ($binaryHashes as $binaryHash) {
-  $h[] = new HashBinary($binaryHash['hashBinaryId'], $binaryHash['hashlistId'], $binaryHash['essid'], $binaryHash['hash'], $binaryHash['plaintext'], $binaryHash['time'], null, $binaryHash['isCracked']);
+  $h[] = new HashBinary($binaryHash['hashBinaryId'], $binaryHash['hashlistId'], $binaryHash['essid'], $binaryHash['hash'], $binaryHash['plaintext'], $binaryHash['time'], null, $binaryHash['isCracked'], 0);
 }
 if (sizeof($h) > 0) {
   Factory::getHashBinaryFactory()->massSave($h);
