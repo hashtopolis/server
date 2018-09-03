@@ -204,12 +204,13 @@ class APISendProgress extends APIBasic {
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
-					// result sent: a895f7d62ccc3e892fa9e9f9146232c1:aef50f22801c:987bdcf9f950:8381533406003807685881523:hashcat!:6861736863617421:12
-          $mac_ap = $splitLine[1];
-          $mac_cli = $splitLine[2];
-          $essid = $splitLine[3];
-          $plain = $splitLine[4];
-					$crackPos = $splitLine[6];
+					// result sent: a895f7d62ccc3e892fa9e9f9146232c1:aef50f22801c:987bdcf9f950:8381533406003807685881523	hashcat!	6861736863617421	12
+					$split = explode(":", $splitLine[0]);
+          $mac_ap = $split[1];
+          $mac_cli = $split[2];
+          $essid = $split[3];
+          $plain = $splitLine[1];
+					$crackPos = $splitLine[3];
           //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
           $qF1 = new QueryFilter(HashBinary::ESSID, $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $essid, "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
