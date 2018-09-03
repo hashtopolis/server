@@ -23,7 +23,7 @@ if($version == 'v0.8.0'){
 	file_put_contents($envPath."src/inc/db.php", $CONFIG);
 }
 else{
-	$CONFIG .= '$PEPPER = ["1", "2", "3", "4"];'."\n";
+	$CONFIG .= '$PEPPER = ["abcd", "bcde", "cdef", "aaaa"];'."\n";
 	file_put_contents($envPath."src/inc/conf.php", $CONFIG);
 }
 
