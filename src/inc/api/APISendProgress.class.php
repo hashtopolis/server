@@ -139,16 +139,26 @@ class APISendProgress extends APIBasic {
     $crackedHashes = $QUERY[PQuerySendProgress::CRACKED_HASHES];
     Factory::getAgentFactory()->getDB()->beginTransaction();
 
-    $plainUpdates = array();
-    $crackHashes = array();
-    $zaps = array();
+    $plainUpdates = [];
+		$crackPosUpdates = [];
+    $crackHashes = [];
+    $zaps = [];
 
     for ($i = 0; $i < sizeof($crackedHashes); $i++) {
+			// hash[:salt]:plain:hex_plain:crack_pos
       $crackedHash = $crackedHashes[$i];
-      if ($crackedHash == "") {
+      if (!is_array($crackedHash) && $crackedHash == "") {
         continue;
       }
-      $splitLine = explode(SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
+			else if(!is_array($crackedHash)){
+				// this is here for compatibility with older client versions
+				$splitLine = explode(SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), $crackedHash);
+				$splitLine[] = ''; // for hex plain
+				$splitLine[] = -1; // for crack pos
+			}
+			else{
+				$splitLine = $crackedHash;
+			}
       switch ($format) {
         case DHashlistFormat::PLAIN:
           $qF1 = new QueryFilter(Hash::HASH, $splitLine[0], "=");
@@ -159,19 +169,19 @@ class APISendProgress extends APIBasic {
             $skipped++;
             continue;
           }
-          $salt = $hashes[0]->getSalt();
-          if (strlen($salt) == 0) {
-            // unsalted hashes
-            $plain = str_ireplace($hashes[0]->getHash() . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
-          }
-          else {
-            // salted hashes
-            $plain = str_ireplace($hashes[0]->getHash() . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $hashes[0]->getSalt() . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), "", $crackedHash);
-          }
+          else if(sizeof($splitLine) == 5){
+						$plain = $splitLine[2]; // if hash is salted
+						$crackPos = $splitLine[4];
+					}
+					else{
+						$plain = $splitLine[1];
+						$crackPos = $splitLine[3];
+					}
 
           foreach ($hashes as $hash) {
             $cracked[$hash->getHashlistId()]++;
             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
+						$crackPosUpdates[] = new MassUpdateSet($hash->getId(), $crackPos);
             $crackHashes[] = $hash->getId();
             $zaps[] = new Zap(null, $hash->getHash(), time(), $this->agent->getId(), $totalHashlist->getId());
           }
@@ -181,6 +191,7 @@ class APISendProgress extends APIBasic {
             $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
             $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
             Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+            Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::CRACK_POS, $crackPosUpdates);
             Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS1, Factory::FILTER => $qF]);
             Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS2, Factory::FILTER => $qF]);
             Factory::getZapFactory()->massSave($zaps);
@@ -193,15 +204,12 @@ class APISendProgress extends APIBasic {
           break;
         case DHashlistFormat::WPA:
           // save cracked wpa password
-          // result sent: 408bc12965e7ce9987cf8fb61e62a90a:aef50f22801c:987bdcf9f950:8381533406003807685881523:hashcat!
+					// result sent: a895f7d62ccc3e892fa9e9f9146232c1:aef50f22801c:987bdcf9f950:8381533406003807685881523:hashcat!:6861736863617421:12
           $mac_ap = $splitLine[1];
           $mac_cli = $splitLine[2];
           $essid = $splitLine[3];
-          $plain = array();
-          for ($t = 4; $t < sizeof($splitLine); $t++) {
-            $plain[] = $splitLine[$t];
-          }
-          $plain = implode(SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), $plain);
+          $plain = $splitLine[4];
+					$crackPos = $splitLine[6];
           //TODO: if we really want to be sure that not different wpas are cracked, we need to check here to which task the client is assigned. But not sure if this is still required if we check both MACs
           $qF1 = new QueryFilter(HashBinary::ESSID, $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $essid, "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
@@ -214,12 +222,15 @@ class APISendProgress extends APIBasic {
             $hash->setIsCracked(1);
             $hash->setChunkId($chunk->getId());
             $hash->setPlaintext($plain);
+						$hash->setCrackPos($crackPos);
             Factory::getHashBinaryFactory()->update($hash);
           }
           break;
         case DHashlistFormat::BINARY:
           // save binary password
-          $plain = implode(SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR), $splitLine);
+					// result sent: ..\hashcat_luks_testfiles\luks_tests\hashcat_ripemd160_aes_cbc-essiv_128.luks:hashcat:68617368636174:12
+          $plain = $splitLine[1];
+					$crackPos = $splitLine[2];
           $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $totalHashlist->getId(), "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
@@ -231,6 +242,7 @@ class APISendProgress extends APIBasic {
             $hash->setIsCracked(1);
             $hash->setChunkId($chunk->getId());
             $hash->setPlaintext($plain);
+						$hash->setCrackPos($crackPos);
             Factory::getHashBinaryFactory()->update($hash);
           }
           break;
@@ -241,6 +253,7 @@ class APISendProgress extends APIBasic {
       $uS2 = new UpdateSet(Hash::IS_CRACKED, 1);
       $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
       Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
+			Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::CRACK_POS, $crackPosUpdates);
       Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS1, Factory::FILTER => $qF]);
       Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS2, Factory::FILTER => $qF]);
       Factory::getZapFactory()->massSave($zaps);
