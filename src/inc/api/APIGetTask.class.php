@@ -123,7 +123,7 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::RESPONSE => PValues::SUCCESS,
         PResponseGetTask::TASK_ID => (int)$task->getId(),
         PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
-        PResponseGetTask::CMD_PARAMETERS => " -p " . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
+        PResponseGetTask::CMD_PARAMETERS => " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
         PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
         PResponseGetTask::BENCHMARK => (int)SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME),
         PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),
