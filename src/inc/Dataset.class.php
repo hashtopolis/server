@@ -21,6 +21,14 @@ class DataSet {
     }
     return false;
   }
+
+  public function getKeys(){
+    $keys = [];
+    foreach($this->values as $key => $val){
+      $keys[] = $key;
+    }
+    return $keys;
+  }
   
   public function getAllValues() {
     return $this->values;
