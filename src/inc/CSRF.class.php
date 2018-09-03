@@ -1,7 +1,7 @@
 <?php
 
 class CSRF {
-  const CSRF_SECRET = "__CSRF__";
+  const CSRF_SECRET = $PEPPER[3];
   
   public static function init() {
     if (!isset($_SESSION[CSRF::CSRF_SECRET])) {
