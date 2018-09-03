@@ -12,14 +12,20 @@ $version = $argv[1];
 $envPath = "/var/www/html/hashtopolis/";
 
 // simulate installation with creating db.php (we just leave the peppers default)
-$DBCONFIG = "<?php\n\n";
-$DBCONFIG .= '$CONN["user"] = "root";'. "\n";
-$DBCONFIG .= '$CONN["pass"] = "";'."\n";
-$DBCONFIG .= '$CONN["server"] = "localhost";'."\n";
-$DBCONFIG .= '$CONN["db"] = "hashtopolis";'."\n";
-$DBCONFIG .= '$CONN["port"] = "3306";'."\n";
-$DBCONFIG .= '$INSTALL = true;';
-file_put_contents($envPath."src/inc/db.php", $DBCONFIG);
+$CONFIG = "<?php\n\n";
+$CONFIG .= '$CONN["user"] = "root";'. "\n";
+$CONFIG .= '$CONN["pass"] = "";'."\n";
+$CONFIG .= '$CONN["server"] = "localhost";'."\n";
+$CONFIG .= '$CONN["db"] = "hashtopolis";'."\n";
+$CONFIG .= '$CONN["port"] = "3306";'."\n";
+$CONFIG .= '$INSTALL = true;';
+if($version == 'v0.8.0'){
+	file_put_contents($envPath."src/inc/db.php", $CONFIG);
+}
+else{
+	$CONFIG .= '$PEPPER = ["1", "2", "3", "4"]'."\n";
+	file_put_contents($envPath."src/inc/conf.php", $CONFIG);
+}
 
 $db = new PDO("mysql:host=localhost;port=3306", "root", "");
 $db->query("CREATE DATABASE hashtopolis;");
