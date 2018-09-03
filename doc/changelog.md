@@ -3,6 +3,7 @@
 ## Enhancements
 
 - Telegram notifications can now completely be configured via server config and also can be used through proxies.
+- Peppers of Encryption.class.php and CSRF.class.php were moved out of the files to make updating easier.
 
 # v0.7.1 -> v0.8.0
 

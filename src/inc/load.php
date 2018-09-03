@@ -12,7 +12,7 @@ if (strpos($HOST, ":") !== false) {
 }
 
 $INSTALL = false;
-@include(dirname(__FILE__) . "/db.php");
+@include(dirname(__FILE__) . "/conf.php");
 
 // include all .class.php files in inc dir
 $dir = scandir(dirname(__FILE__));

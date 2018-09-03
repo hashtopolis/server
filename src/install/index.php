@@ -69,9 +69,9 @@ switch ($STEP) {
     echo Template::getInstance()->render([]);
     break;
   case 2: //installation should be finished now and user should be able to log in
-    $load = file_get_contents(dirname(__FILE__) . "/../inc/db.php");
+    $load = file_get_contents(dirname(__FILE__) . "/../inc/conf.php");
     $load = str_replace('$INSTALL = false;', '$INSTALL = true;', $load);
-    file_put_contents(dirname(__FILE__) . "/../inc/db.php", $load);
+    file_put_contents(dirname(__FILE__) . "/../inc/conf.php", $load);
     if (!file_exists(dirname(__FILE__) . "/../import")) {
       mkdir(dirname(__FILE__) . "/../import");
     }
@@ -117,13 +117,13 @@ switch ($STEP) {
       else {
         //save database details
 
-        $file = file_get_contents(dirname(__FILE__) . "/../inc/db.template.php");
+        $file = file_get_contents(dirname(__FILE__) . "/../inc/conf.template.php");
         $file = str_replace("__DBUSER__", $_POST['user'], $file);
         $file = str_replace("__DBPASS__", $_POST['pass'], $file);
         $file = str_replace("__DBSERVER__", $_POST['server'], $file);
         $file = str_replace("__DBDB__", $_POST['db'], $file);
         $file = str_replace("__DBPORT__", $_POST['port'], $file);
-        file_put_contents(dirname(__FILE__) . "/../inc/db.php", $file);
+        file_put_contents(dirname(__FILE__) . "/../inc/conf.php", $file);
         setcookie("step", "$PREV", time() + 3600);
         sleep(1); // some times there are problems when reading to fast again and the file is not written to disk then
         header("Location: index.php");
@@ -136,15 +136,11 @@ switch ($STEP) {
   case 52: //database is filled with initial data now we create the user now
     // create pepper (this is required here that when we create the user, the included file already contains the right peppers
     $pepper = array(Util::randomString(50), Util::randomString(50), Util::randomString(50));
-    $crypt = file_get_contents(dirname(__FILE__) . "/../inc/Encryption.class.php");
-    $crypt = str_replace("__PEPPER1__", $pepper[0], str_replace("__PEPPER2__", $pepper[1], str_replace("__PEPPER3__", $pepper[2], $crypt)));
-    file_put_contents(dirname(__FILE__) . "/../inc/Encryption.class.php", $crypt);
-
-    // set CSRF private key
-    $key = Util::randomString(20);
-    $csrf = file_get_contents(dirname(__FILE__) . "/../inc/CSRF.class.php");
-    $csrf = str_replace("__CSRF__", $key, $csrf);
-    file_put_contents(dirname(__FILE__) . "/../inc/CSRF.class.php", $csrf);
+		$key = Util::randomString(40);
+    $conf = file_get_contents(dirname(__FILE__) . "/../inc/conf.php");
+    $conf = str_replace("__PEPPER1__", $pepper[0], str_replace("__PEPPER2__", $pepper[1], str_replace("__PEPPER3__", $pepper[2], $conf)));
+    $conf = str_replace("__CSRF__", $key, $conf);
+    file_put_contents(dirname(__FILE__) . "/../inc/conf.php", $conf);
 
     $message = "";
     if (isset($_POST['create'])) {
