@@ -3,6 +3,7 @@
 ## Features
 
 - The server saves the crackpos for hash founds given by hashcat.
+- Supertasks can now can be created by specifying a base command and iterate over a selection of files to be placed in the command.
 
 ## Enhancements
 

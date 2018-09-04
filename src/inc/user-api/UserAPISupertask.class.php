@@ -22,6 +22,9 @@ class UserAPISupertask extends UserAPIBasic {
         case USectionSupertask::DELETE_SUPERTASK:
           $this->deleteSupertask($QUERY);
           break;
+				case USectionSupertask::BULK_SUPERTASK:
+					$this->bulkSupertask($QUERY);
+					break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -54,6 +57,40 @@ class UserAPISupertask extends UserAPIBasic {
     SupertaskUtils::renameSupertask($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_NAME]);
     $this->sendSuccessResponse($QUERY);
   }
+
+	/**
+	 * @param array $QUERY 
+	 * @throws HTException 
+	 */
+	private function bulkSupertask($QUERY){
+		$toCheck = [
+      UQueryTask::SUPERTASK_NAME,
+      UQueryTask::TASK_CPU_ONLY,
+      UQueryTask::TASK_SMALL,
+      UQueryTask::TASK_CRACKER_TYPE,
+			UQueryTask::TASK_BENCHTYPE,
+			UQueryTask::TASK_ATTACKCMD,
+			UQueryTask::TASK_BASEFILES,
+			UQueryTask::TASK_ITERFILES
+    ];
+    foreach ($toCheck as $input) {
+      if (!isset($QUERY[$input])) {
+        throw new HTException("Invalid query (missing $input)!");
+      }
+    }
+		SupertaskUtils::bulkSupertask(
+			$QUERY[UQueryTask::SUPERTASK_NAME],
+			$QUERY[UQueryTask::TASK_ATTACKCMD],
+			$QUERY[UQueryTask::TASK_CPU_ONLY],
+			$QUERY[UQueryTask::TASK_SMALL],
+			$QUERY[UQueryTask::TASK_CRACKER_TYPE],
+			$QUERY[UQueryTask::TASK_BENCHTYPE],
+			$QUERY[UQueryTask::TASK_BASEFILES],
+			$QUERY[UQueryTask::TASK_ITERFILES],
+			$this->user
+		);
+		$this->sendSuccessResponse($QUERY);
+	}
   
   /**
    * @param array $QUERY
@@ -61,7 +98,7 @@ class UserAPISupertask extends UserAPIBasic {
    */
   private function importSupertask($QUERY) {
     $toCheck = [
-      UQueryTask::TASK_NAME,
+      UQueryTask::SUPERTASK_NAME,
       UQueryTask::TASK_CPU_ONLY,
       UQueryTask::TASK_SMALL,
       UQueryTask::TASK_CRACKER_TYPE,
@@ -75,7 +112,7 @@ class UserAPISupertask extends UserAPIBasic {
       }
     }
     SupertaskUtils::importSupertask(
-      $QUERY[UQueryTask::TASK_NAME],
+      $QUERY[UQueryTask::SUPERTASK_NAME],
       $QUERY[UQueryTask::TASK_CPU_ONLY],
       $QUERY[UQueryTask::TASK_SMALL],
       $QUERY[UQueryTask::TASK_OPTIMIZED],
