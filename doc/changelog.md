@@ -1,5 +1,9 @@
 # v0.8.0 -> v0.x.x
 
+## Features
+
+- The server saves the crackpos for hash founds given by hashcat.
+
 ## Enhancements
 
 - Telegram notifications can now completely be configured via server config and also can be used through proxies.
