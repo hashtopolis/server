@@ -197,6 +197,41 @@
 		}
 		\end{verbatim}
 	}
+\subsection*{\textit{bulkSupertask}}
+	Create a supertask with a base command and replace the FILE placeholder with every file it should iterate over.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "bulkSupertask",
+		  "name": "User API Bulk Test",
+		  "isCpuOnly": false,
+		  "isSmall": false,
+		  "crackerTypeId": 1,
+		  "benchmarkType": "speed",
+		  "attackCmd": "#HL# example.dict -r FILE",
+		  "basefiles": [
+		    1
+		  ],
+		  "iterfiles": [
+		    2,
+		    3
+		  ],
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "supertask",
+		  "request": "bulkSupertask",
+		  "response": "OK"
+		}
+		\end{verbatim}
+	}
 
 
 
