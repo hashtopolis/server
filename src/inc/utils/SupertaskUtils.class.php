@@ -33,6 +33,9 @@ class SupertaskUtils {
     else if (!is_array($iterfiles) || sizeof($iterfiles) == 0) {
       throw new HTException("At least one file needs to be selected to iterate over!");
     }
+		else if(strpos($command, "FILE") === false){
+			throw new HTException("No placeholder (FILE) for the iteration!");
+		}
 
 		if(!is_array($basefiles)){
 			$basefiles = [];
@@ -90,7 +93,7 @@ class SupertaskUtils {
     $preTasks = array();
     $priority = sizeof($iterfiles) + 1;
     foreach ($iterfiles as $iterfile) {
-      $cmd = str_replace('$file', $iterfile->getFilename(), $command);
+      $cmd = str_replace('FILE', $iterfile->getFilename(), $command);
       $preTaskName = $name. " + " .$iterfile->getFilename();
 
       $pretask = new Pretask(

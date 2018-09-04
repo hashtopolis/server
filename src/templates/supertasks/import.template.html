@@ -83,7 +83,7 @@
 <h3>Wordlist/Rule Bulk</h3>
 <div class="alert alert-info">
 	<b>Information:</b><br>
-	For every file selected in the iteration column it will create a subtask with having '$file' replaced with the actual file.
+	For every file selected in the iteration column it will create a subtask with having 'FILE' replaced with the actual file.
 </div>
 <form action="supertasks.php" method="POST">
 	<input type='hidden' name='action' value='[[$DSupertaskAction::BULK_SUPERTASK]]'>
@@ -136,7 +136,7 @@
 				    </td>
 			    </tr>
 			    <tr>
-				    <td style="width: 200px;">Base Command (use $file where it should be iterated over the selection):</td>
+				    <td style="width: 200px;">Base Command (use FILE where it should be iterated over the selection):</td>
 				    <td>
 					    <input type='text' name='command' class='form-control' title="Base Command" value="[[SConfig::getInstance()->getVal([[$DConfig::HASHLIST_ALIAS]])]] ">
 				    </td>
