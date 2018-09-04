@@ -34,8 +34,11 @@ $qF = new ContainFilter(Task::TASK_WRAPPER_ID, Util::arrayOfIds($taskWrappers));
 $oF = new OrderFilter(Task::TASK_ID, "ASC");
 $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 
+// load other data
+$hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
+
 // load report
-$objects = ['hashlist' => $hashlist, 'tasks' => $tasks];
+$objects = ['hashlist' => $hashlist, 'tasks' => $tasks, 'hashtype' => $hashtype];
 $report = $_GET['report'];
 $reports = Util::scanReportDirectory();
 $found = false;
