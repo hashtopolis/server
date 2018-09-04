@@ -9,7 +9,7 @@ Some bla bla about the task can be included here
 
 \begin{itemize}
 {{FOREACH task;[[tasks]]}}
-	\item Task [[task.getId()]]: [[task.getAttackCmd()]]
+	\item Task [[task.getId()]]: \texttt{[[Util::texEscape([[task.getAttackCmd()]])]]}
 {{ENDFOREACH}}
 \end{itemize}
 

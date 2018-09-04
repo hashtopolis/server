@@ -97,6 +97,19 @@ class Util {
     }
   }
 
+	public static function texEscape($string){
+		$output = "";
+		for($i=0;$i<strlen($string);$i++){
+			if($string[$i] == '#'){
+				$output .= "\\#";
+			}
+			else if($string[$i] == '\\'){
+				$output .= "\\textbackslash";
+			}
+		}
+		return $output;
+	}
+
 	public static function scanReportDirectory() {
     $directory = dirname(__FILE__) . "/../templates/report/";
     if (file_exists($directory) && is_dir($directory)) {
