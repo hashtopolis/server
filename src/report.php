@@ -51,5 +51,7 @@ $template = new Template("report/$r");
 $tempName = dirname(__FILE__)."/tmp/".time()."hashlist".$hashlist->getId().".tex";
 file_put_contents($tempName, $template->render($objects));
 
-system("cd '".dirname(__FILE__)."/tmp/' && pdflatex '".$tempName."'");
+$output = [];
+exec("cd '".dirname(__FILE__)."/tmp/' && pdflatex '".$tempName."'", $output);
+print_r($output);
 
