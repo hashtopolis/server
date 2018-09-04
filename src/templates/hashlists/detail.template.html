@@ -103,7 +103,7 @@
         <td>Actions:</td>
         <td>
           {{IF [[list.getVal('hashlist')->getCracked()]] > 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]] && [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
-            <form style='float: left; padding-right: 5px;' class="form-inline" action="report.php" method='get'>
+            <form style='float: left; padding-right: 5px;' class="form-inline my-1" action="report.php" method='get'>
               <input type='hidden' name='hashlistId' value="[[list.getVal('hashlist')->getId()]]">
               <select name="report" class="form-control mx-1">
                 {{FOREACH report;[[Util::scanReportDirectory('hashlist', true)]]}}
@@ -111,7 +111,7 @@
                 {{ENDFOREACH}}
               </select>
               <input type='submit' class='btn btn-light mx-1' value='Download Report'>
-            </form>
+            </form><br />
             <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
               <input type='hidden' name='action' value='[[$DHashlistAction::CREATE_WORDLIST]]'>
               <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
