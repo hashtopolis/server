@@ -142,6 +142,7 @@ class APISendProgress extends APIBasic {
     $plainUpdates = [];
 		$crackPosUpdates = [];
     $crackHashes = [];
+		$timeUpdates = [];
     $zaps = [];
 
     for ($i = 0; $i < sizeof($crackedHashes); $i++) {
@@ -182,6 +183,7 @@ class APISendProgress extends APIBasic {
             $cracked[$hash->getHashlistId()]++;
             $plainUpdates[] = new MassUpdateSet($hash->getId(), $plain);
 						$crackPosUpdates[] = new MassUpdateSet($hash->getId(), $crackPos);
+						$timeUpdates[] = new MassUpdateSet($hash->getId(), time());
             $crackHashes[] = $hash->getId();
             $zaps[] = new Zap(null, $hash->getHash(), time(), $this->agent->getId(), $totalHashlist->getId());
           }
@@ -192,6 +194,7 @@ class APISendProgress extends APIBasic {
             $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
             Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
             Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::CRACK_POS, $crackPosUpdates);
+            Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::TIME_CRACKED, $timeUpdates);
             Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS1, Factory::FILTER => $qF]);
             Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS2, Factory::FILTER => $qF]);
             Factory::getZapFactory()->massSave($zaps);
@@ -224,6 +227,7 @@ class APISendProgress extends APIBasic {
             $hash->setChunkId($chunk->getId());
             $hash->setPlaintext($plain);
 						$hash->setCrackPos($crackPos);
+						$hash->setTimeCracked(time());
             Factory::getHashBinaryFactory()->update($hash);
           }
           break;
@@ -244,6 +248,7 @@ class APISendProgress extends APIBasic {
             $hash->setChunkId($chunk->getId());
             $hash->setPlaintext($plain);
 						$hash->setCrackPos($crackPos);
+						$hash->setTimeCracked(time());
             Factory::getHashBinaryFactory()->update($hash);
           }
           break;
@@ -255,6 +260,7 @@ class APISendProgress extends APIBasic {
       $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
       Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
 			Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::CRACK_POS, $crackPosUpdates);
+            Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::TIME_CRACKED, $timeUpdates);
       Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS1, Factory::FILTER => $qF]);
       Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS2, Factory::FILTER => $qF]);
       Factory::getZapFactory()->massSave($zaps);
