@@ -1,0 +1,16 @@
+\documentclass[12pt]{article}
+\begin{document}
+
+\section*{Hashlist '[[hashlist.getHashlistName()]]'}
+
+Some bla bla about the task can be included here
+
+\subsection*{Tasks executed}
+
+\begin{itemize}
+{{FOREACH task;[[tasks]]}}
+	\item Task [[task.getId()]]: [[task.getAttackCmd()]]
+{{ENDFOREACH}}
+\end{itemize}
+
+\end{document}

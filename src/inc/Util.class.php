@@ -97,6 +97,21 @@ class Util {
     }
   }
 
+	public static function scanReportDirectory() {
+    $directory = dirname(__FILE__) . "/../templates/report/";
+    if (file_exists($directory) && is_dir($directory)) {
+      $reportDir = opendir($directory);
+      $reports = array();
+      while ($file = readdir($reportDir)) {
+        if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file) && strpos($file, ".tex") !== false) {
+          $reports[] = $file;
+        }
+      }
+      return $reports;
+    }
+    return [];
+  }
+
   /**
    * Scans the import-directory for files. Directories are ignored.
    * @return array of all files in the top-level directory /../import
