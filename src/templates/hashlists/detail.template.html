@@ -103,7 +103,7 @@
         <td>Actions:</td>
         <td>
           {{IF [[list.getVal('hashlist')->getCracked()]] > 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]] && [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
-            <form style='float: left; padding-right: 5px;' class="form-inline" action="hashlists.php" method='get'>
+            <form style='float: left; padding-right: 5px;' class="form-inline" action="report.php" method='get'>
               <input type='hidden' name='hashlistId' value="[[list.getVal('hashlist')->getId()]]">
               <select name="report" class="form-control mx-1">
                 {{FOREACH report;[[Util::scanReportDirectory('hashlist', true)]]}}
