@@ -51,7 +51,13 @@ $template = new Template("report/$r");
 $tempName = dirname(__FILE__)."/tmp/".time()."hashlist".$hashlist->getId().".tex";
 file_put_contents($tempName, $template->render($objects));
 
+sleep(1);
+
 $output = [];
-exec("cd '".dirname(__FILE__)."/tmp/' && pdflatex '".$tempName."'", $output);
+$cmd = "cd '".dirname(__FILE__)."/tmp/' && pdflatex '".$tempName."'";
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+	$cmd = str_replace("/", "\\", $cmd);
+}
+exec($cmd, $output);
 print_r($output);
 
