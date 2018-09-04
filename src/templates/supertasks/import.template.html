@@ -200,7 +200,7 @@
                 <th>Filename</th>
                 <th>Size</th>
               </tr>
-              {{FOREACH file;[[rules]]}}
+              {{FOREACH file;[[wordlists]]}}
                 <tr>
                   <td>
                     <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
@@ -233,7 +233,7 @@
                 <th>Filename</th>
                 <th>Size</th>
               </tr>
-              {{FOREACH file;[[rules]]}}
+              {{FOREACH file;[[other]]}}
                 <tr>
                   <td>
                     <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
