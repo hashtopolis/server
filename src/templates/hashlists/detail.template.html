@@ -103,19 +103,19 @@
         <td>Actions:</td>
         <td>
           <div class="row">
-            <div class="col col-sx-12">
+            <div class="col col-sm-12 my-1">
               {{IF [[list.getVal('hashlist')->getCracked()]] > 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]] && [[accessControl.hasPermission([[$DAccessControl::ADD_FILE_ACCESS]])]]}}
                 <form style='float: left; padding-right: 5px;' class="form-inline" action="report.php" method='get'>
                   <input type='hidden' name='hashlistId' value="[[list.getVal('hashlist')->getId()]]">
-                  <select name="report" class="form-control mx-1">
+                  <select name="report" class="form-control">
                     {{FOREACH report;[[Util::scanReportDirectory('hashlist', true)]]}}
                       <option value="[[strtolower([[report]])]]">[[report]]</option>
                     {{ENDFOREACH}}
                   </select>
-                  <input type='submit' class='btn btn-light mx-1' value='Download Report'>
+                  <input type='submit' class='btn btn-light' value='Download Report'>
                 </form>
               </div>
-              <div class="col col-sx-12">
+              <div class="col col-sm-12 my-1">
                 <form style='float: left; padding-right: 5px;' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method='post'>
                   <input type='hidden' name='action' value='[[$DHashlistAction::CREATE_WORDLIST]]'>
                   <input type='hidden' name='hashlist' value="[[list.getVal('hashlist')->getId()]]">
