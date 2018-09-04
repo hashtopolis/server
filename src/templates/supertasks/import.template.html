@@ -81,6 +81,10 @@
 </form>
 <hr>
 <h3>Wordlist/Rule Bulk</h3>
+<div class="alert alert-info">
+	<b>Information:</b><br>
+	For every file selected in the iteration column it will create a subtask with having '$file' replaced with the actual file.
+</div>
 <form action="supertasks.php" method="POST">
 	<input type='hidden' name='action' value='[[$DSupertaskAction::BULK_SUPERTASK]]'>
 	<input type="hidden" name="csrf" value="[[csrf]]">
