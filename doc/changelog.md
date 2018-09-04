@@ -3,11 +3,13 @@
 ## Features
 
 - The server saves the crackpos for hash founds given by hashcat.
+- Supertasks can now can be created by specifying a base command and iterate over a selection of files to be placed in the command.
 
 ## Enhancements
 
 - Telegram notifications can now completely be configured via server config and also can be used through proxies.
 - Peppers of Encryption.class.php and CSRF.class.php were moved out of the files to make updating easier.
+- When importing supertasks it can be selected if they should use the optimized flag and which benchmark type should be used.
 
 # v0.7.1 -> v0.8.0
 
