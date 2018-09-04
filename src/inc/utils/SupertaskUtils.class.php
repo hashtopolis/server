@@ -11,8 +11,118 @@ use DBA\Task;
 use DBA\OrderFilter;
 use DBA\User;
 use DBA\Factory;
+use DBA\File;
+use DBA\FilePretask;
 
 class SupertaskUtils {
+	public static function bulkSupertask($name, $command, $isCpuOnly, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user){
+		$name = htmlentities($name, ENT_QUOTES, "UTF-8");
+    $isCpuOnly = ($isCpuOnly) ? 1 : 0;
+    $isSmall = ($isSmall) ? 1 : 0;
+		$benchtype = ($benchtype == 'speed')?1:0;
+    $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
+    if ($crackerBinaryType == null) {
+      throw new HTException("Invalid cracker type ID!");
+    }
+		else if (strpos($command, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+      throw new HTException("Command line must contain hashlist alias (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
+    }
+		else if (Util::containsBlacklistedChars($command)) {
+      throw new HTException("The command must contain no blacklisted characters!");
+    }
+    else if (!is_array($iterfiles) || sizeof($iterfiles) == 0) {
+      throw new HTException("At least one file needs to be selected to iterate over!");
+    }
+
+		if(!is_array($basefiles)){
+			$basefiles = [];
+		}
+
+		$basefilesChecked = [];
+		foreach($basefiles as $basefile){
+			$file = Factory::getFileFactory()->get($basefile);
+			if($file == null){
+			  throw new HTException("Invalid file selected!");
+			}
+			else if(!AccessUtils::userCanAccessFile($file, $user)){
+				throw new HTException("For at least one file you don't have enough access rights!");
+			}
+			$basefilesChecked[] = $file;
+		}
+
+		$iterfilesChecked = [];
+		foreach($iterfiles as $iterfile){
+			$file = Factory::getFileFactory()->get($iterfile);
+			if($file == null){
+			  throw new HTException("Invalid file selected!");
+			}
+			else if(!AccessUtils::userCanAccessFile($file, $user)){
+				throw new HTException("For at least one file you don't have enough access rights!");
+			}
+			$iterfilesChecked[] = $file;
+		}
+
+    Factory::getAgentFactory()->getDB()->beginTransaction();
+    $pretasks = SupertaskUtils::createIterationPretasks($command, $name, $basefilesChecked, $iterfilesChecked, $isSmall, $isCpuOnly, $crackerBinaryType, $benchtype);
+
+    $supertask = new Supertask(null, $name);
+    $supertask = Factory::getSupertaskFactory()->save($supertask);
+    foreach ($pretasks as $preTask) {
+      $relation = new SupertaskPretask(null, $supertask->getId(), $preTask->getId());
+      Factory::getSupertaskPretaskFactory()->save($relation);
+    }
+    Factory::getAgentFactory()->getDB()->commit();
+	}
+
+	/**
+	 * @param string $command
+	 * @param string $name
+	 * @param File[] $basefiles
+	 * @param File[] $iterfiles
+	 * @param int $isSmall
+	 * @param int $isCpuOnly
+	 * @param CrackerBinaryType $crackerBinaryType
+	 * @param int $benchtype
+	 * @return Pretask[]
+	 */
+	public static function createIterationPretasks($command, $name, $basefiles, $iterfiles, $isSmall, $isCpuOnly, $crackerBinaryType, $benchtype){
+		// create the preconf tasks
+    $preTasks = array();
+    $priority = sizeof($iterfiles) + 1;
+    foreach ($iterfiles as $iterfile) {
+      $cmd = str_replace('$file', $iterfile->getFilename(), $command);
+      $preTaskName = $name. " + " .$iterfile->getFilename();
+
+      $pretask = new Pretask(
+				null,
+				$preTaskName,
+				$cmd,
+				SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
+				SConfig::getInstance()->getVal(DConfig::STATUS_TIMER),
+				"",
+				$isSmall,
+				$isCpuOnly,
+				$benchtype,
+				$priority,
+				0,
+				$crackerBinaryType->getId()
+			);
+      $pretask = Factory::getPretaskFactory()->save($pretask);
+
+			// save files
+			$pretaskFiles = [];
+			foreach($basefiles as $basefile){
+				$pretaskFiles[] = new FilePretask(null, $basefile->getId(), $pretask->getId());
+			}
+			$pretaskFiles[] = new FilePretask(null, $iterfile->getId(), $pretask->getId());
+			Factory::getFilePretaskFactory()->massSave($pretaskFiles);
+
+      $preTasks[] = $pretask;
+      $priority--;
+    }
+    return $preTasks;
+	}
+
   /**
    * @param int $supertaskId
    * @param string $newName
@@ -296,17 +406,17 @@ class SupertaskUtils {
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
 
       $pretask = new Pretask(
-				null, 
-				$preTaskName, 
-				SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, 
-				SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION), 
-				SConfig::getInstance()->getVal(DConfig::STATUS_TIMER), 
-				"", 
-				$isSmall, 
-				$isCpu, 
-				$newBench, 
-				$priority, 
-				1, 
+				null,
+				$preTaskName,
+				SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd,
+				SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
+				SConfig::getInstance()->getVal(DConfig::STATUS_TIMER),
+				"",
+				$isSmall,
+				$isCpu,
+				$newBench,
+				$priority,
+				1,
 				$crackerBinaryType->getId()
 			);
       $pretask = Factory::getPretaskFactory()->save($pretask);
