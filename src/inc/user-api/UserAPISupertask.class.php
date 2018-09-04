@@ -66,7 +66,8 @@ class UserAPISupertask extends UserAPIBasic {
       UQueryTask::TASK_SMALL,
       UQueryTask::TASK_CRACKER_TYPE,
       UQueryTask::MASKS,
-      UQueryTask::TASK_OPTIMIZED
+      UQueryTask::TASK_OPTIMIZED,
+			UQueryTask::TASK_BENCHTYPE
     ];
     foreach ($toCheck as $input) {
       if (!isset($QUERY[$input])) {
@@ -79,7 +80,8 @@ class UserAPISupertask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_SMALL],
       $QUERY[UQueryTask::TASK_OPTIMIZED],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],
-      $QUERY[UQueryTask::MASKS]
+      $QUERY[UQueryTask::MASKS],
+			$QUERY[UQueryTask::TASK_BENCHTYPE]
     );
     $this->sendSuccessResponse($QUERY);
   }

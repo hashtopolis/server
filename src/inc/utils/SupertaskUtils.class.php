@@ -229,11 +229,12 @@ class SupertaskUtils {
    * @param array $masks
    * @throws HTException
    */
-  public static function importSupertask($name, $isCpuOnly, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks) {
+  public static function importSupertask($name, $isCpuOnly, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
     $useOptimized = ($useOptimized) ? true : false;
+		$benchtype = ($benchtype == 'speed')?1:0;
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     if ($crackerBinaryType == null) {
       throw new HTException("Invalid cracker type ID!");
@@ -247,7 +248,7 @@ class SupertaskUtils {
     }
 
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $pretasks = SupertaskUtils::createImportPretasks($masks, $isSmall, $isCpuOnly, $crackerBinaryType, $useOptimized);
+    $pretasks = SupertaskUtils::createImportPretasks($masks, $isSmall, $isCpuOnly, $crackerBinaryType, $useOptimized, $benchtype);
 
     $supertask = new Supertask(null, $name);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
@@ -266,7 +267,7 @@ class SupertaskUtils {
    * @param bool $useOptimized
    * @return array
    */
-  private static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType, $useOptimized = false) {
+  private static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType, $useOptimized = false, $newBench = 1) {
     // create the preconf tasks
     $preTasks = array();
     $priority = sizeof($masks) + 1;
@@ -294,7 +295,20 @@ class SupertaskUtils {
       $preTaskName = str_replace("COMMA_PLACEHOLDER", "\\,", $preTaskName);
       $preTaskName = str_replace("HASH_PLACEHOLDER", "\\#", $preTaskName);
 
-      $pretask = new Pretask(null, $preTaskName, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION), SConfig::getInstance()->getVal(DConfig::STATUS_TIMER), "", $isSmall, $isCpu, 0, $priority, 1, $crackerBinaryType->getId());
+      $pretask = new Pretask(
+				null, 
+				$preTaskName, 
+				SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . " -a 3 " . $cmd, 
+				SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION), 
+				SConfig::getInstance()->getVal(DConfig::STATUS_TIMER), 
+				"", 
+				$isSmall, 
+				$isCpu, 
+				$newBench, 
+				$priority, 
+				1, 
+				$crackerBinaryType->getId()
+			);
       $pretask = Factory::getPretaskFactory()->save($pretask);
       $preTasks[] = $pretask;
       $priority--;
