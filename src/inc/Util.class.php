@@ -125,7 +125,7 @@ class Util {
 	 * @param string $type 
 	 * @return string[] found report template file names
 	 */
-	public static function scanReportDirectory($type = "") {
+	public static function scanReportDirectory($type = "", $pretty = false) {
     $directory = dirname(__FILE__) . "/../templates/report/";
     if (file_exists($directory) && is_dir($directory)) {
       $reportDir = opendir($directory);
@@ -135,7 +135,12 @@ class Util {
 					if(strlen($type) > 0 && strpos($file, $type."-") !== 0){
 						continue;
 					}
-          $reports[] = $file;
+					if($pretty){
+						$reports[] = ucfirst(substr(str_replace(".template.tex", "", $file), strlen($type) + 1));
+					}
+					else{
+						$reports[] = $file;
+					}
         }
       }
       return $reports;

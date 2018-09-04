@@ -13,8 +13,9 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-AccessControl::getInstance()->checkPermission(DViewControl::HASHLISTS_VIEW_PERM);
+AccessControl::getInstance()->checkPermission(DAccessControl::MANAGE_HASHLIST_ACCESS);
 
+// load hashlist
 $hashlist = Factory::getHashlistFactory()->get($_GET['hashlistId']);
 if($hashlist == null){
 	UI::printError(UI::ERROR, "Invalid hashlist!");
@@ -23,14 +24,17 @@ else if(!AccessUtils::userCanAccessHashlists($hashlist, Login::getInstance()->ge
 	UI::printError(UI::ERROR, "No access to hashlist!");
 }
 
+// load task wrappers
 $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
 $oF = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "ASC");
 $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 
+// load tasks
 $qF = new ContainFilter(Task::TASK_WRAPPER_ID, Util::arrayOfIds($taskWrappers));
 $oF = new OrderFilter(Task::TASK_ID, "ASC");
 $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 
+// load report
 $objects = ['hashlist' => $hashlist, 'tasks' => $tasks];
 $report = $_GET['report'];
 $reports = Util::scanReportDirectory();
@@ -47,6 +51,7 @@ if($found === false){
 	UI::printError(UI::ERROR, "Invalid report!");
 }
 
+// render report
 $template = new Template("report/$r");
 $baseName = dirname(__FILE__)."/tmp/".time()."-hashlist-".$hashlist->getId();
 $tempName = $baseName.".tex";
@@ -54,6 +59,7 @@ file_put_contents($tempName, $template->render($objects));
 
 sleep(1);
 
+// create PDF
 $output = [];
 $cmd = "cd \"".dirname(__FILE__)."/tmp/\" && pdflatex \"".$tempName."\"";
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -65,6 +71,7 @@ if(!file_exists($baseName.".pdf")){
 	UI::printError(UI::ERROR, "Failed to generate PDF!");
 }
 
+// download pdf
 header('Content-Type: application/octet-stream');
 header("Content-disposition: attachment; filename=\"Hashlist Report " . $hashlist->getId() . "\""); 
 echo file_get_contents($baseName.".pdf");
