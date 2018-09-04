@@ -48,16 +48,24 @@ if($found === false){
 }
 
 $template = new Template("report/$r");
-$tempName = dirname(__FILE__)."/tmp/".time()."hashlist".$hashlist->getId().".tex";
+$baseName = dirname(__FILE__)."/tmp/".time()."hashlist".$hashlist->getId();
+$tempName = $baseName.".tex";
 file_put_contents($tempName, $template->render($objects));
 
 sleep(1);
 
 $output = [];
-$cmd = "cd '".dirname(__FILE__)."/tmp/' && pdflatex '".$tempName."'";
+$cmd = "cd \"".dirname(__FILE__)."/tmp/\" && pdflatex \"".$tempName."\"";
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
 	$cmd = str_replace("/", "\\", $cmd);
 }
 exec($cmd, $output);
-print_r($output);
+
+if(!file_exists($baseName.".pdf")){
+	UI::printError(UI::ERROR, "Failed to generate PDF!");
+}
+
+header('Content-Type: application/octet-stream');
+header("Content-disposition: attachment; filename=\"Hashlist Report " . $hashlist->getId() . "\""); 
+echo file_get_contents($baseName.".pdf");
 
