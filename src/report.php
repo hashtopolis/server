@@ -54,6 +54,17 @@ if($found === false){
 	UI::printError(UI::ERROR, "Invalid report!");
 }
 
+if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+	if(!`where pdflatex`){
+		UI::printError(UI::ERROR, "LaTeX needs to be installed to use this feature!");
+	}
+}
+else{
+	if(!`which pdflatex`){
+		UI::printError(UI::ERROR, "LaTeX needs to be installed to use this feature!");
+	}
+}
+
 // render report
 $template = new Template("report/$r");
 $baseName = dirname(__FILE__)."/tmp/".time()."-hashlist-".$hashlist->getId();
