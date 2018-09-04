@@ -3,16 +3,16 @@
 
 \section*{Hashlist '[[hashlist.getHashlistName()]]'}
 
-Hash type: [[hashtype.getDescription()]]\\
+Hash type: [[Util::texEscape([[hashtype.getDescription()]])]]\\
 Total hashes: [[hashlist.getHashCount()]]\\
 Cracked hashes: [[hashlist.getCracked()]]\\
 
-\subsection*{Tasks executed}
+\subsection*{Tasks}
 
-\begin{itemize}
 {{FOREACH task;[[tasks]]}}
-	\item Task [[task.getId()]]: \texttt{[[Util::texEscape([[task.getAttackCmd()]])]]}
+	\subsubsection{Task '[[Util::texEscape([[task.getTaskName()]])]]' ([[task.getId()]])}
+	Command: \texttt{[[Util::texEscape([[task.getAttackCmd()]])]]}\\
+	Notes: [[Util::texEscape([[task.getNotes]])]]
 {{ENDFOREACH}}
-\end{itemize}
 
 \end{document}
