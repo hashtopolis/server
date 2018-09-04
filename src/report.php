@@ -48,7 +48,7 @@ if($found === false){
 }
 
 $template = new Template("report/$r");
-$baseName = dirname(__FILE__)."/tmp/".time()."hashlist".$hashlist->getId();
+$baseName = dirname(__FILE__)."/tmp/".time()."-hashlist-".$hashlist->getId();
 $tempName = $baseName.".tex";
 file_put_contents($tempName, $template->render($objects));
 
@@ -69,3 +69,6 @@ header('Content-Type: application/octet-stream');
 header("Content-disposition: attachment; filename=\"Hashlist Report " . $hashlist->getId() . "\""); 
 echo file_get_contents($baseName.".pdf");
 
+// cleanup
+unlink($baseName.".aux");
+unlink($baseName.".log");
