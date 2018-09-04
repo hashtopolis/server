@@ -236,6 +236,10 @@ foreach ($hashes as $hash) {
   }
 	if(isset($_GET['crackpos']) && $_GET['crackpos'] == 'true'){
 		$output .= ":".$hash->getCrackPos();
+		UI::add('crackpos', true);
+	}
+	else{
+		UI::add('crackpos', false);
 	}
   $output .= "\n";
 }
