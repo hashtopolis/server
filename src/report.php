@@ -73,7 +73,7 @@ if(!file_exists($baseName.".pdf")){
 
 // download pdf
 header('Content-Type: application/octet-stream');
-header("Content-disposition: attachment; filename=\"Hashlist Report " . $hashlist->getId() . "\""); 
+header("Content-disposition: attachment; filename=\"Hashlist_Report_" . $hashlist->getId() . ".pdf\""); 
 echo file_get_contents($baseName.".pdf");
 
 // cleanup
