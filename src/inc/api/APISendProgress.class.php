@@ -235,7 +235,7 @@ class APISendProgress extends APIBasic {
           // save binary password
 					// result sent: ..\hashcat_luks_testfiles\luks_tests\hashcat_ripemd160_aes_cbc-essiv_128.luks:hashcat:68617368636174:12
           $plain = $splitLine[1];
-					$crackPos = $splitLine[2];
+					$crackPos = $splitLine[3];
           $qF1 = new QueryFilter(HashBinary::HASHLIST_ID, $totalHashlist->getId(), "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
