@@ -401,12 +401,22 @@
 	  "speed":570000,
 	  "state": 3,
 	  "cracks": [
-	    "7fde65673fd28736423f23423786f:thisisplain",
-	    "7fde65673f28987f7423f2342378f:otherplain",
+	    [
+	      "7fde65673fd28736423f23423786f",
+	      "thisisplain",
+	      "746869736973706c61696e",
+	      "787523889"
+	    ],
+	    [
+	      "7fde65673f28987f7423f2342378f",
+	      "otherplain",
+	      "6f74686572706c61696e",
+	      "78652"
+	    ]
 	  ]
 	}
 	\end{verbatim}
-	RelativeProgress is the progress of the current chunk between 0 and 10'000 (in percent * 100).
+	RelativeProgress is the progress of the current chunk between 0 and 10'000 (in percent * 100). The cracks are sent as array resulting from hashcat's output format 15.
 	
 	The server will reply with following:
 	\begin{verbatim}

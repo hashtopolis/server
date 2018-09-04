@@ -46,4 +46,9 @@ $config = new Config(null, 7, DConfig::TELEGRAM_PROXY_ENABLE, '0');
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 
+echo "Updating Hash tables... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` ADD `crackPos` BIGINT NOT NULL");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HashBinary` ADD `crackPos` BIGINT NOT NULL");
+echo "OK\n";
+
 echo "Update complete!\n";
