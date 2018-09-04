@@ -1,7 +1,9 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Create Supertask from Hashcat masks</h2>
+<h2>Import Supertask</h2>
 {%TEMPLATE->struct/messages%}
+<hr>
+<h3>Masks</h3>
 <div class="alert alert-info">
 	<b>Information:</b><br>
 	For every imported mask there will be a pre-conf task created which is then included in the newly created supertask.
@@ -75,6 +77,224 @@
 				</td>
 			</tr>
 		</table>
+  </div>
+</form>
+<hr>
+<h3>Wordlist/Rule Bulk</h3>
+<form class='form-inline' action="supertasks.php" method="POST">
+	<input type='hidden' name='action' value='[[$DSupertaskAction::BULK_SUPERTASK]]'>
+	<input type="hidden" name="csrf" value="[[csrf]]">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+			<tr>
+				<td style="width: 150px;">Name:</td>
+				<td>
+					<input type='text' name='name' class='form-control' title="Name">
+				</td>
+			</tr>
+			<tr>
+				<td>Are small tasks:</td>
+				<td>
+					<select name="isSmall" class="form-control" title="Small Task">
+						<option value="0">No</option>
+						<option value="1">Yes</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Are CPU tasks:</td>
+				<td>
+					<select name="isCpu" class="form-control" title="CPU Task">
+						<option value="0">No</option>
+						<option value="1">Yes</option>
+					</select>
+				</td>
+			</tr>
+      <tr>
+				<td>Benchmark type:</td>
+				<td>
+					<select name="benchtype" class="form-control" title="Benchmark">
+						<option value="speed">Speed</option>
+						<option value="run">Runtime</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Cracker Binary which is used to run this task:</td>
+				<td>
+					<select name="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
+						{{FOREACH crackerBinaryType;[[crackerBinaryTypes]]}}
+							<option value="[[crackerBinaryType.getId()]]">[[crackerBinaryType.getTypeName()]]</option>
+						{{ENDFOREACH}}
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td style="width: 150px;">Base Command (use $file where it should be iterated over the selection):</td>
+				<td>
+					<input type='text' name='command' class='form-control' title="Base Command">
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<input type="submit" class='btn btn-light' value="Create Supertask">
+				</td>
+			</tr>
+		</table>
+  </div>
+  <div class="row">
+    <div class='col-md-12'>
+      <h3>Select Files used</h3>
+      <div class='btn-toolbar my-1'>
+        <div class='btn-group'>
+          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
+          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
+          <button id="otherButton" class='btn btn-light' onclick="return toggleFiles('other')">Other</button>
+        </div>
+      </div>
+      <div id="rules">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Used in base command</th>
+                <th>Use as replacement of $file</th>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[rules]]}}
+                <tr>
+                  <td>
+                    <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
+                  </td>
+                  <td>
+                    <input title="Use File" type="checkbox" name="iterfile[]" value="[[file.getVal('file').getId()]]">
+                  </td>
+                  <td>
+                    [[file.getVal('file').getFilename()]]
+                    {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                      <span class="fas fa-lock" aria-hidden="true"></span>
+                    {{ENDIF}}
+                  </td>
+                  <td>
+                    [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                  </td>
+                </tr>
+              {{ENDFOREACH}}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="wordlists">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Used in base command</th>
+                <th>Use as replacement of $file</th>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[rules]]}}
+                <tr>
+                  <td>
+                    <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
+                  </td>
+                  <td>
+                    <input title="Use File" type="checkbox" name="iterfile[]" value="[[file.getVal('file').getId()]]">
+                  </td>
+                  <td>
+                    [[file.getVal('file').getFilename()]]
+                    {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                      <span class="fas fa-lock" aria-hidden="true"></span>
+                    {{ENDIF}}
+                  </td>
+                  <td>
+                    [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                  </td>
+                </tr>
+              {{ENDFOREACH}}
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="other">
+        <div class="card">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tr>
+                <th>Used in base command</th>
+                <th>Use as replacement of $file</th>
+                <th>Filename</th>
+                <th>Size</th>
+              </tr>
+              {{FOREACH file;[[rules]]}}
+                <tr>
+                  <td>
+                    <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
+                  </td>
+                  <td>
+                    <input title="Use File" type="checkbox" name="iterfile[]" value="[[file.getVal('file').getId()]]">
+                  </td>
+                  <td>
+                    [[file.getVal('file').getFilename()]]
+                    {{IF [[file.getVal('file').getIsSecret()]] == 1}}
+                      <span class="fas fa-lock" aria-hidden="true"></span>
+                    {{ENDIF}}
+                  </td>
+                  <td>
+                    [[Util::nicenum([[file.getVal('file').getSize()]])]]B
+                  </td>
+                </tr>
+              {{ENDFOREACH}}
+            </table>
+          </div>
+        </div>
+      </div>
+      <script type='text/javascript'>
+        toggleFiles('wordlists');
+
+        function toggleFiles(show) {
+          var wordlist = document.getElementById('wordlists');
+          var rule = document.getElementById('rules');
+          var other = document.getElementById('other');
+          if (show === 'rules') {
+            wordlist.style.visibility = "hidden"; // or
+            wordlist.style.display = "none";
+            other.style.visibility = "hidden"; // or
+            other.style.display = "none";
+            rule.style.visibility = "visible"; // or
+            rule.style.display = "inline";
+            document.getElementById("ruleButton").className = "btn btn-light active";
+            document.getElementById("wordlistButton").className = "btn btn-light";
+            document.getElementById("otherButton").className = "btn btn-light";
+          }
+          else if(show === 'wordlists'){
+            wordlist.style.visibility = "visible"; // or
+            wordlist.style.display = "inline";
+            rule.style.visibility = "hidden"; // or
+            rule.style.display = "none";
+            other.style.visibility = "hidden"; // or
+            other.style.display = "none";
+            document.getElementById("ruleButton").className = "btn btn-light";
+            document.getElementById("wordlistButton").className = "btn btn-light active";
+            document.getElementById("otherButton").className = "btn btn-light";
+          }
+          else if (show === 'other') {
+            other.style.visibility = "visible"; // or
+            other.style.display = "inline";
+            rule.style.visibility = "hidden"; // or
+            rule.style.display = "none";
+            wordlist.style.visibility = "hidden"; // or
+            wordlist.style.display = "none";
+            document.getElementById("ruleButton").className = "btn btn-light";
+            document.getElementById("wordlistButton").className = "btn btn-light";
+            document.getElementById("otherButton").className = "btn btn-light active";
+          }
+          return false;
+        }
+      </script>
+    </div>
   </div>
 </form>
 {%TEMPLATE->struct/foot%}
