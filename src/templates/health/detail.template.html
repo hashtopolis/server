@@ -1,0 +1,81 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Health Check [[check.getId()]]</h2>
+{%TEMPLATE->struct/messages%}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <tr>
+        <th>TODO</th>
+      </tr>
+    </table>
+  </div>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <th>Agent Check ID</th>
+			  <th>Agent</th>
+			  <th>Status</th>
+			  <th>Time Required</th>
+			  <th>Num GPUs</th>
+			  <th>Cracked</th>
+			  <th>Errors</th>
+			  <th>&nbsp;</th>
+		  </tr>
+		  {{FOREACH checkAgent;[[checkAgents]]}}
+			  <tr>
+				  <td>[[checkAgent.getId()]]</td>
+          <td><a href="agents.php?id=[[checkAgent.getAgentId()]]">[[agentSet.getVal([[checkAgent.getAgentId()]])->getAgentName()]]</a></td>
+          <td>
+            {{IF [[checkAgent.getStatus()]] == [[$DHealthCheckAgentStatus::PENDING]]}}
+              Running / Waiting
+            {{ENDIF}}
+            {{IF [[checkAgent.getStatus()]] == [[$DHealthCheckAgentStatus::COMPLETED]]}}
+              Completed
+            {{ENDIF}}
+            {{IF [[checkAgent.getStatus()]] == [[$DHealthCheckAgentStatus::FAILED]]}}
+              Failed
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              [[date("H:i:s", [[checkAgent.getEnd()]] - [[checkAgent.getStart()]])]]
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              [[checkAgent.getNumGpus()]]
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              [[checkAgent.getNumCracked()]]
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              <pre>[[json_encode(json_decode([[checkAgent.getErrors()]], true), JSON_PRETTY_PRINT)]]</pre>
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+          <td>
+            &nbsp;
+          </td>
+			  </tr>
+		  {{ENDFOREACH}}
+      {{IF [[sizeof([[checkAgents]])]] == 0}}
+        <tr><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td></tr>
+      {{ENDIF}}
+	  </table>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}

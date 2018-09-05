@@ -3,6 +3,8 @@ use DBA\Factory;
 use DBA\OrderFilter;
 use DBA\HealthCheck;
 use DBA\CrackerBinary;
+use DBA\QueryFilter;
+use DBA\HealthCheckAgent;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -27,7 +29,21 @@ UI::add('pageTitle', "Health Checks");
 Menu::get()->setActive("config_health");
 
 if(isset($_GET['id'])){
-  // TODO: implement
+  $healthCheck = Factory::getHealthCheckFactory()->get($_GET['id']);
+  if($healthCheck == null){
+    UI::printError(UI::ERROR, "Invalid health check ID!");
+  }
+  Template::loadInstance("health/details");
+  UI::add('check', $healthCheck);
+  $qF = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, $healthCheck->getId(), "=");
+  $checkAgents = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qF]);
+  UI::add('checkAgents', $checkAgents);
+  $agents = Factory::getAgentFactory()->filter([]);
+  $agentSet = new DataSet();
+  foreach($agents as $agent){
+    $agentSet->addValue($agent->getId(), $agent);
+  }
+  UI::add('agentSet', $agentSet);
 }
 else{
   $oF = new OrderFilter(HealthCheck::TIME, "DESC");
