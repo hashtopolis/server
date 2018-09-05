@@ -16,6 +16,15 @@ class APIGetTask extends APIBasic {
     $this->checkToken(PActions::GET_TASK, $QUERY);
     $this->updateAgent(PActions::GET_TASK);
 
+    if(HealthUtils::checkNeeded($this->agent)){
+      $this->sendResponse(array(
+          PResponseGetTask::ACTION => PActions::GET_TASK,
+          PResponseGetTask::RESPONSE => PValues::SUCCESS,
+          PResponseGetTask::TASK_ID => PValuesTask::HEALTH_CHECK
+        )
+      );
+    }
+
     if ($this->agent->getIsActive() == 0) {
       $this->sendResponse(array(
           PResponseGetTask::ACTION => PActions::GET_TASK,

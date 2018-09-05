@@ -106,6 +106,31 @@ class PQueryGetTask extends PQuery {
   }
 }
 
+class PQueryGetHealthCheck extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN])) {
+      return false;
+    }
+    return true;
+  }
+}
+
+class PQuerySendHealthCheck extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CHECK_ID]) || !isset($QUERY[self::NUM_CRACKED]) || !isset($QUERY[self::START]) || !isset($QUERY[self::END]) || !isset($QUERY[self::NUM_GPUS]) || !isset($QUERY[self::ERRORS])) {
+      return false;
+    }
+    return true;
+  }
+
+  const CHECK_ID = "checkId";
+  const NUM_CRACKED = "numCracked";
+  const START = "start";
+  const END = "end";
+  const NUM_GPUS = "numGpus";
+  const ERRORS = "errors";
+}
+
 class PQueryGetHashlist extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::HASHLIST_ID])) {
@@ -201,6 +226,10 @@ abstract class PValues {
   const ERROR   = "ERROR";
 }
 
+class PValuesTask extends PValues {
+  const HEALTH_CHECK = -1;
+}
+
 class PValuesDownloadBinaryType extends PValues {
   const EXTRACTOR = "7zr";
   const CRACKER   = "cracker";
@@ -228,6 +257,7 @@ class PValuesChunkType extends PValues {
   const BENCHMARK_REQUIRED = "benchmark";
   const FULLY_DISPATCHED   = "fully_dispatched";
   const CRACKER_UPDATE     = "cracker_update";
+  const HEALTH_CHECK       = "health_check";
   const OK                 = "OK";
 }
 
@@ -342,4 +372,6 @@ class PActions {
   const SEND_PROGRESS             = "sendProgress";
   const TEST_CONNECTION           = "testConnection";
   const GET_FILE_STATUS           = "getFileStatus";
+  const GET_HEALTH_CHECK          = "getHealthCheck";
+  const SEND_HEALTH_CHECK         = "sendHealthCheck";
 }
