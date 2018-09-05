@@ -13,7 +13,7 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::HEALTH_VIEW_PERM);
 
-Template::loadInstance("health");
+Template::loadInstance("health/index");
 UI::add('pageTitle', "Health Checks");
 Menu::get()->setActive("config_health");
 
