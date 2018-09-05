@@ -19,15 +19,15 @@
 			  <tr>
 				  <td>[[check.getId()]]</td>
 				  <td>[[date("d.m.Y - H:i:s", [[check.getTime()]])]]</td>
-				  <td>{{IF [[entry.getType()]] == [[$DHealthCheckType::BRUTE_FORCE]]}}Brute-Force{{ENDIF}}</td>
+				  <td>{{IF [[check.getType()]] == [[$DHealthCheckType::BRUTE_FORCE]]}}Brute-Force{{ENDIF}}</td>
 				  <td>
-            {{IF [[entry.getStatus()]] == [[$DHealthCheckStatus::PENDING]]}}
+            {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::PENDING]]}}
               Running
             {{ENDIF}}
-            {{IF [[entry.getStatus()]] == [[$DHealthCheckStatus::COMPLETED]]}}
+            {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::COMPLETED]]}}
               Completed
             {{ENDIF}}
-            {{IF [[entry.getStatus()]] == [[$DHealthCheckStatus::ABORTED]]}}
+            {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::ABORTED]]}}
               Aborted
             {{ENDIF}}
           </td>
