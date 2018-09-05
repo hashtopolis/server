@@ -15,6 +15,16 @@ class HealthUtils{
     if($checkAgent == null){
       throw new HTException("Invalid health check agent ID!");
     }
+
+    // check if we also need to "un-complete" the health check because of this
+    $check = Factory::getHealthCheckFactory()->get($checkAgent->getHealthCheckId());
+    if($check->getStatus() == DHealthCheckStatus::COMPLETED){
+      $check->setStatus(DHealthCheckStatus::PENDING);
+    }
+    else if($check->getStatus() == DHealthCheckStatus::ABORTED){
+      throw new HTException("You cannot restart an agent check of an aborted health check!");
+    }
+
     $checkAgent->setStatus(DHealthCheckAgentStatus::PENDING);
     $checkAgent->setStart(0);
     $checkAgent->setEnd(0);
