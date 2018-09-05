@@ -138,6 +138,7 @@ class DViewControl {
   const TASKS_VIEW_PERM          = DAccessControl::VIEW_TASK_ACCESS;
   const USERS_VIEW_PERM          = DAccessControl::USER_CONFIG_ACCESS;
   const API_VIEW_PERM            = DAccessControl::USER_CONFIG_ACCESS;
+  const HEALTH_VIEW_PERM         = DAccessControl::SERVER_CONFIG_ACCESS;
 }
 
 class DAccessControlAction {
