@@ -274,6 +274,13 @@ class PResponseGetFileStatus extends PResponse {
   const FILENAMES = "filenames";
 }
 
+class PResponseGetHealthCheck extends PResponse {
+  const ATTACK            = "attack";
+  const CRACKER_BINARY_ID = "crackerBinaryId";
+  const HASHES            = "hashes";
+  const CHECK_ID          = "checkId";
+}
+
 class PResponseErrorMessage extends PResponse {
   const MESSAGE = "message";
 }
@@ -303,6 +310,10 @@ class PResponseBinaryDownload extends PResponse {
 }
 
 class PResponseError extends PResponse {
+  // not additional values required
+}
+
+class PResponseSendHealthCheck extends PResponse {
   // not additional values required
 }
 

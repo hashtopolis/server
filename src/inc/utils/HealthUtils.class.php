@@ -9,6 +9,7 @@ class HealthUtils{
   /**
    * Checks if there is a running health check which the agent has not completed yet.
    * @param Agent $agent
+   * @return HealthCheckAgent
    */
   public static function checkNeeded($agent){
     $qF1 = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
@@ -21,10 +22,26 @@ class HealthUtils{
       // test if the check is still running
       $healthCheck = Factory::getHealthCheckFactory()->get($c->getHealthCheckId());
       if($healthCheck->getStatus() == DHealthCheckStatus::PENDING){
-        return true;
+        return $c;
       }
     }
     return false;
+  }
+
+  /**
+   * Check if the health check is completed (all agents sent a response)
+   * @param HealthCheck $healthCheck 
+   */
+  public static function checkCompletion($healthCheck){
+    $qF = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, $healthCheck->getId(), "=");
+    $checks = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qF]);
+    foreach($checks as $check){
+      if($check->getStatus() != DHealthCheckAgentStatus::COMPLETED && $check->getStatus() != DHealthCheckAgentStatus::FAILED){
+        return; // we can stop here, at least one agent has not finished yet
+      }
+    }
+    $healthCheck->setStatus(DHealthCheckStatus::COMPLETED);
+    Factory::getHealthCheckFactory()->update($healthCheck);
   }
 
   /**
