@@ -13,6 +13,15 @@ if (!Login::getInstance()->isLoggedin()) {
 
 AccessControl::getInstance()->checkPermission(DViewControl::HEALTH_VIEW_PERM);
 
+//catch actions here...
+if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
+  $healthHandler = new HealthHandler();
+  $healthHandler->handle($_POST['action']);
+  if (UI::getNumMessages() == 0) {
+    Util::refresh();
+  }
+}
+
 Template::loadInstance("health/index");
 UI::add('pageTitle', "Health Checks");
 Menu::get()->setActive("config_health");

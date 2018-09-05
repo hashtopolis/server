@@ -47,6 +47,9 @@
             <select class="form-control mx-1" name="type" title="Type">
               <option value="0">Brute-Force</option>
             </select>
+            <select class="form-control mx-1" name="hashtypeId" title="Hash Type">
+              <option value="0">MD5</option>
+            </select>
             <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control mx-1" title="Cracker Binary">
               {{FOREACH binary;[[binaries]]}}
                 <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
