@@ -40,6 +40,7 @@ class APISendHealthCheck extends APIBasic {
     $healthCheckAgent->setStart($start);
     $healthCheckAgent->setEnd($end);
     $healthCheckAgent->setStatus($status);
+    Factory::getHealthCheckAgentFactory()->update($healthCheckAgent);
 
     HealthUtils::checkCompletion($healthCheck);
     $this->sendResponse([
