@@ -65,10 +65,10 @@ class HealthUtils{
     $expected = rand(0.1*DHealthCheck::NUM_HASHES,0.8*DHealthCheck::NUM_HASHES);
     for($i=0;$i<DHealthCheck::NUM_HASHES;$i++){
       if($i > $expected){
-        $hashes = HealthUtils::generateHash($hashtypeId, Util::randomString(8));
+        $hashes[] = HealthUtils::generateHash($hashtypeId, Util::randomString(8));
       }
       else{
-        $hashes = HealthUtils::generateHash($hashtypeId, Util::randomString(5));
+        $hashes[] = HealthUtils::generateHash($hashtypeId, Util::randomString(5));
       }
     }
 

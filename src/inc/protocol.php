@@ -279,6 +279,7 @@ class PResponseGetHealthCheck extends PResponse {
   const CRACKER_BINARY_ID = "crackerBinaryId";
   const HASHES            = "hashes";
   const CHECK_ID          = "checkId";
+  const HASHLIST_ALIAS    = "hashlistAlias";
 }
 
 class PResponseErrorMessage extends PResponse {

@@ -26,7 +26,8 @@ class APIGetHealthCheck extends APIBasic {
       PResponseGetHealthCheck::ATTACK => $cmd,
       PResponseGetHealthCheck::CRACKER_BINARY_ID => (int)$healthCheck->getCrackerBinaryId(),
       PResponseGetHealthCheck::HASHES => $hashes,
-      PResponseGetHealthCheck::CHECK_ID => (int)$healthCheck->getId()
+      PResponseGetHealthCheck::CHECK_ID => (int)$healthCheck->getId(),
+      PResponseGetHealthCheck::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)
     ]);
   }
 }
