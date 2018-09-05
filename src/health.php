@@ -2,6 +2,7 @@
 use DBA\Factory;
 use DBA\OrderFilter;
 use DBA\HealthCheck;
+use DBA\CrackerBinary;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -22,6 +23,13 @@ if(isset($_GET['id'])){
 else{
   $oF = new OrderFilter(HealthCheck::TIME, "DESC");
   UI::add('checks', Factory::getHealthCheckFactory()->filter([Factory::ORDER => $oF]));
+
+  // load cracker info
+  $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
+  UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
+  $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
+  usort($versions, ["Util", "versionComparisonBinary"]);
+  UI::add('versions', $versions);
 }
 
 echo Template::getInstance()->render(UI::getObjects());

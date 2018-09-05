@@ -20,3 +20,8 @@ class DHealthCheck {
   const NUM_HASHES = 100;
 }
 
+class DHealthCheckAction {
+  const CREATE      = "create";
+  const CREATE_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
+}
+
