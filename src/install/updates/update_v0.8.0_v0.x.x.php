@@ -44,6 +44,8 @@ $config = new Config(null, 7, DConfig::TELEGRAM_PROXY_TYPE, 'CURLPROXY_HTTP');
 Factory::getConfigFactory()->save($config);
 $config = new Config(null, 7, DConfig::TELEGRAM_PROXY_ENABLE, '0');
 Factory::getConfigFactory()->save($config);
+$config = new Config(null, 1, DConfig::DISABLE_TRIMMING, '0');
+Factory::getConfigFactory()->save($config);
 echo "OK\n";
 
 echo "Updating Hash tables... ";
