@@ -15,7 +15,7 @@ class ChunkUtils{
 
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
-    if ($chunk->getCheckpoint() == $chunk->getSkip() && $agentChunkSizeMax >= $chunk->getLength()) {
+    if (($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) && $agentChunkSizeMax >= $chunk->getLength()) {
       //chunk has not started yet
       $chunk->setProgress(0);
       $chunk->setDispatchTime(time());
@@ -25,7 +25,7 @@ class ChunkUtils{
       Factory::getChunkFactory()->update($chunk);
       return $chunk;
     }
-    else if ($chunk->getCheckpoint() == $chunk->getSkip()) {
+    else if ($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) {
       //split chunk into two parts
       $originalLength = $chunk->getLength();
       $firstPart = $chunk;
