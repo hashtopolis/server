@@ -287,6 +287,26 @@ $CONF['FileDelete'] = array(
   'filename',
   'time'
 );
+$CONF['HealthCheck'] = array(
+  'healthCheckId',
+  'time',
+  'status',
+  'checkType',
+  'hashtypeId',
+  'crackerBinaryId',
+  'expectedCracks'
+);
+$CONF['HealthCheckAgent'] = array(
+  'healthCheckAgentId',
+  'healthCheckId',
+  'agentId',
+  'status',
+  'cracked',
+  'numGpus',
+  'start',
+  'end',
+  'errors'
+);
 
 // relations
 $CONF['AccessGroupUser'] = array(

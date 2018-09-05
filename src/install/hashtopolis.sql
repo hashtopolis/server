@@ -998,6 +998,28 @@ CREATE TABLE `FileDownload` (
 
 INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) VALUES (1, 'Administrators', 'ALL');
 
+CREATE TABLE `HealthCheck` (
+  `healthCheckId` int(11) NOT NULL,
+  `time` bigint(20) NOT NULL,
+  `status` int(11) NOT NULL,
+  `checkType` int(11) NOT NULL,
+  `hashtypeId` int(11) NOT NULL,
+  `crackerBinaryId` int(11) NOT NULL,
+  `expectedCracks` int(11) NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE `HealthCheckAgent` (
+  `healthCheckAgentId` int(11) NOT NULL,
+  `healthCheckId` int(11) NOT NULL,
+  `agentId` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `cracked` int(11) NOT NULL,
+  `numGpus` int(11) NOT NULL,
+  `start` bigint(20) NOT NULL,
+  `end` bigint(20) NOT NULL,
+  `errors` text COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB;
+
 --
 -- Indexes for table `ApiKey`
 --
@@ -1009,6 +1031,12 @@ ALTER TABLE `ApiGroup`
 
 ALTER TABLE `FileDownload`
   ADD PRIMARY KEY (`fileDownloadId`);
+
+ALTER TABLE `HealthCheck` 
+  ADD PRIMARY KEY (`healthCheckId`);
+
+ALTER TABLE `HealthCheckAgent` 
+  ADD PRIMARY KEY (`healthCheckAgentId`);
 
 
 ALTER TABLE `FileDelete`
@@ -1461,6 +1489,14 @@ ALTER TABLE `User`
 --
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `HealthCheck` 
+  MODIFY `healthCheckId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `HealthCheckAgent` 
+  MODIFY `healthCheckAgentId` int(11) NOT NULL AUTO_INCREMENT;
+
+
 --
 -- Constraints der exportierten Tabellen
 --
