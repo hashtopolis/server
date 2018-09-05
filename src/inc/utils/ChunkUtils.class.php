@@ -15,7 +15,7 @@ class ChunkUtils{
 
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
-    if ($chunk->getCheckpoint() == $chunk->getSkip() && $agentChunkSizeMax > $chunk->getLength()) {
+    if ($chunk->getCheckpoint() == $chunk->getSkip() && $agentChunkSizeMax >= $chunk->getLength()) {
       //chunk has not started yet
       $chunk->setProgress(0);
       $chunk->setDispatchTime(time());
@@ -42,10 +42,26 @@ class ChunkUtils{
     }
     else {
       if ($chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint() == 0) {
-        // special case when chunk length gets 0
+        // special case when remaining chunk length gets 0
+        $chunk->setProgress(10000);
+        $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
+        Factory::getChunkFactory()->update($chunk);
         return ChunkUtils::createNewChunk($task, $assignment);
       }
-      $newChunk = new Chunk(null, $task->getId(), $chunk->getCheckpoint(), $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(), $assignment->getAgentId(), time(), 0, $chunk->getCheckpoint(), DHashcatStatus::INIT, 0, 0, 0);
+      $newChunk = new Chunk(
+        null, 
+        $task->getId(), 
+        $chunk->getCheckpoint(), 
+        $chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint(),
+        $assignment->getAgentId(), 
+        time(), 
+        0, 
+        $chunk->getCheckpoint(), 
+        DHashcatStatus::INIT, 
+        0, 
+        0, 
+        0
+      );
       $chunk->setLength($chunk->getCheckpoint() - $chunk->getSkip());
       $chunk->setProgress(10000);
       $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
@@ -83,7 +99,7 @@ class ChunkUtils{
     $task->setKeyspaceProgress($newProgress);
     Factory::getTaskFactory()->update($task);
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, 0, DHashcatStatus::INIT, 0, 0);
-    Factory::getChunkFactory()->save($chunk);
+    $chunk = Factory::getChunkFactory()->save($chunk);
     return $chunk;
   }
 
