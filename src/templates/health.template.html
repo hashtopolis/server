@@ -1,0 +1,42 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Health Checks</h2>
+{%TEMPLATE->struct/messages%}
+<div class="alert alert-info">
+  Health checks can be used to check if all agents in the setup work properly. Note that a health check won't be finished until all agents which are registered reported back their results.
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <th>Check ID</th>
+			  <th>Created</th>
+			  <th>Type</th>
+			  <th>Status</th>
+			  <th>&nbsp;</th>
+		  </tr>
+		  {{FOREACH check;[[checks]]}}
+			  <tr>
+				  <td>[[check.getId()]]</td>
+				  <td>[[date("d.m.Y - H:i:s", [[check.getTime()]])]]</td>
+				  <td>{{IF [[entry.getType()]] == [[$DHealthCheckType::BRUTE_FORCE]]}}Brute-Force{{ENDIF}}</td>
+				  <td>
+            {{IF [[entry.getStatus()]] == [[$DHealthCheckStatus::PENDING]]}}
+              Running
+            {{ENDIF}}
+            {{IF [[entry.getStatus()]] == [[$DHealthCheckStatus::COMPLETED]]}}
+              Completed
+            {{ENDIF}}
+            {{IF [[entry.getStatus()]] == [[$DHealthCheckStatus::ABORTED]]}}
+              Aborted
+            {{ENDIF}}
+          </td>
+          <td>
+            <a href="health.php?id=[[check.getId()]]" class="float-right mx-1 btn btn-primary">View</a>
+          </td>
+			  </tr>
+		  {{ENDFOREACH}}
+	  </table>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}
