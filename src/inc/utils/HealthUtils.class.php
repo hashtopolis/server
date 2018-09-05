@@ -7,6 +7,24 @@ use DBA\HealthCheck;
 
 class HealthUtils{
   /**
+   * @param int $checkAgentId 
+   * @throws HTException 
+   */
+  public static function resetAgentCheck($checkAgentId){
+    $checkAgent = Factory::getHealthCheckAgentFactory()->get($checkAgentId);
+    if($checkAgent == null){
+      throw new HTException("Invalid health check agent ID!");
+    }
+    $checkAgent->setStatus(DHealthCheckAgentStatus::PENDING);
+    $checkAgent->setStart(0);
+    $checkAgent->setEnd(0);
+    $checkAgent->setErrors("");
+    $checkAgent->setCracked(0);
+    $checkAgent->setNumGpus(0);
+    Factory::getHealthCheckAgentFactory()->update($checkAgent);
+  }
+
+  /**
    * Checks if there is a running health check which the agent has not completed yet.
    * @param Agent $agent
    * @return HealthCheckAgent

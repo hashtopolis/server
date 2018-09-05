@@ -55,7 +55,7 @@
           </td>
 				  <td>
             {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
-              [[checkAgent.getCracked()]]
+              [[checkAgent.getCracked()]] of [[check.getExpectedCracks()]]
             {{ELSE}}
               N/A
             {{ENDIF}}
@@ -68,7 +68,14 @@
             {{ENDIF}}
           </td>
           <td>
-            &nbsp;
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              <form class="form-inline" method="post" action="">
+                <input type="hidden" name="action" value="[[$DHealthCheckAction::RESET_AGENT]]">
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <input type="hidden" name="healthCheckAgentId" value="[[checkAgent.getId()]]">
+                <button type="submit" class="btn btn-danger mx-1 float-right">Restart</button>
+              </form>
+            {{ENDIF}}
           </td>
 			  </tr>
 		  {{ENDFOREACH}}
