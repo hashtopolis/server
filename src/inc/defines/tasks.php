@@ -49,6 +49,9 @@ class DSupertaskAction {
 
   const IMPORT_SUPERTASK      = "importSupertask";
   const IMPORT_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
+
+	const BULK_SUPERTASK      = "bulkSupertaskCreation";
+	const BULK_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
 }
 
 class DTaskAction {
