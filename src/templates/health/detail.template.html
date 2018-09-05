@@ -41,7 +41,7 @@
           </td>
 				  <td>
             {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
-              [[date("H:i:s", [[checkAgent.getEnd()]] - [[checkAgent.getStart()]])]]
+              [[Util::calculate([[checkAgent.getEnd()]] - [[checkAgent.getStart()]])]] seconds
             {{ELSE}}
               N/A
             {{ENDIF}}
