@@ -1,0 +1,18 @@
+\documentclass[12pt]{article}
+\begin{document}
+
+\section*{Hashlist '[[hashlist.getHashlistName()]]'}
+
+Hash type: [[Util::texEscape([[hashtype.getDescription()]])]]\\
+Total hashes: [[hashlist.getHashCount()]]\\
+Cracked hashes: [[hashlist.getCracked()]]\\
+
+\subsection*{Tasks}
+
+{{FOREACH task;[[tasks]]}}
+	\subsubsection*{Task '[[Util::texEscape([[task.getTaskName()]])]]' ([[task.getId()]])}
+	Command: \texttt{[[Util::texEscape([[task.getAttackCmd()]])]]}\\
+	Notes: [[Util::texEscape([[task.getNotes()]])]]
+{{ENDFOREACH}}
+
+\end{document}
