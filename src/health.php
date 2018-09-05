@@ -33,7 +33,7 @@ if(isset($_GET['id'])){
   if($healthCheck == null){
     UI::printError(UI::ERROR, "Invalid health check ID!");
   }
-  Template::loadInstance("health/details");
+  Template::loadInstance("health/detail");
   UI::add('check', $healthCheck);
   $qF = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, $healthCheck->getId(), "=");
   $checkAgents = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qF]);
