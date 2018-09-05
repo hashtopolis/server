@@ -256,7 +256,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (44, 6, 'multicastEnable', '0'),
   (45, 6, 'multicastDevice', 'eth0'),
   (46, 6, 'multicastTransferRateEnable', '0'),
-  (47, 6, 'multicastTranserRate', '500000');
+  (47, 6, 'multicastTranserRate', '500000'),
+  (48, 1, 'disableTrimming', '0');
 
 -- --------------------------------------------------------
 

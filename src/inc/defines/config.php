@@ -47,6 +47,7 @@ class DConfig {
   const RULE_SPLIT_DISABLE     = "ruleSplitDisable";
   const PRINCE_LINK            = "princeLink";
   const AGENT_DATA_LIFETIME    = "agentDataLifetime";
+  const DISABLE_TRIMMING       = "disableTrimming";
 
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -206,6 +207,8 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::TELEGRAM_PROXY_TYPE:
         return DConfigType::SELECT;
+      case DConfig::DISABLE_TRIMMING:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -310,6 +313,8 @@ class DConfig {
         return "Server url of the proxy to use for telegram notifications.";
       case DConfig::TELEGRAM_PROXY_TYPE:
         return "Proxy type to use for telegram notifications.";
+      case DConfig::DISABLE_TRIMMING:
+        return "Disable trimming of chunks and redo whole chunks";
     }
     return $config;
   }
