@@ -55,7 +55,7 @@
           </td>
 				  <td>
             {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
-              [[checkAgent.getNumCracked()]]
+              [[checkAgent.getCracked()]]
             {{ELSE}}
               N/A
             {{ENDIF}}
