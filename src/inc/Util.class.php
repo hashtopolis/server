@@ -112,6 +112,9 @@ class Util {
 			else if($string[$i] == '\\'){
 				$output .= "\\textbackslash";
 			}
+      else if($string[$i] == '_'){
+        $output .= "\\_";
+      }
 			else{
 				$output .= $string[$i];
 			}
