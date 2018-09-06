@@ -5,6 +5,7 @@ use DBA\TaskWrapper;
 use DBA\OrderFilter;
 use DBA\ContainFilter;
 use DBA\Task;
+use DBA\HealthCheckAgent;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -41,13 +42,38 @@ if(isset($_GET['hashlistId'])){
 
   // load other data
   $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
+
+  // set settings
   $objects = ['hashlist' => $hashlist, 'tasks' => $tasks, 'hashtype' => $hashtype];
   $type = "hashlist";
   $typeId = $hashlist->getId();
   $filename = "Hashlist_Report_" . $hashlist->getId() . ".pdf";
 }
 else if(isset($_GET['checkId'])){
-  // TODO:
+  AccessControl::getInstance()->checkPermission(DAccessControl::SERVER_CONFIG_ACCESS);
+
+  // load health check
+  $check = Factory::getHealthCheckFactory()->get($_GET['checkId']);
+  if($check == null){
+    UI::printError(UI::ERROR, "Invalid health check!");
+  }
+
+  // load agent checks
+  $qF = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, $check->getId(), "=");
+  $agentChecks = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qF]);
+
+  // load agent data
+  $agents = Factory::getAgentFactory()->filter([]);
+  $agentData = new DataSet();
+  foreach($agents as $agent){
+    $agentData->addValue($agent->getId(), $agent);
+  }
+
+  // set settings
+  $objects = ['check' => $check, 'agentChecks' => $agentChecks, 'agents' => $agentData];
+  $type = "health-check";
+  $typeId = $check->getId();
+  $filename = "Health_Check_Report_" . $check->getId() . ".pdf";
 }
 else{
   UI::printError(UI::ERROR, "Invalid request!");
