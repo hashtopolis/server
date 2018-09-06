@@ -13,40 +13,55 @@ if (!Login::getInstance()->isLoggedin()) {
   die();
 }
 
-AccessControl::getInstance()->checkPermission(DAccessControl::MANAGE_HASHLIST_ACCESS);
+$objects = [];
+$type = "";
+$typeId = 0;
+$filename = "gen.pdf";
+if(isset($_GET['hashlistId'])){
+  AccessControl::getInstance()->checkPermission(DAccessControl::MANAGE_HASHLIST_ACCESS);
 
-// load hashlist
-$hashlist = Factory::getHashlistFactory()->get($_GET['hashlistId']);
-if($hashlist == null){
-	UI::printError(UI::ERROR, "Invalid hashlist!");
+  // load hashlist
+  $hashlist = Factory::getHashlistFactory()->get($_GET['hashlistId']);
+  if($hashlist == null){
+	  UI::printError(UI::ERROR, "Invalid hashlist!");
+  }
+  else if(!AccessUtils::userCanAccessHashlists($hashlist, Login::getInstance()->getUser())){
+	  UI::printError(UI::ERROR, "No access to hashlist!");
+  }
+
+  // load task wrappers
+  $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
+  $oF = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "ASC");
+  $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
+
+  // load tasks
+  $qF = new ContainFilter(Task::TASK_WRAPPER_ID, Util::arrayOfIds($taskWrappers));
+  $oF = new OrderFilter(Task::TASK_ID, "ASC");
+  $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
+
+  // load other data
+  $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
+  $objects = ['hashlist' => $hashlist, 'tasks' => $tasks, 'hashtype' => $hashtype];
+  $type = "hashlist";
+  $typeId = $hashlist->getId();
+  $filename = "Hashlist_Report_" . $hashlist->getId() . ".pdf";
 }
-else if(!AccessUtils::userCanAccessHashlists($hashlist, Login::getInstance()->getUser())){
-	UI::printError(UI::ERROR, "No access to hashlist!");
+else if(isset($_GET['checkId'])){
+  // TODO:
 }
-
-// load task wrappers
-$qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
-$oF = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "ASC");
-$taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-
-// load tasks
-$qF = new ContainFilter(Task::TASK_WRAPPER_ID, Util::arrayOfIds($taskWrappers));
-$oF = new OrderFilter(Task::TASK_ID, "ASC");
-$tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-
-// load other data
-$hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
+else{
+  UI::printError(UI::ERROR, "Invalid request!");
+}
 
 // load report
-$objects = ['hashlist' => $hashlist, 'tasks' => $tasks, 'hashtype' => $hashtype];
 $report = $_GET['report'];
 $reports = Util::scanReportDirectory();
 $found = false;
 foreach($reports as $r){
-	if(strpos($r, "hashlist-") !== 0){
+	if(strpos($r, $type."-") !== 0){
 		continue;
 	}
-	else if(strpos(substr($r, 9, -13), $report) === 0){
+	else if(strpos(substr($r, strlen($type) + 1, -13), $report) === 0){
 		$found = $r;
 	}
 }
@@ -67,7 +82,7 @@ else{
 
 // render report
 $template = new Template("report/$r");
-$baseName = dirname(__FILE__)."/tmp/".time()."-hashlist-".$hashlist->getId();
+$baseName = dirname(__FILE__)."/tmp/".time()."-$type-".$typeId;
 $tempName = $baseName.".tex";
 file_put_contents($tempName, $template->render($objects));
 
@@ -87,7 +102,7 @@ if(!file_exists($baseName.".pdf")){
 
 // download pdf
 header('Content-Type: application/octet-stream');
-header("Content-disposition: attachment; filename=\"Hashlist_Report_" . $hashlist->getId() . ".pdf\""); 
+header("Content-disposition: attachment; filename=\"$filename\""); 
 echo file_get_contents($baseName.".pdf");
 
 // cleanup

@@ -6,11 +6,41 @@
   <div class="table-responsive">
     <table class="table table-bordered">
       <tr>
-        <th>TODO</th>
+        <th>Time Created</th>
+        <td>[[date([[config.getVal([[$DConfig::TIME_FORMAT]])]], [[check.getTime()]])]]</td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td>
+          {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::PENDING]]}}
+            Running
+          {{ENDIF}}
+          {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::COMPLETED]]}}
+            Completed
+          {{ENDIF}}
+          {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::ABORTED]]}}
+            Aborted
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <th>Report</th>
+        <td>
+          <form class="form-inline" method="get" action="report.php">
+            <input type="hidden" name="checkId" value="[[check.getId()]]">
+            <select class="form-control mx-1" name="report">
+              {{FOREACH report;[[Util::scanReportDirectory('health-check', true)]]}}
+                <option value="[[strtolower([[report]])]]">[[report]]</option>
+              {{ENDFOREACH}}
+            </select>
+            <button type="submit" class="btn btn-light mx-1">Download</button>
+          </form>
+        </td>
       </tr>
     </table>
   </div>
 </div>
+<h3>Checked Agents ([[sizeof([[checkAgents]])]])</h3>
 <div class="card">
   <div class="table-responsive">
     <table class="table table-bordered">
