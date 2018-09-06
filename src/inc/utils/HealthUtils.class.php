@@ -24,6 +24,7 @@ class HealthUtils{
     else if($check->getStatus() == DHealthCheckStatus::ABORTED){
       throw new HTException("You cannot restart an agent check of an aborted health check!");
     }
+    Factory::getHealthCheckFactory()->update($check);
 
     $checkAgent->setStatus(DHealthCheckAgentStatus::PENDING);
     $checkAgent->setStart(0);
