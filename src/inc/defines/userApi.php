@@ -52,6 +52,8 @@ class UQueryTask extends UQuery {
   const AGENT_ID = "agentId";
   const SUPERTASK_PRIORITY = "supertaskPriority";
   const SUPERTASK_NAME = "name";
+	const TASK_BASEFILES = "basefiles";
+	const TASK_ITERFILES = "iterfiles";
 
   const PRETASK_PRIORITY = "priority";
   const PRETASK_NAME = "name";
@@ -691,6 +693,7 @@ class USectionSupertask extends UApi {
   const IMPORT_SUPERTASK = "importSupertask";
   const SET_SUPERTASK_NAME = "setSupertaskName";
   const DELETE_SUPERTASK = "deleteSupertask";
+	const BULK_SUPERTASK = "bulkSupertask";
 
   public function describe($constant){
     switch($constant){
@@ -706,6 +709,8 @@ class USectionSupertask extends UApi {
         return "Rename a configured supertask";
       case USectionSupertask::DELETE_SUPERTASK:
         return "Delete a supertask";
+			case USectionSupertask::BULK_SUPERTASK:
+				return "Create supertask out base command with files";
       default:
         return "__".$constant."__";
     }

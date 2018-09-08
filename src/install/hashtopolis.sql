@@ -256,7 +256,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (44, 6, 'multicastEnable', '0'),
   (45, 6, 'multicastDevice', 'eth0'),
   (46, 6, 'multicastTransferRateEnable', '0'),
-  (47, 6, 'multicastTranserRate', '500000');
+  (47, 6, 'multicastTranserRate', '500000'),
+  (48, 1, 'disableTrimming', '0');
 
 -- --------------------------------------------------------
 
@@ -386,7 +387,8 @@ CREATE TABLE `Hash` (
                 COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeCracked` INT(11)                 DEFAULT NULL,
   `chunkId`     INT(11)                 DEFAULT NULL,
-  `isCracked`   TINYINT(4)              NOT NULL
+  `isCracked`   TINYINT(4)              NOT NULL,
+  `crackPos`    BIGINT                  NOT NULL
 )
   ENGINE = InnoDB;
 
@@ -406,7 +408,8 @@ CREATE TABLE `HashBinary` (
                  COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeCracked`  INT(11)                 DEFAULT NULL,
   `chunkId`      INT(11)                 DEFAULT NULL,
-  `isCracked`    TINYINT(4)                         NOT NULL
+  `isCracked`    TINYINT(4)                         NOT NULL,
+  `crackPos`     BIGINT                  NOT NULL
 )
   ENGINE = InnoDB;
 

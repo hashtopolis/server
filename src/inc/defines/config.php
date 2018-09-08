@@ -5,6 +5,7 @@ class DConfigType {
   const NUMBER_INPUT = "number";
   const TICKBOX      = "checkbox";
   const EMAIL        = "email";
+  const SELECT       = "select";
 }
 
 class DConfigAction {
@@ -19,6 +20,13 @@ class DConfigAction {
 
   const CLEAR_ALL      = "clearAll";
   const CLEAR_ALL_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
+}
+
+class DProxyTypes {
+  const HTTP   = 'HTTP';
+  const HTTPS  = 'HTTPS';
+  const SOCKS4 = 'SOCKS4';
+  const SOCKS5 = 'SOCKS5';
 }
 
 // used config values
@@ -39,6 +47,7 @@ class DConfig {
   const RULE_SPLIT_DISABLE     = "ruleSplitDisable";
   const PRINCE_LINK            = "princeLink";
   const AGENT_DATA_LIFETIME    = "agentDataLifetime";
+  const DISABLE_TRIMMING       = "disableTrimming";
 
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -68,7 +77,6 @@ class DConfig {
   const BASE_HOST          = "baseHost";
   const EMAIL_SENDER       = "emailSender";
   const EMAIL_SENDER_NAME  = "emailSenderName";
-  const TELEGRAM_BOT_TOKEN = "telegramBotToken";
   const CONTACT_EMAIL      = "contactEmail";
   const VOUCHER_DELETION   = "voucherDeletion";
   const S_NAME             = "jeSuisHashtopussy";
@@ -79,6 +87,30 @@ class DConfig {
   const MULTICAST_TR_ENABLE = "multicastTransferRateEnable";
   const MULTICAST_TR        = "multicastTranserRate";
 
+  // Section: Notifications
+  const TELEGRAM_PROXY_ENABLE = "telegramProxyEnable";
+  const TELEGRAM_BOT_TOKEN    = "telegramBotToken";
+  const TELEGRAM_PROXY_SERVER = "telegramProxyServer";
+  const TELEGRAM_PROXY_PORT   = "telegramProxyPort";
+  const TELEGRAM_PROXY_TYPE   = "telegramProxyType";
+
+  /**
+   * Gives the selection for the configuration values which are selections.
+   * @param string $config 
+   * @return DataSet
+   */
+  public static function getSelection($config){
+    switch($config){
+      case DConfig::TELEGRAM_PROXY_TYPE:
+        return new DataSet([
+          DProxyTypes::HTTP => DProxyTypes::HTTP,
+          DProxyTypes::HTTPS => DProxyTypes::HTTPS,
+          DProxyTypes::SOCKS4 => DProxyTypes::SOCKS4,
+          DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
+        ]);
+    }
+    return new DataSet(["Not found!"]);
+  }
 
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
@@ -167,6 +199,16 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::MULTICAST_TR:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::TELEGRAM_PROXY_ENABLE:
+        return DConfigType::TICKBOX;
+      case DConfig::TELEGRAM_PROXY_PORT:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::TELEGRAM_PROXY_SERVER:
+        return DConfigType::STRING_INPUT;
+      case DConfig::TELEGRAM_PROXY_TYPE:
+        return DConfigType::SELECT;
+      case DConfig::DISABLE_TRIMMING:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -263,6 +305,16 @@ class DConfig {
         return "Instead of the built in UFTP flow control, use a static set transfer rate<br>(Important: Setting this value wrong can affect the functionality, only use this if you are sure this transfer rate is feasible)";
       case DConfig::MULTICAST_TR:
         return "Set static transfer rate in case it is activated (in Kbit/s)";
+      case DConfig::TELEGRAM_PROXY_ENABLE:
+        return "Enable using a proxy for the telegram notification bot.";
+      case DConfig::TELEGRAM_PROXY_PORT:
+        return "Set the port for the telegram notification proxy.";
+      case DConfig::TELEGRAM_PROXY_SERVER:
+        return "Server url of the proxy to use for telegram notifications.";
+      case DConfig::TELEGRAM_PROXY_TYPE:
+        return "Proxy type to use for telegram notifications.";
+      case DConfig::DISABLE_TRIMMING:
+        return "Disable trimming of chunks and redo whole chunks";
     }
     return $config;
   }

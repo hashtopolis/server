@@ -66,6 +66,19 @@ class AccessUtils {
     return true;
   }
 
+	/**
+	 * @param File $file 
+	 * @param User $user 
+	 * @return boolean
+	 */
+	public static function userCanAccessFile($file, $user) {
+    $accessGroupIds = Util::getAccessGroupIds($user->getId());
+    if (!in_array($file->getAccessGroupId(), $accessGroupIds)) {
+      return false;
+    }
+    return true;
+  }
+
   /**
    * @param $accessGroupsAgent AccessGroup[]
    * @param $accessGroupsUser AccessGroup[]

@@ -39,6 +39,11 @@ else if (isset($_GET['create']) && $_GET['create'] == "import" && AccessControl:
   Menu::get()->setActive("tasks_superimport");
   Template::loadInstance("supertasks/import");
 
+	$arr = FileUtils::loadFilesByCategory(Login::getInstance()->getUser(), []);
+  UI::add('wordlists', $arr[1]);
+  UI::add('rules', $arr[0]);
+  UI::add('other', $arr[2]);
+
   UI::add('crackerBinaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([]));
   UI::add('pageTitle', "Import Supertask from Masks");
 }

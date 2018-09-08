@@ -197,6 +197,13 @@ UI::add('currentPage', $currentPage);
 $oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
 $hashes = $hashFactory->filter([Factory::FILTER => $queryFilters, Factory::ORDER => $oF]);
 
+if(isset($_GET['crackpos']) && $_GET['crackpos'] == 'true'){
+	UI::add('crackpos', 1);
+}
+else{
+	UI::add('crackpos', 0);
+}
+
 $output = "";
 foreach ($hashes as $hash) {
   $hash = \DBA\Util::cast($hash, $hashClass);
@@ -234,6 +241,9 @@ foreach ($hashes as $hash) {
       continue;
     }
   }
+	if(isset($_GET['crackpos']) && $_GET['crackpos'] == 'true' && $hash->getIsCracked()){
+		$output .= ":".$hash->getCrackPos();
+	}
   $output .= "\n";
 }
 UI::add('output', $output);

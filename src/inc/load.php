@@ -5,14 +5,14 @@ ini_set("display_errors", "0");
 
 session_start();
 
-$VERSION = "0.8.0";
+$VERSION = "0.8.0+dev";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
 }
 
 $INSTALL = false;
-@include(dirname(__FILE__) . "/db.php");
+@include(dirname(__FILE__) . "/conf.php");
 
 // include all .class.php files in inc dir
 $dir = scandir(dirname(__FILE__));
