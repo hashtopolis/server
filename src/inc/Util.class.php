@@ -96,6 +96,57 @@ class Util {
         break;
     }
   }
+  
+  /**
+	 * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
+	 * 
+	 * @param string $string 
+	 * @return string
+	 */
+	public static function texEscape($string){
+		$output = "";
+		for($i=0;$i<strlen($string);$i++){
+			if($string[$i] == '#'){
+				$output .= "\\#";
+			}
+			else if($string[$i] == '\\'){
+				$output .= "\\textbackslash";
+			}
+			else{
+				$output .= $string[$i];
+			}
+		}
+		return $output;
+	}
+
+ 	/**
+	 * Scan the report template directory for templates. If no type is specified it will return all found.
+	 * 
+	 * @param string $type 
+	 * @return string[] found report template file names
+	 */
+	public static function scanReportDirectory($type = "", $pretty = false) {
+    $directory = dirname(__FILE__) . "/../templates/report/";
+    if (file_exists($directory) && is_dir($directory)) {
+      $reportDir = opendir($directory);
+      $reports = array();
+      while ($file = readdir($reportDir)) {
+        if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file) && strpos($file, ".tex") !== false) {
+					if(strlen($type) > 0 && strpos($file, $type."-") !== 0){
+						continue;
+					}
+					if($pretty){
+						$reports[] = ucfirst(substr(str_replace(".template.tex", "", $file), strlen($type) + 1));
+					}
+					else{
+						$reports[] = $file;
+					}
+        }
+      }
+      return $reports;
+    }
+    return [];
+  }
 
   /**
    * Scans the import-directory for files. Directories are ignored.

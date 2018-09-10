@@ -12,11 +12,14 @@ header("Content-Type: application/json");
 $QUERY = file_get_contents('php://input');
 parse_str($QUERY, $output);
 
-$oF = new OrderFilter(Task::PRIORITY, "DESC");
+$start = intval($output['start']);
+$length = intval($output['length']);
+
+$oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT $start,$length");
 $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $output["taskWrapperId"], "=");
 $total_subtasks_count = Factory::getTaskFactory()->countFilter([Factory::FILTER => $qF]);
 
-$subtasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF, Factory::LIMIT => [$output["start"], $output["length"]]]);
+$subtasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 
 $accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
 
