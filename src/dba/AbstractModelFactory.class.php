@@ -516,9 +516,14 @@ abstract class AbstractModelFactory {
     }
     $query .= $this->applyOrder($options['order']);
 
+    if (array_key_exists("limit", $options)) {
+      $query .= $this->applyLimits($options['limit']);
+    }
+    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
+    
 
     $objects = array();
 
@@ -587,6 +592,17 @@ abstract class AbstractModelFactory {
       $groupsQueries[] = $group->getQueryString($this->getModelTable());
     }
     return " GROUP BY " . implode(", ", $groupsQueries);
+  }
+  
+  private function applyLimits($limits) {
+    $limitsQueries = array();
+    if (!is_array($limits)) {
+      $limits = array($limits);
+    }
+    if (count($limits) > 2) {
+      return "";
+    }
+    return " LIMIT " . implode(", ", $limits);
   }
 
   /**
