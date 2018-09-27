@@ -1005,7 +1005,8 @@ CREATE TABLE `HealthCheck` (
   `checkType` int(11) NOT NULL,
   `hashtypeId` int(11) NOT NULL,
   `crackerBinaryId` int(11) NOT NULL,
-  `expectedCracks` int(11) NOT NULL
+  `expectedCracks` int(11) NOT NULL,
+  `attackCmd` VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `HealthCheckAgent` (

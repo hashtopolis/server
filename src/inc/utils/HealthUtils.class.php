@@ -101,8 +101,17 @@ class HealthUtils{
       }
     }
 
+    $cmd = SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)." -a 3 -1 ?l?u?d ?1?1?1?1?1";
+
     // create check
-    $healthCheck = new HealthCheck(null, time(), DHealthCheckStatus::PENDING, $type, $hashtypeId, $crackerBinaryId, $expected);
+    $healthCheck = new HealthCheck(null, 
+      time(), 
+      DHealthCheckStatus::PENDING, 
+      $type, 
+      $hashtypeId, 
+      $crackerBinaryId, 
+      $expected,
+      $cmd);
     $healthCheck = Factory::getHealthCheckFactory()->save($healthCheck);
 
     // save hashes

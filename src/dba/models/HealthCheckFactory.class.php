@@ -23,7 +23,7 @@ class HealthCheckFactory extends AbstractModelFactory {
    * @return HealthCheck
    */
   function getNullObject() {
-    $o = new HealthCheck(-1, null, null, null, null, null, null);
+    $o = new HealthCheck(-1, null, null, null, null, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class HealthCheckFactory extends AbstractModelFactory {
    * @return HealthCheck
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HealthCheck($dict['healthCheckId'], $dict['time'], $dict['status'], $dict['checkType'], $dict['hashtypeId'], $dict['crackerBinaryId'], $dict['expectedCracks']);
+    $o = new HealthCheck($dict['healthCheckId'], $dict['time'], $dict['status'], $dict['checkType'], $dict['hashtypeId'], $dict['crackerBinaryId'], $dict['expectedCracks'], $dict['attackCmd']);
     return $o;
   }
 

@@ -294,7 +294,8 @@ $CONF['HealthCheck'] = array(
   'checkType',
   'hashtypeId',
   'crackerBinaryId',
-  'expectedCracks'
+  'expectedCracks',
+  'attackCmd'
 );
 $CONF['HealthCheckAgent'] = array(
   'healthCheckAgentId',

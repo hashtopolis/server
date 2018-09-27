@@ -10,8 +10,9 @@ class HealthCheck extends AbstractModel {
   private $hashtypeId;
   private $crackerBinaryId;
   private $expectedCracks;
+  private $attackCmd;
   
-  function __construct($healthCheckId, $time, $status, $checkType, $hashtypeId, $crackerBinaryId, $expectedCracks) {
+  function __construct($healthCheckId, $time, $status, $checkType, $hashtypeId, $crackerBinaryId, $expectedCracks, $attackCmd) {
     $this->healthCheckId = $healthCheckId;
     $this->time = $time;
     $this->status = $status;
@@ -19,6 +20,7 @@ class HealthCheck extends AbstractModel {
     $this->hashtypeId = $hashtypeId;
     $this->crackerBinaryId = $crackerBinaryId;
     $this->expectedCracks = $expectedCracks;
+    $this->attackCmd = $attackCmd;
   }
   
   function getKeyValueDict() {
@@ -30,6 +32,7 @@ class HealthCheck extends AbstractModel {
     $dict['hashtypeId'] = $this->hashtypeId;
     $dict['crackerBinaryId'] = $this->crackerBinaryId;
     $dict['expectedCracks'] = $this->expectedCracks;
+    $dict['attackCmd'] = $this->attackCmd;
     
     return $dict;
   }
@@ -97,6 +100,14 @@ class HealthCheck extends AbstractModel {
   function setExpectedCracks($expectedCracks){
     $this->expectedCracks = $expectedCracks;
   }
+  
+  function getAttackCmd(){
+    return $this->attackCmd;
+  }
+  
+  function setAttackCmd($attackCmd){
+    $this->attackCmd = $attackCmd;
+  }
 
   const HEALTH_CHECK_ID = "healthCheckId";
   const TIME = "time";
@@ -105,4 +116,5 @@ class HealthCheck extends AbstractModel {
   const HASHTYPE_ID = "hashtypeId";
   const CRACKER_BINARY_ID = "crackerBinaryId";
   const EXPECTED_CRACKS = "expectedCracks";
+  const ATTACK_CMD = "attackCmd";
 }

@@ -62,7 +62,8 @@ CREATE TABLE `HealthCheck` (
   `checkType` int(11) NOT NULL,
   `hashtypeId` int(11) NOT NULL,
   `crackerBinaryId` int(11) NOT NULL,
-  `expectedCracks` int(11) NOT NULL
+  `expectedCracks` int(11) NOT NULL,
+  `attackCmd` VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheck` ADD PRIMARY KEY (`healthCheckId`)");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheck` MODIFY `healthCheckId` int(11) NOT NULL AUTO_INCREMENT");
