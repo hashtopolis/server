@@ -81,10 +81,9 @@ class HealthUtils{
     throw new HTException("Not able to get attack mode for this type!");
   }
 
-  private static function getAttackInput($type){
-    switch($type){
-      case DHealthCheckType::BRUTE_FORCE:
-        return " -1 ?l?u?d ?1?1?1?1?1";
+  private static function getAttackInput($hashtypeId, $type){
+    if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5){
+      return " -1 ?l?u?d ?1?1?1?1?1";
     }
     throw new HTException("Not able to get attack input for this type!");
   }
@@ -128,7 +127,7 @@ class HealthUtils{
       $hashes[] = HealthUtils::generateHash($hashtypeId, HealthUtils::getAttackPlain($hashtypeId, $type, $i < $expected));
     }
 
-    $cmd = SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS).HealthUtils::getAttackMode($type).HealthUtils::getAttackInput($type);
+    $cmd = SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS).HealthUtils::getAttackMode($type).HealthUtils::getAttackInput($hashtypeId, $type);
 
     // create check
     $healthCheck = new HealthCheck(null, 
