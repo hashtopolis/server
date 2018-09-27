@@ -9,12 +9,13 @@ require_once(dirname(__FILE__) . "/../inc/load.php");
 
 // test if task exists
 $taskWrapper = Factory::getTaskWrapperFactory()->get($_GET['taskWrapperId']);
-if($taskWrapper == 0){
+if($taskWrapper == null){
   die("Invalid task wrapper!");
 }
 else if(!AccessUtils::userCanAccessTask($taskWrapper, Login::getInstance()->getUser())){
   die("No access to task!");
 }
+$accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
 
 $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
 $oF = new OrderFilter(Task::PRIORITY, "DESC");
@@ -59,4 +60,4 @@ foreach ($tasks as $task) {
 }
 
 Template::loadInstance("tasks/subtasks");
-echo Template::getInstance()->render(['subtaskList' => $subTasklist]);
+echo Template::getInstance()->render(['subtaskList' => $subtasklist]);
