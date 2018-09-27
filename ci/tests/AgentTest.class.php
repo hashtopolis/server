@@ -36,7 +36,7 @@ class AgentTest extends HashtopolisTest {
   private function testDeleteAgent($agentId){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "agent",
-      "request" => "delete",
+      "request" => "deleteAgent",
       "agentId" => $agentId,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){

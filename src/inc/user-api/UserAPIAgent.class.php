@@ -49,6 +49,9 @@ class UserAPIAgent extends UserAPIBasic {
         case USectionAgent::SET_TRUSTED:
           $this->setTrusted($QUERY);
           break;
+        case USectionAgent::DELETE_AGENT:
+          $this->deleteAgent($QUERY);
+          break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -56,6 +59,18 @@ class UserAPIAgent extends UserAPIBasic {
     catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQuery::SECTION], $QUERY[UQuery::REQUEST], $e->getMessage());
     }
+  }
+
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function deleteAgent($QUERY) {
+    if (!isset($QUERY[UQueryAgent::AGENT_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    AgentUtils::delete($QUERY[UQueryAgent::AGENT_ID], $this->user);
+    $this->sendSuccessResponse($QUERY);
   }
 
   /**

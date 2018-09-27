@@ -534,6 +534,7 @@ class USectionAgent extends UApi {
   const SET_EXTRA_PARAMS = "setExtraParams";
   const SET_ERROR_FLAG   = "setErrorFlag";
   const SET_TRUSTED      = "setTrusted";
+  const DELETE_AGENT     = "deleteAgent";
 
   public function describe($constant){
     switch($constant){
