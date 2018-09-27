@@ -38,7 +38,7 @@ if ($subtasks != null) {
     $subtasks_json["data"][$i] = array(
         $subtasks[$i]->getId(),
         $subtasks[$i]->getTaskName(),
-        Util::showperc($subtasks[$i]->getKeyspaceProgress(), $subtasks[$i]->getKeyspace()) . " / " . Util::showperc($taskInfo[0], $subtasks[$i]->getKeyspace()),
+        Util::showperc($subtasks[$i]->getKeyspaceProgress(), $subtasks[$i]->getKeyspace()) . "% / " . Util::showperc($taskInfo[0], $subtasks[$i]->getKeyspace()). "%",
         $taskInfo[1],
         $chunkInfo[2],
         $fileInfo[0],
