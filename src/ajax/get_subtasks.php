@@ -60,4 +60,4 @@ foreach ($tasks as $task) {
 }
 
 Template::loadInstance("tasks/subtasks");
-echo Template::getInstance()->render(['subtaskList' => $subtasklist]);
+echo Template::getInstance()->render(['subtaskList' => $subtaskList]);
