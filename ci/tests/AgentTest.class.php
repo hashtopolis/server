@@ -28,7 +28,26 @@ class AgentTest extends HashtopolisTest {
     $this->testAgentRegister(false);
     $this->testListAgents(['Test Agent']);
     $this->testGetAgent(1, ['name' => 'Test Agent', 'owner' => ['userId' => 0, 'username' => '-'], 'isTrusted' => false, 'isCpuOnly' => false]);
+    $this->testDeleteAgent(1);
+    $this->testListAgents();
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testDeleteAgent($agentId){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "agent",
+      "request" => "delete",
+      "agentId" => $agentId,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("AgentTest:testDeleteAgent($agentId)", "Empty response");
+    }
+    else if($response['response'] != 'OK'){
+      $this->testFailed("AgentTest:testDeleteAgent($agentId)", "Response not OK");
+    }
+    else{
+      $this->testSuccess("AgentTest:testDeleteAgent($agentId)");
+    }
   }
 
   private function testGetAgent($agentId, $assert = []){
