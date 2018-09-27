@@ -22,7 +22,7 @@ class APIGetHealthCheck extends APIBasic {
     $this->sendResponse([
       PResponseGetHealthCheck::ACTION => PActions::GET_HEALTH_CHECK,
       PResponseGetHealthCheck::RESPONSE => PValues::SUCCESS,
-      PResponseGetHealthCheck::ATTACK => $healthCheck->getAttackCmd(),
+      PResponseGetHealthCheck::ATTACK => " --hash-type=" . $healthCheck->getHashtypeId() . " ".$healthCheck->getAttackCmd(),
       PResponseGetHealthCheck::CRACKER_BINARY_ID => (int)$healthCheck->getCrackerBinaryId(),
       PResponseGetHealthCheck::HASHES => $hashes,
       PResponseGetHealthCheck::CHECK_ID => (int)$healthCheck->getId(),
