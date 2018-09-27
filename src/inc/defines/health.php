@@ -16,6 +16,10 @@ class DHealthCheckType {
   const BRUTE_FORCE = 0;
 }
 
+class DHealthCheckMode {
+  const MD5 = 0;
+}
+
 class DHealthCheck {
   const NUM_HASHES = 100;
 }

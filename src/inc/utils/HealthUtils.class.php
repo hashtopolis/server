@@ -73,6 +73,37 @@ class HealthUtils{
     Factory::getHealthCheckFactory()->update($healthCheck);
   }
 
+  private static function getAttackMode($type){
+    switch($type){
+      case DHealthCheckType::BRUTE_FORCE:
+        return " -a 3";
+    }
+    throw new HTException("Not able to get attack mode for this type!");
+  }
+
+  private static function getAttackInput($type){
+    switch($type){
+      case DHealthCheckType::BRUTE_FORCE:
+        return " -1 ?l?u?d ?1?1?1?1?1";
+    }
+    throw new HTException("Not able to get attack input for this type!");
+  }
+
+  private static function getAttackPlain($hashtypeId, $type, $crackable){
+    if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5){
+      return Util::randomString(($crackable)?5:8);
+    }
+    throw new HTException("Not able to get attack plain for attack $type and hashtype $hashtypeId ($crackable)");
+  }
+
+  private static function getAttackNumHashes($hashtypeId){
+    switch($hashtypeId){
+      case DHealthCheckMode::MD5:
+        return 100;
+    }
+    return DHealthCheck::NUM_HASHES;
+  }
+
   /**
    * @param int $hashtypeId
    * @param int $type
@@ -91,17 +122,13 @@ class HealthUtils{
 
     // we use len 5 here, but this can be adjusted depending on the agents abilities
     $hashes = [];
-    $expected = rand(0.1*DHealthCheck::NUM_HASHES,0.8*DHealthCheck::NUM_HASHES);
-    for($i=0;$i<DHealthCheck::NUM_HASHES;$i++){
-      if($i >= $expected){
-        $hashes[] = HealthUtils::generateHash($hashtypeId, Util::randomString(8));
-      }
-      else{
-        $hashes[] = HealthUtils::generateHash($hashtypeId, Util::randomString(5));
-      }
+    $numHashes = HealthUtils::getAttackNumHashes($hashtypeId);
+    $expected = rand(0.1*$numHashes,0.8*$numHashes);
+    for($i=0;$i<$numHashes;$i++){
+      $hashes[] = HealthUtils::generateHash($hashtypeId, HealthUtils::getAttackPlain($hashtypeId, $type, $i < $expected));
     }
 
-    $cmd = SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)." -a 3 -1 ?l?u?d ?1?1?1?1?1";
+    $cmd = SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS).HealthUtils::getAttackMode($type).HealthUtils::getAttackInput($type);
 
     // create check
     $healthCheck = new HealthCheck(null, 
@@ -141,7 +168,7 @@ class HealthUtils{
    */
   public static function generateHash($hashtypeId, $plain){
     switch($hashtypeId){
-      case 0:
+      case DHealthCheckMode::MD5:
         return md5($plain);
       default:
         throw new HTException("No implementation for this hash type available to generate hashes!");
