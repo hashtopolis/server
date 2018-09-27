@@ -11,6 +11,7 @@
 - Telegram notifications can now completely be configured via server config and also can be used through proxies.
 - Peppers of Encryption.class.php and CSRF.class.php were moved out of the files to make updating easier.
 - When importing supertasks it can be selected if they should use the optimized flag and which benchmark type should be used.
+- Subtasks are only loaded when being viewed to speed up loading of the tasks page.
 
 # v0.7.1 -> v0.8.0
 
