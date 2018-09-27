@@ -53,4 +53,34 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` ADD `crackPos` BI
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HashBinary` ADD `crackPos` BIGINT NOT NULL");
 echo "OK\n";
 
+echo "Adding Health Check tables... ";
+Factory::getAgentFactory()->getDB()->query("
+CREATE TABLE `HealthCheck` (
+  `healthCheckId` int(11) NOT NULL,
+  `time` bigint(20) NOT NULL,
+  `status` int(11) NOT NULL,
+  `checkType` int(11) NOT NULL,
+  `hashtypeId` int(11) NOT NULL,
+  `crackerBinaryId` int(11) NOT NULL,
+  `expectedCracks` int(11) NOT NULL,
+  `attackCmd` VARCHAR(256) NOT NULL
+) ENGINE=InnoDB");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheck` ADD PRIMARY KEY (`healthCheckId`)");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheck` MODIFY `healthCheckId` int(11) NOT NULL AUTO_INCREMENT");
+Factory::getAgentFactory()->getDB()->query("
+CREATE TABLE `healthcheckagent` (
+  `healthCheckAgentId` int(11) NOT NULL,
+  `healthCheckId` int(11) NOT NULL,
+  `agentId` int(11) NOT NULL,
+  `status` int(11) NOT NULL,
+  `cracked` int(11) NOT NULL,
+  `numGpus` int(11) NOT NULL,
+  `start` bigint(20) NOT NULL,
+  `end` bigint(20) NOT NULL,
+  `errors` text COLLATE utf8_bin NOT NULL
+) ENGINE=InnoDB");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheckAgent` ADD PRIMARY KEY (`healthCheckAgentId`)");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheckAgent` MODIFY `healthCheckAgentId` int(11) NOT NULL AUTO_INCREMENT");
+echo "OK\n";
+
 echo "Update complete!\n";

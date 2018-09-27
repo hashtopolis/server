@@ -338,6 +338,15 @@
 	}
 	\end{verbatim}
 	
+	In case there was a health check requested on the server, it will notify the client.
+	\begin{verbatim}
+	{
+	  "action":"getChunk",
+	  "response":"SUCCESS",
+	  "status":"health_check"
+	}
+	\end{verbatim}
+	
 	
 	\subsection*{Send Keyspace}
 	The client sends the calculated keyspace of a task.
@@ -464,6 +473,55 @@
 	  "filenames": [
 	    "top10000.txt"
 	  ]
+	}
+	\end{verbatim}
+	
+	\subsection*{Get health check}
+	When the client got notified that the server wants to do a health check, it should request the data.
+	\begin{verbatim}
+	{
+	  "action": "getHealthCheck", 
+	  "token": "GHhgdf(/&"
+	}
+	\end{verbatim}
+	The server will provide the task to run and the hashes to use for it.
+	\begin{verbatim}
+	{
+	  "action": "getHealthCheck",
+	  "response": "SUCCESS",
+	  "attack": "#HL# -a 3 -1 ?l?u?d ?1?1?1?1?1",
+	  "crackerBinaryId": 1,
+	  "hashes": [
+	    "9f650d4ef70eead895e7a03ce0f83e88",
+	    "24a7bdfd14bca7f9d14154c0800a833d"
+	  ],
+	  "checkId": 7,
+	  "hashlistAlias": "#HL#"
+	}
+	\end{verbatim}
+	
+	\subsection*{Send health check}
+	When the client executed a health check it should send back the results.
+	\begin{verbatim}
+	{
+	  "action": "sendHealthCheck", 
+	  "token": "GHhgdf(/&", 
+	  "numCracked": 23, 
+	  "start": 1536306884, 
+	  "end": 1536306902, 
+	  "numGpus": 1, 
+	  "errors": [
+	    "nvmlDeviceGetTemperatureThreshold(): Not Supported", 
+	    "nvmlDeviceGetTemperatureThreshold(): Not Supported"
+	  ], 
+	  "checkId": 7
+	}
+	\end{verbatim}
+	On success the server will just reply with OK.
+	\begin{verbatim}
+	{
+	  "action": "sendHealthCheck",
+	  "response": "OK"
 	}
 	\end{verbatim}
 \end{document}

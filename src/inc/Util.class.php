@@ -112,6 +112,9 @@ class Util {
 			else if($string[$i] == '\\'){
 				$output .= "\\textbackslash";
 			}
+      else if($string[$i] == '_'){
+        $output .= "\\_";
+      }
 			else{
 				$output .= $string[$i];
 			}
@@ -1105,8 +1108,7 @@ class Util {
    *          length of random string to generate
    * @return string random string
    */
-  public static function randomString($length) {
-    $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  public static function randomString($length, $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") {
     $result = "";
     for ($x = 0; $x < $length; $x++) {
       $result .= $charset[mt_rand(0, strlen($charset) - 1)];

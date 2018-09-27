@@ -14,6 +14,15 @@ class APIGetChunk extends APIBasic {
     $this->checkToken(PActions::GET_CHUNK, $QUERY);
     $this->updateAgent(PActions::GET_CHUNK);
 
+    if(HealthUtils::checkNeeded($this->agent)){
+      $this->sendResponse(array(
+          PResponseGetChunk::ACTION => PActions::GET_CHUNK,
+          PResponseGetChunk::RESPONSE => PValues::SUCCESS,
+          PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::HEALTH_CHECK
+        )
+      );
+    }
+
     $task = Factory::getTaskFactory()->get($QUERY[PQueryGetChunk::TASK_ID]);
     if ($task == null) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid task ID!");

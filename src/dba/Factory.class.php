@@ -37,6 +37,8 @@ class Factory {
   private static $apiGroupFactory = null;
   private static $fileDownloadFactory = null;
   private static $fileDeleteFactory = null;
+  private static $healthCheckFactory = null;
+  private static $healthCheckAgentFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
@@ -381,6 +383,26 @@ class Factory {
       return $f;
     } else {
       return self::$fileDeleteFactory;
+    }
+  }
+  
+  public static function getHealthCheckFactory() {
+    if (self::$healthCheckFactory == null) {
+      $f = new HealthCheckFactory();
+      self::$healthCheckFactory = $f;
+      return $f;
+    } else {
+      return self::$healthCheckFactory;
+    }
+  }
+  
+  public static function getHealthCheckAgentFactory() {
+    if (self::$healthCheckAgentFactory == null) {
+      $f = new HealthCheckAgentFactory();
+      self::$healthCheckAgentFactory = $f;
+      return $f;
+    } else {
+      return self::$healthCheckAgentFactory;
     }
   }
   

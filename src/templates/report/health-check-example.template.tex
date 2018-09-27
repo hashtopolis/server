@@ -1,0 +1,15 @@
+\documentclass[12pt]{article}
+\begin{document}
+
+\section*{Health Check '[[check.getId()]]'}
+
+Checked agents: [[sizeof([[agentChecks]])]]\\
+
+\subsection*{Agents}
+
+{{FOREACH agentCheck;[[agentChecks]]}}
+	\subsubsection*{Agent '[[agents.getVal([[agentCheck.getAgentId()]])->getAgentName()]]'}
+	TODO: result here
+{{ENDFOREACH}}
+
+\end{document}
