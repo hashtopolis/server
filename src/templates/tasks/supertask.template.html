@@ -121,30 +121,17 @@
       $(document).ready(function () {
         $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable({
           pageLength: 25,
-          searching: false,
-          responsive: true,
-          bAutoWidth: false,
-          serverSide: true,
-          ajax: {
-            url : "ajax/get_subtasks.php",
-            type: "post",
-            dataSrc: function(d) {
-                return d["data"];
-            },
-            data: function(d) {
-                d.taskWrapperId = [[set.getVal("taskWrapperId")]];
-            },
-            contentType: "application/json"
-          },
           "order": [ [6, 'asc'], [0, 'asc'] ],
           "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7] }
-          ]
+            { "orderable": false, "targets": [2, 7] },
+            { "orderable": true, "targets": [0, 1, 3, 4, 5, 6] }
         });
         $('#subtasks[[set.getVal("taskWrapperId")]]').on('shown.bs.modal', function () {
           // load data
-          var content = "TODO";
-          $('#subtasks[[set.getVal("taskWrapperId")]]').find('tbody').empty().append(content);
+          $.ajax({url: 'ajax/get_subtasks.php?taskWrapperId=[[set.getVal("taskWrapperId")]]', success: function(result){
+            $('#subtasks[[set.getVal("taskWrapperId")]]').find('tbody').empty().append(result);
+            $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable().columns.adjust();
+          }});
         });
       });
     </script>

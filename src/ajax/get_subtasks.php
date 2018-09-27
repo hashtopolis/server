@@ -6,47 +6,57 @@ use DBA\Task;
 use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
-set_time_limit(0);
-header("Content-Type: application/json");
 
-$QUERY = file_get_contents('php://input');
-parse_str($QUERY, $output);
-
-$start = intval($output['start']);
-$length = intval($output['length']);
-
-$oF = new OrderFilter(Task::PRIORITY, "DESC LIMIT $start,$length");
-$qF = new QueryFilter(Task::TASK_WRAPPER_ID, $output["taskWrapperId"], "=");
-$total_subtasks_count = Factory::getTaskFactory()->countFilter([Factory::FILTER => $qF]);
-
-$subtasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-
-$accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
-
-$subtasks_json = array(
-  "draw"            => intval( $output['draw'] ),
-  "recordsTotal"    => intval( $total_subtasks_count ),
-  "recordsFiltered" => intval( $total_subtasks_count ),
-  "data"            => array()
-);
-if ($subtasks != null) {
-  for ($i = 0; $i < count($subtasks); $i++) {
-    $taskInfo = Util::getTaskInfo($subtasks[$i]);
-    $chunkInfo = Util::getChunkInfo($subtasks[$i]);
-    $fileInfo = Util::getFileInfo($subtasks[$i], $accessGroups);
-    //$subtasks_json["data"][$i] = $subtasks[$i]->getKeyValueDict();
-    $subtasks_json["data"][$i] = array(
-        $subtasks[$i]->getId(),
-        $subtasks[$i]->getTaskName(),
-        Util::showperc($subtasks[$i]->getKeyspaceProgress(), $subtasks[$i]->getKeyspace()) . "% / " . Util::showperc($taskInfo[0], $subtasks[$i]->getKeyspace()). "%",
-        $taskInfo[1],
-        $chunkInfo[2],
-        $fileInfo[0],
-        $subtasks[$i]->getPriority(),
-        "TODO"
-    );
-  }
+// test if task exists
+$taskWrapper = Factory::getTaskWrapperFactory()->get($_GET['taskWrapperId']);
+if($taskWrapper == 0){
+  die("Invalid task wrapper!");
+}
+else if(!AccessUtils::userCanAccessTask($taskWrapper, Login::getInstance()->getUser())){
+  die("No access to task!");
 }
 
-echo json_encode($subtasks_json);
-die();
+$qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+$oF = new OrderFilter(Task::PRIORITY, "DESC");
+$tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
+$subtaskList = array();
+$tasksDone = 0;
+$isActive = false;
+$cracked = 0;
+$numAssignments = 0;
+$numFiles = 0;
+$fileSecret = false;
+$filesSize = 0;
+foreach ($tasks as $task) {
+  $subSet = new DataSet();
+  $subSet->addValue('color', $task->getColor());
+  $subSet->addValue('taskId', $task->getId());
+  $subSet->addValue('attackCmd', $task->getAttackCmd());
+  $subSet->addValue('taskName', $task->getTaskName());
+  $subSet->addValue('keyspace', $task->getKeyspace());
+  $subSet->addValue('cpuOnly', $task->getIsCpuTask());
+  $subSet->addValue('isSmall', $task->getIsSmall());
+  $subSet->addValue('isPrince', $task->getIsPrince());
+  $subSet->addValue('chunkTime', $task->getChunkTime());
+  $subSet->addValue('taskProgress', $task->getKeyspaceProgress());
+  $subSet->addValue('priority', $task->getPriority());
+  $taskInfo = Util::getTaskInfo($task);
+  $fileInfo = Util::getFileInfo($task, $accessGroups);
+  $chunkInfo = Util::getChunkInfo($task);
+  if($fileInfo[4]){
+    continue;
+  }
+  $subSet->addValue('sumProgress', $taskInfo[0]);
+  $subSet->addValue('numFiles', $fileInfo[0]);
+  $subSet->addValue('fileSecret', $fileInfo[1]);
+  $subSet->addValue('filesSize', $fileInfo[2]);
+  $subSet->addValue('numChunks', $chunkInfo[0]);
+  $subSet->addValue('isActive', $taskInfo[2]);
+  $subSet->addValue('cracked', $taskInfo[1]);
+  $subSet->addValue('numAssignments', $chunkInfo[2]);
+  $subSet->addValue('performance', $taskInfo[4]);
+  $subtaskList[] = $subSet;
+}
+
+Template::loadInstance("tasks/subtasks");
+echo Template::getInstance()->render(['subtaskList' => $subTasklist]);

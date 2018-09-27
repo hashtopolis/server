@@ -1,4 +1,4 @@
-{{FOREACH subTask;[[set.getVal('subtaskList')]]}}
+{{FOREACH subTask;[[subtaskList]]}}
   <tr>
     <td {{IF [[subTask.getVal('sumProgress')]] < [[subTask.getVal('keyspace')]]}}rel="popover" data-img="api/taskimg.php?task=[[subTask.getVal('taskId')]]&x=1200&y=6"{{ENDIF}}{{IF [[strlen([[subTask.getVal('color')]])]] > 0}} style="background-color: #[[subTask.getVal('color')]]"{{ENDIF}}>
       {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
