@@ -122,6 +122,7 @@
         $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable({
           pageLength: 25,
           searching: false,
+          responsive: true,
           serverSide: true,
           ajax: {
             url : "ajax/get_subtasks.php",
