@@ -86,7 +86,7 @@ class HealthUtils{
       return " -1 ?l?u?d ?1?1?1?1?1";
     }
     else if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::BCRYPT){
-      return " ?l?l?l?l?l";
+      return " ?l?l?l";
     }
     throw new HTException("Not able to get attack input for this type!");
   }
@@ -96,7 +96,7 @@ class HealthUtils{
       return Util::randomString(($crackable)?5:8);
     }
     else if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::BCRYPT){
-      return Util::randomString(($crackable)?5:8, "abcdefghijklmnopqrstuvwxyz");
+      return Util::randomString(($crackable)?3:8, "abcdefghijklmnopqrstuvwxyz");
     }
     throw new HTException("Not able to get attack plain for attack $type and hashtype $hashtypeId ($crackable)");
   }
