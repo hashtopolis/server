@@ -1150,7 +1150,7 @@ ALTER TABLE `Hash`
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`),
   ADD KEY `isCracked` (`isCracked`),
-  ADD KEY `hash` (`hash`);
+  ADD KEY `hash` (`hash`(500));
 
 --
 -- Indizes für die Tabelle `HashBinary`
