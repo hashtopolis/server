@@ -379,7 +379,7 @@ CREATE TABLE `FileDelete` (
 CREATE TABLE `Hash` (
   `hashId`      INT(11)                 NOT NULL,
   `hashlistId`  INT(11)                 NOT NULL,
-  `hash`        VARCHAR(1024)
+  `hash`        TEXT
                 COLLATE utf8_unicode_ci NOT NULL,
   `salt`        VARCHAR(256)
                 COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -963,7 +963,7 @@ CREATE TABLE `User` (
 
 CREATE TABLE `Zap` (
   `zapId`      INT(11)                 NOT NULL,
-  `hash`       VARCHAR(1024)
+  `hash`       TEXT
                COLLATE utf8_unicode_ci NOT NULL,
   `solveTime`  INT(11)                 NOT NULL,
   `agentId`    INT(11)                 NULL,

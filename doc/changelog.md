@@ -6,11 +6,16 @@
 - Trimming of chunks can be disabled so a chunk is always run fully again (or splitted if it is too large).
 - Supertasks can now can be created by specifying a base command and iterate over a selection of files to be placed in the command.
 
+## Bugfixes
+
+- Fixed GPU data graph when having multiple agents.
+
 ## Enhancements
 
 - Telegram notifications can now completely be configured via server config and also can be used through proxies.
 - Peppers of Encryption.class.php and CSRF.class.php were moved out of the files to make updating easier.
 - When importing supertasks it can be selected if they should use the optimized flag and which benchmark type should be used.
+- Changed type of the hash column to TEXT to make sure to handle all the long hashes. It should not affect speed as long as there is not a multi-million hashlist.
 
 # v0.7.1 -> v0.8.0
 
