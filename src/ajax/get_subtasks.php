@@ -60,4 +60,5 @@ foreach ($tasks as $task) {
 }
 
 Template::loadInstance("tasks/subtasks");
-echo Template::getInstance()->render(['subtaskList' => $subtaskList, 'accessControl' => AccessControl::getInstance()]);
+UI::add('subtaskList', $subtaskList);
+echo Template::getInstance()->render(UI::getObjects());
