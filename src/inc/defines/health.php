@@ -18,6 +18,7 @@ class DHealthCheckType {
 
 class DHealthCheckMode {
   const MD5 = 0;
+  const BCRYPT = 3200;
 }
 
 class DHealthCheck {

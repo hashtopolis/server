@@ -85,12 +85,18 @@ class HealthUtils{
     if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5){
       return " -1 ?l?u?d ?1?1?1?1?1";
     }
+    else if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::BCRYPT){
+      return " ?l?l?l?l?l";
+    }
     throw new HTException("Not able to get attack input for this type!");
   }
 
   private static function getAttackPlain($hashtypeId, $type, $crackable){
     if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5){
       return Util::randomString(($crackable)?5:8);
+    }
+    else if($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::BCRYPT){
+      return Util::randomString(($crackable)?5:8, "abcdefghijklmnopqrstuvwxyz");
     }
     throw new HTException("Not able to get attack plain for attack $type and hashtype $hashtypeId ($crackable)");
   }
@@ -99,6 +105,8 @@ class HealthUtils{
     switch($hashtypeId){
       case DHealthCheckMode::MD5:
         return 100;
+      case DHealthCheckMode::BCRYPT:
+        return 10;
     }
     return DHealthCheck::NUM_HASHES;
   }
@@ -169,6 +177,8 @@ class HealthUtils{
     switch($hashtypeId){
       case DHealthCheckMode::MD5:
         return md5($plain);
+      case DHealthCheckMode::BCRYPT:
+        return password_hash($plain, PASSWORD_BCRYPT, ["cost" => 5]);
       default:
         throw new HTException("No implementation for this hash type available to generate hashes!");
     }
