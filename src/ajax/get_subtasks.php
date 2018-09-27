@@ -16,6 +16,7 @@ else if(!AccessUtils::userCanAccessTask($taskWrapper, Login::getInstance()->getU
   die("No access to task!");
 }
 $accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
+$showArchived = ($_GET['showArchived'])?true:false;
 
 $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
 $oF = new OrderFilter(Task::PRIORITY, "DESC");
@@ -61,4 +62,5 @@ foreach ($tasks as $task) {
 
 Template::loadInstance("tasks/subtasks");
 UI::add('subtaskList', $subtaskList);
+UI::add('showArchived', $showArchived);
 echo Template::getInstance()->render(UI::getObjects());

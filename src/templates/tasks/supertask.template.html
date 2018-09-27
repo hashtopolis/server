@@ -132,7 +132,7 @@
           // load data if needed
           if (!loaded['[[set.getVal("taskWrapperId")]]']) {
             $.ajax({
-              url: 'ajax/get_subtasks.php?taskWrapperId=[[set.getVal("taskWrapperId")]]',
+              url: 'ajax/get_subtasks.php?taskWrapperId=[[set.getVal("taskWrapperId")]]&showArchived=[[showArchived]]',
               success: function (result) {
                 $('#subtasks[[set.getVal("taskWrapperId")]]').find('tbody').empty().append(result);
                 $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable().columns.adjust();
