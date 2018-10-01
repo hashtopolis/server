@@ -138,6 +138,7 @@ class TaskUtils {
       return;
     }
     TaskUtils::purgeTask($task->getId(), $user);
+    $task = TaskUtils::getTask($taskId, $user); // reload task, otherwise we overwrite purge changes
     $task->setAttackCmd($attackCmd);
     Factory::getTaskFactory()->update($task);
   }
