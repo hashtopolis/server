@@ -15,7 +15,7 @@ class APILogin extends APIBasic {
         PResponseLogin::ACTION => PActions::LOGIN,
         PResponseLogin::RESPONSE => PValues::SUCCESS,
         PResponseLogin::MULTICAST => (SConfig::getInstance()->getVal(DConfig::MULTICAST_ENABLE))?true:false,
-        PResponseLogin::TIMEOUT => SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT),
+        PResponseLogin::TIMEOUT => (int)SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT),
         PResponseLogin::VERSION => $VERSION . " (".Util::getGitCommit().")"
       )
     );
