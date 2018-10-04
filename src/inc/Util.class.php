@@ -33,6 +33,24 @@ use DBA\Factory;
  *         Bunch of useful static functions.
  */
 class Util {
+  public static function getGitCommit(){
+    $gitcommit = "";
+    $gitfolder = dirname(__FILE__) . "/../../.git";
+    if (file_exists($gitfolder) && is_dir($gitfolder)) {
+      $head = file_get_contents($gitfolder . "/HEAD");
+      $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
+      if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
+        $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
+        $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
+      }
+      else {
+        $commit = $head;
+        $gitcommit = "commit " . substr($commit, 0, 7);
+      }
+    }
+    return $gitcommit;
+  }
+
 	/**
 	 * @param string $type
 	 * @param string $version
