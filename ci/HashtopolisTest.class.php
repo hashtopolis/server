@@ -23,6 +23,7 @@ abstract class HashtopolisTest{
     $this->init($fromVersion);
 
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running upgrades...");
+    $TEST = true; // required to fix includes in upgrade script
     switch($fromVersion){
       case "0.8.0":
         HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.8.0+dev...");

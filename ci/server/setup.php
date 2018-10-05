@@ -25,7 +25,9 @@ if($version == 'v0.8.0'){
 else{
 	$CONFIG .= '$PEPPER = ["abcd", "bcde", "cdef", "aaaa"];'."\n";
 	file_put_contents($envPath."src/inc/conf.php", $CONFIG);
-  system("ln -s ".$envPath."src/inc/conf.php ".$envPath."src/inc/db.php");
+
+  // this is to make sure that also old db configs are working
+  file_put_contents($envPath."src/inc/db.php", $CONFIG);
 }
 
 $db = new PDO("mysql:host=localhost;port=3306", "root", "");

@@ -4,9 +4,11 @@ use DBA\Factory;
 use DBA\Config;
 use DBA\QueryFilter;
 
-require_once(dirname(__FILE__) . "/../../inc/db.php");
-require_once(dirname(__FILE__) . "/../../dba/init.php");
-require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+if(!isset($TEST)){
+  require_once(dirname(__FILE__) . "/../../inc/db.php");
+  require_once(dirname(__FILE__) . "/../../dba/init.php");
+  require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+}
 require_once(dirname(__FILE__) . "/../../inc/utils/AccessUtils.class.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
 
@@ -24,7 +26,7 @@ Util::checkAgentVersion("python", "0.2.0");
 Util::checkAgentVersion("csharp", "0.52.4");
 echo "\n";
 
-echo "Add new config section for noticiations... ";
+echo "Add new config section for notifications... ";
 $configSection = new ConfigSection(7, 'Notifications');
 Factory::getConfigSectionFactory()->save($configSection);
 
