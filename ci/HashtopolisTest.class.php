@@ -26,7 +26,7 @@ abstract class HashtopolisTest{
     switch($fromVersion){
       case "0.8.0":
         HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.8.0+dev...");
-        include(dirname(__FILE__)."/../src/install/updates/update_v0.8.0_v0.x.x.php");
+        include("/var/www/html/hashtopolis/src/install/updates/update_v0.8.0_v0.x.x.php");
     }
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }
