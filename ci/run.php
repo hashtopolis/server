@@ -24,15 +24,19 @@ foreach ($dir as $entry) {
   }
 }
 
-if (sizeof($argv) != 2) {
-  die("Invalid number of arguments!\nphp -f run.php <version>\n");
+if (sizeof($argv) < 2) {
+  die("Invalid number of arguments!\nphp -f run.php <version> [upgrade]\n");
 }
 $version = $argv[1];
 HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
-$returnStatus  = $framework->execute($version, HashtopolisTest::RUN_FULL);
-$returnStatus += $framework->executeWithUpgrade("0.8.0", HashtopolisTest::RUN_FULL);
+if(isset($argv[2]) && $argv[2] == 'upgrade'){
+  $returnStatus = $framework->executeWithUpgrade("0.8.0", HashtopolisTest::RUN_FULL);
+}
+else{
+  $returnStatus = $framework->execute($version, HashtopolisTest::RUN_FULL);
+}
 
 HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, HashtopolisTest::getTestCount() . " tests executed");
 
