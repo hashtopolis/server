@@ -134,7 +134,8 @@ $CONF['Hashlist'] = array(
   'isSecret',
   'hexSalt',
   'isSalted',
-  'accessGroupId'
+  'accessGroupId',
+  'notes'
 );
 $CONF['HashType'] = array(
   'hashTypeId',

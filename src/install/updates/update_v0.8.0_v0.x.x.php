@@ -88,4 +88,8 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheckAgent` ADD P
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheckAgent` MODIFY `healthCheckAgentId` int(11) NOT NULL AUTO_INCREMENT");
 echo "OK\n";
 
+echo "Add hashlist notes... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hashlist` ADD `notes` TEXT");
+echo "OK\n";
+
 echo "Update complete!\n";
