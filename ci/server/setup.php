@@ -25,12 +25,15 @@ if($version == 'v0.8.0'){
 else{
 	$CONFIG .= '$PEPPER = ["abcd", "bcde", "cdef", "aaaa"];'."\n";
 	file_put_contents($envPath."src/inc/conf.php", $CONFIG);
+
+  // this is to make sure that also old db configs are working
+  file_put_contents($envPath."src/inc/db.php", $CONFIG);
 }
 
 $db = new PDO("mysql:host=localhost;port=3306", "root", "");
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 try {
-  $db->query("CREATE DATABASE hashtopolis;");
+  $db->query("CREATE DATABASE IF NOT EXISTS hashtopolis;");
   $db->query("USE hashtopolis;");
   $db->query(file_get_contents($envPath."src/install/hashtopolis.sql"));
 }

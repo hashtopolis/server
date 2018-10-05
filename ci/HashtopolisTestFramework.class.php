@@ -41,6 +41,21 @@ class HashtopolisTestFramework{
     return HashtopolisTest::getStatus();
   }
 
+  public function executeWithUpgrade($fromVersion, $runType){
+    foreach(self::$instances as $instance){
+      if($instance->getMaxVersion() != 'master'){
+        echo "Ignoring ".$instance->getTestName().": maximum ".$instance->getMaxVersion()." required, but testing master...\n";
+        continue;
+      }
+      else if($runType > $instance->getRunType()){
+        continue;
+      }
+      $instance->initAndUpgrade($fromVersion);
+      $instance->run();
+    }
+    return HashtopolisTest::getStatus();
+  }
+
   /**
    * @param array $request
    * @param int $requestType
