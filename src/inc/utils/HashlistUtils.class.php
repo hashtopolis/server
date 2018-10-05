@@ -720,7 +720,7 @@ class HashlistUtils {
     }
 
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId());
+    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '');
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
 
     $dataSource = "";
@@ -926,7 +926,7 @@ class HashlistUtils {
       }
     }
 
-    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId);
+    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '');
     $superhashlist = Factory::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {
