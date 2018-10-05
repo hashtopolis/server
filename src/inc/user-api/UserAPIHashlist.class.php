@@ -262,7 +262,8 @@ class UserAPIHashlist extends UserAPIBasic {
       UResponseHashlist::HASHLIST_HEX_SALT => ($hashlist->getHexSalt() == 1) ? true : false,
       UResponseHashlist::HASHLIST_SALTED => ($hashlist->getIsSalted() == 1) ? true : false,
       UResponseHashlist::HASHLIST_SECRET => ($hashlist->getIsSecret() == 1) ? true : false,
-      UResponseHashlist::HASHLIST_SALT_SEPARATOR => $hashlist->getSaltSeparator()
+      UResponseHashlist::HASHLIST_SALT_SEPARATOR => $hashlist->getSaltSeparator(),
+      UResponseHashlist::HASHLIST_NOTES => $hashlist->getNotes()
     ];
     $this->sendResponse($response);
   }

@@ -303,6 +303,7 @@ class UResponseHashlist extends UResponse {
   const HASHLIST_SALTED = "isSalted";
   const HASHLIST_SECRET = "isSecret";
   const HASHLIST_SALT_SEPARATOR = "saltSeparator";
+  const HASHLIST_NOTES = "hashlistNotes";
 
   const ZAP_LINES_PROCESSED = "linesProcessed";
   const ZAP_NEW_CRACKED = "newCracked";

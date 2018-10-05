@@ -5,6 +5,7 @@
 - The server saves the crackpos for hash founds given by hashcat.
 - Trimming of chunks can be disabled so a chunk is always run fully again (or splitted if it is too large).
 - Supertasks can now can be created by specifying a base command and iterate over a selection of files to be placed in the command.
+- Notes can be added to hashlists.
 
 ## Bugfixes
 
@@ -26,7 +27,7 @@
 - The server can store sent debug output from Hashcat sent by the agent.
 - Files now also are associated to an Access Group to control the visibility of files.
 - Agent data about device temperature and util is collected and can be viewed on the server.
-- Notes can be added to tasks
+- Notes can be added to tasks.
 - Static chunking (if for some reasone a fixed number of chunks or static chunk size should be used for a task)
 - The server can provide a list of deleted filenames to the agent when he asks for.
 - Tasks can now be copied to preconfigured tasks and preconfigured tasks can also be copied to preconfigured tasks.
