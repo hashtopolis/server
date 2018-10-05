@@ -16,6 +16,7 @@
 - Peppers of Encryption.class.php and CSRF.class.php were moved out of the files to make updating easier.
 - When importing supertasks it can be selected if they should use the optimized flag and which benchmark type should be used.
 - Changed type of the hash column to TEXT to make sure to handle all the long hashes. It should not affect speed as long as there is not a multi-million hashlist.
+- Preconfigured task attack commands can be edited after creation.
 
 # v0.7.1 -> v0.8.0
 
