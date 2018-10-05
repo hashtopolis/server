@@ -32,7 +32,7 @@ HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
 $returnStatus  = $framework->execute($version, HashtopolisTest::RUN_FULL);
-$returnStatus += $framework->executeWithUpgrade("0.8.0", $version, HashtopolisTest::RUN_FULL);
+$returnStatus += $framework->executeWithUpgrade("0.8.0", HashtopolisTest::RUN_FULL);
 
 HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, HashtopolisTest::getTestCount() . " tests executed");
 
