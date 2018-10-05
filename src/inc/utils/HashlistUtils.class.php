@@ -22,6 +22,22 @@ use DBA\Factory;
 
 class HashlistUtils {
   /**
+   * @param int $hashlistId 
+   * @param string $notes 
+   * @param User $user 
+   * @throws HTException 
+   */
+  public static function editNotes($hashlistId, $notes, $user){
+    $hashlist = HashlistUtils::getHashlist($hashlistId);
+    if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
+      throw new HTException("No access to hashlist!");
+    }
+    $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
+    $hashlist->setNotes($notes);
+    Factory::getHashlistFactory()->update($hashlist);
+  }
+
+  /**
    * @param string $hash
    * @param User $user
    * @return Hash

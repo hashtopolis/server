@@ -37,6 +37,24 @@
         </td>
       </tr>
       <tr>
+        <td>
+          Hashlist Notes
+        </td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+            <form class='form-inline' action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
+              <input type="hidden" name="action" value="[[$DHashlistAction::EDIT_NOTES]]">
+              <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <textarea class="form-control my-1" style="width: 100%" name="notes" title="Hashlist Notes" placeholder="Write hashlist notes here...">[[list.getVal('hashlist')->getNotes()]]</textarea>
+              <button type="submit" class='btn btn-light my-1' data-toggle="tooltip" data-placement="top" title="Save"><i class="fas fa-save" aria-hidden="true"></i></button>
+            </form>
+          {{ELSE}}
+            <textarea class="form-control my-1" style="width: 100%" name="notes" title="Hashlist Notes" placeholder="Write hashlist notes here..." disabled>[[list.getVal('hashlist')->getNotes()]]</textarea>
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
         <td>Hash type:</td>
         <td>
           [[list.getVal('hashtype')->getDescription()]]

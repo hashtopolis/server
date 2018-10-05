@@ -99,6 +99,10 @@ class HashlistHandler implements Handler {
           $file = HashlistUtils::leftlist($_POST['hashlist'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Created left list: " . $file->getFilename());
           break;
+        case DHashlistAction::EDIT_NOTES:
+          AccessControl::getInstance()->checkPermission(DHashlistAction::EDIT_NOTES_PERM);
+          HashlistUtils::editNotes($_POST['hashlist'], $_POST['notes'], Login::getInstance()->getUser());
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
