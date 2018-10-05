@@ -22,4 +22,4 @@ script:
   - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
   - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
   - php -f ci/server/setup.php $TRAVIS_BRANCH
-  - php -f ci/run.php master upgrade
+  - php -f ci/run.php master 0.8.0
