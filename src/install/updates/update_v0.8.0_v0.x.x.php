@@ -75,7 +75,7 @@ CREATE TABLE `HealthCheck` (
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheck` ADD PRIMARY KEY (`healthCheckId`)");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheck` MODIFY `healthCheckId` int(11) NOT NULL AUTO_INCREMENT");
 Factory::getAgentFactory()->getDB()->query("
-CREATE TABLE `healthcheckagent` (
+CREATE TABLE `HealthCheckAgent` (
   `healthCheckAgentId` int(11) NOT NULL,
   `healthCheckId` int(11) NOT NULL,
   `agentId` int(11) NOT NULL,
