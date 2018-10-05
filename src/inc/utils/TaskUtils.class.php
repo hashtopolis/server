@@ -823,7 +823,7 @@ class TaskUtils {
 
     // get all TaskWrappers which we have access to
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroups);
-    $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, ">");
+    $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, (SConfig::getInstance()->getVal(DConfig::PRIORITY_0_START))?">=":">");
     $qF3 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
     if ($all) {
       // if we want to retrieve all tasks which are accessible, we also show the ones with 0 priority
