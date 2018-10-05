@@ -823,7 +823,7 @@ class TaskUtils {
 
     // get all TaskWrappers which we have access to
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroups);
-    $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, ">");
+    $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, (SConfig::getInstance()->getVal(DConfig::PRIORITY_0_START))?">=":">");
     $qF3 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
     if ($all) {
       // if we want to retrieve all tasks which are accessible, we also show the ones with 0 priority
@@ -836,6 +836,7 @@ class TaskUtils {
     foreach ($taskWrappers as $taskWrapper) {
       $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get($taskWrapper->getHashlistId()));
       $permitted = true;
+      $fullyCracked = true;
       foreach ($hashlists as $hashlist) {
         if ($hashlist->getIsSecret() > $agent->getIsTrusted()) {
           $permitted = false;
@@ -843,9 +844,15 @@ class TaskUtils {
         else if (!in_array($hashlist->getAccessGroupId(), $accessGroups)) {
           $permitted = false;
         }
+        else if($hashlist->getHashCount() > $hashlist->getCracked()){
+          $fullyCracked = false;
+        }
       }
       if (!$permitted) {
         continue; // if at least one of the hashlists is secret and the agent not, this taskWrapper cannot be used
+      }
+      else if($fullyCracked){
+        continue; // all hashes of this hashlist are cracked, so we continue
       }
 
       // load assigned tasks for this TaskWrapper

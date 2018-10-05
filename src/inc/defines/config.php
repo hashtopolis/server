@@ -48,6 +48,7 @@ class DConfig {
   const PRINCE_LINK            = "princeLink";
   const AGENT_DATA_LIFETIME    = "agentDataLifetime";
   const DISABLE_TRIMMING       = "disableTrimming";
+  const PRIORITY_0_START       = "priority0Start";
 
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -209,6 +210,8 @@ class DConfig {
         return DConfigType::SELECT;
       case DConfig::DISABLE_TRIMMING:
         return DConfigType::TICKBOX;
+      case DConfig::PRIORITY_0_START:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -315,6 +318,8 @@ class DConfig {
         return "Proxy type to use for telegram notifications.";
       case DConfig::DISABLE_TRIMMING:
         return "Disable trimming of chunks and redo whole chunks";
+      case DConfig::PRIORITY_0_START:
+        return "Also automatically assign tasks with priority 0";
     }
     return $config;
   }
