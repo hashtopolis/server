@@ -33,7 +33,7 @@ else{
 $db = new PDO("mysql:host=localhost;port=3306", "root", "");
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 try {
-  $db->query("CREATE DATABASE hashtopolis;");
+  $db->query("CREATE DATABASE IF NOT EXISTS hashtopolis;");
   $db->query("USE hashtopolis;");
   $db->query(file_get_contents($envPath."src/install/hashtopolis.sql"));
 }
