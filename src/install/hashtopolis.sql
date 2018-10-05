@@ -434,7 +434,8 @@ CREATE TABLE `Hashlist` (
   `isSecret`      INT(11)                 NOT NULL,
   `hexSalt`       INT(11)                 NOT NULL,
   `isSalted`      TINYINT(4)              NOT NULL,
-  `accessGroupId` INT(11)                 NOT NULL
+  `accessGroupId` INT(11)                 NOT NULL,
+  `notes`         TEXT                    NOT NULL
 )
   ENGINE = InnoDB;
 
