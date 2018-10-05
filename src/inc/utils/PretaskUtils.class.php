@@ -11,6 +11,23 @@ use DBA\Factory;
 
 class PretaskUtils {
   /**
+   * @param int $pretaskId 
+   * @param string $attackCmd 
+   * @throws HTException 
+   */
+  public static function changeAttack($pretaskId, $attackCmd){
+    $pretask = PretaskUtils::getPretask($pretaskId);
+    if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
+      throw new HTException("The attack command does not contain the hashlist alias!");
+    }
+    else if (Util::containsBlacklistedChars($attackCmd)) {
+      throw new HTException("The command must contain no blacklisted characters!");
+    }
+    $pretask->setAttackCmd($attackCmd);
+    Factory::getPretaskFactory()->update($pretask);
+  }
+
+  /**
    * @param Task $copy
    * @return Pretask
    */
