@@ -16,10 +16,12 @@ echo "NOTICE: After this update the Peppers for Encryption.class.php and CSRF.cl
 
 echo "Apply updates...\n";
 
-echo "Moving db config... ";
-rename(dirname(__FILE__)."/../../inc/db.php", dirname(__FILE__)."/../../inc/conf.php");
-file_put_contents(dirname(__FILE__)."/../../inc/conf.php", "\n".'$PEPPER = ["__PEPPER1__","__PEPPER2__","__PEPPER3__","__CSRF__"];'."\n", FILE_APPEND);
-echo "OK\n";
+if(!$TEST){
+  echo "Moving db config... ";
+  rename(dirname(__FILE__)."/../../inc/db.php", dirname(__FILE__)."/../../inc/conf.php");
+  file_put_contents(dirname(__FILE__)."/../../inc/conf.php", "\n".'$PEPPER = ["__PEPPER1__","__PEPPER2__","__PEPPER3__","__CSRF__"];'."\n", FILE_APPEND);
+  echo "OK\n";
+}
 
 echo "Check agent binaries... ";
 Util::checkAgentVersion("python", "0.2.0");
