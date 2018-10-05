@@ -18,6 +18,19 @@ abstract class HashtopolisTest{
   const RUN_FULL = 0;
   const RUN_FAST = 1;
 
+  public function initAndUpgrade($fromVersion){
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
+    $this->init($fromVersion);
+
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running upgrades...");
+    switch($fromVersion){
+      case "0.8.0":
+        HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.8.0+dev...");
+        include(dirname(__FILE__)."/../src/install/updates/update_v0.8.0_v0.x.x.php");
+    }
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
+  }
+
   public function init($version){
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
