@@ -354,6 +354,9 @@
             {{ELSE}}
               [[agent.getId()]]
             {{ENDIF}}
+            {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
+              <img src="static/active.gif" alt="Active">
+            {{ENDIF}}
           </td>
           <td>
             {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
@@ -363,9 +366,6 @@
             {{ENDIF}}
             {{IF [[agent.getIsTrusted()]] == 1}}
               <span class="fas fa-lock" aria-hidden="true"></span>
-            {{ENDIF}}
-            {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
-              <img src="static/active.gif" alt="Active">
             {{ENDIF}}
             {{IF [[agent.getIsActive()]] == 0}}
               <span class="fas fa-pause" aria-hidden="true"></span>

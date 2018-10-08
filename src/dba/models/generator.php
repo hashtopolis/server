@@ -134,7 +134,8 @@ $CONF['Hashlist'] = array(
   'isSecret',
   'hexSalt',
   'isSalted',
-  'accessGroupId'
+  'accessGroupId',
+  'notes'
 );
 $CONF['HashType'] = array(
   'hashTypeId',
@@ -286,6 +287,27 @@ $CONF['FileDelete'] = array(
   'fileDeleteId',
   'filename',
   'time'
+);
+$CONF['HealthCheck'] = array(
+  'healthCheckId',
+  'time',
+  'status',
+  'checkType',
+  'hashtypeId',
+  'crackerBinaryId',
+  'expectedCracks',
+  'attackCmd'
+);
+$CONF['HealthCheckAgent'] = array(
+  'healthCheckAgentId',
+  'healthCheckId',
+  'agentId',
+  'status',
+  'cracked',
+  'numGpus',
+  'start',
+  'end',
+  'errors'
 );
 
 // relations

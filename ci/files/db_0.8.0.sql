@@ -256,8 +256,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (44, 6, 'multicastEnable', '0'),
   (45, 6, 'multicastDevice', 'eth0'),
   (46, 6, 'multicastTransferRateEnable', '0'),
-  (47, 6, 'multicastTranserRate', '500000'),
-  (48, 1, 'disableTrimming', '0');
+  (47, 6, 'multicastTranserRate', '500000');
 
 -- --------------------------------------------------------
 
@@ -281,9 +280,7 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (2, 'Yubikey'),
   (3, 'Finetuning'),
   (4, 'UI'),
-  (5, 'Server'),
-  (6, 'Multicast'),
-  (7, 'Notifications');
+  (5, 'Server');
 
 -- --------------------------------------------------------
 
@@ -381,7 +378,7 @@ CREATE TABLE `FileDelete` (
 CREATE TABLE `Hash` (
   `hashId`      INT(11)                 NOT NULL,
   `hashlistId`  INT(11)                 NOT NULL,
-  `hash`        TEXT
+  `hash`        VARCHAR(1024)
                 COLLATE utf8_unicode_ci NOT NULL,
   `salt`        VARCHAR(256)
                 COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -389,8 +386,7 @@ CREATE TABLE `Hash` (
                 COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeCracked` INT(11)                 DEFAULT NULL,
   `chunkId`     INT(11)                 DEFAULT NULL,
-  `isCracked`   TINYINT(4)              NOT NULL,
-  `crackPos`    BIGINT                  NOT NULL
+  `isCracked`   TINYINT(4)              NOT NULL
 )
   ENGINE = InnoDB;
 
@@ -410,8 +406,7 @@ CREATE TABLE `HashBinary` (
                  COLLATE utf8_unicode_ci DEFAULT NULL,
   `timeCracked`  INT(11)                 DEFAULT NULL,
   `chunkId`      INT(11)                 DEFAULT NULL,
-  `isCracked`    TINYINT(4)                         NOT NULL,
-  `crackPos`     BIGINT                  NOT NULL
+  `isCracked`    TINYINT(4)                         NOT NULL
 )
   ENGINE = InnoDB;
 
@@ -434,8 +429,7 @@ CREATE TABLE `Hashlist` (
   `isSecret`      INT(11)                 NOT NULL,
   `hexSalt`       INT(11)                 NOT NULL,
   `isSalted`      TINYINT(4)              NOT NULL,
-  `accessGroupId` INT(11)                 NOT NULL,
-  `notes`         TEXT                    NOT NULL
+  `accessGroupId` INT(11)                 NOT NULL
 )
   ENGINE = InnoDB;
 
@@ -966,7 +960,7 @@ CREATE TABLE `User` (
 
 CREATE TABLE `Zap` (
   `zapId`      INT(11)                 NOT NULL,
-  `hash`       TEXT
+  `hash`       VARCHAR(1024)
                COLLATE utf8_unicode_ci NOT NULL,
   `solveTime`  INT(11)                 NOT NULL,
   `agentId`    INT(11)                 NULL,
@@ -1001,29 +995,6 @@ CREATE TABLE `FileDownload` (
 
 INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) VALUES (1, 'Administrators', 'ALL');
 
-CREATE TABLE `HealthCheck` (
-  `healthCheckId` int(11) NOT NULL,
-  `time` bigint(20) NOT NULL,
-  `status` int(11) NOT NULL,
-  `checkType` int(11) NOT NULL,
-  `hashtypeId` int(11) NOT NULL,
-  `crackerBinaryId` int(11) NOT NULL,
-  `expectedCracks` int(11) NOT NULL,
-  `attackCmd` VARCHAR(256) NOT NULL
-) ENGINE=InnoDB;
-
-CREATE TABLE `HealthCheckAgent` (
-  `healthCheckAgentId` int(11) NOT NULL,
-  `healthCheckId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `status` int(11) NOT NULL,
-  `cracked` int(11) NOT NULL,
-  `numGpus` int(11) NOT NULL,
-  `start` bigint(20) NOT NULL,
-  `end` bigint(20) NOT NULL,
-  `errors` text COLLATE utf8_bin NOT NULL
-) ENGINE=InnoDB;
-
 --
 -- Indexes for table `ApiKey`
 --
@@ -1035,12 +1006,6 @@ ALTER TABLE `ApiGroup`
 
 ALTER TABLE `FileDownload`
   ADD PRIMARY KEY (`fileDownloadId`);
-
-ALTER TABLE `HealthCheck` 
-  ADD PRIMARY KEY (`healthCheckId`);
-
-ALTER TABLE `HealthCheckAgent` 
-  ADD PRIMARY KEY (`healthCheckAgentId`);
 
 
 ALTER TABLE `FileDelete`
@@ -1180,7 +1145,7 @@ ALTER TABLE `Hash`
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`),
   ADD KEY `isCracked` (`isCracked`),
-  ADD KEY `hash` (`hash`(500));
+  ADD KEY `hash` (`hash`);
 
 --
 -- Indizes für die Tabelle `HashBinary`
@@ -1493,14 +1458,6 @@ ALTER TABLE `User`
 --
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `HealthCheck` 
-  MODIFY `healthCheckId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `HealthCheckAgent` 
-  MODIFY `healthCheckAgentId` int(11) NOT NULL AUTO_INCREMENT;
-
-
 --
 -- Constraints der exportierten Tabellen
 --

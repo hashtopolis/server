@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class HashlistFactory extends AbstractModelFactory {
+class HealthCheckFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Hashlist";
+    return "HealthCheck";
   }
   
   function getModelTable() {
-    return "Hashlist";
+    return "HealthCheck";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class HashlistFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return Hashlist
+   * @return HealthCheck
    */
   function getNullObject() {
-    $o = new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new HealthCheck(-1, null, null, null, null, null, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return Hashlist
+   * @return HealthCheck
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes']);
+    $o = new HealthCheck($dict['healthCheckId'], $dict['time'], $dict['status'], $dict['checkType'], $dict['hashtypeId'], $dict['crackerBinaryId'], $dict['expectedCracks'], $dict['attackCmd']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return Hashlist|Hashlist[]
+   * @return HealthCheck|HealthCheck[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class HashlistFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Hashlist::class);
+      return Util::cast(parent::filter($options, $single), HealthCheck::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class HashlistFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, Hashlist::class);
+      $models[] = Util::cast($object, HealthCheck::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return Hashlist
+   * @return HealthCheck
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Hashlist::class);
+    return Util::cast(parent::get($pk), HealthCheck::class);
   }
 
   /**
-   * @param Hashlist $model
-   * @return Hashlist
+   * @param HealthCheck $model
+   * @return HealthCheck
    */
   function save($model) {
-    return Util::cast(parent::save($model), Hashlist::class);
+    return Util::cast(parent::save($model), HealthCheck::class);
   }
 }

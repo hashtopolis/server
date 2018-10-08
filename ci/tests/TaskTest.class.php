@@ -8,7 +8,9 @@ class TaskTest extends HashtopolisTest {
   public function init($version){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing ".$this->getTestName()."...");
     parent::init($version);
+  }
 
+  private function prepare(){
     $status = true;
     // add some files
     $status &= $this->addFile("example.dict", 0);
@@ -24,6 +26,7 @@ class TaskTest extends HashtopolisTest {
 
   public function run(){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
+    $this->prepare();
     $this->testListTasks();
     $this->testCreateTask();
     $this->testListTasks(['Test Task']);

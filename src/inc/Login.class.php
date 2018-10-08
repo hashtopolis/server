@@ -45,7 +45,7 @@ class Login {
       $session = $_COOKIE['session'];
       $filter1 = new QueryFilter(Session::SESSION_KEY, $session, "=");
       $filter2 = new QueryFilter(Session::IS_OPEN, "1", "=");
-      $filter3 = new QueryFilter(Session::LAST_ACTION_DATE, time() - 10000, ">");
+      $filter3 = new QueryFilter(Session::LAST_ACTION_DATE, time() - 100000, ">");
       $check = Factory::getSessionFactory()->filter([Factory::FILTER => [$filter1, $filter2, $filter3]]);
       if ($check === null || sizeof($check) == 0) {
         setcookie("session", "", time() - 600); //delete invalid or old cookie
@@ -62,7 +62,7 @@ class Login {
         $this->session = $s;
         $s->setLastActionDate(time());
         Factory::getSessionFactory()->update($s);
-        setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime(), null, null, null, true);
+        setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime(), null, null, false, true);
       }
     }
   }
@@ -186,7 +186,7 @@ class Login {
 
     $this->valid = true;
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Successful login!");
-    setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime(), null, null, null, true);
+    setcookie("session", "$sessionKey", time() + $this->user->getSessionLifetime(), null, null, false, true);
     return true;
   }
 }

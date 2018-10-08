@@ -24,6 +24,9 @@ class DPretaskAction {
 
   const CREATE_TASK      = "createTask";
   const CREATE_TASK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
+
+  const CHANGE_ATTACK      = "changeAttack";
+  const CHANGE_ATTACK_PERM = DAccessControl::CREATE_PRETASK_ACCESS;
 }
 
 class DTaskTypes {

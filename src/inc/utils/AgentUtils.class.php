@@ -82,16 +82,22 @@ class AgentUtils {
     }
   }
 
+  /**
+   * @param Agent $agent 
+   * @param mixed $types 
+   * @return array
+   */
   public static function getGraphData($agent, $types){
     $limit = intval(SConfig::getInstance()->getVal(DConfig::AGENT_STAT_LIMIT));
     if($limit <= 0){
       $limit = 100;
     }
 
-    $qF = new ContainFilter(AgentStat::STAT_TYPE, $types);
+    $qF1 = new ContainFilter(AgentStat::STAT_TYPE, $types);
+    $qF2 = new QueryFilter(AgentStat::AGENT_ID, $agent->getId(), "="); 
     $oF1 = new OrderFilter(AgentStat::TIME, "DESC");
     $oF2 = new OrderFilter(AgentStat::STAT_TYPE, "ASC LIMIT $limit");
-    $entries = Factory::getAgentStatFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => [$oF1, $oF2]]);
+    $entries = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => [$oF1, $oF2]]);
     $xlabels = [];
     $datasets = [];
     $axes = [];
@@ -215,8 +221,10 @@ class AgentUtils {
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
 
-    $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
+    $qF = new QueryFilter(AgentStat::AGENT_ID, $agent->getId(), "=");
+    Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
 
+    $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentZapFactory()->massDeletion([Factory::FILTER => $qF]);
 
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");

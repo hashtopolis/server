@@ -33,6 +33,24 @@ use DBA\Factory;
  *         Bunch of useful static functions.
  */
 class Util {
+  public static function getGitCommit(){
+    $gitcommit = "";
+    $gitfolder = dirname(__FILE__) . "/../../.git";
+    if (file_exists($gitfolder) && is_dir($gitfolder)) {
+      $head = file_get_contents($gitfolder . "/HEAD");
+      $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
+      if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
+        $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
+        $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
+      }
+      else {
+        $commit = $head;
+        $gitcommit = "commit " . substr($commit, 0, 7);
+      }
+    }
+    return $gitcommit;
+  }
+
 	/**
 	 * @param string $type
 	 * @param string $version
@@ -97,28 +115,6 @@ class Util {
     }
   }
   
-  /**
-	 * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
-	 * 
-	 * @param string $string 
-	 * @return string
-	 */
-	public static function texEscape($string){
-		$output = "";
-		for($i=0;$i<strlen($string);$i++){
-			if($string[$i] == '#'){
-				$output .= "\\#";
-			}
-			else if($string[$i] == '\\'){
-				$output .= "\\textbackslash";
-			}
-			else{
-				$output .= $string[$i];
-			}
-		}
-		return $output;
-	}
-
  	/**
 	 * Scan the report template directory for templates. If no type is specified it will return all found.
 	 * 
@@ -146,6 +142,31 @@ class Util {
       return $reports;
     }
     return [];
+  }
+
+	/**
+	 * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
+	 * 
+	 * @param string $string 
+	 * @return string
+	 */
+	public static function texEscape($string){
+		$output = "";
+		for($i=0;$i<strlen($string);$i++){
+			if($string[$i] == '#'){
+				$output .= "\\#";
+			}
+			else if($string[$i] == '\\'){
+				$output .= "\\textbackslash";
+			}
+      else if($string[$i] == '_'){
+        $output .= "\\_";
+      }
+			else{
+				$output .= $string[$i];
+			}
+		}
+		return $output;
   }
 
   /**
@@ -1038,8 +1059,7 @@ class Util {
    *          length of random string to generate
    * @return string random string
    */
-  public static function randomString($length) {
-    $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  public static function randomString($length, $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") {
     $result = "";
     for ($x = 0; $x < $length; $x++) {
       $result .= $charset[mt_rand(0, strlen($charset) - 1)];

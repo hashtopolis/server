@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class HashlistFactory extends AbstractModelFactory {
+class HealthCheckAgentFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Hashlist";
+    return "HealthCheckAgent";
   }
   
   function getModelTable() {
-    return "Hashlist";
+    return "HealthCheckAgent";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class HashlistFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return Hashlist
+   * @return HealthCheckAgent
    */
   function getNullObject() {
-    $o = new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new HealthCheckAgent(-1, null, null, null, null, null, null, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return Hashlist
+   * @return HealthCheckAgent
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes']);
+    $o = new HealthCheckAgent($dict['healthCheckAgentId'], $dict['healthCheckId'], $dict['agentId'], $dict['status'], $dict['cracked'], $dict['numGpus'], $dict['start'], $dict['end'], $dict['errors']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return Hashlist|Hashlist[]
+   * @return HealthCheckAgent|HealthCheckAgent[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class HashlistFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Hashlist::class);
+      return Util::cast(parent::filter($options, $single), HealthCheckAgent::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class HashlistFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, Hashlist::class);
+      $models[] = Util::cast($object, HealthCheckAgent::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return Hashlist
+   * @return HealthCheckAgent
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Hashlist::class);
+    return Util::cast(parent::get($pk), HealthCheckAgent::class);
   }
 
   /**
-   * @param Hashlist $model
-   * @return Hashlist
+   * @param HealthCheckAgent $model
+   * @return HealthCheckAgent
    */
   function save($model) {
-    return Util::cast(parent::save($model), Hashlist::class);
+    return Util::cast(parent::save($model), HealthCheckAgent::class);
   }
 }
