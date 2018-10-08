@@ -114,33 +114,8 @@ class Util {
         break;
     }
   }
-
-	/**
-	 * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
-	 * 
-	 * @param string $string 
-	 * @return string
-	 */
-	public static function texEscape($string){
-		$output = "";
-		for($i=0;$i<strlen($string);$i++){
-			if($string[$i] == '#'){
-				$output .= "\\#";
-			}
-			else if($string[$i] == '\\'){
-				$output .= "\\textbackslash";
-			}
-      else if($string[$i] == '_'){
-        $output .= "\\_";
-      }
-			else{
-				$output .= $string[$i];
-			}
-		}
-		return $output;
-	}
-
-	/**
+  
+ 	/**
 	 * Scan the report template directory for templates. If no type is specified it will return all found.
 	 * 
 	 * @param string $type 
@@ -167,6 +142,31 @@ class Util {
       return $reports;
     }
     return [];
+  }
+
+	/**
+	 * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
+	 * 
+	 * @param string $string 
+	 * @return string
+	 */
+	public static function texEscape($string){
+		$output = "";
+		for($i=0;$i<strlen($string);$i++){
+			if($string[$i] == '#'){
+				$output .= "\\#";
+			}
+			else if($string[$i] == '\\'){
+				$output .= "\\textbackslash";
+			}
+      else if($string[$i] == '_'){
+        $output .= "\\_";
+      }
+			else{
+				$output .= $string[$i];
+			}
+		}
+		return $output;
   }
 
   /**
@@ -346,73 +346,6 @@ class Util {
         $set->addValue('hashlistCracked', $hashlist->getCracked());
         $set->addValue('priority', $taskWrapper->getPriority());
 
-        $oF = new OrderFilter(Task::PRIORITY, "DESC");
-        $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-        $subtaskList = array();
-
-        $tasksDone = 0;
-        $isActive = false;
-        $cracked = 0;
-        $numAssignments = 0;
-        $numFiles = 0;
-        $fileSecret = false;
-        $filesSize = 0;
-
-        foreach ($tasks as $task) {
-          $subSet = new DataSet();
-          $subSet->addValue('color', $task->getColor());
-          $subSet->addValue('taskId', $task->getId());
-          $subSet->addValue('attackCmd', $task->getAttackCmd());
-          $subSet->addValue('taskName', $task->getTaskName());
-          $subSet->addValue('keyspace', $task->getKeyspace());
-          $subSet->addValue('cpuOnly', $task->getIsCpuTask());
-          $subSet->addValue('isSmall', $task->getIsSmall());
-          $subSet->addValue('isPrince', $task->getIsPrince());
-          $subSet->addValue('chunkTime', $task->getChunkTime());
-          $subSet->addValue('taskProgress', $task->getKeyspaceProgress());
-          $subSet->addValue('priority', $task->getPriority());
-
-
-          $taskInfo = Util::getTaskInfo($task);
-          $fileInfo = Util::getFileInfo($task, $accessGroups);
-          $chunkInfo = Util::getChunkInfo($task);
-
-          if($fileInfo[4]){
-            continue;
-          }
-
-          $subSet->addValue('sumProgress', $taskInfo[0]);
-          $subSet->addValue('numFiles', $fileInfo[0]);
-          $subSet->addValue('fileSecret', $fileInfo[1]);
-          $subSet->addValue('filesSize', $fileInfo[2]);
-          $subSet->addValue('numChunks', $chunkInfo[0]);
-          $subSet->addValue('isActive', $taskInfo[2]);
-          $subSet->addValue('cracked', $taskInfo[1]);
-          $subSet->addValue('numAssignments', $chunkInfo[2]);
-          $subSet->addValue('performance', $taskInfo[4]);
-
-          if ($taskInfo[0] >= $task->getKeyspace() && $task->getKeyspace() > 0) {
-            $tasksDone++;
-          }
-          $isActive = $isActive || $taskInfo[2];
-          $cracked += $taskInfo[1];
-          $numAssignments += $chunkInfo[2];
-          $numFiles += $fileInfo[0];
-          $fileSecret = $fileSecret || $fileInfo[1];
-          $filesSize += $fileInfo[2];
-
-          $subtaskList[] = $subSet;
-        }
-
-        $set->addValue('tasksDone', $tasksDone);
-        $set->addValue('isActive', $isActive);
-        $set->addValue('cracked', $cracked);
-        $set->addValue('numAssignments', $numAssignments);
-        $set->addValue('numFiles', $numFiles);
-        $set->addValue('fileSecret', $fileSecret);
-        $set->addValue('filesSize', $filesSize);
-        $set->addValue('numTasks', sizeof($tasks));
-        $set->addValue('subtaskList', $subtaskList);
         $taskList[] = $set;
       }
       else {
