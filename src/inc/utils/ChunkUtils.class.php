@@ -13,10 +13,13 @@ class ChunkUtils{
   public static function handleExistingChunk($chunk, $task, $assignment) {
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
 
+    DServerLog::log(DServerLog::TRACE, "Handling existing chunk...", [$task, $chunk, $assignment]);
+
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
     if (($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) && $agentChunkSizeMax >= $chunk->getLength()) {
       //chunk has not started yet
+      DServerLog::log(DServerLog::TRACE, "Chunk did not start yet and is small enough to give it to agent", [$task, $chunk, $assignment]);
       $chunk->setProgress(0);
       $chunk->setDispatchTime(time());
       $chunk->setSolveTime(0);
@@ -27,6 +30,7 @@ class ChunkUtils{
     }
     else if ($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) {
       //split chunk into two parts
+      DServerLog::log(DServerLog::TRACE, "Chunk has not started, but needs to be split", [$task, $chunk, $assignment]);
       $originalLength = $chunk->getLength();
       $firstPart = $chunk;
       $firstPart->setLength($agentChunkSize);
@@ -37,15 +41,18 @@ class ChunkUtils{
       $firstPart->setProgress(0);
       Factory::getChunkFactory()->update($firstPart);
       $secondPart = new Chunk(null, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), 0, DHashcatStatus::INIT, 0, 0);
-      Factory::getChunkFactory()->save($secondPart);
+      $secondPart = Factory::getChunkFactory()->save($secondPart);
+      DServerLog::log(DServerLog::TRACE, "Splitting done, resulting in two chunks", [$task, $assignment, $firstPart, $secondPart]);
       return $firstPart;
     }
     else {
+      DServerLog::log(DServerLog::TRACE, "Chunk was started and reached a checkpoint", [$task, $chunk, $assignment]);
       if ($chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint() == 0) {
         // special case when remaining chunk length gets 0
         $chunk->setProgress(10000);
         $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
         Factory::getChunkFactory()->update($chunk);
+        DServerLog::log(DServerLog::TRACE, "Remaining part is 0 for some reason, finished chunk", [$task, $chunk]);
         return ChunkUtils::createNewChunk($task, $assignment);
       }
       $newChunk = new Chunk(
@@ -67,6 +74,7 @@ class ChunkUtils{
       $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
       Factory::getChunkFactory()->update($chunk);
       $newChunk = Factory::getChunkFactory()->save($newChunk);
+      DServerLog::log(DServerLog::TRACE, "Trimmed chunk and created new one of the remaining part", [$task, $chunk, $newChunk, $assignment]);
       return $newChunk;
     }
   }
@@ -100,6 +108,7 @@ class ChunkUtils{
     Factory::getTaskFactory()->update($task);
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, 0, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
+    DServerLog::log(DServerLog::TRACE, "Created new chunk for task", [$task, $chunk, $assignment]);
     return $chunk;
   }
 
@@ -152,6 +161,7 @@ class ChunkUtils{
       // new benchmarking method
       $benchmark = explode(":", $benchmark);
       if (sizeof($benchmark) != 2 || $benchmark[0] <= 0 || $benchmark[1] <= 0) {
+        DServerLog::log(DServerLog::WARNING, "Chunk size 0 because of benchmark having invalid data!", [$keyspace, $benchmark, $chunkTime]);
         return 0;
       }
 
@@ -166,6 +176,7 @@ class ChunkUtils{
       if(is_array($benchmark)){
         $benchmark = implode(":", $benchmark);
       }
+      DServerLog::log(DServerLog::WARNING, "Chunk size 0!", [$keyspace, $benchmark, $chunkTime]);
       Util::createLogEntry("API", $QUERY[PQuery::TOKEN], DLogEntry::WARN, "Calculated chunk size was 0 on benchmark $benchmark!");
     }
 

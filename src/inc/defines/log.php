@@ -8,11 +8,20 @@ class DServerLog{
   const ERROR   = 40;
   const FATAL   = 50;
 
-  public static function log($level, $message){
+  public static function log($level, $message, $data = []){
     if($level >= SConfig::getInstance()->getVal(DConfig::SERVER_LOG_LEVEL)){
       // log it
       LockUtils::get(Lock::LOG);
       $filename = dirname(__FILE__)."/../../log/".date("Y-m-d").".log";
+      if(sizeof($data) > 0){
+        $message .= " ###";
+        foreach($data as $d){
+          if(is_object($d)){
+            $d = get_object_vars($d);
+          }
+          $message .= " ".json_encode($d)."EOD";
+        }
+      }
       if(SConfig::getInstance()->getVal(DConfig::SERVER_LOG_LEVEL) <= DServerLog::DEBUG){
         $key = array_search(__FUNCTION__, array_column(debug_backtrace(), 'function'));
         $file = str_replace('\\', '/', debug_backtrace()[$key]['file']);

@@ -40,6 +40,7 @@ abstract class APIBasic {
     $qF = new QueryFilter(Agent::TOKEN, $QUERY[PQuery::TOKEN], "=");
     $agent = Factory::getAgentFactory()->filter([Factory::FILTER => array($qF)], true);
     if ($agent == null) {
+      DServerLog::log(DServerLog::WARNING, "Agent from " . Util::getIP() . " sent invalid token!");
       $this->sendErrorResponse($action, "Invalid token!");
     }
     $this->agent = $agent;
