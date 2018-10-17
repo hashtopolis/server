@@ -2,6 +2,7 @@
 
 class Lock {
   const CHUNKING = "chunking.lock";
+  const LOG      = "log.lock";
   
   private $lockFile;
   private $lock;

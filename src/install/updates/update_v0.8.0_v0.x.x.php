@@ -55,6 +55,8 @@ $config = new Config(null, 1, DConfig::DISABLE_TRIMMING, '0');
 Factory::getConfigFactory()->save($config);
 $config = new Config(null, 1, DConfig::PRIORITY_0_START, '0');
 Factory::getConfigFactory()->save($config);
+$config = new Config(null, 4, DConfig::SERVER_LOG_LEVEL, DServerLog::INFO);
+Factory::getConfigFactory()->save($config);
 echo "OK\n";
 
 echo "Updating Hash tables... ";
