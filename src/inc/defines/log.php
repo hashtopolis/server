@@ -16,10 +16,10 @@ class DServerLog{
       if(SConfig::getInstance()->getVal(DConfig::SERVER_LOG_LEVEL) <= DServerLog::DEBUG){
         $key = array_search(__FUNCTION__, array_column(debug_backtrace(), 'function'));
         $file = str_replace('\\', '/', debug_backtrace()[$key]['file']);
-        $basePath = str_replace("inc/defines", "", dirname(__FILE__));
+        $basePath = str_replace("inc/defines", "", str_replace('\\', '/', dirname(__FILE__)));
         $file = str_replace($basePath, "", $file);
         $lineNum = debug_backtrace()[$key]['line'];
-        $line = sprintf("[%s][%-5s][%s:%i]: %s\n", date("Y-m-d H:i:s T O"), DServerLog::getLevelName($level), $file, $lineNum, $message);
+        $line = sprintf("[%s][%-5s][%s:%s]: %s\n", date("Y-m-d H:i:s T O"), DServerLog::getLevelName($level), $file, $lineNum, $message);
       }
       else{
         $line = sprintf("[%s][%-5s]: %s\n", date("Y-m-d H:i:s T O"), DServerLog::getLevelName($level), $message);
