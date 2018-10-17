@@ -10,10 +10,13 @@ class DServerLog{
 
   public static function log($level, $message){
     if($level >= SConfig::getInstance()->getVal(DConfig::SERVER_LOG_LEVEL)){
+      $key = array_search(__FUNCTION__, array_column(debug_backtrace(), 'function'));
+      $file = json_encode(debug_backtrace()[$key]);
+
       // log it
       LockUtils::get(Lock::LOG);
       $filename = dirname(__FILE__)."/../../log/".date("Y-m-d").".log";
-      $line = sprintf("[%s][%-5s]: %s", date("Y-m-d H:i:s T O"), DServerLog::getLevelName($level), $message);
+      $line = sprintf("[%s][%-5s][%s]: %s", date("Y-m-d H:i:s T O"), DServerLog::getLevelName($level), $file, $message);
       file_put_contents($filename, $line, FILE_APPEND);
       LockUtils::release(Lock::LOG);
     }
