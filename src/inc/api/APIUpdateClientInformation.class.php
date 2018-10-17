@@ -31,6 +31,7 @@ class APIUpdateClientInformation extends APIBasic {
     $this->agent->setOs($os);
     
     $this->updateAgent(PActions::UPDATE_CLIENT_INFORMATION);
+    DServerLog::log(DServerLog::DEBUG, "Agent sent updated client information", [$this->agent]);
     
     $this->sendResponse(array(
         PQueryUpdateInformation::ACTION => PActions::UPDATE_CLIENT_INFORMATION,

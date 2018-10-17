@@ -42,6 +42,8 @@ class APISendHealthCheck extends APIBasic {
     $healthCheckAgent->setStatus($status);
     Factory::getHealthCheckAgentFactory()->update($healthCheckAgent);
 
+    DServerLog::log(DServerLog::DEBUG, "Agent sent health check results", [$this->agent, $healthCheck, $healthCheckAgent]);
+
     HealthUtils::checkCompletion($healthCheck);
     $this->sendResponse([
       PResponseSendHealthCheck::ACTION => PActions::SEND_HEALTH_CHECK,

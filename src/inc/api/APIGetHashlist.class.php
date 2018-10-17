@@ -17,6 +17,8 @@ class APIGetHashlist extends APIBasic {
       $this->sendErrorResponse(PActions::GET_HASHLIST, "Invalid hashlist!");
     }
 
+    DServerLog::log(DServerLog::DEBUG, "Requesting a hashlist...", [$this->agent, $hashlist]);
+
     $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
     if ($assignment == null) {
@@ -25,15 +27,18 @@ class APIGetHashlist extends APIBasic {
 
     $task = Factory::getTaskFactory()->get($assignment->getTaskId());
     if ($task == null) {
+      DServerLog::log(DServerLog::WARNING, "Assignment contained invalid task!", [$this->agent, $assignment]);
       $this->sendErrorResponse(PActions::GET_HASHLIST, "Assignment contains invalid task!");
     }
 
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
+      DServerLog::log(DServerLog::FATAL, "Inconsistency between taskWrapper and tasks!", [$this->agent, $task]);
       $this->sendErrorResponse(PActions::GET_HASHLIST, "Inconsistent taskWrapper for task!");
     }
 
     if ($taskWrapper->getHashlistId() != $hashlist->getId()) {
+      DServerLog::log(DServerLog::WARNING, "Agent requested hashlist not used for task!", [$this->agent, $taskWrapper, $task, $hashlist]);
       $this->sendErrorResponse(PActions::GET_HASHLIST, "This hashlist is not used for the assigned task!");
     }
     else if ($this->agent->getIsTrusted() < $hashlist->getIsSecret()) {

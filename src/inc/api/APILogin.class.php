@@ -10,6 +10,8 @@ class APILogin extends APIBasic {
     $this->checkToken(PActions::LOGIN, $QUERY);
     $this->agent->setClientSignature(htmlentities($QUERY[PQueryLogin::CLIENT_SIGNATURE], ENT_QUOTES, "UTF-8"));
     $this->updateAgent(PActions::LOGIN);
+
+    DServerLog::log(DServerLog::DEBUG, "Agent logged in", [$this->agent]);
     
     $this->sendResponse(array(
         PResponseLogin::ACTION => PActions::LOGIN,
