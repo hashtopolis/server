@@ -34,6 +34,6 @@ class DServerLog{
       case DServerLog::FATAL:
         return "FATAL";
     }
-    return "EMPTY"
+    return "EMPTY";
   }
 }
