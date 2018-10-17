@@ -40,7 +40,15 @@ class Assignment extends AbstractModel {
   function setId($id) {
     $this->assignmentId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getTaskId(){
     return $this->taskId;
   }

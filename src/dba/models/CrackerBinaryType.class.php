@@ -37,7 +37,15 @@ class CrackerBinaryType extends AbstractModel {
   function setId($id) {
     $this->crackerBinaryTypeId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getTypeName(){
     return $this->typeName;
   }

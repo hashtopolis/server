@@ -46,7 +46,15 @@ class LogEntry extends AbstractModel {
   function setId($id) {
     $this->logEntryId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getIssuer(){
     return $this->issuer;
   }

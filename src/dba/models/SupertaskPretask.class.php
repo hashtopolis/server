@@ -37,7 +37,15 @@ class SupertaskPretask extends AbstractModel {
   function setId($id) {
     $this->supertaskPretaskId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getSupertaskId(){
     return $this->supertaskId;
   }

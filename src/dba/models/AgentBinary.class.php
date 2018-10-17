@@ -43,7 +43,15 @@ class AgentBinary extends AbstractModel {
   function setId($id) {
     $this->agentBinaryId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getType(){
     return $this->type;
   }
