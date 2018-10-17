@@ -16,7 +16,10 @@ class DServerLog{
       if(sizeof($data) > 0){
         $message .= " ###";
         foreach($data as $d){
-          if(is_object($d)){
+          if(is_object($d) && method_exists($d, "expose")){
+            $d = $d->expose();
+          }
+          else if(is_object($d)){
             $d = (array)$d;
           }
           $message .= " ".json_encode($d)."EOD";

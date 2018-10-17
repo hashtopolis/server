@@ -30,4 +30,12 @@ abstract class AbstractModel {
    * this function returns the models id
    */
   abstract function getId();
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
 }
