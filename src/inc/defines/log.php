@@ -17,7 +17,7 @@ class DServerLog{
         $message .= " ###";
         foreach($data as $d){
           if(is_object($d)){
-            $d = get_object_vars($d);
+            $d = (array)$d;
           }
           $message .= " ".json_encode($d)."EOD";
         }
