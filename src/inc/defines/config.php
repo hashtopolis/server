@@ -81,6 +81,7 @@ class DConfig {
   const CONTACT_EMAIL      = "contactEmail";
   const VOUCHER_DELETION   = "voucherDeletion";
   const S_NAME             = "jeSuisHashtopussy";
+  const SERVER_LOG_LEVEL   = "serverLogLevel";
 
   // Section: Multicast
   const MULTICAST_ENABLE    = "multicastEnable";
@@ -108,6 +109,15 @@ class DConfig {
           DProxyTypes::HTTPS => DProxyTypes::HTTPS,
           DProxyTypes::SOCKS4 => DProxyTypes::SOCKS4,
           DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
+        ]);
+      case DConfig::SERVER_LOG_LEVEL:
+        return new DataSet([
+          DServerLog::TRACE => "TRACE",
+          DServerLog::DEBUG => "DEBUG",
+          DServerLog::INFO => "INFO",
+          DServerLog::WARNING => "WARNING",
+          DServerLog::ERROR => "ERROR",
+          DServerLog::FATAL => "FATAL"
         ]);
     }
     return new DataSet(["Not found!"]);
@@ -212,6 +222,8 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::PRIORITY_0_START:
         return DConfigType::TICKBOX;
+      case DConfig::SERVER_LOG_LEVEL:
+        return DConfigType::SELECT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -320,6 +332,8 @@ class DConfig {
         return "Disable trimming of chunks and redo whole chunks";
       case DConfig::PRIORITY_0_START:
         return "Also automatically assign tasks with priority 0";
+      case DConfig::SERVER_LOG_LEVEL:
+        return "Server level to be logged on the server to file";
     }
     return $config;
   }

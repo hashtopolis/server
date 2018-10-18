@@ -6,6 +6,7 @@
 - Trimming of chunks can be disabled so a chunk is always run fully again (or splitted if it is too large).
 - Supertasks can now can be created by specifying a base command and iterate over a selection of files to be placed in the command.
 - Notes can be added to hashlists.
+- Added optional trace logging of actions from the client API to get more information in case of failures.
 
 ## Bugfixes
 

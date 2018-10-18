@@ -28,24 +28,29 @@ class APISendBenchmark extends APIBasic {
     $type = $QUERY[PQuerySendBenchmark::TYPE];
     $benchmark = $QUERY[PQuerySendBenchmark::RESULT];
 
+    DServerLog::log(DServerLog::TRACE, "Agent sending benchmark", [$this->agent, $task, $type, $benchmark]);
+
     switch ($type) {
       case PValuesBenchmarkType::SPEED_TEST:
         $split = explode(":", $benchmark);
         if (sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <= 0 || $split[1] <= 0) {
           $this->agent->setIsActive(0);
           Factory::getAgentFactory()->update($this->agent);
+          DServerLog::log(DServerLog::ERROR, "Invalid speed test benchmark result!", [$this->agent, $benchmark]);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
 
         // Here we check if the benchmark result would require to split the task and check if the task can be split
         if(SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $task->getIsPrince() == 0 && $split[1] > $task->getChunkTime() * 1000 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL){
           // test if we have a large rule file
+          DServerLog::log(DServerLog::INFO, "Potential rule split required", [$this->agent, $task]);
           $files = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfAgent($this->agent))[3];
           foreach($files as $file){
             if($file->getFileType() == DFileType::RULE){
               // test if splitting makes sense here
               if(Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_ALWAYS)){
                 // --> split
+                DServerLog::log(DServerLog::INFO, "Rule splitting possible on file", [$this->agent, $task, $file]);
                 TaskUtils::splitByRules($task, $taskWrapper, $files, $file, $split);
                 $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Task was split due to benchmark!");
               }
@@ -58,10 +63,12 @@ class APISendBenchmark extends APIBasic {
         if (!is_numeric($benchmark) || $benchmark <= 0) {
           $this->agent->setIsActive(0);
           Factory::getAgentFactory()->update($this->agent);
+          DServerLog::log(DServerLog::ERROR, "Invalid benchmark results for runtime benchmark", [$this->agent, $task, $benchmark]);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
         // normalize time of the benchmark to 100 seconds
         $benchmark = $benchmark / SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME) * 100;
+        DServerLog::log(DServerLog::TRACE, "Saving normalized runtime benchmark", [$this->agent, $task, $benchmark]);
         break;
       default:
         $this->agent->setIsActive(0);
@@ -71,6 +78,7 @@ class APISendBenchmark extends APIBasic {
 
     $assignment->setBenchmark($benchmark);
     Factory::getAssignmentFactory()->update($assignment);
+    DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
     $this->sendResponse(array(
         PResponseSendBenchmark::ACTION => PActions::SEND_BENCHMARK,
         PResponseSendBenchmark::RESPONSE => PValues::SUCCESS,

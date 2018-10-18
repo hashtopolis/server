@@ -34,7 +34,15 @@ class ConfigSection extends AbstractModel {
   function setId($id) {
     $this->configSectionId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getSectionName(){
     return $this->sectionName;
   }

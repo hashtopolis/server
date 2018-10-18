@@ -29,6 +29,8 @@ class APISendProgress extends APIBasic {
     $speed = intval($QUERY[PQuerySendProgress::SPEED]);
     $state = intval($QUERY[PQuerySendProgress::HASHCAT_STATE]);
 
+    DServerLog::log(DServerLog::TRACE, "Agent sending progress", [$this->agent]);
+
     $chunk = Factory::getChunkFactory()->get(intval($QUERY[PQuerySendProgress::CHUNK_ID]));
     if ($chunk == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Invalid chunk id " . intval($QUERY[PQuerySendProgress::CHUNK_ID]));
@@ -40,8 +42,11 @@ class APISendProgress extends APIBasic {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "You are not assigned to this chunk");
     }
 
+    DServerLog::log(DServerLog::TRACE, "Agent is assigned to this chunk and active", [$this->agent, $chunk]);
+
     $task = Factory::getTaskFactory()->get($chunk->getTaskId());
     if ($task == null) {
+      DServerLog::log(DServerLog::ERROR, "Inconsistency between chunk and task!", [$this->agent, $chunk]);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "No task exists for the given chunk");
     }
     else if($task->getIsArchived() == 1){
@@ -49,20 +54,27 @@ class APISendProgress extends APIBasic {
     }
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
+      DServerLog::log(DServerLog::ERROR, "Inconsistency between task and taskWrapper!", [$this->agent, $task]);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Inconsistency error on taskWrapper");
     }
 
+    DServerLog::log(DServerLog::TRACE, "Agent working on valid task", [$this->agent, $task]);
+
     $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
     if ($hashlist == null) {
+      DServerLog::log(DServerLog::ERROR, "Task is not having a valid hashlist!", [$this->agent, $task]);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "The given task does not have a corresponding hashlist!");
     }
     $totalHashlist = $hashlist;
     $hashlists = Util::checkSuperHashlist($hashlist);
     foreach ($hashlists as $hashlist) {
       if ($hashlist->getIsSecret() > $this->agent->getIsTrusted()) {
+        DServerLog::log(DServerLog::TRACE, "For some reason agent was working on a hashlist he is not allowed to (probabily permission change)", [$this->agent, $task, $hashlist]);
         $this->sendErrorResponse(PActions::SEND_PROGRESS, "Unknown Error. The API does not trust you with more information");
       }
     }
+
+    DServerLog::log(DServerLog::TRACE, "Agent working on correct hashlist(s)", [$this->agent, $totalHashlist]);
 
     $dataTime = time();
     if(isset($QUERY[PQuerySendProgress::GPU_TEMP])){
@@ -122,10 +134,13 @@ class APISendProgress extends APIBasic {
     $chunk->setSolveTime(time());
     $aborting = false;
     if ($chunk->getState() == DHashcatStatus::ABORTED) {
+      DServerLog::log(DServerLog::TRACE, "Chunk was aborted, we need to stop afterwards", [$this->agent]);
       $aborting = true;
     }
     $chunk->setState($state);
     Factory::getChunkFactory()->update($chunk);
+    DServerLog::log(DServerLog::TRACE, "Progress updated chunk", [$this->agent, $chunk]);
+
     $format = $hashlists[0]->getFormat();
 
     // reset values
@@ -260,7 +275,7 @@ class APISendProgress extends APIBasic {
       $qF = new ContainFilter(Hash::HASH_ID, $crackHashes);
       Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::PLAINTEXT, $plainUpdates);
 			Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::CRACK_POS, $crackPosUpdates);
-            Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::TIME_CRACKED, $timeUpdates);
+      Factory::getHashFactory()->massSingleUpdate(Hash::HASH_ID, Hash::TIME_CRACKED, $timeUpdates);
       Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS1, Factory::FILTER => $qF]);
       Factory::getHashFactory()->massUpdate([Factory::UPDATE => $uS2, Factory::FILTER => $qF]);
       Factory::getZapFactory()->massSave($zaps);
@@ -282,10 +297,13 @@ class APISendProgress extends APIBasic {
     Factory::getChunkFactory()->update($chunk);
     Factory::getAgentFactory()->getDB()->commit();
 
+    DServerLog::log(DServerLog::TRACE, "Updated with received cracks", [$this->agent, $chunk]);
+
     if ($chunk->getState() == DHashcatStatus::STATUS_ABORTED_RUNTIME) {
       // the chunk was manually interrupted
       $chunk->setState(DHashcatStatus::ABORTED);
       Factory::getChunkFactory()->update($chunk);
+      DServerLog::log(DServerLog::TRACE, "Chunk was manually interrupted", [$this->agent]);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was manually interrupted.");
     }
     /** Check if the task is done */
@@ -298,6 +316,7 @@ class APISendProgress extends APIBasic {
       if ($count == 0) {
         // this was the last incomplete chunk!
         $taskdone = true;
+        DServerLog::log(DServerLog::INFO, "Chunk is the last one and is completed and keyspace is reached", [$this->agent, $task, $chunk]);
       }
     }
 
@@ -317,6 +336,7 @@ class APISendProgress extends APIBasic {
         $taskWrapper->setPriority(0);
         Factory::getTaskWrapperFactory()->update($taskWrapper);
       }
+      DServerLog::log(DServerLog::TRACE, "As task is done, finished it and updated taskWrapper", [$this->agent, $task, $taskWrapper]);
 
       $payload = new DataSet(array(DPayloadKeys::TASK => $task));
       NotificationHandler::checkNotifications(DNotificationType::TASK_COMPLETE, $payload);
@@ -333,6 +353,7 @@ class APISendProgress extends APIBasic {
       $chunk->setSpeed(0);
       $chunk->setState(DHashcatStatus::ABORTED);
       Factory::getChunkFactory()->update($chunk);
+      DServerLog::log(DServerLog::TRACE, "From earlier setting, chunk needed to be aborted.", [$this->agent, $chunk]);
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Chunk was aborted!");
     }
 
@@ -343,6 +364,7 @@ class APISendProgress extends APIBasic {
         $chunk->setProgress(10000);
         $chunk->setCheckpoint($chunk->getSkip() + $chunk->getLength());
         Factory::getChunkFactory()->update($chunk);
+        DServerLog::log(DServerLog::TRACE, "Chunk is exhausted (cracker status)", [$this->agent, $chunk]);
         break;
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
@@ -351,9 +373,11 @@ class APISendProgress extends APIBasic {
         $chunk->setProgress(10000);
         $chunk->setSpeed(0);
         Factory::getChunkFactory()->update($chunk);
+        DServerLog::log(DServerLog::TRACE, "Last hash was cracked (cracker status)", [$this->agent, $chunk]);
 
         TaskUtils::depriorizeAllTasks($hashlists);
         TaskUtils::unassignAllAgents($hashlists);
+        DServerLog::log(DServerLog::TRACE, "Depriorized all tasks of the hashlist and unassigned all agents", [$this->agent, $totalHashlist]);
 
         $payload = new DataSet(array(DPayloadKeys::HASHLIST => $totalHashlist));
         NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
@@ -374,6 +398,7 @@ class APISendProgress extends APIBasic {
         if ($count == 0) {
           $payload = new DataSet(array(DPayloadKeys::HASHLIST => $totalHashlist));
           NotificationHandler::checkNotifications(DNotificationType::HASHLIST_ALL_CRACKED, $payload);
+          DServerLog::log(DServerLog::TRACE, "Agent still is running, but all hashes got cracked (all agents together), stop it", [$this->agent]);
 
           $task->setPriority(0);
           $chunk->setCheckpoint($chunk->getSkip() + $chunk->getLength());
@@ -387,6 +412,7 @@ class APISendProgress extends APIBasic {
 
           Factory::getChunkFactory()->update($chunk);
           Factory::getTaskFactory()->update($task);
+          DServerLog::log(DServerLog::TRACE, "Depriorized all tasks and updated", [$this->agent, $task, $chunk, $totalHashlist]);
 
           //stop agent
           $this->sendResponse(array(
@@ -425,7 +451,7 @@ class APISendProgress extends APIBasic {
           Factory::getAgentZapFactory()->update($agentZap);
         }
 
-        // update hashList age for agent to this task
+        DServerLog::log(DServerLog::TRACE, "Checked zaps and sending new ones to agent", [$this->agent, $zaps]);
         break;
     }
     Util::zapCleaning();

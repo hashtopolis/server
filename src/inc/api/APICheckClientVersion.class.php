@@ -18,11 +18,13 @@ class APICheckClientVersion extends APIBasic {
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($result == null) {
+      DServerLog::log(DServerLog::WARNING, "Agent " . $this->agent->getId() . " sent unknown client type: " . $type);
       $this->sendErrorResponse(PActions::CHECK_CLIENT_VERSION, "Type not found!");
     }
 
     $this->updateAgent(PActions::CHECK_CLIENT_VERSION);
     if (Util::versionComparison($result->getVersion(), $version) == -1) {
+      DServerLog::log(DServerLog::DEBUG, "Agent " . $this->agent->getId() . " got notified about client update");
       $this->sendResponse(array(
           PResponseClientUpdate::ACTION => PActions::CHECK_CLIENT_VERSION,
           PResponseClientUpdate::RESPONSE => PValues::SUCCESS,

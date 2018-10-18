@@ -32,11 +32,13 @@ class APIRegisterAgent extends APIBasic {
     if ($agent != null) {
       $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
       NotificationHandler::checkNotifications(DNotificationType::NEW_AGENT, $payload);
+      DServerLog::log(DServerLog::INFO, "Registered new agent", [$agent]);
 
       // assign agent to default group
       $accessGroup = AccessUtils::getOrCreateDefaultAccessGroup();
       $accessGroupAgent = new AccessGroupAgent(null, $accessGroup->getId(), $agent->getId());
       Factory::getAccessGroupAgentFactory()->save($accessGroupAgent);
+      DServerLog::log(DServerLog::INFO, "Assigned agent to access group", [$agent, $accessGroup]);
 
       $this->sendResponse(array(
           PQueryRegister::ACTION => PActions::REGISTER,
@@ -46,6 +48,7 @@ class APIRegisterAgent extends APIBasic {
       );
     }
     else {
+      DServerLog::log(DServerLog::ERROR, "Saving of agent failed!", [$agent]);
       $this->sendErrorResponse(PActions::REGISTER, "Could not register you to server: Saving failed!");
     }
   }

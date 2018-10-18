@@ -2,6 +2,7 @@
 
 class Lock {
   const CHUNKING = "chunking.lock";
+  const LOG      = "log.lock";
   
   private $lockFile;
   private $lock;
@@ -35,13 +36,13 @@ class Lock {
   /**
    * @throws Exception
    */
-  public
-  function release() {
+  public function release() {
     /* Release the lock */
     $ret = flock($this->lock, LOCK_UN);
     if ($ret === false) {
       throw new Exception("Could not release lock on lockfile '" . $this->lockFile . "'.");
     }
-    fclose($this->lock);
+    // not closing as otherwise we cannot reuse this object for locking
+    // fclose($this->lock);
   }
 }

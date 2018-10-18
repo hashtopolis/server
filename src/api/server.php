@@ -119,6 +119,8 @@ switch ($QUERY[PQuery::ACTION]) {
     break;
 }
 
+DServerLog::log(DServerLog::TRACE, "Received from " . Util::getIP() . ": " . json_encode($QUERY));
+
 if ($api == null) {
   $api = new APITestConnection();
   $api->sendErrorResponse("INV", "Invalid query!");

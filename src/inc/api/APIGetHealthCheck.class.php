@@ -16,6 +16,8 @@ class APIGetHealthCheck extends APIBasic {
     }
     $healthCheck = Factory::getHealthCheckFactory()->get($healthCheckAgent->getHealthCheckId());
 
+    DServerLog::log(DServerLog::INFO, "Received health check task", [$this->agent, $healthCheck]);
+
     $hashes = file_get_contents(dirname(__FILE__)."/../../tmp/health-check-".$healthCheck->getId().".txt");
     $hashes = explode("\n", $hashes);
 

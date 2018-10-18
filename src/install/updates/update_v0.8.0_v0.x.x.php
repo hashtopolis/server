@@ -11,6 +11,7 @@ if(!isset($TEST)){
   require_once(dirname(__FILE__) . "/../../inc/utils/AccessUtils.class.php");
 }
 require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/log.php");
 
 echo "NOTICE: After this update the Peppers for Encryption.class.php and CSRF.class.php are stored in the new config file. So if you didn't merge them you would have to put the old pepper values into inc/conf.php to make the log in working again. Read more on this on the specific release information.\n";
 
@@ -54,6 +55,8 @@ echo "Updating config values... ";
 $config = new Config(null, 1, DConfig::DISABLE_TRIMMING, '0');
 Factory::getConfigFactory()->save($config);
 $config = new Config(null, 1, DConfig::PRIORITY_0_START, '0');
+Factory::getConfigFactory()->save($config);
+$config = new Config(null, 4, DConfig::SERVER_LOG_LEVEL, DServerLog::INFO);
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 

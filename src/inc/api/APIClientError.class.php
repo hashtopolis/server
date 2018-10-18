@@ -16,6 +16,7 @@ class APIClientError extends APIBasic {
     // load task wrapper
     $task = Factory::getTaskFactory()->get($QUERY[PQueryClientError::TASK_ID]);
     if ($task == null) {
+      DServerLog::log(DServerLog::WARNING, "Agent ".$this->agent->getId()." tried to send error for invalid task!");
       $this->sendErrorResponse(PActions::CLIENT_ERROR, "Invalid task!");
     }
 
@@ -24,9 +25,11 @@ class APIClientError extends APIBasic {
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($assignment == null) {
+      DServerLog::log(DServerLog::WARNING, "Agent ".$this->agent->getId()." tried to send error for task he is not assigned to!");
       $this->sendErrorResponse(PActions::CLIENT_ERROR, "Agent is not assigned to this task!");
     }
 
+    DServerLog::log(DServerLog::INFO, "Agent ".$this->agent->getId()." sent error: ".$QUERY[PQueryClientError::MESSAGE]);
     if ($this->agent->getIgnoreErrors() <= DAgentIgnoreErrors::IGNORE_SAVE) {
       //save error message
       $error = new AgentError(null, $this->agent->getId(), $task->getId(), time(), $QUERY[PQueryClientError::MESSAGE]);

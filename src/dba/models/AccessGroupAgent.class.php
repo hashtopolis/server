@@ -37,7 +37,15 @@ class AccessGroupAgent extends AbstractModel {
   function setId($id) {
     $this->accessGroupAgentId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getAccessGroupId(){
     return $this->accessGroupId;
   }

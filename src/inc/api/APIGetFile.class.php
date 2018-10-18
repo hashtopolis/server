@@ -14,6 +14,8 @@ class APIGetFile extends APIBasic {
     }
     $this->checkToken(PActions::GET_FILE, $QUERY);
 
+    DServerLog::log(DServerLog::DEBUG, "Requesting file ".$QUERY[PQueryGetFile::FILENAME], [$this->agent]);
+
     // let agent download adjacent files
     $task = Factory::getTaskFactory()->get($QUERY[PQueryGetFile::TASK_ID]);
     if ($task == null) {
@@ -38,6 +40,7 @@ class APIGetFile extends APIBasic {
     $qF2 = new QueryFilter(FileTask::FILE_ID, $file->getId(), "=");
     $taskFile = Factory::getFileTaskFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($taskFile == null) {
+      DServerLog::log(DServerLog::WARNING, "Agent requested file not used in the task!", [$this->agent, $file, $task]);
       $this->sendErrorResponse(PActions::GET_FILE, "This file is not used for the specified task!");
     }
 
