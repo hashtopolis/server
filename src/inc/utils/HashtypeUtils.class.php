@@ -33,7 +33,7 @@ class HashtypeUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function addHashtype($hashtypeId, $description, $isSalted, $user) {
+  public static function addHashtype($hashtypeId, $description, $isSalted, $isSlowHash, $user) {
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if ($hashtype != null) {
       throw new HTException("This hash number is already used!");
@@ -47,8 +47,12 @@ class HashtypeUtils {
     if ($isSalted) {
       $salted = 1;
     }
+    $slow = 0;
+    if ($isSlowHash){
+      $slow = 1;
+    }
 
-    $hashtype = new HashType($hashtypeId, $desc, $salted);
+    $hashtype = new HashType($hashtypeId, $desc, $salted, $slow);
     if (Factory::getHashTypeFactory()->save($hashtype) == null) {
       throw new HTException("Failed to add new hash type!");
     }

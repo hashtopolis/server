@@ -140,7 +140,8 @@ $CONF['Hashlist'] = array(
 $CONF['HashType'] = array(
   'hashTypeId',
   'description',
-  'isSalted'
+  'isSalted',
+  'isSlowHash'
 );
 $CONF['LogEntry'] = array(
   'logEntryId',

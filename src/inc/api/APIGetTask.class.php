@@ -144,6 +144,8 @@ class APIGetTask extends APIBasic {
       $taskFiles[] = $file->getFilename();
     }
 
+    $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
+
     DServerLog::log(DServerLog::TRACE, "Sending task to agent", [$this->agent, $task, $taskFiles]);
 
     $this->sendResponse(array(
@@ -161,7 +163,8 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
         PResponseGetTask::KEYSPACE => $task->getKeyspace(),
         PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,
-        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe())? true : false
+        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe())? true : false,
+        PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash())? true : false
       )
     );
   }

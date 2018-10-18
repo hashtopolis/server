@@ -7,6 +7,7 @@
 - Supertasks can now can be created by specifying a base command and iterate over a selection of files to be placed in the command.
 - Notes can be added to hashlists.
 - Added optional trace logging of actions from the client API to get more information in case of failures.
+- Slow hashes are marked, so the client can decide if piping could make sense for this hash type.
 
 ## Bugfixes
 

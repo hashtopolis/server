@@ -341,6 +341,7 @@ class PResponseGetTask extends PResponse {
   const REASON         = "reason";
   const PRINCE         = "usePrince";
   const ENFORCE_PIPE   = "enforcePipe";
+  const SLOW_HASH      = "slowHash";
 }
 
 class PResponseGetChunk extends PResponse {

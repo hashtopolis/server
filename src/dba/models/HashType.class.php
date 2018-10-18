@@ -6,11 +6,13 @@ class HashType extends AbstractModel {
   private $hashTypeId;
   private $description;
   private $isSalted;
+  private $isSlowHash;
   
-  function __construct($hashTypeId, $description, $isSalted) {
+  function __construct($hashTypeId, $description, $isSalted, $isSlowHash) {
     $this->hashTypeId = $hashTypeId;
     $this->description = $description;
     $this->isSalted = $isSalted;
+    $this->isSlowHash = $isSlowHash;
   }
   
   function getKeyValueDict() {
@@ -18,6 +20,7 @@ class HashType extends AbstractModel {
     $dict['hashTypeId'] = $this->hashTypeId;
     $dict['description'] = $this->description;
     $dict['isSalted'] = $this->isSalted;
+    $dict['isSlowHash'] = $this->isSlowHash;
     
     return $dict;
   }
@@ -61,8 +64,17 @@ class HashType extends AbstractModel {
   function setIsSalted($isSalted){
     $this->isSalted = $isSalted;
   }
+  
+  function getIsSlowHash(){
+    return $this->isSlowHash;
+  }
+  
+  function setIsSlowHash($isSlowHash){
+    $this->isSlowHash = $isSlowHash;
+  }
 
   const HASH_TYPE_ID = "hashTypeId";
   const DESCRIPTION = "description";
   const IS_SALTED = "isSalted";
+  const IS_SLOW_HASH = "isSlowHash";
 }
