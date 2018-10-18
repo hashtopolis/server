@@ -316,8 +316,9 @@ class UResponseHashlist extends UResponse {
   const EXPORT_FILE_ID = "fileId";
   const EXPORT_FILE_NAME = "filename";
 
-  const HASH = "hash";
-  const PLAIN = "plain";
+  const HASH     = "hash";
+  const PLAIN    = "plain";
+  const CRACKPOS = "crackpos";
 }
 
 class UResponseSuperhashlist extends UResponse {

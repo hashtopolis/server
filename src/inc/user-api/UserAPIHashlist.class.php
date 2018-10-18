@@ -65,7 +65,8 @@ class UserAPIHashlist extends UserAPIBasic {
         UResponseHashlist::REQUEST => $QUERY[UQueryHashlist::REQUEST],
         UResponseHashlist::RESPONSE => UValues::OK,
         UResponseHashlist::HASH => $QUERY[UQueryHashlist::HASH],
-        UResponseHashlist::PLAIN => $hash->getPlaintext()
+        UResponseHashlist::PLAIN => $hash->getPlaintext(),
+        UResponseHashlist::CRACKPOS => (int)$hash->getCrackPos()
       ];
       $this->sendResponse($resonse);
     }
