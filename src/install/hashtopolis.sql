@@ -239,7 +239,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (27, 5, 'baseHost', ''),
   (28, 3, 'maxHashlistSize', '5000000'),
   (29, 4, 'hideImportMasks', '1'),
-  (30, 5, 'telegramBotToken', ''),
+  (30, 7, 'telegramBotToken', ''),
   (31, 5, 'contactEmail', ''),
   (32, 5, 'voucherDeletion', '0'),
   (33, 4, 'hashesPerPage', '1000'),
@@ -258,7 +258,11 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (46, 6, 'multicastTransferRateEnable', '0'),
   (47, 6, 'multicastTranserRate', '500000'),
   (48, 1, 'disableTrimming', '0'),
-  (49, 5, 'serverLogLevel', '20');
+  (49, 5, 'serverLogLevel', '20'),
+  (50, 7, 'telegramProxyEnable', '0'),
+  (60, 7, 'telegramProxyServer', ''),
+  (61, 7, 'telegramProxyPort', '8080'),
+  (62, 7, 'telegramProxyType', 'HTTP');
 
 -- --------------------------------------------------------
 
