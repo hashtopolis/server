@@ -17,10 +17,12 @@ class AccountTest extends HashtopolisTest {
     $this->testGetInformation(["userId" => 1, "rightGroupId" => 1, 'email' => 'otheremail@example.org']);
     $this->testSetEmail('invalid-email', false);
     $this->testSetEmail('', false);
+    $this->testGetInformation(["userId" => 1, "rightGroupId" => 1, 'email' => 'otheremail@example.org']);
     $this->testSetSessionLength(6000);
     $this->testSetSessionLength(500000, false);
     $this->testSetSessionLength(0, false);
     $this->testSetSessionLength(-6000, false);
+    $this->testGetInformation(["userId" => 1, "rightGroupId" => 1, 'email' => 'otheremail@example.org', 'sessionLength' => 6000]);
     $this->testChangePassword(HashtopolisTest::USER_PASS, 'newPassword');
     $this->testChangePassword(HashtopolisTest::USER_PASS, 'newPassword', false);
     $this->testChangePassword('newPassword', 'newPassword', false);
