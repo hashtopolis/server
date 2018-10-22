@@ -18,7 +18,81 @@ class UserTest extends HashtopolisTest {
     $this->testCreateUser('testuser', false);
     $this->testCreateUser('user2');
     $this->testListUsers(['user2', 'testuser']);
+    $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => true]);
+    $this->testGetUser(3, ['username' => 'user2', 'userId' => 3, 'email' => 'user2@example.org', 'rightGroupId' => 1, 'isValid' => true]);
+    $this->testGetUser(4, [], false);
+    $this->testDisableUser(1, false);
+    $this->testDisableUser(2);
+    $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => false]);
+    $this->testEnableUser(2);
+    $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => true]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testEnableUser($userId, $assert = true){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "user",
+      "request" => "enableUser",
+      "userId" => $userId,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("UserTest:testEnableUser($userId,$assert)", "Empty response");
+    }
+    else if($response['response'] != 'OK' && $assert){
+      $this->testFailed("UserTest:testEnableUser($userId,$assert", "Response not OK");
+    }
+    else{
+      if(!$assert){
+        $this->testFailed("UserTest:testEnableUser($userId,$assert", "Response OK, but expected to fail");
+      }
+      $this->testSuccess("UserTest:testEnableUser($userId,$assert");
+    }
+  }
+
+  private function testDisableUser($userId, $assert = true){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "user",
+      "request" => "disableUser",
+      "userId" => $userId,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("UserTest:testDisableUser($userId,$assert)", "Empty response");
+    }
+    else if($response['response'] != 'OK' && $assert){
+      $this->testFailed("UserTest:testDisableUser($userId,$assert", "Response not OK");
+    }
+    else{
+      if(!$assert){
+        $this->testFailed("UserTest:testDisableUser($userId,$assert", "Response OK, but expected to fail");
+      }
+      $this->testSuccess("UserTest:testDisableUser($userId,$assert");
+    }
+  }
+
+  private function testGetUser($userId, $data, $assert = true){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "user",
+      "request" => "getUser",
+      "userId" => $userId,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . ",$assert)", "Empty response");
+    }
+    else if($response['response'] != 'OK' && $assert){
+      $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert", "Response not OK");
+    }
+    else{
+      if(!$assert){
+        $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert", "Response OK, but expected to fail");
+      }
+      foreach($data as $key => $val){
+        if(!isset($response[$key]) || $val != $response[$key]){
+          $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert", "Not all data present or matching");
+          return;
+        }
+      }
+      $this->testSuccess("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert");
+    }
   }
 
   private function testCreateUser($username, $assert = true){
