@@ -70,7 +70,7 @@ class CrackerTest extends HashtopolisTest {
   private function testCreateVersion($crackerTypeId, $version, $basename, $url, $assert = true){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "cracker",
-      "request" => "createCracker",
+      "request" => "addVersion",
       "crackerTypeId" => $crackerTypeId,
       "crackerBinaryVersion" => $version,
       "crackerBinaryBasename" => $basename,
