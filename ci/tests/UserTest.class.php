@@ -98,7 +98,7 @@ class UserTest extends HashtopolisTest {
     }
   }
 
-  private function testGetUser($userId, $data, $assert = true){
+  public function testGetUser($userId, $data, $assert = true){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "user",
       "request" => "getUser",
@@ -125,7 +125,7 @@ class UserTest extends HashtopolisTest {
     }
   }
 
-  private function testCreateUser($username, $assert = true){
+  public function testCreateUser($username, $assert = true){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "user",
       "request" => "createUser",
@@ -148,7 +148,7 @@ class UserTest extends HashtopolisTest {
     }
   }
 
-  private function testListUsers($assert){
+  public function testListUsers($assert){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "user",
       "request" => "listUsers",
