@@ -22,11 +22,37 @@ class UserTest extends HashtopolisTest {
     $this->testGetUser(3, ['username' => 'user2', 'userId' => 3, 'email' => 'user2@example.org', 'rightGroupId' => 1, 'isValid' => true]);
     $this->testGetUser(4, [], false);
     $this->testDisableUser(1, false);
+    $this->testDisableUser(1234, false);
     $this->testDisableUser(2);
     $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => false]);
     $this->testEnableUser(2);
+    $this->testEnableUser(1234, false);
     $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => true]);
+    $this->testSetPassword(2, true);
+    $this->testSetPassword(1, false);
+    $this->testSetPassword(1234, false);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
+  }
+
+  private function testSetPassword($userId, $assert){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "user",
+      "request" => "setUserPassword",
+      "userId" => $userId,
+      "password" => Util::randomString(20),
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("UserTest:testSetPassword($userId,$assert)", "Empty response");
+    }
+    else if($response['response'] != 'OK' && $assert){
+      $this->testFailed("UserTest:testSetPassword($userId,$assert", "Response not OK");
+    }
+    else{
+      if(!$assert){
+        $this->testFailed("UserTest:testSetPassword($userId,$assert", "Response OK, but expected to fail");
+      }
+      $this->testSuccess("UserTest:testSetPassword($userId,$assert");
+    }
   }
 
   private function testEnableUser($userId, $assert = true){
