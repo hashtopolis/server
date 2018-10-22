@@ -143,7 +143,7 @@ class UserTest extends HashtopolisTest {
     else if($response['response'] != 'OK'){
       $this->testFailed("UserTest:testListUsers(" . implode(", ", $assert) . ")", "Response not OK");
     }
-    else if(sizeof($assert) != sizeof($response['tasks'])){
+    else if(sizeof($assert) != sizeof($response['users'])){
       $this->testFailed("UserTest:testListUsers(" . implode(", ", $assert) . ")", "Not matching number of users");
     }
     else{
