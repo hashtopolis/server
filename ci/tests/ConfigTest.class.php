@@ -87,7 +87,7 @@ class ConfigTest extends HashtopolisTest {
         if($item['item'] == "jeSuisHashtopussy"){
           continue;
         }
-        $items[$item['item']];
+        $items[$item['item']] = true;
       }
       foreach($configs as $c){
         if(!isset($items[$c])){

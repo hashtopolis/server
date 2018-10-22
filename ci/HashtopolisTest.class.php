@@ -35,6 +35,8 @@ abstract class HashtopolisTest{
   }
 
   public function init($version){
+    global $PEPPER;
+    
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
     Factory::getAgentFactory()->getDB()->query("CREATE DATABASE hashtopolis");
@@ -52,6 +54,7 @@ abstract class HashtopolisTest{
 
     // insert user and api key
     $salt = Util::randomString(30);
+    $PEPPER = ["abcd", "bcde", "cdef", "aaaa"];
     $hash = Encryption::passwordHash(HashtopolisTest::USER_PASS, $salt);
     $this->user = new User(null, 'testuser', '', $hash, $salt, 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
     $this->user = Factory::getUserFactory()->save($this->user);
