@@ -13,6 +13,7 @@ $CONN = [
 ];
 require_once("/var/www/html/hashtopolis/src/dba/init.php");
 require_once(dirname(__FILE__) . "/../src/inc/Util.class.php");
+require_once(dirname(__FILE__) . "/../src/inc/Encryption.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/utils/AccessUtils.class.php");
 require_once(dirname(__FILE__) . "/HashtopolisTest.class.php");
 require_once(dirname(__FILE__) . "/HashtopolisTestFramework.class.php");

@@ -15,6 +15,8 @@ abstract class HashtopolisTest{
   protected $user;
   protected $apiKey;
 
+  const USER_PASS = "HG78Ghdfs87gh";
+
   const RUN_FULL = 0;
   const RUN_FAST = 1;
 
@@ -49,7 +51,9 @@ abstract class HashtopolisTest{
     sleep(1);
 
     // insert user and api key
-    $this->user = new User(null, 'testuser', '', '', '', 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
+    $salt = Util::randomString(30);
+    $hash = Encryption::passwordHash(HashtopolisTest::USER_PASS, $salt);
+    $this->user = new User(null, 'testuser', '', $hash, $salt, 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
     $this->user = Factory::getUserFactory()->save($this->user);
     $accessGroup = new AccessGroupUser(null, 1, $this->user->getId());
     Factory::getAccessGroupUserFactory()->save($accessGroup);
