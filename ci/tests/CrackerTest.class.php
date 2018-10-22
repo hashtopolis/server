@@ -91,7 +91,7 @@ class CrackerTest extends HashtopolisTest {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "cracker",
       "request" => "createCracker",
-      "name" => $name,
+      "crackerName" => $name,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
       $this->testFailed("CrackerTest:testCreateCracker($name,$assert)", "Empty response");
@@ -124,7 +124,7 @@ class CrackerTest extends HashtopolisTest {
   private function testGetCracker($crackerTypeId, $versions, $versionData, $assert = true){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "cracker",
-      "request" => "getCrackers",
+      "request" => "getCracker",
       "crackerTypeId" => $crackerTypeId,
       "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
     if($response === false){
