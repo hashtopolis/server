@@ -47,6 +47,7 @@ class AccountTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("AccountTest:testChangePassword($old,$new,$assert)", "Response OK, but expected to fail");
+        return;
       }
       $this->testSuccess("AccountTest:testChangePassword($old,$new,$assert)");
     }
@@ -67,6 +68,7 @@ class AccountTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("AccountTest:testSetSessionLength($length,$assert)", "Response OK, but expected to fail");
+        return;
       }
       $this->testSuccess("AccountTest:testSetSessionLength($length,$assert)");
     }
@@ -87,6 +89,7 @@ class AccountTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("AccountTest:testSetEmail($email,$assert)", "Response OK, but expected to fail");
+        return;
       }
       $this->testSuccess("AccountTest:testSetEmail($email,$assert)");
     }
@@ -106,10 +109,12 @@ class AccountTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)", "Response OK, but expected to fail");
+        return;
       }
       foreach($data as $key => $val){
         if(!isset($response[$key]) || $val != $response[$key]){
           $this->testFailed("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)", "Response OK, but wrong response");
+          return;
         }
       }
       $this->testSuccess("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)");

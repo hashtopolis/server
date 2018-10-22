@@ -50,6 +50,7 @@ class UserTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("UserTest:testSetPassword($userId,$assert", "Response OK, but expected to fail");
+        return;
       }
       $this->testSuccess("UserTest:testSetPassword($userId,$assert");
     }
@@ -70,6 +71,7 @@ class UserTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("UserTest:testEnableUser($userId,$assert", "Response OK, but expected to fail");
+        return;
       }
       $this->testSuccess("UserTest:testEnableUser($userId,$assert");
     }
@@ -90,6 +92,7 @@ class UserTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("UserTest:testDisableUser($userId,$assert", "Response OK, but expected to fail");
+        return;
       }
       $this->testSuccess("UserTest:testDisableUser($userId,$assert");
     }
@@ -110,6 +113,7 @@ class UserTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert", "Response OK, but expected to fail");
+        return;
       }
       foreach($data as $key => $val){
         if(!isset($response[$key]) || $val != $response[$key]){
@@ -138,6 +142,7 @@ class UserTest extends HashtopolisTest {
     else{
       if(!$assert){
         $this->testFailed("UserTest:testCreateUser($username, $assert)", "Response OK, but expected to fail");
+        return;
       }
       $this->testSuccess("UserTest:testCreateUser($username, $assert)");
     }
