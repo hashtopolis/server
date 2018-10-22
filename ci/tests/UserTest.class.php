@@ -13,21 +13,21 @@ class UserTest extends HashtopolisTest {
   public function run(){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
     $this->testListUsers([]);
-    $this->testCreateUser('testuser');
-    $this->testListUsers(['testuser']);
-    $this->testCreateUser('testuser', false);
+    $this->testCreateUser('testuser2');
+    $this->testListUsers(['testuser2']);
+    $this->testCreateUser('testuser2', false);
     $this->testCreateUser('user2');
     $this->testListUsers(['user2', 'testuser']);
-    $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => true]);
+    $this->testGetUser(2, ['username' => 'testuser2', 'userId' => 2, 'email' => 'testuser2@example.org', 'rightGroupId' => 1, 'isValid' => true]);
     $this->testGetUser(3, ['username' => 'user2', 'userId' => 3, 'email' => 'user2@example.org', 'rightGroupId' => 1, 'isValid' => true]);
     $this->testGetUser(4, [], false);
     $this->testDisableUser(1, false);
     $this->testDisableUser(1234, false);
     $this->testDisableUser(2);
-    $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => false]);
+    $this->testGetUser(2, ['username' => 'testuser2', 'userId' => 2, 'email' => 'testuser2@example.org', 'rightGroupId' => 1, 'isValid' => false]);
     $this->testEnableUser(2);
     $this->testEnableUser(1234, false);
-    $this->testGetUser(2, ['username' => 'testuser', 'userId' => 2, 'email' => 'testuser@example.org', 'rightGroupId' => 1, 'isValid' => true]);
+    $this->testGetUser(2, ['username' => 'testuser2', 'userId' => 2, 'email' => 'testuser2@example.org', 'rightGroupId' => 1, 'isValid' => true]);
     $this->testSetPassword(2, true);
     $this->testSetPassword(1, false);
     $this->testSetPassword(1234, false);
