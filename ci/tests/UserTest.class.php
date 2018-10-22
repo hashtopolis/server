@@ -44,14 +44,10 @@ class UserTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("UserTest:testSetPassword($userId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("UserTest:testSetPassword($userId,$assert", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("UserTest:testSetPassword($userId,$assert", "Response doest not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("UserTest:testSetPassword($userId,$assert", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("UserTest:testSetPassword($userId,$assert");
     }
   }
@@ -65,14 +61,10 @@ class UserTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("UserTest:testEnableUser($userId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("UserTest:testEnableUser($userId,$assert", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("UserTest:testEnableUser($userId,$assert", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("UserTest:testEnableUser($userId,$assert", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("UserTest:testEnableUser($userId,$assert");
     }
   }
@@ -86,14 +78,10 @@ class UserTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("UserTest:testDisableUser($userId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("UserTest:testDisableUser($userId,$assert", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("UserTest:testDisableUser($userId,$assert", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("UserTest:testDisableUser($userId,$assert", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("UserTest:testDisableUser($userId,$assert");
     }
   }
@@ -107,12 +95,12 @@ class UserTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . ",$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert", "Response OK, but expected to fail");
+        $this->testSuccess("UserTest:testGetUser($userId," . implode(", ", $data) . "),$assert");
         return;
       }
       foreach($data as $key => $val){
@@ -136,14 +124,10 @@ class UserTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("UserTest:testCreateUser($username, $assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("UserTest:testCreateUser($username, $assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("UserTest:testCreateUser($username, $assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("UserTest:testCreateUser($username, $assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("UserTest:testCreateUser($username, $assert)");
     }
   }

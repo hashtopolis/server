@@ -69,6 +69,16 @@ abstract class HashtopolisTest{
     self::$testCount++;
     self::$status = -1;
   }
+  
+  public function validState($response, $assert){
+    if($response == 'OK' && $assert){
+      return true;
+    }
+    else if($response == 'ERROR' && !$assert){
+      return true;
+    }
+    return false;
+  }
 
   public static function getStatus(){
     return self::$status;

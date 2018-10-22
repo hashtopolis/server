@@ -59,14 +59,10 @@ class CrackerTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("CrackerTest:testUpdateVersion($crackerVersionId,$version,$basename,$url,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("CrackerTest:testUpdateVersion($crackerVersionId,$version,$basename,$url,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("CrackerTest:testUpdateVersion($crackerVersionId,$version,$basename,$url,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("CrackerTest:testUpdateVersion($crackerVersionId,$version,$basename,$url,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("CrackerTest:testUpdateVersion($crackerVersionId,$version,$basename,$url,$assert)");
     }
   }
@@ -83,14 +79,10 @@ class CrackerTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("CrackerTest:testCreateVersion($crackerTypeId,$version,$basename,$url,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("CrackerTest:testCreateVersion($crackerTypeId,$version,$basename,$url,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("CrackerTest:testCreateVersion($crackerTypeId,$version,$basename,$url,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("CrackerTest:testCreateVersion($crackerTypeId,$version,$basename,$url,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("CrackerTest:testCreateVersion($crackerTypeId,$version,$basename,$url,$assert)");
     }
   }
@@ -104,14 +96,10 @@ class CrackerTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("CrackerTest:testCreateCracker($name,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("CrackerTest:testCreateCracker($name,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("CrackerTest:testCreateCracker($name,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("CrackerTest:testCreateCracker($name,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("CrackerTest:testCreateCracker($name,$assert)");
     }
   }
@@ -125,14 +113,10 @@ class CrackerTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("CrackerTest:testDeleteVersion($crackerVersionId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("CrackerTest:testDeleteVersion($crackerVersionId,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("CrackerTest:testDeleteVersion($crackerVersionId,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("CrackerTest:testDeleteVersion($crackerVersionId,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("CrackerTest:testDeleteVersion($crackerVersionId,$assert)");
     }
   }
@@ -146,12 +130,12 @@ class CrackerTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response OK, but expected to fail");
+        $this->testSuccess("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)");
         return;
       }
       else if(sizeof($response['crackerVersions']) != sizeof($versions)){
@@ -183,14 +167,10 @@ class CrackerTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("CrackerTest:testDeleteCracker($crackerTypeId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("CrackerTest:testDeleteCracker($crackerTypeId,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("CrackerTest:testDeleteCracker($crackerTypeId,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("CrackerTest:testDeleteCracker($crackerTypeId,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("CrackerTest:testDeleteCracker($crackerTypeId,$assert)");
     }
   }
@@ -203,12 +183,12 @@ class CrackerTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("CrackerTest:testListCrackers([" . implode(", ", $data) . "],$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("CrackerTest:testListCrackers([" . implode(", ", $data) . "],$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("CrackerTest:testListCrackers([" . implode(", ", $data) . "],$assert)", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("CrackerTest:testListCrackers([" . implode(", ", $data) . "],$assert)", "Response OK, but expected to fail");
+        $this->testSuccess("CrackerTest:testListCrackers([" . implode(", ", $data) . "],$assert)");
         return;
       }
       else if(sizeof($response['crackers']) != sizeof($data)){

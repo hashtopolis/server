@@ -64,14 +64,10 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testDeleteGroup($groupId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testDeleteGroup($groupId,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testDeleteGroup($groupId,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("GroupTest:testDeleteGroup($groupId,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("GroupTest:testDeleteGroup($groupId,$assert)");
     }
   }
@@ -86,14 +82,10 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testRemoveAgent($groupId,$agentId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testRemoveAgent($groupId,$agentId,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testRemoveAgent($groupId,$agentId,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("GroupTest:testRemoveAgent($groupId,$agentId,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("GroupTest:testRemoveAgent($groupId,$agentId,$assert)");
     }
   }
@@ -108,14 +100,10 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testAddAgent($groupId,$agentId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testAddAgent($groupId,$agentId,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testAddAgent($groupId,$agentId,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("GroupTest:testAddAgent($groupId,$agentId,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("GroupTest:testAddAgent($groupId,$agentId,$assert)");
     }
   }
@@ -130,14 +118,10 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testRemoveUser($groupId,$userId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testRemoveUser($groupId,$userId,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testRemoveUser($groupId,$userId,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("GroupTest:testRemoveUser($groupId,$userId,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("GroupTest:testRemoveUser($groupId,$userId,$assert)");
     }
   }
@@ -152,14 +136,10 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testAddUser($groupId,$userId,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testAddUser($groupId,$userId,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testAddUser($groupId,$userId,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("GroupTest:testAddUser($groupId,$userId,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("GroupTest:testAddUser($groupId,$userId,$assert)");
     }
   }
@@ -173,14 +153,10 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testCreateGroup($name,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testCreateGroup($name,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testCreateGroup($name,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("GroupTest:testCreateGroup($name,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("GroupTest:testCreateGroup($name,$assert)");
     }
   }
@@ -194,12 +170,12 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testGetGroup($groupId,[" . implode(",", $users) . "],[" . implode(",", $agents) . "],$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testGetGroup($groupId,[" . implode(",", $users) . "],[" . implode(",", $agents) . "],$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testGetGroup($groupId,[" . implode(",", $users) . "],[" . implode(",", $agents) . "],$assert)", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("GroupTest:testGetGroup($groupId,[" . implode(",", $users) . "],[" . implode(",", $agents) . "],$assert)", "Response OK, but expected to fail");
+        $this->testSuccess("GroupTest:testGetGroup($groupId,[" . implode(",", $users) . "],[" . implode(",", $agents) . "],$assert)");
         return;
       }
       else if(sizeof($users) != sizeof($response['users'])){
@@ -234,12 +210,12 @@ class GroupTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("GroupTest:testListGroups([" . implode(",", $groups) . "],$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("GroupTest:testListGroups([" . implode(",", $groups) . "],$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("GroupTest:testListGroups([" . implode(",", $groups) . "],$assert)", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("GroupTest:testListGroups([" . implode(",", $groups) . "],$assert)", "Response OK, but expected to fail");
+        $this->testSuccess("GroupTest:testListGroups([" . implode(",", $groups) . "],$assert)");
         return;
       }
       else if(sizeof($groups) != sizeof($response['groups'])){
