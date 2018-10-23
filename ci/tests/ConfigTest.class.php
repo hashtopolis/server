@@ -84,9 +84,6 @@ class ConfigTest extends HashtopolisTest {
       }
       $items = [];
       foreach($response['items'] as $item){
-        if($item['item'] == "jeSuisHashtopussy"){
-          continue;
-        }
         $items[$item['item']] = true;
       }
       foreach($configs as $c){

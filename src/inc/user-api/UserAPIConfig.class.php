@@ -52,6 +52,7 @@ class UserAPIConfig extends UserAPIBasic {
     }
     else {
       $config = ConfigUtils::get($QUERY[UQueryConfig::CONFIG_ITEM]);
+      $config->setValue($QUERY[UQueryConfig::CONFIG_VALUE]);
     }
     $type = DConfig::getConfigType($config->getItem());
     switch ($type) {
