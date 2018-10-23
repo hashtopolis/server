@@ -73,6 +73,11 @@ class UserAPIConfig extends UserAPIBasic {
           throw new HTException("Value most be boolean!");
         }
         break;
+      case DConfigType::SELECT:
+        if(!in_array($config->getValue(), DConfig::getSelection($config->getItem())->getKeys())){
+          throw new HTException("Value is not in selection!");
+        }
+        break;
     }
     ConfigUtils::set($config, $new);
     $this->sendSuccessResponse($QUERY);

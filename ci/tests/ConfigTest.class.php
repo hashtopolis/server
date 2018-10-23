@@ -19,6 +19,12 @@ class ConfigTest extends HashtopolisTest {
     $this->testGetConfig('unknown-config', '', false);
     $this->testSetConfig('unknown-config', "blub", true, true);
     $this->testGetConfig('unknown-config', 'blub');
+
+    $this->testSetConfig(DConfig::CONTACT_EMAIL, "this-is-not-a-mail", false, false);
+    $this->testSetConfig(DConfig::TELEGRAM_PROXY_ENABLE, "100", false, false);
+    $this->testSetConfig(DConfig::STATUS_TIMER, "no-number", false, false);
+    $this->testSetConfig(DConfig::TELEGRAM_PROXY_TYPE, DProxyTypes::HTTPS);
+    $this->testSetConfig(DConfig::TELEGRAM_PROXY_TYPE, 'proto');
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
 
