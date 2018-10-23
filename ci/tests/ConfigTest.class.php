@@ -24,7 +24,7 @@ class ConfigTest extends HashtopolisTest {
     $this->testSetConfig(DConfig::TELEGRAM_PROXY_ENABLE, "100", false, false);
     $this->testSetConfig(DConfig::STATUS_TIMER, "no-number", false, false);
     $this->testSetConfig(DConfig::TELEGRAM_PROXY_TYPE, DProxyTypes::HTTPS);
-    $this->testSetConfig(DConfig::TELEGRAM_PROXY_TYPE, 'proto');
+    $this->testSetConfig(DConfig::TELEGRAM_PROXY_TYPE, 'proto', false, false);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
 
