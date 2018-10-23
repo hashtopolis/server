@@ -2,8 +2,8 @@
 
 class CSRF {
   public static function init() {
-		global $PEPPER;
-
+    global $PEPPER;
+    
     if (!isset($_SESSION[$PEPPER[3]])) {
       // generate a secret
       $_SESSION[$PEPPER[3]] = Util::randomString(40);
@@ -15,8 +15,8 @@ class CSRF {
   }
   
   public static function check($csrf) {
-		global $PEPPER;
-
+    global $PEPPER;
+    
     $csrf = explode(":", $csrf);
     if (sizeof($csrf) != 2) {
       UI::addMessage(UI::ERROR, "Invalid form submission!");

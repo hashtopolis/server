@@ -1,21 +1,22 @@
 <?php
+
 use DBA\Factory;
 
 class AccountHandler implements Handler {
   private $user;
-
+  
   public function __construct($userId = null) {
     if ($userId == null) {
       $this->user = null;
       return;
     }
-
+    
     $this->user = Factory::getUserFactory()->get($userId);
     if ($this->user == null) {
       UI::printError("FATAL", "User with ID $userId not found!");
     }
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {
@@ -72,7 +73,7 @@ class AccountHandler implements Handler {
     catch (HTException $e) {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
-
+    
     UI::add('user', Login::getInstance()->getUser());
   }
 }

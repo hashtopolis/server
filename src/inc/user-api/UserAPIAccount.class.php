@@ -2,7 +2,7 @@
 
 class UserAPIAccount extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    try{
+    try {
       switch ($QUERY[UQuery::REQUEST]) {
         case USectionAccount::GET_INFORMATION:
           $this->getInformation($QUERY);
@@ -24,47 +24,47 @@ class UserAPIAccount extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
-  private function changePassword($QUERY){
+  private function changePassword($QUERY) {
     if (!isset($QUERY[UQueryAccount::OLD_PASS]) || !isset($QUERY[UQueryAccount::NEW_PASS])) {
       throw new HTException("Invalid query!");
     }
     AccountUtils::changePassword($QUERY[UQueryAccount::OLD_PASS], $QUERY[UQueryAccount::NEW_PASS], $QUERY[UQueryAccount::NEW_PASS], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setSessionLenght($QUERY){
+  private function setSessionLenght($QUERY) {
     if (!isset($QUERY[UQueryAccount::SESSION_LENGTH])) {
       throw new HTException("Invalid query!");
     }
     AccountUtils::updateSessionLifetime($QUERY[UQueryAccount::SESSION_LENGTH], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function setEmail($QUERY){
+  private function setEmail($QUERY) {
     if (!isset($QUERY[UQueryAccount::EMAIL])) {
       throw new HTException("Invalid query!");
     }
     AccountUtils::setEmail($QUERY[UQueryAccount::EMAIL], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    */
-  private function getInformation($QUERY){
+  private function getInformation($QUERY) {
     $response = [
       UResponseAccount::SECTION => $QUERY[UQueryAccount::SECTION],
       UResponseAccount::REQUEST => $QUERY[UQueryAccount::REQUEST],

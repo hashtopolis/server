@@ -17,7 +17,7 @@ class UserAPITest extends UserAPIBasic {
         $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
     }
   }
-
+  
   private function connectionTest($QUERY) {
     $this->sendResponse(array(
         UResponse::SECTION => USection::TEST,
@@ -26,7 +26,7 @@ class UserAPITest extends UserAPIBasic {
       )
     );
   }
-
+  
   private function accessTest($QUERY) {
     $qF = new QueryFilter(ApiKey::ACCESS_KEY, $QUERY[UQuery::ACCESS_KEY], "=");
     $apiKey = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF], true);

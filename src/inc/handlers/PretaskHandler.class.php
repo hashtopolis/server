@@ -4,7 +4,7 @@ class PretaskHandler implements Handler {
   public function __construct($fileId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {

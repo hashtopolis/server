@@ -15,10 +15,10 @@ class APIGetTask extends APIBasic {
     }
     $this->checkToken(PActions::GET_TASK, $QUERY);
     $this->updateAgent(PActions::GET_TASK);
-
+    
     DServerLog::log(DServerLog::TRACE, "Requesting a task...", [$this->agent]);
-
-    if(HealthUtils::checkNeeded($this->agent)){
+    
+    if (HealthUtils::checkNeeded($this->agent)) {
       DServerLog::log(DServerLog::INFO, "Notified about pending health check", [$this->agent]);
       $this->sendResponse(array(
           PResponseGetTask::ACTION => PActions::GET_TASK,
@@ -27,7 +27,7 @@ class APIGetTask extends APIBasic {
         )
       );
     }
-
+    
     if ($this->agent->getIsActive() == 0) {
       DServerLog::log(DServerLog::TRACE, "Agent is inactive and cannot get a task", [$this->agent]);
       $this->sendResponse(array(
@@ -38,7 +38,7 @@ class APIGetTask extends APIBasic {
         )
       );
     }
-
+    
     DServerLog::log(DServerLog::TRACE, "Searching for assignment and best task", [$this->agent]);
     $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
@@ -90,7 +90,7 @@ class APIGetTask extends APIBasic {
       }
     }
   }
-
+  
   private function noTask() {
     $this->sendResponse(array(
         PResponseGetTask::ACTION => PActions::GET_TASK,
@@ -100,7 +100,7 @@ class APIGetTask extends APIBasic {
       )
     );
   }
-
+  
   /**
    * @param $task Task
    * @param $assignment Assignment
@@ -122,7 +122,7 @@ class APIGetTask extends APIBasic {
         DServerLog::log(DServerLog::TRACE, "Created new assignment", [$this->agent, $assignment]);
       }
     }
-
+    
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
       DServerLog::log(DServerLog::FATAL, "Inconsistency between taskWrapper and task", [$this->agent, $task]);
@@ -133,7 +133,7 @@ class APIGetTask extends APIBasic {
       DServerLog::log(DServerLog::TRACE, "Inconsistency between taskWrapper and hashlist", [$this->agent, $taskWrapper]);
       $this->sendErrorResponse(PActions::GET_TASK, "Inconsistent TaskWrapper-Hashlist information");
     }
-
+    
     $taskFiles = array();
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
     $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
@@ -143,11 +143,11 @@ class APIGetTask extends APIBasic {
     foreach ($files as $file) {
       $taskFiles[] = $file->getFilename();
     }
-
+    
     $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
-
+    
     DServerLog::log(DServerLog::TRACE, "Sending task to agent", [$this->agent, $task, $taskFiles]);
-
+    
     $this->sendResponse(array(
         PResponseGetTask::ACTION => PActions::GET_TASK,
         PResponseGetTask::RESPONSE => PValues::SUCCESS,
@@ -163,8 +163,8 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
         PResponseGetTask::KEYSPACE => $task->getKeyspace(),
         PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,
-        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe())? true : false,
-        PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash())? true : false
+        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe()) ? true : false,
+        PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash()) ? true : false
       )
     );
   }

@@ -33,7 +33,7 @@ use DBA\Factory;
  *         Bunch of useful static functions.
  */
 class Util {
-  public static function getGitCommit(){
+  public static function getGitCommit() {
     $gitcommit = "";
     $gitfolder = dirname(__FILE__) . "/../../.git";
     if (file_exists($gitfolder) && is_dir($gitfolder)) {
@@ -50,24 +50,24 @@ class Util {
     }
     return $gitcommit;
   }
-
-	/**
-	 * @param string $type
-	 * @param string $version
-	 */
-	public static function checkAgentVersion($type, $version){
-		$qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
-		$binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
-		if ($binary != null) {
-			if (Util::versionComparison($binary->getVersion(), $version) == 1) {
-				echo "update $type version... ";
-				$binary->setVersion($version);
-				Factory::getAgentBinaryFactory()->update($binary);
-				echo "OK";
-			}
-		}
-	}
-
+  
+  /**
+   * @param string $type
+   * @param string $version
+   */
+  public static function checkAgentVersion($type, $version) {
+    $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
+    $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
+    if ($binary != null) {
+      if (Util::versionComparison($binary->getVersion(), $version) == 1) {
+        echo "update $type version... ";
+        $binary->setVersion($version);
+        Factory::getAgentBinaryFactory()->update($binary);
+        echo "OK";
+      }
+    }
+  }
+  
   public static function isYubikeyEnabled() {
     $clientId = SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID);
     if (!is_numeric($clientId) || $clientId <= 0) {
@@ -83,7 +83,7 @@ class Util {
     }
     return true;
   }
-
+  
   /**
    * @param $issuer string API or User
    * @param $issuerId string either the ID of the user or the token of the client
@@ -98,10 +98,10 @@ class Util {
       $oF = new OrderFilter(LogEntry::TIME, "ASC LIMIT $toDelete");
       Factory::getLogEntryFactory()->massDeletion([Factory::ORDER => $oF]);
     }
-
+    
     $entry = new LogEntry(null, $issuer, $issuerId, $level, $message, time());
     Factory::getLogEntryFactory()->save($entry);
-
+    
     switch ($level) {
       case DLogEntry::ERROR:
         NotificationHandler::checkNotifications(DNotificationType::LOG_ERROR, new DataSet(array(DPayloadKeys::LOG_ENTRY => $entry)));
@@ -115,60 +115,60 @@ class Util {
     }
   }
   
- 	/**
-	 * Scan the report template directory for templates. If no type is specified it will return all found.
-	 * 
-	 * @param string $type 
-	 * @return string[] found report template file names
-	 */
-	public static function scanReportDirectory($type = "", $pretty = false) {
+  /**
+   * Scan the report template directory for templates. If no type is specified it will return all found.
+   *
+   * @param string $type
+   * @return string[] found report template file names
+   */
+  public static function scanReportDirectory($type = "", $pretty = false) {
     $directory = dirname(__FILE__) . "/../templates/report/";
     if (file_exists($directory) && is_dir($directory)) {
       $reportDir = opendir($directory);
       $reports = array();
       while ($file = readdir($reportDir)) {
         if ($file[0] != '.' && $file != "." && $file != ".." && !is_dir($file) && strpos($file, ".tex") !== false) {
-					if(strlen($type) > 0 && strpos($file, $type."-") !== 0){
-						continue;
-					}
-					if($pretty){
-						$reports[] = ucfirst(substr(str_replace(".template.tex", "", $file), strlen($type) + 1));
-					}
-					else{
-						$reports[] = $file;
-					}
+          if (strlen($type) > 0 && strpos($file, $type . "-") !== 0) {
+            continue;
+          }
+          if ($pretty) {
+            $reports[] = ucfirst(substr(str_replace(".template.tex", "", $file), strlen($type) + 1));
+          }
+          else {
+            $reports[] = $file;
+          }
         }
       }
       return $reports;
     }
     return [];
   }
-
-	/**
-	 * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
-	 * 
-	 * @param string $string 
-	 * @return string
-	 */
-	public static function texEscape($string){
-		$output = "";
-		for($i=0;$i<strlen($string);$i++){
-			if($string[$i] == '#'){
-				$output .= "\\#";
-			}
-			else if($string[$i] == '\\'){
-				$output .= "\\textbackslash";
-			}
-      else if($string[$i] == '_'){
+  
+  /**
+   * Escapes special chars before they can be entered into the report template to avoid mess-up with latex
+   *
+   * @param string $string
+   * @return string
+   */
+  public static function texEscape($string) {
+    $output = "";
+    for ($i = 0; $i < strlen($string); $i++) {
+      if ($string[$i] == '#') {
+        $output .= "\\#";
+      }
+      else if ($string[$i] == '\\') {
+        $output .= "\\textbackslash";
+      }
+      else if ($string[$i] == '_') {
         $output .= "\\_";
       }
-			else{
-				$output .= $string[$i];
-			}
-		}
-		return $output;
+      else {
+        $output .= $string[$i];
+      }
+    }
+    return $output;
   }
-
+  
   /**
    * Scans the import-directory for files. Directories are ignored.
    * @return array of all files in the top-level directory /../import
@@ -188,7 +188,7 @@ class Util {
     }
     return array();
   }
-
+  
   /**
    * Calculates variable. Used in Templates.
    * @param $in mixed calculation to be done
@@ -197,7 +197,7 @@ class Util {
   public static function calculate($in) {
     return $in;
   }
-
+  
   /**
    * Saves a file into the DB using the FileFactory.
    * @param $path string
@@ -211,14 +211,14 @@ class Util {
     if ($type == 'rule') {
       $fileType = DFileType::RULE;
     }
-    else if ($type == 'dict'){
+    else if ($type == 'dict') {
       $fileType = DFileType::WORDLIST;
     }
-
+    
     // check if there is an old deletion request for the same filename
     $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
-
+    
     $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
     $file = Factory::getFileFactory()->save($file);
     if ($file == null) {
@@ -226,7 +226,7 @@ class Util {
     }
     return true;
   }
-
+  
   /**
    * @param $task Task
    * @return array
@@ -251,14 +251,14 @@ class Util {
         $maxTime = $chunk->getSolveTime();
       }
     }
-
+    
     $isActive = false;
     if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
     return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
   }
-
+  
   /**
    * @param $task Task
    * @param $accessGroups AccessGroup[]
@@ -277,14 +277,14 @@ class Util {
       if ($file->getIsSecret() == 1) {
         $fileSecret = true;
       }
-      if(!in_array($file->getAccessGroupId(), Util::arrayOfIds($accessGroups))){
+      if (!in_array($file->getAccessGroupId(), Util::arrayOfIds($accessGroups))) {
         $noAccess = true;
       }
       $sizeFiles += $file->getSize();
     }
     return array(sizeof($files), $fileSecret, $sizeFiles, $files, $noAccess);
   }
-
+  
   /**
    * @param $task Task
    * @return array
@@ -296,13 +296,13 @@ class Util {
     foreach ($chunks as $chunk) {
       $cracked += $chunk->getCracked();
     }
-
+    
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
-
+    
     return array(sizeof($chunks), $cracked, $numAssignments);
   }
-
+  
   /**
    * @param $userId int
    * @return array
@@ -315,29 +315,29 @@ class Util {
     $accessGroups = $joined[Factory::getAccessGroupFactory()->getModelName()];
     return Util::arrayOfIds($accessGroups);
   }
-
+  
   public static function loadTasks($archived = false) {
     $accessGroupIds = Util::getAccessGroupIds(Login::getInstance()->getUserID());
     $accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
-
+    
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
-    $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, ($archived)?1:0, "=");
+    $qF2 = new QueryFilter(TaskWrapper::IS_ARCHIVED, ($archived) ? 1 : 0, "=");
     $oF1 = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $oF2 = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
     $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => [$oF1, $oF2]]);
-
+    
     $taskList = array();
     foreach ($taskWrappers as $taskWrapper) {
       $set = new DataSet();
       $set->addValue('taskType', $taskWrapper->getTaskType());
-
+      
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
       if ($taskWrapper->getTaskType() == DTaskTypes::SUPERTASK) {
         // supertask
         $set->addValue('supertaskName', $taskWrapper->getTaskWrapperName());
-
+        
         $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
-
+        
         $set->addValue('hashlistId', $hashlist->getId());
         $set->addValue('taskWrapperId', $taskWrapper->getId());
         $set->addValue('hashlistName', $hashlist->getHashlistName());
@@ -345,7 +345,7 @@ class Util {
         $set->addValue('hashCount', $hashlist->getHashCount());
         $set->addValue('hashlistCracked', $hashlist->getCracked());
         $set->addValue('priority', $taskWrapper->getPriority());
-
+        
         $taskList[] = $set;
       }
       else {
@@ -357,10 +357,10 @@ class Util {
         }
         $taskInfo = Util::getTaskInfo($task);
         $fileInfo = Util::getFileInfo($task, $accessGroups);
-        if($fileInfo[4]){
+        if ($fileInfo[4]) {
           continue;
         }
-
+        
         $chunkInfo = Util::getChunkInfo($task);
         $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
         $set->addValue('taskId', $task->getId());
@@ -394,7 +394,7 @@ class Util {
     }
     UI::add('taskList', $taskList);
   }
-
+  
   /**
    * @param $taskWrapper TaskWrapper
    * @return bool
@@ -420,7 +420,7 @@ class Util {
     }
     return true;
   }
-
+  
   public static function agentStatCleaning() {
     $entry = Factory::getStoredValueFactory()->get(DStats::LAST_STAT_CLEANING);
     if ($entry == null) {
@@ -429,17 +429,17 @@ class Util {
     }
     if (time() - $entry->getVal() > 600) {
       $lifetime = intval(SConfig::getInstance()->getVal(DConfig::AGENT_DATA_LIFETIME));
-      if($lifetime <= 0){
+      if ($lifetime <= 0) {
         $lifetime = 3600;
       }
       $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
       Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
-
+      
       $entry->setVal(time());
       Factory::getStoredValueFactory()->update($entry);
     }
   }
-
+  
   /**
    * Used by the solver. Cleans the zap-queue
    */
@@ -451,21 +451,21 @@ class Util {
     }
     if (time() - $entry->getVal() > 600) {
       $zapFilter = new QueryFilter(Zap::SOLVE_TIME, time() - 600, "<=");
-
+      
       // delete dependencies on AgentZap
       $zaps = Factory::getZapFactory()->filter([Factory::FILTER => $zapFilter]);
       $zapIds = Util::arrayOfIds($zaps);
       $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
       $qF = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
       Factory::getAgentZapFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-
+      
       Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter]);
-
+      
       $entry->setVal(time());
       Factory::getStoredValueFactory()->update($entry);
     }
   }
-
+  
   /**
    * This filesize is able to determine the file size of a given file, also if it's bigger than 4GB which causes
    * some problems with the built-in filesize() function of PHP.
@@ -482,7 +482,7 @@ class Util {
     fseek($fp, 0, SEEK_SET);
     while ($size > 1) {
       fseek($fp, $size, SEEK_CUR);
-
+      
       if (fgetc($fp) === false) {
         fseek($fp, -$size, SEEK_CUR);
         $size = (int)($size / 2);
@@ -492,20 +492,20 @@ class Util {
         $pos += $size;
       }
     }
-
+    
     while (fgetc($fp) !== false) {
       $pos++;
     }
-
+    
     return $pos;
   }
-
+  
   /**
    * Refreshes the page with the current url, also includes the query string.
    */
   public static function refresh() {
     global $_SERVER;
-
+    
     $url = $_SERVER['PHP_SELF'];
     if (strlen($_SERVER['QUERY_STRING']) > 0) {
       $url .= "?" . $_SERVER['QUERY_STRING'];
@@ -513,7 +513,7 @@ class Util {
     header("Location: $url");
     die();
   }
-
+  
   /**
    * Checks if the given list is a superhashlist and returns an array containing all hashlists belonging to this superhashlist.
    * If the hashlist is not a superhashlist it just returns an array containing the list itself.
@@ -531,7 +531,7 @@ class Util {
     }
     return array($hashlist);
   }
-
+  
   /**
    * Tries to determine the IP of the client.
    * @return string 0.0.0.0 or the client IP
@@ -551,7 +551,7 @@ class Util {
     }
     return $ip;
   }
-
+  
   /**
    * Checks if files are writable. If at least one of the files in the list is not writable it returns false.
    * @param $arr array of files to check
@@ -565,7 +565,7 @@ class Util {
     }
     return true;
   }
-
+  
   /**
    * Iterates through all chars, converts them to 0x__ and concats the hexes
    * @param $binString String you want to convert
@@ -582,7 +582,7 @@ class Util {
     }
     return $return;
   }
-
+  
   /**
    * Checks if the task is completed and returns the html tick image if this is the case.
    * @param $prog int progress so far
@@ -596,7 +596,7 @@ class Util {
     }
     return "";
   }
-
+  
   /**
    * Returns the username from the given userId
    * @param $id int ID for the user
@@ -609,7 +609,7 @@ class Util {
     }
     return $user->getUsername();
   }
-
+  
   /**
    * Used in Template. Converts seconds to human readable format
    * @param $seconds
@@ -625,7 +625,7 @@ class Util {
     $return .= gmdate("H:i:s", $seconds);
     return $return;
   }
-
+  
   /**
    * Escapes some special string which should be put as value in form fields to avoid breaking. This function should still be used
    * together with htmlentities(), this function just cares about some special cases which are not handled by htmlentities().
@@ -639,7 +639,7 @@ class Util {
     $string = str_replace('`', '&#96;', $string);
     return $string;
   }
-
+  
   /**
    * Checks if the given string contains characters which are blacklisted
    * @param $string string
@@ -653,7 +653,7 @@ class Util {
     }
     return false;
   }
-
+  
   /**
    * Used in Template
    * TODO: this should be made a bit better
@@ -717,7 +717,7 @@ class Util {
     }
     return "";
   }
-
+  
   /**
    * @param $binary1 CrackerBinary
    * @param $binary2 CrackerBinary
@@ -726,7 +726,7 @@ class Util {
   public static function versionComparisonBinary($binary1, $binary2) {
     return Util::versionComparison($binary1->getVersion(), $binary2->getVersion());
   }
-
+  
   /**
    * @param $version1
    * @param $version2
@@ -735,7 +735,7 @@ class Util {
   public static function versionComparison($version1, $version2) {
     $version1 = explode(".", $version1);
     $version2 = explode(".", $version2);
-
+    
     for ($i = 0; $i < sizeof($version1) && $i < sizeof($version2); $i++) {
       $num1 = (int)$version1[$i];
       $num2 = (int)$version2[$i];
@@ -754,7 +754,7 @@ class Util {
     }
     return 0;
   }
-
+  
   /**
    * Shows big numbers with the right suffixes (k, M, G)
    * @param $num int integer you want formatted
@@ -777,7 +777,7 @@ class Util {
     $return = Util::niceround($num, 2);
     return $return . " " . $rs[$r];
   }
-
+  
   /**
    * Formats percentage nicely
    * @param $part int progress
@@ -801,7 +801,7 @@ class Util {
     $return = Util::niceround($percentage, $decs);
     return $return;
   }
-
+  
   /**
    * Puts a given file at the right place, depending on which action is used to add a file.
    * TODO: this function can be improved, some else blocks can be removed when handling a bit differently
@@ -823,7 +823,7 @@ class Util {
             $msg = "Unable to save pasted content!";
           }
           break;
-
+        
         case "upload":
           $hashfile = $sourcedata;
           if ($hashfile["error"] == 0) {
@@ -838,7 +838,7 @@ class Util {
             $msg = "File upload failed: " . $hashfile['error'];
           }
           break;
-
+        
         case "import":
           if (file_exists(dirname(__FILE__) . "/../import/" . $sourcedata)) {
             rename(dirname(__FILE__) . "/../import/" . $sourcedata, $target);
@@ -853,7 +853,7 @@ class Util {
             $msg = "Source file in import directory does not exist!";
           }
           break;
-
+        
         case "url":
           $furl = fopen($sourcedata, "rb");
           if (!$furl) {
@@ -885,7 +885,7 @@ class Util {
             fclose($furl);
           }
           break;
-
+        
         default:
           $msg = "Unknown import type!";
           break;
@@ -896,7 +896,7 @@ class Util {
     }
     return array($success, $msg);
   }
-
+  
   public static function getFileExtension($os) {
     switch ($os) {
       case DOperatingSystem::LINUX:
@@ -913,7 +913,7 @@ class Util {
     }
     return $ext;
   }
-
+  
   /**
    * This function determines the protocol, domain and port of the webserver and puts it together as baseurl.
    * @return string basic server url
@@ -923,7 +923,7 @@ class Util {
     if (strlen(SConfig::getInstance()->getVal(DConfig::BASE_HOST)) > 0) {
       return SConfig::getInstance()->getVal(DConfig::BASE_HOST);
     }
-
+    
     $protocol = (isset($_SERVER['HTTPS']) && (strcasecmp('off', $_SERVER['HTTPS']) !== 0)) ? "https://" : "http://";
     $hostname = $_SERVER['HTTP_HOST'];
     $port = $_SERVER['SERVER_PORT'];
@@ -938,7 +938,7 @@ class Util {
     }
     return $protocol . $hostname . $port;
   }
-
+  
   /**
    * Round to a specific amount of decimal points
    * @param $num Number
@@ -960,7 +960,7 @@ class Util {
     }
     return $return;
   }
-
+  
   /**
    * Cut a string to a certain number of letters. If the string is too long, instead replaces the last three letters with ...
    * @param $string String you want to short
@@ -979,7 +979,7 @@ class Util {
     $return .= "</span>";
     return $return;
   }
-
+  
   /**
    * Adds 0s to the beginning of a number until it reaches size.
    * @param $number
@@ -993,7 +993,7 @@ class Util {
     }
     return $formatted;
   }
-
+  
   /**
    * Converts a given string to hex code.
    *
@@ -1004,7 +1004,7 @@ class Util {
   public static function strToHex($string) {
     return implode(unpack("H*", $string));
   }
-
+  
   /**
    * @param $a Chunk
    * @param $b Chunk
@@ -1016,7 +1016,7 @@ class Util {
     }
     return ($a->getDispatchTime() < $b->getDispatchTime()) ? -1 : 1;
   }
-
+  
   /**
    * This sends a given email with text and subject to the address.
    *
@@ -1031,27 +1031,27 @@ class Util {
    */
   public static function sendMail($address, $subject, $text, $plaintext) {
     $boundary = uniqid('np');
-
+    
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "From: " . SConfig::getInstance()->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . SConfig::getInstance()->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
     $headers .= "To: " . $address . "\r\n";
     $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
-
+    
     $plainMessage = "\r\n\r\n--" . $boundary . "\r\n";
     $plainMessage .= "Content-type: text/plain;charset=utf-8\r\n\r\n";
     $plainMessage .= $plaintext;
-
+    
     $htmlMessage = "\r\n\r\n--" . $boundary . "\r\n";
     $htmlMessage .= "Content-type: text/html;charset=utf-8\r\n\r\n";
     $htmlMessage .= $text;
     $htmlMessage .= "\r\n\r\n--" . $boundary . "--";
-
+    
     if (!mail($address, $subject, $plainMessage . $htmlMessage, $headers)) {
       return false;
     }
     return true;
   }
-
+  
   /**
    * Generates a random string with mixedalphanumeric chars
    *
@@ -1066,7 +1066,7 @@ class Util {
     }
     return $result;
   }
-
+  
   /**
    * Checks if $search starts with $pattern. Shortcut for strpos==0
    * @param $search
@@ -1079,7 +1079,7 @@ class Util {
     }
     return false;
   }
-
+  
   /**
    * if pattern is empty or if pattern is at the end of search
    * @param $search
@@ -1090,7 +1090,7 @@ class Util {
     // search forward starting from end minus needle length characters
     return $pattern === "" || (($temp = strlen($search) - strlen($pattern)) >= 0 && strpos($search, $pattern, $temp) !== FALSE);
   }
-
+  
   /**
    * Converts a hex to binary
    * @param $data
@@ -1103,7 +1103,7 @@ class Util {
     }
     return $res;
   }
-
+  
   /**
    * @note dev
    * Sets the max length of hashes in the database
@@ -1114,7 +1114,7 @@ class Util {
     if ($limit < 1) {
       return false;
     }
-
+    
     $DB = Factory::getAgentFactory()->getDB();
     $DB->beginTransaction();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::HASH . ")) as maxLength FROM " . Factory::getHashFactory()->getModelTable());
@@ -1133,7 +1133,7 @@ class Util {
     $DB->commit();
     return true;
   }
-
+  
   /**
    * @note dev
    * Sets the max length of plaintexts in the database
@@ -1144,7 +1144,7 @@ class Util {
     if ($limit < 1) {
       return false;
     }
-
+    
     $DB = Factory::getAgentFactory()->getDB();
     $result = $DB->query("SELECT MAX(LENGTH(" . Hash::PLAINTEXT . ")) as maxLength FROM " . Factory::getHashFactory()->getModelTable());
     $maxLength = $result->fetch()['maxLength'];
@@ -1158,7 +1158,7 @@ class Util {
     }
     return true;
   }
-
+  
   /**
    * @param $array AbstractModel[]
    * @return array
@@ -1170,7 +1170,7 @@ class Util {
     }
     return $arr;
   }
-
+  
   public static function countLines($tmpfile) {
     if (stripos(PHP_OS, "WIN") === 0) {
       // windows line count
@@ -1180,7 +1180,7 @@ class Util {
     }
     return intval(exec("wc -l '$tmpfile'"));
   }
-
+  
   /**
    * Checks a given array of device names to see if they can be shortened with the defined patterns and replacements.
    *

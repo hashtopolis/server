@@ -6,11 +6,11 @@
  */
 class Menu {
   private $active;
-
+  
   private static $instance = null;
-
-  public static function get($name = ""){
-    if(self::$instance == null){
+  
+  public static function get($name = "") {
+    if (self::$instance == null) {
       self::$instance = new Menu($name);
     }
     return self::$instance;

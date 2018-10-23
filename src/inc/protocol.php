@@ -10,7 +10,7 @@ abstract class PQuery { // include only generalized query values
   const QUERY  = "query";
   const ACTION = "action";
   const TOKEN  = "token";
-
+  
   /**
    * This function checks if all required values are given in the query
    *
@@ -27,7 +27,7 @@ class PQueryLogin extends PQuery {
     }
     return true;
   }
-
+  
   const CLIENT_SIGNATURE = "clientSignature";
 }
 
@@ -47,18 +47,18 @@ class PQuerySendProgress extends PQuery {
     }
     return true;
   }
-
+  
   const CHUNK_ID          = "chunkId";
   const KEYSPACE_PROGRESS = "keyspaceProgress"; // aka curku
   const RELATIVE_PROGRESS = "relativeProgress";
   const SPEED             = "speed";
   const HASHCAT_STATE     = "state";
   const CRACKED_HASHES    = "cracks";
-
+  
   // optional
-  const DEBUG_OUTPUT      = "debugOutput";
-  const GPU_TEMP = "gpuTemp";
-  const GPU_UTIL = "gpuUtil";
+  const DEBUG_OUTPUT = "debugOutput";
+  const GPU_TEMP     = "gpuTemp";
+  const GPU_UTIL     = "gpuUtil";
 }
 
 class PQuerySendBenchmark extends PQuery {
@@ -68,7 +68,7 @@ class PQuerySendBenchmark extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID = "taskId";
   const TYPE    = "type";
   const RESULT  = "result";
@@ -81,7 +81,7 @@ class PQuerySendKeyspace extends PQuery {
     }
     return true;
   }
-
+  
   const KEYSPACE = "keyspace";
   const TASK_ID  = "taskId";
 }
@@ -93,7 +93,7 @@ class PQueryGetChunk extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID = "taskId";
 }
 
@@ -122,13 +122,13 @@ class PQuerySendHealthCheck extends PQuery {
     }
     return true;
   }
-
-  const CHECK_ID = "checkId";
+  
+  const CHECK_ID    = "checkId";
   const NUM_CRACKED = "numCracked";
-  const START = "start";
-  const END = "end";
-  const NUM_GPUS = "numGpus";
-  const ERRORS = "errors";
+  const START       = "start";
+  const END         = "end";
+  const NUM_GPUS    = "numGpus";
+  const ERRORS      = "errors";
 }
 
 class PQueryGetHashlist extends PQuery {
@@ -138,7 +138,7 @@ class PQueryGetHashlist extends PQuery {
     }
     return true;
   }
-
+  
   const HASHLIST_ID = "hashlistId";
 }
 
@@ -149,7 +149,7 @@ class PQueryGetFile extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID  = "taskId";
   const FILENAME = "file";
 }
@@ -161,7 +161,7 @@ class PQueryClientError extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID = "taskId";
   const MESSAGE = "message";
 }
@@ -173,7 +173,7 @@ class PQueryDownloadBinary extends PQuery {
     }
     return true;
   }
-
+  
   const BINARY_TYPE       = "type";
   const BINARY_VERSION_ID = "binaryVersionId";
 }
@@ -185,7 +185,7 @@ class PQueryCheckClientVersion extends PQuery {
     }
     return true;
   }
-
+  
   const VERSION = "version";
   const TYPE    = "type";
 }
@@ -197,7 +197,7 @@ class PQueryUpdateInformation extends PQuery {
     }
     return true;
   }
-
+  
   const DEVICES          = "devices";
   const UID              = "uid";
   const OPERATING_SYSTEM = "os";
@@ -210,7 +210,7 @@ class PQueryRegister extends PQuery {
     }
     return true;
   }
-
+  
   const VOUCHER    = "voucher";
   const AGENT_NAME = "name";
 }

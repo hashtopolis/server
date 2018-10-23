@@ -63,11 +63,11 @@ if (!Login::getInstance()->isLoggedin()) {
 else if (!AccessControl::getInstance()->hasPermission(DAccessControl::VIEW_FILE_ACCESS)) {
   die("No access!");
 }
-else{
+else {
   $accessGroupIds = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
 }
 
-if(!in_array($line->getAccessGroupId(), $accessGroupIds)){
+if (!in_array($line->getAccessGroupId(), $accessGroupIds)) {
   die("Access denied to file because of access groups!");
 }
 
@@ -101,12 +101,12 @@ header("Content-Description: " . $line->getFilename());
 header("Content-Disposition: attachment; filename=\"" . $line->getFilename() . "\"");
 
 if (isset($_SERVER['HTTP_RANGE'])) {
-
+  
   $c_start = $start;
   $c_end = $end;
-
+  
   list(, $range) = explode('=', $_SERVER['HTTP_RANGE'], 2);
-
+  
   if (strpos($range, ',') !== false) {
     header('HTTP/1.1 416 Requested Range Not Satisfiable');
     header("Content-Range: bytes $start-$end/$size");
@@ -145,7 +145,7 @@ header("Content-Length: " . $length);
 
 $buffer = 1024 * 100;
 while (!feof($fp) && ($p = ftell($fp)) <= $end) {
-
+  
   if ($p + $buffer > $end) {
     $buffer = $end - $p + 1;
   }

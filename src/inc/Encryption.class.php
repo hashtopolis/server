@@ -14,7 +14,7 @@ class Encryption {
    * @return string base64 encoded hash
    */
   public static function sessionHash($id, $startTime, $username) {
-		global $PEPPER;
+    global $PEPPER;
     
     $KEY = pack('H*', hash("sha256", $startTime));
     $cycles = Encryption::getCount($username . $startTime, 500, 1000);

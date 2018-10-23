@@ -33,7 +33,7 @@ class DHashlistAction {
   
   const CREATE_LEFTLIST      = "createLeftlist";
   const CREATE_LEFTLIST_PERM = DAccessControl::ADD_FILE_ACCESS;
-
+  
   const EDIT_NOTES      = "editNotes";
   const EDIT_NOTES_PERM = DAccessControl::MANAGE_HASHLIST_ACCESS;
 }

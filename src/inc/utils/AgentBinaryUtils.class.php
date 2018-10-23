@@ -30,7 +30,7 @@ class AgentBinaryUtils {
     Factory::getAgentBinaryFactory()->save($agentBinary);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "New Binary " . $agentBinary->getFilename() . " was added!");
   }
-
+  
   /**
    * @param int $binaryId
    * @param string $type
@@ -48,23 +48,23 @@ class AgentBinaryUtils {
       throw new HTException("Provided filename does not exist!");
     }
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
-
+    
     $qF1 = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $qF2 = new QueryFilter(AgentBinary::AGENT_BINARY_ID, $agentBinary->getId(), "<>");
     $result = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     if ($result != null) {
       throw new HTException("You cannot have two binaries with the same type!");
     }
-
+    
     $agentBinary->setType($type);
     $agentBinary->setOperatingSystems($os);
     $agentBinary->setFilename($filename);
     $agentBinary->setVersion($version);
-
+    
     Factory::getAgentBinaryFactory()->update($agentBinary);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
-
+  
   /**
    * @param int $binaryId
    * @throws HTException
@@ -74,7 +74,7 @@ class AgentBinaryUtils {
     Factory::getAgentBinaryFactory()->delete($agentBinary);
     unlink(dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
   }
-
+  
   /**
    * @param int $binaryId
    * @throws HTException

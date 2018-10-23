@@ -4,7 +4,7 @@ class SupertaskHandler implements Handler {
   public function __construct($supertaskId = null) {
     //nothing
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {
@@ -24,11 +24,11 @@ class SupertaskHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DSupertaskAction::IMPORT_SUPERTASK_PERM);
           SupertaskUtils::importSupertask($_POST['name'], $_POST['isCpu'], $_POST['isSmall'], $_POST['optimized'], $_POST['crackerBinaryTypeId'], explode("\n", str_replace("\r\n", "\n", $_POST['masks'])), $_POST['benchtype']);
           break;
-				case DSupertaskAction::BULK_SUPERTASK:
-					AccessControl::getInstance()->checkPermission(DSupertaskAction::BULK_SUPERTASK_PERM);
-					SupertaskUtils::bulkSupertask($_POST['name'], $_POST['command'], $_POST['isCpu'], $_POST['isSmall'], $_POST['crackerBinaryTypeId'], $_POST['benchtype'], @$_POST['basefile'], @$_POST['iterfile'], Login::getInstance()->getUser());
-					break;
-				default:
+        case DSupertaskAction::BULK_SUPERTASK:
+          AccessControl::getInstance()->checkPermission(DSupertaskAction::BULK_SUPERTASK_PERM);
+          SupertaskUtils::bulkSupertask($_POST['name'], $_POST['command'], $_POST['isCpu'], $_POST['isSmall'], $_POST['crackerBinaryTypeId'], $_POST['benchtype'], @$_POST['basefile'], @$_POST['iterfile'], Login::getInstance()->getUser());
+          break;
+        default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
       }

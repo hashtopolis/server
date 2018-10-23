@@ -4,7 +4,7 @@ class HealthHandler implements Handler {
   public function __construct($userId = null) {
     //nothing to do
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {

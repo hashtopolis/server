@@ -42,7 +42,7 @@ else if (isset($_GET['id'])) {
     else {
       UI::add('perm', new DataSet(json_decode($group->getPermissions(), true)));
     }
-
+    
     $qF = new QueryFilter(User::RIGHT_GROUP_ID, $group->getId(), "=");
     UI::add('users', Factory::getUserFactory()->filter([Factory::FILTER => $qF]));
     $constants = DAccessControl::getConstants();
@@ -66,17 +66,17 @@ else if (isset($_GET['id'])) {
 else {
   // determine members and agents
   $groups = Factory::getRightGroupFactory()->filter([]);
-
+  
   $users = array();
   foreach ($groups as $group) {
     $users[$group->getId()] = 0;
   }
-
+  
   $allUsers = Factory::getUserFactory()->filter([]);
   foreach ($allUsers as $user) {
     $users[$user->getRightGroupId()]++;
   }
-
+  
   UI::add('users', new DataSet($users));
   UI::add('groups', $groups);
   UI::add('pageTitle', "Permission Groups");

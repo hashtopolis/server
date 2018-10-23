@@ -15,8 +15,8 @@ class APIGetChunk extends APIBasic {
     $this->updateAgent(PActions::GET_CHUNK);
     
     DServerLog::log(DServerLog::DEBUG, "Requesting a chunk...", [$this->agent]);
-
-    if(HealthUtils::checkNeeded($this->agent)){
+    
+    if (HealthUtils::checkNeeded($this->agent)) {
       DServerLog::log(DServerLog::DEBUG, "Notifying agent about health check", [$this->agent]);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
@@ -25,13 +25,13 @@ class APIGetChunk extends APIBasic {
         )
       );
     }
-
+    
     $task = Factory::getTaskFactory()->get($QUERY[PQueryGetChunk::TASK_ID]);
     if ($task == null) {
       DServerLog::log(DServerLog::WARNING, "Requested chunk on invalid task!", [$this->agent]);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid task ID!");
     }
-
+    
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
@@ -61,7 +61,7 @@ class APIGetChunk extends APIBasic {
       DServerLog::log(DServerLog::TRACE, "Agent is inactive!", [$this->agent]);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Agent is inactive!");
     }
-
+    
     LockUtils::get(Lock::CHUNKING);
     DServerLog::log(DServerLog::TRACE, "Retrieved lock for chunking!", [$this->agent]);
     $task = Factory::getTaskFactory()->get($task->getId());
@@ -80,7 +80,7 @@ class APIGetChunk extends APIBasic {
         )
       );
     }
-
+    
     DServerLog::log(DServerLog::TRACE, "Search for best task...", [$this->agent]);
     $bestTask = TaskUtils::getBestTask($this->agent);
     if ($bestTask == null) {
@@ -94,7 +94,7 @@ class APIGetChunk extends APIBasic {
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
     }
-
+    
     // if the best task is not the one we are working on, we should switch
     DServerLog::log(DServerLog::TRACE, "Determine important task", [$this->agent, $task, $bestTask]);
     $bestTask = TaskUtils::getImportantTask($bestTask, $task);
@@ -105,7 +105,7 @@ class APIGetChunk extends APIBasic {
       DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
     }
-
+    
     // find a chunk to assign
     DServerLog::log(DServerLog::DEBUG, "Searching existing chunk...", [$this->agent, $task]);
     $qF1 = new QueryFilter(Chunk::PROGRESS, 10000, "<");
@@ -125,7 +125,7 @@ class APIGetChunk extends APIBasic {
     }
     DServerLog::log(DServerLog::DEBUG, "Create new chunk for agent", [$this->agent, $task]);
     $chunk = ChunkUtils::createNewChunk($task, $assignment);
-    if($chunk == null){
+    if ($chunk == null) {
       DServerLog::log(DServerLog::DEBUG, "Could not create a chunk, task is fully dispatched", [$this->agent, $task]);
       Factory::getAgentFactory()->getDB()->commit();
       LockUtils::release(Lock::CHUNKING);
@@ -140,7 +140,7 @@ class APIGetChunk extends APIBasic {
     DServerLog::log(DServerLog::DEBUG, "Sending new chunk to agent", [$this->agent, $task, $chunk]);
     $this->sendChunk($chunk);
   }
-
+  
   /**
    * @param $chunk Chunk
    */

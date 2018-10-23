@@ -50,8 +50,8 @@ $qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_UTIL, "=");
 $qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT), ">");
 $stats = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => [$oF1, $oF2]]);
 $agentStats = new DataSet();
-foreach($stats as $stat){
-  if($agentStats->getVal($stat->getAgentId()) === false){
+foreach ($stats as $stat) {
+  if ($agentStats->getVal($stat->getAgentId()) === false) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
@@ -64,8 +64,8 @@ $qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::GPU_TEMP, "=");
 $qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT), ">");
 $stats = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => [$oF1, $oF2]]);
 $agentStats = new DataSet();
-foreach($stats as $stat){
-  if($agentStats->getVal($stat->getAgentId()) === false){
+foreach ($stats as $stat) {
+  if ($agentStats->getVal($stat->getAgentId()) === false) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }

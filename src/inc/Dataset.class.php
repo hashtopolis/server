@@ -21,10 +21,10 @@ class DataSet {
     }
     return false;
   }
-
-  public function getKeys(){
+  
+  public function getKeys() {
     $keys = [];
-    foreach($this->values as $key => $val){
+    foreach ($this->values as $key => $val) {
       $keys[] = $key;
     }
     return $keys;

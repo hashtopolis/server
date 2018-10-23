@@ -49,10 +49,10 @@ else {
   $qF2 = new ContainFilter(File::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser())));
   $oF = new OrderFilter(File::FILENAME, "ASC");
   UI::add('fileType', "Other Files");
-  if($view == 'dict'){
+  if ($view == 'dict') {
     UI::add('fileType', "Wordlists");
   }
-  else if($view == 'rule'){
+  else if ($view == 'rule') {
     UI::add('fileType', "Rules");
   }
   UI::add('files', Factory::getFileFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]));
@@ -60,7 +60,7 @@ else {
   UI::add('pageTitle', "Files");
   $accessGroups = Factory::getAccessGroupFactory()->filter([]);
   $groups = new DataSet();
-  foreach($accessGroups as $accessGroup){
+  foreach ($accessGroups as $accessGroup) {
     $groups->addValue($accessGroup->getId(), $accessGroup);
   }
   UI::add('accessGroups', $groups);

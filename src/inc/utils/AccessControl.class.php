@@ -6,26 +6,26 @@ use DBA\Factory;
 class AccessControl {
   private $user;
   private $rightGroup;
-
+  
   private static $instance = null;
   
-  public static function getInstance($user = null, $groupId = 0){
-    if($user != null || $groupId != 0){
+  public static function getInstance($user = null, $groupId = 0) {
+    if ($user != null || $groupId != 0) {
       self::$instance = new AccessControl($user, $groupId);
     }
-    else if(self::$instance == null){
+    else if (self::$instance == null) {
       self::$instance = new AccessControl();
     }
     return self::$instance;
   }
-
+  
   /**
    * @return User
    */
   public function getUser() {
     return $this->user;
   }
-
+  
   /**
    * AccessControl constructor.
    * @param $user User
@@ -40,7 +40,7 @@ class AccessControl {
       $this->rightGroup = Factory::getRightGroupFactory()->get($groupId);
     }
   }
-
+  
   /**
    * Force a reload of the permissions from the database
    */
@@ -49,7 +49,7 @@ class AccessControl {
       $this->rightGroup = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
     }
   }
-
+  
   /**
    * If access is not granted, permission denied page will be shown
    * @param $perm string|string[]
@@ -59,7 +59,7 @@ class AccessControl {
       UI::permissionError();
     }
   }
-
+  
   /**
    * @param $singlePerm string
    */
@@ -75,7 +75,7 @@ class AccessControl {
     }
     return false;
   }
-
+  
   /**
    * @param $perm string|string[]
    * @return bool true if access is granted

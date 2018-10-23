@@ -93,23 +93,23 @@ else {
   $progress = $task->getKeyspaceProgress();
   $keyspace = max($task->getKeyspace(), 1);
   $taskId = $task->getId();
-
+  
   //load chunks
   $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   foreach ($chunks as $chunk) {
-    if($task->getIsPrince() == 1 && $task->getKeyspace() <= 0){
+    if ($task->getIsPrince() == 1 && $task->getKeyspace() <= 0) {
       continue;
     }
     $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);
     $end = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength()) / $keyspace) - 1;
     //division by 10000 is required because rprogress is saved in percents with two decimals
     $current = floor(($size[0] - 1) * ($chunk->getSkip() + $chunk->getLength() * $chunk->getProgress() / 10000) / $keyspace) - 1;
-
+    
     if ($current > $end) {
       $current = $end;
     }
-
+    
     if ($end - $start < 3) {
       if ($chunk->getState() >= 6) {
         imagefilledrectangle($image, $start, 0, $end, $size[1] - 1, $red);

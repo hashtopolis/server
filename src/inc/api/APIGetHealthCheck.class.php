@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Factory;
 
 class APIGetHealthCheck extends APIBasic {
@@ -8,27 +9,28 @@ class APIGetHealthCheck extends APIBasic {
     }
     $this->checkToken(PActions::GET_HEALTH_CHECK, $QUERY);
     $this->updateAgent(PActions::GET_HEALTH_CHECK);
-
+    
     $healthCheckAgent = HealthUtils::checkNeeded($this->agent);
-    if($healthCheckAgent == null){
+    if ($healthCheckAgent == null) {
       // for whatever reason there is no check available anymore
       $this->sendErrorResponse(PActions::GET_HEALTH_CHECK, "No health check available for this agent!");
     }
     $healthCheck = Factory::getHealthCheckFactory()->get($healthCheckAgent->getHealthCheckId());
-
+    
     DServerLog::log(DServerLog::INFO, "Received health check task", [$this->agent, $healthCheck]);
-
-    $hashes = file_get_contents(dirname(__FILE__)."/../../tmp/health-check-".$healthCheck->getId().".txt");
+    
+    $hashes = file_get_contents(dirname(__FILE__) . "/../../tmp/health-check-" . $healthCheck->getId() . ".txt");
     $hashes = explode("\n", $hashes);
-
+    
     $this->sendResponse([
       PResponseGetHealthCheck::ACTION => PActions::GET_HEALTH_CHECK,
       PResponseGetHealthCheck::RESPONSE => PValues::SUCCESS,
-      PResponseGetHealthCheck::ATTACK => " --hash-type=" . $healthCheck->getHashtypeId() . " ".$healthCheck->getAttackCmd(). " " . $this->agent->getCmdPars(),
+      PResponseGetHealthCheck::ATTACK => " --hash-type=" . $healthCheck->getHashtypeId() . " " . $healthCheck->getAttackCmd() . " " . $this->agent->getCmdPars(),
       PResponseGetHealthCheck::CRACKER_BINARY_ID => (int)$healthCheck->getCrackerBinaryId(),
       PResponseGetHealthCheck::HASHES => $hashes,
       PResponseGetHealthCheck::CHECK_ID => (int)$healthCheck->getId(),
       PResponseGetHealthCheck::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)
-    ]);
+    ]
+    );
   }
 }

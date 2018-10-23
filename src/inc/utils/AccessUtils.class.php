@@ -22,7 +22,7 @@ class AccessUtils {
     if (!is_array($hashlists)) {
       $hashlists = array($hashlists);
     }
-
+    
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
     foreach ($hashlists as $hashlist) {
       if (!in_array($hashlist->getAccessGroupId(), $accessGroupIds)) {
@@ -31,7 +31,7 @@ class AccessUtils {
     }
     return true;
   }
-
+  
   /**
    * @param $agent Agent
    * @param $user User
@@ -43,16 +43,16 @@ class AccessUtils {
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $accessGroupsAgent AccessGroup[] */
     $accessGroupsAgent = $joined[Factory::getAccessGroupFactory()->getModelName()];
-
+    
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $accessGroupsUser AccessGroup[] */
     $accessGroupsUser = $joined[Factory::getAccessGroupFactory()->getModelName()];
-
+    
     return sizeof(AccessUtils::intersection($accessGroupsAgent, $accessGroupsUser)) > 0;
   }
-
+  
   /**
    * @param TaskWrapper $taskWrapper
    * @param User $user
@@ -65,20 +65,20 @@ class AccessUtils {
     }
     return true;
   }
-
-	/**
-	 * @param File $file 
-	 * @param User $user 
-	 * @return boolean
-	 */
-	public static function userCanAccessFile($file, $user) {
+  
+  /**
+   * @param File $file
+   * @param User $user
+   * @return boolean
+   */
+  public static function userCanAccessFile($file, $user) {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
     if (!in_array($file->getAccessGroupId(), $accessGroupIds)) {
       return false;
     }
     return true;
   }
-
+  
   /**
    * @param $accessGroupsAgent AccessGroup[]
    * @param $accessGroupsUser AccessGroup[]
@@ -99,7 +99,7 @@ class AccessUtils {
     }
     return $intersect;
   }
-
+  
   /**
    * @param $user User
    * @return AccessGroup[]
@@ -111,7 +111,7 @@ class AccessUtils {
     /** @var $accessGroupsUser AccessGroup[] */
     return $joined[Factory::getAccessGroupFactory()->getModelName()];
   }
-
+  
   /**
    * @param $agent Agent
    * @return AccessGroup[]
@@ -123,7 +123,7 @@ class AccessUtils {
     /** @var $accessGroupsUser AccessGroup[] */
     return $joined[Factory::getAccessGroupFactory()->getModelName()];
   }
-
+  
   /**
    * Gets the first access group (which is the default access group. If it does not exist, it created the default access group.
    *
@@ -137,7 +137,7 @@ class AccessUtils {
     }
     return $accessGroup;
   }
-
+  
   /**
    * @param $agent Agent
    * @param $task Task
@@ -147,13 +147,13 @@ class AccessUtils {
     // load access groups of agent
     $accessGroups = AccessUtils::getAccessGroupsOfAgent($agent);
     $accessGroupsIds = Util::arrayOfIds($accessGroups);
-
+    
     // load task info
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if (!in_array($taskWrapper->getAccessGroupId(), $accessGroupsIds)) {
       return false; // task is in an access group which agent is not allowed to access
     }
-
+    
     $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get($taskWrapper->getHashlistId()));
     foreach ($hashlists as $hashlist) {
       if ($hashlist->getIsSecret() > $agent->getIsTrusted()) {
@@ -163,7 +163,7 @@ class AccessUtils {
         return false; // agent is not in the access group to which the hashlist is assigned
       }
     }
-
+    
     $files = TaskUtils::getFilesOfTask($task);
     foreach ($files as $file) {
       if ($file->getIsSecret() > $agent->getIsTrusted()) {

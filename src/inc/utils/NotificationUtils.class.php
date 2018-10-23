@@ -60,11 +60,11 @@ class NotificationUtils {
         $objectId = $task->getId();
         break;
     }
-
+    
     $notificationSetting = new NotificationSetting(null, $actionType, $objectId, $notification, Login::getInstance()->getUser()->getId(), $receiver, 1);
     Factory::getNotificationSettingFactory()->save($notificationSetting);
   }
-
+  
   /**
    * @param int $notification
    * @param boolean $isActive
@@ -90,7 +90,7 @@ class NotificationUtils {
     }
     Factory::getNotificationSettingFactory()->update($notification);
   }
-
+  
   /**
    * @param int $notification
    * @param User $user
@@ -103,7 +103,7 @@ class NotificationUtils {
     }
     Factory::getNotificationSettingFactory()->delete($notification);
   }
-
+  
   /**
    * @param int $notification
    * @throws HTException

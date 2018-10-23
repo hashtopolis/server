@@ -9,14 +9,14 @@ require_once(dirname(__FILE__) . "/../inc/load.php");
 
 // test if task exists
 $taskWrapper = Factory::getTaskWrapperFactory()->get($_GET['taskWrapperId']);
-if($taskWrapper == null){
+if ($taskWrapper == null) {
   die("Invalid task wrapper!");
 }
-else if(!AccessUtils::userCanAccessTask($taskWrapper, Login::getInstance()->getUser())){
+else if (!AccessUtils::userCanAccessTask($taskWrapper, Login::getInstance()->getUser())) {
   die("No access to task!");
 }
 $accessGroups = AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser());
-$showArchived = ($_GET['showArchived'])?true:false;
+$showArchived = ($_GET['showArchived']) ? true : false;
 
 $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
 $oF = new OrderFilter(Task::PRIORITY, "DESC");
@@ -45,7 +45,7 @@ foreach ($tasks as $task) {
   $taskInfo = Util::getTaskInfo($task);
   $fileInfo = Util::getFileInfo($task, $accessGroups);
   $chunkInfo = Util::getChunkInfo($task);
-  if($fileInfo[4]){
+  if ($fileInfo[4]) {
     continue;
   }
   $subSet->addValue('sumProgress', $taskInfo[0]);

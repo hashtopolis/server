@@ -11,13 +11,13 @@ class DConfigType {
 class DConfigAction {
   const UPDATE_CONFIG      = "updateConfig";
   const UPDATE_CONFIG_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-
+  
   const REBUILD_CACHE      = "rebuildCache";
   const REBUILD_CACHE_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-
+  
   const RESCAN_FILES      = "rescanFiles";
   const RESCAN_FILES_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-
+  
   const CLEAR_ALL      = "clearAll";
   const CLEAR_ALL_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
 }
@@ -49,12 +49,12 @@ class DConfig {
   const AGENT_DATA_LIFETIME    = "agentDataLifetime";
   const DISABLE_TRIMMING       = "disableTrimming";
   const PRIORITY_0_START       = "priority0Start";
-
+  
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
   const YUBIKEY_KEY = "yubikey_key";
   const YUBIKEY_URL = "yubikey_url";
-
+  
   // Section: Finetuning
   const HASHES_PAGE_SIZE     = "pagingSize";
   const NUMBER_LOGENTRIES    = "numLogEntries";
@@ -62,7 +62,7 @@ class DConfig {
   const PLAINTEXT_MAX_LENGTH = "plainTextMaxLength";
   const HASH_MAX_LENGTH      = "hashMaxLength";
   const MAX_HASHLIST_SIZE    = "maxHashlistSize";
-
+  
   // Section: UI
   const TIME_FORMAT           = "timefmt";
   const DONATE_OFF            = "donateOff";
@@ -72,30 +72,30 @@ class DConfig {
   const SHOW_TASK_PERFORMANCE = "showTaskPerformance";
   const AGENT_STAT_LIMIT      = "agentStatLimit";
   const AGENT_STAT_TENSION    = "agentStatTension";
-
+  
   // Section: Server
-  const BASE_URL           = "baseUrl";
-  const BASE_HOST          = "baseHost";
-  const EMAIL_SENDER       = "emailSender";
-  const EMAIL_SENDER_NAME  = "emailSenderName";
-  const CONTACT_EMAIL      = "contactEmail";
-  const VOUCHER_DELETION   = "voucherDeletion";
-  const S_NAME             = "jeSuisHashtopussy";
-  const SERVER_LOG_LEVEL   = "serverLogLevel";
-
+  const BASE_URL          = "baseUrl";
+  const BASE_HOST         = "baseHost";
+  const EMAIL_SENDER      = "emailSender";
+  const EMAIL_SENDER_NAME = "emailSenderName";
+  const CONTACT_EMAIL     = "contactEmail";
+  const VOUCHER_DELETION  = "voucherDeletion";
+  const S_NAME            = "jeSuisHashtopussy";
+  const SERVER_LOG_LEVEL  = "serverLogLevel";
+  
   // Section: Multicast
   const MULTICAST_ENABLE    = "multicastEnable";
   const MULTICAST_DEVICE    = "multicastDevice";
   const MULTICAST_TR_ENABLE = "multicastTransferRateEnable";
   const MULTICAST_TR        = "multicastTranserRate";
-
+  
   // Section: Notifications
   const TELEGRAM_PROXY_ENABLE = "telegramProxyEnable";
   const TELEGRAM_BOT_TOKEN    = "telegramBotToken";
   const TELEGRAM_PROXY_SERVER = "telegramProxyServer";
   const TELEGRAM_PROXY_PORT   = "telegramProxyPort";
   const TELEGRAM_PROXY_TYPE   = "telegramProxyType";
-
+  
   static function getConstants() {
     try {
       $oClass = new ReflectionClass(__CLASS__);
@@ -105,21 +105,22 @@ class DConfig {
     }
     return $oClass->getConstants();
   }
-
+  
   /**
    * Gives the selection for the configuration values which are selections.
-   * @param string $config 
+   * @param string $config
    * @return DataSet
    */
-  public static function getSelection($config){
-    switch($config){
+  public static function getSelection($config) {
+    switch ($config) {
       case DConfig::TELEGRAM_PROXY_TYPE:
         return new DataSet([
           DProxyTypes::HTTP => DProxyTypes::HTTP,
           DProxyTypes::HTTPS => DProxyTypes::HTTPS,
           DProxyTypes::SOCKS4 => DProxyTypes::SOCKS4,
           DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
-        ]);
+        ]
+        );
       case DConfig::SERVER_LOG_LEVEL:
         return new DataSet([
           DServerLog::TRACE => "TRACE",
@@ -128,11 +129,12 @@ class DConfig {
           DServerLog::WARNING => "WARNING",
           DServerLog::ERROR => "ERROR",
           DServerLog::FATAL => "FATAL"
-        ]);
+        ]
+        );
     }
     return new DataSet(["Not found!"]);
   }
-
+  
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
    * @param $config string
@@ -237,7 +239,7 @@ class DConfig {
     }
     return DConfigType::STRING_INPUT;
   }
-
+  
   /**
    * @param $config string
    * @return string

@@ -16,14 +16,14 @@ class CrackerUtils {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $cracker->getId(), "=");
     return Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
   }
-
+  
   /**
    * @return CrackerBinaryType[]
    */
   public static function getBinaryTypes() {
     return Factory::getCrackerBinaryTypeFactory()->filter([]);
   }
-
+  
   /**
    * @param string $typeName
    * @throws HTException
@@ -34,13 +34,13 @@ class CrackerUtils {
     if ($check !== null) {
       throw new HTException("This binary type already exists!");
     }
-    else if(strlen($typeName) == 0){
+    else if (strlen($typeName) == 0) {
       throw new HTException("Cracker name cannot be empmty!");
     }
     $binaryType = new CrackerBinaryType(null, $typeName, 1);
     Factory::getCrackerBinaryTypeFactory()->save($binaryType);
   }
-
+  
   /**
    * @param string $version
    * @param string $name
@@ -58,7 +58,7 @@ class CrackerUtils {
     Factory::getCrackerBinaryFactory()->save($binary);
     return $binaryType;
   }
-
+  
   /**
    * @param int $binaryId
    * @throws HTException
@@ -72,29 +72,29 @@ class CrackerUtils {
     }
     Factory::getCrackerBinaryFactory()->delete($binary);
   }
-
+  
   /**
    * @param int $binaryTypeId
    * @throws HTException
    */
   public static function deleteBinaryType($binaryTypeId) {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
-
+    
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
     $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     $versionIds = Util::arrayOfIds($binaries);
-
+    
     $qF = new ContainFilter(Task::CRACKER_BINARY_ID, $versionIds);
     $check = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
     if (sizeof($check) > 0) {
       throw new HTException("There are tasks which use binaries of this cracker!");
     }
-
+    
     // delete
     Factory::getCrackerBinaryFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getCrackerBinaryTypeFactory()->delete($binaryType);
   }
-
+  
   /**
    * @param string $version
    * @param string $name
@@ -114,7 +114,7 @@ class CrackerUtils {
     Factory::getCrackerBinaryFactory()->update($binary);
     return Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
-
+  
   /**
    * @param int $binaryTypeId
    * @throws HTException
@@ -127,7 +127,7 @@ class CrackerUtils {
     }
     return $binaryType;
   }
-
+  
   /**
    * @param int $binaryId
    * @throws HTException

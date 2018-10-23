@@ -29,37 +29,37 @@ class TaskUtils {
    * @param Pretask $copy
    * @return Task
    */
-  public static function getFromPretask($copy){
+  public static function getFromPretask($copy) {
     return new Task(
-        null,
-        $copy->getTaskName(),
-        $copy->getAttackCmd(),
-        $copy->getChunkTime(),
-        $copy->getStatusTimer(),
-        0,
-        0,
-        $copy->getPriority(),
-        $copy->getColor(),
-        $copy->getIsSmall(),
-        $copy->getIsCpuTask(),
-        $copy->getUseNewBench(),
-        0,
-        0,
-        $copy->getCrackerBinaryTypeId(),
-        0,
-        0,
-        0,
-        '',
-        0,
-        0,
-        0
-      );
+      null,
+      $copy->getTaskName(),
+      $copy->getAttackCmd(),
+      $copy->getChunkTime(),
+      $copy->getStatusTimer(),
+      0,
+      0,
+      $copy->getPriority(),
+      $copy->getColor(),
+      $copy->getIsSmall(),
+      $copy->getIsCpuTask(),
+      $copy->getUseNewBench(),
+      0,
+      0,
+      $copy->getCrackerBinaryTypeId(),
+      0,
+      0,
+      0,
+      '',
+      0,
+      0,
+      0
+    );
   }
-
+  
   /**
    * @return Task
    */
-  public static function getDefault(){
+  public static function getDefault() {
     return new Task(
       null,
       "",
@@ -85,19 +85,19 @@ class TaskUtils {
       0
     );
   }
-
+  
   /**
    * @param int $taskId
    * @param string $notes
    * @param User $user
    */
-  public static function editNotes($taskId, $notes, $user){
+  public static function editNotes($taskId, $notes, $user) {
     $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
     $task = TaskUtils::getTask($taskId, $user);
     $task->setNotes($notes);
     Factory::getTaskFactory()->update($task);
   }
-
+  
   /**
    * @param User $user
    */
@@ -116,7 +116,7 @@ class TaskUtils {
       Factory::getAgentFactory()->getDB()->commit();
     }
   }
-
+  
   /**
    * @param int $taskId
    * @param string $attackCmd
@@ -124,16 +124,16 @@ class TaskUtils {
    * @throws HTException
    * @return void
    */
-  public static function changeAttackCmd($taskId, $attackCmd, $user){
-    if(strlen($attackCmd) == 0){
+  public static function changeAttackCmd($taskId, $attackCmd, $user) {
+    if (strlen($attackCmd) == 0) {
       throw new HTException("Attack command cannot be empty!");
     }
-    else if(strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false){
+    else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command must contain the hashlist alias!");
     }
-
+    
     $task = TaskUtils::getTask($taskId, $user);
-    if($task->getAttackCmd() == $attackCmd){
+    if ($task->getAttackCmd() == $attackCmd) {
       // no change required, we avoid all the overhead
       return;
     }
@@ -142,12 +142,12 @@ class TaskUtils {
     $task->setAttackCmd($attackCmd);
     Factory::getTaskFactory()->update($task);
   }
-
+  
   /**
    * @param int $supertaskId
    * @param User $user
    */
-  public static function archiveSupertask($supertaskId, $user){
+  public static function archiveSupertask($supertaskId, $user) {
     $taskWrapper = TaskUtils::getTaskWrapper($supertaskId, $user);
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
     $uS = new UpdateSet(Task::IS_ARCHIVED, 1);
@@ -155,22 +155,22 @@ class TaskUtils {
     $taskWrapper->setIsArchived(1);
     Factory::getTaskWrapperFactory()->update($taskWrapper);
   }
-
+  
   /**
    * @param int $taskId
    * @param User $user
    */
-  public static function archiveTask($taskId, $user){
+  public static function archiveTask($taskId, $user) {
     $task = TaskUtils::getTask($taskId, $user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
-    if($taskWrapper->getTaskType() == DTaskTypes::NORMAL){
+    if ($taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
       $taskWrapper->setIsArchived(1);
       Factory::getTaskWrapperFactory()->update($taskWrapper);
     }
     $task->setIsArchived(1);
     Factory::getTaskFactory()->update($task);
   }
-
+  
   /**
    * @param int $taskWrapperId
    * @param string $newName
@@ -183,7 +183,7 @@ class TaskUtils {
     $taskWrapper->setTaskWrapperName($name);
     Factory::getTaskWrapperFactory()->update($taskWrapper);
   }
-
+  
   /**
    * @param int $taskWrapperId
    * @return Task
@@ -192,7 +192,7 @@ class TaskUtils {
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapperId, "=");
     return Factory::getTaskFactory()->filter([Factory::FILTER => $qF], true);
   }
-
+  
   /**
    * @param int $taskWrapperId
    * @return Task[]
@@ -201,20 +201,20 @@ class TaskUtils {
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapperId, "=");
     return Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
   }
-
+  
   /**
    * @param User $user
    * @return TaskWrapper[]
    */
   public static function getTaskWrappersForUser($user) {
     $accessGroupIds = Util::getAccessGroupIds($user->getId());
-
+    
     $qF = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
     $oF1 = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $oF2 = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
     return Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => [$oF1, $oF2]]);
   }
-
+  
   /**
    * @param int $taskId
    * @return Assignment[]
@@ -223,7 +223,7 @@ class TaskUtils {
     $qF = new QueryFilter(Assignment::TASK_ID, $taskId, "=");
     return Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
   }
-
+  
   /**
    * @param int $taskId
    * @return Chunk[]
@@ -233,7 +233,7 @@ class TaskUtils {
     $oF = new OrderFilter(Chunk::DISPATCH_TIME, "DESC");
     return Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
   }
-
+  
   /**
    * @param int $taskWrapperId
    * @param User $user
@@ -250,7 +250,7 @@ class TaskUtils {
     }
     return $taskWrapper;
   }
-
+  
   /**
    * @param int $taskId
    * @param User $user
@@ -268,7 +268,7 @@ class TaskUtils {
     }
     return $task;
   }
-
+  
   /**
    * @param Pretask $pretask
    * @param Task $task
@@ -283,7 +283,7 @@ class TaskUtils {
       FileDownloadUtils::addDownload($fileTask->getFileId());
     }
   }
-
+  
   /**
    * @param int $supertaskId
    * @param int $priority
@@ -302,7 +302,7 @@ class TaskUtils {
     $supertask->setPriority($priority);
     Factory::getTaskWrapperFactory()->update($supertask);
   }
-
+  
   /**
    * @param int $taskId
    * @param int $isCpuOnly
@@ -325,7 +325,7 @@ class TaskUtils {
     $task->setIsCpuTask($isCpuTask);
     Factory::getTaskFactory()->update($task);
   }
-
+  
   /**
    * @param User $user
    * @throws HTException
@@ -367,7 +367,7 @@ class TaskUtils {
       }
     }
   }
-
+  
   /**
    * @param int $taskId
    * @param int $chunkTime
@@ -399,7 +399,7 @@ class TaskUtils {
     Factory::getTaskFactory()->update($task);
     Factory::getAgentFactory()->getDB()->commit();
   }
-
+  
   /**
    * @param int $chunkId
    * @param User $user
@@ -419,7 +419,7 @@ class TaskUtils {
     $chunk->setState(DHashcatStatus::ABORTED);
     Factory::getChunkFactory()->update($chunk);
   }
-
+  
   /**
    * @param int $chunkId
    * @param User $user
@@ -443,7 +443,7 @@ class TaskUtils {
     $chunk->setSolveTime(0);
     Factory::getChunkFactory()->update($chunk);
   }
-
+  
   /**
    * @param int $agentId
    * @param string $benchmark
@@ -464,7 +464,7 @@ class TaskUtils {
     $assignment->setBenchmark($benchmark);
     Factory::getAssignmentFactory()->update($assignment);
   }
-
+  
   /**
    * @param int $taskId
    * @param User $user
@@ -501,7 +501,7 @@ class TaskUtils {
     Factory::getTaskFactory()->update($task);
     Factory::getAgentFactory()->getDB()->commit();
   }
-
+  
   /**
    * @param int $taskId
    * @param User $user
@@ -518,12 +518,12 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-
+    
     Factory::getAgentFactory()->getDB()->beginTransaction();
-
+    
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_TASK, $payload);
-
+    
     TaskUtils::deleteTask($task);
     if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
       Factory::getTaskWrapperFactory()->delete($taskWrapper);
@@ -534,7 +534,7 @@ class TaskUtils {
       die();
     }
   }
-
+  
   /**
    * @param int $taskId
    * @param int $isSmall
@@ -550,7 +550,7 @@ class TaskUtils {
     $task->setIsSmall($isSmall);
     Factory::getTaskFactory()->update($task);
   }
-
+  
   /**
    * @param int $taskId
    * @param string $color
@@ -566,7 +566,7 @@ class TaskUtils {
     $task->setColor($color);
     Factory::getTaskFactory()->update($task);
   }
-
+  
   /**
    * @param int $taskId
    * @param string $name
@@ -580,7 +580,7 @@ class TaskUtils {
     $task->setTaskName($name);
     Factory::getTaskFactory()->update($task);
   }
-
+  
   /**
    * @param int $taskId
    * @param int $priority
@@ -600,7 +600,7 @@ class TaskUtils {
       Factory::getTaskWrapperFactory()->update($taskWrapper);
     }
   }
-
+  
   /**
    * @param int $hashlistId
    * @param string $name
@@ -641,10 +641,10 @@ class TaskUtils {
     else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command does not contain hashlist alias!");
     }
-    else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
+    else if ($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS) {
       throw new HTException("Invalid static chunk setting!");
     }
-    else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
+    else if ($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0) {
       throw new HTException("Invalid chunk size / number of chunks for static chunking!");
     }
     else if (Util::containsBlacklistedChars($attackCmd)) {
@@ -672,15 +672,15 @@ class TaskUtils {
     if ($priority < 0) {
       $priority = 0;
     }
-    if($isPrince && $benchtype == 'runtime'){
+    if ($isPrince && $benchtype == 'runtime') {
       // enforce speed benchmark type when using PRINCE
       $benchtype = 'speed';
     }
-
+    
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
-
+    
     $task = new Task(
       null,
       $name,
@@ -707,7 +707,7 @@ class TaskUtils {
       0
     );
     $task = Factory::getTaskFactory()->save($task);
-
+    
     if (is_array($files) && sizeof($files) > 0) {
       foreach ($files as $fileId) {
         $taskFile = new FileTask(null, $fileId, $task->getId());
@@ -716,11 +716,11 @@ class TaskUtils {
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
-
+    
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
   }
-
+  
   /**
    * Splits a given task into subtasks within a supertask by splitting the rule file
    * @param Task $task
@@ -734,7 +734,7 @@ class TaskUtils {
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
     $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
     $linesPerFile = floor($numLines / $numSplits) + 1;
-
+    
     // create the temporary rule files
     $newFiles = [];
     $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename())));
@@ -750,7 +750,7 @@ class TaskUtils {
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
-
+    
     // take out the split file from the file list
     for ($i = 0; $i < sizeof($files); $i++) {
       if ($files[$i]->getId() == $splitFile->getId()) {
@@ -758,7 +758,7 @@ class TaskUtils {
         break;
       }
     }
-
+    
     // create new tasks as supertask
     $newWrapper = new TaskWrapper(null, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName(), 0);
     $newWrapper = Factory::getTaskWrapperFactory()->save($newWrapper);
@@ -799,12 +799,12 @@ class TaskUtils {
     }
     $newWrapper->setPriority($taskWrapper->getPriority());
     Factory::getTaskWrapperFactory()->update($newWrapper);
-
+    
     // cleanup
     TaskUtils::deleteTask($task);
     Factory::getTaskWrapperFactory()->delete($taskWrapper);
   }
-
+  
   /**
    * @param $agent Agent
    * @param bool $all set true to get all matching tasks for this agent
@@ -812,7 +812,7 @@ class TaskUtils {
    */
   public static function getBestTask($agent, $all = false) {
     $allTasks = array();
-
+    
     // load all groups where this agent has access to
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
@@ -820,10 +820,10 @@ class TaskUtils {
     /** @var $accessGroupAgent AccessGroup[] */
     $accessGroupAgent = $joined[Factory::getAccessGroupFactory()->getModelName()];
     $accessGroups = Util::arrayOfIds($accessGroupAgent);
-
+    
     // get all TaskWrappers which we have access to
     $qF1 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroups);
-    $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, (SConfig::getInstance()->getVal(DConfig::PRIORITY_0_START))?">=":">");
+    $qF2 = new QueryFilter(TaskWrapper::PRIORITY, 0, (SConfig::getInstance()->getVal(DConfig::PRIORITY_0_START)) ? ">=" : ">");
     $qF3 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
     if ($all) {
       // if we want to retrieve all tasks which are accessible, we also show the ones with 0 priority
@@ -831,7 +831,7 @@ class TaskUtils {
     }
     $oF = new OrderFilter(TaskWrapper::PRIORITY, "DESC");
     $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => $oF]);
-
+    
     // go trough task wrappers and test if we have access
     foreach ($taskWrappers as $taskWrapper) {
       $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get($taskWrapper->getHashlistId()));
@@ -844,17 +844,17 @@ class TaskUtils {
         else if (!in_array($hashlist->getAccessGroupId(), $accessGroups)) {
           $permitted = false;
         }
-        else if($hashlist->getHashCount() > $hashlist->getCracked()){
+        else if ($hashlist->getHashCount() > $hashlist->getCracked()) {
           $fullyCracked = false;
         }
       }
       if (!$permitted) {
         continue; // if at least one of the hashlists is secret and the agent not, this taskWrapper cannot be used
       }
-      else if($fullyCracked){
+      else if ($fullyCracked) {
         continue; // all hashes of this hashlist are cracked, so we continue
       }
-
+      
       // load assigned tasks for this TaskWrapper
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
       $oF = new OrderFilter(Task::PRIORITY, "DESC");
@@ -867,20 +867,20 @@ class TaskUtils {
           if ($file->getIsSecret() > $agent->getIsTrusted()) {
             $permitted = false;
           }
-          else if(!in_array($file->getAccessGroupId(), $accessGroups)){
+          else if (!in_array($file->getAccessGroupId(), $accessGroups)) {
             $permitted = false;
           }
         }
         if (!$permitted) {
           continue; // at least one of the files required for this task is secret and the agent not, so this task cannot be used
         }
-
+        
         // we need to check now if the task is already completed or fully dispatched
         $task = TaskUtils::checkTask($task, $agent);
         if ($task == null) {
           continue; // if it is completed we go to the next
         }
-
+        
         // check if it's a small task
         if ($task->getIsSmall() == 1) {
           $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
@@ -894,7 +894,7 @@ class TaskUtils {
         if ($task->getIsCpuTask() != $agent->getCpuOnly()) {
           continue;
         }
-
+        
         // this task is available for this user regarding permissions
         if ($all) {
           $allTasks[] = $task;
@@ -908,14 +908,14 @@ class TaskUtils {
     }
     return null;
   }
-
+  
   /**
    * @param $task Task
    */
   public static function deleteTask($task) {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunkIds = Util::arrayOfIds(Factory::getChunkFactory()->filter([Factory::FILTER => $qF]));
-
+    
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $task->getId(), "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF]);
     foreach ($notifications as $notification) {
@@ -923,14 +923,14 @@ class TaskUtils {
         Factory::getNotificationSettingFactory()->delete($notification);
       }
     }
-
+    
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(AgentError::TASK_ID, $task->getId(), "=");
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(TaskDebugOutput::TASK_ID, $task->getId(), "=");
     Factory::getTaskDebugOutputFactory()->massDeletion([Factory::FILTER => $qF]);
-
+    
     // test if this task used temporary files
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
     $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
@@ -947,19 +947,19 @@ class TaskUtils {
     Factory::getFileTaskFactory()->massDeletion([Factory::FILTER => $qF]);
     $cF = new ContainFilter(File::FILE_ID, Util::arrayOfIds($toDelete));
     Factory::getFileFactory()->massDeletion([Factory::FILTER => $cF]);
-
+    
     $uS = new UpdateSet(Hash::CHUNK_ID, null);
     if (sizeof($chunkIds) > 0) {
       $qF2 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
       Factory::getHashFactory()->massUpdate([Factory::FILTER => $qF2, Factory::UPDATE => $uS]);
       Factory::getHashBinaryFactory()->massUpdate([Factory::FILTER => $qF2, Factory::UPDATE => $uS]);
     }
-
+    
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     Factory::getChunkFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getTaskFactory()->delete($task);
   }
-
+  
   /**
    * @param int $chunkId
    * @param User $user
@@ -978,7 +978,7 @@ class TaskUtils {
     }
     return $chunk;
   }
-
+  
   /**
    * Checks if a task is completed or fully dispatched.
    *
@@ -987,16 +987,16 @@ class TaskUtils {
    * @return Task null if the task is completed or fully dispatched
    */
   public static function checkTask($task, $agent = null) {
-    if($task->getIsArchived() == 1){
+    if ($task->getIsArchived() == 1) {
       return null;
     }
     else if ($task->getKeyspace() == 0) {
       return $task;
     }
-    else if($task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE){
+    else if ($task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE) {
       return $task;
     }
-
+    
     // check chunks
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
@@ -1039,7 +1039,7 @@ class TaskUtils {
     }
     return $task;
   }
-
+  
   /**
    * @param $hashlists Hashlist[]
    */
@@ -1055,7 +1055,7 @@ class TaskUtils {
     $uS = new UpdateSet(TaskWrapper::PRIORITY, 0);
     Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $twFilter, Factory::UPDATE => $uS]);
   }
-
+  
   /**
    * @param $task1 Task
    * @param $task2 Task
@@ -1068,7 +1068,7 @@ class TaskUtils {
     else if ($task2 == null) {
       return $task1;
     }
-
+    
     $taskWrapper1 = Factory::getTaskWrapperFactory()->get($task1->getTaskWrapperId());
     $taskWrapper2 = Factory::getTaskWrapperFactory()->get($task2->getTaskWrapperId());
     if ($taskWrapper1->getPriority() > $taskWrapper2->getPriority()) {
@@ -1076,7 +1076,7 @@ class TaskUtils {
     }
     return $task2;
   }
-
+  
   /**
    * @param $hashlists Hashlist[]
    */
@@ -1092,7 +1092,7 @@ class TaskUtils {
       Factory::getTaskFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     }
   }
-
+  
   /**
    * @param $task Task
    * @return File[]
@@ -1104,7 +1104,7 @@ class TaskUtils {
     /** @var $files File[] */
     return $joined[Factory::getFileFactory()->getModelName()];
   }
-
+  
   /**
    * @param $pretask Pretask
    * @return File[]
@@ -1116,7 +1116,7 @@ class TaskUtils {
     /** @var $files File[] */
     return $joined[Factory::getFileFactory()->getModelName()];
   }
-
+  
   /**
    * @param int $supertaskId
    * @param User $user
@@ -1130,7 +1130,7 @@ class TaskUtils {
     else if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this supertask!");
     }
-
+    
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
     $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);

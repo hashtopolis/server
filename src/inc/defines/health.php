@@ -17,7 +17,7 @@ class DHealthCheckType {
 }
 
 class DHealthCheckMode {
-  const MD5 = 0;
+  const MD5    = 0;
   const BCRYPT = 3200;
 }
 
@@ -28,7 +28,7 @@ class DHealthCheck {
 class DHealthCheckAction {
   const CREATE      = "create";
   const CREATE_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-
+  
   const RESET_AGENT      = "resetAgent";
   const RESET_AGENT_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
 }

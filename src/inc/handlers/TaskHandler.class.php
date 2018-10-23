@@ -9,19 +9,19 @@ use DBA\Factory;
 
 class TaskHandler implements Handler {
   private $task;
-
+  
   public function __construct($taskId = null) {
     if ($taskId == null) {
       $this->task = null;
       return;
     }
-
+    
     $this->task = Factory::getAgentFactory()->get($taskId);
     if ($this->task == null) {
       UI::printError("FATAL", "Task with ID $taskId not found!");
     }
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {
@@ -114,7 +114,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
   private function create() {
     // new task creator
     $name = htmlentities($_POST["name"], ENT_QUOTES, "UTF-8");
@@ -134,14 +134,14 @@ class TaskHandler implements Handler {
     $chunkSize = intval(@$_POST['chunkSize']);
     $priority = intval(@$_POST['priority']);
     $enforcePipe = intval(@$_POST['enforcePipe']);
-
+    
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
     $hashlist = Factory::getHashlistFactory()->get($_POST["hashlist"]);
-    if($hashlist != null){
+    if ($hashlist != null) {
       $accessGroup = Factory::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
     }
-
+    
     if (strpos($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       UI::addMessage(UI::ERROR, "Command line must contain hashlist (" . SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS) . ")!");
       return;
@@ -150,15 +150,15 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Invalid access group!");
       return;
     }
-    else if($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS){
+    else if ($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS) {
       UI::addMessage(UI::ERROR, "Invalid static chunking value selected!");
       return;
     }
-    else if($enforcePipe < 0 || $enforcePipe > 1){
+    else if ($enforcePipe < 0 || $enforcePipe > 1) {
       UI::addMessage(UI::ERROR, "Invalid enforce pipe value selected!");
       return;
     }
-    else if($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0){
+    else if ($staticChunking > DTaskStaticChunking::NORMAL && $chunkSize <= 0) {
       UI::addMessage(UI::ERROR, "Invalid chunk size / number of chunks for static chunking selected!");
       return;
     }
@@ -182,7 +182,7 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "Chunk time must be higher than status timer!");
       return;
     }
-
+    
     $qF1 = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
     $qF2 = new QueryFilter(AccessGroupUser::USER_ID, Login::getInstance()->getUserID(), "=");
     $accessGroupUser = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
@@ -190,14 +190,14 @@ class TaskHandler implements Handler {
       UI::addMessage(UI::ERROR, "No access to this access group!");
       return;
     }
-
+    
     if ($skipKeyspace < 0) {
       $skipKeyspace = 0;
     }
-    if($priority < 0){
+    if ($priority < 0) {
       $priority = 0;
     }
-    if($isPrince && !$useNewBench){
+    if ($isPrince && !$useNewBench) {
       // enforce speed benchmark when using prince
       $useNewBench = 1;
     }
@@ -212,11 +212,11 @@ class TaskHandler implements Handler {
     if ($hashlistId != null && $hashlist->getHexSalt() == 1 && strpos($cmdline, "--hex-salt") === false) {
       $cmdline = "--hex-salt $cmdline"; // put the --hex-salt if the user was not clever enough to put it there :D
     }
-
+    
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
-
+    
     if (AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
       $task = new Task(
         null,
@@ -276,7 +276,7 @@ class TaskHandler implements Handler {
       );
       $forward = "pretasks.php";
     }
-
+    
     $task = Factory::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
       foreach ($_POST["adfile"] as $fileId) {
@@ -286,10 +286,10 @@ class TaskHandler implements Handler {
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
-
+    
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
-
+    
     header("Location: $forward");
     die();
   }

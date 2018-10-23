@@ -16,16 +16,16 @@ class HashtypeUtils {
     if ($hashtype == null) {
       throw new HTException("Invalid hashtype!");
     }
-
+    
     $qF = new QueryFilter(Hashlist::HASH_TYPE_ID, $hashtype->getId(), "=");
     $hashlists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
     if (sizeof($hashlists) > 0) {
       throw new HTException("You cannot delete this hashtype! There are hashlists present which are of this type!");
     }
-
+    
     Factory::getHashTypeFactory()->delete($hashtype);
   }
-
+  
   /**
    * @param int $hashtypeId
    * @param string $description
@@ -42,16 +42,16 @@ class HashtypeUtils {
     if (strlen($desc) == 0 || $hashtypeId < 0) {
       throw new HTException("Invalid inputs!");
     }
-
+    
     $salted = 0;
     if ($isSalted) {
       $salted = 1;
     }
     $slow = 0;
-    if ($isSlowHash){
+    if ($isSlowHash) {
       $slow = 1;
     }
-
+    
     $hashtype = new HashType($hashtypeId, $desc, $salted, $slow);
     if (Factory::getHashTypeFactory()->save($hashtype) == null) {
       throw new HTException("Failed to add new hash type!");

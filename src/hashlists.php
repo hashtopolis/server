@@ -61,7 +61,7 @@ else if (isset($_GET['id'])) {
   $list = new DataSet(array('hashlist' => $joined[Factory::getHashlistFactory()->getModelName()][0], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][0]));
   UI::add('list', $list);
   UI::add('accessGroup', Factory::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId()));
-
+  
   //check if the list is a superhashlist
   UI::add('sublists', []);
   if ($list->getVal('hashlist')->getFormat() == DHashlistFormat::SUPERHASHLIST) {
@@ -74,7 +74,7 @@ else if (isset($_GET['id'])) {
     }
     UI::add('sublists', $sublists);
   }
-
+  
   //load tasks assigned to hashlist
   $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", Factory::getTaskWrapperFactory());
   $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
@@ -98,19 +98,19 @@ else if (isset($_GET['id'])) {
     $hashlistTasks[] = $set;
   }
   UI::add('tasks', $hashlistTasks);
-
+  
   //load list of available preconfigured tasks
   if (SConfig::getInstance()->getVal(DConfig::HIDE_IMPORT_MASKS) == 1) {
     $qF = new QueryFilter(Pretask::IS_MASK_IMPORT, 0, "=");
     UI::add('preTasks', Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]));
   }
-  else{
+  else {
     UI::add('preTasks', Factory::getPretaskFactory()->filter([]));
   }
-
+  
   // load list of available supertasks
   UI::add('superTasks', Factory::getSupertaskFactory()->filter([]));
-
+  
   UI::add('pageTitle', "Hashlist details for " . $list->getVal('hashlist')->getHashlistName());
   Template::loadInstance("hashlists/detail");
 }
