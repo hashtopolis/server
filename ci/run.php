@@ -33,10 +33,10 @@ $version = $argv[1];
 HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
-if(isset($argv[2])){
+if (isset($argv[2])) {
   $returnStatus = $framework->executeWithUpgrade($argv[2], HashtopolisTest::RUN_FULL);
 }
-else{
+else {
   $returnStatus = $framework->execute($version, HashtopolisTest::RUN_FULL);
 }
 
