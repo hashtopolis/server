@@ -33,14 +33,10 @@ class ConfigTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("ConfigTest:testSetConfig($item,$value,$force,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("ConfigTest:testSetConfig($item,$value,$force,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("ConfigTest:testSetConfig($item,$value,$force,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("ConfigTest:testSetConfig($item,$value,$force,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("ConfigTest:testSetConfig($item,$value,$force,$assert)");
     }
   }
@@ -54,12 +50,12 @@ class ConfigTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("ConfigTest:testGetConfig($item,$value,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("ConfigTest:testGetConfig($item,$value,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("ConfigTest:testGetConfig($item,$value,$assert)", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("ConfigTest:testGetConfig($item,$value,$assert)", "Response OK, but expected to fail");
+        $this->testSuccess("ConfigTest:testGetConfig($item,$value,$assert)");
         return;
       }
       else if($response['value'] != $value){
@@ -78,12 +74,12 @@ class ConfigTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("ConfigTest:testListConfig([" . implode(",", $configs) . "],$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("ConfigTest:testListConfig([" . implode(",", $configs) . "],$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("ConfigTest:testListConfig([" . implode(",", $configs) . "],$assert)", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("ConfigTest:testListConfig([" . implode(",", $configs) . "],$assert)", "Response OK, but expected to fail");
+        $this->testSuccess("ConfigTest:testListConfig([" . implode(",", $configs) . "],$assert)");
         return;
       }
       $items = [];
@@ -91,7 +87,7 @@ class ConfigTest extends HashtopolisTest {
         if($item['item'] == "jeSuisHashtopussy"){
           continue;
         }
-        $items[$item['item']];
+        $items[$item['item']] = true;
       }
       foreach($configs as $c){
         if(!isset($items[$c])){

@@ -41,14 +41,10 @@ class AccountTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("AccountTest:testChangePassword($old,$new,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("AccountTest:testChangePassword($old,$new,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("AccountTest:testChangePassword($old,$new,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("AccountTest:testChangePassword($old,$new,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("AccountTest:testChangePassword($old,$new,$assert)");
     }
   }
@@ -62,14 +58,10 @@ class AccountTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("AccountTest:testSetSessionLength($length,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("AccountTest:testSetSessionLength($length,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("AccountTest:testSetSessionLength($length,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("AccountTest:testSetSessionLength($length,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("AccountTest:testSetSessionLength($length,$assert)");
     }
   }
@@ -83,14 +75,10 @@ class AccountTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("AccountTest:testSetEmail($email,$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("AccountTest:testSetEmail($email,$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("AccountTest:testSetEmail($email,$assert)", "Response does not match assert");
     }
     else{
-      if(!$assert){
-        $this->testFailed("AccountTest:testSetEmail($email,$assert)", "Response OK, but expected to fail");
-        return;
-      }
       $this->testSuccess("AccountTest:testSetEmail($email,$assert)");
     }
   }
@@ -103,12 +91,12 @@ class AccountTest extends HashtopolisTest {
     if($response === false){
       $this->testFailed("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)", "Empty response");
     }
-    else if($response['response'] != 'OK' && $assert){
-      $this->testFailed("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)", "Response not OK");
+    else if(!$this->validState($response['response'], $assert)){
+      $this->testFailed("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)", "Response does not match assert");
     }
     else{
       if(!$assert){
-        $this->testFailed("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)", "Response OK, but expected to fail");
+        $this->testSuccess("AccountTest:testGetInformation([" . implode(", ", $data) . "],$assert)");
         return;
       }
       foreach($data as $key => $val){
