@@ -142,7 +142,7 @@ class CrackerTest extends HashtopolisTest {
         $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response OK, but number of entries not matching");
         return;
       }
-      foreach($response['crackers'] as $c){
+      foreach($response['crackerVersions'] as $c){
         if(!in_array($c['versionId'], $versions)){
           $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response OK, but wrong response");
           return;
