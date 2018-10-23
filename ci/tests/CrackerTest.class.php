@@ -147,7 +147,7 @@ class CrackerTest extends HashtopolisTest {
           $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response OK, but wrong response");
           return;
         }
-        foreach($versionData as $key => $val){
+        foreach($versionData[$c['versionId']] as $key => $val){
           if(!isset($c[$key]) || $c[$key] != $val){
             $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response OK, but wrong version data on $key");
             return;

@@ -90,6 +90,9 @@ class ConfigTest extends HashtopolisTest {
         $items[$item['item']] = true;
       }
       foreach($configs as $c){
+        if($c == 'jeSuisHashtopussy'){
+          continue;
+        }
         if(!isset($items[$c])){
           $this->testFailed("ConfigTest:testListConfig([" . implode(",", $configs) . "],$assert)", "Response OK, but item $c missing");
           return;

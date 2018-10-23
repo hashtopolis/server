@@ -12,12 +12,12 @@ class UserTest extends HashtopolisTest {
 
   public function run(){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
-    $this->testListUsers([]);
+    $this->testListUsers(['testuser']);
     $this->testCreateUser('testuser2');
-    $this->testListUsers(['testuser2']);
+    $this->testListUsers(['testuser2', 'testuser']);
     $this->testCreateUser('testuser2', false);
     $this->testCreateUser('user2');
-    $this->testListUsers(['user2', 'testuser']);
+    $this->testListUsers(['user2', 'testuser2', 'testuser']);
     $this->testGetUser(2, ['username' => 'testuser2', 'userId' => 2, 'email' => 'testuser2@example.org', 'rightGroupId' => 1, 'isValid' => true]);
     $this->testGetUser(3, ['username' => 'user2', 'userId' => 3, 'email' => 'user2@example.org', 'rightGroupId' => 1, 'isValid' => true]);
     $this->testGetUser(4, [], false);
