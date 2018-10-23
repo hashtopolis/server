@@ -52,6 +52,7 @@ class UserAPIConfig extends UserAPIBasic {
     }
     else {
       $config = ConfigUtils::get($QUERY[UQueryConfig::CONFIG_ITEM]);
+      $config->setValue($QUERY[UQueryConfig::CONFIG_VALUE]);
     }
     $type = DConfig::getConfigType($config->getItem());
     switch ($type) {
@@ -70,6 +71,11 @@ class UserAPIConfig extends UserAPIBasic {
       case DConfigType::TICKBOX:
         if (!is_bool($config->getValue())) {
           throw new HTException("Value most be boolean!");
+        }
+        break;
+      case DConfigType::SELECT:
+        if(!in_array($config->getValue(), DConfig::getSelection($config->getItem())->getKeys())){
+          throw new HTException("Value is not in selection!");
         }
         break;
     }

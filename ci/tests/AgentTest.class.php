@@ -12,6 +12,10 @@ class AgentTest extends HashtopolisTest {
     parent::init($version);
   }
 
+  public function getToken(){
+    return $this->token;
+  }
+
   public function run(){
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running ".$this->getTestName()."...");
     // voucher section
@@ -33,7 +37,7 @@ class AgentTest extends HashtopolisTest {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
 
-  private function testDeleteAgent($agentId){
+  public function testDeleteAgent($agentId){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "agent",
       "request" => "deleteAgent",
@@ -50,7 +54,7 @@ class AgentTest extends HashtopolisTest {
     }
   }
 
-  private function testGetAgent($agentId, $assert = []){
+  public function testGetAgent($agentId, $assert = []){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "agent",
       "request" => "get",
@@ -70,7 +74,7 @@ class AgentTest extends HashtopolisTest {
     }
   }
 
-  private function checkAssert($agentId, $response, $assert){
+  public function checkAssert($agentId, $response, $assert){
     foreach($assert as $key => $value){
       if(!isset($response[$key])){
         $this->testFailed("AgentTest:testGetAgent($agentId," . json_encode($assert) . ")", "Key ($key) from assert not present in response");
@@ -90,7 +94,7 @@ class AgentTest extends HashtopolisTest {
     return true;
   }
 
-  private function testAgentRegister($assert = true, $voucher = 'myvoucher'){
+  public function testAgentRegister($assert = true, $voucher = 'myvoucher'){
     $response = HashtopolisTestFramework::doRequest([
       "action" => "register",
       "voucher" => $voucher,
@@ -112,7 +116,7 @@ class AgentTest extends HashtopolisTest {
     }
   }
 
-  private function testListAgents($assert = []){
+  public function testListAgents($assert = []){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "agent",
       "request" => "listAgents",
@@ -137,7 +141,7 @@ class AgentTest extends HashtopolisTest {
     }
   }
 
-  private function testDeleteVoucher($voucher = 'othervoucher'){
+  public function testDeleteVoucher($voucher = 'othervoucher'){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "agent",
       "request" => "deleteVoucher",
@@ -154,7 +158,7 @@ class AgentTest extends HashtopolisTest {
     }
   }
 
-  private function testListVouchers($assert = []){
+  public function testListVouchers($assert = []){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "agent",
       "request" => "listVouchers",
@@ -179,7 +183,7 @@ class AgentTest extends HashtopolisTest {
     }
   }
 
-  private function testCreateVoucher($voucher = 'myvoucher', $assert = true){
+  public function testCreateVoucher($voucher = 'myvoucher', $assert = true){
     $response = HashtopolisTestFramework::doRequest([
       "section" => "agent",
       "request" => "createVoucher",

@@ -15,6 +15,8 @@ abstract class HashtopolisTest{
   protected $user;
   protected $apiKey;
 
+  const USER_PASS = "HG78Ghdfs87gh";
+
   const RUN_FULL = 0;
   const RUN_FAST = 1;
 
@@ -33,6 +35,8 @@ abstract class HashtopolisTest{
   }
 
   public function init($version){
+    global $PEPPER;
+    
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
     Factory::getAgentFactory()->getDB()->query("CREATE DATABASE hashtopolis");
@@ -49,7 +53,10 @@ abstract class HashtopolisTest{
     sleep(1);
 
     // insert user and api key
-    $this->user = new User(null, 'testuser', '', '', '', 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
+    $salt = Util::randomString(30);
+    $PEPPER = ["abcd", "bcde", "cdef", "aaaa"];
+    $hash = Encryption::passwordHash(HashtopolisTest::USER_PASS, $salt);
+    $this->user = new User(null, 'testuser', '', $hash, $salt, 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
     $this->user = Factory::getUserFactory()->save($this->user);
     $accessGroup = new AccessGroupUser(null, 1, $this->user->getId());
     Factory::getAccessGroupUserFactory()->save($accessGroup);
@@ -64,6 +71,16 @@ abstract class HashtopolisTest{
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Test '$test' failed: $error");
     self::$testCount++;
     self::$status = -1;
+  }
+  
+  public function validState($response, $assert){
+    if($response == 'OK' && $assert){
+      return true;
+    }
+    else if($response == 'ERROR' && !$assert){
+      return true;
+    }
+    return false;
   }
 
   public static function getStatus(){

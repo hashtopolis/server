@@ -165,6 +165,32 @@ class FileTest extends HashtopolisTest {
     }
   }
 
+  public function testCreateFile($filename, $filetype, $data, $assert = true){
+    $testFile = base64_encode("This is a test file content!");
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "file",
+      "request" => "addFile",
+      "filename" => "test.txt",
+      "fileType" => 0,
+      "source" => "inline",
+      "data" => $testFile,
+      "accessGroupId" => 1,
+      "accessKey" => "mykey"], HashtopolisTestFramework::REQUEST_UAPI);
+    if($response === false){
+      $this->testFailed("FileTest:testCreateFile($filename,$filetype,$assert)", "Empty response");
+    }
+    else if($response['response'] != 'OK' && $assert){
+      $this->testFailed("FileTest:testCreateFile($filename,$filetype,$assert)", "Response not OK");
+    }
+    else{
+      if(!$assert){
+        $this->testFailed("FileTest:testCreateFile($filename,$filetype,$assert)", "Response OK, but expected to fail");
+        return;
+      }
+      $this->testSuccess("FileTest:testCreateFile($filename,$filetype,$assert)");
+    }
+  }
+
   private function fileCreation(){
     $testFile = base64_encode("This is a test file content!");
     return HashtopolisTestFramework::doRequest([

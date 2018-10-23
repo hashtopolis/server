@@ -34,6 +34,9 @@ class CrackerUtils {
     if ($check !== null) {
       throw new HTException("This binary type already exists!");
     }
+    else if(strlen($typeName) == 0){
+      throw new HTException("Cracker name cannot be empmty!");
+    }
     $binaryType = new CrackerBinaryType(null, $typeName, 1);
     Factory::getCrackerBinaryTypeFactory()->save($binaryType);
   }

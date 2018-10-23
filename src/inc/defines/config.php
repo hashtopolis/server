@@ -96,6 +96,16 @@ class DConfig {
   const TELEGRAM_PROXY_PORT   = "telegramProxyPort";
   const TELEGRAM_PROXY_TYPE   = "telegramProxyType";
 
+  static function getConstants() {
+    try {
+      $oClass = new ReflectionClass(__CLASS__);
+    }
+    catch (ReflectionException $e) {
+      die("Exception: " . $e->getMessage());
+    }
+    return $oClass->getConstants();
+  }
+
   /**
    * Gives the selection for the configuration values which are selections.
    * @param string $config 

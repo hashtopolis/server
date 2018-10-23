@@ -58,8 +58,9 @@ switch ($STEP) {
       if ($baseUrl[sizeof($baseUrl) - 1] == "install") {
         unset($baseUrl[sizeof($baseUrl) - 1]);
       }
-      $urlConfig = new Config(null, 5, DConfig::BASE_URL, implode("/", $baseUrl));
-      Factory::getConfigFactory()->save($urlConfig);
+      $urlConfig = ConfigUtils::get(DConfig::BASE_URL);
+      $urlConfig->setValue(implode("/", $baseUrl));
+      Factory::getConfigFactory()->update($urlConfig);
       setcookie("step", "52", time() + 3600);
       setcookie("prev", "2", time() + 3600);
       header("Location: index.php");
