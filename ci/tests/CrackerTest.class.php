@@ -35,10 +35,10 @@ class CrackerTest extends HashtopolisTest {
     $this->testGetCracker(2, [], []);
     $this->testCreateVersion(2, '1.2.3', 'own', 'http://blub.com');
     $this->testGetCracker(2, [3], [3 => ['version' => '1.2.3', 'downloadUrl' => 'http://blub.com', 'binaryBasename' => 'own']]);
-    $this->testUpdateVersion(3, '2.3.4', 'my-own', ''); // empty url
-    $this->testUpdateVersion(3, '2.3.4', '', 'http://blah.com'); // empty basename
-    $this->testUpdateVersion(3, '', 'my-own', 'http://blah.com'); // empty version
-    $this->testUpdateVersion(5, '2.3.4', 'my-own', 'http://blah.com'); // invalid version
+    $this->testUpdateVersion(3, '2.3.4', 'my-own', '', false); // empty url
+    $this->testUpdateVersion(3, '2.3.4', '', 'http://blah.com', false); // empty basename
+    $this->testUpdateVersion(3, '', 'my-own', 'http://blah.com', false); // empty version
+    $this->testUpdateVersion(5, '2.3.4', 'my-own', 'http://blah.com', false); // invalid version
     $this->testGetCracker(2, [3], [3 => ['version' => '1.2.3', 'downloadUrl' => 'http://blub.com', 'binaryBasename' => 'own']]);
     $this->testUpdateVersion(3, '2.3.4', 'my-own', 'http://blah.com');
     $this->testGetCracker(2, [3], [3 => ['version' => '2.3.4', 'downloadUrl' => 'http://blah.com', 'binaryBasename' => 'my-own']]);
@@ -149,7 +149,7 @@ class CrackerTest extends HashtopolisTest {
         }
         foreach($versionData as $key => $val){
           if(!isset($c[$key]) || $c[$key] != $val){
-            $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response OK, but wrong version data");
+            $this->testFailed("CrackerTest:testGetCracker($crackerTypeId,[" . implode(", ", $versions) . "],$assert)", "Response OK, but wrong version data on $key");
             return;
           }
         }

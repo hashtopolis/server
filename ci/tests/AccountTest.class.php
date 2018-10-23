@@ -27,7 +27,7 @@ class AccountTest extends HashtopolisTest {
     $this->testChangePassword(HashtopolisTest::USER_PASS, 'newPassword', false);
     $this->testChangePassword('newPassword', 'newPassword', false);
     $this->testChangePassword('newPassword', '', false);
-    $this->testChangePassword('newPassword', '1234', false);
+    $this->testChangePassword('newPassword', '123', false);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
 
