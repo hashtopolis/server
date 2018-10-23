@@ -136,6 +136,9 @@ class AccountUtils {
     else if ($newPassword != $repeatedPassword) {
       throw new HTException("Your new passwords do not match!");
     }
+    else if ($newPassword == $oldPassword) {
+      throw new HTException("Your new password is the same as the old one!");
+    }
 
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
