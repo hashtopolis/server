@@ -3,6 +3,7 @@ use DBA\ConfigSection;
 use DBA\Factory;
 use DBA\Config;
 use DBA\QueryFilter;
+use DBA\HashType;
 
 if(!isset($TEST)){
   require_once(dirname(__FILE__) . "/../../inc/db.php");
@@ -103,6 +104,26 @@ echo "Add slow hash flag to hash types... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HashType` ADD `isSlowHash` TINYINT(4) NOT NULL");
 $slow = [2100, 2500, 2501, 5200, 6211, 6212, 6213, 6221, 6222, 6223, 6231, 6232, 6233, 6241, 6242, 6243, 6400, 6500, 6600, 6700, 6800, 7100, 7200, 8200, 8800, 9100, 9200, 9400, 9500, 9600, 10000, 10900, 11300, 11900, 12000, 12001, 12100, 12200, 12300, 12700, 12800, 12900, 13000, 13600, 13711, 13712, 13713, 13721, 13722, 13723, 13731, 13732, 13733, 13741, 13742, 13743, 13751, 13752, 13753, 13761, 13762, 13763, 14600, 14700, 14800, 15100, 15300, 15600, 15900, 16200, 16300, 16700, 16800, 16801, 16900];
 Factory::getAgentFactory()->getDB()->query("UPDATE `HashType` SET isSlowHash=1 WHERE hashTypeId IN (".implode(",", $slow).")");
+echo "OK\n";
+
+echo "Add new hashcat algorithms... ";
+$hashtypes = [
+  new HashType(17300, 'SHA3-224', 0, 0),
+  new HashType(17400, 'SHA3-256', 0, 0),
+  new HashType(17500, 'SHA3-384', 0, 0),
+  new HashType(17600, 'SHA3-512', 0, 0),
+  new HashType(17700, 'Keccak-224', 0, 0),
+  new HashType(17800, 'Keccak-256', 0, 0),
+  new HashType(17900, 'Keccak-384', 0, 0),
+  new HashType(18000, 'Keccak-512', 0, 0),
+  new HashType(18100, 'TOTP (HMAC-SHA1)', 1, 0)
+];
+foreach($hashtypes as $hashtype){
+  $check = Factory::getHashTypeFactory()->get($hashtype->getId());
+  if($check === null){
+    Factory::getHashTypeFactory()->save($hashtype);
+  }
+}
 echo "OK\n";
 
 echo "Update complete!\n";
