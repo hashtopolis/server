@@ -17,7 +17,7 @@ class ConfigTest extends HashtopolisTest {
     $this->testGetConfig(DConfig::HASHLIST_ALIAS, "__HL__");
     $this->testSetConfig('unknown-config', "blub", false, false);
     $this->testGetConfig('unknown-config', '', false);
-    $this->testSetConfig('unknown-config', "blub", true, false);
+    $this->testSetConfig('unknown-config', "blub", true, true);
     $this->testGetConfig('unknown-config', 'blub');
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName()." completed");
   }
