@@ -17,7 +17,7 @@ class GroupTest extends HashtopolisTest {
     $this->testListGroups([1]);
     $this->testGetGroup(1, [1], []);
     $this->testGetGroup(2, [], [], false);
-    $userTest->testCreateUser('testuser');
+    $userTest->testCreateUser('testuser2');
     $this->testGetGroup(1, [1, 2], []);
     $this->testCreateGroup('Group #2');
     $this->testListGroups([1, 2]);
