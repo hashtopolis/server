@@ -60,7 +60,7 @@ $config = new Config(null, 1, DConfig::PRIORITY_0_START, '0');
 Factory::getConfigFactory()->save($config);
 $config = new Config(null, 4, DConfig::SERVER_LOG_LEVEL, DServerLog::INFO);
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 4, DConfig::MAX_SESSION_LENGTH, '2');
+$config = new Config(null, 4, DConfig::MAX_SESSION_LENGTH, '48');
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 
