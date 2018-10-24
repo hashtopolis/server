@@ -38,9 +38,6 @@ class Login {
    * running. It updates the session lifetime again up to the session limit.
    */
   private function __construct() {
-    $this->user = null;
-    $this->session = null;
-    $this->valid = false;
     if (isset($_COOKIE['session'])) {
       $session = $_COOKIE['session'];
       $filter1 = new QueryFilter(Session::SESSION_KEY, $session, "=");
