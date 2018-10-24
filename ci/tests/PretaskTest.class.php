@@ -17,6 +17,11 @@ class PretaskTest extends HashtopolisTest {
     $this->testCreatePretask("Pretask #1", "#HL# -a 3 ?l?l?l?l?l?l");
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask #1", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 0]);
     $this->testListPretasks([1 => ["name" => "Pretask #1", "priority" => 0]]);
+    $this->testCreatePretask("Pretask fail", "-a 3 ?l?l?l?l?l?l", false); // hashlist alias is not in attack command
+    $this->testCreatePretask("", "#HL# -a 3 ?l?l?l?l?l?l", false); // empty task name
+    $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, 0); // chunk size 0
+    $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, -600); // chunk size negative
+    $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, 600, 5, 'speed', 2); // invalid cracker type
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
 
@@ -54,7 +59,7 @@ class PretaskTest extends HashtopolisTest {
     }
   }
 
-  private function testCreatePretask($name, $cmd, $chunksize = 600, $statusTimer = 5, $benchmarkType = "speed", $crackerTypeId = 1, $files = [], $priority = 0, $color = "", $isCpuOnly = false, $isSmall = false, $assert = true) {
+  private function testCreatePretask($name, $cmd, $assert = true, $chunksize = 600, $statusTimer = 5, $benchmarkType = "speed", $crackerTypeId = 1, $files = [], $priority = 0, $color = "", $isCpuOnly = false, $isSmall = false) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
       "request" => "createPretask",

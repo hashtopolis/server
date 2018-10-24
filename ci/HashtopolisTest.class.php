@@ -35,11 +35,11 @@ abstract class HashtopolisTest {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }
 
-  public static function multiImplode($array, $glue) {
+  public static function multiImplode($glue, $array) {
     $output = "";
     foreach ($array as $item) {
       if (is_array($item)) {
-        $output .= HashtopolisTest::multiImplode($item, $glue) . $glue;
+        $output .= HashtopolisTest::multiImplode($glue, $item) . $glue;
       } else {
         $output .= $item . $glue;
       }
