@@ -48,21 +48,21 @@ class Login {
       $filter3 = new QueryFilter(Session::LAST_ACTION_DATE, time() - 100000, ">");
       $check = Factory::getSessionFactory()->filter([Factory::FILTER => [$filter1, $filter2, $filter3]]);
       if ($check === null || sizeof($check) == 0) {
-        setcookie("session", "", time() - 600); //delete invalid or old cookie
+        setcookie("session", false, time() - 600); //delete invalid or old cookie
         return;
       }
       $s = $check[0];
       $this->user = Factory::getUserFactory()->get($s->getUserId());
       if ($this->user !== null) {
         if ($s->getLastActionDate() < time() - $this->user->getSessionLifetime()) {
-          setcookie("session", "", time() - 600); //delete invalid or old cookie
+          setcookie("session", false, time() - 600); //delete invalid or old cookie
           return;
         }
         $this->valid = true;
         $this->session = $s;
         $s->setLastActionDate(time());
         Factory::getSessionFactory()->update($s);
-        setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime(), null, null, false, true);
+        setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime(), "", "", false, true);
       }
     }
   }
@@ -80,7 +80,7 @@ class Login {
   public function logout() {
     $this->session->setIsOpen(0);
     Factory::getSessionFactory()->update($this->session);
-    setcookie("session", "", time() - 600);
+    setcookie("session", false, time() - 600);
   }
   
   /**
