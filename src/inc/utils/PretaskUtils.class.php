@@ -105,10 +105,10 @@ class PretaskUtils {
    */
   public static function setPriority($pretaskId, $priority) {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    $priority = intval($priority);
-    if ($priority < 0) {
-      $priority = 0;
+    if(!is_numeric($priority)){
+      throw new HTException("Priority needs to be a number!");
     }
+    $priority = intval($priority);
     $pretask->setPriority($priority);
     Factory::getPretaskFactory()->update($pretask);
   }

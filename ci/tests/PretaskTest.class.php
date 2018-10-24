@@ -24,7 +24,7 @@ class PretaskTest extends HashtopolisTest {
     $this->testGetPretask(2, ['pretaskId' => 2, 'name' => "Pretask #2", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 0, 'chunksize' => 600]);
     $this->testGetPretask(3, ['pretaskId' => 3, 'name' => "Pretask #3", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 0, 'chunksize' => 600]);
     $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, 600, 5, 'speed', 2); // invalid cracker type
-    $this->testSetPretaskPriority(2, 5, false); // invalid pretask
+    $this->testSetPretaskPriority(5, 5, false); // invalid pretask
     $this->testSetPretaskPriority(1, "bla", false); // invalid priority
     $this->testSetPretaskPriority(1, 5);
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask #1", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5]);
