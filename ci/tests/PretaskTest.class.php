@@ -12,10 +12,46 @@ class PretaskTest extends HashtopolisTest {
 
   public function run() {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
+    $this->testListPretasks([]);
     $this->testGetPretask(1, [], [], false);
     $this->testCreatePretask("Pretask #1", "#HL# -a 3 ?l?l?l?l?l?l");
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask #1", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 0]);
+    $this->testListPretasks([1 => ["name" => "Pretask #1", "priority" => 0]]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+
+  private function testListPretasks($data, $assert = true){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "listPretasks",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Response does not match assert");
+    }
+    else {
+      if (!$assert) {
+        $this->testSuccess("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)");
+        return;
+      }
+      else if (sizeof($response['pretasks']) != sizeof($data)) {
+        $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Response OK, but number of entries not matching");
+        return;
+      }
+      foreach ($response['pretasks'] as $pretask) {
+        foreach($data[$pretask['pretaskId']] as $key => $val){
+          if (!isset($pretask[$key]) || $val != $pretask[$key]) {
+            $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Response OK, but wrong content");
+            return;
+          }
+        }
+      }
+      $this->testSuccess("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)");
+    }
   }
 
   private function testCreatePretask($name, $cmd, $chunksize = 600, $statusTimer = 5, $benchmarkType = "speed", $crackerTypeId = 1, $files = [], $priority = 0, $color = "", $isCpuOnly = false, $isSmall = false, $assert = true) {
