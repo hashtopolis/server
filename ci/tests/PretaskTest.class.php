@@ -28,29 +28,29 @@ class PretaskTest extends HashtopolisTest {
     ], HashtopolisTestFramework::REQUEST_UAPI
     );
     if ($response === false) {
-      $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Empty response");
+      $this->testFailed("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)", "Empty response");
     }
     else if (!$this->validState($response['response'], $assert)) {
-      $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Response does not match assert");
+      $this->testFailed("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)", "Response does not match assert");
     }
     else {
       if (!$assert) {
-        $this->testSuccess("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)");
+        $this->testSuccess("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)");
         return;
       }
       else if (sizeof($response['pretasks']) != sizeof($data)) {
-        $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Response OK, but number of entries not matching");
+        $this->testFailed("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)", "Response OK, but number of entries not matching");
         return;
       }
       foreach ($response['pretasks'] as $pretask) {
         foreach($data[$pretask['pretaskId']] as $key => $val){
           if (!isset($pretask[$key]) || $val != $pretask[$key]) {
-            $this->testFailed("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)", "Response OK, but wrong content");
+            $this->testFailed("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)", "Response OK, but wrong content");
             return;
           }
         }
       }
-      $this->testSuccess("PretaskTest:testListPretasks([" . implode(", ", $data) . "],$assert)");
+      $this->testSuccess("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)");
     }
   }
 
