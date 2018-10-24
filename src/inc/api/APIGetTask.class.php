@@ -159,7 +159,7 @@ class APIGetTask extends APIBasic {
         PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),
         PResponseGetTask::FILES => $taskFiles,
         PResponseGetTask::CRACKER_ID => $task->getCrackerBinaryId(),
-        PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run", // TODO: this need to be adapted also for generic
+        PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run",
         PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
         PResponseGetTask::KEYSPACE => $task->getKeyspace(),
         PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,

@@ -297,7 +297,7 @@
           </td>
           <td>
             {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
-              <a href='tasks.php?id=[[chunk.getTaskId()]]'>[[chunk.getTaskId()]]</a> <!-- TODO: put here task name -->
+              <a href='tasks.php?id=[[chunk.getTaskId()]]'>[[chunk.getTaskId()]]</a>
             {{ELSE}}
               [[chunk.getTaskId()]]
             {{ENDIF}}

@@ -229,7 +229,6 @@ class HashlistUtils {
     Factory::getHashlistFactory()->update($hashlist);
     if ($secret == 1) {
       //handle agents which are assigned to hashlists which are secret now
-      //TODO: not sure if this code works
       $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID, Factory::getAssignmentFactory());
       $jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskWrapperFactory());
       $jF3 = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID, Factory::getTaskWrapperFactory());
