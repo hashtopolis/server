@@ -19,10 +19,10 @@ class PretaskTest extends HashtopolisTest {
     $this->testListPretasks([1 => ["name" => "Pretask #1", "priority" => 0]]);
     $this->testCreatePretask("Pretask fail", "-a 3 ?l?l?l?l?l?l", false); // hashlist alias is not in attack command
     $this->testCreatePretask("", "#HL# -a 3 ?l?l?l?l?l?l", false); // empty task name
-    $this->testCreatePretask("Pretask #2", "#HL# -a 3 ?l?l?l?l?l?l", false, 0); // chunk size 0 (will go to default)
-    $this->testCreatePretask("Pretask #3", "#HL# -a 3 ?l?l?l?l?l?l", false, -600); // chunk size negative (will go to default)
-    $this->testGetPretask(1, ['pretaskId' => 2, 'name' => "Pretask #2", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'chunksize' => 600]);
-    $this->testGetPretask(1, ['pretaskId' => 3, 'name' => "Pretask #3", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'chunksize' => 600]);
+    $this->testCreatePretask("Pretask #2", "#HL# -a 3 ?l?l?l?l?l?l", true, 0); // chunk size 0 (will go to default)
+    $this->testCreatePretask("Pretask #3", "#HL# -a 3 ?l?l?l?l?l?l", true, -600); // chunk size negative (will go to default)
+    $this->testGetPretask(2, ['pretaskId' => 2, 'name' => "Pretask #2", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'chunksize' => 600]);
+    $this->testGetPretask(3, ['pretaskId' => 3, 'name' => "Pretask #3", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'chunksize' => 600]);
     $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, 600, 5, 'speed', 2); // invalid cracker type
     $this->testSetPretaskPriority(2, 5, false); // invalid pretask
     $this->testSetPretaskPriority(1, "bla", false); // invalid priority
