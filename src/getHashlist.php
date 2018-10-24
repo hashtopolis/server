@@ -61,7 +61,7 @@ switch ($format) {
         foreach ($current as $entry) {
           $output .= $entry->getHash();
           if (strlen($entry->getSalt()) > 0) {
-            $output .= $hashlist->getSaltSeparator() . $entry->getSalt();
+            $output .= "\t" . $entry->getSalt();
           }
           $output .= $lineDelimiter;
         }
