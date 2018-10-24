@@ -47,7 +47,7 @@ $config = new Config(null, 7, DConfig::TELEGRAM_PROXY_SERVER, '');
 Factory::getConfigFactory()->save($config);
 $config = new Config(null, 7, DConfig::TELEGRAM_PROXY_PORT, '');
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_TYPE, 'CURLPROXY_HTTP');
+$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_TYPE, 'HTTP');
 Factory::getConfigFactory()->save($config);
 $config = new Config(null, 7, DConfig::TELEGRAM_PROXY_ENABLE, '0');
 Factory::getConfigFactory()->save($config);
