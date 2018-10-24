@@ -22,7 +22,31 @@ class PretaskTest extends HashtopolisTest {
     $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, 0); // chunk size 0
     $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, -600); // chunk size negative
     $this->testCreatePretask("Pretask fail", "#HL# -a 3 ?l?l?l?l?l?l", false, 600, 5, 'speed', 2); // invalid cracker type
+    $this->testSetPretaskPriority(2, 5, false); // invalid pretask
+    $this->testSetPretaskPriority(1, "bla", false); // invalid priority
+    $this->testSetPretaskPriority(1, 5);
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask #1", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+
+  private function testSetPretaskPriority($pretaskId, $priority, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "setPretaskPriority",
+      "pretaskId" => $pretaskId,
+      "priority" => $priority,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("AccountTest:testChangePassword($pretaskId,$priority,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("AccountTest:testChangePassword($pretaskId,$priority,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("AccountTest:testChangePassword($pretaskId,$priority,$assert)");
+    }
   }
 
   private function testListPretasks($data, $assert = true){
