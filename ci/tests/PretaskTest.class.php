@@ -1,0 +1,90 @@
+<?php
+
+class PretaskTest extends HashtopolisTest {
+  protected $minVersion = "0.7.0";
+  protected $maxVersion = "master";
+  protected $runType    = HashtopolisTest::RUN_FAST;
+
+  public function init($version) {
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing " . $this->getTestName() . "...");
+    parent::init($version);
+  }
+
+  public function run() {
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
+    $this->testGetPretask(1, [], [], false);
+    $this->testCreatePretask("Pretask #1", "#HL# -a 3 ?l?l?l?l?l?l");
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask #1", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 0]);
+    HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+
+  private function testCreatePretask($name, $cmd, $chunksize = 600, $statusTimer = 5, $benchmarkType = "speed", $crackerTypeId = 1, $files = [], $priority = 0, $color = "", $isCpuOnly = false, $isSmall = false, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "createPretask",
+      "name" => $name,
+      "attackCmd" => $cmd,
+      "chunksize" => $chunksize,
+      "statusTimer" => $statusTimer,
+      "benchmarkType" => $benchmarkType,
+      "color" => $color,
+      "isCpuOnly" => $isCpuOnly,
+      "isSmall" => $isSmall,
+      "crackerTypeId" => $crackerTypeId,
+      "files" => $files,
+      "priority" => $priority,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testCreatePretask($name,$cmd,$chunksize,$statusTimer,$benchmarkType,$crackerTypeId,[" . implode(",", $files) . "],$priority,$color,$isCpuOnly,$isSmall,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testCreatePretask($name,$cmd,$chunksize,$statusTimer,$benchmarkType,$crackerTypeId,[" . implode(",", $files) . "],$priority,$color,$isCpuOnly,$isSmall,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("PretaskTest:testCreatePretask($name,$cmd,$chunksize,$statusTimer,$benchmarkType,$crackerTypeId,[" . implode(",", $files) . "],$priority,$color,$isCpuOnly,$isSmall,$assert)");
+    }
+  }
+
+  private function testGetPretask($pretaskId, $data, $files = [], $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "getPretask",
+      "pretaskId" => $pretaskId,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)", "Response does not match assert");
+    }
+    else {
+      if (!$assert) {
+        $this->testSuccess("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)");
+        return;
+      }
+      foreach ($data as $key => $val) {
+        if (!isset($response[$key]) || $val != $response[$key]) {
+          $this->testFailed("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)", "Response OK, but wrong content");
+          return;
+        }
+      }
+      foreach ($files as $val) {
+        if (!in_array($val, $response['files'])) {
+          $this->testFailed("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)", "Response OK, but wrong files");
+          return;
+        }
+      }
+      $this->testSuccess("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)");
+    }
+  }
+
+  public function getTestName() {
+    return "Pretask Test";
+  }
+}
+
+HashtopolisTestFramework::register(new PretaskTest());
