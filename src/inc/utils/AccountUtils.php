@@ -111,8 +111,8 @@ class AccountUtils {
    */
   public static function updateSessionLifetime($lifetime, $user) {
     $lifetime = intval($lifetime);
-    if ($lifetime < 60 || $lifetime > SConfig::getInstance()->getVal(MAX_SESSION_LENGTH) * 3600) { // TODO: make maximum configurable
-      throw new HTException("Lifetime must be larger than 1 minute and smaller than " . SConfig::getInstance()->getVal(MAX_SESSION_LENGTH) . " hours!");
+    if ($lifetime < 60 || $lifetime > SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) * 3600) { // TODO: make maximum configurable
+      throw new HTException("Lifetime must be larger than 1 minute and smaller than " . SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) . " hours!");
     }
     
     $user->setSessionLifetime($lifetime);
