@@ -72,6 +72,7 @@ class DConfig {
   const SHOW_TASK_PERFORMANCE = "showTaskPerformance";
   const AGENT_STAT_LIMIT      = "agentStatLimit";
   const AGENT_STAT_TENSION    = "agentStatTension";
+  const MAX_SESSION_LENGTH    = "maxSessionLength";
   
   // Section: Server
   const BASE_URL          = "baseUrl";
@@ -236,6 +237,8 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::SERVER_LOG_LEVEL:
         return DConfigType::SELECT;
+      case DConfig::MAX_SESSION_LENGTH:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -346,6 +349,8 @@ class DConfig {
         return "Also automatically assign tasks with priority 0";
       case DConfig::SERVER_LOG_LEVEL:
         return "Server level to be logged on the server to file";
+      case DConfig::MAX_SESSION_LENGTH:
+        return "Max session length users can configure (in hours)";
     }
     return $config;
   }

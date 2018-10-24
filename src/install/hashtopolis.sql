@@ -264,7 +264,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (61, 7, 'telegramProxyPort', '8080'),
   (62, 7, 'telegramProxyType', 'HTTP'),
   (63, 1, 'priority0Start', '0'),
-  (64, 5, 'baseUrl', '');
+  (64, 5, 'baseUrl', ''),
+  (65, 4, 'maxSessionLength', '48');
 
 -- --------------------------------------------------------
 
