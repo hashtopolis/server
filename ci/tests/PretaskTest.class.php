@@ -44,7 +44,57 @@ class PretaskTest extends HashtopolisTest {
     $this->testSetPretaskChunksize(10, 100, false); // invalid id
     $this->testSetPretaskChunksize(1, 6000);
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'chunksize' => 6000]);
+    $this->testSetPretaskCpuOnly(10, true, false); // invalid id
+    $this->testSetPretaskCpuOnly(1, "hello", false); // invalid setting
+    $this->testSetPretaskCpuOnly(1, true);
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'isCpuOnly' => true]);
+    $this->testSetPretaskCpuOnly(1, false);
+    $this->testSetPretaskSmall(10, true, false); // invalid id
+    $this->testSetPretaskSmall(1, "hello", false); // invalid setting
+    $this->testSetPretaskSmall(1, true);
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'isSmall' => true, 'isCpuOnly' => false]);
+    $this->testSetPretaskSmall(1, false);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+
+  private function testSetPretaskSmall($pretaskId, $isSmall, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "setPretaskSmall",
+      "pretaskId" => $pretaskId,
+      "isSmall" => $isSmall,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testSetPretaskSmall($pretaskId,$isSmall,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testSetPretaskSmall($pretaskId,$isSmall,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("PretaskTest:testSetPretaskSmall($pretaskId,$isSmall,$assert)");
+    }
+  }
+
+  private function testSetPretaskCpuOnly($pretaskId, $isCpuOnly, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "setPretaskCpuOnly",
+      "pretaskId" => $pretaskId,
+      "isCpuOnly" => $isCpuOnly,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testSetPretaskCpuOnly($pretaskId,$isCpuOnly,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testSetPretaskCpuOnly($pretaskId,$isCpuOnly,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("PretaskTest:testSetPretaskCpuOnly($pretaskId,$isCpuOnly,$assert)");
+    }
   }
 
   private function testSetPretaskChunksize($pretaskId, $chunksize, $assert = true) {
