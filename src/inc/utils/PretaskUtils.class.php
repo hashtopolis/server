@@ -77,7 +77,7 @@ class PretaskUtils {
     $pretask = PretaskUtils::getPretask($pretaskId);
     $isCpuOnly = intval($isCpuOnly);
     if ($isCpuOnly < 0 || $isCpuOnly > 1) {
-      $isCpuOnly = 0;
+      throw new HTException("Invalid boolean value!");
     }
     $pretask->setIsCpuTask($isCpuOnly);
     Factory::getPretaskFactory()->update($pretask);
@@ -92,7 +92,7 @@ class PretaskUtils {
     $pretask = PretaskUtils::getPretask($pretaskId);
     $isSmall = intval($isSmall);
     if ($isSmall < 0 || $isSmall > 1) {
-      $isSmall = 0;
+      throw new HTException("Invalid boolean value!");
     }
     $pretask->setIsSmall($isSmall);
     Factory::getPretaskFactory()->update($pretask);
