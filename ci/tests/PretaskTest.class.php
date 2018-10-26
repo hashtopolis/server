@@ -29,7 +29,57 @@ class PretaskTest extends HashtopolisTest {
     $this->testSetPretaskPriority(1, 5);
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask #1", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5]);
     $this->testListPretasks([1 => ['name' => "Pretask #1", 'priority' => 5], 2 => ['name' => "Pretask #2", 'priority' => 0], 3 => ['name' => "Pretask #3", 'priority' => 0]]);
+    $this->testSetPretaskName(1, "", false); // empty name
+    $this->testSetPretaskName(10, "Name", false); // invalid id
+    $this->testSetPretaskName(1, "Pretask Name");
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5]);
+    $this->testSetPretaskColor(1, "hello", false); // not valid html color
+    $this->testSetPretaskColor(10, "ff00ff", false); // invalid id
+    $this->testSetPretaskColor(1, "ff00ff");
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'color' => 'ff00ff']);
+    $this->testSetPretaskColor(1, "");
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'color' => '']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+
+  private function testSetPretaskColor($pretaskId, $color, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "setPretaskColor",
+      "pretaskId" => $pretaskId,
+      "color" => $color,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testSetPretaskName($pretaskId,$color,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testSetPretaskColor($pretaskId,$color,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("PretaskTest:testSetPretaskColor($pretaskId,$color,$assert)");
+    }
+  }
+
+  private function testSetPretaskName($pretaskId, $name, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "setPretaskName",
+      "pretaskId" => $pretaskId,
+      "name" => $name,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testSetPretaskName($pretaskId,$name,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testSetPretaskName($pretaskId,$name,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("PretaskTest:testSetPretaskName($pretaskId,$name,$assert)");
+    }
   }
 
   private function testSetPretaskPriority($pretaskId, $priority, $assert = true) {
@@ -42,13 +92,13 @@ class PretaskTest extends HashtopolisTest {
     ], HashtopolisTestFramework::REQUEST_UAPI
     );
     if ($response === false) {
-      $this->testFailed("AccountTest:testChangePassword($pretaskId,$priority,$assert)", "Empty response");
+      $this->testFailed("PretaskTest:testChangePassword($pretaskId,$priority,$assert)", "Empty response");
     }
     else if (!$this->validState($response['response'], $assert)) {
-      $this->testFailed("AccountTest:testChangePassword($pretaskId,$priority,$assert)", "Response does not match assert");
+      $this->testFailed("PretaskTest:testChangePassword($pretaskId,$priority,$assert)", "Response does not match assert");
     }
     else {
-      $this->testSuccess("AccountTest:testChangePassword($pretaskId,$priority,$assert)");
+      $this->testSuccess("PretaskTest:testChangePassword($pretaskId,$priority,$assert)");
     }
   }
 
