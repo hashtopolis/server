@@ -280,7 +280,8 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (2, 'Yubikey'),
   (3, 'Finetuning'),
   (4, 'UI'),
-  (5, 'Server');
+  (5, 'Server'),
+  (6, 'Network');
 
 -- --------------------------------------------------------
 
