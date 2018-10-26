@@ -54,7 +54,30 @@ class PretaskTest extends HashtopolisTest {
     $this->testSetPretaskSmall(1, true);
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'isSmall' => true, 'isCpuOnly' => false]);
     $this->testSetPretaskSmall(1, false);
+    $this->testDeletePretask(10, false); // invalid id
+    $this->testDeletePretask(1);
+    $this->testGetPretask(1, [], [], false);
+    $this->testListPretasks([2 => ['name' => "Pretask #2", 'priority' => 0], 3 => ['name' => "Pretask #3", 'priority' => 0]]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+
+  private function testDeletePretask($pretaskId, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "deletePretask",
+      "pretaskId" => $pretaskId,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testDeletePretask($pretaskId,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testDeletePretask($pretaskId,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("PretaskTest:testDeletePretask($pretaskId,$assert)");
+    }
   }
 
   private function testSetPretaskSmall($pretaskId, $isSmall, $assert = true) {
