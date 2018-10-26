@@ -75,6 +75,9 @@ class PretaskUtils {
    */
   public static function setCpuOnlyTask($pretaskId, $isCpuOnly) {
     $pretask = PretaskUtils::getPretask($pretaskId);
+    if(is_bool($isCpuOnly)){
+      $isCpuOnly = ($isCpuOnly) ? 1 : 0;
+    }
     if (!is_numeric($isCpuOnly) || $isCpuOnly < 0 || $isCpuOnly > 1) {
       throw new HTException("Invalid boolean value!");
     }
@@ -89,6 +92,9 @@ class PretaskUtils {
    */
   public static function setSmallTask($pretaskId, $isSmall) {
     $pretask = PretaskUtils::getPretask($pretaskId);
+    if(is_bool($isSmall)){
+      $isSmall = ($isSmall) ? 1 : 0;
+    }
     if (!is_numeric($isSmall) || $isSmall < 0 || $isSmall > 1) {
       throw new HTException("Invalid boolean value!");
     }
