@@ -37,8 +37,8 @@ class PretaskTest extends HashtopolisTest {
     $this->testSetPretaskColor(10, "ff00ff", false); // invalid id
     $this->testSetPretaskColor(1, "ff00ff");
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'color' => 'ff00ff']);
-    $this->testSetPretaskColor(1, null);
-    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'color' => '']);
+    $this->testSetPretaskColor(1, "");
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'color' => null]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
 
