@@ -281,7 +281,7 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (3, 'Finetuning'),
   (4, 'UI'),
   (5, 'Server'),
-  (6, 'Network');
+  (6, 'Multicast');
 
 -- --------------------------------------------------------
 
