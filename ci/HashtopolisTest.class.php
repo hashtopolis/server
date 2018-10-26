@@ -34,6 +34,19 @@ abstract class HashtopolisTest {
     }
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }
+
+  public static function multiImplode($glue, $array) {
+    $output = "";
+    foreach ($array as $item) {
+      if (is_array($item)) {
+        $output .= HashtopolisTest::multiImplode($glue, $item) . $glue;
+      } else {
+        $output .= $item . $glue;
+      }
+    }
+    $ret = substr($output, 0, 0 - strlen($glue));
+    return $ret;
+}
   
   public function init($version) {
     global $PEPPER;

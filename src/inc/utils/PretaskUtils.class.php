@@ -75,9 +75,11 @@ class PretaskUtils {
    */
   public static function setCpuOnlyTask($pretaskId, $isCpuOnly) {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    $isCpuOnly = intval($isCpuOnly);
-    if ($isCpuOnly < 0 || $isCpuOnly > 1) {
-      $isCpuOnly = 0;
+    if(is_bool($isCpuOnly)){
+      $isCpuOnly = ($isCpuOnly) ? 1 : 0;
+    }
+    if (!is_numeric($isCpuOnly) || $isCpuOnly < 0 || $isCpuOnly > 1) {
+      throw new HTException("Invalid boolean value!");
     }
     $pretask->setIsCpuTask($isCpuOnly);
     Factory::getPretaskFactory()->update($pretask);
@@ -90,9 +92,11 @@ class PretaskUtils {
    */
   public static function setSmallTask($pretaskId, $isSmall) {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    $isSmall = intval($isSmall);
-    if ($isSmall < 0 || $isSmall > 1) {
-      $isSmall = 0;
+    if(is_bool($isSmall)){
+      $isSmall = ($isSmall) ? 1 : 0;
+    }
+    if (!is_numeric($isSmall) || $isSmall < 0 || $isSmall > 1) {
+      throw new HTException("Invalid boolean value!");
     }
     $pretask->setIsSmall($isSmall);
     Factory::getPretaskFactory()->update($pretask);
@@ -105,10 +109,10 @@ class PretaskUtils {
    */
   public static function setPriority($pretaskId, $priority) {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    $priority = intval($priority);
-    if ($priority < 0) {
-      $priority = 0;
+    if(!is_numeric($priority)){
+      throw new HTException("Priority needs to be a number!");
     }
+    $priority = intval($priority);
     $pretask->setPriority($priority);
     Factory::getPretaskFactory()->update($pretask);
   }
@@ -121,7 +125,7 @@ class PretaskUtils {
   public static function setColor($pretaskId, $color) {
     $pretask = PretaskUtils::getPretask($pretaskId);
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
-      $color = "";
+      throw new HTException("Invalid color!");
     }
     $pretask->setColor($color);
     Factory::getPretaskFactory()->update($pretask);
