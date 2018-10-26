@@ -145,6 +145,9 @@ class APIGetChunk extends APIBasic {
    * @param $chunk Chunk
    */
   protected function sendChunk($chunk) {
+    if($chunk == null){
+      return; // this can be safely done before the commit/release, because the only sendChunk which comes really at the end check for null before, so a lock which is not released cannot happen
+    }
     Factory::getAgentFactory()->getDB()->commit();
     LockUtils::release(Lock::CHUNKING);
     DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
