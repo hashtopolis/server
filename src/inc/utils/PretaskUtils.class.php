@@ -121,7 +121,7 @@ class PretaskUtils {
   public static function setColor($pretaskId, $color) {
     $pretask = PretaskUtils::getPretask($pretaskId);
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
-      $color = "";
+      throw new HTException("Invalid color!");
     }
     $pretask->setColor($color);
     Factory::getPretaskFactory()->update($pretask);
