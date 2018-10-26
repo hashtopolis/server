@@ -39,7 +39,32 @@ class PretaskTest extends HashtopolisTest {
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'color' => 'ff00ff']);
     $this->testSetPretaskColor(1, "");
     $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'color' => null]);
+    $this->testSetPretaskChunksize(1, -5, false); // invalid chunk size
+    $this->testSetPretaskChunksize(1, 0, false); // invalid chunk size
+    $this->testSetPretaskChunksize(10, 100, false); // invalid id
+    $this->testSetPretaskChunksize(1, 6000);
+    $this->testGetPretask(1, ['pretaskId' => 1, 'name' => "Pretask Name", 'attackCmd' => "#HL# -a 3 ?l?l?l?l?l?l", 'priority' => 5, 'chunksize' => 6000]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+
+  private function testSetPretaskChunksize($pretaskId, $chunksize, $assert = true) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "pretask",
+      "request" => "setPretaskChunksize",
+      "pretaskId" => $pretaskId,
+      "chunksize" => $chunksize,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("PretaskTest:testSetPretaskChunksize($pretaskId,$chunksize,$assert)", "Empty response");
+    }
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("PretaskTest:testSetPretaskChunksize($pretaskId,$chunksize,$assert)", "Response does not match assert");
+    }
+    else {
+      $this->testSuccess("PretaskTest:testSetPretaskChunksize($pretaskId,$chunksize,$assert)");
+    }
   }
 
   private function testSetPretaskColor($pretaskId, $color, $assert = true) {
@@ -126,7 +151,7 @@ class PretaskTest extends HashtopolisTest {
       }
       foreach ($response['pretasks'] as $pretask) {
         foreach($data[$pretask['pretaskId']] as $key => $val){
-          if (!isset($pretask[$key]) || $val != $pretask[$key]) {
+          if (!array_key_exists($key, $pretask) || $val != $pretask[$key]) {
             $this->testFailed("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)", "Response OK, but wrong content");
             return;
           }
@@ -185,7 +210,7 @@ class PretaskTest extends HashtopolisTest {
         return;
       }
       foreach ($data as $key => $val) {
-        if (!isset($response[$key]) || $val != $response[$key]) {
+        if (!array_key_exists($key, $response) || $val != $response[$key]) {
           $this->testFailed("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)", "Response OK, but wrong content");
           return;
         }
