@@ -239,7 +239,6 @@
         <tr>
           <th>Time</th>
           <th>Task</th>
-          <th>Chunk</th>
           <th>Message</th>
         </tr>
         {{FOREACH error;[[errors]]}}
@@ -251,9 +250,6 @@
               {{ELSE}}
                 <a href="tasks.php?id=[[error.getTaskId()]]">[[error.getTaskId()]]</a>
               {{ENDIF}}
-            </td>
-            <td>
-              [[error.getId()]]
             </td>
             <td style="white-space: normal;">
               [[error.getError()]]
