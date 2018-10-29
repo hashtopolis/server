@@ -1074,6 +1074,9 @@ class TaskUtils {
     if ($taskWrapper1->getPriority() > $taskWrapper2->getPriority()) {
       return $task1; // if first task wrapper has more priority, this task should be done
     }
+    else if($taskWrapper1->getPriority() == $taskWrapper2->getPriority() && $task1->getPriority() > $task2->getPriority()){
+      return $task1; // if both wrappers have the same priority but the subtask not (this can be the case when comparing supertasks)
+    }
     return $task2;
   }
   
