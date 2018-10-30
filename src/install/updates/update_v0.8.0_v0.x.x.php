@@ -27,7 +27,7 @@ if (!isset($TEST)) {
 }
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.2.0");
+Util::checkAgentVersion("python", "0.3.0");
 Util::checkAgentVersion("csharp", "0.52.4");
 echo "\n";
 
