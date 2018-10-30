@@ -51,10 +51,7 @@ else if (isset($_GET['id'])) {
       if (is_array($constant)) {
         $constant = $constant[0];
       }
-      if ($constant == DAccessControl::PUBLIC_ACCESS || $constant == DAccessControl::LOGIN_ACCESS) {
-        // ignore public and login access
-      }
-      else {
+      if ($constant != DAccessControl::PUBLIC_ACCESS && $constant != DAccessControl::LOGIN_ACCESS) {
         $constantsChecked[] = $constant;
       }
     }
