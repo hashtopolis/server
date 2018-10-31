@@ -4,7 +4,7 @@ class ConfigHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {

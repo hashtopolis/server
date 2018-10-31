@@ -38,7 +38,7 @@ else if (isset($_GET['id'])) {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
     UI::add('keys', Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]));
     UI::add('sectionConstants', USection::getConstants());
-
+    
     $section = USection::TEST;
     if (isset($_GET['section'])) {
       $section = $_GET['section'];
@@ -49,7 +49,7 @@ else if (isset($_GET['id'])) {
     }
     UI::add('currentConstants', $currentSection->getConstants());
     UI::add('currentSection', $section);
-
+    
     UI::add('group', $group);
     if ($group->getPermissions() == 'ALL') {
       UI::add('perm', 'ALL');
@@ -64,20 +64,20 @@ else if (isset($_GET['id'])) {
       }
       UI::add('perm', new DataSet($json));
     }
-
+    
     Template::loadInstance("api/detail");
     UI::add('pageTitle', "Details of API Group " . htmlentities($group->getName(), ENT_QUOTES, "UTF-8"));
   }
 }
-else if(isset($_GET['newkey'])){
+else if (isset($_GET['newkey'])) {
   Template::loadInstance("api/newkey");
   UI::add('users', Factory::getUserFactory()->filter([]));
   UI::add('groups', Factory::getApiGroupFactory()->filter([]));
   UI::add('pageTitle', "Create new API key");
 }
-else if(isset($_GET['keyId'])){
+else if (isset($_GET['keyId'])) {
   $key = Factory::getApiKeyFactory()->get($_GET['keyId']);
-  if($key == null){
+  if ($key == null) {
     UI::printError(UI::ERROR, "Invalid API key ID!");
   }
   UI::add('key', $key);
@@ -89,17 +89,17 @@ else if(isset($_GET['keyId'])){
 else {
   // determine keys and groups
   $groups = Factory::getApiGroupFactory()->filter([]);
-
+  
   $apis = array();
   foreach ($groups as $group) {
     $apis[$group->getId()] = 0;
   }
-
+  
   $allApiKeys = Factory::getApiKeyFactory()->filter([]);
   foreach ($allApiKeys as $apiKey) {
     $apis[$apiKey->getApiGroupId()]++;
   }
-
+  
   UI::add('keys', Factory::getApiKeyFactory()->filter([]));
   UI::add('apis', new DataSet($apis));
   UI::add('groups', $groups);

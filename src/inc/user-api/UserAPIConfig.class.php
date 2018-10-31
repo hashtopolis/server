@@ -26,7 +26,7 @@ class UserAPIConfig extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -52,6 +52,7 @@ class UserAPIConfig extends UserAPIBasic {
     }
     else {
       $config = ConfigUtils::get($QUERY[UQueryConfig::CONFIG_ITEM]);
+      $config->setValue($QUERY[UQueryConfig::CONFIG_VALUE]);
     }
     $type = DConfig::getConfigType($config->getItem());
     switch ($type) {
@@ -72,11 +73,16 @@ class UserAPIConfig extends UserAPIBasic {
           throw new HTException("Value most be boolean!");
         }
         break;
+      case DConfigType::SELECT:
+        if (!in_array($config->getValue(), DConfig::getSelection($config->getItem())->getKeys())) {
+          throw new HTException("Value is not in selection!");
+        }
+        break;
     }
     ConfigUtils::set($config, $new);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -85,7 +91,7 @@ class UserAPIConfig extends UserAPIBasic {
     if (!isset($QUERY[UQueryConfig::CONFIG_ITEM])) {
       throw new HTException("Invalid query!");
     }
-
+    
     $value = SConfig::getInstance()->getVal($QUERY[UQueryConfig::CONFIG_ITEM]);
     if ($value === false) {
       throw new HTException("Unknown config item!");
@@ -111,7 +117,7 @@ class UserAPIConfig extends UserAPIBasic {
     }
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param mixed $QUERY
    */
@@ -132,7 +138,7 @@ class UserAPIConfig extends UserAPIBasic {
     $response[UResponseConfig::SECTIONS] = $list;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param mixed $QUERY
    */

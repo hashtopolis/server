@@ -37,12 +37,12 @@ if (isset($_GET['id'])) {
   }
   Template::loadInstance("pretasks/detail");
   UI::add('pretask', $pretask);
-
+  
   $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", Factory::getFilePretaskFactory());
   $jF = new JoinFilter(Factory::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
   $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
   UI::add('attachedFiles', $joinedFiles[Factory::getFileFactory()->getModelName()]);
-
+  
   $isUsed = false;
   $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
   $supertaskTasks = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => $qF]);
@@ -55,10 +55,10 @@ if (isset($_GET['id'])) {
 else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_PRETASK_ACCESS)) {
   Template::loadInstance("pretasks/new");
   Menu::get()->setActive("tasks_prenew");
-
+  
   UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
   $accessGroupIds = Util::arrayOfIds(UI::get('accessGroups'));
-
+  
   $orig = 0;
   $origTask = null;
   $origType = 0;
@@ -83,7 +83,7 @@ else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAcc
       }
     }
   }
-  else if(isset($_GET['copyTask'])){
+  else if (isset($_GET['copyTask'])) {
     $copy = Factory::getTaskFactory()->get($_GET['copyTask']);
     if ($copy != null) {
       $orig = $copy->getId();
@@ -95,20 +95,20 @@ else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAcc
   if ($copy === null) {
     $copy = PretaskUtils::getDefault();
   }
-
+  
   $origFiles = array();
   if ($origType == 1) {
     $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfTask($origTask));
   }
-  else if($origType == 2){
+  else if ($origType == 2) {
     $origFiles = Util::arrayOfIds(TaskUtils::getFilesOfPretask($origTask));
   }
-
+  
   $arr = FileUtils::loadFilesByCategory(Login::getInstance()->getUser(), $origFiles);
   UI::add('wordlists', $arr[1]);
   UI::add('rules', $arr[0]);
   UI::add('other', $arr[2]);
-
+  
   UI::add('crackerBinaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([]));
   UI::add('pageTitle', "Create preconfigured Task");
   UI::add('copy', $copy);
@@ -126,7 +126,7 @@ else {
     $set = new DataSet();
     $pretask = $taskList[$z];
     $set->addValue('Task', $taskList[$z]);
-
+    
     $qF = new QueryFilter(FilePretask::PRETASK_ID, $pretask->getId(), "=", Factory::getFilePretaskFactory());
     $jF = new JoinFilter(Factory::getFilePretaskFactory(), FilePretask::FILE_ID, File::FILE_ID);
     $joinedFiles = Factory::getFileFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
@@ -140,19 +140,19 @@ else {
         $secret = true;
       }
     }
-
+    
     $isUsed = false;
     $qF = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretask->getId(), "=");
     $supertaskTasks = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => $qF]);
     if (sizeof($supertaskTasks) > 0) {
       $isUsed = true;
     }
-
+    
     $set->addValue('numFiles', sizeof($files));
     $set->addValue('filesSize', $sizes);
     $set->addValue('fileSecret', $secret);
     $set->addValue('isUsed', $isUsed);
-
+    
     $tasks[] = $set;
   }
   UI::add('tasks', $tasks);

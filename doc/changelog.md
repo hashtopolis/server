@@ -1,3 +1,30 @@
+# v0.8.0 -> v0.x.x
+
+## Features
+
+- The server saves the crackpos for hash founds given by hashcat.
+- Trimming of chunks can be disabled so a chunk is always run fully again (or splitted if it is too large).
+- Supertasks can now can be created by specifying a base command and iterate over a selection of files to be placed in the command.
+- Notes can be added to hashlists.
+- Added optional trace logging of actions from the client API to get more information in case of failures.
+- Slow hashes are marked, so the client can decide if piping could make sense for this hash type.
+- Agents can run health checks to determine if all agents are running correctly.
+
+## Bugfixes
+
+- Fixed GPU data graph when having multiple agents.
+- Fixed assignment issue with subtasks of supertasks if they were in the same supertask.
+
+## Enhancements
+
+- Telegram notifications can now completely be configured via server config and also can be used through proxies.
+- Peppers of Encryption.class.php and CSRF.class.php were moved out of the files to make updating easier.
+- When importing supertasks it can be selected if they should use the optimized flag and which benchmark type should be used.
+- Subtasks are only loaded when being viewed to speed up loading of the tasks page.
+- Changed type of the hash column to TEXT to make sure to handle all the long hashes. It should not affect speed as long as there is not a multi-million hashlist.
+- Preconfigured task attack commands can be edited after creation.
+- If needed it can be set that the server should also distribute tasks with priority 0.
+
 # v0.7.1 -> v0.8.0
 
 ## Features
@@ -5,7 +32,7 @@
 - The server can store sent debug output from Hashcat sent by the agent.
 - Files now also are associated to an Access Group to control the visibility of files.
 - Agent data about device temperature and util is collected and can be viewed on the server.
-- Notes can be added to tasks
+- Notes can be added to tasks.
 - Static chunking (if for some reasone a fixed number of chunks or static chunk size should be used for a task)
 - The server can provide a list of deleted filenames to the agent when he asks for.
 - Tasks can now be copied to preconfigured tasks and preconfigured tasks can also be copied to preconfigured tasks.

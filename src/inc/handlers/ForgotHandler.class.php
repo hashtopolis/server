@@ -8,7 +8,7 @@ class ForgotHandler implements Handler {
   public function __construct($configId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     switch ($action) {
       case DForgotAction::RESET:
@@ -19,7 +19,7 @@ class ForgotHandler implements Handler {
         break;
     }
   }
-
+  
   private function forgot($username, $email) {
     $username = htmlentities($username, ENT_QUOTES, "UTF-8");
     $qF = new QueryFilter(User::USERNAME, $username, "=");

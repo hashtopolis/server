@@ -3,14 +3,17 @@
 class Template {
   private $content;
   private $statements;
-
+  
   private static $instance = null;
-
-  public static function loadInstance($template){
+  
+  public static function loadInstance($template) {
     self::$instance = new Template($template);
   }
-
-  public static function getInstance(){
+  
+  public static function getInstance() {
+    if (self::$instance == null) {
+      self::$instance = new Template("errors/error");
+    }
     return self::$instance;
   }
   

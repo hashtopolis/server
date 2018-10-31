@@ -8,19 +8,19 @@ class HashlistHandler implements Handler {
    * @var Hashlist $hashlist
    */
   private $hashlist;
-
+  
   public function __construct($hashlistId = null) {
     if ($hashlistId == null) {
       $this->hashlist = null;
       return;
     }
-
+    
     $this->hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($this->hashlist == null) {
       UI::printError("FATAL", "Hashlist with ID $hashlistId not found!");
     }
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {
@@ -99,6 +99,10 @@ class HashlistHandler implements Handler {
           $file = HashlistUtils::leftlist($_POST['hashlist'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Created left list: " . $file->getFilename());
           break;
+        case DHashlistAction::EDIT_NOTES:
+          AccessControl::getInstance()->checkPermission(DHashlistAction::EDIT_NOTES_PERM);
+          HashlistUtils::editNotes($_POST['hashlist'], $_POST['notes'], Login::getInstance()->getUser());
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
@@ -108,14 +112,14 @@ class HashlistHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
   /**
    * @throws HTException
    */
   private function zap() {
     $this->hashlist = HashlistUtils::getHashlist($_POST['hashlist']);
     $type = Factory::getHashTypeFactory()->get($this->hashlist->getHashTypeId());
-
+    
     UI::add('list', new DataSet(['hashlist' => $this->hashlist, 'hashtype' => $type]));
     UI::add('zap', true);
     UI::add('impfiles', Util::scanImportDirectory());

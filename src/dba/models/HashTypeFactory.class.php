@@ -23,7 +23,7 @@ class HashTypeFactory extends AbstractModelFactory {
    * @return HashType
    */
   function getNullObject() {
-    $o = new HashType(-1, null, null);
+    $o = new HashType(-1, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class HashTypeFactory extends AbstractModelFactory {
    * @return HashType
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HashType($dict['hashTypeId'], $dict['description'], $dict['isSalted']);
+    $o = new HashType($dict['hashTypeId'], $dict['description'], $dict['isSalted'], $dict['isSlowHash']);
     return $o;
   }
 

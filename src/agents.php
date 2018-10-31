@@ -66,22 +66,22 @@ if (isset($_GET['id'])) {
     UI::add('agent', $agent);
     UI::add('users', Factory::getUserFactory()->filter([]));
     UI::add('pageTitle', "Agent details for " . $agent->getAgentName());
-
+    
     // load all tasks which are valid for this agent
     UI::add('allTasks', TaskUtils::getBestTask($agent, true));
-
+    
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=", Factory::getAccessGroupAgentFactory());
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     UI::add('accessGroups', $joined[Factory::getAccessGroupFactory()->getModelName()]);
-
+    
     // load agent detail data
     $data = AgentUtils::getGraphData($agent, [DAgentStatsType::GPU_TEMP, DAgentStatsType::GPU_UTIL]);
     UI::add('gpuTemp', json_encode($data['sets']));
-    UI::add('gpuTempAvailable', (sizeof($data['sets']) > 0)?true:false);
+    UI::add('gpuTempAvailable', (sizeof($data['sets']) > 0) ? true : false);
     UI::add('gpuTempXLabels', json_encode($data['xlabels']));
     UI::add('gpuAxes', json_encode($data['axes']));
-
+    
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
     $currentTask = 0;
@@ -89,10 +89,10 @@ if (isset($_GET['id'])) {
       $currentTask = $assignment->getTaskId();
     }
     UI::add('currentTask', $currentTask);
-
+    
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     UI::add('errors', Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF]));
-
+    
     $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
     $timeSpent = 0;
@@ -109,7 +109,7 @@ else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAcc
   UI::add('pageTitle', "New Agent");
   UI::add('vouchers', Factory::getRegVoucherFactory()->filter([]));
   UI::add('agentBinaries', Factory::getAgentBinaryFactory()->filter([]));
-
+  
   $url = explode("/", $_SERVER['PHP_SELF']);
   unset($url[sizeof($url) - 1]);
   UI::add('apiUrl', Util::buildServerUrl() . implode("/", $url) . "/api/server.php");
@@ -117,7 +117,7 @@ else if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAcc
 }
 else {
   UI::add('pageTitle', "Agents");
-
+  
   // load all agents which are in an access group the user has access to
   $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, $accessGroupIds);
   $accessGroupAgents = Factory::getAccessGroupAgentFactory()->filter([Factory::FILTER => $qF]);
@@ -125,7 +125,7 @@ else {
   foreach ($accessGroupAgents as $accessGroupAgent) {
     $agentIds[] = $accessGroupAgent->getAgentId();
   }
-
+  
   $oF = new OrderFilter(Agent::AGENT_ID, "ASC", Factory::getAgentFactory());
   $qF = new ContainFilter(Agent::AGENT_ID, $agentIds);
   $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
@@ -137,7 +137,7 @@ else {
     $accessGroupAgents->addValue($agent->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()]);
     $agent->setDevices(Util::compressDevices(explode("\n", $agent->getDevices())));
   }
-
+  
   UI::add('accessGroupAgents', $accessGroupAgents);
   UI::add('agents', $agents);
   UI::add('numAgents', sizeof($agents));

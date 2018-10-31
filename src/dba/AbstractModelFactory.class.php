@@ -515,7 +515,7 @@ abstract class AbstractModelFactory {
       $options['order'] = $orderOptions;
     }
     $query .= $this->applyOrder($options['order']);
-
+    
     $dbh = self::getDB();
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);

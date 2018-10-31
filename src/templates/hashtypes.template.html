@@ -9,7 +9,7 @@
     <div class="table-responsive">
       <table class="table table-bordered">
 			  <tr>
-				  <th colspan='3' style='text-align: center;'>
+				  <th colspan='4' style='text-align: center;'>
 					  <b>Add new Hashtype</b>
 				  </th>
 			  </tr>
@@ -17,6 +17,7 @@
 				  <th>Hashtype (Hashcat -m)</th>
 				  <th>Description</th>
 				  <th>Salted (only if there is a separate salt value)</th>
+          <th>Slow Hash</th>
 			  </tr>
 			  <tr>
 				  <td>
@@ -31,9 +32,15 @@
               <option value="1">Yes</option>
             </select>
 				  </td>
+				  <td>
+					  <select name="isSlowHash" class="form-control" title="Is Slow Hash">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+				  </td>
 			  </tr>
 			  <tr>
-				  <td colspan="3">
+				  <td colspan="4">
 					  <input type="submit" class='btn btn-success' value="Add">
 				  </td>
 			  </tr>
@@ -48,6 +55,7 @@
 			  <th>Hashtype (Hashcat -m)</th>
 			  <th>Description</th>
         <th>Salted</th>
+        <th>Slow Hash</th>
 			  <th>&nbsp;</th>
 		  </tr>
 		  {{FOREACH type;[[hashtypes]]}}
@@ -56,9 +64,16 @@
 				  <td>[[type.getDescription()]]</td>
           <td>
             {{IF [[type.getIsSalted()]] == 1}}
-            Yes
+              Yes
             {{ELSE}}
-            No
+              No
+            {{ENDIF}}
+          </td>
+          <td>
+            {{IF [[type.getIsSlowHash()]] == 1}}
+              Yes
+            {{ELSE}}
+              No
             {{ENDIF}}
           </td>
 				  <td>

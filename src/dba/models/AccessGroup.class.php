@@ -34,7 +34,15 @@ class AccessGroup extends AbstractModel {
   function setId($id) {
     $this->accessGroupId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getGroupName(){
     return $this->groupName;
   }

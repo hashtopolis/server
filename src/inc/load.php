@@ -5,14 +5,14 @@ ini_set("display_errors", "0");
 
 session_start();
 
-$VERSION = "0.8.0";
+$VERSION = "0.8.0+dev";
 $HOST = @$_SERVER['HTTP_HOST'];
 if (strpos($HOST, ":") !== false) {
   $HOST = substr($HOST, 0, strpos($HOST, ":"));
 }
 
 $INSTALL = false;
-@include(dirname(__FILE__) . "/db.php");
+@include(dirname(__FILE__) . "/conf.php");
 
 // include all .class.php files in inc dir
 $dir = scandir(dirname(__FILE__));
@@ -47,22 +47,7 @@ require_once(dirname(__FILE__) . "/../dba/init.php");
 $LANG = new Lang();
 UI::add('version', $VERSION);
 UI::add('host', $HOST);
-
-$gitcommit = "";
-$gitfolder = dirname(__FILE__) . "/../../.git";
-if (file_exists($gitfolder) && is_dir($gitfolder)) {
-  $head = file_get_contents($gitfolder . "/HEAD");
-  $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
-  if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
-    $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
-    $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
-  }
-  else {
-    $commit = $head;
-    $gitcommit = "commit " . substr($commit, 0, 7);
-  }
-}
-UI::add('gitcommit', $gitcommit);
+UI::add('gitcommit', Util::getGitCommit());
 
 UI::add('menu', Menu::get());
 UI::add('messages', []);

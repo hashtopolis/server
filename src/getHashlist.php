@@ -55,18 +55,18 @@ switch ($format) {
         $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
         $qF2 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
         $current = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
-
+        
         $output = "";
         $count += sizeof($current);
         foreach ($current as $entry) {
           $output .= $entry->getHash();
           if (strlen($entry->getSalt()) > 0) {
-            $output .= $hashlist->getSaltSeparator() . $entry->getSalt();
+            $output .= "\t" . $entry->getSalt();
           }
           $output .= $lineDelimiter;
         }
         echo $output;
-
+        
         $limit += $size;
       } while (sizeof($current) > 0);
     }

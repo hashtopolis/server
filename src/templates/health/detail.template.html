@@ -1,0 +1,118 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Health Check [[check.getId()]]</h2>
+{%TEMPLATE->struct/messages%}
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <tr>
+        <th>Time Created</th>
+        <td>[[date([[config.getVal([[$DConfig::TIME_FORMAT]])]], [[check.getTime()]])]]</td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td>
+          {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::PENDING]]}}
+            Running
+          {{ENDIF}}
+          {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::COMPLETED]]}}
+            Completed
+          {{ENDIF}}
+          {{IF [[check.getStatus()]] == [[$DHealthCheckStatus::ABORTED]]}}
+            Aborted
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
+        <th>Report</th>
+        <td>
+          <form class="form-inline" method="get" action="report.php">
+            <input type="hidden" name="checkId" value="[[check.getId()]]">
+            <select class="form-control mx-1" name="report">
+              {{FOREACH report;[[Util::scanReportDirectory('health-check', true)]]}}
+                <option value="[[strtolower([[report]])]]">[[report]]</option>
+              {{ENDFOREACH}}
+            </select>
+            <button type="submit" class="btn btn-light mx-1">Download</button>
+          </form>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<h3>Checked Agents ([[sizeof([[checkAgents]])]])</h3>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-bordered">
+		  <tr>
+			  <th>ID</th>
+			  <th>Agent</th>
+			  <th>Status</th>
+			  <th>Time Required</th>
+			  <th># Devices</th>
+			  <th>Cracked</th>
+			  <th>Errors</th>
+			  <th>&nbsp;</th>
+		  </tr>
+		  {{FOREACH checkAgent;[[checkAgents]]}}
+			  <tr>
+				  <td>[[checkAgent.getId()]]</td>
+          <td><a href="agents.php?id=[[checkAgent.getAgentId()]]">[[agentSet.getVal([[checkAgent.getAgentId()]])->getAgentName()]]</a></td>
+          <td>
+            {{IF [[checkAgent.getStatus()]] == [[$DHealthCheckAgentStatus::PENDING]]}}
+              Running / Waiting
+            {{ENDIF}}
+            {{IF [[checkAgent.getStatus()]] == [[$DHealthCheckAgentStatus::COMPLETED]]}}
+              Completed
+            {{ENDIF}}
+            {{IF [[checkAgent.getStatus()]] == [[$DHealthCheckAgentStatus::FAILED]]}}
+              Failed
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              [[Util::calculate([[checkAgent.getEnd()]] - [[checkAgent.getStart()]])]] seconds
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              [[checkAgent.getNumGpus()]]
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              [[checkAgent.getCracked()]] of [[check.getExpectedCracks()]]
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+				  <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              <pre>[[json_encode(json_decode([[checkAgent.getErrors()]], true), JSON_PRETTY_PRINT)]]</pre>
+            {{ELSE}}
+              N/A
+            {{ENDIF}}
+          </td>
+          <td>
+            {{IF [[checkAgent.getStatus()]] != [[$DHealthCheckAgentStatus::PENDING]]}}
+              <form class="form-inline" method="post" action="">
+                <input type="hidden" name="action" value="[[$DHealthCheckAction::RESET_AGENT]]">
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <input type="hidden" name="healthCheckAgentId" value="[[checkAgent.getId()]]">
+                <button type="submit" class="btn btn-danger mx-1 float-right">Restart</button>
+              </form>
+            {{ENDIF}}
+          </td>
+			  </tr>
+		  {{ENDFOREACH}}
+      {{IF [[sizeof([[checkAgents]])]] == 0}}
+        <tr><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td><td>---</td></tr>
+      {{ENDIF}}
+	  </table>
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}

@@ -59,6 +59,8 @@ switch ($QUERY[UQuery::SECTION]) {
     break;
 }
 
+DServerLog::log(DServerLog::TRACE, "Received from " . Util::getIP() . ": " . json_encode($QUERY));
+
 if ($api == null) {
   $api = new UserAPITest();
   $api->sendErrorResponse("INV", "INV", "Invalid user api query!");

@@ -33,7 +33,7 @@ class UserAPIFile extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -45,7 +45,7 @@ class UserAPIFile extends UserAPIBasic {
     FileUtils::setFileType($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILE_TYPE], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -57,7 +57,7 @@ class UserAPIFile extends UserAPIBasic {
     FileUtils::delete($QUERY[UQueryFile::FILE_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -69,7 +69,7 @@ class UserAPIFile extends UserAPIBasic {
     FileUtils::switchSecret($QUERY[UQueryFile::FILE_ID], ($QUERY[UQueryFile::SET_SECRET]) ? 1 : 0, $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -81,7 +81,7 @@ class UserAPIFile extends UserAPIBasic {
     FileUtils::saveChanges($QUERY[UQueryFile::FILE_ID], $QUERY[UQueryFile::FILENAME], 0, $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -125,7 +125,7 @@ class UserAPIFile extends UserAPIBasic {
     }
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
@@ -148,7 +148,7 @@ class UserAPIFile extends UserAPIBasic {
     ];
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException

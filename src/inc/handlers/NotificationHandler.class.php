@@ -5,11 +5,11 @@ use DBA\QueryFilter;
 use DBA\Factory;
 
 class NotificationHandler implements Handler {
-
+  
   public function __construct($id = null) {
     // nothing required here
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {
@@ -34,7 +34,7 @@ class NotificationHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
   /**
    * @param $action
    * @param $payload DataSet

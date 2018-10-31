@@ -109,7 +109,8 @@ $CONF['Hash'] = array(
   'plaintext',
   'timeCracked',
   'chunkId',
-  'isCracked'
+  'isCracked',
+	'crackPos'
 );
 $CONF['HashBinary'] = array(
   'hashBinaryId',
@@ -119,7 +120,8 @@ $CONF['HashBinary'] = array(
   'plaintext',
   'timeCracked',
   'chunkId',
-  'isCracked'
+  'isCracked',
+	'crackPos'
 );
 $CONF['Hashlist'] = array(
   'hashlistId',
@@ -132,12 +134,14 @@ $CONF['Hashlist'] = array(
   'isSecret',
   'hexSalt',
   'isSalted',
-  'accessGroupId'
+  'accessGroupId',
+  'notes'
 );
 $CONF['HashType'] = array(
   'hashTypeId',
   'description',
-  'isSalted'
+  'isSalted',
+  'isSlowHash'
 );
 $CONF['LogEntry'] = array(
   'logEntryId',
@@ -284,6 +288,27 @@ $CONF['FileDelete'] = array(
   'fileDeleteId',
   'filename',
   'time'
+);
+$CONF['HealthCheck'] = array(
+  'healthCheckId',
+  'time',
+  'status',
+  'checkType',
+  'hashtypeId',
+  'crackerBinaryId',
+  'expectedCracks',
+  'attackCmd'
+);
+$CONF['HealthCheckAgent'] = array(
+  'healthCheckAgentId',
+  'healthCheckId',
+  'agentId',
+  'status',
+  'cracked',
+  'numGpus',
+  'start',
+  'end',
+  'errors'
 );
 
 // relations

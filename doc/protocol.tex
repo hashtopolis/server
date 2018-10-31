@@ -8,7 +8,7 @@
 	\title{Hashtopolis Communication Protocol (V2)}
 	\maketitle
 	\section*{Introduction}
-	The communication between Hashtopolis Clients and Server is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
+	The communication between Hashtopolis Clients (Agents) and Server is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
 
 	\section*{Errors}
 	In case of an error with the query which the client sends to the server, the response will have following format with the corresponding action which was requested and the error message which should help in getting information about this error.
@@ -217,7 +217,9 @@
 	{
 	  "action":"getFile",
 	  "response":"SUCCESS",
-	  "url":"get.php?file=5&token=GHhgdf(/&"
+	  "extension": ".txt",
+	  "url":"get.php?file=5&token=GHhgdf(/&",
+	  "filesize": 267729
 	}
 	\end{verbatim}
 	
@@ -266,7 +268,9 @@
 	    "wordlist.txt"
 	  ],
 	  "keyspace":0,
-	  "usePrince": false
+	  "usePrince": false,
+	  "enforcePipe": false,
+	  "slowHash": false
 	}
 	\end{verbatim}
 	or send this if there is no task available:
@@ -337,6 +341,15 @@
 	}
 	\end{verbatim}
 	
+	In case there was a health check requested on the server, it will notify the client.
+	\begin{verbatim}
+	{
+	  "action":"getChunk",
+	  "response":"SUCCESS",
+	  "status":"health_check"
+	}
+	\end{verbatim}
+	
 	
 	\subsection*{Send Keyspace}
 	The client sends the calculated keyspace of a task.
@@ -401,12 +414,28 @@
 	  "speed":570000,
 	  "state": 3,
 	  "cracks": [
-	    "7fde65673fd28736423f23423786f:thisisplain",
-	    "7fde65673f28987f7423f2342378f:otherplain",
+	    [
+	      "7fde65673fd28736423f23423786f",
+	      "thisisplain",
+	      "746869736973706c61696e",
+	      "787523889"
+	    ],
+	    [
+	      "7fde65673f28987f7423f2342378f",
+	      "otherplain",
+	      "6f74686572706c61696e",
+	      "78652"
+	    ]
+	  ],
+	  "gpuTemp": [
+	    67
+	  ], 
+	  "gpuUtil": [
+	    99
 	  ]
 	}
 	\end{verbatim}
-	RelativeProgress is the progress of the current chunk between 0 and 10'000 (in percent * 100).
+	RelativeProgress is the progress of the current chunk between 0 and 10'000 (in percent * 100). The cracks are sent as array resulting from hashcat's output format 15.
 	
 	The server will reply with following:
 	\begin{verbatim}
@@ -447,6 +476,55 @@
 	  "filenames": [
 	    "top10000.txt"
 	  ]
+	}
+	\end{verbatim}
+	
+	\subsection*{Get health check}
+	When the client got notified that the server wants to do a health check, it should request the data.
+	\begin{verbatim}
+	{
+	  "action": "getHealthCheck", 
+	  "token": "GHhgdf(/&"
+	}
+	\end{verbatim}
+	The server will provide the task to run and the hashes to use for it.
+	\begin{verbatim}
+	{
+	  "action": "getHealthCheck",
+	  "response": "SUCCESS",
+	  "attack": "#HL# -a 3 -1 ?l?u?d ?1?1?1?1?1",
+	  "crackerBinaryId": 1,
+	  "hashes": [
+	    "9f650d4ef70eead895e7a03ce0f83e88",
+	    "24a7bdfd14bca7f9d14154c0800a833d"
+	  ],
+	  "checkId": 7,
+	  "hashlistAlias": "#HL#"
+	}
+	\end{verbatim}
+	
+	\subsection*{Send health check}
+	When the client executed a health check it should send back the results.
+	\begin{verbatim}
+	{
+	  "action": "sendHealthCheck", 
+	  "token": "GHhgdf(/&", 
+	  "numCracked": 23, 
+	  "start": 1536306884, 
+	  "end": 1536306902, 
+	  "numGpus": 1, 
+	  "errors": [
+	    "nvmlDeviceGetTemperatureThreshold(): Not Supported", 
+	    "nvmlDeviceGetTemperatureThreshold(): Not Supported"
+	  ], 
+	  "checkId": 7
+	}
+	\end{verbatim}
+	On success the server will just reply with OK.
+	\begin{verbatim}
+	{
+	  "action": "sendHealthCheck",
+	  "response": "OK"
 	}
 	\end{verbatim}
 \end{document}

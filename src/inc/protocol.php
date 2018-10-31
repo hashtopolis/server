@@ -10,7 +10,7 @@ abstract class PQuery { // include only generalized query values
   const QUERY  = "query";
   const ACTION = "action";
   const TOKEN  = "token";
-
+  
   /**
    * This function checks if all required values are given in the query
    *
@@ -27,7 +27,7 @@ class PQueryLogin extends PQuery {
     }
     return true;
   }
-
+  
   const CLIENT_SIGNATURE = "clientSignature";
 }
 
@@ -47,18 +47,18 @@ class PQuerySendProgress extends PQuery {
     }
     return true;
   }
-
+  
   const CHUNK_ID          = "chunkId";
   const KEYSPACE_PROGRESS = "keyspaceProgress"; // aka curku
   const RELATIVE_PROGRESS = "relativeProgress";
   const SPEED             = "speed";
   const HASHCAT_STATE     = "state";
   const CRACKED_HASHES    = "cracks";
-
+  
   // optional
-  const DEBUG_OUTPUT      = "debugOutput";
-  const GPU_TEMP = "gpuTemp";
-  const GPU_UTIL = "gpuUtil";
+  const DEBUG_OUTPUT = "debugOutput";
+  const GPU_TEMP     = "gpuTemp";
+  const GPU_UTIL     = "gpuUtil";
 }
 
 class PQuerySendBenchmark extends PQuery {
@@ -68,7 +68,7 @@ class PQuerySendBenchmark extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID = "taskId";
   const TYPE    = "type";
   const RESULT  = "result";
@@ -81,7 +81,7 @@ class PQuerySendKeyspace extends PQuery {
     }
     return true;
   }
-
+  
   const KEYSPACE = "keyspace";
   const TASK_ID  = "taskId";
 }
@@ -93,7 +93,7 @@ class PQueryGetChunk extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID = "taskId";
 }
 
@@ -106,6 +106,31 @@ class PQueryGetTask extends PQuery {
   }
 }
 
+class PQueryGetHealthCheck extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN])) {
+      return false;
+    }
+    return true;
+  }
+}
+
+class PQuerySendHealthCheck extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CHECK_ID]) || !isset($QUERY[self::NUM_CRACKED]) || !isset($QUERY[self::START]) || !isset($QUERY[self::END]) || !isset($QUERY[self::NUM_GPUS]) || !isset($QUERY[self::ERRORS])) {
+      return false;
+    }
+    return true;
+  }
+  
+  const CHECK_ID    = "checkId";
+  const NUM_CRACKED = "numCracked";
+  const START       = "start";
+  const END         = "end";
+  const NUM_GPUS    = "numGpus";
+  const ERRORS      = "errors";
+}
+
 class PQueryGetHashlist extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::HASHLIST_ID])) {
@@ -113,7 +138,7 @@ class PQueryGetHashlist extends PQuery {
     }
     return true;
   }
-
+  
   const HASHLIST_ID = "hashlistId";
 }
 
@@ -124,7 +149,7 @@ class PQueryGetFile extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID  = "taskId";
   const FILENAME = "file";
 }
@@ -136,7 +161,7 @@ class PQueryClientError extends PQuery {
     }
     return true;
   }
-
+  
   const TASK_ID = "taskId";
   const MESSAGE = "message";
 }
@@ -148,7 +173,7 @@ class PQueryDownloadBinary extends PQuery {
     }
     return true;
   }
-
+  
   const BINARY_TYPE       = "type";
   const BINARY_VERSION_ID = "binaryVersionId";
 }
@@ -160,7 +185,7 @@ class PQueryCheckClientVersion extends PQuery {
     }
     return true;
   }
-
+  
   const VERSION = "version";
   const TYPE    = "type";
 }
@@ -172,7 +197,7 @@ class PQueryUpdateInformation extends PQuery {
     }
     return true;
   }
-
+  
   const DEVICES          = "devices";
   const UID              = "uid";
   const OPERATING_SYSTEM = "os";
@@ -185,7 +210,7 @@ class PQueryRegister extends PQuery {
     }
     return true;
   }
-
+  
   const VOUCHER    = "voucher";
   const AGENT_NAME = "name";
 }
@@ -199,6 +224,10 @@ abstract class PValues {
   const OK      = "OK";
   const NONE    = null;
   const ERROR   = "ERROR";
+}
+
+class PValuesTask extends PValues {
+  const HEALTH_CHECK = -1;
 }
 
 class PValuesDownloadBinaryType extends PValues {
@@ -228,6 +257,7 @@ class PValuesChunkType extends PValues {
   const BENCHMARK_REQUIRED = "benchmark";
   const FULLY_DISPATCHED   = "fully_dispatched";
   const CRACKER_UPDATE     = "cracker_update";
+  const HEALTH_CHECK       = "health_check";
   const OK                 = "OK";
 }
 
@@ -242,6 +272,14 @@ abstract class PResponse {
 
 class PResponseGetFileStatus extends PResponse {
   const FILENAMES = "filenames";
+}
+
+class PResponseGetHealthCheck extends PResponse {
+  const ATTACK            = "attack";
+  const CRACKER_BINARY_ID = "crackerBinaryId";
+  const HASHES            = "hashes";
+  const CHECK_ID          = "checkId";
+  const HASHLIST_ALIAS    = "hashlistAlias";
 }
 
 class PResponseErrorMessage extends PResponse {
@@ -259,6 +297,7 @@ class PResponseGetHashlist extends PResponse {
 class PResponseLogin extends PResponse {
   const TIMEOUT   = "timeout";
   const MULTICAST = "multicastEnabled";
+  const VERSION   = "server-version";
 }
 
 class PResponseClientUpdate extends PResponse {
@@ -273,6 +312,10 @@ class PResponseBinaryDownload extends PResponse {
 }
 
 class PResponseError extends PResponse {
+  // not additional values required
+}
+
+class PResponseSendHealthCheck extends PResponse {
   // not additional values required
 }
 
@@ -298,6 +341,7 @@ class PResponseGetTask extends PResponse {
   const REASON         = "reason";
   const PRINCE         = "usePrince";
   const ENFORCE_PIPE   = "enforcePipe";
+  const SLOW_HASH      = "slowHash";
 }
 
 class PResponseGetChunk extends PResponse {
@@ -342,4 +386,6 @@ class PActions {
   const SEND_PROGRESS             = "sendProgress";
   const TEST_CONNECTION           = "testConnection";
   const GET_FILE_STATUS           = "getFileStatus";
+  const GET_HEALTH_CHECK          = "getHealthCheck";
+  const SEND_HEALTH_CHECK         = "sendHealthCheck";
 }

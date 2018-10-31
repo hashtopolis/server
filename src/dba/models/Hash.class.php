@@ -11,8 +11,9 @@ class Hash extends AbstractModel {
   private $timeCracked;
   private $chunkId;
   private $isCracked;
+  private $crackPos;
   
-  function __construct($hashId, $hashlistId, $hash, $salt, $plaintext, $timeCracked, $chunkId, $isCracked) {
+  function __construct($hashId, $hashlistId, $hash, $salt, $plaintext, $timeCracked, $chunkId, $isCracked, $crackPos) {
     $this->hashId = $hashId;
     $this->hashlistId = $hashlistId;
     $this->hash = $hash;
@@ -21,6 +22,7 @@ class Hash extends AbstractModel {
     $this->timeCracked = $timeCracked;
     $this->chunkId = $chunkId;
     $this->isCracked = $isCracked;
+    $this->crackPos = $crackPos;
   }
   
   function getKeyValueDict() {
@@ -33,6 +35,7 @@ class Hash extends AbstractModel {
     $dict['timeCracked'] = $this->timeCracked;
     $dict['chunkId'] = $this->chunkId;
     $dict['isCracked'] = $this->isCracked;
+    $dict['crackPos'] = $this->crackPos;
     
     return $dict;
   }
@@ -52,7 +55,15 @@ class Hash extends AbstractModel {
   function setId($id) {
     $this->hashId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getHashlistId(){
     return $this->hashlistId;
   }
@@ -108,6 +119,14 @@ class Hash extends AbstractModel {
   function setIsCracked($isCracked){
     $this->isCracked = $isCracked;
   }
+  
+  function getCrackPos(){
+    return $this->crackPos;
+  }
+  
+  function setCrackPos($crackPos){
+    $this->crackPos = $crackPos;
+  }
 
   const HASH_ID = "hashId";
   const HASHLIST_ID = "hashlistId";
@@ -117,4 +136,5 @@ class Hash extends AbstractModel {
   const TIME_CRACKED = "timeCracked";
   const CHUNK_ID = "chunkId";
   const IS_CRACKED = "isCracked";
+  const CRACK_POS = "crackPos";
 }

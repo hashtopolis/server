@@ -15,7 +15,7 @@ class UserUtils {
   public static function getUsers() {
     return Factory::getUserFactory()->filter([]);
   }
-
+  
   /**
    * @param int $userId
    * @param User $adminUser
@@ -26,10 +26,10 @@ class UserUtils {
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("You cannot delete yourself!");
     }
-
+    
     $payload = new DataSet(array(DPayloadKeys::USER => $user));
     NotificationHandler::checkNotifications(DNotificationType::USER_DELETED, $payload);
-
+    
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $user->getId(), "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF]);
     foreach ($notifications as $notification) {
@@ -37,7 +37,7 @@ class UserUtils {
         Factory::getNotificationSettingFactory()->delete($notification);
       }
     }
-
+    
     $qF = new QueryFilter(Agent::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Agent::USER_ID, null);
     Factory::getAgentFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
@@ -47,7 +47,7 @@ class UserUtils {
     Factory::getAccessGroupUserFactory()->massDeletion([Factory::FILTER => $qF]);
     Factory::getUserFactory()->delete($user);
   }
-
+  
   /**
    * @param int $userId
    * @throws HTException
@@ -57,7 +57,7 @@ class UserUtils {
     $user->setIsValid(1);
     Factory::getUserFactory()->update($user);
   }
-
+  
   /**
    * @param int $userId
    * @param User $adminUser
@@ -68,14 +68,14 @@ class UserUtils {
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("You cannot disable yourself!");
     }
-
+    
     $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Session::IS_OPEN, "0");
     Factory::getSessionFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     $user->setIsValid(0);
     Factory::getUserFactory()->update($user);
   }
-
+  
   /**
    * @param int $userId
    * @param int $groupId
@@ -91,7 +91,7 @@ class UserUtils {
     $user->setRightGroupId($group->getId());
     Factory::getUserFactory()->update($user);
   }
-
+  
   /**
    * @param int $userId
    * @param string $password
@@ -103,7 +103,7 @@ class UserUtils {
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("To change your own password go to your settings!");
     }
-
+    
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($password, $newSalt);
     $user->setPasswordHash($newHash);
@@ -111,7 +111,7 @@ class UserUtils {
     $user->setIsComputedPassword(0);
     Factory::getUserFactory()->update($user);
   }
-
+  
   /**
    * @param string $username
    * @param string $email
@@ -141,22 +141,22 @@ class UserUtils {
     $newHash = Encryption::passwordHash($newPass, $newSalt);
     $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
     Factory::getUserFactory()->save($user);
-
+    
     // add user to default group
     $group = AccessUtils::getOrCreateDefaultAccessGroup();
     $groupMember = new AccessGroupUser(null, $group->getId(), $user->getId());
     Factory::getAccessGroupUserFactory()->save($groupMember);
-
+    
     $tmpl = new Template("email/creation");
     $tmplPlain = new Template("email/creation.plain");
     $obj = array('username' => $username, 'password' => $newPass, 'url' => Util::buildServerUrl() . SConfig::getInstance()->getVal(DConfig::BASE_URL));
     Util::sendMail($email, "Account at " . APP_NAME, $tmpl->render($obj), $tmplPlain->render($obj));
-
+    
     Util::createLogEntry("User", $adminUser->getId(), DLogEntry::INFO, "New User created: " . $user->getUsername());
     $payload = new DataSet(array(DPayloadKeys::USER => $user));
     NotificationHandler::checkNotifications(DNotificationType::USER_CREATED, $payload);
   }
-
+  
   /**
    * @param int $userId
    * @throws HTException

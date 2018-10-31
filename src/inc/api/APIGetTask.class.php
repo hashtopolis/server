@@ -15,8 +15,21 @@ class APIGetTask extends APIBasic {
     }
     $this->checkToken(PActions::GET_TASK, $QUERY);
     $this->updateAgent(PActions::GET_TASK);
-
+    
+    DServerLog::log(DServerLog::TRACE, "Requesting a task...", [$this->agent]);
+    
+    if (HealthUtils::checkNeeded($this->agent)) {
+      DServerLog::log(DServerLog::INFO, "Notified about pending health check", [$this->agent]);
+      $this->sendResponse(array(
+          PResponseGetTask::ACTION => PActions::GET_TASK,
+          PResponseGetTask::RESPONSE => PValues::SUCCESS,
+          PResponseGetTask::TASK_ID => PValuesTask::HEALTH_CHECK
+        )
+      );
+    }
+    
     if ($this->agent->getIsActive() == 0) {
+      DServerLog::log(DServerLog::TRACE, "Agent is inactive and cannot get a task", [$this->agent]);
       $this->sendResponse(array(
           PResponseGetTask::ACTION => PActions::GET_TASK,
           PResponseGetTask::RESPONSE => PValues::SUCCESS,
@@ -25,10 +38,12 @@ class APIGetTask extends APIBasic {
         )
       );
     }
-
+    
+    DServerLog::log(DServerLog::TRACE, "Searching for assignment and best task", [$this->agent]);
     $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
     $task = TaskUtils::getBestTask($this->agent);
+    DServerLog::log(DServerLog::TRACE, "Search results", [$this->agent, $assignment, $task]);
     if ($task == null) {
       if ($assignment == null) {
         // there is no best task available and nothing is assigned currently -> no task to assign
@@ -40,9 +55,11 @@ class APIGetTask extends APIBasic {
         $currentTask = TaskUtils::checkTask($currentTask);
         if ($currentTask == null) {
           // we checked the task and it is completed
+          DServerLog::log(DServerLog::TRACE, "No best task available and current assigned task is fullfilled", [$this->agent]);
           $this->noTask();
         }
         // assignment is still good -> send this task
+        DServerLog::log(DServerLog::TRACE, "Current task is running, continue with this", [$this->agent, $currentTask]);
         $this->sendTask($currentTask, $assignment);
       }
     }
@@ -52,24 +69,28 @@ class APIGetTask extends APIBasic {
         $currentTask = Factory::getTaskFactory()->get($assignment->getTaskId());
         if ($currentTask == null) {
           // current task is not available anymore, just send the new one
+          DServerLog::log(DServerLog::TRACE, "Current task does not exist anymore, send new one", [$this->agent, $task]);
           $this->sendTask($task, $assignment);
         }
         // check if this task is fulfilled, or we still have the permission on it
         $currentTask = TaskUtils::checkTask($currentTask);
         if ($currentTask == null) {
           // it got filtered out, just send new task
+          DServerLog::log(DServerLog::TRACE, "Current task is done or permissions changed, send new one", [$this->agent, $task]);
           $this->sendTask($task, $assignment);
         }
         else {
+          DServerLog::log(DServerLog::TRACE, "Current task is fine, send the more important one", [$this->agent, $currentTask, $task]);
           $this->sendTask(TaskUtils::getImportantTask($task, $currentTask), $assignment);
         }
       }
       else {
+        DServerLog::log(DServerLog::TRACE, "Task available, but nothing assigned, send new one", [$this->agent, $task]);
         $this->sendTask($task, $assignment);
       }
     }
   }
-
+  
   private function noTask() {
     $this->sendResponse(array(
         PResponseGetTask::ACTION => PActions::GET_TASK,
@@ -79,7 +100,7 @@ class APIGetTask extends APIBasic {
       )
     );
   }
-
+  
   /**
    * @param $task Task
    * @param $assignment Assignment
@@ -88,26 +109,31 @@ class APIGetTask extends APIBasic {
     // check if the assignment is up-to-date and correct if needed
     if ($assignment == null) {
       $assignment = new Assignment(null, $task->getId(), $this->agent->getId(), 0);
-      Factory::getAssignmentFactory()->save($assignment);
+      $assignment = Factory::getAssignmentFactory()->save($assignment);
+      DServerLog::log(DServerLog::TRACE, "No assignment present, created", [$this->agent, $assignment]);
     }
     else {
       if ($assignment->getTaskId() != $task->getId()) {
         $qF = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
         Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
+        DServerLog::log(DServerLog::TRACE, "Current task does not match assignment, delete it", [$this->agent, $assignment]);
         $assignment = new Assignment(null, $task->getId(), $this->agent->getId(), 0);
-        Factory::getAssignmentFactory()->save($assignment);
+        $assignment = Factory::getAssignmentFactory()->save($assignment);
+        DServerLog::log(DServerLog::TRACE, "Created new assignment", [$this->agent, $assignment]);
       }
     }
-
+    
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if ($taskWrapper == null) {
+      DServerLog::log(DServerLog::FATAL, "Inconsistency between taskWrapper and task", [$this->agent, $task]);
       $this->sendErrorResponse(PActions::GET_TASK, "Inconsistent TaskWrapper information!");
     }
     $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
     if ($hashlist == null) {
+      DServerLog::log(DServerLog::TRACE, "Inconsistency between taskWrapper and hashlist", [$this->agent, $taskWrapper]);
       $this->sendErrorResponse(PActions::GET_TASK, "Inconsistent TaskWrapper-Hashlist information");
     }
-
+    
     $taskFiles = array();
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
     $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
@@ -117,23 +143,28 @@ class APIGetTask extends APIBasic {
     foreach ($files as $file) {
       $taskFiles[] = $file->getFilename();
     }
-
+    
+    $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
+    
+    DServerLog::log(DServerLog::TRACE, "Sending task to agent", [$this->agent, $task, $taskFiles]);
+    
     $this->sendResponse(array(
         PResponseGetTask::ACTION => PActions::GET_TASK,
         PResponseGetTask::RESPONSE => PValues::SUCCESS,
         PResponseGetTask::TASK_ID => (int)$task->getId(),
         PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
-        PResponseGetTask::CMD_PARAMETERS => " -p " . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
+        PResponseGetTask::CMD_PARAMETERS => " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
         PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
         PResponseGetTask::BENCHMARK => (int)SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME),
         PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),
         PResponseGetTask::FILES => $taskFiles,
         PResponseGetTask::CRACKER_ID => $task->getCrackerBinaryId(),
-        PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run", // TODO: this need to be adapted also for generic
+        PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run",
         PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
         PResponseGetTask::KEYSPACE => $task->getKeyspace(),
         PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,
-        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe())? true : false
+        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe()) ? true : false,
+        PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash()) ? true : false
       )
     );
   }

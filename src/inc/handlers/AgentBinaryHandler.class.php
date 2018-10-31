@@ -1,11 +1,11 @@
 <?php
 
 class AgentBinaryHandler implements Handler {
-
+  
   public function __construct($id = null) {
     //nothing
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {

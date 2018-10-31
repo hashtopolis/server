@@ -1,4 +1,5 @@
 <?php
+
 use DBA\QueryFilter;
 use DBA\ApiKey;
 use DBA\ApiGroup;
@@ -13,13 +14,13 @@ class ApiUtils {
    */
   public static function update($groupId, $perm, $sectionName) {
     $group = Factory::getApiGroupFactory()->get($groupId);
-    if($group == null){
+    if ($group == null) {
       throw new HTException("Invalid API group!");
     }
     else if ($group->getPermissions() == 'ALL') {
       throw new HTException("Administrator group cannot be changed!");
     }
-
+    
     $newArr = json_decode($group->getPermissions(), true);
     $section = UApi::getSection($sectionName);
     $constants = $section->getConstants();
@@ -40,7 +41,7 @@ class ApiUtils {
     $group->setPermissions(json_encode($newArr));
     Factory::getApiGroupFactory()->update($group);
   }
-
+  
   /**
    * @param int $keyId
    * @param int $userId
@@ -49,17 +50,17 @@ class ApiUtils {
    * @param string $endValid
    * @throws HTException
    */
-  public static function editKey($keyId, $userId, $groupId, $startValid, $endValid){
+  public static function editKey($keyId, $userId, $groupId, $startValid, $endValid) {
     $key = Factory::getApiKeyFactory()->get($keyId);
     $user = Factory::getUserFactory()->get($userId);
     $group = Factory::getApiGroupFactory()->get($groupId);
-    if($key == null){
+    if ($key == null) {
       throw new HTException("Invalid API key!");
     }
-    else if($user == null){
+    else if ($user == null) {
       throw new HTException("Invalid user selected!");
     }
-    else if($group == null){
+    else if ($group == null) {
       throw new HTException("Invalid API group selected!");
     }
     $key->setUserId($user->getId());
@@ -68,19 +69,19 @@ class ApiUtils {
     $key->setEndValid(strtotime($endValid));
     Factory::getApiKeyFactory()->update($key);
   }
-
+  
   /**
    * @param int $userId
    * @param int $groupId
    * @throws HTException
    */
-  public static function createKey($userId, $groupId){
+  public static function createKey($userId, $groupId) {
     $user = Factory::getUserFactory()->get($userId);
     $group = Factory::getApiGroupFactory()->get($groupId);
-    if($user == null){
+    if ($user == null) {
       throw new HTException("Invalid user ID!");
     }
-    else if($group == null){
+    else if ($group == null) {
       throw new HTException("Invalid API group ID!");
     }
     do {
@@ -88,43 +89,43 @@ class ApiUtils {
       $accessKey = Util::randomString(30);
       $qF = new QueryFilter(ApiKey::ACCESS_KEY, $accessKey, "=");
       $count = Factory::getApiKeyFactory()->countFilter([Factory::FILTER => $qF]);
-    } while($count > 0);
+    } while ($count > 0);
     $key = new ApiKey(null, time(), time() + 3600 * 24 * 30, $accessKey, 0, $user->getId(), $group->getId());
     Factory::getApiKeyFactory()->save($key);
   }
-
+  
   /**
    * @param int $keyId
    * @throws HTException
    */
-  public static function deleteKey($keyId){
+  public static function deleteKey($keyId) {
     $key = Factory::getApiKeyFactory()->get($keyId);
-    if($key == null){
+    if ($key == null) {
       throw new HTException("Invalid API key ID!");
     }
     Factory::getApiKeyFactory()->delete($key);
   }
-
+  
   /**
    * @param string $name
    */
-  public static function createGroup($name){
+  public static function createGroup($name) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $group = new ApiGroup(null, '{}', $name);
     Factory::getApiGroupFactory()->save($group);
   }
-
+  
   /**
    * @param int $groupId
    * @throws HTException
    */
-  public static function deleteGroup($groupId){
+  public static function deleteGroup($groupId) {
     $group = Factory::getApiGroupFactory()->get($groupId);
-    if($group == null){
+    if ($group == null) {
       throw new HTException("Invalid group ID!");
     }
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
-    if(Factory::getApiKeyFactory()->countFilter([Factory::FILTER => $qF]) > 0){
+    if (Factory::getApiKeyFactory()->countFilter([Factory::FILTER => $qF]) > 0) {
       throw new HTException("You cannot delete an API group with members!");
     }
     Factory::getApiGroupFactory()->delete($group);

@@ -12,7 +12,9 @@ $CONN = [
   "port" => 3306
 ];
 require_once("/var/www/html/hashtopolis/src/dba/init.php");
+require_once("/var/www/html/hashtopolis/src/inc/defines/config.php");
 require_once(dirname(__FILE__) . "/../src/inc/Util.class.php");
+require_once(dirname(__FILE__) . "/../src/inc/Encryption.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/utils/AccessUtils.class.php");
 require_once(dirname(__FILE__) . "/HashtopolisTest.class.php");
 require_once(dirname(__FILE__) . "/HashtopolisTestFramework.class.php");
@@ -24,15 +26,20 @@ foreach ($dir as $entry) {
   }
 }
 
-if (sizeof($argv) != 2) {
-  die("Invalid number of arguments!\nphp -f run.php <version>\n");
+if (sizeof($argv) < 2) {
+  die("Invalid number of arguments!\nphp -f run.php <version> [upgrade]\n");
 }
 $version = $argv[1];
 HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
-$resturnStatus = $framework->execute($version, HashtopolisTest::RUN_FULL);
+if (isset($argv[2])) {
+  $returnStatus = $framework->executeWithUpgrade($argv[2], HashtopolisTest::RUN_FULL);
+}
+else {
+  $returnStatus = $framework->execute($version, HashtopolisTest::RUN_FULL);
+}
 
 HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, HashtopolisTest::getTestCount() . " tests executed");
 
-exit($resturnStatus);
+exit($returnStatus);

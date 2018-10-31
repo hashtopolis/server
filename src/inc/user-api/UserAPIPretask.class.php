@@ -63,7 +63,7 @@ class UserAPIPretask extends UserAPIBasic {
     if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_SMALL])) {
       throw new HTException("Invalid query!");
     }
-    PretaskUtils::setSmallTask($QUERY[UQueryTask::PRETASK_ID], ($QUERY[UQueryTask::PRETASK_SMALL]) ? 1 : 0);
+    PretaskUtils::setSmallTask($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_SMALL]);
     $this->sendSuccessResponse($QUERY);
   }
   
@@ -75,7 +75,7 @@ class UserAPIPretask extends UserAPIBasic {
     if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_CPU_ONLY])) {
       throw new HTException("Invalid query!");
     }
-    PretaskUtils::setCpuOnlyTask($QUERY[UQueryTask::PRETASK_ID], ($QUERY[UQueryTask::PRETASK_CPU_ONLY]) ? 1 : 0);
+    PretaskUtils::setCpuOnlyTask($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_CPU_ONLY]);
     $this->sendSuccessResponse($QUERY);
   }
   

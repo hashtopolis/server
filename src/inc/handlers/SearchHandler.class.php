@@ -11,7 +11,7 @@ class SearchHandler implements Handler {
   public function __construct($id = null) {
     // nothing
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {
@@ -28,7 +28,7 @@ class SearchHandler implements Handler {
       UI::addMessage(UI::ERROR, $e->getMessage());
     }
   }
-
+  
   /**
    * @throws HTException
    */
@@ -45,7 +45,7 @@ class SearchHandler implements Handler {
       if (strlen($queryEntry) == 0) {
         continue;
       }
-
+      
       // test if hash contains salt
       if (strpos($queryEntry, ":") !== false) {
         $split = explode(":", $queryEntry);
@@ -57,9 +57,9 @@ class SearchHandler implements Handler {
         $hash = $queryEntry;
         $salt = "";
       }
-
+      
       // TODO: add option to select if exact match or like match
-
+      
       $filters = array();
       $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
       if (strlen($salt) > 0) {
@@ -67,14 +67,14 @@ class SearchHandler implements Handler {
       }
       $jF = new JoinFilter(Factory::getHashlistFactory(), Hash::HASHLIST_ID, Hashlist::HASHLIST_ID);
       $joined = Factory::getHashFactory()->filter([Factory::FILTER => $filters, Factory::JOIN => $jF]);
-
+      
       $qF = new LikeFilter(Hash::PLAINTEXT, "%" . $queryEntry . "%");
       $joined2 = Factory::getHashFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
       for ($i = 0; $i < sizeof($joined2[Factory::getHashFactory()->getModelName()]); $i++) {
         $joined[Factory::getHashFactory()->getModelName()][] = $joined2[Factory::getHashFactory()->getModelName()][$i];
         $joined[Factory::getHashlistFactory()->getModelName()][] = $joined2[Factory::getHashlistFactory()->getModelName()][$i];
       }
-
+      
       $resultEntry = new DataSet();
       if (sizeof($joined[Factory::getHashFactory()->getModelName()]) == 0) {
         $resultEntry->addValue("found", false);

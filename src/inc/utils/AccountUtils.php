@@ -9,7 +9,7 @@ class AccountUtils {
    */
   public static function checkOTP($user) {
     $isValid = false;
-
+    
     if (strlen($user->getOtp1()) == 12) {
       $isValid = true;
     }
@@ -27,7 +27,7 @@ class AccountUtils {
     }
     Factory::getUserFactory()->update($user);
   }
-
+  
   /**
    * @param $num
    * @param $action
@@ -38,7 +38,7 @@ class AccountUtils {
   public static function setOTP($num, $action, $user, $otpArr) {
     if ($action == DAccountAction::YUBIKEY_ENABLE) {
       $isValid = false;
-
+      
       if (strlen($user->getOtp1()) == 12) {
         $isValid = true;
       }
@@ -51,12 +51,12 @@ class AccountUtils {
       else if (strlen($user->getOtp4()) == 12) {
         $isValid = true;
       }
-
+      
       if (!$isValid) {
         throw new HTException("Configure OTP KEY first!");
       }
     }
-
+    
     switch ($num) {
       case -1:
         $user->setYubikey(0);
@@ -83,12 +83,12 @@ class AccountUtils {
       default:
         return;
     }
-
+    
     AccountUtils::checkOTP($user);
     Factory::getUserFactory()->update($user);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed OTP!");
   }
-
+  
   /**
    * @param string $email
    * @param User $user
@@ -98,12 +98,12 @@ class AccountUtils {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
       throw new HTException("Invalid email address!");
     }
-
+    
     $user->setEmail($email);
     Factory::getUserFactory()->update($user);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed email!");
   }
-
+  
   /**
    * @param int $lifetime
    * @param User $user
@@ -111,14 +111,14 @@ class AccountUtils {
    */
   public static function updateSessionLifetime($lifetime, $user) {
     $lifetime = intval($lifetime);
-    if ($lifetime < 60 || $lifetime > 48 * 3600) { // TODO: make maximum configurable
-      throw new HTException("Lifetime must be larger than 1 minute and smaller than 2 days!");
+    if ($lifetime < 60 || $lifetime > SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) * 3600) {
+      throw new HTException("Lifetime must be larger than 1 minute and smaller than " . SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) . " hours!");
     }
-
+    
     $user->setSessionLifetime($lifetime);
     Factory::getUserFactory()->update($user);
   }
-
+  
   /**
    * @param string $oldPassword
    * @param string $newPassword
@@ -136,7 +136,10 @@ class AccountUtils {
     else if ($newPassword != $repeatedPassword) {
       throw new HTException("Your new passwords do not match!");
     }
-
+    else if ($newPassword == $oldPassword) {
+      throw new HTException("Your new password is the same as the old one!");
+    }
+    
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
     $user->setPasswordHash($newHash);

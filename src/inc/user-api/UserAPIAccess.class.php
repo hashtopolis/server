@@ -2,7 +2,7 @@
 
 class UserAPIAccess extends UserAPIBasic {
   public function execute($QUERY = array()) {
-    try{
+    try {
       switch ($QUERY[UQuery::REQUEST]) {
         case USectionAccess::LIST_GROUPS:
           $this->listGroups($QUERY);
@@ -27,22 +27,22 @@ class UserAPIAccess extends UserAPIBasic {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
   }
-
+  
   /**
-   * @param array $QUERY 
-   * @throws HTException 
+   * @param array $QUERY
+   * @throws HTException
    */
-  private function setPermissions($QUERY){
+  private function setPermissions($QUERY) {
     if (!isset($QUERY[UQueryAccess::RIGHT_GROUP_ID]) || !isset($QUERY[UQueryAccess::PERMISSIONS])) {
       throw new HTException("Invalid query!");
     }
     $perm = $QUERY[UQueryAccess::PERMISSIONS];
     $prepared = [];
-    foreach($perm as $key => $p){
-      $prepared[] = $key."-".(($p)?"1":"0");
+    foreach ($perm as $key => $p) {
+      $prepared[] = $key . "-" . (($p) ? "1" : "0");
     }
     $changed = AccessControlUtils::updateGroupPermissions($QUERY[UQueryAccess::RIGHT_GROUP_ID], $prepared);
-    if($changed){
+    if ($changed) {
       $response = [
         UResponseAccess::SECTION => $QUERY[UQueryAccess::SECTION],
         UResponseAccess::REQUEST => $QUERY[UQueryAccess::REQUEST],
@@ -51,40 +51,40 @@ class UserAPIAccess extends UserAPIBasic {
       ];
       $this->sendResponse($response);
     }
-    else{
+    else {
       $this->sendSuccessResponse($QUERY);
     }
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function deleteGroup($QUERY){
+  private function deleteGroup($QUERY) {
     if (!isset($QUERY[UQueryAccess::RIGHT_GROUP_ID])) {
       throw new HTException("Invalid query!");
     }
     AccessControlUtils::deleteGroup($QUERY[UQueryAccess::RIGHT_GROUP_ID]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function createGroup($QUERY){
+  private function createGroup($QUERY) {
     if (!isset($QUERY[UQueryAccess::RIGHT_GROUP_NAME])) {
       throw new HTException("Invalid query!");
     }
     AccessControlUtils::createGroup($QUERY[UQueryAccess::RIGHT_GROUP_NAME]);
     $this->sendSuccessResponse($QUERY);
   }
-
+  
   /**
    * @param array $QUERY
    * @throws HTException
    */
-  private function getGroup($QUERY){
+  private function getGroup($QUERY) {
     if (!isset($QUERY[UQueryAccess::RIGHT_GROUP_ID])) {
       throw new HTException("Invalid query!");
     }
@@ -97,19 +97,19 @@ class UserAPIAccess extends UserAPIBasic {
       UResponseAccess::RESPONSE => UValues::OK,
       UResponseAccess::RIGHT_GROUP_ID => (int)$group->getId(),
       UResponseAccess::RIGHT_GROUP_NAME => $group->getGroupName(),
-      UResponseAccess::PERMISSIONS => ($group->getPermissions() == 'ALL')?'ALL':json_decode($group->getPermissions(), true),
+      UResponseAccess::PERMISSIONS => ($group->getPermissions() == 'ALL') ? 'ALL' : json_decode($group->getPermissions(), true),
     ];
-    foreach($members as $user){
+    foreach ($members as $user) {
       $list[] = (int)$user->getId();
     }
     $response[UResponseAccess::MEMBERS] = $list;
     $this->sendResponse($response);
   }
-
+  
   /**
    * @param array $QUERY
    */
-  private function listGroups($QUERY){
+  private function listGroups($QUERY) {
     $groups = AccessControlUtils::getGroups();
     $list = [];
     $response = [

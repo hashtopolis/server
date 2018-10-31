@@ -43,7 +43,15 @@ class AgentStat extends AbstractModel {
   function setId($id) {
     $this->agentStatId = $id;
   }
-  
+
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+
   function getAgentId(){
     return $this->agentId;
   }

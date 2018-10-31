@@ -105,7 +105,21 @@ switch ($QUERY[PQuery::ACTION]) {
   case PActions::GET_FILE_STATUS:
     $api = new APIGetFileStatus();
     break;
+  /**
+   * Retrieve a health check (if available)
+   */
+  case PActions::GET_HEALTH_CHECK:
+    $api = new APIGetHealthCheck();
+    break;
+  /**
+   * Send the results of a health check
+   */
+  case PActions::SEND_HEALTH_CHECK:
+    $api = new APISendHealthCheck();
+    break;
 }
+
+DServerLog::log(DServerLog::TRACE, "Received from " . Util::getIP() . ": " . json_encode($QUERY));
 
 if ($api == null) {
   $api = new APITestConnection();

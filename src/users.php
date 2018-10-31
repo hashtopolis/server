@@ -41,12 +41,12 @@ else if (isset($_GET['id'])) {
   else {
     UI::add('user', $user);
     UI::add('groups', Factory::getRightGroupFactory()->filter([]));
-
+    
     $qF = new QueryFilter(AccessGroupUser::USER_ID, $user->getId(), "=", Factory::getAccessGroupUserFactory());
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
     $joinedGroups = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     UI::add('accessGroups', $joinedGroups[Factory::getAccessGroupFactory()->getModelName()]);
-
+    
     Template::loadInstance("users/detail");
     UI::add('pageTitle', "User details for " . $user->getUsername());
   }
@@ -60,7 +60,7 @@ else {
     $set->addValue('group', Factory::getRightGroupFactory()->get($entry->getRightGroupId()));
     $users[] = $set;
   }
-
+  
   UI::add('allUsers', $users);
   UI::add('numUsers', sizeof($users));
   UI::add('pageTitle', "Users");

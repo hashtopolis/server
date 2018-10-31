@@ -4,7 +4,7 @@ class PretaskHandler implements Handler {
   public function __construct($fileId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {
@@ -46,6 +46,10 @@ class PretaskHandler implements Handler {
           PretaskUtils::createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType'], $_POST['adfile'], $_POST['crackerBinaryTypeId']);
           header("Location: pretasks.php");
           die();
+        case DPretaskAction::CHANGE_ATTACK:
+          AccessControl::getInstance()->checkPermission(DPretaskAction::CHANGE_ATTACK_PERM);
+          PretaskUtils::changeAttack($_POST['pretaskId'], $_POST['attackCmd']);
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;

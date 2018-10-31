@@ -5,7 +5,7 @@ class DLimits {
 }
 
 class DZaps {
-	const LAST_ZAP_CLEANING = "lastZapCleaning";
+  const LAST_ZAP_CLEANING = "lastZapCleaning";
 }
 
 // log entry types
@@ -29,7 +29,7 @@ class DStats {
   const TASKS_FINISHED     = "tasksFinished";
   const TASKS_RUNNING      = "tasksRunning";
   const TASKS_QUEUED       = "tasksQueued";
-
+  
   const LAST_STAT_CLEANING = "lastStatCleaning";
 }
 

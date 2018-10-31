@@ -4,7 +4,7 @@ class AccessControlHandler implements Handler {
   public function __construct($groupId = null) {
     //we need nothing to load
   }
-
+  
   public function handle($action) {
     try {
       switch ($action) {

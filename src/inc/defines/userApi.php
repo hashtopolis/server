@@ -7,139 +7,141 @@
 #####################
 
 abstract class UQuery { // include only generalized query values
-  const SECTION = "section";
-  const REQUEST = "request";
-  const ACCESS_KEY  = "accessKey";
+  const SECTION    = "section";
+  const REQUEST    = "request";
+  const ACCESS_KEY = "accessKey";
 }
 
 class UQueryAgent extends UQuery {
-  const VOUCHER = "voucher";
-  const AGENT_ID = "agentId";
-  const ACTIVE = "active";
-  const USER = "user";
-  const NAME = "name";
-  const CPU_ONLY = "cpuOnly";
-  const EXTRA_PARAMS = "extraParameters";
+  const VOUCHER       = "voucher";
+  const AGENT_ID      = "agentId";
+  const ACTIVE        = "active";
+  const USER          = "user";
+  const NAME          = "name";
+  const CPU_ONLY      = "cpuOnly";
+  const EXTRA_PARAMS  = "extraParameters";
   const IGNORE_ERRORS = "ignoreErrors";
-  const TRUSTED = "trusted";
+  const TRUSTED       = "trusted";
 }
 
 class UQueryTask extends UQuery {
-  const TASK_ID = "taskId";
+  const TASK_ID      = "taskId";
   const SUPERTASK_ID = "supertaskId";
-  const PRETASK_ID = "pretaskId";
-  const CHUNK_ID = "chunkId";
-
-  const TASK_NAME = "name";
-  const TASK_HASHLIST = "hashlistId";
-  const TASK_ATTACKCMD = "attackCmd";
-  const TASK_CHUNKSIZE = "chunksize";
-  const TASK_STATUS = "statusTimer";
-  const TASK_BENCHTYPE = "benchmarkType";
-  const TASK_COLOR = "color";
-  const TASK_CPU_ONLY = "isCpuOnly";
-  const TASK_SMALL = "isSmall";
-  const TASK_SKIP = "skip";
+  const PRETASK_ID   = "pretaskId";
+  const CHUNK_ID     = "chunkId";
+  
+  const TASK_NAME            = "name";
+  const TASK_HASHLIST        = "hashlistId";
+  const TASK_ATTACKCMD       = "attackCmd";
+  const TASK_CHUNKSIZE       = "chunksize";
+  const TASK_STATUS          = "statusTimer";
+  const TASK_BENCHTYPE       = "benchmarkType";
+  const TASK_COLOR           = "color";
+  const TASK_CPU_ONLY        = "isCpuOnly";
+  const TASK_SMALL           = "isSmall";
+  const TASK_SKIP            = "skip";
   const TASK_CRACKER_VERSION = "crackerVersionId";
-  const TASK_FILES = "files";
-  const TASK_PRIORITY = "priority";
-  const TASK_PRINCE = "isPrince";
-
-  const TASK_CRACKER_TYPE = "crackerTypeId";
-  const PRETASKS = "pretasks";
-  const MASKS = "masks";
-  const TASK_OPTIMIZED = "optimizedFlag";
-  const AGENT_ID = "agentId";
+  const TASK_FILES           = "files";
+  const TASK_PRIORITY        = "priority";
+  const TASK_PRINCE          = "isPrince";
+  
+  const TASK_CRACKER_TYPE  = "crackerTypeId";
+  const PRETASKS           = "pretasks";
+  const MASKS              = "masks";
+  const TASK_OPTIMIZED     = "optimizedFlag";
+  const AGENT_ID           = "agentId";
   const SUPERTASK_PRIORITY = "supertaskPriority";
-  const SUPERTASK_NAME = "name";
-
-  const PRETASK_PRIORITY = "priority";
-  const PRETASK_NAME = "name";
-  const PRETASK_COLOR = "color";
+  const SUPERTASK_NAME     = "name";
+  const TASK_BASEFILES     = "basefiles";
+  const TASK_ITERFILES     = "iterfiles";
+  
+  const PRETASK_PRIORITY  = "priority";
+  const PRETASK_NAME      = "name";
+  const PRETASK_COLOR     = "color";
   const PRETASK_CHUNKSIZE = "chunksize";
-  const PRETASK_CPU_ONLY = "isCpuOnly";
-  const PRETASK_SMALL = "isSmall";
+  const PRETASK_CPU_ONLY  = "isCpuOnly";
+  const PRETASK_SMALL     = "isSmall";
 }
 
 class UQueryHashlist extends UQuery {
   const HASHLIST_ID = "hashlistId";
-
-  const HASHLIST_NAME = "name";
-  const HASHLIST_IS_SALTED = "isSalted";
-  const HASHLIST_IS_SECRET = "isSecret";
-  const HASHLIST_HEX_SALTED = "isHexSalt";
-  const HASHLIST_SEPARATOR = "separator";
-  const HASHLIST_FORMAT = "format";
-  const HASHLIST_HASHTYPE_ID = "hashtypeId";
+  
+  const HASHLIST_NAME            = "name";
+  const HASHLIST_IS_SALTED       = "isSalted";
+  const HASHLIST_IS_SECRET       = "isSecret";
+  const HASHLIST_HEX_SALTED      = "isHexSalt";
+  const HASHLIST_SEPARATOR       = "separator";
+  const HASHLIST_FORMAT          = "format";
+  const HASHLIST_HASHTYPE_ID     = "hashtypeId";
   const HASHLIST_ACCESS_GROUP_ID = "accessGroupId";
-  const HASHLIST_DATA = "data";
-
+  const HASHLIST_DATA            = "data";
+  
   const HASH = "hash";
 }
 
-class UQuerySuperhashlist extends UQuery{
-  const SUPERHASHLIST_ID = "superhashlistId";
-  const SUPERHASHLIST_NAME = "name";
+class UQuerySuperhashlist extends UQuery {
+  const SUPERHASHLIST_ID        = "superhashlistId";
+  const SUPERHASHLIST_NAME      = "name";
   const SUPERHASHLIST_HASHLISTS = "hashlists";
 }
 
 class UQueryFile extends UQuery {
   const FILE_ID = "fileId";
-
-  const FILENAME = "filename";
+  
+  const FILENAME  = "filename";
   const FILE_TYPE = "fileType";
-  const SOURCE = "source";
-  const DATA = "data";
-
-  const SET_SECRET = "isSecret";
+  const SOURCE    = "source";
+  const DATA      = "data";
+  
+  const SET_SECRET      = "isSecret";
   const ACCESS_GROUP_ID = "accessGroupId";
 }
 
 class UQueryCracker extends UQuery {
-  const CRACKER_ID = "crackerTypeId";
+  const CRACKER_ID         = "crackerTypeId";
   const CRACKER_VERSION_ID = "crackerVersionId";
-
-  const CRACKER_NAME = "crackerName";
+  
+  const CRACKER_NAME   = "crackerName";
   const BINARY_VERSION = "crackerBinaryVersion";
-  const BINARY_NAME = "crackerBinaryBasename";
-  const BINARY_URL = "crackerBinaryUrl";
+  const BINARY_NAME    = "crackerBinaryBasename";
+  const BINARY_URL     = "crackerBinaryUrl";
 }
 
 class UQueryConfig extends UQuery {
-  const CONFIG_ITEM = "configItem";
+  const CONFIG_ITEM  = "configItem";
   const CONFIG_VALUE = "value";
   const CONFIG_FORCE = "force";
 }
 
 class UQueryUser extends UQuery {
   const USER_ID = "userId";
-
-  const USER_USERNAME = "username";
-  const USER_EMAIL = "email";
+  
+  const USER_USERNAME  = "username";
+  const USER_EMAIL     = "email";
   const RIGHT_GROUP_ID = "rightGroupId";
-
-  const USER_PASSWORD = "password";
+  
+  const USER_PASSWORD       = "password";
   const USER_RIGHT_GROUP_ID = "rightGroupId";
 }
 
 class UQueryGroup extends UQuery {
-  const GROUP_ID = "groupId";
+  const GROUP_ID   = "groupId";
   const GROUP_NAME = "name";
-
+  
   const AGENT_ID = "agentId";
-  const USER_ID = "userId";
+  const USER_ID  = "userId";
 }
 
 class UQueryAccess extends UQuery {
-  const RIGHT_GROUP_ID = "rightGroupId";
+  const RIGHT_GROUP_ID   = "rightGroupId";
   const RIGHT_GROUP_NAME = "name";
-  const PERMISSIONS = "permissions";
+  const PERMISSIONS      = "permissions";
 }
 
 class UQueryAccount extends UQuery {
-  const EMAIL = "email";
+  const EMAIL          = "email";
   const SESSION_LENGTH = "sessionLength";
-
+  
   const OLD_PASS = "oldPassword";
   const NEW_PASS = "newPassword";
 }
@@ -172,7 +174,7 @@ class UResponseErrorMessage extends UResponse {
 class UResponseAgent extends UResponse {
   const VOUCHER  = "voucher";
   const VOUCHERS = "vouchers";
-
+  
   const BINARIES          = "binaries";
   const BINARIES_NAME     = "name";
   const BINARIES_URL      = "url";
@@ -180,243 +182,245 @@ class UResponseAgent extends UResponse {
   const BINARIES_OS       = "os";
   const BINARIES_FILENAME = "filename";
   const AGENT_URL         = "apiUrl";
-
+  
   const AGENTS         = "agents";
   const AGENTS_ID      = "agentId";
   const AGENTS_NAME    = "name";
   const AGENTS_DEVICES = "devices";
-
-  const AGENT_NAME = "name";
-  const AGENT_DEVICES = "devices";
-  const AGENT_OWNER = "owner";
-  const AGENT_OWNER_ID = "userId";
-  const AGENT_OWNER_NAME = "username";
-  const AGENT_CPU_ONLY = "isCpuOnly";
-  const AGENT_TRUSTED = "isTrusted";
-  const AGENT_ACTIVE = "isActive";
-  const AGENT_TOKEN = "token";
-  const AGENT_PARAMS = "extraParameters";
-  const AGENT_ERRORS = "errorFlag";
-  const AGENT_ACTIVITY = "lastActivity";
+  
+  const AGENT_NAME            = "name";
+  const AGENT_DEVICES         = "devices";
+  const AGENT_OWNER           = "owner";
+  const AGENT_OWNER_ID        = "userId";
+  const AGENT_OWNER_NAME      = "username";
+  const AGENT_CPU_ONLY        = "isCpuOnly";
+  const AGENT_TRUSTED         = "isTrusted";
+  const AGENT_ACTIVE          = "isActive";
+  const AGENT_TOKEN           = "token";
+  const AGENT_PARAMS          = "extraParameters";
+  const AGENT_ERRORS          = "errorFlag";
+  const AGENT_ACTIVITY        = "lastActivity";
   const AGENT_ACTIVITY_ACTION = "action";
-  const AGENT_ACTIVITY_TIME = "time";
-  const AGENT_ACTIVITY_IP = "ip";
+  const AGENT_ACTIVITY_TIME   = "time";
+  const AGENT_ACTIVITY_IP     = "ip";
 }
 
 class UResponseTask extends UResponse {
-  const TASKS = "tasks";
-  const TASKS_ID = "taskId";
+  const TASKS              = "tasks";
+  const TASKS_ID           = "taskId";
   const TASKS_SUPERTASK_ID = "supertaskId";
-  const TASKS_NAME = "name";
-  const TASKS_TYPE = "type";
-  const TASKS_HASHLIST = "hashlistId";
-  const TASKS_PRIORITY = "priority";
-
-  const TASK_ID = "taskId";
-  const TASK_NAME = "name";
-  const TASK_ATTACK = "attack";
-  const TASK_CHUNKSIZE = "cunksize";
-  const TASK_COLOR = "color";
-  const TASK_BENCH_TYPE = "benchmarkType";
-  const TASK_STATUS = "statusTimer";
-  const TASK_PRIORITY = "priority";
-  const TASK_CPU_ONLY = "isCpuOnly";
-  const TASK_SMALL = "isSmall";
-  const TASK_SKIP = "skipKeyspace";
-  const TASK_KEYSPACE = "keyspace";
-  const TASK_DISPATCHED = "dispatched";
-  const TASK_SEARCHED = "searched";
-  const TASK_SPEED = "speed";
-  const TASK_HASHLIST = "hashlistId";
-  const TASK_IMAGE = "imageUrl";
-  const TASK_FILES = "files";
-  const TASK_FILES_ID = "fileId";
-  const TASK_FILES_NAME = "filename";
-  const TASK_FILES_SIZE = "size";
-  const TASK_AGENTS = "agents";
-  const TASK_AGENTS_ID = "agentId";
+  const TASKS_NAME         = "name";
+  const TASKS_TYPE         = "type";
+  const TASKS_HASHLIST     = "hashlistId";
+  const TASKS_PRIORITY     = "priority";
+  
+  const TASK_ID               = "taskId";
+  const TASK_NAME             = "name";
+  const TASK_ATTACK           = "attack";
+  const TASK_CHUNKSIZE        = "cunksize";
+  const TASK_COLOR            = "color";
+  const TASK_BENCH_TYPE       = "benchmarkType";
+  const TASK_STATUS           = "statusTimer";
+  const TASK_PRIORITY         = "priority";
+  const TASK_CPU_ONLY         = "isCpuOnly";
+  const TASK_SMALL            = "isSmall";
+  const TASK_SKIP             = "skipKeyspace";
+  const TASK_KEYSPACE         = "keyspace";
+  const TASK_DISPATCHED       = "dispatched";
+  const TASK_SEARCHED         = "searched";
+  const TASK_SPEED            = "speed";
+  const TASK_HASHLIST         = "hashlistId";
+  const TASK_IMAGE            = "imageUrl";
+  const TASK_FILES            = "files";
+  const TASK_FILES_ID         = "fileId";
+  const TASK_FILES_NAME       = "filename";
+  const TASK_FILES_SIZE       = "size";
+  const TASK_AGENTS           = "agents";
+  const TASK_AGENTS_ID        = "agentId";
   const TASK_AGENTS_BENCHMARK = "benchmark";
-  const TASK_AGENTS_SPEED = "speed";
-  const TASK_CHUNKS = "chunkIds";
-
+  const TASK_AGENTS_SPEED     = "speed";
+  const TASK_CHUNKS           = "chunkIds";
+  
   const SUBTASKS = "subtasks";
-
-  const PRETASKS = "pretasks";
-  const PRETASKS_ID = "pretaskId";
-  const PRETASKS_NAME = "name";
+  
+  const PRETASKS          = "pretasks";
+  const PRETASKS_ID       = "pretaskId";
+  const PRETASKS_NAME     = "name";
   const PRETASKS_PRIORITY = "priority";
-
-  const PRETASK_ID = "pretaskId";
-  const PRETASK_NAME = "name";
-  const PRETASK_ATTACK = "attackCmd";
-  const PRETASK_CHUNKSIZE = "chunksize";
-  const PRETASK_COLOR = "color";
+  
+  const PRETASK_ID         = "pretaskId";
+  const PRETASK_NAME       = "name";
+  const PRETASK_ATTACK     = "attackCmd";
+  const PRETASK_CHUNKSIZE  = "chunksize";
+  const PRETASK_COLOR      = "color";
   const PRETASK_BENCH_TYPE = "benchmarkType";
-  const PRETASK_STATUS = "statusTimer";
-  const PRETASK_PRIORITY = "priority";
-  const PRETASK_CPU_ONLY = "isCpuOnly";
-  const PRETASK_SMALL = "isSmall";
-  const PRETASK_FILES = "files";
-  const PRETASK_FILES_ID = "fileId";
+  const PRETASK_STATUS     = "statusTimer";
+  const PRETASK_PRIORITY   = "priority";
+  const PRETASK_CPU_ONLY   = "isCpuOnly";
+  const PRETASK_SMALL      = "isSmall";
+  const PRETASK_FILES      = "files";
+  const PRETASK_FILES_ID   = "fileId";
   const PRETASK_FILES_NAME = "filename";
   const PRETASK_FILES_SIZE = "size";
-
-  const SUPERTASKS = "supertasks";
-  const SUPERTASKS_ID = "supertaskId";
+  
+  const SUPERTASKS      = "supertasks";
+  const SUPERTASKS_ID   = "supertaskId";
   const SUPERTASKS_NAME = "name";
-
-  const SUPERTASK_ID = "supertaskId";
+  
+  const SUPERTASK_ID   = "supertaskId";
   const SUPERTASK_NAME = "name";
-
-  const CHUNK_ID = "chunkId";
-  const CHUNK_START = "start";
-  const CHUNK_LENGTH = "length";
+  
+  const CHUNK_ID         = "chunkId";
+  const CHUNK_START      = "start";
+  const CHUNK_LENGTH     = "length";
   const CHUNK_CHECKPOINT = "checkpoint";
-  const CHUNK_PROGRESS = "progress";
-  const CHUNK_TASK = "taskId";
-  const CHUNK_AGENT = "agentId";
+  const CHUNK_PROGRESS   = "progress";
+  const CHUNK_TASK       = "taskId";
+  const CHUNK_AGENT      = "agentId";
   const CHUNK_DISPATCHED = "dispatchTime";
-  const CHUNK_ACTIVITY = "lastActivity";
-  const CHUNK_STATE = "state";
-  const CHUNK_CRACKED = "cracked";
-  const CHUNK_SPEED = "speed";
+  const CHUNK_ACTIVITY   = "lastActivity";
+  const CHUNK_STATE      = "state";
+  const CHUNK_CRACKED    = "cracked";
+  const CHUNK_SPEED      = "speed";
 }
 
 class UResponseHashlist extends UResponse {
-  const HASHLISTS = "hashlists";
-  const HASHLISTS_ID = "hashlistId";
-  const HASHLISTS_NAME = "name";
+  const HASHLISTS             = "hashlists";
+  const HASHLISTS_ID          = "hashlistId";
+  const HASHLISTS_NAME        = "name";
   const HASHLISTS_HASHTYPE_ID = "hashtypeId";
-  const HASHLISTS_FORMAT = "format";
-  const HASHLISTS_COUNT = "hashCount";
-
-  const HASHLIST_ID = "hashlistId";
-  const HASHLIST_NAME = "name";
-  const HASHLIST_HASHTYPE_ID = "hashtypeId";
-  const HASHLIST_FORMAT = "format";
-  const HASHLIST_COUNT = "hashCount";
-  const HASHLIST_CRACKED = "cracked";
-  const HASHLIST_ACCESS_GROUP = "accessGroupId";
-  const HASHLIST_HEX_SALT = "isHexSalt";
-  const HASHLIST_SALTED = "isSalted";
-  const HASHLIST_SECRET = "isSecret";
+  const HASHLISTS_FORMAT      = "format";
+  const HASHLISTS_COUNT       = "hashCount";
+  
+  const HASHLIST_ID             = "hashlistId";
+  const HASHLIST_NAME           = "name";
+  const HASHLIST_HASHTYPE_ID    = "hashtypeId";
+  const HASHLIST_FORMAT         = "format";
+  const HASHLIST_COUNT          = "hashCount";
+  const HASHLIST_CRACKED        = "cracked";
+  const HASHLIST_ACCESS_GROUP   = "accessGroupId";
+  const HASHLIST_HEX_SALT       = "isHexSalt";
+  const HASHLIST_SALTED         = "isSalted";
+  const HASHLIST_SECRET         = "isSecret";
   const HASHLIST_SALT_SEPARATOR = "saltSeparator";
-
+  const HASHLIST_NOTES          = "hashlistNotes";
+  
   const ZAP_LINES_PROCESSED = "linesProcessed";
-  const ZAP_NEW_CRACKED = "newCracked";
+  const ZAP_NEW_CRACKED     = "newCracked";
   const ZAP_ALREADY_CRACKED = "alreadyCracked";
-  const ZAP_INVALID = "invalidLines";
-  const ZAP_NOT_FOUND = "notFound";
-  const ZAP_TIME_REQUIRED = "processTime";
-  const ZAP_TOO_LONG = "tooLongPlains";
-
-  const EXPORT_FILE_ID = "fileId";
+  const ZAP_INVALID         = "invalidLines";
+  const ZAP_NOT_FOUND       = "notFound";
+  const ZAP_TIME_REQUIRED   = "processTime";
+  const ZAP_TOO_LONG        = "tooLongPlains";
+  
+  const EXPORT_FILE_ID   = "fileId";
   const EXPORT_FILE_NAME = "filename";
-
-  const HASH = "hash";
-  const PLAIN = "plain";
+  
+  const HASH     = "hash";
+  const PLAIN    = "plain";
+  const CRACKPOS = "crackpos";
 }
 
 class UResponseSuperhashlist extends UResponse {
-  const SUPERHASHLISTS = "superhashlists";
-  const SUPERHASHLISTS_ID = "hashlistId";
-  const SUPERHASHLISTS_NAME = "name";
+  const SUPERHASHLISTS             = "superhashlists";
+  const SUPERHASHLISTS_ID          = "hashlistId";
+  const SUPERHASHLISTS_NAME        = "name";
   const SUPERHASHLISTS_HASHTYPE_ID = "hashtypeId";
-  const SUPERHASHLISTS_COUNT = "hashCount";
-
-  const SUPERHASHLIST_ID = "hashlistId";
-  const SUPERHASHLIST_NAME = "name";
-  const SUPERHASHLIST_HASHTYPE_ID = "hashtypeId";
-  const SUPERHASHLIST_COUNT = "hashCount";
-  const SUPERHASHLIST_CRACKED = "cracked";
+  const SUPERHASHLISTS_COUNT       = "hashCount";
+  
+  const SUPERHASHLIST_ID           = "hashlistId";
+  const SUPERHASHLIST_NAME         = "name";
+  const SUPERHASHLIST_HASHTYPE_ID  = "hashtypeId";
+  const SUPERHASHLIST_COUNT        = "hashCount";
+  const SUPERHASHLIST_CRACKED      = "cracked";
   const SUPERHASHLIST_ACCESS_GROUP = "accessGroupId";
-  const SUPERHASHLIST_SECRET = "isSecret";
-  const SUPERHASHLIST_HASHLISTS = "hashlists";
+  const SUPERHASHLIST_SECRET       = "isSecret";
+  const SUPERHASHLIST_HASHLISTS    = "hashlists";
 }
 
 class UResponseFile extends UResponse {
-  const FILES = "files";
-  const FILES_FILE_ID = "fileId";
+  const FILES          = "files";
+  const FILES_FILE_ID  = "fileId";
   const FILES_FILETYPE = "fileType";
   const FILES_FILENAME = "filename";
-
-  const FILE_ID = "fileId";
-  const FILE_TYPE = "fileType";
+  
+  const FILE_ID       = "fileId";
+  const FILE_TYPE     = "fileType";
   const FILE_FILENAME = "filename";
-  const FILE_SECRET = "isSecret";
-  const FILE_SIZE = "size";
-  const FILE_URL = "url";
+  const FILE_SECRET   = "isSecret";
+  const FILE_SIZE     = "size";
+  const FILE_URL      = "url";
 }
 
 class UResponseCracker extends UResponse {
-  const CRACKERS = "crackers";
-  const CRACKERS_ID = "crackerTypeId";
+  const CRACKERS      = "crackers";
+  const CRACKERS_ID   = "crackerTypeId";
   const CRACKERS_NAME = "crackerTypeName";
-
-  const CRACKER_ID = "crackerTypeId";
+  
+  const CRACKER_ID   = "crackerTypeId";
   const CRACKER_NAME = "crackerTypeName";
-
-  const VERSIONS = "crackerVersions";
-  const VERSIONS_ID = "versionId";
-  const VERSIONS_VERSION = "version";
-  const VERSIONS_URL = "downloadUrl";
+  
+  const VERSIONS             = "crackerVersions";
+  const VERSIONS_ID          = "versionId";
+  const VERSIONS_VERSION     = "version";
+  const VERSIONS_URL         = "downloadUrl";
   const VERSIONS_BINARY_NAME = "binaryBasename";
 }
 
 class UResponseConfig extends UResponse {
-  const CONFIG = "items";
-  const CONFIG_SECTION_ID = "configSectionId";
-  const CONFIG_ITEM = "item";
-  const CONFIG_VALUE = "value";
-  const CONFIG_TYPE = "configType";
+  const CONFIG             = "items";
+  const CONFIG_SECTION_ID  = "configSectionId";
+  const CONFIG_ITEM        = "item";
+  const CONFIG_VALUE       = "value";
+  const CONFIG_TYPE        = "configType";
   const CONFIG_DESCRIPTION = "itemDescription";
-
-  const SECTIONS = "configSections";
-  const SECTIONS_ID = "configSectionId";
+  
+  const SECTIONS      = "configSections";
+  const SECTIONS_ID   = "configSectionId";
   const SECTIONS_NAME = "name";
 }
 
 class UResponseUser extends UResponse {
-  const USERS = "users";
-  const USERS_ID = "userId";
+  const USERS          = "users";
+  const USERS_ID       = "userId";
   const USERS_USERNAME = "username";
-
-  const USER_ID = "userId";
-  const USER_USERNAME = "username";
-  const USER_EMAIL = "email";
-  const USER_RIGHT_GROUP_ID = "rightGroupId";
-  const USER_REGISTERED = "registered";
-  const USER_LAST_LOGIN = "lastLogin";
-  const USER_IS_VALID = "isValid";
+  
+  const USER_ID               = "userId";
+  const USER_USERNAME         = "username";
+  const USER_EMAIL            = "email";
+  const USER_RIGHT_GROUP_ID   = "rightGroupId";
+  const USER_REGISTERED       = "registered";
+  const USER_LAST_LOGIN       = "lastLogin";
+  const USER_IS_VALID         = "isValid";
   const USER_SESSION_LIFETIME = "sessionLifetime";
 }
 
 class UResponseGroup extends UResponse {
-  const GROUPS = "groups";
-  const GROUPS_ID = "groupId";
+  const GROUPS      = "groups";
+  const GROUPS_ID   = "groupId";
   const GROUPS_NAME = "name";
-
-  const GROUP_ID = "groupId";
+  
+  const GROUP_ID   = "groupId";
   const GROUP_NAME = "name";
-  const USERS = "users";
-  const AGENTS = "agents";
+  const USERS      = "users";
+  const AGENTS     = "agents";
 }
 
 class UResponseAccess extends UResponse {
-  const RIGHT_GROUPS_ID = "rightGroupId";
+  const RIGHT_GROUPS_ID   = "rightGroupId";
   const RIGHT_GROUPS_NAME = "name";
-  const RIGHT_GROUPS = "rightGroups";
-
-  const RIGHT_GROUP_ID = "rightGroupId";
+  const RIGHT_GROUPS      = "rightGroups";
+  
+  const RIGHT_GROUP_ID   = "rightGroupId";
   const RIGHT_GROUP_NAME = "name";
-  const PERMISSIONS = "permissions";
-  const MEMBERS = "members";
-  const WARNING = "warning";
+  const PERMISSIONS      = "permissions";
+  const MEMBERS          = "members";
+  const WARNING          = "warning";
 }
 
 class UResponseAccount extends UResponse {
-  const USER_ID = "userId";
-  const EMAIL = "email";
+  const USER_ID        = "userId";
+  const EMAIL          = "email";
   const RIGHT_GROUP_ID = "rightGroupId";
   const SESSION_LENGTH = "sessionLength";
 }
@@ -427,7 +431,7 @@ class UResponseAccount extends UResponse {
 
 abstract class UApi {
   abstract function describe($constant);
-
+  
   static function getConstants() {
     try {
       $oClass = new ReflectionClass(static::class);
@@ -437,9 +441,9 @@ abstract class UApi {
     }
     return $oClass->getConstants();
   }
-
-  static function getSection($section){
-    switch($section){
+  
+  static function getSection($section) {
+    switch ($section) {
       case USection::TEST:
         return new USectionTest();
       case USection::AGENT:
@@ -471,10 +475,10 @@ abstract class UApi {
     }
     return null;
   }
-
-  static function getDescription($section, $constant){
+  
+  static function getDescription($section, $constant) {
     $section = UApi::getSection($section);
-    if($section == null){
+    if ($section == null) {
       return "__" . $section . "_" . $constant . "__";
     }
     return $section->describe($constant);
@@ -496,8 +500,8 @@ class USection extends UApi {
   const GROUP         = "group";
   const ACCESS        = "access";
   const ACCOUNT       = "account";
-
-  public function describe($section){
+  
+  public function describe($section) {
     // placeholder
     return $section;
   }
@@ -506,15 +510,15 @@ class USection extends UApi {
 class USectionTest extends UApi {
   const CONNECTION = "connection";
   const ACCESS     = "access";
-
-  public function describe($constant){
-    switch($constant){
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionTest::CONNECTION:
         return "Connection testing";
       case USectionTest::ACCESS:
         return "Verifying the API key and test if user has access to the API";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
@@ -524,7 +528,7 @@ class USectionAgent extends UApi {
   const GET_BINARIES   = "getBinaries";
   const LIST_VOUCHERS  = "listVouchers";
   const DELETE_VOUCHER = "deleteVoucher";
-
+  
   const LIST_AGENTS      = "listAgents";
   const GET              = "get";
   const SET_ACTIVE       = "setActive";
@@ -534,9 +538,10 @@ class USectionAgent extends UApi {
   const SET_EXTRA_PARAMS = "setExtraParams";
   const SET_ERROR_FLAG   = "setErrorFlag";
   const SET_TRUSTED      = "setTrusted";
-
-  public function describe($constant){
-    switch($constant){
+  const DELETE_AGENT     = "deleteAgent";
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionAgent::CREATE_VOUCHER:
         return "Creating new vouchers";
       case USectionAgent::GET_BINARIES:
@@ -564,39 +569,39 @@ class USectionAgent extends UApi {
       case USectionAgent::SET_TRUSTED:
         return "Set if an agent is trusted or not";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionTask extends UApi {
-  const LIST_TASKS = "listTasks";
-  const GET_TASK = "getTask";
+  const LIST_TASKS    = "listTasks";
+  const GET_TASK      = "getTask";
   const LIST_SUBTASKS = "listSubtasks";
-  const GET_CHUNK = "getChunk";
-
-  const CREATE_TASK = "createTask";
-  const RUN_PRETASK = "runPretask";
+  const GET_CHUNK     = "getChunk";
+  
+  const CREATE_TASK   = "createTask";
+  const RUN_PRETASK   = "runPretask";
   const RUN_SUPERTASK = "runSupertask";
-
-  const SET_TASK_PRIORITY = "setTaskPriority";
+  
+  const SET_TASK_PRIORITY      = "setTaskPriority";
   const SET_SUPERTASK_PRIORITY = "setSupertaskPriority";
-  const SET_TASK_NAME = "setTaskName";
-  const SET_TASK_COLOR = "setTaskColor";
-  const SET_TASK_CPU_ONLY = "setTaskCpuOnly";
-  const SET_TASK_SMALL = "setTaskSmall";
-  const TASK_UNASSIGN_AGENT = "taskUnassignAgent";
-  const DELETE_TASK = "deleteTask";
-  const PURGE_TASK = "purgeTask";
-
+  const SET_TASK_NAME          = "setTaskName";
+  const SET_TASK_COLOR         = "setTaskColor";
+  const SET_TASK_CPU_ONLY      = "setTaskCpuOnly";
+  const SET_TASK_SMALL         = "setTaskSmall";
+  const TASK_UNASSIGN_AGENT    = "taskUnassignAgent";
+  const DELETE_TASK            = "deleteTask";
+  const PURGE_TASK             = "purgeTask";
+  
   const SET_SUPERTASK_NAME = "setSupertaskName";
-  const DELETE_SUPERTASK = "deleteSupertask";
-
-  const ARCHIVE_TASK = "archiveTask";
+  const DELETE_SUPERTASK   = "deleteSupertask";
+  
+  const ARCHIVE_TASK      = "archiveTask";
   const ARCHIVE_SUPERTASK = "archiveSupertask";
-
-  public function describe($constant){
-    switch($constant){
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionTask::LIST_TASKS:
         return "List all tasks";
       case USectionTask::GET_TASK:
@@ -638,26 +643,26 @@ class USectionTask extends UApi {
       case USectionTask::ARCHIVE_SUPERTASK:
         return "Archive supertasks";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionPretask extends UApi {
-  const LIST_PRETASKS = "listPretasks";
-  const GET_PRETASK = "getPretask";
+  const LIST_PRETASKS  = "listPretasks";
+  const GET_PRETASK    = "getPretask";
   const CREATE_PRETASK = "createPretask";
-
-  const SET_PRETASK_PRIORITY = "setPretaskPriority";
-  const SET_PRETASK_NAME = "setPretaskName";
-  const SET_PRETASK_COLOR = "setPretaskColor";
+  
+  const SET_PRETASK_PRIORITY  = "setPretaskPriority";
+  const SET_PRETASK_NAME      = "setPretaskName";
+  const SET_PRETASK_COLOR     = "setPretaskColor";
   const SET_PRETASK_CHUNKSIZE = "setPretaskChunksize";
-  const SET_PRETASK_CPU_ONLY = "setPretaskCpuOnly";
-  const SET_PRETASK_SMALL = "setPretaskSmall";
-  const DELETE_PRETASK = "deletePretask";
-
-  public function describe($constant){
-    switch($constant){
+  const SET_PRETASK_CPU_ONLY  = "setPretaskCpuOnly";
+  const SET_PRETASK_SMALL     = "setPretaskSmall";
+  const DELETE_PRETASK        = "deletePretask";
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionPretask::LIST_PRETASKS:
         return "List all preconfigured tasks";
       case USectionPretask::GET_PRETASK:
@@ -679,21 +684,22 @@ class USectionPretask extends UApi {
       case USectionPretask::DELETE_PRETASK:
         return "Delete preconfigured tasks";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionSupertask extends UApi {
-  const LIST_SUPERTASKS = "listSupertasks";
-  const GET_SUPERTASK = "getSupertask";
-  const CREATE_SUPERTASK = "createSupertask";
-  const IMPORT_SUPERTASK = "importSupertask";
+  const LIST_SUPERTASKS    = "listSupertasks";
+  const GET_SUPERTASK      = "getSupertask";
+  const CREATE_SUPERTASK   = "createSupertask";
+  const IMPORT_SUPERTASK   = "importSupertask";
   const SET_SUPERTASK_NAME = "setSupertaskName";
-  const DELETE_SUPERTASK = "deleteSupertask";
-
-  public function describe($constant){
-    switch($constant){
+  const DELETE_SUPERTASK   = "deleteSupertask";
+  const BULK_SUPERTASK     = "bulkSupertask";
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionSupertask::LIST_SUPERTASKS:
         return "List all supertasks";
       case USectionSupertask::GET_SUPERTASK:
@@ -706,29 +712,31 @@ class USectionSupertask extends UApi {
         return "Rename a configured supertask";
       case USectionSupertask::DELETE_SUPERTASK:
         return "Delete a supertask";
+      case USectionSupertask::BULK_SUPERTASK:
+        return "Create supertask out base command with files";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionHashlist extends UApi {
-  const LIST_HASLISTS = "listHashlists";
-  const GET_HASHLIST = "getHashlist";
-  const CREATE_HASHLIST = "createHashlist";
+  const LIST_HASLISTS     = "listHashlists";
+  const GET_HASHLIST      = "getHashlist";
+  const CREATE_HASHLIST   = "createHashlist";
   const SET_HASHLIST_NAME = "setHashlistName";
-  const SET_SECRET = "setSecret";
-
-  const IMPORT_CRACKED = "importCracked";
-  const EXPORT_CRACKED = "exportCracked";
+  const SET_SECRET        = "setSecret";
+  
+  const IMPORT_CRACKED    = "importCracked";
+  const EXPORT_CRACKED    = "exportCracked";
   const GENERATE_WORDLIST = "generateWordlist";
-  const EXPORT_LEFT = "exportLeft";
-
+  const EXPORT_LEFT       = "exportLeft";
+  
   const DELETE_HASHLIST = "deleteHashlist";
-  const GET_HASH = "getHash";
-
-  public function describe($constant){
-    switch($constant){
+  const GET_HASH        = "getHash";
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionHashlist::LIST_HASLISTS:
         return "List all hashlists";
       case USectionHashlist::GET_HASHLIST:
@@ -752,19 +760,19 @@ class USectionHashlist extends UApi {
       case USectionHashlist::GET_HASH:
         return "Query for specific hashes";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionSuperhashlist extends UApi {
-  const LIST_SUPERHASHLISTS = "listSuperhashlists";
-  const GET_SUPERHASHLIST = "getSuperhashlist";
+  const LIST_SUPERHASHLISTS  = "listSuperhashlists";
+  const GET_SUPERHASHLIST    = "getSuperhashlist";
   const CREATE_SUPERHASHLIST = "createSuperhashlist";
   const DELETE_SUPERHASHLIST = "deleteSuperhashlist";
-
-  public function describe($constant){
-    switch($constant){
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionSuperhashlist::LIST_SUPERHASHLISTS:
         return "List all superhashlists";
       case USectionSuperhashlist::GET_SUPERHASHLIST:
@@ -774,23 +782,23 @@ class USectionSuperhashlist extends UApi {
       case USectionSuperhashlist::DELETE_SUPERHASHLIST:
         return "Delete superhashlists";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionFile extends UApi {
   const LIST_FILES = "listFiles";
-  const GET_FILE = "getFile";
-  const ADD_FILE = "addFile";
-
-  const RENAME_FILE = "renameFile";
-  const SET_SECRET = "setSecret";
-  const DELETE_FILE = "deleteFile";
+  const GET_FILE   = "getFile";
+  const ADD_FILE   = "addFile";
+  
+  const RENAME_FILE   = "renameFile";
+  const SET_SECRET    = "setSecret";
+  const DELETE_FILE   = "deleteFile";
   const SET_FILE_TYPE = "setFileType";
-
-  public function describe($constant){
-    switch($constant){
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionFile::LIST_FILES:
         return "List all files";
       case USectionFile::GET_FILE:
@@ -806,23 +814,23 @@ class USectionFile extends UApi {
       case USectionFile::SET_FILE_TYPE:
         return "Change type of files";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionCracker extends UApi {
-  const LIST_CRACKERS = "listCrackers";
-  const GET_CRACKER = "getCracker";
+  const LIST_CRACKERS  = "listCrackers";
+  const GET_CRACKER    = "getCracker";
   const DELETE_VERSION = "deleteVersion";
   const DELETE_CRACKER = "deleteCracker";
-
+  
   const CREATE_CRACKER = "createCracker";
-  const ADD_VERSION = "addVersion";
+  const ADD_VERSION    = "addVersion";
   const UPDATE_VERSION = "updateVersion";
-
-  public function describe($constant){
-    switch($constant){
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionCracker::LIST_CRACKERS:
         return "List all crackers";
       case USectionCracker::GET_CRACKER:
@@ -838,19 +846,19 @@ class USectionCracker extends UApi {
       case USectionCracker::UPDATE_VERSION:
         return "Update cracker versions";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionConfig extends UApi {
   const LIST_SECTIONS = "listSections";
-  const LIST_CONFIG = "listConfig";
-  const GET_CONFIG = "getConfig";
-  const SET_CONFIG = "setConfig";
-
-  public function describe($constant){
-    switch($constant){
+  const LIST_CONFIG   = "listConfig";
+  const GET_CONFIG    = "getConfig";
+  const SET_CONFIG    = "setConfig";
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionConfig::LIST_SECTIONS:
         return "List available sections in config";
       case USectionConfig::LIST_CONFIG:
@@ -860,22 +868,22 @@ class USectionConfig extends UApi {
       case USectionConfig::SET_CONFIG:
         return "Change values of configs";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionUser extends UApi {
-  const LIST_USERS = "listUsers";
-  const GET_USER = "getUser";
-  const CREATE_USER = "createUser";
-  const DISABLE_USER = "disableUser";
-  const ENABLE_USER = "enableUser";
-  const SET_USER_PASSWORD = "setUserPassword";
+  const LIST_USERS           = "listUsers";
+  const GET_USER             = "getUser";
+  const CREATE_USER          = "createUser";
+  const DISABLE_USER         = "disableUser";
+  const ENABLE_USER          = "enableUser";
+  const SET_USER_PASSWORD    = "setUserPassword";
   const SET_USER_RIGHT_GROUP = "setUserRightGroup";
-
-  public function describe($constant){
-    switch($constant){
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionUser::LIST_USERS:
         return "List all users";
       case USectionUser::GET_USER:
@@ -891,24 +899,24 @@ class USectionUser extends UApi {
       case USectionUser::SET_USER_RIGHT_GROUP:
         return "Change the permission group for a user";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionGroup extends UApi {
-  const LIST_GROUPS = "listGroups";
-  const GET_GROUP = "getGroup";
+  const LIST_GROUPS  = "listGroups";
+  const GET_GROUP    = "getGroup";
   const CREATE_GROUP = "createGroup";
   const DELETE_GROUP = "deleteGroup";
-
-  const ADD_AGENT = "addAgent";
-  const ADD_USER = "addUser";
+  
+  const ADD_AGENT    = "addAgent";
+  const ADD_USER     = "addUser";
   const REMOVE_AGENT = "removeAgent";
-  const REMOVE_USER = "removeUser";
-
-  public function describe($constant){
-    switch($constant){
+  const REMOVE_USER  = "removeUser";
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionGroup::LIST_GROUPS:
         return "List all groups";
       case USectionGroup::GET_GROUP:
@@ -926,20 +934,20 @@ class USectionGroup extends UApi {
       case USectionGroup::REMOVE_USER:
         return "Remove users from groups";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionAccess extends UApi {
-  const LIST_GROUPS = "listGroups";
-  const GET_GROUP = "getGroup";
-  const CREATE_GROUP = "createGroup";
-  const DELETE_GROUP = "deleteGroup";
+  const LIST_GROUPS     = "listGroups";
+  const GET_GROUP       = "getGroup";
+  const CREATE_GROUP    = "createGroup";
+  const DELETE_GROUP    = "deleteGroup";
   const SET_PERMISSIONS = "setPermissions";
-
-  public function describe($constant){
-    switch($constant){
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionAccess::LIST_GROUPS:
         return "List permission groups";
       case USectionAccess::GET_GROUP:
@@ -951,19 +959,19 @@ class USectionAccess extends UApi {
       case USectionAccess::SET_PERMISSIONS:
         return "Update permissions of a group";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }
 
 class USectionAccount extends UApi {
-  const GET_INFORMATION = "getInformation";
-  const SET_EMAIL = "setEmail";
+  const GET_INFORMATION    = "getInformation";
+  const SET_EMAIL          = "setEmail";
   const SET_SESSION_LENGTH = "setSessionLength";
-  const CHANGE_PASSWORD = "changePassword";
-
-  public function describe($constant){
-    switch($constant){
+  const CHANGE_PASSWORD    = "changePassword";
+  
+  public function describe($constant) {
+    switch ($constant) {
       case USectionAccount::GET_INFORMATION:
         return "Get account information";
       case USectionAccount::SET_EMAIL:
@@ -973,7 +981,7 @@ class USectionAccount extends UApi {
       case USectionAccount::CHANGE_PASSWORD:
         return "Change password";
       default:
-        return "__".$constant."__";
+        return "__" . $constant . "__";
     }
   }
 }

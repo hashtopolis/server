@@ -12,7 +12,6 @@ AccessControl::getInstance()->checkPermission(DViewControl::INDEX_VIEW_PERM);
 Template::loadInstance("static/index");
 UI::add('pageTitle', "Welcome");
 
-// TODO: rewrite these messages to use the messages template
 if (isset($_GET['err'])) {
   $err = $_GET['err'];
   $time = substr($err, 1);

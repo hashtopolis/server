@@ -14,14 +14,14 @@ class Encryption {
    * @return string base64 encoded hash
    */
   public static function sessionHash($id, $startTime, $username) {
-    $PEPPER = "__PEPPER1__";
+    global $PEPPER;
     
     $KEY = pack('H*', hash("sha256", $startTime));
     $cycles = Encryption::getCount($username . $startTime, 500, 1000);
     $CIPHER = $username . $startTime;
-    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
+    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER[0], 0, 8));
     for ($x = 0; $x < $cycles; $x++) {
-      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER . $KEY));
+      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER[0] . $KEY));
     }
     return Util::strToHex($KEY);
   }
@@ -65,18 +65,18 @@ class Encryption {
    * @return string hash
    */
   public static function passwordHash($password, $salt) {
-    $PEPPER = "__PEPPER2__";
+    global $PEPPER;
     
-    $CIPHER = $PEPPER . $password . $salt;
+    $CIPHER = $PEPPER[1] . $password . $salt;
     $options = array('cost' => 12);
     $CIPHER = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
     return $CIPHER;
   }
   
   public static function passwordVerify($password, $salt, $hash) {
-    $PEPPER = "__PEPPER2__";
+    global $PEPPER;
     
-    $CIPHER = $PEPPER . $password . $salt;
+    $CIPHER = $PEPPER[1] . $password . $salt;
     if (!password_verify($CIPHER, $hash)) {
       return false;
     }
@@ -108,14 +108,14 @@ class Encryption {
    * @return string base64 encoded hash
    */
   public static function validationHash($id, $username) {
-    $PEPPER = "__PEPPER3__";
+    global $PEPPER;
     
     $KEY = pack('H*', hash("sha256", $id));
-    $cycles = Encryption::getCount($username . $PEPPER, 500, 1000);
+    $cycles = Encryption::getCount($username . $PEPPER[2], 500, 1000);
     $CIPHER = $id . $username;
-    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER, 0, 8));
+    $CIPHER = openssl_encrypt($CIPHER, 'blowfish', $KEY, 0, substr($PEPPER[2], 0, 8));
     for ($x = 0; $x < $cycles; $x++) {
-      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER . $username . $KEY));
+      $KEY = pack('H*', hash("sha256", $CIPHER . $id . $PEPPER[2] . $username . $KEY));
     }
     return Util::strToHex($KEY);
   }

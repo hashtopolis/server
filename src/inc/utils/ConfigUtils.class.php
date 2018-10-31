@@ -15,17 +15,18 @@ class ConfigUtils {
   /**
    * @param Config $config
    * @param boolean $new
+   * @throws HTException
    */
   public static function set($config, $new) {
-    if($config->getItem() == DConfig::MULTICAST_ENABLE && $config->getValue()){
+    if ($config->getItem() == DConfig::MULTICAST_ENABLE && $config->getValue()) {
       // multicast was ticked to enable -> start runner
       RunnerUtils::startService();
     }
-    else if($config->getItem() == DConfig::MULTICAST_ENABLE && !$config->getValue()){
+    else if ($config->getItem() == DConfig::MULTICAST_ENABLE && !$config->getValue()) {
       // multicast was ticked to disable -> stop runner
       RunnerUtils::stopService();
     }
-
+    
     if ($new) {
       Factory::getConfigFactory()->save($config);
     }
@@ -33,7 +34,7 @@ class ConfigUtils {
       Factory::getConfigFactory()->update($config);
     }
   }
-
+  
   /**
    * @param string $item
    * @throws HTException
@@ -47,21 +48,21 @@ class ConfigUtils {
     }
     return $config;
   }
-
+  
   /**
    * @return ConfigSection[]
    */
   public static function getSections() {
     return Factory::getConfigSectionFactory()->filter([]);
   }
-
+  
   /**
    * @return Config[]
    */
   public static function getAll() {
     return Factory::getConfigFactory()->filter([]);
   }
-
+  
   /**
    * @param array $arr
    * @throws HTException
@@ -73,7 +74,7 @@ class ConfigUtils {
         if (SConfig::getInstance()->getVal($name) == $val) {
           continue; // the value was not changed, so we don't need to update it
         }
-
+        
         $qF = new QueryFilter(Config::ITEM, $name, "=");
         $config = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
         if ($config == null) {
@@ -102,26 +103,26 @@ class ConfigUtils {
     SConfig::reload();
     UI::add('config', SConfig::getInstance());
   }
-
+  
   /**
    * @return int[]
    */
   public static function rebuildCache() {
     $correctedChunks = 0;
     $correctedHashlists = 0;
-
+    
     //check chunks
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $taskWrappers = Factory::getTaskWrapperFactory()->filter([]);
     foreach ($taskWrappers as $taskWrapper) {
       $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get($taskWrapper->getHashlistId()));
-
+      
       $jF = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, Factory::getChunkFactory());
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=", Factory::getTaskFactory());
       $joined = Factory::getChunkFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
       /** @var $chunks Chunk[] */
       $chunks = $joined[Factory::getChunkFactory()->getModelName()];
-
+      
       foreach ($chunks as $chunk) {
         $hashFactory = ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) ? Factory::getHashFactory() : Factory::getHashBinaryFactory();
         $qF1 = new QueryFilter(Hash::CHUNK_ID, $chunk->getId(), "=");
@@ -135,7 +136,7 @@ class ConfigUtils {
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
-
+    
     //check hashlists
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
@@ -155,7 +156,7 @@ class ConfigUtils {
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
-
+    
     //check superhashlists
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $qF = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "=");
@@ -173,10 +174,10 @@ class ConfigUtils {
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
-
+    
     return [$correctedChunks, $correctedHashlists];
   }
-
+  
   /**
    * @throws HTMessages
    */
@@ -207,7 +208,7 @@ class ConfigUtils {
       throw new HTMessages($messages);
     }
   }
-
+  
   /**
    * @param User $user
    */

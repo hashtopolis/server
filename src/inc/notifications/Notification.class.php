@@ -5,20 +5,20 @@ use DBA\NotificationSetting;
 abstract class HashtopolisNotification {
   public static $name;
   protected     $receiver;
-
+  
   /** @var  $notification NotificationSetting */
   protected $notification;
-
+  
   private static $instances = [];
-
-  public static function add($name, $instance){
+  
+  public static function add($name, $instance) {
     self::$instances[$name] = $instance;
   }
-
-  public static function getInstances(){
+  
+  public static function getInstances() {
     return self::$instances;
   }
-
+  
   /**
    * @param $notificationType string
    * @param $payload DataSet
@@ -162,10 +162,10 @@ abstract class HashtopolisNotification {
     }
     $this->sendMessage($template->render($obj), $subject);
   }
-
+  
   abstract function getTemplateName();
-
+  
   abstract function getObjects();
-
+  
   abstract function sendMessage($message, $subject);
 }

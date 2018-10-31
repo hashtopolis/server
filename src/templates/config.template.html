@@ -11,6 +11,7 @@
     <button onclick="window.location='config.php?view=4'" type="button" class="btn btn-light{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
     <button onclick="window.location='config.php?view=5'" type="button" class="btn btn-light{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
     <button onclick="window.location='config.php?view=6'" type="button" class="btn btn-light{{IF [[configSectionId]] == 6}} active{{ENDIF}}">Multicast</button>
+    <button onclick="window.location='config.php?view=7'" type="button" class="btn btn-light{{IF [[configSectionId]] == 7}} active{{ENDIF}}">Notifications</button>
   </div>
 </div>
 
@@ -48,6 +49,13 @@
 						  {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "checkbox"}}
 							  <input type="hidden" name="config_[[conf.getVal('item')]]" value="0">
 							  <input title="Config Value" type="checkbox" name="config_[[conf.getVal('item')]]" value="1" {{IF [[conf.getVal('value')]] == 1}}checked{{ENDIF}}>
+						  {{ENDIF}}
+              {{IF [[DConfig::getConfigType([[conf.getVal('item')]])]] == "select"}}
+                <select name="config_[[conf.getVal('item')]]" class="form-control" title="config_[[conf.getVal('item')]]">
+                  {{FOREACH key;[[DConfig::getSelection([[conf.getVal('item')]])->getKeys()]]}}
+                    <option value="[[key]]"{{IF [[conf.getVal('value')]] == [[key]]}} selected{{ENDIF}}>[[DConfig::getSelection([[conf.getVal('item')]])->getVal([[key]])]]</option>
+                  {{ENDFOREACH}}
+                </select>
 						  {{ENDIF}}
 					  </td>
 				  </tr>

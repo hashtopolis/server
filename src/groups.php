@@ -41,7 +41,7 @@ else if (isset($_GET['id'])) {
   }
   else {
     UI::add('group', $group);
-
+    
     $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
     $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $group->getId(), "=", Factory::getAccessGroupUserFactory());
     $joinedUsers = Factory::getUserFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
@@ -49,7 +49,7 @@ else if (isset($_GET['id'])) {
     $users = $joinedUsers[Factory::getUserFactory()->getModelName()];
     UI::add('users', $users);
     $excludedUsers = Util::arrayOfIds($users);
-
+    
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
     $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $group->getId(), "=", Factory::getAccessGroupAgentFactory());
     $joinedAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
@@ -57,7 +57,7 @@ else if (isset($_GET['id'])) {
     $agents = $joinedAgents[Factory::getAgentFactory()->getModelName()];
     UI::add('agents', $agents);
     $excludedAgents = Util::arrayOfIds($agents);
-
+    
     $qF = new ContainFilter(User::USER_ID, $excludedUsers, Factory::getUserFactory(), true);
     UI::add('allUsers', Factory::getUserFactory()->filter([Factory::FILTER => $qF]));
     $qF = new ContainFilter(Agent::AGENT_ID, $excludedAgents, Factory::getAgentFactory(), true);
@@ -73,13 +73,13 @@ else {
   foreach ($userList as $user) {
     $users->addValue($user->getAccessGroupId(), $users->getVal($user->getAccessGroupId()) + 1);
   }
-
+  
   $agentList = Factory::getAccessGroupAgentFactory()->filter([]);
   $agents = new DataSet();
   foreach ($agentList as $agent) {
     $agents->addValue($agent->getAccessGroupId(), $agents->getVal($agent->getAccessGroupId()) + 1);
   }
-
+  
   UI::add('groups', Factory::getAccessGroupFactory()->filter([]));
   foreach (UI::get('groups') as $group) {
     if ($users->getVal($group->getId()) === false) {
@@ -89,7 +89,7 @@ else {
       $agents->addValue($group->getId(), 0);
     }
   }
-
+  
   UI::add('agents', $agents);
   UI::add('users', $users);
   UI::add('pageTitle', "Groups");
