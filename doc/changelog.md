@@ -8,6 +8,7 @@
 - Notes can be added to hashlists.
 - Added optional trace logging of actions from the client API to get more information in case of failures.
 - Slow hashes are marked, so the client can decide if piping could make sense for this hash type.
+- Agents can run health checks to determine if all agents are running correctly.
 
 ## Bugfixes
 

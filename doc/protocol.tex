@@ -8,7 +8,7 @@
 	\title{Hashtopolis Communication Protocol (V2)}
 	\maketitle
 	\section*{Introduction}
-	The communication between Hashtopolis Clients and Server is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
+	The communication between Hashtopolis Clients (Agents) and Server is always in JSON formatted values. When sending a request to the server, it should be a POST containing the JSON data.
 
 	\section*{Errors}
 	In case of an error with the query which the client sends to the server, the response will have following format with the corresponding action which was requested and the error message which should help in getting information about this error.
@@ -217,7 +217,9 @@
 	{
 	  "action":"getFile",
 	  "response":"SUCCESS",
-	  "url":"get.php?file=5&token=GHhgdf(/&"
+	  "extension": ".txt",
+	  "url":"get.php?file=5&token=GHhgdf(/&",
+	  "filesize": 267729
 	}
 	\end{verbatim}
 	

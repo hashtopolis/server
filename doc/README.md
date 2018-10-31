@@ -2,7 +2,8 @@
 
 ## Hashtopolis Protocol
 
-The current up-to-date protocol version which Hashtopolis uses to communicate with clients is contained in the `protocol.pdf` file.
+The current up-to-date protocol version which Hashtopolis uses to communicate with clients is contained in the `protocol.pdf` file. 
+The documentation for the User API can be found in `user-api/user-api.pdf`, listing all functions which can be called.
 
 ## Generic Crackers
 
