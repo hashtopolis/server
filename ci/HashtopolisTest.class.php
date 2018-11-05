@@ -29,8 +29,11 @@ abstract class HashtopolisTest {
     $TEST = true; // required to fix includes in upgrade script
     switch ($fromVersion) {
       case "0.8.0":
-        HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.9.0-rc1...");
+        HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.9.0...");
         include("/var/www/html/hashtopolis/src/install/updates/update_v0.8.0_v0.9.0.php");
+      case "0.9.0":
+        HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.9.0+dev...");
+        include("/var/www/html/hashtopolis/src/install/updates/update_v0.9.0_v0.x.x.php");
     }
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }
