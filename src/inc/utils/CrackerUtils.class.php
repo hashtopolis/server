@@ -6,6 +6,7 @@ use DBA\QueryFilter;
 use DBA\Task;
 use DBA\ContainFilter;
 use DBA\Factory;
+use DBA\Pretask;
 
 class CrackerUtils {
   /**
@@ -84,10 +85,18 @@ class CrackerUtils {
     $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     $versionIds = Util::arrayOfIds($binaries);
     
+    // check if there are tasks which use a binary of this type
     $qF = new ContainFilter(Task::CRACKER_BINARY_ID, $versionIds);
     $check = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
     if (sizeof($check) > 0) {
       throw new HTException("There are tasks which use binaries of this cracker!");
+    }
+
+    // check if there are pretasks using this type
+    $qF = new ContainFilter(Pretask::CRACKER_BINARY_TYPE_ID, $binaryTypeId);
+    $check = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]);
+    if (sizeof($check) > 0) {
+      throw new HTException("There are pretasks which use this cracker type!");
     }
     
     // delete
