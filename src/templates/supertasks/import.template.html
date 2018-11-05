@@ -138,7 +138,7 @@
 			    <tr>
 				    <td style="width: 200px;">Base Command (use FILE where it should be iterated over the selection):</td>
 				    <td>
-					    <input type='text' name='command' class='form-control' title="Base Command" value="[[SConfig::getInstance()->getVal([[$DConfig::HASHLIST_ALIAS]])]] ">
+					    <input type='text' id="cmdLine" name='command' class='form-control' title="Base Command" value="[[SConfig::getInstance()->getVal([[$DConfig::HASHLIST_ALIAS]])]] ">
 				    </td>
 			    </tr>
 			    <tr>
@@ -170,7 +170,7 @@
               {{FOREACH file;[[rules]]}}
                 <tr>
                   <td>
-                    <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
+                    <input title="Use File" type="checkbox" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'rule');" name="basefile[]" value="[[file.getVal('file').getId()]]">
                   </td>
                   <td>
                     <input title="Use File" type="checkbox" name="iterfile[]" value="[[file.getVal('file').getId()]]">
@@ -203,7 +203,7 @@
               {{FOREACH file;[[wordlists]]}}
                 <tr>
                   <td>
-                    <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
+                    <input title="Use File" type="checkbox" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" name="basefile[]" value="[[file.getVal('file').getId()]]">
                   </td>
                   <td>
                     <input title="Use File" type="checkbox" name="iterfile[]" value="[[file.getVal('file').getId()]]">
@@ -236,7 +236,7 @@
               {{FOREACH file;[[other]]}}
                 <tr>
                   <td>
-                    <input title="Use File" type="checkbox" name="basefile[]" value="[[file.getVal('file').getId()]]">
+                    <input title="Use File" type="checkbox" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" name="basefile[]" value="[[file.getVal('file').getId()]]">
                   </td>
                   <td>
                     <input title="Use File" type="checkbox" name="iterfile[]" value="[[file.getVal('file').getId()]]">
@@ -297,6 +297,36 @@
             document.getElementById("otherButton").className = "btn btn-light active";
           }
           return false;
+        }
+
+        function assignFile(cmdLine, addObject, fileName, type) {
+          if (fileName.indexOf('.7z') !== -1) {
+            fileName = fileName.substring(0, fileName.length - 2) + '???';
+          }
+          var cmdObject = document.getElementById(cmdLine);
+          if (addObject === true) {
+            if (cmdObject.value.indexOf(fileName) === -1) {
+              if (cmdObject.value.length > 0 && cmdObject.value.slice(-1) !== ' ') {
+                cmdObject.value += ' ';
+              }
+              if (type === 'rule') {
+                cmdObject.value += '-r ';
+              }
+              cmdObject.value += fileName;
+            }
+          }
+          else {
+            if (type === 'rule') {
+              cmdObject.value = cmdObject.value.replace('-r ' + fileName, '');
+            }
+            cmdObject.value = cmdObject.value.replace(fileName, '');
+            while (cmdObject.value.slice(-1) === ' ') {
+              cmdObject.value = cmdObject.value.substring(0, cmdObject.value.length - 1);
+            }
+            while (cmdObject.value.substring(0, 1) === ' ') {
+              cmdObject.value = cmdObject.value.substring(1);
+            }
+          }
         }
       </script>
     </div>
