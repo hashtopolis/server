@@ -3,7 +3,7 @@ use DBA\Config;
 use DBA\Factory;
 
 if (!isset($TEST)) {
-  require_once(dirname(__FILE__) . "/../../inc/db.php");
+  require_once(dirname(__FILE__) . "/../../inc/conf.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
 }
