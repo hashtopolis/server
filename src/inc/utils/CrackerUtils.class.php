@@ -93,7 +93,7 @@ class CrackerUtils {
     }
 
     // check if there are pretasks using this type
-    $qF = new ContainFilter(Pretask::CRACKER_BINARY_TYPE_ID, $binaryTypeId);
+    $qF = new QueryFilter(Pretask::CRACKER_BINARY_TYPE_ID, $binaryTypeId, "=");
     $check = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF]);
     if (sizeof($check) > 0) {
       throw new HTException("There are pretasks which use this cracker type!");
