@@ -5,7 +5,7 @@ class CrackerTest extends HashtopolisTest {
   protected $maxVersion = "master";
   protected $runType    = HashtopolisTest::RUN_FAST;
   
-  protected $currentHashcat = "4.2.1";
+  protected $currentHashcat = "5.0.0";
   
   public function init($version) {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing " . $this->getTestName() . "...");
