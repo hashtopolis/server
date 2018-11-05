@@ -33,6 +33,14 @@ use DBA\Factory;
  *         Bunch of useful static functions.
  */
 class Util {
+  public static function getHashtypeById($hashtypeId){
+    $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
+    if($hashtype == null){
+      return "N/A";
+    }
+    return $hashtype->getDescription();
+  }
+
   public static function getGitCommit() {
     $gitcommit = "";
     $gitfolder = dirname(__FILE__) . "/../../.git";
