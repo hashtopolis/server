@@ -167,6 +167,7 @@ class HashlistTest extends HashtopolisTest {
       "hashtypeId" => $hashtype,
       "accessGroupId" => 1,
       "data" => $data,
+      "useBrain" => false,
       "accessKey" => "mykey"
     ], HashtopolisTestFramework::REQUEST_UAPI
     );
