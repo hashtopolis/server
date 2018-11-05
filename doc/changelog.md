@@ -14,6 +14,7 @@
 
 - Fixed GPU data graph when having multiple agents.
 - Fixed assignment issue with subtasks of supertasks if they were in the same supertask.
+- Fixed that cracker types cannot be deleted when there are supertasks using this type.
 
 ## Enhancements
 
