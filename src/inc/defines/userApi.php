@@ -75,6 +75,7 @@ class UQueryHashlist extends UQuery {
   const HASHLIST_HASHTYPE_ID     = "hashtypeId";
   const HASHLIST_ACCESS_GROUP_ID = "accessGroupId";
   const HASHLIST_DATA            = "data";
+  const HASHLIST_USE_BRAIN       = "useBrain";
   
   const HASH = "hash";
 }

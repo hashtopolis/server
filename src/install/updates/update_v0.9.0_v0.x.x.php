@@ -28,4 +28,8 @@ $config = new Config(null, 1, DConfig::HASHCAT_BRAIN_PASS, '');
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 
+echo "Add brain settings... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hashlist` ADD `brainId` INT NOT NULL;");
+echo "OK\n";
+
 echo "Update complete!\n";
