@@ -139,7 +139,7 @@
                   function(){
                     $('#subtasks[[set.getVal("taskWrapperId")]]').DataTable().columns.adjust().responsive.recalc();
                   },
-                  1000
+                  300
                 );
                 loaded['[[set.getVal("taskWrapperId")]]'] = true;
                 $('td[rel=popover]').popover({
