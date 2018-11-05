@@ -5,8 +5,6 @@ class CrackerTest extends HashtopolisTest {
   protected $maxVersion = "master";
   protected $runType    = HashtopolisTest::RUN_FAST;
   
-  protected $currentHashcat = "5.0.0";
-  
   public function init($version) {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing " . $this->getTestName() . "...");
     parent::init($version);
@@ -17,14 +15,14 @@ class CrackerTest extends HashtopolisTest {
     $this->testListCrackers([1]);
     $this->testDeleteCracker(2, false); // invalid cracker type
     $this->testGetCracker(2, [], [], false); // invalid cracker
-    $this->testGetCracker(1, [1], [1 => ['version' => $this->currentHashcat, 'downloadUrl' => 'https://hashcat.net/files/hashcat-' . $this->currentHashcat . '.7z', 'binaryBasename' => 'hashcat']]);
+    $this->testGetCracker(1, [1], [1 => ['binaryBasename' => 'hashcat']]);
     $this->testCreateVersion(1, '1.2.3', 'hashcat', 'http://blub.com');
     $this->testCreateVersion(1, '1.2.3', 'hashcat', '', false); // empty url
     $this->testCreateVersion(1, '1.2.3', '', 'http://blub.com', false); // empty basename
     $this->testCreateVersion(1, '', 'hashcat', 'http://blub.com', false); // empty version
     $this->testCreateVersion(2, '1.2.3', 'hashcat', 'http://blub.com', false); // invalid cracker
     $this->testGetCracker(1, [1, 2], [
-      1 => ['version' => $this->currentHashcat, 'downloadUrl' => 'https://hashcat.net/files/hashcat-' . $this->currentHashcat . '.7z', 'binaryBasename' => 'hashcat'],
+      1 => ['binaryBasename' => 'hashcat'],
       2 => ['version' => '1.2.3', 'downloadUrl' => 'http://blub.com', 'binaryBasename' => 'hashcat']
     ]
     );
