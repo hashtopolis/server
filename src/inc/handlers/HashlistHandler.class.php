@@ -85,7 +85,8 @@ class HashlistHandler implements Handler {
             $_POST['source'],
             $_POST,
             $_FILES,
-            AccessControl::getInstance()->getUser()
+            AccessControl::getInstance()->getUser(),
+            (isset($_POST["useBrain"]) && intval($_POST["useBrain"]) == 1) ? 1 : 0
           );
           header("Location: hashlists.php?id=" . $hashlist->getId());
           die();
