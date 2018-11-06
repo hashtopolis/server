@@ -342,6 +342,10 @@ class PResponseGetTask extends PResponse {
   const PRINCE         = "usePrince";
   const ENFORCE_PIPE   = "enforcePipe";
   const SLOW_HASH      = "slowHash";
+  const USE_BRAIN      = "useBrain";
+  const BRAIN_HOST     = "brainHost";
+  const BRAIN_PORT     = "brainPort";
+  const BRAIN_PASS     = "brainPass";
 }
 
 class PResponseGetChunk extends PResponse {

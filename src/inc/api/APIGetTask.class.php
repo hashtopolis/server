@@ -147,25 +147,35 @@ class APIGetTask extends APIBasic {
     $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
     
     DServerLog::log(DServerLog::TRACE, "Sending task to agent", [$this->agent, $task, $taskFiles]);
+
+    $brain = ($hashlist->getBrainId() && !$task->getForcePipe() && !$task->getIsPrince()) ? true : false;
     
-    $this->sendResponse(array(
-        PResponseGetTask::ACTION => PActions::GET_TASK,
-        PResponseGetTask::RESPONSE => PValues::SUCCESS,
-        PResponseGetTask::TASK_ID => (int)$task->getId(),
-        PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
-        PResponseGetTask::CMD_PARAMETERS => " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
-        PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
-        PResponseGetTask::BENCHMARK => (int)SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME),
-        PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),
-        PResponseGetTask::FILES => $taskFiles,
-        PResponseGetTask::CRACKER_ID => $task->getCrackerBinaryId(),
-        PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run",
-        PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
-        PResponseGetTask::KEYSPACE => $task->getKeyspace(),
-        PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,
-        PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe()) ? true : false,
-        PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash()) ? true : false
-      )
+    $response = array(
+      PResponseGetTask::ACTION => PActions::GET_TASK,
+      PResponseGetTask::RESPONSE => PValues::SUCCESS,
+      PResponseGetTask::TASK_ID => (int)$task->getId(),
+      PResponseGetTask::ATTACK_COMMAND => $task->getAttackCmd(),
+      PResponseGetTask::CMD_PARAMETERS => " --hash-type=" . $hashlist->getHashTypeId() . " " . $this->agent->getCmdPars(),
+      PResponseGetTask::HASHLIST_ID => (int)$taskWrapper->getHashlistId(),
+      PResponseGetTask::BENCHMARK => (int)SConfig::getInstance()->getVal(DConfig::BENCHMARK_TIME),
+      PResponseGetTask::STATUS_TIMER => (int)$task->getStatusTimer(),
+      PResponseGetTask::FILES => $taskFiles,
+      PResponseGetTask::CRACKER_ID => $task->getCrackerBinaryId(),
+      PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run",
+      PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
+      PResponseGetTask::KEYSPACE => $task->getKeyspace(),
+      PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,
+      PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe()) ? true : false,
+      PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash()) ? true : false,
+      PResponseGetTask::USE_BRAIN => $brain,
     );
+
+    if($brain){
+      $response[PResponseGetTask::BRAIN_HOST] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_HOST);
+      $response[PResponseGetTask::BRAIN_PORT] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_PORT);
+      $response[PResponseGetTask::BRAIN_PASS] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_PASS);
+    }
+
+    $this->sendResponse($response);
   }
 }
