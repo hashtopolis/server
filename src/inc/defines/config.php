@@ -278,7 +278,7 @@ class DConfig {
       case DConfig::BATCH_SIZE:
         return "Batch size of SQL query when hashlist is sent to the agent.";
       case DConfig::YUBIKEY_ID:
-        return "Yubikey Client Id.";
+        return "Yubikey Client ID.";
       case DConfig::YUBIKEY_KEY:
         return "Yubikey Secret Key.";
       case DConfig::YUBIKEY_URL:
