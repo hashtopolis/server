@@ -250,9 +250,9 @@ class DConfig {
   public static function getConfigDescription($config) {
     switch ($config) {
       case DConfig::BENCHMARK_TIME:
-        return "Time in seconds an agent should benchmark a task";
+        return "Time in seconds an agent should benchmark a task.";
       case DConfig::CHUNK_DURATION:
-        return "Time in seconds a client should be working on a single chunk";
+        return "Time in seconds a client should be working on a single chunk.";
       case DConfig::CHUNK_TIMEOUT:
         return "Time in seconds the server will consider an issued chunk as inactive or timed out and will reallocate to another client.";
       case DConfig::AGENT_TIMEOUT:
@@ -260,33 +260,33 @@ class DConfig {
       case DConfig::HASHES_PAGE_SIZE:
         return "Number of hashes shown on each page of the hashes view.";
       case DConfig::FIELD_SEPARATOR:
-        return "The separator character used to separate hash and plain (or salt)";
+        return "The separator character used to separate hash and plain (or salt).";
       case DConfig::HASHLIST_ALIAS:
-        return "The string used as hashlist alias when creating a task";
+        return "The string used as hashlist alias when creating a task.";
       case DConfig::STATUS_TIMER:
-        return "Interval in seconds clients should report back to the server. (cracks, status, and progress)";
+        return "Interval in seconds clients should report back to the server. (cracks, status, and progress).";
       case DConfig::BLACKLIST_CHARS:
-        return "Characters that are not allowed to be used in attack command inputs";
+        return "Characters that are not allowed to be used in attack command inputs.";
       case DConfig::NUMBER_LOGENTRIES:
-        return "Number of log entries that should be saved. When this number is exceeded by 120%, the oldest will be overwritten";
+        return "Number of log entries that should be saved. When this number is exceeded by 120%, the oldest will be overwritten.";
       case DConfig::TIME_FORMAT:
-        return "Set the time format. Use syntax for PHPs date() method";
+        return "Set the time format. Use syntax for PHPs date() method.";
       case DConfig::BASE_URL:
-        return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation)";
+        return "Base url for the webpage (this does not include hostname and is normally determined automatically on the installation).";
       case DConfig::DISP_TOLERANCE:
-        return "Allowable deviation in the final chunk of a task in percent.<br>(avoids issuing small chunks when the remaining part of a task is slightly bigger than the normal chunk size)";
+        return "Allowable deviation in the final chunk of a task in percent.<br>(avoids issuing small chunks when the remaining part of a task is slightly bigger than the normal chunk size).";
       case DConfig::BATCH_SIZE:
-        return "Batch size of SQL query when hashlist is sent to the agent";
+        return "Batch size of SQL query when hashlist is sent to the agent.";
       case DConfig::YUBIKEY_ID:
-        return "Yubikey Client Id";
+        return "Yubikey Client Id.";
       case DConfig::YUBIKEY_KEY:
-        return "Yubikey Secret Key";
+        return "Yubikey Secret Key.";
       case DConfig::YUBIKEY_URL:
-        return "Yubikey API Url";
+        return "Yubikey API URL.";
       case DConfig::BASE_HOST:
         return "Base hostname/port/protocol to use. Only fill this in to override the auto-determined value.";
       case DConfig::DONATE_OFF:
-        return "Hide donation information";
+        return "Hide donation information.";
       case DConfig::PLAINTEXT_MAX_LENGTH:
         return "Max length of a plaintext. (WARNING: This change may take a long time depending on DB size!)";
       case DConfig::HASH_MAX_LENGTH:
@@ -344,13 +344,13 @@ class DConfig {
       case DConfig::TELEGRAM_PROXY_TYPE:
         return "Proxy type to use for telegram notifications.";
       case DConfig::DISABLE_TRIMMING:
-        return "Disable trimming of chunks and redo whole chunks";
+        return "Disable trimming of chunks and redo whole chunks.";
       case DConfig::PRIORITY_0_START:
-        return "Also automatically assign tasks with priority 0";
+        return "Also automatically assign tasks with priority 0.";
       case DConfig::SERVER_LOG_LEVEL:
-        return "Server level to be logged on the server to file";
+        return "Server level to be logged on the server to file.";
       case DConfig::MAX_SESSION_LENGTH:
-        return "Max session length users can configure (in hours)";
+        return "Max session length users can configure (in hours).";
     }
     return $config;
   }
