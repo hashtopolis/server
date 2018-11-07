@@ -4,6 +4,10 @@
 
 - Integration of Hashcat Brain feature.
 
+## Enhancements
+
+- In case of client errors the corresponding chunk now also is saved if available.
+
 # v0.8.0 -> v0.9.0
 
 ## Features
