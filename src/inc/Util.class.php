@@ -797,10 +797,10 @@ class Util {
     if ($total > 0) {
       $percentage = round(($part / $total) * 100, $decs);
       if ($percentage == 100 && $part < $total) {
-        $percentage -= 1 / (10 ^ $decs);
+        $percentage -= 1 / (pow(10, $decs));
       }
       if ($percentage == 0 && $part > 0) {
-        $percentage += 1 / (10 ^ $decs);
+        $percentage += 1 / (pow(10, $decs));
       }
     }
     else {
