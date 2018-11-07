@@ -284,20 +284,22 @@
       </table>
     </div>
   </div>
-  <div class="card">
-    <div class="table-responsive">
-      <table class="table table-bordered">
-        <tr>
-          <td>Visual representation</td>
-        </tr>
-        <tr>
-          <td>
-            <img class='img-fluid' style="height: 32px" src="api/taskimg.php?task=[[task.getId()]]&x=1500&y=32">
-          </td>
-        </tr>
-      {{ENDIF}}
-    </table>
-  </div>
+  {{IF [[task.getKeyspace()]] >= 0}}
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <tr>
+            <td>Visual representation</td>
+          </tr>
+          <tr>
+            <td>
+              <img class='img-fluid' style="height: 32px" src="api/taskimg.php?task=[[task.getId()]]&x=1500&y=32">
+            </td>
+          </tr>
+        {{ENDIF}}
+      </table>
+    </div>
+  {{ENDIF}}
 </div>
 {{IF [[sizeof([[attachedFiles]])]] > 0}}
   <h3>Attached files</h3>
