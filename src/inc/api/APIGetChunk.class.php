@@ -112,6 +112,8 @@ class APIGetChunk extends APIBasic {
     $qF2 = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
     $oF = new OrderFilter(Chunk::SKIP, "ASC");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+    $qF1 = new QueryFilter(Chunk::PROGRESS, null, "=");
+    $chunks = array_merge($chunks, Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]));
     foreach ($chunks as $chunk) {
       if ($chunk->getAgentId() == $this->agent->getId()) {
         DServerLog::log(DServerLog::DEBUG, "Found chunk of same agent which is not done yet.", [$this->agent, $task, $chunk]);
