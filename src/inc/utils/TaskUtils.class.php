@@ -436,8 +436,9 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
+    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
     $chunk->setState(0);
-    $chunk->setProgress(0);
+    $chunk->setProgress($initialProgress);
     $chunk->setCheckpoint($chunk->getSkip());
     $chunk->setDispatchTime(0);
     $chunk->setSolveTime(0);

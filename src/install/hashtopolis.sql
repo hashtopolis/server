@@ -188,7 +188,7 @@ CREATE TABLE `Chunk` (
   `dispatchTime` INT(11)    NOT NULL,
   `solveTime`    INT(11)    NOT NULL,
   `checkpoint`   BIGINT(20) NOT NULL,
-  `progress`     INT(11)    NOT NULL,
+  `progress`     INT(11)        NULL,
   `state`        INT(11)    NOT NULL,
   `cracked`      INT(11)    NOT NULL,
   `speed`        BIGINT(20) NOT NULL

@@ -36,4 +36,8 @@ echo "Update agent error table... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentError` ADD `chunkId` INT NULL;");
 echo "OK\n";
 
+echo "Update chunk table... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Chunk` CHANGE `progress` `progress` INT(11) NULL;");
+echo "OK\n";
+
 echo "Update complete!\n";

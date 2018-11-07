@@ -129,7 +129,9 @@ class APISendProgress extends APIBasic {
     /*
      * Save chunk updates
      */
-    $chunk->setProgress($relativeProgress);
+    if(!$task->getIsPrince() && !$task->getForcePipe()){
+      $chunk->setProgress($relativeProgress);
+    }
     $chunk->setCheckpoint($keyspaceProgress);
     $chunk->setSolveTime(time());
     $aborting = false;

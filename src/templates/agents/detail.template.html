@@ -297,7 +297,11 @@
             {{ENDIF}}
           </td>
           <td class='num'>
-            [[Util::showperc([[chunk.getProgress()]], 10000)]]%
+            {{IF [[chunk.getProgress()]] == null}}
+              N/A
+            {{ELSE}}
+              [[Util::showperc([[chunk.getProgress()]], 10000)]]%
+            {{ENDIF}}
           </td>
           <td>
             {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
