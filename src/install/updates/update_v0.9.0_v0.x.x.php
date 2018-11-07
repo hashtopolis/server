@@ -32,4 +32,8 @@ echo "Add brain settings... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hashlist` ADD `brainId` INT NOT NULL;");
 echo "OK\n";
 
+echo "Update agent error table... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentError` ADD `chunkId` INT NULL;");
+echo "OK\n";
+
 echo "Update complete!\n";

@@ -173,8 +173,9 @@ class PQueryClientError extends PQuery {
     return true;
   }
   
-  const TASK_ID = "taskId";
-  const MESSAGE = "message";
+  const TASK_ID  = "taskId";
+  const MESSAGE  = "message";
+  const CHUNK_ID = "chunkId";
 }
 
 class PQueryDownloadBinary extends PQuery {

@@ -185,12 +185,13 @@
 	\end{verbatim}
 	
 	\subsection*{Client Error}
-	In case there happens an error with Hashcat/Cracker on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page.
+	In case there happens an error with Hashcat/Cracker on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page. The chunk ID is optional and can be null if not available.
 	\begin{verbatim}
 	{
 	  "action":"clientError",
 	  "taskId":45,
 	  "token":"GHhgdf(/&",
+	  "chunkId": 1,
 	  "message":"This is a sample error message!"
 	}
 	\end{verbatim}

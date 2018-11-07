@@ -23,7 +23,7 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @return AgentError
    */
   function getNullObject() {
-    $o = new AgentError(-1, null, null, null, null);
+    $o = new AgentError(-1, null, null, null, null, null);
     return $o;
   }
 
@@ -33,7 +33,7 @@ class AgentErrorFactory extends AbstractModelFactory {
    * @return AgentError
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new AgentError($dict['agentErrorId'], $dict['agentId'], $dict['taskId'], $dict['time'], $dict['error']);
+    $o = new AgentError($dict['agentErrorId'], $dict['agentId'], $dict['taskId'], $dict['chunkId'], $dict['time'], $dict['error']);
     return $o;
   }
 

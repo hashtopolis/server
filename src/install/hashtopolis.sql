@@ -125,7 +125,8 @@ CREATE TABLE `AgentError` (
   `agentId`      INT(11)                      NOT NULL,
   `taskId`       INT(11) DEFAULT NULL,
   `time`         INT(11)                      NOT NULL,
-  `error`        TEXT COLLATE utf8_unicode_ci NOT NULL
+  `error`        TEXT COLLATE utf8_unicode_ci NOT NULL,
+  `chunkId`      INT(11)                      NULL
 )
   ENGINE = InnoDB;
 

@@ -36,6 +36,7 @@ $CONF['AgentError'] = array(
   'agentErrorId',
   'agentId',
   'taskId',
+  'chunkId',
   'time',
   'error'
 );

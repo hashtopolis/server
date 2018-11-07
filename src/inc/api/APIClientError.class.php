@@ -32,7 +32,11 @@ class APIClientError extends APIBasic {
     DServerLog::log(DServerLog::INFO, "Agent " . $this->agent->getId() . " sent error: " . $QUERY[PQueryClientError::MESSAGE]);
     if ($this->agent->getIgnoreErrors() <= DAgentIgnoreErrors::IGNORE_SAVE) {
       //save error message
-      $error = new AgentError(null, $this->agent->getId(), $task->getId(), time(), $QUERY[PQueryClientError::MESSAGE]);
+      $chunkId = null;
+      if(isset($QUERY[PQueryClientError::CHUNK_ID])){
+        $chunkId = intval($QUERY[PQueryClientError::CHUNK_ID]);
+      }
+      $error = new AgentError(null, $this->agent->getId(), $task->getId(), $chunkId, time(), $QUERY[PQueryClientError::MESSAGE]);
       Factory::getAgentErrorFactory()->save($error);
       
       $payload = new DataSet(array(DPayloadKeys::AGENT => $this->agent, DPayloadKeys::AGENT_ERROR => $QUERY[PQueryClientError::MESSAGE]));
