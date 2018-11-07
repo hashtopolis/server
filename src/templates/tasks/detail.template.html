@@ -232,7 +232,7 @@
         <tr>
           <td>Keyspace searched:</td>
           <td>
-            {{IF [[task.getKeyspace()]] > 0}}
+            {{IF [[task.getKeyspace()]] > 0 || ([[task.getIsPrince()]] && [[cProgress]] > 0)}}
               [[cProgress]] ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%)
             {{ELSE}}
               N/A
