@@ -154,6 +154,17 @@ class PQueryGetFile extends PQuery {
   const FILENAME = "file";
 }
 
+class PQueryGetFound extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::HASHLIST_ID])) {
+      return false;
+    }
+    return true;
+  }
+  
+  const HASHLIST_ID  = "hashlistId";
+}
+
 class PQueryClientError extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::TASK_ID]) || !isset($QUERY[self::MESSAGE])) {
@@ -342,6 +353,10 @@ class PResponseGetTask extends PResponse {
   const PRINCE         = "usePrince";
   const ENFORCE_PIPE   = "enforcePipe";
   const SLOW_HASH      = "slowHash";
+  const USE_BRAIN      = "useBrain";
+  const BRAIN_HOST     = "brainHost";
+  const BRAIN_PORT     = "brainPort";
+  const BRAIN_PASS     = "brainPass";
 }
 
 class PResponseGetChunk extends PResponse {
@@ -366,6 +381,10 @@ class PResponseSendProgress extends PResponse {
   const HASH_ZAPS     = "zaps";
 }
 
+class PResponseGetFound extends PResponse {
+  const URL = "url";
+}
+
 ######################
 # Action definitions #
 ######################
@@ -388,4 +407,5 @@ class PActions {
   const GET_FILE_STATUS           = "getFileStatus";
   const GET_HEALTH_CHECK          = "getHealthCheck";
   const SEND_HEALTH_CHECK         = "sendHealthCheck";
+  const GET_FOUND                 = "getFound";
 }

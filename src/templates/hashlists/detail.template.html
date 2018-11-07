@@ -61,6 +61,12 @@
         </td>
       </tr>
       <tr>
+        <td>Using hashcat brain:</td>
+        <td>
+          {{IF [[list.getVal('hashlist')->getBrainId()]]}}Yes{{ELSE}}No{{ENDIF}}
+        </td>
+      </tr>
+      <tr>
         <td>Format:</td>
         <td>
           [[Util::getStaticArray([[list.getVal('hashlist')->getFormat()]], 'formats')]]

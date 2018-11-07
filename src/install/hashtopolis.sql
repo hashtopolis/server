@@ -264,7 +264,11 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (62, 7, 'telegramProxyType', 'HTTP'),
   (63, 1, 'priority0Start', '0'),
   (64, 5, 'baseUrl', ''),
-  (65, 4, 'maxSessionLength', '48');
+  (65, 4, 'maxSessionLength', '48'),
+  (66, 1, 'hashcatBrainHost', ''),
+  (67, 1, 'hashcatBrainEnable', '0'),
+  (68, 1, 'hashcatBrainPort', '0'),
+  (69, 1, 'hashcatBrainPass', '');
 
 -- --------------------------------------------------------
 
@@ -442,7 +446,8 @@ CREATE TABLE `Hashlist` (
   `hexSalt`       INT(11)                 NOT NULL,
   `isSalted`      TINYINT(4)              NOT NULL,
   `accessGroupId` INT(11)                 NOT NULL,
-  `notes`         TEXT                    NOT NULL
+  `notes`         TEXT                    NOT NULL,
+  `brainId`       INT(11)                 NOT NULL
 )
   ENGINE = InnoDB;
 

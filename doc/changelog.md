@@ -1,5 +1,9 @@
 # v0.9.0 -> v0.x.x
 
+## Features
+
+- Integration of Hashcat Brain feature.
+
 # v0.8.0 -> v0.9.0
 
 ## Features
