@@ -4,6 +4,10 @@
 
 - Integration of Hashcat Brain feature.
 
+## Bugfixes
+
+- Fixed wrong percentage in case of big tasks where percentage was close to 0.
+
 ## Enhancements
 
 - In case of client errors the corresponding chunk now also is saved if available.
