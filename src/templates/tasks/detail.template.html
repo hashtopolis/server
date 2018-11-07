@@ -564,7 +564,11 @@
             {{ENDIF}}
           </td>
           <td class="num">
-            [[Util::showperc([[chunk.getProgress()]], 10000)]]%
+            {{IF [[task.getIsPrince()]] || [[task.getForcePipe()]]}}
+              N/A
+            {{ELSE}}
+              [[Util::showperc([[chunk.getProgress()]], 10000)]]%
+            {{ENDIF}}
           </td>
           <td>
             {{IF ![[chunk.getAgentId()]]}}
