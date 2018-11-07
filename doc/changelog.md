@@ -11,6 +11,7 @@
 ## Enhancements
 
 - In case of client errors the corresponding chunk now also is saved if available.
+- Make more clear naming on rule splitting tasks, rules have an empty line at the end to increase readability.
 
 # v0.8.0 -> v0.9.0
 
