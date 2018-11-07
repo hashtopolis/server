@@ -218,7 +218,7 @@
         <tr>
           <td>Keyspace dispatched:</td>
           <td>
-            [[task.getKeyspaceProgress()]] ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%)
+            [[task.getKeyspaceProgress()]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%){{ENDIF}}
             {{IF [[isActive]] == 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
               <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
                 <input type="hidden" name="action" value="[[$DTaskAction::PURGE_TASK]]">
@@ -233,7 +233,7 @@
           <td>Keyspace searched:</td>
           <td>
             {{IF [[task.getKeyspace()]] > 0 || ([[task.getIsPrince()]] && [[cProgress]] > 0)}}
-              [[cProgress]] ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%)
+              [[cProgress]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%){{ENDIF}}
             {{ELSE}}
               N/A
             {{ENDIF}}
