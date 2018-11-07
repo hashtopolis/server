@@ -315,6 +315,8 @@ class APISendProgress extends APIBasic {
       $incompleteFilter = new QueryFilter(Chunk::PROGRESS, 10000, "<");
       $taskFilter = new QueryFilter(Chunk::TASK_ID, $taskID, "=");
       $count = Factory::getChunkFactory()->countFilter([Factory::FILTER => [$incompleteFilter, $taskFilter]]);
+      $incompleteFilter = new QueryFilter(Chunk::PROGRESS, null, "=");
+      $count += Factory::getChunkFactory()->countFilter([Factory::FILTER => [$incompleteFilter, $taskFilter]]);
       if ($count == 0) {
         // this was the last incomplete chunk!
         $taskdone = true;
