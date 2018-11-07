@@ -281,10 +281,10 @@
             {{ENDIF}}
           </td>
         </tr>
-      </table>
+        {{IF [[task.getKeyspace()]] >= 0}}
+        </table>
+      </div>
     </div>
-  </div>
-  {{IF [[task.getKeyspace()]] >= 0}}
     <div class="card">
       <div class="table-responsive">
         <table class="table table-bordered">
@@ -297,9 +297,9 @@
             </td>
           </tr>
         {{ENDIF}}
-      </table>
-    </div>
-  {{ENDIF}}
+      {{ENDIF}}
+    </table>
+  </div>
 </div>
 {{IF [[sizeof([[attachedFiles]])]] > 0}}
   <h3>Attached files</h3>
