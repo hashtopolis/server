@@ -94,11 +94,13 @@ if (isset($_GET['id'])) {
     UI::add('errors', Factory::getAgentErrorFactory()->filter([Factory::FILTER => $qF]));
     
     $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+    $oF = new OrderFilter(Chunk::DISPATCH_TIME, "DESC");
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
     $timeSpent = 0;
     foreach ($chunks as $chunk) {
       $timeSpent += max($chunk->getSolveTime(), $chunk->getDispatchTime()) - $chunk->getDispatchTime();
     }
+    $chunks = array_slice($chunks, 0, 50);
     UI::add('chunks', $chunks);
     UI::add('timeSpent', $timeSpent);
   }
