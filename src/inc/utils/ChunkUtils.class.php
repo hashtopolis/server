@@ -107,9 +107,10 @@ class ChunkUtils {
     if ($remaining / $length <= $disptolerance && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       $length = $remaining;
     }
-    $newProgress = $task->getKeyspaceProgress() + $length;
-    $task->setKeyspaceProgress($newProgress);
-    Factory::getTaskFactory()->update($task);
+    //$newProgress = $task->getKeyspaceProgress() + $length;
+    //$task->setKeyspaceProgress($newProgress);
+    Factory::getTaskFactory()->inc($task->getId(), Task::KEYSPACE_PROGRESS, $length);
+    //Factory::getTaskFactory()->update($task);
     $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
