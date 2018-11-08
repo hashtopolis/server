@@ -14,6 +14,7 @@ use DBA\QueryFilterWithNull;
 use DBA\TaskDebugOutput;
 use DBA\AgentStat;
 use DBA\Factory;
+use DBA\TaskWrapper;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
@@ -351,6 +352,8 @@ class APISendProgress extends APIBasic {
     if ($sumCracked > 0) {
       $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $this->agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $totalHashlist));
       NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
+
+      Factory::getTaskWrapperFactory()->inc($taskWrapper, TaskWrapper::CRACKED, $sumCracked);
     }
     
     if ($aborting) {

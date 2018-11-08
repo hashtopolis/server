@@ -10,8 +10,9 @@ class TaskWrapper extends AbstractModel {
   private $accessGroupId;
   private $taskWrapperName;
   private $isArchived;
+  private $cracked;
   
-  function __construct($taskWrapperId, $priority, $taskType, $hashlistId, $accessGroupId, $taskWrapperName, $isArchived) {
+  function __construct($taskWrapperId, $priority, $taskType, $hashlistId, $accessGroupId, $taskWrapperName, $isArchived, $cracked) {
     $this->taskWrapperId = $taskWrapperId;
     $this->priority = $priority;
     $this->taskType = $taskType;
@@ -19,6 +20,7 @@ class TaskWrapper extends AbstractModel {
     $this->accessGroupId = $accessGroupId;
     $this->taskWrapperName = $taskWrapperName;
     $this->isArchived = $isArchived;
+    $this->cracked = $cracked;
   }
   
   function getKeyValueDict() {
@@ -30,6 +32,7 @@ class TaskWrapper extends AbstractModel {
     $dict['accessGroupId'] = $this->accessGroupId;
     $dict['taskWrapperName'] = $this->taskWrapperName;
     $dict['isArchived'] = $this->isArchived;
+    $dict['cracked'] = $this->cracked;
     
     return $dict;
   }
@@ -105,6 +108,14 @@ class TaskWrapper extends AbstractModel {
   function setIsArchived($isArchived){
     $this->isArchived = $isArchived;
   }
+  
+  function getCracked(){
+    return $this->cracked;
+  }
+  
+  function setCracked($cracked){
+    $this->cracked = $cracked;
+  }
 
   const TASK_WRAPPER_ID = "taskWrapperId";
   const PRIORITY = "priority";
@@ -113,4 +124,5 @@ class TaskWrapper extends AbstractModel {
   const ACCESS_GROUP_ID = "accessGroupId";
   const TASK_WRAPPER_NAME = "taskWrapperName";
   const IS_ARCHIVED = "isArchived";
+  const CRACKED = "cracked";
 }

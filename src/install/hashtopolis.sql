@@ -942,7 +942,8 @@ CREATE TABLE `TaskWrapper` (
   `hashlistId`      INT(11)      NOT NULL,
   `accessGroupId`   INT(11) DEFAULT NULL,
   `taskWrapperName` VARCHAR(100) NOT NULL,
-  `isArchived`      INT(11)      NOT NULL
+  `isArchived`      INT(11)      NOT NULL,
+  `cracked`         INT(11)      NOT NULL
 )
   ENGINE = InnoDB;
 

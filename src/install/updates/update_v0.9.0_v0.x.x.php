@@ -40,4 +40,8 @@ echo "Update chunk table... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Chunk` CHANGE `progress` `progress` INT(11) NULL;");
 echo "OK\n";
 
+echo "Update taskwrapper table... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `TaskWrapper` ADD `cracked` INT NOT NULL;");
+echo "OK\n";
+
 echo "Update complete!\n";
