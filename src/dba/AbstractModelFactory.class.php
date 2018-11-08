@@ -222,18 +222,20 @@ abstract class AbstractModelFactory {
    * Increments the given key of this model by the given value
    *
    * Returns the return of PDO::execute()
-   * @param $id int primary key of model
+   * @param $model AbstractModel primary key of model
    * @param $key string key of the column to update
    * @param $value int amount of increment
    * @return PDOStatement
    */
-  public function inc($id, $key, $value = 1) {
+  public function inc(&$model, $key, $value = 1) {
     $query = "UPDATE " . $this->getModelTable() . " SET " . $key . "=" . $key . "+?";
 
     $values = [];
-    $query = $query . " WHERE " . $this->getPrimaryKey() . "=?";
+    $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
     array_push($values, $value);
-    array_push($values, $id);
+    array_push($values, $model->getPrimaryKeyValue());
+
+    $model = $this->get($model->getPrimaryKeyValue());
 
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
