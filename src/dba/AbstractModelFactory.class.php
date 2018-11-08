@@ -235,10 +235,10 @@ abstract class AbstractModelFactory {
     array_push($values, $value);
     array_push($values, $model->getPrimaryKeyValue());
 
-    $model = $this->get($model->getPrimaryKeyValue());
-
     $stmt = $this->getDB()->prepare($query);
     $stmt->execute($values);
+
+    $model = $this->get($model->getPrimaryKeyValue());
     return $stmt;
   }
 
