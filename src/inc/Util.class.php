@@ -489,6 +489,9 @@ class Util {
       return -1;
     }
     $fp = fopen($file, "rb");
+    if ($fp === false){
+      return -1;
+    }
     $pos = 0;
     $size = 1073741824;
     fseek($fp, 0, SEEK_SET);
