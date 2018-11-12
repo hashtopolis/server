@@ -45,7 +45,7 @@
     </td>
     <td class='num' style="min-width: 50px;">
       {{IF [[subTask.getVal('numAssignments')]] > 0}}
-        [[subTask.getVal('numAssignments')]]<br>
+        [[subTask.getVal('numAssignments')]]
         {{IF [[subTask.getVal('isActive')]]}}  
           <br>
           @[[Util::nicenum([[subTask.getVal('speed')]], 10000, 1000)]]H/s
