@@ -61,8 +61,8 @@ class Util {
     $data = [];
     $used = [];
     for($i=0;$i<$limit;$i++){
-      $data[$limit] = 0;
-      $used[$limit] = [];
+      $data[$i] = 0;
+      $used[$i] = [];
     }
 
     $first = $entries[0]->getTime();
