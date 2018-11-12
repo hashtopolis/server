@@ -79,7 +79,7 @@ class Util {
     }
     
     // prepare with timestamps
-    $first = round($first, floor($delta / 10));
+    $first = round($first, -log10($delta));
     $timestampData = [];
     foreach($data as $key => $val){
       $timestampData[$first - ($limit - 1 - $key) * $delta] = $val;

@@ -333,6 +333,57 @@
     </div>
   </div>
 {{ENDIF}}
+{{IF [[task.getKeyspace()]] > 0}}
+  <h3>Task Speed</h3>
+  <div class="row">
+    <div class="col col-12">
+      <canvas id="taskSpeed"></canvas>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+      var config = {
+          type: 'line',
+          data: {
+              labels: [[taskSpeedXLabels]],
+              datasets: [[taskSpeed]]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              tooltips: {
+                  mode: 'index',
+                  intersect: false,
+              },
+              hover: {
+                  mode: 'nearest',
+                  intersect: true
+              },
+              scales: {
+                  xAxes: [{
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: 'Time'
+                      }
+                  }],
+                  yAxes: [{
+                      display: true,
+                      scaleLabel: {
+                          display: true,
+                          labelString: 'H/s'
+                      }
+                  }]
+              }
+          }
+      };
+
+      window.onload = function () {
+          var ctx = document.getElementById('taskSpeed').getContext('2d');
+          window.myLine = new Chart(ctx, config);
+      };
+  </script>
+{{ENDIF}}
 <h3>Assigned agents</h3>
 <div class="card">
   <div class="table-responsive">
