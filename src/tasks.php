@@ -218,23 +218,6 @@ if (isset($_GET['id'])) {
     }
     UI::add('agentObjects', $agentObjects);
     UI::add('allAgentsSpent', $allAgentsSpent);
-
-    // load graph data
-    $data = Util::getSpeedDataSet($task->getId());
-    $datasets[0] = [
-      "label" => "H/s",
-      "fill" => false,
-      "lineTension" => 0.2,
-      "borderColor" => "#008000",
-      "backgroundColor" => "#008000",
-      "data" => $data
-    ];
-    $xlabels = [];
-    foreach($data as $key => $val){
-      $xlables[] = $key;
-    }
-    UI::add("taskSpeedXLabels", $xlabels);
-    UI::add("taskSpeed", $datasets[0]);
   }
   
   if (isset($_GET['all'])) {
@@ -257,6 +240,23 @@ if (isset($_GET['id'])) {
   }
   UI::add('fullAgents', $fullAgents);
   UI::add('pageTitle', "Task details for " . $task->getTaskName());
+
+    // load graph data
+    $data = Util::getSpeedDataSet($task->getId());
+    $datasets[0] = [
+      "label" => "H/s",
+      "fill" => false,
+      "lineTension" => 0.2,
+      "borderColor" => "#008000",
+      "backgroundColor" => "#008000",
+      "data" => $data
+    ];
+    $xlabels = [];
+    foreach($data as $key => $val){
+      $xlables[] = $key;
+    }
+    UI::add("taskSpeedXLabels", $xlabels);
+    UI::add("taskSpeed", $datasets[0]);
 }
 else if (isset($_GET['new'])) {
   AccessControl::getInstance()->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
