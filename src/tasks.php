@@ -241,8 +241,9 @@ if (isset($_GET['id'])) {
   UI::add('fullAgents', $fullAgents);
   UI::add('pageTitle', "Task details for " . $task->getTaskName());
 
-    // load graph data
-    $data = Util::getSpeedDataSet($task->getId());
+  // load graph data
+  $data = Util::getSpeedDataSet($task->getId());
+  if(sizeof($data) > 0){
     $xlabels = [];
     $rawData = [];
     foreach($data as $key => $val){
@@ -259,6 +260,8 @@ if (isset($_GET['id'])) {
     ];
     UI::add("taskSpeedXLabels", json_encode($xlabels));
     UI::add("taskSpeed", json_encode($datasets));
+  }
+  UI::add('taskGraph', (sizeof($data) > 0)?1:0);
 }
 else if (isset($_GET['new'])) {
   AccessControl::getInstance()->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
