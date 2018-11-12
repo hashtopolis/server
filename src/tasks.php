@@ -256,7 +256,7 @@ if (isset($_GET['id'])) {
       $xlables[] = $key;
     }
     UI::add("taskSpeedXLabels", json_encode($xlabels));
-    UI::add("taskSpeed", json_encode($datasets[0]));
+    UI::add("taskSpeed", json_encode($datasets));
 }
 else if (isset($_GET['new'])) {
   AccessControl::getInstance()->checkPermission(array_merge(DAccessControl::RUN_TASK_ACCESS, DAccessControl::CREATE_TASK_ACCESS));
