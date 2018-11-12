@@ -47,7 +47,7 @@ class Util {
     $qF1 = new QueryFilter(Speed::TASK_ID, $taskId, "=");
     $oF = new OrderFilter(Speed::SPEED_ID, "DESC LIMIT $requestLimit");
     if($agentId > 0){
-      $qF2 = new ContainFilter(Speed::AGENT_ID, $agentId, "=");
+      $qF2 = new QueryFilter(Speed::AGENT_ID, $agentId, "=");
       $entries = Factory::getSpeedFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
     }
     else{
