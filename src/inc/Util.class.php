@@ -67,7 +67,7 @@ class Util {
 
     $first = $entries[0]->getTime();
     foreach($entries as $entry){
-      $pos = 49 - floor(($first - $entry->getTime()) / $delta);
+      $pos = $limit - 1 - floor(($first - $entry->getTime()) / $delta);
       if($pos < 0){
         continue; // too old entry
       }
@@ -77,7 +77,14 @@ class Util {
       $data[$pos] += $entry->getSpeed();
       $used[$pos][] = $entry->getAgentId();
     }
-    return $data;
+    
+    // prepare with timestamps
+    $first = round($first, floor($delta / 10));
+    $timestampData = [];
+    foreach($data as $key => $val){
+      $timestampData[$first - ($limit - 1 - $key) * $delta] = $val;
+    }
+    return $timestampData;
   }
 
   public static function getHashtypeById($hashtypeId){
