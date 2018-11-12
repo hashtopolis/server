@@ -707,10 +707,11 @@ class HashlistUtils {
    * @param array $files
    * @param User $user
    * @param int $brainId
+   * @param int $brainFeatures
    * @throws HTException
    * @return Hashlist
    */
-  public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId) {
+  public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId, $brainFeatures) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
@@ -718,6 +719,7 @@ class HashlistUtils {
     $format = intval($format);
     $hashtype = intval($hashtype);
     $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
+    $brainFeatures = intval($brainFeatures);
     
     if ($format < DHashlistFormat::PLAIN || $format > DHashlistFormat::BINARY) {
       throw new HTException("Invalid hashlist format!");
@@ -737,9 +739,12 @@ class HashlistUtils {
     else if ($brainId && !SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_ENABLE)){
       throw new HTException("Hashcat brain cannot be used if not enabled in config!");
     }
+    else if($brainId && $brainFeatures < 1 || $brainFeatures > 3){
+      throw new HTException("Invalid brain features selected!");
+    }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId);
+    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures);
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
     
     $dataSource = "";
@@ -945,7 +950,7 @@ class HashlistUtils {
       }
     }
     
-    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0);
+    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0, 0);
     $superhashlist = Factory::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {

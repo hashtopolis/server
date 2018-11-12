@@ -172,8 +172,9 @@ class APIGetTask extends APIBasic {
 
     if($brain){
       $response[PResponseGetTask::BRAIN_HOST] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_HOST);
-      $response[PResponseGetTask::BRAIN_PORT] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_PORT);
+      $response[PResponseGetTask::BRAIN_PORT] = intval(SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_PORT));
       $response[PResponseGetTask::BRAIN_PASS] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_PASS);
+      $response[PResponseGetTask::BRAIN_FEATURES] = (int)$hashlist->getBrainFeatures();
     }
 
     $this->sendResponse($response);

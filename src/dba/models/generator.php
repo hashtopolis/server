@@ -137,7 +137,8 @@ $CONF['Hashlist'] = array(
   'isSalted',
   'accessGroupId',
   'notes',
-  'brainId'
+  'brainId',
+  'brainFeatures'
 );
 $CONF['HashType'] = array(
   'hashTypeId',

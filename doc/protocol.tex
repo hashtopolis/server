@@ -271,7 +271,8 @@
 	  "keyspace":0,
 	  "usePrince": false,
 	  "enforcePipe": false,
-	  "slowHash": false
+	  "slowHash": false,
+	  "useBrain": false
 	}
 	\end{verbatim}
 	or send this if there is no task available:
@@ -281,6 +282,34 @@
 	  "response":"SUCCESS",
 	  "taskId": null,
 	  "reason": "No task available!"
+	}
+	\end{verbatim}
+	In case the hashcat brain is used, further settings are sent:
+	\begin{verbatim}
+	{
+	  "action":"getTask",
+	  "response":"SUCCESS",
+	  "taskId": 25,
+	  "attackcmd": "#HL# -a 3 ?a?a?a?a --hash-type=0",
+	  "hashlistId": 13,
+	  "bench": 30,
+	  "statustimer": 5,
+	  "benchType":"speed",
+	  "crackerId":45
+	  "hashlistAlias":"#HL#",
+	  "files": [
+	    "rockyou.txt",
+	    "wordlist.txt"
+	  ],
+	  "keyspace":0,
+	  "usePrince": false,
+	  "enforcePipe": false,
+	  "slowHash": false,
+	  "useBrain": true,
+	  "brainHost": "10.20.30.40",
+	  "brainPort": 1234,
+	  "brainPass": "password",
+	  "brainFeatures": 3
 	}
 	\end{verbatim}
 	

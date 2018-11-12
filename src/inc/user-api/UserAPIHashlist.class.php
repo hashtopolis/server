@@ -234,7 +234,8 @@ class UserAPIHashlist extends UserAPIBasic {
       ['hashfield' => base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA])],
       [],
       $this->user, 
-      $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN]
+      $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
+      $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
     );
     $this->sendSuccessResponse($QUERY);
   }

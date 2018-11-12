@@ -448,7 +448,8 @@ CREATE TABLE `Hashlist` (
   `isSalted`      TINYINT(4)              NOT NULL,
   `accessGroupId` INT(11)                 NOT NULL,
   `notes`         TEXT                    NOT NULL,
-  `brainId`       INT(11)                 NOT NULL
+  `brainId`       INT(11)                 NOT NULL,
+  `brainFeatures` TINYINT(4)              NOT NULL
 )
   ENGINE = InnoDB;
 

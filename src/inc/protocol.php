@@ -358,6 +358,7 @@ class PResponseGetTask extends PResponse {
   const BRAIN_HOST     = "brainHost";
   const BRAIN_PORT     = "brainPort";
   const BRAIN_PASS     = "brainPass";
+  const BRAIN_FEATURES = "brainFeatures";
 }
 
 class PResponseGetChunk extends PResponse {
