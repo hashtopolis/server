@@ -15,6 +15,7 @@ use DBA\TaskDebugOutput;
 use DBA\AgentStat;
 use DBA\Factory;
 use DBA\TaskWrapper;
+use DBA\Speed;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
@@ -433,6 +434,10 @@ class APISendProgress extends APIBasic {
         }
         $chunk->setSpeed($speed);
         Factory::getChunkFactory()->update($chunk);
+
+        // save speed in history
+        $s = new Speed(null, $this->agent->getId(), $task->getId(), $speed);
+        Factory::getSpeedFactory()->save($s);
         
         $qF = new QueryFilter(AgentZap::AGENT_ID, $this->agent->getId(), "=");
         $agentZap = Factory::getAgentZapFactory()->filter([Factory::FILTER => $qF], true);
