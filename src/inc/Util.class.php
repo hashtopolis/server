@@ -25,6 +25,7 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\FileDelete;
 use DBA\Factory;
+use DBA\Speed;
 
 /**
  *
@@ -33,6 +34,52 @@ use DBA\Factory;
  *         Bunch of useful static functions.
  */
 class Util {
+  public static function getSpeedDataSet($taskId, $limit = 50, $agentId = 0, $delta = 10){
+    // if agentId is 0 we need to find out how many agents there are to find how many entries we would need max
+    $requestLimit = intval($limit) * $delta / 5;
+    if($agentId == 0){ // This might be to rewritten, it's just an estimation how to calculate an ideal number of entries to be requested
+      // we cannot request all entries here as this number might grow quite quickly over time
+      $qF = new QueryFilter(Assignment::TASK_ID, $taskId, "=");
+      $agentCount = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]) + 1;
+      $requestLimit = $agentCount * $limit * $delta / 5;
+    }
+
+    $qF1 = new QueryFilter(Speed::TASK_ID, $taskId, "=");
+    $oF = new OrderFilter(Speed::SPEED_ID, "DESC LIMIT $requestLimit");
+    if($agentId > 0){
+      $qF2 = new ContainFilter(Speed::AGENT_ID, $agentId, "=");
+      $entries = Factory::getSpeedFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+    }
+    else{
+      $entries = Factory::getSpeedFactory()->filter([Factory::FILTER => $qF1, Factory::ORDER => $oF]);
+    }
+
+    if(sizeof($entries) == 0){
+      return [];
+    }
+
+    $data = [];
+    $used = [];
+    for($i=0;$i<$limit;$i++){
+      $data[$limit] = 0;
+      $used[$limit] = [];
+    }
+
+    $first = $entries[0]->getTime();
+    foreach($entries as $entry){
+      $pos = 49 - floor(($first - $entry->getTime()) / $delta);
+      if($pos < 0){
+        continue; // too old entry
+      }
+      else if(in_array($entry->getAgentId(), $used[$pos])){
+        continue; // if we already have a newer entry in this range, we ignore it
+      }
+      $data[$pos] += $entry->getSpeed();
+      $used[$pos][] = $entry->getAgentId();
+    }
+    return $data;
+  }
+
   public static function getHashtypeById($hashtypeId){
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if($hashtype == null){
