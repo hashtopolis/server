@@ -243,18 +243,20 @@ if (isset($_GET['id'])) {
 
     // load graph data
     $data = Util::getSpeedDataSet($task->getId());
+    $xlabels = [];
+    $rawData = [];
+    foreach($data as $key => $val){
+      $xlables[] = $key;
+      $rawData[] = $val;
+    }
     $datasets[0] = [
       "label" => "H/s",
       "fill" => false,
       "lineTension" => 0.2,
       "borderColor" => "#008000",
       "backgroundColor" => "#008000",
-      "data" => $data
+      "data" => $rawData
     ];
-    $xlabels = [];
-    foreach($data as $key => $val){
-      $xlables[] = $key;
-    }
     UI::add("taskSpeedXLabels", json_encode($xlabels));
     UI::add("taskSpeed", json_encode($datasets));
 }
