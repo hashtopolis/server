@@ -386,6 +386,12 @@
             scaleLabel: {
               display: true,
               labelString: 'H/s'
+            },
+            ticks: {
+              beginAtZero: false,
+              callback: function(value, index, values) {
+                return value.toLocaleString();
+              }
             }
           }]
         }
