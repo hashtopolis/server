@@ -246,7 +246,7 @@ if (isset($_GET['id'])) {
     $xlabels = [];
     $rawData = [];
     foreach($data as $key => $val){
-      $xlabels[] = $key;
+      $xlabels[] = date(SConfig::getInstance()->getVal(DConfig::TIME_FORMAT), $key);
       $rawData[] = $val;
     }
     $datasets[0] = [
