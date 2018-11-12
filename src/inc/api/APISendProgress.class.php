@@ -436,8 +436,10 @@ class APISendProgress extends APIBasic {
         Factory::getChunkFactory()->update($chunk);
 
         // save speed in history
-        $s = new Speed(null, $this->agent->getId(), $task->getId(), $speed, time());
-        Factory::getSpeedFactory()->save($s);
+        if($speed > 0){
+          $s = new Speed(null, $this->agent->getId(), $task->getId(), $speed, time());
+          Factory::getSpeedFactory()->save($s);
+        }
         
         $qF = new QueryFilter(AgentZap::AGENT_ID, $this->agent->getId(), "=");
         $agentZap = Factory::getAgentZapFactory()->filter([Factory::FILTER => $qF], true);
