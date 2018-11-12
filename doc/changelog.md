@@ -3,6 +3,7 @@
 ## Features
 
 - Integration of Hashcat Brain feature.
+- Speed data is kept and can be shown in graphs for tasks.
 
 ## Bugfixes
 
