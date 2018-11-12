@@ -246,7 +246,7 @@ if (isset($_GET['id'])) {
     $xlabels = [];
     $rawData = [];
     foreach($data as $key => $val){
-      $xlables[] = $key;
+      $xlabels[] = $key;
       $rawData[] = $val;
     }
     $datasets[0] = [
