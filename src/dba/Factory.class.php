@@ -39,6 +39,7 @@ class Factory {
   private static $fileDeleteFactory = null;
   private static $healthCheckFactory = null;
   private static $healthCheckAgentFactory = null;
+  private static $speedFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
@@ -403,6 +404,16 @@ class Factory {
       return $f;
     } else {
       return self::$healthCheckAgentFactory;
+    }
+  }
+  
+  public static function getSpeedFactory() {
+    if (self::$speedFactory == null) {
+      $f = new SpeedFactory();
+      self::$speedFactory = $f;
+      return $f;
+    } else {
+      return self::$speedFactory;
     }
   }
   

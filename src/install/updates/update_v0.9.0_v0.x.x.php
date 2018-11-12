@@ -45,4 +45,16 @@ echo "Update taskwrapper table... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `TaskWrapper` ADD `cracked` INT NOT NULL;");
 echo "OK\n";
 
+echo "Add speed table... ";
+Factory::getAgentFactory()->getDB()->query("CREATE TABLE `Speed` (
+  `speedId` int(11) NOT NULL,
+  `agentId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `speed` bigint(20) NOT NULL,
+  `time` bigint(20) NOT NULL
+) ENGINE=InnoDB;");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD PRIMARY KEY (`speedId`);");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` MODIFY `speedId` int(11) NOT NULL AUTO_INCREMENT;");
+echo "OK\n";
+
 echo "Update complete!\n";

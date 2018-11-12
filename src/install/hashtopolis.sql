@@ -849,6 +849,14 @@ CREATE TABLE `Session` (
 )
   ENGINE = InnoDB;
 
+CREATE TABLE `Speed` (
+  `speedId` int(11) NOT NULL,
+  `agentId` int(11) NOT NULL,
+  `taskId` int(11) NOT NULL,
+  `speed` bigint(20) NOT NULL,
+  `time` bigint(20) NOT NULL
+) ENGINE=InnoDB;
+
 -- --------------------------------------------------------
 
 --
@@ -1070,6 +1078,9 @@ ALTER TABLE `HealthCheckAgent`
 
 ALTER TABLE `FileDelete`
   ADD PRIMARY KEY (`fileDeleteId`);
+
+ALTER TABLE `Speed`
+  ADD PRIMARY KEY (`speedId`);
 
 --
 -- Indizes der exportierten Tabellen
@@ -1343,6 +1354,9 @@ ALTER TABLE `FileDownload`
 
 ALTER TABLE `FileDelete`
   MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Speed`
+  MODIFY `speedId` int(11) NOT NULL AUTO_INCREMENT;
 
 
 --

@@ -3,11 +3,11 @@
 $CONF = array();
 
 // entities
-$CONF['AccessGroup'] = array(
+$CONF['AccessGroup'] = [
   'accessGroupId',
   'groupName'
-);
-$CONF['Agent'] = array(
+];
+$CONF['Agent'] = [
   'agentId',
   'agentName',
   'uid',
@@ -24,41 +24,41 @@ $CONF['Agent'] = array(
   'userId',
   'cpuOnly',
   'clientSignature'
-);
-$CONF['AgentBinary'] = array(
+];
+$CONF['AgentBinary'] = [
   'agentBinaryId',
   'type',
   'version',
   'operatingSystems',
   'filename'
-);
-$CONF['AgentError'] = array(
+];
+$CONF['AgentError'] = [
   'agentErrorId',
   'agentId',
   'taskId',
   'chunkId',
   'time',
   'error'
-);
-$CONF['AgentStat'] = array(
+];
+$CONF['AgentStat'] = [
   'agentStatId',
   'agentId',
   'statType',
   'time',
   'value'
-);
-$CONF['AgentZap'] = array(
+];
+$CONF['AgentZap'] = [
   'agentZapId',
   'agentId',
   'lastZapId'
-);
-$CONF['Assignment'] = array(
+];
+$CONF['Assignment'] = [
   'assignmentId',
   'taskId',
   'agentId',
   'benchmark',
-);
-$CONF['Chunk'] = array(
+];
+$CONF['Chunk'] = [
   'chunkId',
   'taskId',
   'skip',
@@ -71,38 +71,38 @@ $CONF['Chunk'] = array(
   'state',
   'cracked',
   'speed'
-);
-$CONF['Config'] = array(
+];
+$CONF['Config'] = [
   'configId',
   'configSectionId',
   'item',
   'value'
-);
-$CONF['ConfigSection'] = array(
+];
+$CONF['ConfigSection'] = [
   'configSectionId',
   'sectionName'
-);
-$CONF['CrackerBinary'] = array(
+];
+$CONF['CrackerBinary'] = [
   'crackerBinaryId',
   'crackerBinaryTypeId',
   'version',
   'downloadUrl',
   'binaryName'
-);
-$CONF['CrackerBinaryType'] = array(
+];
+$CONF['CrackerBinaryType'] = [
   'crackerBinaryTypeId',
   'typeName',
   'isChunkingAvailable'
-);
-$CONF['File'] = array(
+];
+$CONF['File'] = [
   'fileId',
   'filename',
   'size',
   'isSecret',
   'fileType',
   'accessGroupId'
-);
-$CONF['Hash'] = array(
+];
+$CONF['Hash'] = [
   'hashId',
   'hashlistId',
   'hash',
@@ -112,8 +112,8 @@ $CONF['Hash'] = array(
   'chunkId',
   'isCracked',
 	'crackPos'
-);
-$CONF['HashBinary'] = array(
+];
+$CONF['HashBinary'] = [
   'hashBinaryId',
   'hashlistId',
   'essid',
@@ -123,8 +123,8 @@ $CONF['HashBinary'] = array(
   'chunkId',
   'isCracked',
 	'crackPos'
-);
-$CONF['Hashlist'] = array(
+];
+$CONF['Hashlist'] = [
   'hashlistId',
   'hashlistName',
   'format',
@@ -139,22 +139,22 @@ $CONF['Hashlist'] = array(
   'notes',
   'brainId',
   'brainFeatures'
-);
-$CONF['HashType'] = array(
+];
+$CONF['HashType'] = [
   'hashTypeId',
   'description',
   'isSalted',
   'isSlowHash'
-);
-$CONF['LogEntry'] = array(
+];
+$CONF['LogEntry'] = [
   'logEntryId',
   'issuer',
   'issuerId',
   'level',
   'message',
   'time'
-);
-$CONF['NotificationSetting'] = array(
+];
+$CONF['NotificationSetting'] = [
   'notificationSettingId',
   'action',
   'objectId',
@@ -162,8 +162,8 @@ $CONF['NotificationSetting'] = array(
   'userId',
   'receiver',
   'isActive'
-);
-$CONF['Pretask'] = array(
+];
+$CONF['Pretask'] = [
   'pretaskId',
   'taskName',
   'attackCmd',
@@ -176,18 +176,18 @@ $CONF['Pretask'] = array(
   'priority',
   'isMaskImport',
   'crackerBinaryTypeId'
-);
-$CONF['RegVoucher'] = array(
+];
+$CONF['RegVoucher'] = [
   'regVoucherId',
   'voucher',
   'time'
-);
-$CONF['RightGroup'] = array(
+];
+$CONF['RightGroup'] = [
   'rightGroupId',
   'groupName',
   'permissions'
-);
-$CONF['Session'] = array(
+];
+$CONF['Session'] = [
   'sessionId',
   'userId',
   'sessionStartDate',
@@ -195,16 +195,16 @@ $CONF['Session'] = array(
   'isOpen',
   'sessionLifetime',
   'sessionKey'
-);
-$CONF['StoredValue'] = array(
+];
+$CONF['StoredValue'] = [
   'storedValueId',
   'val'
-);
-$CONF['Supertask'] = array(
+];
+$CONF['Supertask'] = [
   'supertaskId',
   'supertaskName'
-);
-$CONF['Task'] = array(
+];
+$CONF['Task'] = [
   'taskId',
   'taskName',
   'attackCmd',
@@ -227,13 +227,13 @@ $CONF['Task'] = array(
   'staticChunks',
   'chunkSize',
   'forcePipe'
-);
-$CONF['TaskDebugOutput'] = array(
+];
+$CONF['TaskDebugOutput'] = [
   'taskDebugOutputId',
   'taskId',
   'output'
-);
-$CONF['TaskWrapper'] = array(
+];
+$CONF['TaskWrapper'] = [
   'taskWrapperId',
   'priority',
   'taskType',
@@ -242,8 +242,8 @@ $CONF['TaskWrapper'] = array(
   'taskWrapperName',
   'isArchived',
   'cracked'
-);
-$CONF['User'] = array(
+];
+$CONF['User'] = [
   'userId',
   'username',
   'email',
@@ -260,15 +260,15 @@ $CONF['User'] = array(
   'otp2',
   'otp3',
   'otp4'
-);
-$CONF['Zap'] = array(
+];
+$CONF['Zap'] = [
   'zapId',
   'hash',
   'solveTime',
   'agentId',
   'hashlistId'
-);
-$CONF['ApiKey'] = array(
+];
+$CONF['ApiKey'] = [
   'apiKeyId',
   'startValid',
   'endValid',
@@ -276,24 +276,24 @@ $CONF['ApiKey'] = array(
   'accessCount',
   'userId',
   'apiGroupId'
-);
-$CONF['ApiGroup'] = array(
+];
+$CONF['ApiGroup'] = [
   'apiGroupId',
   'permissions',
   'name'
-);
-$CONF['FileDownload'] = array(
+];
+$CONF['FileDownload'] = [
   'fileDownloadId',
   'time',
   'fileId',
   'status'
-);
-$CONF['FileDelete'] = array(
+];
+$CONF['FileDelete'] = [
   'fileDeleteId',
   'filename',
   'time'
-);
-$CONF['HealthCheck'] = array(
+];
+$CONF['HealthCheck'] = [
   'healthCheckId',
   'time',
   'status',
@@ -302,8 +302,8 @@ $CONF['HealthCheck'] = array(
   'crackerBinaryId',
   'expectedCracks',
   'attackCmd'
-);
-$CONF['HealthCheckAgent'] = array(
+];
+$CONF['HealthCheckAgent'] = [
   'healthCheckAgentId',
   'healthCheckId',
   'agentId',
@@ -313,39 +313,46 @@ $CONF['HealthCheckAgent'] = array(
   'start',
   'end',
   'errors'
-);
+];
+$CONF['Speed'] = [
+  'speedId',
+  'agentId',
+  'taskId',
+  'speed',
+  'time'
+];
 
 // relations
-$CONF['AccessGroupUser'] = array(
+$CONF['AccessGroupUser'] = [
   'accessGroupUserId',
   'accessGroupId',
   'userId'
-);
-$CONF['AccessGroupAgent'] = array(
+];
+$CONF['AccessGroupAgent'] = [
   'accessGroupAgentId',
   'accessGroupId',
   'agentId'
-);
-$CONF['FileTask'] = array(
+];
+$CONF['FileTask'] = [
   'fileTaskId',
   'fileId',
   'taskId'
-);
-$CONF['FilePretask'] = array(
+];
+$CONF['FilePretask'] = [
   'filePretaskId',
   'fileId',
   'pretaskId'
-);
-$CONF['SupertaskPretask'] = array(
+];
+$CONF['SupertaskPretask'] = [
   'supertaskPretaskId',
   'supertaskId',
   'pretaskId'
-);
-$CONF['HashlistHashlist'] = array(
+];
+$CONF['HashlistHashlist'] = [
   'hashlistHashlistId',
   'parentHashlistId',
   'hashlistId'
-);
+];
 
 foreach ($CONF as $NAME => $COLUMNS) {
   $class = file_get_contents(dirname(__FILE__) . "/AbstractModel.template.txt");
