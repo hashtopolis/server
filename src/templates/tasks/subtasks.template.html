@@ -45,7 +45,8 @@
     </td>
     <td class='num' style="min-width: 50px;">
       {{IF [[subTask.getVal('numAssignments')]] > 0}}
-        [[subTask.getVal('numAssignments')]]
+        [[subTask.getVal('numAssignments')]]<br>
+        @[[Util::nicenum([[subTask.getVal('speed')]], 10000, 1000)]]H/s
       {{ENDIF}}
     </td>
     <td style='min-width: 95px' data-sort="[[subTask.getVal('filesSize')]]">

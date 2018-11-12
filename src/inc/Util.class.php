@@ -246,6 +246,7 @@ class Util {
     $cracked = 0;
     $maxTime = 0;
     $totalTimeSpent = 0;
+    $speed = 0;
     foreach ($chunks as $chunk) {
       if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
         $totalTimeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
@@ -258,13 +259,14 @@ class Util {
       if ($chunk->getSolveTime() > $maxTime) {
         $maxTime = $chunk->getSolveTime();
       }
+      $speed = $chunk->getSpeed();
     }
     
     $isActive = false;
     if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
-    return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
+    return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0, $speed);
   }
   
   /**
@@ -398,6 +400,7 @@ class Util {
         $set->addValue('crackedCount', $chunkInfo[1]);
         $set->addValue('numChunks', $chunkInfo[0]);
         $set->addValue('performance', $taskInfo[4]);
+        $set->addValue('speed', $taskInfo[5]);
         $taskList[] = $set;
       }
     }
