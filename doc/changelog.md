@@ -8,6 +8,7 @@
 ## Bugfixes
 
 - Fixed wrong percentage in case of big tasks where percentage was close to 0.
+- Rule splitting can only happen if at least two subparts get created afterwards.
 
 ## Enhancements
 
