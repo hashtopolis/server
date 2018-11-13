@@ -817,7 +817,25 @@ class HashlistUtils {
             continue;
           }
           //TODO: check hash length here
-          $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
+
+          // if selected check if it is cracked
+          $found = null;
+          if(SConfig::getInstance()->getVal(DConfig::HASHLIST_IMPORT_CHECK)){
+            $qF = new QueryFilter(Hash::HASH, $hash, "=");
+            $check = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
+            foreach($check as $c){
+              if($c->getIsCracked()){
+                $found = $c;
+                break;
+              }
+            }
+          }
+          if($found == null){
+            $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
+          }
+          else{
+            $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, $found->getPlaintext(), time(), null, 1, 0);
+          }
           $bufferCount++;
           if ($bufferCount >= 10000) {
             $result = Factory::getHashFactory()->massSave($values);
