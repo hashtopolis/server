@@ -4,6 +4,7 @@
 
 - Integration of Hashcat Brain feature.
 - Speed data is kept and can be shown in graphs for tasks.
+- Agents can automatically de-register if allowed on the server.
 
 ## Bugfixes
 

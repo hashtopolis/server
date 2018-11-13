@@ -557,4 +557,20 @@
 	  "response": "OK"
 	}
 	\end{verbatim}
+	
+	\subsection*{De-Registration}
+	If the flag is set on the client to de-register on quitting, he sends following command to the server. In case this is not allowed, it will report an error.
+	\begin{verbatim}
+	{
+	  "action": "deregister", 
+	  "token": "GHhgdf(/&"
+	}
+	\end{verbatim}
+	On success the server will just reply with OK.
+	\begin{verbatim}
+	{
+	  "action": "deregister",
+	  "response": "OK"
+	}
+	\end{verbatim}
 \end{document}
