@@ -781,6 +781,7 @@ class HashlistUtils {
     }
     Factory::getAgentFactory()->getDB()->commit();
     $added = 0;
+    $preFound = 0;
     
     switch ($format) {
       case DHashlistFormat::PLAIN:
@@ -835,6 +836,7 @@ class HashlistUtils {
           }
           else{
             $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, $found->getPlaintext(), time(), null, 1, 0);
+            $preFound++;
           }
           $bufferCount++;
           if ($bufferCount >= 10000) {
@@ -853,6 +855,7 @@ class HashlistUtils {
         fclose($file);
         unlink($tmpfile);
         $hashlist->setHashCount($added);
+        $hashlist->setCracked($preFound);
         Factory::getHashlistFactory()->update($hashlist);
         Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
