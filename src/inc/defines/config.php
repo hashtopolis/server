@@ -53,6 +53,7 @@ class DConfig {
   const HASHCAT_BRAIN_HOST     = "hashcatBrainHost";
   const HASHCAT_BRAIN_PORT     = "hashcatBrainPort";
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
+  const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
   
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -251,6 +252,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::HASHCAT_BRAIN_PASS:
         return DConfigType::STRING_INPUT;
+      case DConfig::HASHLIST_IMPORT_CHECK:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -371,6 +374,8 @@ class DConfig {
         return "Port for hashcat brain";
       case DConfig::HASHCAT_BRAIN_PASS:
         return "Password to be used to access hashcat brain server";
+      case DConfig::HASHLIST_IMPORT_CHECK:
+        return "Check all hashes of a hashlist on import in case they are already cracked in another list";
     }
     return $config;
   }
