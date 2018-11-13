@@ -270,7 +270,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (67, 1, 'hashcatBrainEnable', '0'),
   (68, 1, 'hashcatBrainPort', '0'),
   (69, 1, 'hashcatBrainPass', ''),
-  (70, 1, 'hashlistImportCheck', '0');
+  (70, 1, 'hashlistImportCheck', '0'),
+  (71, 5, 'allowDeregister', '0');
 
 -- --------------------------------------------------------
 

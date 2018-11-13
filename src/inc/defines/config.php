@@ -88,6 +88,7 @@ class DConfig {
   const VOUCHER_DELETION  = "voucherDeletion";
   const S_NAME            = "jeSuisHashtopussy";
   const SERVER_LOG_LEVEL  = "serverLogLevel";
+  const ALLOW_DEREGISTER  = "allowDeregister";
   
   // Section: Multicast
   const MULTICAST_ENABLE    = "multicastEnable";
@@ -254,6 +255,8 @@ class DConfig {
         return DConfigType::STRING_INPUT;
       case DConfig::HASHLIST_IMPORT_CHECK:
         return DConfigType::TICKBOX;
+      case DConfig::ALLOW_DEREGISTER:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -376,6 +379,8 @@ class DConfig {
         return "Password to be used to access hashcat brain server";
       case DConfig::HASHLIST_IMPORT_CHECK:
         return "Check all hashes of a hashlist on import in case they are already cracked in another list";
+      case DConfig::ALLOW_DEREGISTER:
+        return "Allow clients to deregister themselves automatically from the server.";
     }
     return $config;
   }

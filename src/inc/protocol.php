@@ -115,6 +115,15 @@ class PQueryGetHealthCheck extends PQuery {
   }
 }
 
+class PQueryDeRegister extends PQuery {
+  static function isValid($QUERY) {
+    if (!isset($QUERY[self::TOKEN])) {
+      return false;
+    }
+    return true;
+  }
+}
+
 class PQuerySendHealthCheck extends PQuery {
   static function isValid($QUERY) {
     if (!isset($QUERY[self::TOKEN]) || !isset($QUERY[self::CHECK_ID]) || !isset($QUERY[self::NUM_CRACKED]) || !isset($QUERY[self::START]) || !isset($QUERY[self::END]) || !isset($QUERY[self::NUM_GPUS]) || !isset($QUERY[self::ERRORS])) {
@@ -331,6 +340,10 @@ class PResponseSendHealthCheck extends PResponse {
   // not additional values required
 }
 
+class PResponseDeRegister extends PResponse {
+  // not additional values required
+}
+
 class PResponseGetFile extends PResponse {
   const FILENAME  = "filename";
   const EXTENSION = "extension";
@@ -410,4 +423,5 @@ class PActions {
   const GET_HEALTH_CHECK          = "getHealthCheck";
   const SEND_HEALTH_CHECK         = "sendHealthCheck";
   const GET_FOUND                 = "getFound";
+  const DEREGISTER                = "deregister";
 }

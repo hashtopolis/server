@@ -28,6 +28,8 @@ $config = new Config(null, 1, DConfig::HASHCAT_BRAIN_PASS, '');
 Factory::getConfigFactory()->save($config);
 $config = new Config(null, 1, DConfig::HASHLIST_IMPORT_CHECK, '0');
 Factory::getConfigFactory()->save($config);
+$config = new Config(null, 5, DConfig::ALLOW_DEREGISTER, '1');
+Factory::getConfigFactory()->save($config);
 echo "OK\n";
 
 echo "Add brain settings... ";

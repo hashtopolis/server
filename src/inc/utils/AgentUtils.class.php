@@ -196,7 +196,7 @@ class AgentUtils {
     
     if (AgentUtils::deleteDependencies($agent)) {
       Factory::getAgentFactory()->getDB()->commit();
-      Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
+      Util::createLogEntry("User", (($user == null)?0:($user->getId())), DLogEntry::INFO, "Agent " . $name . " got deleted.");
     }
     else {
       Factory::getAgentFactory()->getDB()->rollBack();
