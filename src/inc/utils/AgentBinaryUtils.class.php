@@ -153,7 +153,7 @@ class AgentBinaryUtils {
       throw new HTException("Invalid HTTP status code: $http_code");
     }
     curl_close($curl);
-    return $resp;
+    return trim($resp);
   }
 
   public static function getAgentUpdate($agent, $track){
