@@ -5,6 +5,7 @@ use DBA\Factory;
 use DBA\Config;
 use DBA\QueryFilter;
 use DBA\HashType;
+use DBA\AgentBinary;
 
 if (!isset($TEST)) {
   require_once(dirname(__FILE__) . "/../../inc/db.php");
@@ -27,8 +28,16 @@ if (!isset($TEST)) {
 }
 
 echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.3.0");
-Util::checkAgentVersion("csharp", "0.52.4");
+$qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
+$binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
+if ($binary != null) {
+  if (Util::versionComparison($binary->getVersion(), "0.3.0") == 1) {
+    echo "update python version... ";
+    $binary->setVersion("0.3.0");
+    Factory::getAgentBinaryFactory()->update($binary);
+    echo "OK";
+  }
+}
 echo "\n";
 
 echo "Add new config section for notifications... ";
