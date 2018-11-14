@@ -3,7 +3,7 @@
 <h2>Agent Binaries</h2>
 {%TEMPLATE->struct/messages%}
 {{IF [[newBinary]]}}
-  <form action="" method="post">
+  <form action="binaries.php" method="post">
     <input type="hidden" name="action" value="[[$DAgentBinaryAction::NEW_BINARY]]">
     <input type="hidden" name="csrf" value="[[csrf]]">
     <div class="card">
@@ -46,7 +46,7 @@
   </form>
 {{ENDIF}}
 {{IF [[editBinary]]}}
-  <form action="" method="post">
+  <form action="binaries.php" method="post">
     <input type="hidden" name="action" value="[[$DAgentBinaryAction::EDIT_BINARY]]">
     <input type="hidden" name="id" value="[[bin.getId()]]">
     <input type="hidden" name="csrf" value="[[csrf]]">
