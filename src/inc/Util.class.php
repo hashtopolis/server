@@ -34,6 +34,26 @@ use DBA\Speed;
  *         Bunch of useful static functions.
  */
 class Util {
+  public static function downloadFromUrl($url, $dest){
+    $furl = fopen($url, "rb");
+    if (!$furl) {
+      throw new HTException("Failed to open URL!");
+    }
+    $fileLocation = fopen($dest, "w");
+    if (!$fileLocation) {
+      throw new HTException("Failed to open destination file!");
+    }
+    $buffersize = 131072;
+    while (!feof($furl)) {
+      if (!$data = fread($furl, $buffersize)) {
+        throw new HTException("Data reading error!");
+      }
+      fwrite($fileLocation, $data);
+    }
+    fclose($fileLocation);
+    fclose($furl);
+  }
+
   public static function getSpeedDataSet($taskId, $limit = 50, $agentId = 0, $delta = 10){
     // if agentId is 0 we need to find out how many agents there are to find how many entries we would need max
     $requestLimit = intval($limit) * $delta / 5;

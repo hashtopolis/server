@@ -1,5 +1,7 @@
 <?php
 
+define("HTP_AGENT_ARCHIVE", 'https://archive.hashtopolis.org/agent/');
+
 class DAgentBinaryAction {
   const NEW_BINARY      = "newBinary";
   const NEW_BINARY_PERM = DAccessControl::CRACKER_BINARY_ACCESS;

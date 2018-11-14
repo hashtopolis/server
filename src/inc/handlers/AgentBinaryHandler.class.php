@@ -36,6 +36,7 @@ class AgentBinaryHandler implements Handler {
         case DAgentBinaryAction::UPGRADE_BINARY:
           AccessControl::getInstance()->checkPermission(DAgentBinaryAction::UPGRADE_BINARY_PERM);
           AgentBinaryUtils::executeUpgrade($_POST['binaryId']);
+          UI::addMessage(UI::SUCCESS, "Agent binary was upgraded!");
           break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");

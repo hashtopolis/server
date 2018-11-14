@@ -92,27 +92,46 @@ class AgentBinaryUtils {
     return $agentBinary;
   }
 
+  // TODO: this later needs to be adapted that it detects the file extension of the agent and uses this for the url
   public static function executeUpgrade($binaryId){
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
-    // TODO: check if update is available, 
-    // check track again to be sure it didn't change, 
-    // download file, 
-    // download checksum, 
-    // check checksum, 
-    // move file to right place, 
-    // update version number of agent, 
-    // reset update flag
+    // check if there is really an update available
+    if(!AgentBinaryUtils::checkUpdate($binaryId)){
+      throw new HTException("No update available!");
+    }
+    
+    // download file to tmp directory
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . ".zip", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip");
+    
+    // download checksum
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . ".zip.sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip.sha256");
+
+    // check checksum
+    $sum = hash_file("sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip");
+    $check = file_get_contents(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip.sha256");
+    if($sum != $check){
+      throw new HTException("Checksum check for updated agent failed!");
+    }
+
+    // move file to right place
+    rename(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip", dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
+    $sum = hash_file("sha256", dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
+    if($sum != $check){
+      throw new HTException("Failed to move new agent to right location!");
+    }
+
+    // update version number of agent and reset flag
+    $agentBinary->setVersion($agentBinary->getUpdateAvailable());
+    $agentBinary->setUpdateAvailable('');
+    Factory::getAgentBinaryFactory()->update($agentBinary);
   }
 
   public static function checkUpdate($binaryId){
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     $update = AgentBinaryUtils::getAgentUpdate($agentBinary->getType(), $agentBinary->getUpdateTrack());
-    if($update === false){
-      return false;
-    }
-    $agentBinary->setUpdateAvailable($update);
+    $agentBinary->setUpdateAvailable(($update)?$update:'');
     Factory::getAgentBinaryFactory()->update($agentBinary);
-    return true;
+    return $update;
   }
 
   /**
@@ -126,7 +145,7 @@ class AgentBinaryUtils {
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => 'https://archive.hashtopolis.org/agent/' . $agent . '/' . $track,
+        CURLOPT_URL => HTP_AGENT_ARCHIVE . $agent . '/' . $track,
     ));
     $resp = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
