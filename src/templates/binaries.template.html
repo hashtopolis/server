@@ -28,7 +28,7 @@
           <tr>
             <th>Update Track</th>
             <td>
-              <select name="updateTrack" title="Update Track">
+              <select class="form-control" name="updateTrack" title="Update Track">
                 <option value="release">Release</option>
                 <option value="stable" selected>Stable</option>
                 <option value="dev">Dev</option>
@@ -72,7 +72,7 @@
           <tr>
             <th>Update Track</th>
             <td>
-              <select name="updateTrack" title="Update Track">
+              <select class="form-control" name="updateTrack" title="Update Track">
                 <option value="release"{{IF [[bin.getUpdateTrack()]] == 'release'}} selected{{ENDIF}}>Release</option>
                 <option value="stable"{{IF [[bin.getUpdateTrack()]] == 'stable'}} selected{{ENDIF}}>Stable</option>
                 <option value="dev"{{IF [[bin.getUpdateTrack()]] == 'dev'}} selected{{ENDIF}}>Dev</option>
@@ -116,13 +116,13 @@
           <td>[[binary.getVersion()]]</td>
           <td><code>[[binary.getUpdateTrack()]]</code></td>
           <td>
-            <a href="binaries.php?edit=[[binary.getId()]]" class="btn btn-primary float-right" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
             <form class="float-right" action="binaries.php" method="POST" onSubmit="if (!confirm('Really delete binary [[binary.getId()]]?')) return false;">
               <input type='hidden' name='action' value='[[$DAgentBinaryAction::DELETE_BINARY]]'>
               <input type="hidden" name="id" value="[[binary.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
+              <button type="submit" class='btn btn-danger mx-1' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
             </form>
+            <a href="binaries.php?edit=[[binary.getId()]]" class="btn btn-primary float-right mx-1" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></a>
           </td>
 			  </tr>
 		  {{ENDFOREACH}}
