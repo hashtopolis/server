@@ -109,8 +109,8 @@ CREATE TABLE `AgentBinary` (
 -- Daten für Tabelle `AgentBinary`
 --
 
-INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
-  (1, 'python', '0.3.0', 'Windows, Linux, OS X', 'hashtopolis.zip');
+INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
+  (1, 'python', '0.3.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 -- --------------------------------------------------------
 
