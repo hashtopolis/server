@@ -92,6 +92,29 @@ class AgentBinaryUtils {
     return $agentBinary;
   }
 
+  public static function executeUpgrade($binaryId){
+    $agentBinary = AgentBinaryUtils::getBinary($binaryId);
+    // TODO: check if update is available, 
+    // check track again to be sure it didn't change, 
+    // download file, 
+    // download checksum, 
+    // check checksum, 
+    // move file to right place, 
+    // update version number of agent, 
+    // reset update flag
+  }
+
+  public static function checkUpdate($binaryId){
+    $agentBinary = AgentBinaryUtils::getBinary($binaryId);
+    $update = AgentBinaryUtils::getAgentUpdate($agentBinary->getType(), $agentBinary->getUpdateTrack());
+    if($update === false){
+      return false;
+    }
+    $agentBinary->setUpdateAvailable($update);
+    Factory::getAgentBinaryFactory()->update($agentBinary);
+    return true;
+  }
+
   /**
    * Retrieves the latest version number for the according agent type and track.
    * 
