@@ -24,6 +24,14 @@ class AgentBinaryHandler implements Handler {
           AgentBinaryUtils::deleteBinary($_POST['id']);
           UI::addMessage(UI::SUCCESS, "Binary deleted successfully!");
           break;
+        case DAgentBinaryAction::CHECK_UPDATE:
+          AccessControl::getInstance()->checkPermission(DAgentBinaryAction::CHECK_UPDATE_PERM);
+          // TODO:
+          break;
+        case DAgentBinaryAction::UPGRADE_BINARY:
+          AccessControl::getInstance()->checkPermission(DAgentBinaryAction::UPGRADE_BINARY_PERM);
+          // TODO:
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
