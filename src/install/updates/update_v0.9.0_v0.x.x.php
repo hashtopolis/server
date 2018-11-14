@@ -1,6 +1,8 @@
 <?php
 use DBA\Config;
 use DBA\Factory;
+use DBA\QueryFilter;
+use DBA\AgentBinary;
 
 if (!isset($TEST)) {
   require_once(dirname(__FILE__) . "/../../inc/conf.php");
@@ -14,7 +16,6 @@ echo "Apply updates...\n";
 
 echo "Check agent binaries... ";
 Util::checkAgentVersion("python", "0.3.0");
-Util::checkAgentVersion("csharp", "0.52.4");
 echo "\n";
 
 echo "Adding new config values... ";
@@ -64,6 +65,12 @@ echo "OK\n";
 echo "Update agent binary table... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateAvailable` VARCHAR(20) NOT NULL");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateTrack` VARCHAR(20) NOT NULL");
+$qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
+$agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
+if($agent != null){
+  $agent->setUpdateTrack('stable');
+  Factory::getAgentBinaryFactory()->update($agent);
+}
 echo "OK\n";
 
 echo "Update complete!\n";
