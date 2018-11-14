@@ -102,6 +102,10 @@ class AgentBinaryUtils {
         CURLOPT_URL => 'https://archive.hashtopolis.org/agent/' . $agent . '/' . $track,
     ));
     $resp = curl_exec($curl);
+    $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+    if($http_code != 200){
+      throw new HTException("Invalid HTTP status code: $http_code");
+    }
     curl_close($curl);
     return $resp;
   }
