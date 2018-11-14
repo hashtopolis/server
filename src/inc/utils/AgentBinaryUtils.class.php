@@ -87,4 +87,38 @@ class AgentBinaryUtils {
     }
     return $agentBinary;
   }
+
+  /**
+   * Retrieves the latest version number for the according agent type and track.
+   * 
+   * @param string $agent 
+   * @param string $track 
+   * @return string
+   */
+  public static function getLatestVersion($agent, $track){
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_RETURNTRANSFER => 1,
+        CURLOPT_URL => 'https://archive.hashtopolis.org/agent/' . $agent . '/' . $track,
+    ));
+    $resp = curl_exec($curl);
+    curl_close($curl);
+    return $resp;
+  }
+
+  public static function getAgentUpdate($agent, $track){
+    $qF = new QueryFilter(AgentBinary::TYPE, $agent, "=");
+    $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
+    if($agent == null){
+      throw new HTException("Invalid agent binary type!");
+    }
+    $latest = AgentBinaryUtils::getLatestVersion($agent->getType(), $track);
+    if(strlen($latest) == 0){
+      throw new HTException("Failed to retrieve latest version!");
+    }
+    if(Util::versionComparison($agent->getVersion(), $latest) > 0){
+      return $latest;
+    }
+    return false;
+  }
 }
