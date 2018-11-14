@@ -14,10 +14,6 @@ require_once(dirname(__FILE__) . "/../../inc/defines/log.php");
 
 echo "Apply updates...\n";
 
-echo "Check agent binaries... ";
-Util::checkAgentVersion("python", "0.3.0");
-echo "\n";
-
 echo "Adding new config values... ";
 $config = new Config(null, 1, DConfig::HASHCAT_BRAIN_ENABLE, '0');
 Factory::getConfigFactory()->save($config);
@@ -72,5 +68,9 @@ if($agent != null){
   Factory::getAgentBinaryFactory()->update($agent);
 }
 echo "OK\n";
+
+echo "Check agent binaries... ";
+Util::checkAgentVersion("python", "0.3.0");
+echo "\n";
 
 echo "Update complete!\n";
