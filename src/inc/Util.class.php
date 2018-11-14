@@ -34,6 +34,22 @@ use DBA\Speed;
  *         Bunch of useful static functions.
  */
 class Util {
+  public static function extractFileExtension($filename){
+    $split = explode(".", $filename);
+    if(sizeof($split) == 1){
+      return "";
+    }
+    return $split[sizeof($split)-1];
+  }
+
+  /**
+   * Downloads the data at the given url and saves it at the specified destination.
+   * It will overwrite files if they already exist.
+   * 
+   * @param string $url 
+   * @param string $dest 
+   * @throws HTException 
+   */
   public static function downloadFromUrl($url, $dest){
     $furl = fopen($url, "rb");
     if (!$furl) {

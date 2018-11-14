@@ -92,29 +92,30 @@ class AgentBinaryUtils {
     return $agentBinary;
   }
 
-  // TODO: this later needs to be adapted that it detects the file extension of the agent and uses this for the url
   public static function executeUpgrade($binaryId){
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     // check if there is really an update available
     if(!AgentBinaryUtils::checkUpdate($binaryId)){
       throw new HTException("No update available!");
     }
+
+    $extension = Util::extractFileExtension($agentBinary->getFilename());
     
     // download file to tmp directory
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . ".zip", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip");
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
     
     // download checksum
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . ".zip.sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip.sha256");
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
 
     // check checksum
-    $sum = hash_file("sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip");
-    $check = file_get_contents(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip.sha256");
+    $sum = hash_file("sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
+    $check = file_get_contents(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
     if($sum != $check){
       throw new HTException("Checksum check for updated agent failed!");
     }
 
     // move file to right place
-    rename(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . ".zip", dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
+    rename(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
     $sum = hash_file("sha256", dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
     if($sum != $check){
       throw new HTException("Failed to move new agent to right location!");
