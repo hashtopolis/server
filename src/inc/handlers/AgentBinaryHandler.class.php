@@ -11,12 +11,12 @@ class AgentBinaryHandler implements Handler {
       switch ($action) {
         case DAgentBinaryAction::NEW_BINARY:
           AccessControl::getInstance()->checkPermission(DAgentBinaryAction::NEW_BINARY_PERM);
-          AgentBinaryUtils::newBinary($_POST['type'], $_POST['os'], $_POST['filename'], $_POST['version'], Login::getInstance()->getUser());
+          AgentBinaryUtils::newBinary($_POST['type'], $_POST['os'], $_POST['filename'], $_POST['version'], $_POST['updateTrack'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Binary was added successfully!");
           break;
         case DAgentBinaryAction::EDIT_BINARY:
           AccessControl::getInstance()->checkPermission(DAgentBinaryAction::EDIT_BINARY_PERM);
-          AgentBinaryUtils::editBinary($_POST['id'], $_POST['type'], $_POST['os'], $_POST['filename'], $_POST['version'], Login::getInstance()->getUser());
+          AgentBinaryUtils::editBinary($_POST['id'], $_POST['type'], $_POST['os'], $_POST['filename'], $_POST['version'], $_POST['updateTrack'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "Binary was updated successfully!");
           break;
         case DAgentBinaryAction::DELETE_BINARY:

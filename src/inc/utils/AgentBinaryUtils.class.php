@@ -14,7 +14,7 @@ class AgentBinaryUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function newBinary($type, $os, $filename, $version, $user) {
+  public static function newBinary($type, $os, $filename, $version, $updateTrack, $user) {
     if (strlen($version) == 0) {
       throw new HTException("Version cannot be empty!");
     }
@@ -26,7 +26,7 @@ class AgentBinaryUtils {
     if ($result != null) {
       throw new HTException("You cannot have two binaries with the same type!");
     }
-    $agentBinary = new AgentBinary(null, $type, $version, $os, $filename);
+    $agentBinary = new AgentBinary(null, $type, $version, $os, $filename, $updateTrack, '');
     Factory::getAgentBinaryFactory()->save($agentBinary);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "New Binary " . $agentBinary->getFilename() . " was added!");
   }
@@ -40,7 +40,7 @@ class AgentBinaryUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function editBinary($binaryId, $type, $os, $filename, $version, $user) {
+  public static function editBinary($binaryId, $type, $os, $filename, $version, $updateTrack, $user) {
     if (strlen($version) == 0) {
       throw new HTException("Version cannot be empty!");
     }
@@ -60,6 +60,10 @@ class AgentBinaryUtils {
     $agentBinary->setOperatingSystems($os);
     $agentBinary->setFilename($filename);
     $agentBinary->setVersion($version);
+    if($updateTrack != $agentBinary->getUpdateTrack()){
+      $agentBinary->setUpdateAvailable('');
+    }
+    $agentBinary->setUpdateTrack($updateTrack);
     
     Factory::getAgentBinaryFactory()->update($agentBinary);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
