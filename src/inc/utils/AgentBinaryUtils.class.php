@@ -92,6 +92,10 @@ class AgentBinaryUtils {
     return $agentBinary;
   }
 
+  /**
+   * @param int $binaryId 
+   * @throws HTException 
+   */
   public static function executeUpgrade($binaryId){
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     // check if there is really an update available
@@ -127,6 +131,10 @@ class AgentBinaryUtils {
     Factory::getAgentBinaryFactory()->update($agentBinary);
   }
 
+  /**
+   * @param int $binaryId 
+   * @return boolean|string
+   */
   public static function checkUpdate($binaryId){
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     $update = AgentBinaryUtils::getAgentUpdate($agentBinary->getType(), $agentBinary->getUpdateTrack());
@@ -157,6 +165,12 @@ class AgentBinaryUtils {
     return trim($resp);
   }
 
+  /**
+   * @param string $agent 
+   * @param string $track 
+   * @throws HTException 
+   * @return boolean|string
+   */
   public static function getAgentUpdate($agent, $track){
     $qF = new QueryFilter(AgentBinary::TYPE, $agent, "=");
     $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);

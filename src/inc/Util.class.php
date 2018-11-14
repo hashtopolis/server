@@ -34,6 +34,13 @@ use DBA\Speed;
  *         Bunch of useful static functions.
  */
 class Util {
+  /**
+   * Determines the file extension of the given file name (based on the last dot).
+   * Returns an empty string if no extension was found.
+   * 
+   * @param string $filename 
+   * @return string
+   */
   public static function extractFileExtension($filename){
     $split = explode(".", $filename);
     if(sizeof($split) == 1){
@@ -70,6 +77,16 @@ class Util {
     fclose($furl);
   }
 
+  /**
+   * Loads the last speed data on a specific task. Either for the full task, or a specific agent.
+   * The data is provided as an associative array with the timestamps as keys.
+   * 
+   * @param int $taskId  
+   * @param int $limit 
+   * @param int $agentId corresponding agent to show data from, 0 to sum up from all agents on this task 
+   * @param int $delta time distance between the data points
+   * @return int[]
+   */
   public static function getSpeedDataSet($taskId, $limit = 50, $agentId = 0, $delta = 10){
     // if agentId is 0 we need to find out how many agents there are to find how many entries we would need max
     $requestLimit = intval($limit) * $delta / 5;
@@ -123,6 +140,12 @@ class Util {
     return $timestampData;
   }
 
+  /**
+   * Get the hashtype name by its ID
+   * 
+   * @param int $hashtypeId 
+   * @return string
+   */
   public static function getHashtypeById($hashtypeId){
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if($hashtype == null){
@@ -130,7 +153,12 @@ class Util {
     }
     return $hashtype->getDescription();
   }
-
+  
+  /**
+   * Get the commit hash and branch (if available) of the Hashtopolis server.
+   * 
+   * @return string
+   */
   public static function getGitCommit() {
     $gitcommit = "";
     $gitfolder = dirname(__FILE__) . "/../../.git";
@@ -166,6 +194,9 @@ class Util {
     }
   }
   
+  /**
+   * @return boolean
+   */
   public static function isYubikeyEnabled() {
     $clientId = SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID);
     if (!is_numeric($clientId) || $clientId <= 0) {
@@ -523,6 +554,11 @@ class Util {
     return true;
   }
   
+  /**
+   * Checks if it is longer than 10 mins since the last time it was checked if there are 
+   * any old agent statistic entries which can be deleted. If necessary, check is executed 
+   * and old entries are deleted.
+   */
   public static function agentStatCleaning() {
     $entry = Factory::getStoredValueFactory()->get(DStats::LAST_STAT_CLEANING);
     if ($entry == null) {
@@ -833,8 +869,8 @@ class Util {
   }
   
   /**
-   * @param $version1
-   * @param $version2
+   * @param string $version1
+   * @param string $version2
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
    */
   public static function versionComparison($version1, $version2) {
@@ -862,7 +898,7 @@ class Util {
   
   /**
    * Shows big numbers with the right suffixes (k, M, G)
-   * @param $num int integer you want formatted
+   * @param int $num integer you want formatted
    * @param int $threshold default 1024
    * @param int $divider default 1024
    * @return string Formatted Integer

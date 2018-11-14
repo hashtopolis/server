@@ -5,6 +5,10 @@ use DBA\QueryFilter;
 use DBA\Factory;
 
 class CrackerBinaryUtils {
+  /**
+   * @param int $crackerBinaryTypeId 
+   * @return DBA\CrackerBinary|null
+   */
   public static function getNewestVersion($crackerBinaryTypeId) {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $crackerBinaryTypeId, "=");
     $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
@@ -16,6 +20,7 @@ class CrackerBinaryUtils {
       }
     }
     if ($newest == null) {
+      // TODO: throw exception here
       UI::printError("ERROR", "No binary versions available, cannot create tasks!");
     }
     return $newest;

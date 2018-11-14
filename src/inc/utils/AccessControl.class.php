@@ -9,6 +9,11 @@ class AccessControl {
   
   private static $instance = null;
   
+  /**
+   * @param User $user 
+   * @param int $groupId 
+   * @return AccessControl
+   */
   public static function getInstance($user = null, $groupId = 0) {
     if ($user != null || $groupId != 0) {
       self::$instance = new AccessControl($user, $groupId);

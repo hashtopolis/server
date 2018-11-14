@@ -74,6 +74,11 @@ class HealthUtils {
     Factory::getHealthCheckFactory()->update($healthCheck);
   }
   
+  /**
+   * @param int $type 
+   * @throws HTException 
+   * @return string
+   */
   private static function getAttackMode($type) {
     switch ($type) {
       case DHealthCheckType::BRUTE_FORCE:
@@ -82,6 +87,12 @@ class HealthUtils {
     throw new HTException("Not able to get attack mode for this type!");
   }
   
+  /**
+   * @param int $hashtypeId 
+   * @param int $type 
+   * @throws HTException 
+   * @return string
+   */
   private static function getAttackInput($hashtypeId, $type) {
     if ($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5) {
       return " -1 ?l?u?d ?1?1?1?1?1";
@@ -92,6 +103,13 @@ class HealthUtils {
     throw new HTException("Not able to get attack input for this type!");
   }
   
+  /**
+   * @param int $hashtypeId 
+   * @param int $type 
+   * @param bool $crackable 
+   * @throws HTException 
+   * @return string
+   */
   private static function getAttackPlain($hashtypeId, $type, $crackable) {
     if ($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5) {
       return Util::randomString(($crackable) ? 5 : 8);
@@ -102,6 +120,10 @@ class HealthUtils {
     throw new HTException("Not able to get attack plain for attack $type and hashtype $hashtypeId ($crackable)");
   }
   
+  /**
+   * @param int $hashtypeId 
+   * @return integer
+   */
   private static function getAttackNumHashes($hashtypeId) {
     switch ($hashtypeId) {
       case DHealthCheckMode::MD5:
