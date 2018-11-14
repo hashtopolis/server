@@ -8,13 +8,15 @@ class AgentBinary extends AbstractModel {
   private $version;
   private $operatingSystems;
   private $filename;
+  private $updateAvailable;
   
-  function __construct($agentBinaryId, $type, $version, $operatingSystems, $filename) {
+  function __construct($agentBinaryId, $type, $version, $operatingSystems, $filename, $updateAvailable) {
     $this->agentBinaryId = $agentBinaryId;
     $this->type = $type;
     $this->version = $version;
     $this->operatingSystems = $operatingSystems;
     $this->filename = $filename;
+    $this->updateAvailable = $updateAvailable;
   }
   
   function getKeyValueDict() {
@@ -24,6 +26,7 @@ class AgentBinary extends AbstractModel {
     $dict['version'] = $this->version;
     $dict['operatingSystems'] = $this->operatingSystems;
     $dict['filename'] = $this->filename;
+    $dict['updateAvailable'] = $this->updateAvailable;
     
     return $dict;
   }
@@ -83,10 +86,19 @@ class AgentBinary extends AbstractModel {
   function setFilename($filename){
     $this->filename = $filename;
   }
+  
+  function getUpdateAvailable(){
+    return $this->updateAvailable;
+  }
+  
+  function setUpdateAvailable($updateAvailable){
+    $this->updateAvailable = $updateAvailable;
+  }
 
   const AGENT_BINARY_ID = "agentBinaryId";
   const TYPE = "type";
   const VERSION = "version";
   const OPERATING_SYSTEMS = "operatingSystems";
   const FILENAME = "filename";
+  const UPDATE_AVAILABLE = "updateAvailable";
 }

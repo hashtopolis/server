@@ -30,7 +30,8 @@ $CONF['AgentBinary'] = [
   'type',
   'version',
   'operatingSystems',
-  'filename'
+  'filename',
+  'updateAvailable'
 ];
 $CONF['AgentError'] = [
   'agentErrorId',

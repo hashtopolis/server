@@ -61,4 +61,8 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD PRIMARY KEY 
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` MODIFY `speedId` int(11) NOT NULL AUTO_INCREMENT;");
 echo "OK\n";
 
+echo "Update agent binary table... ";
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateAvailable` VARCHAR(20) NOT NULL");
+echo "OK\n";
+
 echo "Update complete!\n";

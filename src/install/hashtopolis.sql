@@ -96,14 +96,11 @@ CREATE TABLE `Agent` (
 
 CREATE TABLE `AgentBinary` (
   `agentBinaryId`    INT(11)                 NOT NULL,
-  `type`             VARCHAR(20)
-                     COLLATE utf8_unicode_ci NOT NULL,
-  `version`          VARCHAR(20)
-                     COLLATE utf8_unicode_ci NOT NULL,
-  `operatingSystems` VARCHAR(50)
-                     COLLATE utf8_unicode_ci NOT NULL,
-  `filename`         VARCHAR(50)
-                     COLLATE utf8_unicode_ci NOT NULL
+  `type`             VARCHAR(20)             NOT NULL,
+  `version`          VARCHAR(20)             NOT NULL,
+  `operatingSystems` VARCHAR(50)             NOT NULL,
+  `filename`         VARCHAR(50)             NOT NULL,
+  `updateAvailable`  VARCHAR(20)             NOT NULL
 )
   ENGINE = InnoDB;
 
