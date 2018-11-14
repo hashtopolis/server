@@ -100,6 +100,7 @@ CREATE TABLE `AgentBinary` (
   `version`          VARCHAR(20)             NOT NULL,
   `operatingSystems` VARCHAR(50)             NOT NULL,
   `filename`         VARCHAR(50)             NOT NULL,
+  `updateTrack`      VARCHAR(20)             NOT NULL,
   `updateAvailable`  VARCHAR(20)             NOT NULL
 )
   ENGINE = InnoDB;

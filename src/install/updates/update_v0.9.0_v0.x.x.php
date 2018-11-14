@@ -63,6 +63,7 @@ echo "OK\n";
 
 echo "Update agent binary table... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateAvailable` VARCHAR(20) NOT NULL");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateTrack` VARCHAR(20) NOT NULL");
 echo "OK\n";
 
 echo "Update complete!\n";
