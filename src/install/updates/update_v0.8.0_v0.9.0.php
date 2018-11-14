@@ -25,20 +25,20 @@ if (!isset($TEST)) {
   rename(dirname(__FILE__) . "/../../inc/db.php", dirname(__FILE__) . "/../../inc/conf.php");
   file_put_contents(dirname(__FILE__) . "/../../inc/conf.php", "\n" . '$PEPPER = ["__PEPPER1__","__PEPPER2__","__PEPPER3__","__CSRF__"];' . "\n", FILE_APPEND);
   echo "OK\n";
-}
 
-echo "Check agent binaries... ";
-$qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
-$binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
-if ($binary != null) {
-  if (Util::versionComparison($binary->getVersion(), "0.3.0") == 1) {
-    echo "update python version... ";
-    $binary->setVersion("0.3.0");
-    Factory::getAgentBinaryFactory()->update($binary);
-    echo "OK";
+  echo "Check agent binaries... ";
+  $qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
+  $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
+  if ($binary != null) {
+    if (Util::versionComparison($binary->getVersion(), "0.3.0") == 1) {
+      echo "update python version... ";
+      $binary->setVersion("0.3.0");
+      Factory::getAgentBinaryFactory()->update($binary);
+      echo "OK";
+    }
   }
+  echo "\n";
 }
-echo "\n";
 
 echo "Add new config section for notifications... ";
 $configSection = new ConfigSection(7, 'Notifications');
