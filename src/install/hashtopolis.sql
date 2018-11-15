@@ -26,65 +26,65 @@ CREATE TABLE `AccessGroupUser` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Agent` (
-  `agentId`         INT(11)                      NOT NULL,
-  `agentName`       VARCHAR(100)                 NOT NULL,
-  `uid`             VARCHAR(100)                 NOT NULL,
-  `os`              INT(11)                      NOT NULL,
-  `devices`         TEXT                         NOT NULL,
-  `cmdPars`         VARCHAR(256)                 NOT NULL,
-  `ignoreErrors`    TINYINT(4)                   NOT NULL,
-  `isActive`        TINYINT(4)                   NOT NULL,
-  `isTrusted`       TINYINT(4)                   NOT NULL,
-  `token`           VARCHAR(30)                  NOT NULL,
-  `lastAct`         VARCHAR(50)                  NOT NULL,
-  `lastTime`        INT(11)                      NOT NULL,
-  `lastIp`          VARCHAR(50)                  NOT NULL,
-  `userId`          INT(11)                      DEFAULT NULL,
-  `cpuOnly`         TINYINT(4)                   NOT NULL,
-  `clientSignature` VARCHAR(50)                  NOT NULL
+  `agentId`         INT(11)      NOT NULL,
+  `agentName`       VARCHAR(100) NOT NULL,
+  `uid`             VARCHAR(100) NOT NULL,
+  `os`              INT(11)      NOT NULL,
+  `devices`         TEXT         NOT NULL,
+  `cmdPars`         VARCHAR(256) NOT NULL,
+  `ignoreErrors`    TINYINT(4)   NOT NULL,
+  `isActive`        TINYINT(4)   NOT NULL,
+  `isTrusted`       TINYINT(4)   NOT NULL,
+  `token`           VARCHAR(30)  NOT NULL,
+  `lastAct`         VARCHAR(50)  NOT NULL,
+  `lastTime`        INT(11)      NOT NULL,
+  `lastIp`          VARCHAR(50)  NOT NULL,
+  `userId`          INT(11)      DEFAULT NULL,
+  `cpuOnly`         TINYINT(4)   NOT NULL,
+  `clientSignature` VARCHAR(50)  NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `AgentBinary` (
-  `agentBinaryId`    INT(11)                 NOT NULL,
-  `type`             VARCHAR(20)             NOT NULL,
-  `version`          VARCHAR(20)             NOT NULL,
-  `operatingSystems` VARCHAR(50)             NOT NULL,
-  `filename`         VARCHAR(50)             NOT NULL,
-  `updateTrack`      VARCHAR(20)             NOT NULL,
-  `updateAvailable`  VARCHAR(20)             NOT NULL
+  `agentBinaryId`    INT(11)     NOT NULL,
+  `type`             VARCHAR(20) NOT NULL,
+  `version`          VARCHAR(20) NOT NULL,
+  `operatingSystems` VARCHAR(50) NOT NULL,
+  `filename`         VARCHAR(50) NOT NULL,
+  `updateTrack`      VARCHAR(20) NOT NULL,
+  `updateAvailable`  VARCHAR(20) NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
   (1, 'python', '0.3.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
-  `agentErrorId` INT(11)                      NOT NULL,
-  `agentId`      INT(11)                      NOT NULL,
-  `taskId`       INT(11)                      DEFAULT NULL,
-  `time`         INT(11)                      NOT NULL,
-  `error`        TEXT                         NOT NULL,
-  `chunkId`      INT(11)                      NULL
+  `agentErrorId` INT(11) NOT NULL,
+  `agentId`      INT(11) NOT NULL,
+  `taskId`       INT(11) DEFAULT NULL,
+  `time`         INT(11) NOT NULL,
+  `error`        TEXT    NOT NULL,
+  `chunkId`      INT(11) NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `AgentStat` (
-  `agentStatId` INT(11)      NOT NULL,
-  `agentId`     INT(11)      NOT NULL,
-  `statType`    INT(11)      NOT NULL,
-  `time`        BIGINT       NOT NULL,
-  `value`       VARCHAR(64)  NOT NULL
+  `agentStatId` INT(11)     NOT NULL,
+  `agentId`     INT(11)     NOT NULL,
+  `statType`    INT(11)     NOT NULL,
+  `time`        BIGINT      NOT NULL,
+  `value`       VARCHAR(64) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `AgentZap` (
-  `agentZapId` INT(11)  NOT NULL,
-  `agentId`    INT(11)  NOT NULL,
-  `lastZapId`  INT(11)  NULL
+  `agentZapId` INT(11) NOT NULL,
+  `agentId`    INT(11) NOT NULL,
+  `lastZapId`  INT(11) NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Assignment` (
-  `assignmentId` INT(11)                 NOT NULL,
-  `taskId`       INT(11)                 NOT NULL,
-  `agentId`      INT(11)                 NOT NULL,
-  `benchmark`    VARCHAR(50)             NOT NULL
+  `assignmentId` INT(11)     NOT NULL,
+  `taskId`       INT(11)     NOT NULL,
+  `agentId`      INT(11)     NOT NULL,
+  `benchmark`    VARCHAR(50) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Chunk` (
@@ -103,10 +103,10 @@ CREATE TABLE `Chunk` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Config` (
-  `configId`        INT(11)                      NOT NULL,
-  `configSectionId` INT(11)                      NOT NULL,
-  `item`            VARCHAR(80)                  NOT NULL,
-  `value`           TEXT                         NOT NULL
+  `configId`        INT(11)     NOT NULL,
+  `configSectionId` INT(11)     NOT NULL,
+  `item`            VARCHAR(80) NOT NULL,
+  `value`           TEXT        NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
@@ -169,8 +169,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (71, 5, 'allowDeregister', '0');
 
 CREATE TABLE `ConfigSection` (
-  `configSectionId` INT(11)                 NOT NULL,
-  `sectionName`     VARCHAR(100)            NOT NULL
+  `configSectionId` INT(11)      NOT NULL,
+  `sectionName`     VARCHAR(100) NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
@@ -183,32 +183,32 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (7, 'Notifications');
 
 CREATE TABLE `CrackerBinary` (
-  `crackerBinaryId`     INT(11)                 NOT NULL,
-  `crackerBinaryTypeId` INT(11)                 NOT NULL,
-  `version`             VARCHAR(20)             NOT NULL,
-  `downloadUrl`         VARCHAR(150)            NOT NULL,
-  `binaryName`          VARCHAR(50)             NOT NULL
+  `crackerBinaryId`     INT(11)      NOT NULL,
+  `crackerBinaryTypeId` INT(11)      NOT NULL,
+  `version`             VARCHAR(20)  NOT NULL,
+  `downloadUrl`         VARCHAR(150) NOT NULL,
+  `binaryName`          VARCHAR(50)  NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
   (1, 1, '5.0.0', 'https://hashcat.net/files/hashcat-5.0.0.7z', 'hashcat');
 
 CREATE TABLE `CrackerBinaryType` (
-  `crackerBinaryTypeId` INT(11)                 NOT NULL,
-  `typeName`            VARCHAR(30)             NOT NULL,
-  `isChunkingAvailable` INT(11)                 NOT NULL
+  `crackerBinaryTypeId` INT(11)     NOT NULL,
+  `typeName`            VARCHAR(30) NOT NULL,
+  `isChunkingAvailable` INT(11)     NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingAvailable`) VALUES
   (1, 'hashcat', 1);
 
 CREATE TABLE `File` (
-  `fileId`   INT(11)                 NOT NULL,
-  `filename` VARCHAR(100)            NOT NULL,
-  `size`     BIGINT(20)              NOT NULL,
-  `isSecret` INT(11)                 NOT NULL,
-  `fileType` INT(11)                 NOT NULL,
-  `accessGroupId` INT(11)            NOT NULL
+  `fileId`   INT(11)      NOT NULL,
+  `filename` VARCHAR(100) NOT NULL,
+  `size`     BIGINT(20)   NOT NULL,
+  `isSecret` INT(11)      NOT NULL,
+  `fileType` INT(11)      NOT NULL,
+  `accessGroupId` INT(11) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `FilePretask` (
@@ -224,50 +224,50 @@ CREATE TABLE `FileTask` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `FileDelete` (
-  `fileDeleteId` int(11) NOT NULL,
-  `filename` varchar(256) NOT NULL,
-  `time` int(11) NOT NULL
+  `fileDeleteId` INT(11)      NOT NULL,
+  `filename`     VARCHAR(256) NOT NULL,
+  `time`         INT(11)      NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `Hash` (
-  `hashId`      INT(11)                 NOT NULL,
-  `hashlistId`  INT(11)                 NOT NULL,
-  `hash`        TEXT                    NOT NULL,
-  `salt`        VARCHAR(256)  DEFAULT NULL,
-  `plaintext`   VARCHAR(256)  DEFAULT NULL,
-  `timeCracked` INT(11)                 DEFAULT NULL,
-  `chunkId`     INT(11)                 DEFAULT NULL,
-  `isCracked`   TINYINT(4)              NOT NULL,
-  `crackPos`    BIGINT                  NOT NULL
+  `hashId`      INT(11)      NOT NULL,
+  `hashlistId`  INT(11)      NOT NULL,
+  `hash`        TEXT         NOT NULL,
+  `salt`        VARCHAR(256) DEFAULT NULL,
+  `plaintext`   VARCHAR(256) DEFAULT NULL,
+  `timeCracked` INT(11)      DEFAULT NULL,
+  `chunkId`     INT(11)      DEFAULT NULL,
+  `isCracked`   TINYINT(4)   NOT NULL,
+  `crackPos`    BIGINT       NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `HashBinary` (
-  `hashBinaryId` INT(11)                            NOT NULL,
-  `hashlistId`   INT(11)                            NOT NULL,
-  `essid`        VARCHAR(100)            NOT NULL,
-  `hash`         MEDIUMTEXT   NOT NULL,
-  `plaintext`    VARCHAR(1024)  DEFAULT NULL,
-  `timeCracked`  INT(11)                 DEFAULT NULL,
-  `chunkId`      INT(11)                 DEFAULT NULL,
-  `isCracked`    TINYINT(4)                         NOT NULL,
-  `crackPos`     BIGINT                  NOT NULL
+  `hashBinaryId` INT(11)       NOT NULL,
+  `hashlistId`   INT(11)       NOT NULL,
+  `essid`        VARCHAR(100)  NOT NULL,
+  `hash`         MEDIUMTEXT    NOT NULL,
+  `plaintext`    VARCHAR(1024) DEFAULT NULL,
+  `timeCracked`  INT(11)       DEFAULT NULL,
+  `chunkId`      INT(11)       DEFAULT NULL,
+  `isCracked`    TINYINT(4)    NOT NULL,
+  `crackPos`     BIGINT        NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Hashlist` (
-  `hashlistId`    INT(11)                 NOT NULL,
-  `hashlistName`  VARCHAR(100)  NOT NULL,
-  `format`        INT(11)                 NOT NULL,
-  `hashTypeId`    INT(11)                 NOT NULL,
-  `hashCount`     INT(11)                 NOT NULL,
+  `hashlistId`    INT(11)      NOT NULL,
+  `hashlistName`  VARCHAR(100) NOT NULL,
+  `format`        INT(11)      NOT NULL,
+  `hashTypeId`    INT(11)      NOT NULL,
+  `hashCount`     INT(11)      NOT NULL,
   `saltSeparator` VARCHAR(10)  DEFAULT NULL,
-  `cracked`       INT(11)                 NOT NULL,
-  `isSecret`      INT(11)                 NOT NULL,
-  `hexSalt`       INT(11)                 NOT NULL,
-  `isSalted`      TINYINT(4)              NOT NULL,
-  `accessGroupId` INT(11)                 NOT NULL,
-  `notes`         TEXT                    NOT NULL,
-  `brainId`       INT(11)                 NOT NULL,
-  `brainFeatures` TINYINT(4)              NOT NULL
+  `cracked`       INT(11)      NOT NULL,
+  `isSecret`      INT(11)      NOT NULL,
+  `hexSalt`       INT(11)      NOT NULL,
+  `isSalted`      TINYINT(4)   NOT NULL,
+  `accessGroupId` INT(11)      NOT NULL,
+  `notes`         TEXT         NOT NULL,
+  `brainId`       INT(11)      NOT NULL,
+  `brainFeatures` TINYINT(4)   NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `HashlistHashlist` (
@@ -277,167 +277,167 @@ CREATE TABLE `HashlistHashlist` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `HashType` (
-  `hashTypeId`  INT(11)                 NOT NULL,
-  `description` VARCHAR(256)  NOT NULL,
-  `isSalted`    TINYINT(4)              NOT NULL,
-  `isSlowHash`  TINYINT(4)              NOT NULL
+  `hashTypeId`  INT(11)      NOT NULL,
+  `description` VARCHAR(256) NOT NULL,
+  `isSalted`    TINYINT(4)   NOT NULL,
+  `isSlowHash`  TINYINT(4)   NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) VALUES
-  (0, 'MD5', 0, 0),
-  (10, 'md5($pass.$salt)', 1, 0),
-  (11, 'Joomla < 2.5.18', 1, 0),
-  (12, 'PostgreSQL', 1, 0),
-  (20, 'md5($salt.$pass)', 1, 0),
-  (21, 'osCommerce, xt:Commerce', 1, 0),
-  (22, 'Juniper Netscreen/SSG (ScreenOS)', 1, 0),
-  (23, 'Skype', 1, 0),
-  (30, 'md5(unicode($pass).$salt)', 1, 0),
-  (40, 'md5($salt.unicode($pass))', 1, 0),
-  (50, 'HMAC-MD5 (key = $pass)', 1, 0),
-  (60, 'HMAC-MD5 (key = $salt)', 1, 0),
-  (100, 'SHA1', 0, 0),
-  (101, 'nsldap, SHA-1(Base64), Netscape LDAP SHA', 0, 0),
-  (110, 'sha1($pass.$salt)', 1, 0),
-  (111, 'nsldaps, SSHA-1(Base64), Netscape LDAP SSHA', 0, 0),
-  (112, 'Oracle S: Type (Oracle 11+)', 1, 0),
-  (120, 'sha1($salt.$pass)', 1, 0),
-  (121, 'SMF >= v1.1', 1, 0),
-  (122, 'OS X v10.4, v10.5, v10.6', 0, 0),
-  (123, 'EPi', 0, 0),
-  (124, 'Django (SHA-1)', 0, 0),
-  (125, 'ArubaOS', 0, 0),
-  (130, 'sha1(unicode($pass).$salt)', 1, 0),
-  (131, 'MSSQL(2000)', 0, 0),
-  (132, 'MSSQL(2005)', 0, 0),
-  (133, 'PeopleSoft', 0, 0),
-  (140, 'sha1($salt.unicode($pass))', 1, 0),
-  (141, 'EPiServer 6.x < v4', 0, 0),
-  (150, 'HMAC-SHA1 (key = $pass)', 1, 0),
-  (160, 'HMAC-SHA1 (key = $salt)', 1, 0),
-  (200, 'MySQL323', 0, 0),
-  (300, 'MySQL4.1/MySQL5+', 0, 0),
-  (400, 'phpass, MD5(Wordpress), MD5(Joomla), MD5(phpBB3)', 0, 0),
-  (500, 'md5crypt, MD5(Unix), FreeBSD MD5, Cisco-IOS MD5 2', 0, 0),
-  (501, 'Juniper IVE', 0, 0),
-  (600, 'BLAKE2b-512', 0, 0),
-  (900, 'MD4', 0, 0),
-  (1000, 'NTLM', 0, 0),
-  (1100, 'Domain Cached Credentials (DCC), MS Cache', 1, 0),
-  (1300, 'SHA-224', 0, 0),
-  (1400, 'SHA256', 0, 0),
-  (1410, 'sha256($pass.$salt)', 1, 0),
-  (1411, 'SSHA-256(Base64), LDAP {SSHA256}', 0, 0),
-  (1420, 'sha256($salt.$pass)', 1, 0),
-  (1421, 'hMailServer', 0, 0),
-  (1430, 'sha256(unicode($pass).$salt)', 1, 0),
-  (1440, 'sha256($salt.unicode($pass))', 1, 0),
-  (1441, 'EPiServer 6.x >= v4', 0, 0),
-  (1450, 'HMAC-SHA256 (key = $pass)', 1, 0),
-  (1460, 'HMAC-SHA256 (key = $salt)', 1, 0),
-  (1500, 'descrypt, DES(Unix), Traditional DES', 0, 0),
-  (1600, 'md5apr1, MD5(APR), Apache MD5', 0, 0),
-  (1700, 'SHA512', 0, 0),
-  (1710, 'sha512($pass.$salt)', 1, 0),
-  (1711, 'SSHA-512(Base64), LDAP {SSHA512}', 0, 0),
-  (1720, 'sha512($salt.$pass)', 1, 0),
-  (1722, 'OS X v10.7', 0, 0),
-  (1730, 'sha512(unicode($pass).$salt)', 1, 0),
-  (1731, 'MSSQL(2012), MSSQL(2014)', 0, 0),
-  (1740, 'sha512($salt.unicode($pass))', 1, 0),
-  (1750, 'HMAC-SHA512 (key = $pass)', 1, 0),
-  (1760, 'HMAC-SHA512 (key = $salt)', 1, 0),
-  (1800, 'sha512crypt, SHA512(Unix)', 0, 0),
-  (2100, 'Domain Cached Credentials 2 (DCC2), MS Cache', 0, 1),
-  (2400, 'Cisco-PIX MD5', 0, 0),
-  (2410, 'Cisco-ASA MD5', 1, 0),
-  (2500, 'WPA/WPA2', 0, 1),
-  (2600, 'md5(md5($pass))', 0, 0),
-  (2611, 'vBulletin < v3.8.5', 1, 0),
-  (2612, 'PHPS', 0, 0),
-  (2711, 'vBulletin >= v3.8.5', 1, 0),
-  (2811, 'IPB2+, MyBB1.2+', 1, 0),
-  (3000, 'LM', 0, 0),
-  (3100, 'Oracle H: Type (Oracle 7+), DES(Oracle)', 1, 0),
-  (3200, 'bcrypt, Blowfish(OpenBSD)', 0, 0),
-  (3710, 'md5($salt.md5($pass))', 1, 0),
-  (3711, 'Mediawiki B type', 0, 0),
-  (3800, 'md5($salt.$pass.$salt)', 1, 0),
-  (3910, 'md5(md5($pass).md5($salt))', 1, 0),
-  (4010, 'md5($salt.md5($salt.$pass))', 1, 0),
-  (4110, 'md5($salt.md5($pass.$salt))', 1, 0),
-  (4300, 'md5(strtoupper(md5($pass)))', 0, 0),
-  (4400, 'md5(sha1($pass))', 0, 0),
-  (4500, 'sha1(sha1($pass))', 0, 0),
-  (4520, 'sha1($salt.sha1($pass))', 1, 0),
-  (4521, 'Redmine Project Management Web App', 0, 0),
-  (4522, 'PunBB', 0, 0),
-  (4700, 'sha1(md5($pass))', 0, 0),
-  (4800, 'MD5(Chap), iSCSI CHAP authentication', 1, 0),
-  (4900, 'sha1($salt.$pass.$salt)', 1, 0),
-  (5000, 'SHA-3(Keccak)', 0, 0),
-  (5100, 'Half MD5', 0, 0),
-  (5200, 'Password Safe v3', 0, 1),
-  (5300, 'IKE-PSK MD5', 0, 0),
-  (5400, 'IKE-PSK SHA1', 0, 0),
-  (5500, 'NetNTLMv1-VANILLA / NetNTLMv1+ESS', 0, 0),
-  (5600, 'NetNTLMv2', 0, 0),
-  (5700, 'Cisco-IOS SHA256', 0, 0),
-  (5800, 'Samsung Android Password/PIN', 1, 0),
-  (6000, 'RipeMD160', 0, 0),
-  (6100, 'Whirlpool', 0, 0),
-  (6211, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish', 0, 1),
-  (6212, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
-  (6213, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
-  (6221, 'TrueCrypt 5.0+ SHA512 + AES/Serpent/Twofish', 0, 1),
-  (6222, 'TrueCrypt 5.0+ SHA512 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
-  (6223, 'TrueCrypt 5.0+ SHA512 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
-  (6231, 'TrueCrypt 5.0+ Whirlpool + AES/Serpent/Twofish', 0, 1),
-  (6232, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
-  (6233, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
-  (6241, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish + boot', 0, 1),
-  (6242, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent + boot', 0, 1),
-  (6243, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES + boot', 0, 1),
-  (6300, 'AIX {smd5}', 0, 0),
-  (6400, 'AIX {ssha256}', 0, 1),
-  (6500, 'AIX {ssha512}', 0, 1),
-  (6600, '1Password, Agile Keychain', 0, 1),
-  (6700, 'AIX {ssha1}', 0, 1),
-  (6800, 'Lastpass', 1, 1),
-  (6900, 'GOST R 34.11-94', 0, 0),
-  (7000, 'Fortigate (FortiOS)', 0, 0),
-  (7100, 'OS X v10.8 / v10.9', 0, 1),
-  (7200, 'GRUB 2', 0, 1),
-  (7300, 'IPMI2 RAKP HMAC-SHA1', 1, 0),
-  (7400, 'sha256crypt, SHA256(Unix)', 0, 0),
-  (7500, 'Kerberos 5 AS-REQ Pre-Auth', 0, 0),
-  (7700, 'SAP CODVN B (BCODE)', 0, 0),
-  (7800, 'SAP CODVN F/G (PASSCODE)', 0, 0),
-  (7900, 'Drupal7', 0, 0),
-  (8000, 'Sybase ASE', 0, 0),
-  (8100, 'Citrix Netscaler', 0, 0),
-  (8200, '1Password, Cloud Keychain', 0, 1),
-  (8300, 'DNSSEC (NSEC3)', 1, 0),
-  (8400, 'WBB3, Woltlab Burning Board 3', 1, 0),
-  (8500, 'RACF', 0, 0),
-  (8600, 'Lotus Notes/Domino 5', 0, 0),
-  (8700, 'Lotus Notes/Domino 6', 0, 0),
-  (8800, 'Android FDE <= 4.3', 0, 1),
-  (8900, 'scrypt', 1, 0),
-  (9000, 'Password Safe v2', 0, 0),
-  (9100, 'Lotus Notes/Domino', 0, 1),
-  (9200, 'Cisco $8$', 0, 1),
-  (9300, 'Cisco $9$', 0, 0),
-  (9400, 'Office 2007', 0, 1),
-  (9500, 'Office 2010', 0, 1),
-  (9600, 'Office 2013', 0, 1),
-  (9700, 'MS Office ⇐ 2003 MD5 + RC4, oldoffice$0, oldoffice$1', 0, 0),
-  (9710, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1', 0, 0),
-  (9720, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2', 0, 0),
-  (9800, 'MS Office ⇐ 2003 SHA1 + RC4, oldoffice$3, oldoffice$4', 0, 0),
-  (9810, 'MS Office <= 2003 $3, SHA1 + RC4, collider #1', 0, 0),
-  (9820, 'MS Office <= 2003 $3, SHA1 + RC4, collider #2', 0, 0),
-  (9900, 'Radmin2', 0, 0),
+  (0,     'MD5', 0, 0),
+  (10,    'md5($pass.$salt)', 1, 0),
+  (11,    'Joomla < 2.5.18', 1, 0),
+  (12,    'PostgreSQL', 1, 0),
+  (20,    'md5($salt.$pass)', 1, 0),
+  (21,    'osCommerce, xt:Commerce', 1, 0),
+  (22,    'Juniper Netscreen/SSG (ScreenOS)', 1, 0),
+  (23,    'Skype', 1, 0),
+  (30,    'md5(unicode($pass).$salt)', 1, 0),
+  (40,    'md5($salt.unicode($pass))', 1, 0),
+  (50,    'HMAC-MD5 (key = $pass)', 1, 0),
+  (60,    'HMAC-MD5 (key = $salt)', 1, 0),
+  (100,   'SHA1', 0, 0),
+  (101,   'nsldap, SHA-1(Base64), Netscape LDAP SHA', 0, 0),
+  (110,   'sha1($pass.$salt)', 1, 0),
+  (111,   'nsldaps, SSHA-1(Base64), Netscape LDAP SSHA', 0, 0),
+  (112,   'Oracle S: Type (Oracle 11+)', 1, 0),
+  (120,   'sha1($salt.$pass)', 1, 0),
+  (121,   'SMF >= v1.1', 1, 0),
+  (122,   'OS X v10.4, v10.5, v10.6', 0, 0),
+  (123,   'EPi', 0, 0),
+  (124,   'Django (SHA-1)', 0, 0),
+  (125,   'ArubaOS', 0, 0),
+  (130,   'sha1(unicode($pass).$salt)', 1, 0),
+  (131,   'MSSQL(2000)', 0, 0),
+  (132,   'MSSQL(2005)', 0, 0),
+  (133,   'PeopleSoft', 0, 0),
+  (140,   'sha1($salt.unicode($pass))', 1, 0),
+  (141,   'EPiServer 6.x < v4', 0, 0),
+  (150,   'HMAC-SHA1 (key = $pass)', 1, 0),
+  (160,   'HMAC-SHA1 (key = $salt)', 1, 0),
+  (200,   'MySQL323', 0, 0),
+  (300,   'MySQL4.1/MySQL5+', 0, 0),
+  (400,   'phpass, MD5(Wordpress), MD5(Joomla), MD5(phpBB3)', 0, 0),
+  (500,   'md5crypt, MD5(Unix), FreeBSD MD5, Cisco-IOS MD5 2', 0, 0),
+  (501,   'Juniper IVE', 0, 0),
+  (600,   'BLAKE2b-512', 0, 0),
+  (900,   'MD4', 0, 0),
+  (1000,  'NTLM', 0, 0),
+  (1100,  'Domain Cached Credentials (DCC), MS Cache', 1, 0),
+  (1300,  'SHA-224', 0, 0),
+  (1400,  'SHA256', 0, 0),
+  (1410,  'sha256($pass.$salt)', 1, 0),
+  (1411,  'SSHA-256(Base64), LDAP {SSHA256}', 0, 0),
+  (1420,  'sha256($salt.$pass)', 1, 0),
+  (1421,  'hMailServer', 0, 0),
+  (1430,  'sha256(unicode($pass).$salt)', 1, 0),
+  (1440,  'sha256($salt.unicode($pass))', 1, 0),
+  (1441,  'EPiServer 6.x >= v4', 0, 0),
+  (1450,  'HMAC-SHA256 (key = $pass)', 1, 0),
+  (1460,  'HMAC-SHA256 (key = $salt)', 1, 0),
+  (1500,  'descrypt, DES(Unix), Traditional DES', 0, 0),
+  (1600,  'md5apr1, MD5(APR), Apache MD5', 0, 0),
+  (1700,  'SHA512', 0, 0),
+  (1710,  'sha512($pass.$salt)', 1, 0),
+  (1711,  'SSHA-512(Base64), LDAP {SSHA512}', 0, 0),
+  (1720,  'sha512($salt.$pass)', 1, 0),
+  (1722,  'OS X v10.7', 0, 0),
+  (1730,  'sha512(unicode($pass).$salt)', 1, 0),
+  (1731,  'MSSQL(2012), MSSQL(2014)', 0, 0),
+  (1740,  'sha512($salt.unicode($pass))', 1, 0),
+  (1750,  'HMAC-SHA512 (key = $pass)', 1, 0),
+  (1760,  'HMAC-SHA512 (key = $salt)', 1, 0),
+  (1800,  'sha512crypt, SHA512(Unix)', 0, 0),
+  (2100,  'Domain Cached Credentials 2 (DCC2), MS Cache', 0, 1),
+  (2400,  'Cisco-PIX MD5', 0, 0),
+  (2410,  'Cisco-ASA MD5', 1, 0),
+  (2500,  'WPA/WPA2', 0, 1),
+  (2600,  'md5(md5($pass))', 0, 0),
+  (2611,  'vBulletin < v3.8.5', 1, 0),
+  (2612,  'PHPS', 0, 0),
+  (2711,  'vBulletin >= v3.8.5', 1, 0),
+  (2811,  'IPB2+, MyBB1.2+', 1, 0),
+  (3000,  'LM', 0, 0),
+  (3100,  'Oracle H: Type (Oracle 7+), DES(Oracle)', 1, 0),
+  (3200,  'bcrypt, Blowfish(OpenBSD)', 0, 0),
+  (3710,  'md5($salt.md5($pass))', 1, 0),
+  (3711,  'Mediawiki B type', 0, 0),
+  (3800,  'md5($salt.$pass.$salt)', 1, 0),
+  (3910,  'md5(md5($pass).md5($salt))', 1, 0),
+  (4010,  'md5($salt.md5($salt.$pass))', 1, 0),
+  (4110,  'md5($salt.md5($pass.$salt))', 1, 0),
+  (4300,  'md5(strtoupper(md5($pass)))', 0, 0),
+  (4400,  'md5(sha1($pass))', 0, 0),
+  (4500,  'sha1(sha1($pass))', 0, 0),
+  (4520,  'sha1($salt.sha1($pass))', 1, 0),
+  (4521,  'Redmine Project Management Web App', 0, 0),
+  (4522,  'PunBB', 0, 0),
+  (4700,  'sha1(md5($pass))', 0, 0),
+  (4800,  'MD5(Chap), iSCSI CHAP authentication', 1, 0),
+  (4900,  'sha1($salt.$pass.$salt)', 1, 0),
+  (5000,  'SHA-3(Keccak)', 0, 0),
+  (5100,  'Half MD5', 0, 0),
+  (5200,  'Password Safe v3', 0, 1),
+  (5300,  'IKE-PSK MD5', 0, 0),
+  (5400,  'IKE-PSK SHA1', 0, 0),
+  (5500,  'NetNTLMv1-VANILLA / NetNTLMv1+ESS', 0, 0),
+  (5600,  'NetNTLMv2', 0, 0),
+  (5700,  'Cisco-IOS SHA256', 0, 0),
+  (5800,  'Samsung Android Password/PIN', 1, 0),
+  (6000,  'RipeMD160', 0, 0),
+  (6100,  'Whirlpool', 0, 0),
+  (6211,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish', 0, 1),
+  (6212,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
+  (6213,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
+  (6221,  'TrueCrypt 5.0+ SHA512 + AES/Serpent/Twofish', 0, 1),
+  (6222,  'TrueCrypt 5.0+ SHA512 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
+  (6223,  'TrueCrypt 5.0+ SHA512 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
+  (6231,  'TrueCrypt 5.0+ Whirlpool + AES/Serpent/Twofish', 0, 1),
+  (6232,  'TrueCrypt 5.0+ Whirlpool + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
+  (6233,  'TrueCrypt 5.0+ Whirlpool + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
+  (6241,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish + boot', 0, 1),
+  (6242,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent + boot', 0, 1),
+  (6243,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES + boot', 0, 1),
+  (6300,  'AIX {smd5}', 0, 0),
+  (6400,  'AIX {ssha256}', 0, 1),
+  (6500,  'AIX {ssha512}', 0, 1),
+  (6600,  '1Password, Agile Keychain', 0, 1),
+  (6700,  'AIX {ssha1}', 0, 1),
+  (6800,  'Lastpass', 1, 1),
+  (6900,  'GOST R 34.11-94', 0, 0),
+  (7000,  'Fortigate (FortiOS)', 0, 0),
+  (7100,  'OS X v10.8 / v10.9', 0, 1),
+  (7200,  'GRUB 2', 0, 1),
+  (7300,  'IPMI2 RAKP HMAC-SHA1', 1, 0),
+  (7400,  'sha256crypt, SHA256(Unix)', 0, 0),
+  (7500,  'Kerberos 5 AS-REQ Pre-Auth', 0, 0),
+  (7700,  'SAP CODVN B (BCODE)', 0, 0),
+  (7800,  'SAP CODVN F/G (PASSCODE)', 0, 0),
+  (7900,  'Drupal7', 0, 0),
+  (8000,  'Sybase ASE', 0, 0),
+  (8100,  'Citrix Netscaler', 0, 0),
+  (8200,  '1Password, Cloud Keychain', 0, 1),
+  (8300,  'DNSSEC (NSEC3)', 1, 0),
+  (8400,  'WBB3, Woltlab Burning Board 3', 1, 0),
+  (8500,  'RACF', 0, 0),
+  (8600,  'Lotus Notes/Domino 5', 0, 0),
+  (8700,  'Lotus Notes/Domino 6', 0, 0),
+  (8800,  'Android FDE <= 4.3', 0, 1),
+  (8900,  'scrypt', 1, 0),
+  (9000,  'Password Safe v2', 0, 0),
+  (9100,  'Lotus Notes/Domino', 0, 1),
+  (9200,  'Cisco $8$', 0, 1),
+  (9300,  'Cisco $9$', 0, 0),
+  (9400,  'Office 2007', 0, 1),
+  (9500,  'Office 2010', 0, 1),
+  (9600,  'Office 2013', 0, 1),
+  (9700,  'MS Office ⇐ 2003 MD5 + RC4, oldoffice$0, oldoffice$1', 0, 0),
+  (9710,  'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1', 0, 0),
+  (9720,  'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2', 0, 0),
+  (9800,  'MS Office ⇐ 2003 SHA1 + RC4, oldoffice$3, oldoffice$4', 0, 0),
+  (9810,  'MS Office <= 2003 $3, SHA1 + RC4, collider #1', 0, 0),
+  (9820,  'MS Office <= 2003 $3, SHA1 + RC4, collider #2', 0, 0),
+  (9900,  'Radmin2', 0, 0),
   (10000, 'Django (PBKDF2-SHA256)', 0, 1),
   (10100, 'SipHash', 1, 0),
   (10200, 'Cram MD5', 0, 0),
@@ -531,70 +531,70 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (99999, 'Plaintext', 0, 0);
 
 CREATE TABLE `LogEntry` (
-  `logEntryId` INT(11)                      NOT NULL,
-  `issuer`     VARCHAR(50)      NOT NULL,
+  `logEntryId` INT(11)     NOT NULL,
+  `issuer`     VARCHAR(50) NOT NULL,
   `issuerId`   VARCHAR(50) NOT NULL,
-  `level`      VARCHAR(50)     NOT NULL,
-  `message`    TEXT  NOT NULL,
-  `time`       INT(11)                      NOT NULL
+  `level`      VARCHAR(50) NOT NULL,
+  `message`    TEXT        NOT NULL,
+  `time`       INT(11)     NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `NotificationSetting` (
-  `notificationSettingId` INT(11)                 NOT NULL,
+  `notificationSettingId` INT(11)      NOT NULL,
   `action`                VARCHAR(50)  NOT NULL,
-  `objectId`              INT(11)                 NULL,
+  `objectId`              INT(11)      NULL,
   `notification`          VARCHAR(50)  NOT NULL,
-  `userId`                INT(11)                 NOT NULL,
-  `receiver`              VARCHAR(256)  NOT NULL,
-  `isActive`              TINYINT(4)              NOT NULL
+  `userId`                INT(11)      NOT NULL,
+  `receiver`              VARCHAR(256) NOT NULL,
+  `isActive`              TINYINT(4)   NOT NULL
 )ENGINE = InnoDB;
 
 CREATE TABLE `Pretask` (
-  `pretaskId`           INT(11)                 NOT NULL,
-  `taskName`            VARCHAR(100)  NOT NULL,
-  `attackCmd`           VARCHAR(256)  NOT NULL,
-  `chunkTime`           INT(11)                 NOT NULL,
-  `statusTimer`         INT(11)                 NOT NULL,
+  `pretaskId`           INT(11)      NOT NULL,
+  `taskName`            VARCHAR(100) NOT NULL,
+  `attackCmd`           VARCHAR(256) NOT NULL,
+  `chunkTime`           INT(11)      NOT NULL,
+  `statusTimer`         INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
-  `isSmall`             INT(11)                 NOT NULL,
-  `isCpuTask`           INT(11)                 NOT NULL,
-  `useNewBench`         INT(11)                 NOT NULL,
-  `priority`            INT(11)                 NOT NULL,
-  `isMaskImport`        INT(11)                 NOT NULL,
-  `crackerBinaryTypeId` INT(11)                 NOT NULL
+  `isSmall`             INT(11)      NOT NULL,
+  `isCpuTask`           INT(11)      NOT NULL,
+  `useNewBench`         INT(11)      NOT NULL,
+  `priority`            INT(11)      NOT NULL,
+  `isMaskImport`        INT(11)      NOT NULL,
+  `crackerBinaryTypeId` INT(11)      NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `RegVoucher` (
-  `regVoucherId` INT(11)                 NOT NULL,
-  `voucher`      VARCHAR(100)  NOT NULL,
-  `time`         INT(11)                 NOT NULL
+  `regVoucherId` INT(11)      NOT NULL,
+  `voucher`      VARCHAR(100) NOT NULL,
+  `time`         INT(11)      NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `RightGroup` (
-  `rightGroupId` INT(11)                 NOT NULL,
-  `groupName`    VARCHAR(50)  NOT NULL,
-  `permissions`  TEXT                    NOT NULL
+  `rightGroupId` INT(11)     NOT NULL,
+  `groupName`    VARCHAR(50) NOT NULL,
+  `permissions`  TEXT        NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `permissions`) VALUES
   (1, 'Administrator', 'ALL');
 
 CREATE TABLE `Session` (
-  `sessionId`        INT(11)                 NOT NULL,
-  `userId`           INT(11)                 NOT NULL,
-  `sessionStartDate` INT(11)                 NOT NULL,
-  `lastActionDate`   INT(11)                 NOT NULL,
-  `isOpen`           INT(11)                 NOT NULL,
-  `sessionLifetime`  INT(11)                 NOT NULL,
-  `sessionKey`       VARCHAR(256)  NOT NULL
+  `sessionId`        INT(11)      NOT NULL,
+  `userId`           INT(11)      NOT NULL,
+  `sessionStartDate` INT(11)      NOT NULL,
+  `lastActionDate`   INT(11)      NOT NULL,
+  `isOpen`           INT(11)      NOT NULL,
+  `sessionLifetime`  INT(11)      NOT NULL,
+  `sessionKey`       VARCHAR(256) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Speed` (
-  `speedId` INT(11) NOT NULL,
-  `agentId` INT(11) NOT NULL,
-  `taskId` INT(11) NOT NULL,
-  `speed` BIGINT(20) NOT NULL,
-  `time` BIGINT(20) NOT NULL
+  `speedId` INT(11)    NOT NULL,
+  `agentId` INT(11)    NOT NULL,
+  `taskId`  INT(11)    NOT NULL,
+  `speed`   BIGINT(20) NOT NULL,
+  `time`    BIGINT(20) NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `StoredValue` (
@@ -603,8 +603,8 @@ CREATE TABLE `StoredValue` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Supertask` (
-  `supertaskId`   INT(11)                 NOT NULL,
-  `supertaskName` VARCHAR(50)  NOT NULL
+  `supertaskId`   INT(11)     NOT NULL,
+  `supertaskName` VARCHAR(50) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `SupertaskPretask` (
@@ -614,34 +614,34 @@ CREATE TABLE `SupertaskPretask` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Task` (
-  `taskId`              INT(11)                 NOT NULL,
-  `taskName`            VARCHAR(256)  NOT NULL,
-  `attackCmd`           VARCHAR(256)  NOT NULL,
-  `chunkTime`           INT(11)                 NOT NULL,
-  `statusTimer`         INT(11)                 NOT NULL,
-  `keyspace`            BIGINT(20)              NOT NULL,
-  `keyspaceProgress`    BIGINT(20)              NOT NULL,
-  `priority`            INT(11)                 NOT NULL,
+  `taskId`              INT(11)      NOT NULL,
+  `taskName`            VARCHAR(256) NOT NULL,
+  `attackCmd`           VARCHAR(256) NOT NULL,
+  `chunkTime`           INT(11)      NOT NULL,
+  `statusTimer`         INT(11)      NOT NULL,
+  `keyspace`            BIGINT(20)   NOT NULL,
+  `keyspaceProgress`    BIGINT(20)   NOT NULL,
+  `priority`            INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
-  `isSmall`             INT(11)                 NOT NULL,
-  `isCpuTask`           INT(11)                 NOT NULL,
-  `useNewBench`         INT(11)                 NOT NULL,
-  `skipKeyspace`        BIGINT(20)              NOT NULL,
-  `crackerBinaryId`     INT(11) DEFAULT NULL,
-  `crackerBinaryTypeId` INT(11)                 NULL,
-  `taskWrapperId`       INT(11)                 NOT NULL,
-  `isArchived`          INT(11)                 NOT NULL,
-  `isPrince`            INT(11)                 NOT NULL,
-  `notes`               TEXT                    NOT NULL,
-  `staticChunks`        INT(11)                 NOT NULL,
-  `chunkSize`           BIGINT(20)              NOT NULL,
-  `forcePipe`           INT(11)                 NOT NULL
+  `isSmall`             INT(11)      NOT NULL,
+  `isCpuTask`           INT(11)      NOT NULL,
+  `useNewBench`         INT(11)      NOT NULL,
+  `skipKeyspace`        BIGINT(20)   NOT NULL,
+  `crackerBinaryId`     INT(11)      DEFAULT NULL,
+  `crackerBinaryTypeId` INT(11)      NULL,
+  `taskWrapperId`       INT(11)      NOT NULL,
+  `isArchived`          INT(11)      NOT NULL,
+  `isPrince`            INT(11)      NOT NULL,
+  `notes`               TEXT         NOT NULL,
+  `staticChunks`        INT(11)      NOT NULL,
+  `chunkSize`           BIGINT(20)   NOT NULL,
+  `forcePipe`           INT(11)      NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `TaskDebugOutput` (
-  `taskDebugOutputId` INT(11) NOT NULL,
-  `taskId` INT(11) NOT NULL,
-  `output` VARCHAR(256) NOT NULL
+  `taskDebugOutputId` INT(11)      NOT NULL,
+  `taskId`            INT(11)      NOT NULL,
+  `output`            VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
  
 CREATE TABLE `TaskWrapper` (
@@ -656,79 +656,79 @@ CREATE TABLE `TaskWrapper` (
 )ENGINE = InnoDB;
 
 CREATE TABLE `User` (
-  `userId`             INT(11)                 NOT NULL,
-  `username`           VARCHAR(100)  NOT NULL,
-  `email`              VARCHAR(150)  NOT NULL,
-  `passwordHash`       VARCHAR(256)  NOT NULL,
-  `passwordSalt`       VARCHAR(256)  NOT NULL,
-  `isValid`            INT(11)                 NOT NULL,
-  `isComputedPassword` INT(11)                 NOT NULL,
-  `lastLoginDate`      INT(11)                 NOT NULL,
-  `registeredSince`    INT(11)                 NOT NULL,
-  `sessionLifetime`    INT(11)                 NOT NULL,
-  `rightGroupId`       INT(11)                 NOT NULL,
-  `yubikey`            VARCHAR(256)  DEFAULT NULL,
-  `otp1`               VARCHAR(256)  DEFAULT NULL,
-  `otp2`               VARCHAR(256)  DEFAULT NULL,
-  `otp3`               VARCHAR(256)  DEFAULT NULL,
-  `otp4`               VARCHAR(256)  DEFAULT NULL
+  `userId`             INT(11)      NOT NULL,
+  `username`           VARCHAR(100) NOT NULL,
+  `email`              VARCHAR(150) NOT NULL,
+  `passwordHash`       VARCHAR(256) NOT NULL,
+  `passwordSalt`       VARCHAR(256) NOT NULL,
+  `isValid`            INT(11)      NOT NULL,
+  `isComputedPassword` INT(11)      NOT NULL,
+  `lastLoginDate`      INT(11)      NOT NULL,
+  `registeredSince`    INT(11)      NOT NULL,
+  `sessionLifetime`    INT(11)      NOT NULL,
+  `rightGroupId`       INT(11)      NOT NULL,
+  `yubikey`            VARCHAR(256) DEFAULT NULL,
+  `otp1`               VARCHAR(256) DEFAULT NULL,
+  `otp2`               VARCHAR(256) DEFAULT NULL,
+  `otp3`               VARCHAR(256) DEFAULT NULL,
+  `otp4`               VARCHAR(256) DEFAULT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
-  `zapId`      INT(11)                 NOT NULL,
-  `hash`       TEXT  NOT NULL,
-  `solveTime`  INT(11)                 NOT NULL,
-  `agentId`    INT(11)                 NULL,
-  `hashlistId` INT(11)                 NOT NULL
+  `zapId`      INT(11) NOT NULL,
+  `hash`       TEXT    NOT NULL,
+  `solveTime`  INT(11) NOT NULL,
+  `agentId`    INT(11) NULL,
+  `hashlistId` INT(11) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `ApiKey` (
-  `apiKeyId` int(11) NOT NULL,
-  `startValid` bigint(20) NOT NULL,
-  `endValid` bigint(20) NOT NULL,
-  `accessKey` varchar(256) NOT NULL,
-  `accessCount` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
-  `apiGroupId` int(11) NOT NULL
+  `apiKeyId`    INT(11)      NOT NULL,
+  `startValid`  BIGINT(20)   NOT NULL,
+  `endValid`    BIGINT(20)   NOT NULL,
+  `accessKey`   VARCHAR(256) NOT NULL,
+  `accessCount` INT(11)      NOT NULL,
+  `userId`      INT(11)      NOT NULL,
+  `apiGroupId`  INT(11)      NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `ApiGroup` (
-  `apiGroupId` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `permissions` text NOT NULL
+  `apiGroupId`  INT(11)      NOT NULL,
+  `name`        VARCHAR(100) NOT NULL,
+  `permissions` TEXT         NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `FileDownload` (
-  `fileDownloadId` int(11) NOT NULL,
-  `time` int(11) NOT NULL,
-  `fileId` int(11) NOT NULL,
-  `status` int(11) NOT NULL
+  `fileDownloadId` INT(11) NOT NULL,
+  `time`           INT(11) NOT NULL,
+  `fileId`         INT(11) NOT NULL,
+  `status`         INT(11) NOT NULL
 ) ENGINE=InnoDB;
 
-INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) 
-  VALUES (1, 'Administrators', 'ALL');
+INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) VALUES
+  (1, 'Administrators', 'ALL');
 
 CREATE TABLE `HealthCheck` (
-  `healthCheckId` int(11) NOT NULL,
-  `time` bigint(20) NOT NULL,
-  `status` int(11) NOT NULL,
-  `checkType` int(11) NOT NULL,
-  `hashtypeId` int(11) NOT NULL,
-  `crackerBinaryId` int(11) NOT NULL,
-  `expectedCracks` int(11) NOT NULL,
-  `attackCmd` VARCHAR(256) NOT NULL
+  `healthCheckId`   INT(11)      NOT NULL,
+  `time`            BIGINT(20)   NOT NULL,
+  `status`          INT(11)      NOT NULL,
+  `checkType`       INT(11)      NOT NULL,
+  `hashtypeId`      INT(11)      NOT NULL,
+  `crackerBinaryId` INT(11)      NOT NULL,
+  `expectedCracks`  INT(11)      NOT NULL,
+  `attackCmd`       VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `HealthCheckAgent` (
-  `healthCheckAgentId` int(11) NOT NULL,
-  `healthCheckId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `status` int(11) NOT NULL,
-  `cracked` int(11) NOT NULL,
-  `numGpus` int(11) NOT NULL,
-  `start` bigint(20) NOT NULL,
-  `end` bigint(20) NOT NULL,
-  `errors` text COLLATE utf8_bin NOT NULL
+  `healthCheckAgentId` INT(11)    NOT NULL,
+  `healthCheckId`      INT(11)    NOT NULL,
+  `agentId`            INT(11)    NOT NULL,
+  `status`             INT(11)    NOT NULL,
+  `cracked`            INT(11)    NOT NULL,
+  `numGpus`            INT(11)    NOT NULL,
+  `start`              BIGINT(20) NOT NULL,
+  `end`                BIGINT(20) NOT NULL,
+  `errors`             TEXT       NOT NULL
 ) ENGINE=InnoDB;
 
 -- Add Indexes
