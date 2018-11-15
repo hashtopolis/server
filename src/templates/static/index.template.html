@@ -47,6 +47,7 @@
     ask for creating an account.
   </div>
 {{ELSE}}
+  {%TEMPLATE->struct/messages%}
   <div class='alert alert-success'>Hi [[user.getUsername()]], welcome back!</div>
   <div class="alert alert-neutral">
     [[$APP_NAME]] Sourcecode is available in these Github repositories:&nbsp;&nbsp;<a href="https://github.com/s3inlc/hashtopolis" target="_blank" rel="noopener"><button class="btn btn-primary">Server</button></a>&nbsp;&nbsp;

@@ -4,6 +4,7 @@ use DBA\Factory;
 use DBA\User;
 use DBA\ApiKey;
 use DBA\AccessGroupUser;
+use DBA\StoredValue;
 
 abstract class HashtopolisTest {
   protected $minVersion;
@@ -20,6 +21,12 @@ abstract class HashtopolisTest {
   
   const RUN_FULL = 0;
   const RUN_FAST = 1;
+
+  
+  protected $RELEASES = [
+    "0.8.0" => "47e4444c22cbfae08f8e8f974fb6ca6bfa0e944d",
+    "0.9.0" => "cd2951cd10552114c44c29962ac22efcbabf57c7"
+  ];
   
   public function initAndUpgrade($fromVersion) {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
@@ -52,7 +59,7 @@ abstract class HashtopolisTest {
 }
   
   public function init($version) {
-    global $PEPPER;
+    global $PEPPER, $VERSION;
     
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
@@ -79,6 +86,10 @@ abstract class HashtopolisTest {
     Factory::getAccessGroupUserFactory()->save($accessGroup);
     $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, $this->user->getId(), 1);
     $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
+    $versionStore = new StoredValue("version", ($version == 'master')?explode("+", $VERSION)[0]:$version);
+    Factory::getStoredValueFactory()->save($versionStore);
+    $buildStore = new StoredValue("build", ($version == 'master')?Util::getGitCommit(true):$this->RELEASES[$version]);
+    Factory::getStoredValueFactory()->save($buildStore);
   }
   
   abstract function run();

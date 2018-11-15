@@ -159,7 +159,7 @@ class Util {
    * 
    * @return string
    */
-  public static function getGitCommit() {
+  public static function getGitCommit($hashOnly = false) {
     $gitcommit = "";
     $gitfolder = dirname(__FILE__) . "/../../.git";
     if (file_exists($gitfolder) && is_dir($gitfolder)) {
@@ -167,10 +167,16 @@ class Util {
       $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
       if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
         $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
+        if($hashOnly){
+          return $commit;
+        }
         $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
       }
       else {
         $commit = $head;
+        if($hashOnly){
+          return $commit;
+        }
         $gitcommit = "commit " . substr($commit, 0, 7);
       }
     }
@@ -181,15 +187,15 @@ class Util {
    * @param string $type
    * @param string $version
    */
-  public static function checkAgentVersion($type, $version) {
+  public static function checkAgentVersion($type, $version, $silent = false) {
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
       if (Util::versionComparison($binary->getVersion(), $version) == 1) {
-        echo "update $type version... ";
+        if(!$silent) echo "update $type version... ";
         $binary->setVersion($version);
         Factory::getAgentBinaryFactory()->update($binary);
-        echo "OK";
+        if(!$silent) echo "OK";
       }
     }
   }
