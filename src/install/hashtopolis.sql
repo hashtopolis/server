@@ -1052,6 +1052,10 @@ ALTER TABLE `AgentZap`
   ADD CONSTRAINT `AgentZap_ibfk_1` FOREIGN KEY (`agentId`)   REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `AgentZap_ibfk_2` FOREIGN KEY (`lastZapId`) REFERENCES `Zap` (`zapId`);
 
+ALTER TABLE `ApiKey`
+  ADD CONSTRAINT `ApiKey_ibfk_1` FOREIGN KEY (`userId`)     REFERENCES `User` (`userId`),
+  ADD CONSTRAINT `ApiKey_ibfk_2` FOREIGN KEY (`apiGroupId`) REFERENCES `ApiGroup` (`apiGroupId`);
+
 ALTER TABLE `Assignment`
   ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
@@ -1065,6 +1069,12 @@ ALTER TABLE `Config`
 
 ALTER TABLE `CrackerBinary`
   ADD CONSTRAINT `CrackerBinary_ibfk_1` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`);
+
+ALTER TABLE `File`
+  ADD CONSTRAINT `File_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
+
+ALTER TABLE `FileDownload`
+  ADD CONSTRAINT `FileDownload_ibkf_1` FOREIGN KEY (`fileId`) REFERENCES `File`(`fileId`);
 
 ALTER TABLE `FilePretask`
   ADD CONSTRAINT `FilePretask_ibfk_1` FOREIGN KEY (`fileId`)    REFERENCES `File` (`fileId`),
@@ -1083,24 +1093,44 @@ ALTER TABLE `HashBinary`
   ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`)    REFERENCES `Chunk` (`chunkId`);
 
 ALTER TABLE `Hashlist`
-  ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
+  ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`)    REFERENCES `HashType` (`hashTypeId`),
+  ADD CONSTRAINT `Hashlist_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
 
 ALTER TABLE `HashlistHashlist`
   ADD CONSTRAINT `HashlistHashlist_ibfk_1` FOREIGN KEY (`parentHashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `HashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`)       REFERENCES `Hashlist` (`hashlistId`);
 
+ALTER TABLE `HealthCheck`
+  ADD CONSTRAINT `HealthCheck_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
+
+ALTER TABLE `HealthCheckAgent`
+  ADD CONSTRAINT `HealthCheckAgent_ibfk_1` FOREIGN KEY (`agentId`)       REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `HealthCheckAgent_ibfk_2` FOREIGN KEY (`healthCheckId`) REFERENCES `HealthCheck` (`healthCheckId`);
+
 ALTER TABLE `NotificationSetting`
   ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
+ALTER TABLE `Pretask`
+  ADD CONSTRAINT `Pretask_ibfk_1` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`);
+
 ALTER TABLE `Session`
   ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+
+ALTER TABLE `Speed`
+  ADD CONSTRAINT `Speed_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Speed_ibfk_2` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`);
 
 ALTER TABLE `SupertaskPretask`
   ADD CONSTRAINT `SupertaskPretask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`),
   ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`)   REFERENCES `Pretask` (`pretaskId`);
 
 ALTER TABLE `Task`
-  ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
+  ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`)     REFERENCES `CrackerBinary` (`crackerBinaryId`),
+  ADD CONSTRAINT `Task_ibfk_2` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`),
+  ADD CONSTRAINT `Task_ibfk_3` FOREIGN KEY (`taskWrapperId`)       REFERENCES `TaskWrapper` (`taskWrapperId`);
+
+ALTER TABLE `TaskDebugOutput`
+  ADD CONSTRAINT `TaskDebugOutput_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
 ALTER TABLE `TaskWrapper`
   ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`)    REFERENCES `Hashlist` (`hashlistId`),
