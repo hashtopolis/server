@@ -732,27 +732,6 @@ CREATE TABLE `HealthCheckAgent` (
 ) ENGINE=InnoDB;
 
 -- Add Indexes
-ALTER TABLE `ApiKey`
-  ADD PRIMARY KEY (`apiKeyId`);
-
-ALTER TABLE `ApiGroup`
-  ADD PRIMARY KEY (`apiGroupId`);
-
-ALTER TABLE `FileDownload`
-  ADD PRIMARY KEY (`fileDownloadId`);
-
-ALTER TABLE `HealthCheck` 
-  ADD PRIMARY KEY (`healthCheckId`);
-
-ALTER TABLE `HealthCheckAgent` 
-  ADD PRIMARY KEY (`healthCheckAgentId`);
-
-ALTER TABLE `FileDelete`
-  ADD PRIMARY KEY (`fileDeleteId`);
-
-ALTER TABLE `Speed`
-  ADD PRIMARY KEY (`speedId`);
-
 ALTER TABLE `AccessGroup`
   ADD PRIMARY KEY (`accessGroupId`);
 
@@ -787,6 +766,12 @@ ALTER TABLE `AgentZap`
   ADD KEY `agentId` (`agentId`),
   ADD KEY `lastZapId` (`lastZapId`);
 
+ALTER TABLE `ApiKey`
+  ADD PRIMARY KEY (`apiKeyId`);
+
+ALTER TABLE `ApiGroup`
+  ADD PRIMARY KEY (`apiGroupId`);
+
 ALTER TABLE `Assignment`
   ADD PRIMARY KEY (`assignmentId`),
   ADD KEY `taskId` (`taskId`),
@@ -813,6 +798,12 @@ ALTER TABLE `CrackerBinaryType`
 
 ALTER TABLE `File`
   ADD PRIMARY KEY (`fileId`);
+
+ALTER TABLE `FileDownload`
+  ADD PRIMARY KEY (`fileDownloadId`);
+
+ALTER TABLE `FileDelete`
+  ADD PRIMARY KEY (`fileDeleteId`);
 
 ALTER TABLE `FilePretask`
   ADD PRIMARY KEY (`filePretaskId`),
@@ -848,6 +839,12 @@ ALTER TABLE `HashlistHashlist`
 ALTER TABLE `HashType`
   ADD PRIMARY KEY (`hashTypeId`);
 
+ALTER TABLE `HealthCheck` 
+  ADD PRIMARY KEY (`healthCheckId`);
+
+ALTER TABLE `HealthCheckAgent` 
+  ADD PRIMARY KEY (`healthCheckAgentId`);
+
 ALTER TABLE `LogEntry`
   ADD PRIMARY KEY (`logEntryId`);
 
@@ -867,6 +864,9 @@ ALTER TABLE `RightGroup`
 ALTER TABLE `Session`
   ADD PRIMARY KEY (`sessionId`),
   ADD KEY `userId` (`userId`);
+
+ALTER TABLE `Speed`
+  ADD PRIMARY KEY (`speedId`);
 
 ALTER TABLE `StoredValue`
   ADD PRIMARY KEY (`storedValueId`);
@@ -902,21 +902,6 @@ ALTER TABLE `Zap`
   ADD KEY `hashlistId` (`hashlistId`);
 
 -- Add AUTO_INCREMENT for tables
-ALTER TABLE `ApiKey`
-  MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `ApiGroup`
-  MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `FileDownload`
-  MODIFY `fileDownloadId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `FileDelete`
-  MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `Speed`
-  MODIFY `speedId` int(11) NOT NULL AUTO_INCREMENT;
-
 ALTER TABLE `AccessGroup`
   MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
 
@@ -942,6 +927,12 @@ ALTER TABLE `AgentStat`
 ALTER TABLE `AgentZap`
   MODIFY `agentZapId` INT(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `ApiKey`
+  MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `ApiGroup`
+  MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `Assignment`
   MODIFY `assignmentId` INT(11) NOT NULL AUTO_INCREMENT;
 
@@ -965,6 +956,12 @@ ALTER TABLE `CrackerBinaryType`
 ALTER TABLE `File`
   MODIFY `fileId` INT(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `FileDownload`
+  MODIFY `fileDownloadId` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `FileDelete`
+  MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `FilePretask`
   MODIFY `filePretaskId` INT(11) NOT NULL AUTO_INCREMENT;
 
@@ -982,6 +979,12 @@ ALTER TABLE `Hashlist`
 
 ALTER TABLE `HashlistHashlist`
   MODIFY `hashlistHashlistId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `HealthCheck` 
+  MODIFY `healthCheckId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `HealthCheckAgent` 
+  MODIFY `healthCheckAgentId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `LogEntry`
   MODIFY `logEntryId` INT(11) NOT NULL AUTO_INCREMENT;
@@ -1002,6 +1005,9 @@ ALTER TABLE `RightGroup`
 ALTER TABLE `Session`
   MODIFY `sessionId` INT(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `Speed`
+  MODIFY `speedId` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `Supertask`
   MODIFY `supertaskId` INT(11) NOT NULL AUTO_INCREMENT;
 
@@ -1012,7 +1018,7 @@ ALTER TABLE `Task`
   MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `TaskDebugOutput`
-  MODIFY `taskDebugOutputId` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `taskDebugOutputId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `TaskWrapper`
   MODIFY `taskWrapperId` INT(11) NOT NULL AUTO_INCREMENT;
@@ -1023,41 +1029,35 @@ ALTER TABLE `User`
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `HealthCheck` 
-  MODIFY `healthCheckId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `HealthCheckAgent` 
-  MODIFY `healthCheckAgentId` int(11) NOT NULL AUTO_INCREMENT;
-
 -- Add Constraints
 ALTER TABLE `AccessGroupAgent`
   ADD CONSTRAINT `AccessGroupAgent_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
-  ADD CONSTRAINT `AccessGroupAgent_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
+  ADD CONSTRAINT `AccessGroupAgent_ibfk_2` FOREIGN KEY (`agentId`)       REFERENCES `Agent` (`agentId`);
 
 ALTER TABLE `AccessGroupUser`
   ADD CONSTRAINT `AccessGroupUser_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
-  ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+  ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`)        REFERENCES `User` (`userId`);
 
 ALTER TABLE `Agent`
   ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `AgentError_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
-  ADD CONSTRAINT `AgentError_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
+  ADD CONSTRAINT `AgentError_ibfk_2` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`);
 
 ALTER TABLE `AgentStat`
   ADD CONSTRAINT `AgentStat_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
 ALTER TABLE `AgentZap`
-  ADD CONSTRAINT `AgentZap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `AgentZap_ibfk_1` FOREIGN KEY (`agentId`)   REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `AgentZap_ibfk_2` FOREIGN KEY (`lastZapId`) REFERENCES `Zap` (`zapId`);
 
 ALTER TABLE `Assignment`
-  ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
 ALTER TABLE `Chunk`
-  ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Chunk_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
 ALTER TABLE `Config`
@@ -1067,7 +1067,7 @@ ALTER TABLE `CrackerBinary`
   ADD CONSTRAINT `CrackerBinary_ibfk_1` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`);
 
 ALTER TABLE `FilePretask`
-  ADD CONSTRAINT `FilePretask_ibfk_1` FOREIGN KEY (`fileId`) REFERENCES `File` (`fileId`),
+  ADD CONSTRAINT `FilePretask_ibfk_1` FOREIGN KEY (`fileId`)    REFERENCES `File` (`fileId`),
   ADD CONSTRAINT `FilePretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);
 
 ALTER TABLE `FileTask`
@@ -1076,18 +1076,18 @@ ALTER TABLE `FileTask`
 
 ALTER TABLE `Hash`
   ADD CONSTRAINT `Hash_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
+  ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`)    REFERENCES `Chunk` (`chunkId`);
 
 ALTER TABLE `HashBinary`
   ADD CONSTRAINT `HashBinary_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
+  ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`)    REFERENCES `Chunk` (`chunkId`);
 
 ALTER TABLE `Hashlist`
   ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
 
 ALTER TABLE `HashlistHashlist`
   ADD CONSTRAINT `HashlistHashlist_ibfk_1` FOREIGN KEY (`parentHashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `HashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
+  ADD CONSTRAINT `HashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`)       REFERENCES `Hashlist` (`hashlistId`);
 
 ALTER TABLE `NotificationSetting`
   ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
@@ -1097,20 +1097,20 @@ ALTER TABLE `Session`
 
 ALTER TABLE `SupertaskPretask`
   ADD CONSTRAINT `SupertaskPretask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`),
-  ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);
+  ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`)   REFERENCES `Pretask` (`pretaskId`);
 
 ALTER TABLE `Task`
   ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
 
 ALTER TABLE `TaskWrapper`
-  ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`)    REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `TaskWrapper_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
 
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
 
 ALTER TABLE `Zap`
-  ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`)    REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Zap_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
