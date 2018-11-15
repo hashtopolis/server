@@ -16,6 +16,7 @@ use DBA\OrderFilter;
 use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\HealthCheckAgent;
+use DBA\Speed;
 
 class AgentUtils {
   /**
@@ -230,6 +231,9 @@ class AgentUtils {
 
     $qF = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
     Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => $qF]);
+
+    $qF = new QueryFilter(Speed::AGENT_ID, $agent->getId(), "=");
+    Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
     
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
     $uS = new UpdateSet(Zap::AGENT_ID, null);

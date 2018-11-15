@@ -23,6 +23,7 @@ use DBA\Hashlist;
 use DBA\AccessGroupUser;
 use DBA\TaskDebugOutput;
 use DBA\Factory;
+use DBA\Speed;
 
 class TaskUtils {
   /**
@@ -931,6 +932,8 @@ class TaskUtils {
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(TaskDebugOutput::TASK_ID, $task->getId(), "=");
     Factory::getTaskDebugOutputFactory()->massDeletion([Factory::FILTER => $qF]);
+    $qF = new QueryFilter(Speed::TASK_ID, $task->getId(), "=");
+    Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
     
     // test if this task used temporary files
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());
