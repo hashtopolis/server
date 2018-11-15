@@ -48,19 +48,22 @@ echo "OK\n";
 
 echo "Add speed table... ";
 Factory::getAgentFactory()->getDB()->query("CREATE TABLE `Speed` (
-  `speedId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `taskId` int(11) NOT NULL,
-  `speed` bigint(20) NOT NULL,
-  `time` bigint(20) NOT NULL
+  `speedId` INT(11)    NOT NULL,
+  `agentId` INT(11)    NOT NULL,
+  `taskId`  INT(11)    NOT NULL,
+  `speed`   BIGINT(20) NOT NULL,
+  `time`    BIGINT(20) NOT NULL
 ) ENGINE=InnoDB;");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD PRIMARY KEY (`speedId`);");
-Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` MODIFY `speedId` int(11) NOT NULL AUTO_INCREMENT;");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` MODIFY `speedId` INT(11) NOT NULL AUTO_INCREMENT;");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed`
+  ADD CONSTRAINT `Speed_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Speed_ibfk_2` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`);");
 echo "OK\n";
 
 echo "Update agent binary table... ";
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateAvailable` VARCHAR(20) NOT NULL");
-Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateTrack` VARCHAR(20) NOT NULL");
+Factory::getAgentFactory()->getDB()->query("ALTER TABLE `AgentBinary` ADD `updateTrack`     VARCHAR(20) NOT NULL");
 $qF = new QueryFilter(AgentBinary::TYPE, "python", "=");
 $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
 if($agent != null){
