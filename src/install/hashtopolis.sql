@@ -37,7 +37,7 @@ CREATE TABLE `Agent` (
   `isTrusted`       TINYINT(4)   NOT NULL,
   `token`           VARCHAR(30)  NOT NULL,
   `lastAct`         VARCHAR(50)  NOT NULL,
-  `lastTime`        INT(11)      NOT NULL,
+  `lastTime`        BIGINT       NOT NULL,
   `lastIp`          VARCHAR(50)  NOT NULL,
   `userId`          INT(11)      DEFAULT NULL,
   `cpuOnly`         TINYINT(4)   NOT NULL,
@@ -61,7 +61,7 @@ CREATE TABLE `AgentError` (
   `agentErrorId` INT(11) NOT NULL,
   `agentId`      INT(11) NOT NULL,
   `taskId`       INT(11) DEFAULT NULL,
-  `time`         INT(11) NOT NULL,
+  `time`         BIGINT  NOT NULL,
   `error`        TEXT    NOT NULL,
   `chunkId`      INT(11) NULL
 ) ENGINE = InnoDB;
@@ -93,8 +93,8 @@ CREATE TABLE `Chunk` (
   `skip`         BIGINT(20) NOT NULL,
   `length`       BIGINT(20) NOT NULL,
   `agentId`      INT(11)    NULL,
-  `dispatchTime` INT(11)    NOT NULL,
-  `solveTime`    INT(11)    NOT NULL,
+  `dispatchTime` BIGINT     NOT NULL,
+  `solveTime`    BIGINT     NOT NULL,
   `checkpoint`   BIGINT(20) NOT NULL,
   `progress`     INT(11)    NULL,
   `state`        INT(11)    NOT NULL,
@@ -196,7 +196,7 @@ INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)     NOT NULL,
   `typeName`            VARCHAR(30) NOT NULL,
-  `isChunkingAvailable` INT(11)     NOT NULL
+  `isChunkingAvailable` TINYINT(4)  NOT NULL
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingAvailable`) VALUES
@@ -206,7 +206,7 @@ CREATE TABLE `File` (
   `fileId`   INT(11)      NOT NULL,
   `filename` VARCHAR(100) NOT NULL,
   `size`     BIGINT(20)   NOT NULL,
-  `isSecret` INT(11)      NOT NULL,
+  `isSecret` TINYINT(4)   NOT NULL,
   `fileType` INT(11)      NOT NULL,
   `accessGroupId` INT(11) NOT NULL
 ) ENGINE = InnoDB;
@@ -226,7 +226,7 @@ CREATE TABLE `FileTask` (
 CREATE TABLE `FileDelete` (
   `fileDeleteId` INT(11)      NOT NULL,
   `filename`     VARCHAR(256) NOT NULL,
-  `time`         INT(11)      NOT NULL
+  `time`         BIGINT       NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `Hash` (
@@ -235,7 +235,7 @@ CREATE TABLE `Hash` (
   `hash`        TEXT         NOT NULL,
   `salt`        VARCHAR(256) DEFAULT NULL,
   `plaintext`   VARCHAR(256) DEFAULT NULL,
-  `timeCracked` INT(11)      DEFAULT NULL,
+  `timeCracked` BIGINT       DEFAULT NULL,
   `chunkId`     INT(11)      DEFAULT NULL,
   `isCracked`   TINYINT(4)   NOT NULL,
   `crackPos`    BIGINT       NOT NULL
@@ -247,7 +247,7 @@ CREATE TABLE `HashBinary` (
   `essid`        VARCHAR(100)  NOT NULL,
   `hash`         MEDIUMTEXT    NOT NULL,
   `plaintext`    VARCHAR(1024) DEFAULT NULL,
-  `timeCracked`  INT(11)       DEFAULT NULL,
+  `timeCracked`  BIGINT        DEFAULT NULL,
   `chunkId`      INT(11)       DEFAULT NULL,
   `isCracked`    TINYINT(4)    NOT NULL,
   `crackPos`     BIGINT        NOT NULL
@@ -261,8 +261,8 @@ CREATE TABLE `Hashlist` (
   `hashCount`     INT(11)      NOT NULL,
   `saltSeparator` VARCHAR(10)  DEFAULT NULL,
   `cracked`       INT(11)      NOT NULL,
-  `isSecret`      INT(11)      NOT NULL,
-  `hexSalt`       INT(11)      NOT NULL,
+  `isSecret`      TINYINT(4)   NOT NULL,
+  `hexSalt`       TINYINT(4)   NOT NULL,
   `isSalted`      TINYINT(4)   NOT NULL,
   `accessGroupId` INT(11)      NOT NULL,
   `notes`         TEXT         NOT NULL,
@@ -536,7 +536,7 @@ CREATE TABLE `LogEntry` (
   `issuerId`   VARCHAR(50) NOT NULL,
   `level`      VARCHAR(50) NOT NULL,
   `message`    TEXT        NOT NULL,
-  `time`       INT(11)     NOT NULL
+  `time`       BIGINT      NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `NotificationSetting` (
@@ -556,18 +556,18 @@ CREATE TABLE `Pretask` (
   `chunkTime`           INT(11)      NOT NULL,
   `statusTimer`         INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
-  `isSmall`             INT(11)      NOT NULL,
-  `isCpuTask`           INT(11)      NOT NULL,
-  `useNewBench`         INT(11)      NOT NULL,
+  `isSmall`             TINYINT(4)   NOT NULL,
+  `isCpuTask`           TINYINT(4)   NOT NULL,
+  `useNewBench`         TINYINT(4)   NOT NULL,
   `priority`            INT(11)      NOT NULL,
-  `isMaskImport`        INT(11)      NOT NULL,
+  `isMaskImport`        TINYINT(4)   NOT NULL,
   `crackerBinaryTypeId` INT(11)      NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `RegVoucher` (
   `regVoucherId` INT(11)      NOT NULL,
   `voucher`      VARCHAR(100) NOT NULL,
-  `time`         INT(11)      NOT NULL
+  `time`         BIGINT       NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `RightGroup` (
@@ -582,9 +582,9 @@ INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `permissions`) VALUES
 CREATE TABLE `Session` (
   `sessionId`        INT(11)      NOT NULL,
   `userId`           INT(11)      NOT NULL,
-  `sessionStartDate` INT(11)      NOT NULL,
-  `lastActionDate`   INT(11)      NOT NULL,
-  `isOpen`           INT(11)      NOT NULL,
+  `sessionStartDate` BIGINT       NOT NULL,
+  `lastActionDate`   BIGINT       NOT NULL,
+  `isOpen`           TINYINT(4)   NOT NULL,
   `sessionLifetime`  INT(11)      NOT NULL,
   `sessionKey`       VARCHAR(256) NOT NULL
 ) ENGINE = InnoDB;
@@ -623,19 +623,19 @@ CREATE TABLE `Task` (
   `keyspaceProgress`    BIGINT(20)   NOT NULL,
   `priority`            INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
-  `isSmall`             INT(11)      NOT NULL,
-  `isCpuTask`           INT(11)      NOT NULL,
-  `useNewBench`         INT(11)      NOT NULL,
+  `isSmall`             TINYINT(4)   NOT NULL,
+  `isCpuTask`           TINYINT(4)   NOT NULL,
+  `useNewBench`         TINYINT(4)   NOT NULL,
   `skipKeyspace`        BIGINT(20)   NOT NULL,
   `crackerBinaryId`     INT(11)      DEFAULT NULL,
   `crackerBinaryTypeId` INT(11)      NULL,
   `taskWrapperId`       INT(11)      NOT NULL,
-  `isArchived`          INT(11)      NOT NULL,
-  `isPrince`            INT(11)      NOT NULL,
+  `isArchived`          TINYINT(4)   NOT NULL,
+  `isPrince`            TINYINT(4)   NOT NULL,
   `notes`               TEXT         NOT NULL,
   `staticChunks`        INT(11)      NOT NULL,
   `chunkSize`           BIGINT(20)   NOT NULL,
-  `forcePipe`           INT(11)      NOT NULL
+  `forcePipe`           TINYINT(4)   NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `TaskDebugOutput` (
@@ -651,7 +651,7 @@ CREATE TABLE `TaskWrapper` (
   `hashlistId`      INT(11)      NOT NULL,
   `accessGroupId`   INT(11)      DEFAULT NULL,
   `taskWrapperName` VARCHAR(100) NOT NULL,
-  `isArchived`      INT(11)      NOT NULL,
+  `isArchived`      TINYINT(4)   NOT NULL,
   `cracked`         INT(11)      NOT NULL
 )ENGINE = InnoDB;
 
@@ -661,10 +661,10 @@ CREATE TABLE `User` (
   `email`              VARCHAR(150) NOT NULL,
   `passwordHash`       VARCHAR(256) NOT NULL,
   `passwordSalt`       VARCHAR(256) NOT NULL,
-  `isValid`            INT(11)      NOT NULL,
-  `isComputedPassword` INT(11)      NOT NULL,
-  `lastLoginDate`      INT(11)      NOT NULL,
-  `registeredSince`    INT(11)      NOT NULL,
+  `isValid`            TINYINT(4)   NOT NULL,
+  `isComputedPassword` TINYINT(4)   NOT NULL,
+  `lastLoginDate`      BIGINT       NOT NULL,
+  `registeredSince`    BIGINT       NOT NULL,
   `sessionLifetime`    INT(11)      NOT NULL,
   `rightGroupId`       INT(11)      NOT NULL,
   `yubikey`            VARCHAR(256) DEFAULT NULL,
@@ -677,7 +677,7 @@ CREATE TABLE `User` (
 CREATE TABLE `Zap` (
   `zapId`      INT(11) NOT NULL,
   `hash`       TEXT    NOT NULL,
-  `solveTime`  INT(11) NOT NULL,
+  `solveTime`  BIGINT  NOT NULL,
   `agentId`    INT(11) NULL,
   `hashlistId` INT(11) NOT NULL
 ) ENGINE = InnoDB;
@@ -700,7 +700,7 @@ CREATE TABLE `ApiGroup` (
 
 CREATE TABLE `FileDownload` (
   `fileDownloadId` INT(11) NOT NULL,
-  `time`           INT(11) NOT NULL,
+  `time`           BIGINT  NOT NULL,
   `fileId`         INT(11) NOT NULL,
   `status`         INT(11) NOT NULL
 ) ENGINE=InnoDB;
