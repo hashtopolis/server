@@ -159,7 +159,7 @@ class Util {
    * 
    * @return string
    */
-  public static function getGitCommit() {
+  public static function getGitCommit($hashOnly = false) {
     $gitcommit = "";
     $gitfolder = dirname(__FILE__) . "/../../.git";
     if (file_exists($gitfolder) && is_dir($gitfolder)) {
@@ -167,10 +167,16 @@ class Util {
       $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
       if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
         $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
+        if($hashOnly){
+          return $commit;
+        }
         $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
       }
       else {
         $commit = $head;
+        if($hashOnly){
+          return $commit;
+        }
         $gitcommit = "commit " . substr($commit, 0, 7);
       }
     }

@@ -4,6 +4,7 @@ use DBA\Factory;
 use DBA\User;
 use DBA\ApiKey;
 use DBA\AccessGroupUser;
+use DBA\StoredValue;
 
 abstract class HashtopolisTest {
   protected $minVersion;
@@ -79,6 +80,10 @@ abstract class HashtopolisTest {
     Factory::getAccessGroupUserFactory()->save($accessGroup);
     $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, $this->user->getId(), 1);
     $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
+    $version = new StoredValue("version", $version);
+    Factory::getStoredValueFactory()->save($version);
+    $build = new StoredValue("build", 'repository');
+    Factory::getStoredValueFactory()->save($build);
   }
   
   abstract function run();

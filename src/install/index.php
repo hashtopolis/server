@@ -6,6 +6,7 @@ use DBA\QueryFilter;
 use DBA\RightGroup;
 use DBA\User;
 use DBA\Factory;
+use DBA\StoredValue;
 
 require_once(dirname(__FILE__) . "/../inc/load.php");
 
@@ -77,8 +78,18 @@ switch ($STEP) {
       mkdir(dirname(__FILE__) . "/../import");
     }
     file_put_contents(dirname(__FILE__) . "/../import/.htaccess", "Order deny,allow\nDeny from all");
+
+    // save version and build into database
+    $version = new StoredValue("version", explode("+", $VERSION)[0]);
+    Factory::getStoredValueFactory()->save($version);
+    $build = new StoredValue("build", $BUILD);
+    Factory::getStoredValueFactory()->save($build);
     setcookie("step", "", time() - 10);
     setcookie("prev", "", time() - 10);
+
+    // protect installation directory
+    file_put_contents(dirname(__FILE__) . "/.htaccess", "Order deny,allow\nDeny from all");
+
     sleep(1);
     Template::loadInstance("install/2");
     echo Template::getInstance()->render([]);
