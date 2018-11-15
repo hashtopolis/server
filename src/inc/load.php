@@ -51,14 +51,14 @@ UI::add('gitcommit', Util::getGitCommit());
 // (note if the version was retrieved with git, but the git folder was removed, smaller updates are not recognized because the build value is missing)
 $updateExecuted = false;
 $storedVersion = Factory::getStoredValueFactory()->get("version");
-if($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0]){
-  // TODO: call update script
+if($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")){
+  include(dirname(__FILE__) . "/../install/updates/update.php");
   $updateExecuted = true;
 }
 else{ // in case it is not a version upgrade, but the person retrieved a new version via git or copying
   $storedBuild = Factory::getStoredValueFactory()->get("build");
-  if($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true))){
-    // TODO: also update needed
+  if($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")){
+    include(dirname(__FILE__) . "/../install/updates/update.php");
     $updateExecuted = true;
   }
 }
