@@ -187,15 +187,15 @@ class Util {
    * @param string $type
    * @param string $version
    */
-  public static function checkAgentVersion($type, $version) {
+  public static function checkAgentVersion($type, $version, $silent = false) {
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
       if (Util::versionComparison($binary->getVersion(), $version) == 1) {
-        echo "update $type version... ";
+        if(!$silent) echo "update $type version... ";
         $binary->setVersion($version);
         Factory::getAgentBinaryFactory()->update($binary);
-        echo "OK";
+        if(!$silent) echo "OK";
       }
     }
   }
