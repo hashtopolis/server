@@ -62,12 +62,14 @@ else{ // in case it is not a version upgrade, but the person retrieved a new ver
     $updateExecuted = true;
   }
 }
+
+UI::add('menu', Menu::get());
+UI::add('messages', []);
+
 if($updateExecuted){
   UI::addMessage(UI::SUCCESS, "An automatic upgrade was executed! " . sizeof($EXECUTED) . " changes applied on DB!");
 }
 
-UI::add('menu', Menu::get());
-UI::add('messages', []);
 UI::add('pageTitle', "");
 if ($INSTALL) {
   UI::add('login', Login::getInstance());
