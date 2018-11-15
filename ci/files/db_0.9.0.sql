@@ -1,40 +1,17 @@
--- phpMyAdmin SQL Dump
--- version 4.6.6
--- https://www.phpmyadmin.net/
---
--- Server-Version: 10.1.26-MariaDB
--- PHP-Version: 5.6.31
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Datenbank: `hashtopolis`
---
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AccessGroup`
---
 
 CREATE TABLE `AccessGroup` (
   `accessGroupId` INT(11)     NOT NULL,
   `groupName`     VARCHAR(50) NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AccessGroupAgent`
---
 
 CREATE TABLE `AccessGroupAgent` (
   `accessGroupAgentId` INT(11) NOT NULL,
@@ -43,24 +20,12 @@ CREATE TABLE `AccessGroupAgent` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AccessGroupUser`
---
-
 CREATE TABLE `AccessGroupUser` (
   `accessGroupUserId` INT(11) NOT NULL,
   `accessGroupId`     INT(11) NOT NULL,
   `userId`            INT(11) NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Agent`
---
 
 CREATE TABLE `Agent` (
   `agentId`         INT(11)                      NOT NULL,
@@ -88,12 +53,6 @@ CREATE TABLE `Agent` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentBinary`
---
-
 CREATE TABLE `AgentBinary` (
   `agentBinaryId`    INT(11)                 NOT NULL,
   `type`             VARCHAR(20)
@@ -107,18 +66,8 @@ CREATE TABLE `AgentBinary` (
 )
   ENGINE = InnoDB;
 
---
--- Daten für Tabelle `AgentBinary`
---
-
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
   (1, 'python', '0.3.0', 'Windows, Linux, OS X', 'hashtopolis.zip');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentError`
---
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11)                      NOT NULL,
@@ -129,12 +78,6 @@ CREATE TABLE `AgentError` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentStat`
---
-
 CREATE TABLE `AgentStat` (
   `agentStatId` INT(11) NOT NULL,
   `agentId`     INT(11) NOT NULL,
@@ -144,24 +87,12 @@ CREATE TABLE `AgentStat` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentZap`
---
-
 CREATE TABLE `AgentZap` (
   `agentZapId` INT(11) NOT NULL,
   `agentId`    INT(11) NOT NULL,
   `lastZapId`  INT(11) NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Assignment`
---
 
 CREATE TABLE `Assignment` (
   `assignmentId` INT(11)                 NOT NULL,
@@ -171,12 +102,6 @@ CREATE TABLE `Assignment` (
                  COLLATE utf8_unicode_ci NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Chunk`
---
 
 CREATE TABLE `Chunk` (
   `chunkId`      INT(11)    NOT NULL,
@@ -194,12 +119,6 @@ CREATE TABLE `Chunk` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Config`
---
-
 CREATE TABLE `Config` (
   `configId`        INT(11)                      NOT NULL,
   `configSectionId` INT(11)                      NOT NULL,
@@ -208,10 +127,6 @@ CREATE TABLE `Config` (
   `value`           TEXT COLLATE utf8_unicode_ci NOT NULL
 )
   ENGINE = InnoDB;
-
---
--- Daten für Tabelle `Config`
---
 
 INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (1, 1, 'agenttimeout', '30'),
@@ -266,22 +181,12 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (64, 5, 'baseUrl', ''),
   (65, 4, 'maxSessionLength', '48');
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `ConfigSection`
---
-
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)                 NOT NULL,
   `sectionName`     VARCHAR(100)
                     COLLATE utf8_unicode_ci NOT NULL
 )
   ENGINE = InnoDB;
-
---
--- Daten für Tabelle `ConfigSection`
---
 
 INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (1, 'Cracking/Tasks'),
@@ -291,12 +196,6 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (5, 'Server'),
   (6, 'Multicast'),
   (7, 'Notifications');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `CrackerBinary`
---
 
 CREATE TABLE `CrackerBinary` (
   `crackerBinaryId`     INT(11)                 NOT NULL,
@@ -313,12 +212,6 @@ CREATE TABLE `CrackerBinary` (
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
   (1, 1, '5.0.0', 'https://hashcat.net/files/hashcat-5.0.0.7z', 'hashcat');
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `CrackerBinaryType`
---
-
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)                 NOT NULL,
   `typeName`            VARCHAR(30)
@@ -329,12 +222,6 @@ CREATE TABLE `CrackerBinaryType` (
 
 INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingAvailable`) VALUES
   (1, 'hashcat', 1);
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `File`
---
 
 CREATE TABLE `File` (
   `fileId`   INT(11)                 NOT NULL,
@@ -347,24 +234,12 @@ CREATE TABLE `File` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `FilePretask`
---
-
 CREATE TABLE `FilePretask` (
   `filePretaskId` INT(11) NOT NULL,
   `fileId`        INT(11) NOT NULL,
   `pretaskId`     INT(11) NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `FileTask`
---
 
 CREATE TABLE `FileTask` (
   `fileTaskId` INT(11) NOT NULL,
@@ -378,12 +253,6 @@ CREATE TABLE `FileDelete` (
   `filename` varchar(256) NOT NULL,
   `time` int(11) NOT NULL
 ) ENGINE=InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Hash`
---
 
 CREATE TABLE `Hash` (
   `hashId`      INT(11)                 NOT NULL,
@@ -401,12 +270,6 @@ CREATE TABLE `Hash` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashBinary`
---
-
 CREATE TABLE `HashBinary` (
   `hashBinaryId` INT(11)                            NOT NULL,
   `hashlistId`   INT(11)                            NOT NULL,
@@ -421,12 +284,6 @@ CREATE TABLE `HashBinary` (
   `crackPos`     BIGINT                  NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Hashlist`
---
 
 CREATE TABLE `Hashlist` (
   `hashlistId`    INT(11)                 NOT NULL,
@@ -446,24 +303,12 @@ CREATE TABLE `Hashlist` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashlistHashlist`
---
-
 CREATE TABLE `HashlistHashlist` (
   `hashlistHashlistId` INT(11) NOT NULL,
   `parentHashlistId`   INT(11) NOT NULL,
   `hashlistId`         INT(11) NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashType`
---
 
 CREATE TABLE `HashType` (
   `hashTypeId`  INT(11)                 NOT NULL,
@@ -473,10 +318,6 @@ CREATE TABLE `HashType` (
   `isSlowHash`  TINYINT(4)              NOT NULL
 )
   ENGINE = InnoDB;
-
---
--- Daten für Tabelle `HashType`
---
 
 INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) VALUES
   (0, 'MD5', 0, 0),
@@ -725,12 +566,6 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (18100, 'TOTP (HMAC-SHA1)', 1, 0),
   (99999, 'Plaintext', 0, 0);
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `LogEntry`
---
-
 CREATE TABLE `LogEntry` (
   `logEntryId` INT(11)                      NOT NULL,
   `issuer`     VARCHAR(50)
@@ -743,12 +578,6 @@ CREATE TABLE `LogEntry` (
   `time`       INT(11)                      NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `NotificationSetting`
---
 
 CREATE TABLE `NotificationSetting` (
   `notificationSettingId` INT(11)                 NOT NULL,
@@ -763,12 +592,6 @@ CREATE TABLE `NotificationSetting` (
   `isActive`              TINYINT(4)              NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Pretask`
---
 
 CREATE TABLE `Pretask` (
   `pretaskId`           INT(11)                 NOT NULL,
@@ -789,12 +612,6 @@ CREATE TABLE `Pretask` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `RegVoucher`
---
-
 CREATE TABLE `RegVoucher` (
   `regVoucherId` INT(11)                 NOT NULL,
   `voucher`      VARCHAR(100)
@@ -802,12 +619,6 @@ CREATE TABLE `RegVoucher` (
   `time`         INT(11)                 NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `RightGroup`
---
 
 CREATE TABLE `RightGroup` (
   `rightGroupId` INT(11)                 NOT NULL,
@@ -817,18 +628,8 @@ CREATE TABLE `RightGroup` (
 )
   ENGINE = InnoDB;
 
---
--- Daten für Tabelle `RightGroup`
---
-
 INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `permissions`) VALUES
   (1, 'Administrator', 'ALL');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Session`
---
 
 CREATE TABLE `Session` (
   `sessionId`        INT(11)                 NOT NULL,
@@ -842,12 +643,6 @@ CREATE TABLE `Session` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `StoredValue`
---
-
 CREATE TABLE `StoredValue` (
   `storedValueId` VARCHAR(50)
                   COLLATE utf8_unicode_ci NOT NULL,
@@ -856,12 +651,6 @@ CREATE TABLE `StoredValue` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Supertask`
---
-
 CREATE TABLE `Supertask` (
   `supertaskId`   INT(11)                 NOT NULL,
   `supertaskName` VARCHAR(50)
@@ -869,24 +658,12 @@ CREATE TABLE `Supertask` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `SupertaskPretask`
---
-
 CREATE TABLE `SupertaskPretask` (
   `supertaskPretaskId` INT(11) NOT NULL,
   `supertaskId`        INT(11) NOT NULL,
   `pretaskId`          INT(11) NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Task`
---
 
 CREATE TABLE `Task` (
   `taskId`              INT(11)                 NOT NULL,
@@ -923,12 +700,6 @@ CREATE TABLE `TaskDebugOutput` (
   `output` varchar(256) NOT NULL
 ) ENGINE=InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `TaskWrapper`
---
-
 CREATE TABLE `TaskWrapper` (
   `taskWrapperId`   INT(11)      NOT NULL,
   `priority`        INT(11)      NOT NULL,
@@ -939,12 +710,6 @@ CREATE TABLE `TaskWrapper` (
   `isArchived`      INT(11)      NOT NULL
 )
   ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `User`
---
 
 CREATE TABLE `User` (
   `userId`             INT(11)                 NOT NULL,
@@ -975,12 +740,6 @@ CREATE TABLE `User` (
 )
   ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Zap`
---
-
 CREATE TABLE `Zap` (
   `zapId`      INT(11)                 NOT NULL,
   `hash`       TEXT
@@ -990,8 +749,6 @@ CREATE TABLE `Zap` (
   `hashlistId` INT(11)                 NOT NULL
 )
   ENGINE = InnoDB;
-
-
 
 CREATE TABLE `ApiKey` (
   `apiKeyId` int(11) NOT NULL,
@@ -1041,9 +798,7 @@ CREATE TABLE `HealthCheckAgent` (
   `errors` text COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB;
 
---
--- Indexes for table `ApiKey`
---
+
 ALTER TABLE `ApiKey`
   ADD PRIMARY KEY (`apiKeyId`);
 
@@ -1059,139 +814,80 @@ ALTER TABLE `HealthCheck`
 ALTER TABLE `HealthCheckAgent` 
   ADD PRIMARY KEY (`healthCheckAgentId`);
 
-
 ALTER TABLE `FileDelete`
   ADD PRIMARY KEY (`fileDeleteId`);
 
---
--- Indizes der exportierten Tabellen
---
-
---
--- Indizes für die Tabelle `AccessGroup`
---
 ALTER TABLE `AccessGroup`
   ADD PRIMARY KEY (`accessGroupId`);
 
---
--- Indizes für die Tabelle `AccessGroupAgent`
---
 ALTER TABLE `AccessGroupAgent`
   ADD PRIMARY KEY (`accessGroupAgentId`),
   ADD KEY `accessGroupId` (`accessGroupId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `AccessGroupUser`
---
 ALTER TABLE `AccessGroupUser`
   ADD PRIMARY KEY (`accessGroupUserId`),
   ADD KEY `accessGroupId` (`accessGroupId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `Agent`
---
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `AgentBinary`
---
 ALTER TABLE `AgentBinary`
   ADD PRIMARY KEY (`agentBinaryId`);
 
---
--- Indizes für die Tabelle `AgentError`
---
 ALTER TABLE `AgentError`
   ADD PRIMARY KEY (`agentErrorId`),
   ADD KEY `agentId` (`agentId`),
   ADD KEY `taskId` (`taskId`);
 
---
--- Indizes für die Tabelle `AgentStat`
---
 ALTER TABLE `AgentStat`
   ADD PRIMARY KEY (`agentStatId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `AgentZap`
---
 ALTER TABLE `AgentZap`
   ADD PRIMARY KEY (`agentZapId`),
   ADD KEY `agentId` (`agentId`),
   ADD KEY `lastZapId` (`lastZapId`);
 
---
--- Indizes für die Tabelle `Assignment`
---
 ALTER TABLE `Assignment`
   ADD PRIMARY KEY (`assignmentId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `Chunk`
---
 ALTER TABLE `Chunk`
   ADD PRIMARY KEY (`chunkId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `Config`
---
 ALTER TABLE `Config`
   ADD PRIMARY KEY (`configId`),
   ADD KEY `configSectionId` (`configSectionId`);
 
---
--- Indizes für die Tabelle `ConfigSection`
---
 ALTER TABLE `ConfigSection`
   ADD PRIMARY KEY (`configSectionId`);
 
---
--- Indizes für die Tabelle `CrackerBinary`
---
 ALTER TABLE `CrackerBinary`
   ADD PRIMARY KEY (`crackerBinaryId`),
   ADD KEY `crackerBinaryTypeId` (`crackerBinaryTypeId`);
 
---
--- Indizes für die Tabelle `CrackerBinaryType`
---
 ALTER TABLE `CrackerBinaryType`
   ADD PRIMARY KEY (`crackerBinaryTypeId`);
 
---
--- Indizes für die Tabelle `File`
---
 ALTER TABLE `File`
   ADD PRIMARY KEY (`fileId`);
 
---
--- Indizes für die Tabelle `FilePretask`
---
 ALTER TABLE `FilePretask`
   ADD PRIMARY KEY (`filePretaskId`),
   ADD KEY `fileId` (`fileId`),
   ADD KEY `pretaskId` (`pretaskId`);
 
---
--- Indizes für die Tabelle `FileTask`
---
 ALTER TABLE `FileTask`
   ADD PRIMARY KEY (`fileTaskId`),
   ADD KEY `fileId` (`fileId`),
   ADD KEY `taskId` (`taskId`);
 
---
--- Indizes für die Tabelle `Hash`
---
 ALTER TABLE `Hash`
   ADD PRIMARY KEY (`hashId`),
   ADD KEY `hashlistId` (`hashlistId`),
@@ -1199,96 +895,54 @@ ALTER TABLE `Hash`
   ADD KEY `isCracked` (`isCracked`),
   ADD KEY `hash` (`hash`(500));
 
---
--- Indizes für die Tabelle `HashBinary`
---
 ALTER TABLE `HashBinary`
   ADD PRIMARY KEY (`hashBinaryId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`);
 
---
--- Indizes für die Tabelle `Hashlist`
---
 ALTER TABLE `Hashlist`
   ADD PRIMARY KEY (`hashlistId`),
   ADD KEY `hashTypeId` (`hashTypeId`);
 
---
--- Indizes für die Tabelle `HashlistHashlist`
---
 ALTER TABLE `HashlistHashlist`
   ADD PRIMARY KEY (`hashlistHashlistId`),
   ADD KEY `parentHashlistId` (`parentHashlistId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
---
--- Indizes für die Tabelle `HashType`
---
 ALTER TABLE `HashType`
   ADD PRIMARY KEY (`hashTypeId`);
 
---
--- Indizes für die Tabelle `LogEntry`
---
 ALTER TABLE `LogEntry`
   ADD PRIMARY KEY (`logEntryId`);
 
---
--- Indizes für die Tabelle `NotificationSetting`
---
 ALTER TABLE `NotificationSetting`
   ADD PRIMARY KEY (`notificationSettingId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `Pretask`
---
 ALTER TABLE `Pretask`
   ADD PRIMARY KEY (`pretaskId`);
 
---
--- Indizes für die Tabelle `RegVoucher`
---
 ALTER TABLE `RegVoucher`
   ADD PRIMARY KEY (`regVoucherId`);
 
---
--- Indizes für die Tabelle `RightGroup`
---
 ALTER TABLE `RightGroup`
   ADD PRIMARY KEY (`rightGroupId`);
 
---
--- Indizes für die Tabelle `Session`
---
 ALTER TABLE `Session`
   ADD PRIMARY KEY (`sessionId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `StoredValue`
---
 ALTER TABLE `StoredValue`
   ADD PRIMARY KEY (`storedValueId`);
 
---
--- Indizes für die Tabelle `Supertask`
---
 ALTER TABLE `Supertask`
   ADD PRIMARY KEY (`supertaskId`);
 
---
--- Indizes für die Tabelle `SupertaskPretask`
---
 ALTER TABLE `SupertaskPretask`
   ADD PRIMARY KEY (`supertaskPretaskId`),
   ADD KEY `supertaskId` (`supertaskId`),
   ADD KEY `pretaskId` (`pretaskId`);
 
---
--- Indizes für die Tabelle `Task`
---
 ALTER TABLE `Task`
   ADD PRIMARY KEY (`taskId`),
   ADD KEY `crackerBinaryId` (`crackerBinaryId`);
@@ -1296,33 +950,21 @@ ALTER TABLE `Task`
 ALTER TABLE `TaskDebugOutput`
   ADD PRIMARY KEY (`taskDebugOutputId`);
 
---
--- Indizes für die Tabelle `TaskWrapper`
---
 ALTER TABLE `TaskWrapper`
   ADD PRIMARY KEY (`taskWrapperId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `accessGroupId` (`accessGroupId`);
 
---
--- Indizes für die Tabelle `User`
---
 ALTER TABLE `User`
   ADD PRIMARY KEY (`userId`),
   ADD UNIQUE KEY `username` (`username`),
   ADD KEY `rightGroupId` (`rightGroupId`);
 
---
--- Indizes für die Tabelle `Zap`
---
 ALTER TABLE `Zap`
   ADD PRIMARY KEY (`zapId`),
   ADD KEY `agentId` (`agentId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
---
--- AUTO_INCREMENT für exportierte Tabellen
---
 
 ALTER TABLE `ApiKey`
   MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
@@ -1336,178 +978,109 @@ ALTER TABLE `FileDownload`
 ALTER TABLE `FileDelete`
   MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
 
-
---
--- AUTO_INCREMENT für Tabelle `AccessGroup`
---
 ALTER TABLE `AccessGroup`
   MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AccessGroupAgent`
---
+
 ALTER TABLE `AccessGroupAgent`
   MODIFY `accessGroupAgentId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AccessGroupUser`
---
+
 ALTER TABLE `AccessGroupUser`
   MODIFY `accessGroupUserId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Agent`
---
+
 ALTER TABLE `Agent`
   MODIFY `agentId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AgentBinary`
---
+
 ALTER TABLE `AgentBinary`
   MODIFY `agentBinaryId` INT(11) NOT NULL AUTO_INCREMENT,
   AUTO_INCREMENT = 3;
---
--- AUTO_INCREMENT für Tabelle `AgentError`
---
+
 ALTER TABLE `AgentError`
   MODIFY `agentErrorId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AgentStat`
---
+
 ALTER TABLE `AgentStat`
   MODIFY `agentStatId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AgentZap`
---
+
 ALTER TABLE `AgentZap`
   MODIFY `agentZapId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Assignment`
---
+
 ALTER TABLE `Assignment`
   MODIFY `assignmentId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Chunk`
---
+
 ALTER TABLE `Chunk`
   MODIFY `chunkId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Config`
---
+
 ALTER TABLE `Config`
   MODIFY `configId` INT(11) NOT NULL AUTO_INCREMENT,
   AUTO_INCREMENT = 22;
---
--- AUTO_INCREMENT für Tabelle `ConfigSection`
---
+
 ALTER TABLE `ConfigSection`
   MODIFY `configSectionId` INT(11) NOT NULL AUTO_INCREMENT,
   AUTO_INCREMENT = 5;
---
--- AUTO_INCREMENT für Tabelle `CrackerBinary`
---
+
 ALTER TABLE `CrackerBinary`
   MODIFY `crackerBinaryId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `CrackerBinaryType`
---
+
 ALTER TABLE `CrackerBinaryType`
   MODIFY `crackerBinaryTypeId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `File`
---
+
 ALTER TABLE `File`
   MODIFY `fileId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `FilePretask`
---
+
 ALTER TABLE `FilePretask`
   MODIFY `filePretaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `FileTask`
---
+
 ALTER TABLE `FileTask`
   MODIFY `fileTaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Hash`
---
+
 ALTER TABLE `Hash`
   MODIFY `hashId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashBinary`
---
+
 ALTER TABLE `HashBinary`
   MODIFY `hashBinaryId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Hashlist`
---
+
 ALTER TABLE `Hashlist`
   MODIFY `hashlistId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashlistHashlist`
---
+
 ALTER TABLE `HashlistHashlist`
   MODIFY `hashlistHashlistId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `LogEntry`
---
+
 ALTER TABLE `LogEntry`
   MODIFY `logEntryId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `NotificationSetting`
---
+
 ALTER TABLE `NotificationSetting`
   MODIFY `notificationSettingId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Pretask`
---
+
 ALTER TABLE `Pretask`
   MODIFY `pretaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `RegVoucher`
---
+
 ALTER TABLE `RegVoucher`
   MODIFY `regVoucherId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `RightGroup`
---
+
 ALTER TABLE `RightGroup`
   MODIFY `rightGroupId` INT(11) NOT NULL AUTO_INCREMENT,
   AUTO_INCREMENT = 6;
---
--- AUTO_INCREMENT für Tabelle `Session`
---
+
 ALTER TABLE `Session`
   MODIFY `sessionId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Supertask`
---
+
 ALTER TABLE `Supertask`
   MODIFY `supertaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `SupertaskPretask`
---
+
 ALTER TABLE `SupertaskPretask`
   MODIFY `supertaskPretaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Task`
---
+
 ALTER TABLE `Task`
   MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `TaskDebugOutput`
   MODIFY `taskDebugOutputId` int(11) NOT NULL AUTO_INCREMENT;
-  
---
--- AUTO_INCREMENT für Tabelle `TaskWrapper`
---
+
 ALTER TABLE `TaskWrapper`
   MODIFY `taskWrapperId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `User`
---
+
 ALTER TABLE `User`
   MODIFY `userId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Zap`
---
+
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
 
@@ -1518,161 +1091,89 @@ ALTER TABLE `HealthCheckAgent`
   MODIFY `healthCheckAgentId` int(11) NOT NULL AUTO_INCREMENT;
 
 
---
--- Constraints der exportierten Tabellen
---
-
---
--- Constraints der Tabelle `AccessGroupAgent`
---
 ALTER TABLE `AccessGroupAgent`
   ADD CONSTRAINT `AccessGroupAgent_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
   ADD CONSTRAINT `AccessGroupAgent_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `AccessGroupUser`
---
 ALTER TABLE `AccessGroupUser`
   ADD CONSTRAINT `AccessGroupUser_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
   ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `Agent`
---
 ALTER TABLE `Agent`
   ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `AgentError`
---
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `AgentError_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `AgentError_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
---
--- Constraints der Tabelle `AgentStat`
---
 ALTER TABLE `AgentStat`
   ADD CONSTRAINT `AgentStat_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `AgentZap`
---
 ALTER TABLE `AgentZap`
   ADD CONSTRAINT `AgentZap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `AgentZap_ibfk_2` FOREIGN KEY (`lastZapId`) REFERENCES `Zap` (`zapId`);
 
---
--- Constraints der Tabelle `Assignment`
---
 ALTER TABLE `Assignment`
   ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `Chunk`
---
 ALTER TABLE `Chunk`
   ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Chunk_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `Config`
---
 ALTER TABLE `Config`
   ADD CONSTRAINT `Config_ibfk_1` FOREIGN KEY (`configSectionId`) REFERENCES `ConfigSection` (`configSectionId`);
 
---
--- Constraints der Tabelle `CrackerBinary`
---
 ALTER TABLE `CrackerBinary`
   ADD CONSTRAINT `CrackerBinary_ibfk_1` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`);
 
---
--- Constraints der Tabelle `FilePretask`
---
 ALTER TABLE `FilePretask`
   ADD CONSTRAINT `FilePretask_ibfk_1` FOREIGN KEY (`fileId`) REFERENCES `File` (`fileId`),
   ADD CONSTRAINT `FilePretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);
 
---
--- Constraints der Tabelle `FileTask`
---
 ALTER TABLE `FileTask`
   ADD CONSTRAINT `FileTask_ibfk_1` FOREIGN KEY (`fileId`) REFERENCES `File` (`fileId`),
   ADD CONSTRAINT `FileTask_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
---
--- Constraints der Tabelle `Hash`
---
 ALTER TABLE `Hash`
   ADD CONSTRAINT `Hash_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
 
---
--- Constraints der Tabelle `HashBinary`
---
 ALTER TABLE `HashBinary`
   ADD CONSTRAINT `HashBinary_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
 
---
--- Constraints der Tabelle `Hashlist`
---
 ALTER TABLE `Hashlist`
   ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
 
---
--- Constraints der Tabelle `HashlistHashlist`
---
 ALTER TABLE `HashlistHashlist`
   ADD CONSTRAINT `HashlistHashlist_ibfk_1` FOREIGN KEY (`parentHashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `HashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
 
---
--- Constraints der Tabelle `NotificationSetting`
---
 ALTER TABLE `NotificationSetting`
   ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `Session`
---
 ALTER TABLE `Session`
   ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `SupertaskPretask`
---
 ALTER TABLE `SupertaskPretask`
   ADD CONSTRAINT `SupertaskPretask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`),
   ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);
 
---
--- Constraints der Tabelle `Task`
---
 ALTER TABLE `Task`
   ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
 
---
--- Constraints der Tabelle `TaskWrapper`
---
 ALTER TABLE `TaskWrapper`
   ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `TaskWrapper_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
 
---
--- Constraints der Tabelle `User`
---
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
 
---
--- Constraints der Tabelle `Zap`
---
 ALTER TABLE `Zap`
   ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Zap_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
+
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
