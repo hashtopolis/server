@@ -4,7 +4,7 @@ if [ -f server.zip ]; then
   rm server.zip
 fi
 
-count=$(git log $(git describe --tags --abbrev=0)..HEAD --oneline | wc -l)
+count=$(git log $(git describe --tags --abbrev=0)..HEAD --oneline | wc -l | tr -d ' ')
 if [ ${count} \> 0 ];
 then
     sed -i -E 's/BUILD = "repository"/BUILD = "'"$count"'"/g' ../src/inc/info.php
