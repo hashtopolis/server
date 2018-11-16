@@ -2,49 +2,46 @@
 
 namespace DBA;
 
-class AgentError extends AbstractModel {
-  private $agentErrorId;
+class Speed extends AbstractModel {
+  private $speedId;
   private $agentId;
   private $taskId;
-  private $chunkId;
+  private $speed;
   private $time;
-  private $error;
   
-  function __construct($agentErrorId, $agentId, $taskId, $chunkId, $time, $error) {
-    $this->agentErrorId = $agentErrorId;
+  function __construct($speedId, $agentId, $taskId, $speed, $time) {
+    $this->speedId = $speedId;
     $this->agentId = $agentId;
     $this->taskId = $taskId;
-    $this->chunkId = $chunkId;
+    $this->speed = $speed;
     $this->time = $time;
-    $this->error = $error;
   }
   
   function getKeyValueDict() {
     $dict = array();
-    $dict['agentErrorId'] = $this->agentErrorId;
+    $dict['speedId'] = $this->speedId;
     $dict['agentId'] = $this->agentId;
     $dict['taskId'] = $this->taskId;
-    $dict['chunkId'] = $this->chunkId;
+    $dict['speed'] = $this->speed;
     $dict['time'] = $this->time;
-    $dict['error'] = $this->error;
     
     return $dict;
   }
   
   function getPrimaryKey() {
-    return "agentErrorId";
+    return "speedId";
   }
   
   function getPrimaryKeyValue() {
-    return $this->agentErrorId;
+    return $this->speedId;
   }
   
   function getId() {
-    return $this->agentErrorId;
+    return $this->speedId;
   }
   
   function setId($id) {
-    $this->agentErrorId = $id;
+    $this->speedId = $id;
   }
 
   /**
@@ -71,12 +68,12 @@ class AgentError extends AbstractModel {
     $this->taskId = $taskId;
   }
   
-  function getChunkId(){
-    return $this->chunkId;
+  function getSpeed(){
+    return $this->speed;
   }
   
-  function setChunkId($chunkId){
-    $this->chunkId = $chunkId;
+  function setSpeed($speed){
+    $this->speed = $speed;
   }
   
   function getTime(){
@@ -86,19 +83,10 @@ class AgentError extends AbstractModel {
   function setTime($time){
     $this->time = $time;
   }
-  
-  function getError(){
-    return $this->error;
-  }
-  
-  function setError($error){
-    $this->error = $error;
-  }
 
-  const AGENT_ERROR_ID = "agentErrorId";
+  const SPEED_ID = "speedId";
   const AGENT_ID = "agentId";
   const TASK_ID = "taskId";
-  const CHUNK_ID = "chunkId";
+  const SPEED = "speed";
   const TIME = "time";
-  const ERROR = "error";
 }

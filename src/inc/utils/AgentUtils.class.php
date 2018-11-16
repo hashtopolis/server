@@ -15,6 +15,8 @@ use DBA\AgentStat;
 use DBA\OrderFilter;
 use DBA\ContainFilter;
 use DBA\Factory;
+use DBA\HealthCheckAgent;
+use DBA\Speed;
 
 class AgentUtils {
   /**
@@ -196,7 +198,7 @@ class AgentUtils {
     
     if (AgentUtils::deleteDependencies($agent)) {
       Factory::getAgentFactory()->getDB()->commit();
-      Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "Agent " . $name . " got deleted.");
+      Util::createLogEntry("User", (($user == null)?0:($user->getId())), DLogEntry::INFO, "Agent " . $name . " got deleted.");
     }
     else {
       Factory::getAgentFactory()->getDB()->rollBack();
@@ -226,6 +228,12 @@ class AgentUtils {
     
     $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentZapFactory()->massDeletion([Factory::FILTER => $qF]);
+
+    $qF = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
+    Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => $qF]);
+
+    $qF = new QueryFilter(Speed::AGENT_ID, $agent->getId(), "=");
+    Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
     
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
     $uS = new UpdateSet(Zap::AGENT_ID, null);

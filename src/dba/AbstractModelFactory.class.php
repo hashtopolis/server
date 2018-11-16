@@ -219,6 +219,54 @@ abstract class AbstractModelFactory {
   }
 
   /**
+   * Increments the given key of this model by the given value
+   *
+   * Returns the return of PDO::execute()
+   * @param $model AbstractModel primary key of model
+   * @param $key string key of the column to update
+   * @param $value int amount of increment
+   * @return PDOStatement
+   */
+  public function inc(&$model, $key, $value = 1) {
+    $query = "UPDATE " . $this->getModelTable() . " SET " . $key . "=" . $key . "+?";
+
+    $values = [];
+    $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
+    array_push($values, $value);
+    array_push($values, $model->getPrimaryKeyValue());
+
+    $stmt = $this->getDB()->prepare($query);
+    $stmt->execute($values);
+
+    $model = $this->get($model->getPrimaryKeyValue());
+    return $stmt;
+  }
+
+  /**
+   * Decrements the given key of this model by the given value
+   *
+   * Returns the return of PDO::execute()
+   * @param $model AbstractModel primary key of model
+   * @param $key string key of the column to update
+   * @param $value int amount of increment
+   * @return PDOStatement
+   */
+  public function dec(&$model, $key, $value = 1) {
+    $query = "UPDATE " . $this->getModelTable() . " SET " . $key . "=" . $key . "-?";
+
+    $values = [];
+    $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
+    array_push($values, $value);
+    array_push($values, $model->getPrimaryKeyValue());
+
+    $stmt = $this->getDB()->prepare($query);
+    $stmt->execute($values);
+
+    $model = $this->get($model->getPrimaryKeyValue());
+    return $stmt;
+  }
+
+  /**
    * @param $models AbstractModel[]
    * @return bool|PDOStatement
    */

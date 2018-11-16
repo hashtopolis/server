@@ -52,6 +52,10 @@
   <td class='num'>
     {{IF [[set.getVal('numAssignments')]] > 0}}
       [[set.getVal('numAssignments')]]
+      {{IF [[set.getVal('isActive')]]}}  
+        <br>
+        @[[Util::nicenum([[set.getVal('speed')]], 10000, 1000)]]H/s
+      {{ENDIF}}
     {{ENDIF}}
   </td>
   <td style='min-width: 95px' data-sort="[[set.getVal('fileSizes')]]">

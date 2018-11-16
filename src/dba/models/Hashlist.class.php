@@ -15,8 +15,10 @@ class Hashlist extends AbstractModel {
   private $isSalted;
   private $accessGroupId;
   private $notes;
+  private $brainId;
+  private $brainFeatures;
   
-  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted, $accessGroupId, $notes) {
+  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted, $accessGroupId, $notes, $brainId, $brainFeatures) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -29,6 +31,8 @@ class Hashlist extends AbstractModel {
     $this->isSalted = $isSalted;
     $this->accessGroupId = $accessGroupId;
     $this->notes = $notes;
+    $this->brainId = $brainId;
+    $this->brainFeatures = $brainFeatures;
   }
   
   function getKeyValueDict() {
@@ -45,6 +49,8 @@ class Hashlist extends AbstractModel {
     $dict['isSalted'] = $this->isSalted;
     $dict['accessGroupId'] = $this->accessGroupId;
     $dict['notes'] = $this->notes;
+    $dict['brainId'] = $this->brainId;
+    $dict['brainFeatures'] = $this->brainFeatures;
     
     return $dict;
   }
@@ -160,6 +166,22 @@ class Hashlist extends AbstractModel {
   function setNotes($notes){
     $this->notes = $notes;
   }
+  
+  function getBrainId(){
+    return $this->brainId;
+  }
+  
+  function setBrainId($brainId){
+    $this->brainId = $brainId;
+  }
+  
+  function getBrainFeatures(){
+    return $this->brainFeatures;
+  }
+  
+  function setBrainFeatures($brainFeatures){
+    $this->brainFeatures = $brainFeatures;
+  }
 
   const HASHLIST_ID = "hashlistId";
   const HASHLIST_NAME = "hashlistName";
@@ -173,4 +195,6 @@ class Hashlist extends AbstractModel {
   const IS_SALTED = "isSalted";
   const ACCESS_GROUP_ID = "accessGroupId";
   const NOTES = "notes";
+  const BRAIN_ID = "brainId";
+  const BRAIN_FEATURES = "brainFeatures";
 }

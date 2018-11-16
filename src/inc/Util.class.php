@@ -25,6 +25,7 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\FileDelete;
 use DBA\Factory;
+use DBA\Speed;
 
 /**
  *
@@ -33,6 +34,118 @@ use DBA\Factory;
  *         Bunch of useful static functions.
  */
 class Util {
+  /**
+   * Determines the file extension of the given file name (based on the last dot).
+   * Returns an empty string if no extension was found.
+   * 
+   * @param string $filename 
+   * @return string
+   */
+  public static function extractFileExtension($filename){
+    $split = explode(".", $filename);
+    if(sizeof($split) == 1){
+      return "";
+    }
+    return $split[sizeof($split)-1];
+  }
+
+  /**
+   * Downloads the data at the given url and saves it at the specified destination.
+   * It will overwrite files if they already exist.
+   * 
+   * @param string $url 
+   * @param string $dest 
+   * @throws HTException 
+   */
+  public static function downloadFromUrl($url, $dest){
+    $furl = fopen($url, "rb");
+    if (!$furl) {
+      throw new HTException("Failed to open URL!");
+    }
+    $fileLocation = fopen($dest, "w");
+    if (!$fileLocation) {
+      throw new HTException("Failed to open destination file!");
+    }
+    $buffersize = 131072;
+    while (!feof($furl)) {
+      if (!$data = fread($furl, $buffersize)) {
+        throw new HTException("Data reading error!");
+      }
+      fwrite($fileLocation, $data);
+    }
+    fclose($fileLocation);
+    fclose($furl);
+  }
+
+  /**
+   * Loads the last speed data on a specific task. Either for the full task, or a specific agent.
+   * The data is provided as an associative array with the timestamps as keys.
+   * 
+   * @param int $taskId  
+   * @param int $limit 
+   * @param int $agentId corresponding agent to show data from, 0 to sum up from all agents on this task 
+   * @param int $delta time distance between the data points
+   * @return int[]
+   */
+  public static function getSpeedDataSet($taskId, $limit = 50, $agentId = 0, $delta = 10){
+    // if agentId is 0 we need to find out how many agents there are to find how many entries we would need max
+    $requestLimit = intval($limit) * $delta / 5;
+    if($agentId == 0){ // This might be to rewritten, it's just an estimation how to calculate an ideal number of entries to be requested
+      // we cannot request all entries here as this number might grow quite quickly over time
+      $qF = new QueryFilter(Assignment::TASK_ID, $taskId, "=");
+      $agentCount = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]) + 1;
+      $requestLimit = $agentCount * $limit * $delta / 5;
+    }
+
+    $qF1 = new QueryFilter(Speed::TASK_ID, $taskId, "=");
+    $oF = new OrderFilter(Speed::SPEED_ID, "DESC LIMIT $requestLimit");
+    if($agentId > 0){
+      $qF2 = new QueryFilter(Speed::AGENT_ID, $agentId, "=");
+      $entries = Factory::getSpeedFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
+    }
+    else{
+      $entries = Factory::getSpeedFactory()->filter([Factory::FILTER => $qF1, Factory::ORDER => $oF]);
+    }
+
+    if(sizeof($entries) == 0){
+      return [];
+    }
+
+    $data = [];
+    $used = [];
+    for($i=0;$i<$limit;$i++){
+      $data[$i] = 0;
+      $used[$i] = [];
+    }
+
+    $first = $entries[0]->getTime();
+    foreach($entries as $entry){
+      $pos = $limit - 1 - floor(($first - $entry->getTime()) / $delta);
+      if($pos < 0){
+        continue; // too old entry
+      }
+      else if(in_array($entry->getAgentId(), $used[$pos])){
+        continue; // if we already have a newer entry in this range, we ignore it
+      }
+      $data[$pos] += $entry->getSpeed();
+      $used[$pos][] = $entry->getAgentId();
+    }
+    
+    // prepare with timestamps
+    $first = round($first, -log10($delta));
+    $timestampData = [];
+    foreach($data as $key => $val){
+      $timestampData[$first - ($limit - 1 - $key) * $delta] = $val;
+    }
+    return $timestampData;
+  }
+
+  /**
+   * Get the hashtype name by its ID
+   * 
+   * @param int $hashtypeId 
+   * @return string
+   */
   public static function getHashtypeById($hashtypeId){
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
     if($hashtype == null){
@@ -40,8 +153,13 @@ class Util {
     }
     return $hashtype->getDescription();
   }
-
-  public static function getGitCommit() {
+  
+  /**
+   * Get the commit hash and branch (if available) of the Hashtopolis server.
+   * 
+   * @return string
+   */
+  public static function getGitCommit($hashOnly = false) {
     $gitcommit = "";
     $gitfolder = dirname(__FILE__) . "/../../.git";
     if (file_exists($gitfolder) && is_dir($gitfolder)) {
@@ -49,10 +167,16 @@ class Util {
       $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
       if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
         $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
+        if($hashOnly){
+          return $commit;
+        }
         $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
       }
       else {
         $commit = $head;
+        if($hashOnly){
+          return $commit;
+        }
         $gitcommit = "commit " . substr($commit, 0, 7);
       }
     }
@@ -63,19 +187,22 @@ class Util {
    * @param string $type
    * @param string $version
    */
-  public static function checkAgentVersion($type, $version) {
+  public static function checkAgentVersion($type, $version, $silent = false) {
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
       if (Util::versionComparison($binary->getVersion(), $version) == 1) {
-        echo "update $type version... ";
+        if(!$silent) echo "update $type version... ";
         $binary->setVersion($version);
         Factory::getAgentBinaryFactory()->update($binary);
-        echo "OK";
+        if(!$silent) echo "OK";
       }
     }
   }
   
+  /**
+   * @return boolean
+   */
   public static function isYubikeyEnabled() {
     $clientId = SConfig::getInstance()->getVal(DConfig::YUBIKEY_ID);
     if (!is_numeric($clientId) || $clientId <= 0) {
@@ -246,6 +373,7 @@ class Util {
     $cracked = 0;
     $maxTime = 0;
     $totalTimeSpent = 0;
+    $speed = 0;
     foreach ($chunks as $chunk) {
       if ($chunk->getDispatchTime() > 0 && $chunk->getSolveTime() > 0) {
         $totalTimeSpent += $chunk->getSolveTime() - $chunk->getDispatchTime();
@@ -258,13 +386,14 @@ class Util {
       if ($chunk->getSolveTime() > $maxTime) {
         $maxTime = $chunk->getSolveTime();
       }
+      $speed = $chunk->getSpeed();
     }
     
     $isActive = false;
     if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
-    return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0);
+    return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0, $speed);
   }
   
   /**
@@ -353,6 +482,7 @@ class Util {
         $set->addValue('hashCount', $hashlist->getHashCount());
         $set->addValue('hashlistCracked', $hashlist->getCracked());
         $set->addValue('priority', $taskWrapper->getPriority());
+        $set->addValue('cracked', $taskWrapper->getCracked());
         
         $taskList[] = $set;
       }
@@ -397,6 +527,7 @@ class Util {
         $set->addValue('crackedCount', $chunkInfo[1]);
         $set->addValue('numChunks', $chunkInfo[0]);
         $set->addValue('performance', $taskInfo[4]);
+        $set->addValue('speed', $taskInfo[5]);
         $taskList[] = $set;
       }
     }
@@ -429,6 +560,11 @@ class Util {
     return true;
   }
   
+  /**
+   * Checks if it is longer than 10 mins since the last time it was checked if there are 
+   * any old agent statistic entries which can be deleted. If necessary, check is executed 
+   * and old entries are deleted.
+   */
   public static function agentStatCleaning() {
     $entry = Factory::getStoredValueFactory()->get(DStats::LAST_STAT_CLEANING);
     if ($entry == null) {
@@ -485,6 +621,9 @@ class Util {
       return -1;
     }
     $fp = fopen($file, "rb");
+    if ($fp === false){
+      return -1;
+    }
     $pos = 0;
     $size = 1073741824;
     fseek($fp, 0, SEEK_SET);
@@ -736,8 +875,8 @@ class Util {
   }
   
   /**
-   * @param $version1
-   * @param $version2
+   * @param string $version1
+   * @param string $version2
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
    */
   public static function versionComparison($version1, $version2) {
@@ -765,7 +904,7 @@ class Util {
   
   /**
    * Shows big numbers with the right suffixes (k, M, G)
-   * @param $num int integer you want formatted
+   * @param int $num integer you want formatted
    * @param int $threshold default 1024
    * @param int $divider default 1024
    * @return string Formatted Integer
@@ -797,10 +936,10 @@ class Util {
     if ($total > 0) {
       $percentage = round(($part / $total) * 100, $decs);
       if ($percentage == 100 && $part < $total) {
-        $percentage -= 1 / (10 ^ $decs);
+        $percentage -= 1 / (pow(10, $decs));
       }
       if ($percentage == 0 && $part > 0) {
-        $percentage += 1 / (10 ^ $decs);
+        $percentage += 1 / (pow(10, $decs));
       }
     }
     else {

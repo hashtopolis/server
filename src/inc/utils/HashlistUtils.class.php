@@ -109,7 +109,7 @@ class HashlistUtils {
         if ($task->getPriority() > 0) {
           $taskPriority = $priorityBase + $task->getPriority();
         }
-        $taskWrapper = new TaskWrapper(null, $taskPriority, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0);
+        $taskWrapper = new TaskWrapper(null, $taskPriority, DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0);
         $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
         
         $newTask = new Task(
@@ -706,10 +706,12 @@ class HashlistUtils {
    * @param array $post
    * @param array $files
    * @param User $user
+   * @param int $brainId
+   * @param int $brainFeatures
    * @throws HTException
    * @return Hashlist
    */
-  public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user) {
+  public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId, $brainFeatures) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
@@ -717,6 +719,7 @@ class HashlistUtils {
     $format = intval($format);
     $hashtype = intval($hashtype);
     $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
+    $brainFeatures = intval($brainFeatures);
     
     if ($format < DHashlistFormat::PLAIN || $format > DHashlistFormat::BINARY) {
       throw new HTException("Invalid hashlist format!");
@@ -733,9 +736,15 @@ class HashlistUtils {
     else if ($salted == '1' && strlen($saltSeparator) == 0) {
       throw new HTException("Salt separator cannot be empty when hashes are salted!");
     }
+    else if ($brainId && !SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_ENABLE)){
+      throw new HTException("Hashcat brain cannot be used if not enabled in config!");
+    }
+    else if($brainId && $brainFeatures < 1 || $brainFeatures > 3){
+      throw new HTException("Invalid brain features selected!");
+    }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '');
+    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures);
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
     
     $dataSource = "";
@@ -772,6 +781,7 @@ class HashlistUtils {
     }
     Factory::getAgentFactory()->getDB()->commit();
     $added = 0;
+    $preFound = 0;
     
     switch ($format) {
       case DHashlistFormat::PLAIN:
@@ -808,7 +818,26 @@ class HashlistUtils {
             continue;
           }
           //TODO: check hash length here
-          $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
+
+          // if selected check if it is cracked
+          $found = null;
+          if(SConfig::getInstance()->getVal(DConfig::HASHLIST_IMPORT_CHECK)){
+            $qF = new QueryFilter(Hash::HASH, $hash, "=");
+            $check = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
+            foreach($check as $c){
+              if($c->getIsCracked()){
+                $found = $c;
+                break;
+              }
+            }
+          }
+          if($found == null){
+            $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
+          }
+          else{
+            $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, $found->getPlaintext(), time(), null, 1, 0);
+            $preFound++;
+          }
           $bufferCount++;
           if ($bufferCount >= 10000) {
             $result = Factory::getHashFactory()->massSave($values);
@@ -826,6 +855,7 @@ class HashlistUtils {
         fclose($file);
         unlink($tmpfile);
         $hashlist->setHashCount($added);
+        $hashlist->setCracked($preFound);
         Factory::getHashlistFactory()->update($hashlist);
         Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
@@ -941,7 +971,7 @@ class HashlistUtils {
       }
     }
     
-    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '');
+    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0, 0);
     $superhashlist = Factory::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {

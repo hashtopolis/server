@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class AgentErrorFactory extends AbstractModelFactory {
+class SpeedFactory extends AbstractModelFactory {
   function getModelName() {
-    return "AgentError";
+    return "Speed";
   }
   
   function getModelTable() {
-    return "AgentError";
+    return "Speed";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class AgentErrorFactory extends AbstractModelFactory {
   }
 
   /**
-   * @return AgentError
+   * @return Speed
    */
   function getNullObject() {
-    $o = new AgentError(-1, null, null, null, null, null);
+    $o = new Speed(-1, null, null, null, null);
     return $o;
   }
 
   /**
    * @param string $pk
    * @param array $dict
-   * @return AgentError
+   * @return Speed
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new AgentError($dict['agentErrorId'], $dict['agentId'], $dict['taskId'], $dict['chunkId'], $dict['time'], $dict['error']);
+    $o = new Speed($dict['speedId'], $dict['agentId'], $dict['taskId'], $dict['speed'], $dict['time']);
     return $o;
   }
 
   /**
    * @param array $options
    * @param bool $single
-   * @return AgentError|AgentError[]
+   * @return Speed|Speed[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class AgentErrorFactory extends AbstractModelFactory {
       if($join){
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), AgentError::class);
+      return Util::cast(parent::filter($options, $single), Speed::class);
     }
     $objects = parent::filter($options, $single);
     if($join){
@@ -59,24 +59,24 @@ class AgentErrorFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach($objects as $object){
-      $models[] = Util::cast($object, AgentError::class);
+      $models[] = Util::cast($object, Speed::class);
     }
     return $models;
   }
 
   /**
    * @param string $pk
-   * @return AgentError
+   * @return Speed
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), AgentError::class);
+    return Util::cast(parent::get($pk), Speed::class);
   }
 
   /**
-   * @param AgentError $model
-   * @return AgentError
+   * @param Speed $model
+   * @return Speed
    */
   function save($model) {
-    return Util::cast(parent::save($model), AgentError::class);
+    return Util::cast(parent::save($model), Speed::class);
   }
 }

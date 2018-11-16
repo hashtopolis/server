@@ -4,6 +4,9 @@ class LockUtils {
   /** @var $locks Lock[] */
   private static $locks = array();
   
+  /**
+   * @param string $lockFile 
+   */
   public static function get($lockFile) {
     $lock = null;
     if (isset(self::$locks[$lockFile])) {
@@ -23,6 +26,9 @@ class LockUtils {
     }
   }
   
+  /**
+   * @param string $lockFile 
+   */
   public static function release($lockFile) {
     if (isset(self::$locks[$lockFile])) {
       $lock = self::$locks[$lockFile];

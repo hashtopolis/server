@@ -185,12 +185,13 @@
 	\end{verbatim}
 	
 	\subsection*{Client Error}
-	In case there happens an error with Hashcat/Cracker on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page.
+	In case there happens an error with Hashcat/Cracker on the client, he can submit the error message to the server where it will be assigned to the agent and shown on the page. The chunk ID is optional and can be null if not available.
 	\begin{verbatim}
 	{
 	  "action":"clientError",
 	  "taskId":45,
 	  "token":"GHhgdf(/&",
+	  "chunkId": 1,
 	  "message":"This is a sample error message!"
 	}
 	\end{verbatim}
@@ -270,7 +271,8 @@
 	  "keyspace":0,
 	  "usePrince": false,
 	  "enforcePipe": false,
-	  "slowHash": false
+	  "slowHash": false,
+	  "useBrain": false
 	}
 	\end{verbatim}
 	or send this if there is no task available:
@@ -280,6 +282,34 @@
 	  "response":"SUCCESS",
 	  "taskId": null,
 	  "reason": "No task available!"
+	}
+	\end{verbatim}
+	In case the hashcat brain is used, further settings are sent:
+	\begin{verbatim}
+	{
+	  "action":"getTask",
+	  "response":"SUCCESS",
+	  "taskId": 25,
+	  "attackcmd": "#HL# -a 3 ?a?a?a?a --hash-type=0",
+	  "hashlistId": 13,
+	  "bench": 30,
+	  "statustimer": 5,
+	  "benchType":"speed",
+	  "crackerId":45
+	  "hashlistAlias":"#HL#",
+	  "files": [
+	    "rockyou.txt",
+	    "wordlist.txt"
+	  ],
+	  "keyspace":0,
+	  "usePrince": false,
+	  "enforcePipe": false,
+	  "slowHash": false,
+	  "useBrain": true,
+	  "brainHost": "10.20.30.40",
+	  "brainPort": 1234,
+	  "brainPass": "password",
+	  "brainFeatures": 3
 	}
 	\end{verbatim}
 	
@@ -524,6 +554,22 @@
 	\begin{verbatim}
 	{
 	  "action": "sendHealthCheck",
+	  "response": "OK"
+	}
+	\end{verbatim}
+	
+	\subsection*{De-Registration}
+	If the flag is set on the client to de-register on quitting, he sends following command to the server. In case this is not allowed, it will report an error.
+	\begin{verbatim}
+	{
+	  "action": "deregister", 
+	  "token": "GHhgdf(/&"
+	}
+	\end{verbatim}
+	On success the server will just reply with OK.
+	\begin{verbatim}
+	{
+	  "action": "deregister",
 	  "response": "OK"
 	}
 	\end{verbatim}

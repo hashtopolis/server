@@ -53,6 +53,26 @@
 					</select>
 				</td>
 			</tr>
+      {{IF [[config.getVal([[$DConfig::HASHCAT_BRAIN_ENABLE]])]]}}
+        <tr>
+				  <td>This hashlist should use hashcat brain:</td>
+				  <td>
+					  <span class="textopt">
+						  <input type="checkbox" name="useBrain" id="useBrain" value="1" title="Use Hashcat Brain">
+					  </span>
+				  </td>
+			  </tr>
+        <tr>
+				    <td>In case hashcat brain is used, which features:</td>
+				    <td>
+					    <select name="brain-features" class='form-control' id="brain-features" title="Brain Features">
+							  <option value="1">Send hashed passwords</option>
+							  <option value="2" selected>Send attack positions</option>
+							  <option value="3">Send hashed passwords and attack positions</option>
+					    </select>
+				    </td>
+			    </tr>
+      {{ENDIF}}
 			<tr>
 				<td>Hashlist format:</td>
 				<td>

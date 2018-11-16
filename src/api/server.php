@@ -117,6 +117,18 @@ switch ($QUERY[PQuery::ACTION]) {
   case PActions::SEND_HEALTH_CHECK:
     $api = new APISendHealthCheck();
     break;
+  /**
+   * Retrieve the found hashes of a hashlist
+   */
+  case PActions::GET_FOUND:
+    $api = new APIGetFound();
+    break;
+  /**
+   * De-register a client on exit
+   */
+  case PActions::DEREGISTER:
+    $api = new APIDeRegisterAgent();
+    break;
 }
 
 DServerLog::log(DServerLog::TRACE, "Received from " . Util::getIP() . ": " . json_encode($QUERY));

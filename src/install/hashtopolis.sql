@@ -1,10 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 4.6.6
--- https://www.phpmyadmin.net/
---
--- Server-Version: 10.1.26-MariaDB
--- PHP-Version: 5.6.31
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
@@ -14,169 +7,85 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Datenbank: `hashtopolis`
---
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AccessGroup`
---
-
+-- Create tables and insert default entries
 CREATE TABLE `AccessGroup` (
   `accessGroupId` INT(11)     NOT NULL,
   `groupName`     VARCHAR(50) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AccessGroupAgent`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `AccessGroupAgent` (
   `accessGroupAgentId` INT(11) NOT NULL,
   `accessGroupId`      INT(11) NOT NULL,
   `agentId`            INT(11) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AccessGroupUser`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `AccessGroupUser` (
   `accessGroupUserId` INT(11) NOT NULL,
   `accessGroupId`     INT(11) NOT NULL,
   `userId`            INT(11) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Agent`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `Agent` (
-  `agentId`         INT(11)                      NOT NULL,
-  `agentName`       VARCHAR(100)
-                    COLLATE utf8_unicode_ci      NOT NULL,
-  `uid`             VARCHAR(100)
-                    COLLATE utf8_unicode_ci      NOT NULL,
-  `os`              INT(11)                      NOT NULL,
-  `devices`         TEXT COLLATE utf8_unicode_ci NOT NULL,
-  `cmdPars`         VARCHAR(256)
-                    COLLATE utf8_unicode_ci      NOT NULL,
-  `ignoreErrors`    TINYINT(4)                   NOT NULL,
-  `isActive`        TINYINT(4)                   NOT NULL,
-  `isTrusted`       TINYINT(4)                   NOT NULL,
-  `token`           VARCHAR(30)
-                    COLLATE utf8_unicode_ci      NOT NULL,
-  `lastAct`         VARCHAR(50)
-                    COLLATE utf8_unicode_ci      NOT NULL,
-  `lastTime`        INT(11)                      NOT NULL,
-  `lastIp`          VARCHAR(50)
-                    COLLATE utf8_unicode_ci      NOT NULL,
-  `userId`          INT(11) DEFAULT NULL,
-  `cpuOnly`         TINYINT(4)                   NOT NULL,
-  `clientSignature` VARCHAR(50)                  NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentBinary`
---
+  `agentId`         INT(11)      NOT NULL,
+  `agentName`       VARCHAR(100) NOT NULL,
+  `uid`             VARCHAR(100) NOT NULL,
+  `os`              INT(11)      NOT NULL,
+  `devices`         TEXT         NOT NULL,
+  `cmdPars`         VARCHAR(256) NOT NULL,
+  `ignoreErrors`    TINYINT(4)   NOT NULL,
+  `isActive`        TINYINT(4)   NOT NULL,
+  `isTrusted`       TINYINT(4)   NOT NULL,
+  `token`           VARCHAR(30)  NOT NULL,
+  `lastAct`         VARCHAR(50)  NOT NULL,
+  `lastTime`        BIGINT       NOT NULL,
+  `lastIp`          VARCHAR(50)  NOT NULL,
+  `userId`          INT(11)      DEFAULT NULL,
+  `cpuOnly`         TINYINT(4)   NOT NULL,
+  `clientSignature` VARCHAR(50)  NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `AgentBinary` (
-  `agentBinaryId`    INT(11)                 NOT NULL,
-  `type`             VARCHAR(20)
-                     COLLATE utf8_unicode_ci NOT NULL,
-  `version`          VARCHAR(20)
-                     COLLATE utf8_unicode_ci NOT NULL,
-  `operatingSystems` VARCHAR(50)
-                     COLLATE utf8_unicode_ci NOT NULL,
-  `filename`         VARCHAR(50)
-                     COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
+  `agentBinaryId`    INT(11)     NOT NULL,
+  `type`             VARCHAR(20) NOT NULL,
+  `version`          VARCHAR(20) NOT NULL,
+  `operatingSystems` VARCHAR(50) NOT NULL,
+  `filename`         VARCHAR(50) NOT NULL,
+  `updateTrack`      VARCHAR(20) NOT NULL,
+  `updateAvailable`  VARCHAR(20) NOT NULL
+) ENGINE = InnoDB;
 
---
--- Daten für Tabelle `AgentBinary`
---
-
-INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`) VALUES
-  (1, 'python', '0.3.0', 'Windows, Linux, OS X', 'hashtopolis.zip');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentError`
---
+INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
+  (1, 'python', '0.3.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
-  `agentErrorId` INT(11)                      NOT NULL,
-  `agentId`      INT(11)                      NOT NULL,
+  `agentErrorId` INT(11) NOT NULL,
+  `agentId`      INT(11) NOT NULL,
   `taskId`       INT(11) DEFAULT NULL,
-  `time`         INT(11)                      NOT NULL,
-  `error`        TEXT COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentStat`
---
+  `time`         BIGINT  NOT NULL,
+  `error`        TEXT    NOT NULL,
+  `chunkId`      INT(11) NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `AgentStat` (
-  `agentStatId` INT(11) NOT NULL,
-  `agentId`     INT(11) NOT NULL,
-  `statType`    INT(11) NOT NULL,
-  `time`        BIGINT NOT NULL,
+  `agentStatId` INT(11)     NOT NULL,
+  `agentId`     INT(11)     NOT NULL,
+  `statType`    INT(11)     NOT NULL,
+  `time`        BIGINT      NOT NULL,
   `value`       VARCHAR(64) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `AgentZap`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `AgentZap` (
   `agentZapId` INT(11) NOT NULL,
   `agentId`    INT(11) NOT NULL,
   `lastZapId`  INT(11) NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Assignment`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `Assignment` (
-  `assignmentId` INT(11)                 NOT NULL,
-  `taskId`       INT(11)                 NOT NULL,
-  `agentId`      INT(11)                 NOT NULL,
-  `benchmark`    VARCHAR(50)
-                 COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Chunk`
---
+  `assignmentId` INT(11)     NOT NULL,
+  `taskId`       INT(11)     NOT NULL,
+  `agentId`      INT(11)     NOT NULL,
+  `benchmark`    VARCHAR(50) NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `Chunk` (
   `chunkId`      INT(11)    NOT NULL,
@@ -184,34 +93,21 @@ CREATE TABLE `Chunk` (
   `skip`         BIGINT(20) NOT NULL,
   `length`       BIGINT(20) NOT NULL,
   `agentId`      INT(11)    NULL,
-  `dispatchTime` INT(11)    NOT NULL,
-  `solveTime`    INT(11)    NOT NULL,
+  `dispatchTime` BIGINT     NOT NULL,
+  `solveTime`    BIGINT     NOT NULL,
   `checkpoint`   BIGINT(20) NOT NULL,
-  `progress`     INT(11)    NOT NULL,
+  `progress`     INT(11)    NULL,
   `state`        INT(11)    NOT NULL,
   `cracked`      INT(11)    NOT NULL,
   `speed`        BIGINT(20) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Config`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `Config` (
-  `configId`        INT(11)                      NOT NULL,
-  `configSectionId` INT(11)                      NOT NULL,
-  `item`            VARCHAR(80)
-                    COLLATE utf8_unicode_ci      NOT NULL,
-  `value`           TEXT COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
-
---
--- Daten für Tabelle `Config`
---
+  `configId`        INT(11)     NOT NULL,
+  `configSectionId` INT(11)     NOT NULL,
+  `item`            VARCHAR(80) NOT NULL,
+  `value`           TEXT        NOT NULL
+) ENGINE = InnoDB;
 
 INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (1, 1, 'agenttimeout', '30'),
@@ -264,24 +160,18 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (62, 7, 'telegramProxyType', 'HTTP'),
   (63, 1, 'priority0Start', '0'),
   (64, 5, 'baseUrl', ''),
-  (65, 4, 'maxSessionLength', '48');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `ConfigSection`
---
+  (65, 4, 'maxSessionLength', '48'),
+  (66, 1, 'hashcatBrainHost', ''),
+  (67, 1, 'hashcatBrainEnable', '0'),
+  (68, 1, 'hashcatBrainPort', '0'),
+  (69, 1, 'hashcatBrainPass', ''),
+  (70, 1, 'hashlistImportCheck', '0'),
+  (71, 5, 'allowDeregister', '0');
 
 CREATE TABLE `ConfigSection` (
-  `configSectionId` INT(11)                 NOT NULL,
-  `sectionName`     VARCHAR(100)
-                    COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
-
---
--- Daten für Tabelle `ConfigSection`
---
+  `configSectionId` INT(11)      NOT NULL,
+  `sectionName`     VARCHAR(100) NOT NULL
+) ENGINE = InnoDB;
 
 INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (1, 'Cracking/Tasks'),
@@ -292,347 +182,262 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (6, 'Multicast'),
   (7, 'Notifications');
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `CrackerBinary`
---
-
 CREATE TABLE `CrackerBinary` (
-  `crackerBinaryId`     INT(11)                 NOT NULL,
-  `crackerBinaryTypeId` INT(11)                 NOT NULL,
-  `version`             VARCHAR(20)
-                        COLLATE utf8_unicode_ci NOT NULL,
-  `downloadUrl`         VARCHAR(150)
-                        COLLATE utf8_unicode_ci NOT NULL,
-  `binaryName`          VARCHAR(50)
-                        COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
+  `crackerBinaryId`     INT(11)      NOT NULL,
+  `crackerBinaryTypeId` INT(11)      NOT NULL,
+  `version`             VARCHAR(20)  NOT NULL,
+  `downloadUrl`         VARCHAR(150) NOT NULL,
+  `binaryName`          VARCHAR(50)  NOT NULL
+) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
   (1, 1, '5.0.0', 'https://hashcat.net/files/hashcat-5.0.0.7z', 'hashcat');
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `CrackerBinaryType`
---
-
 CREATE TABLE `CrackerBinaryType` (
-  `crackerBinaryTypeId` INT(11)                 NOT NULL,
-  `typeName`            VARCHAR(30)
-                        COLLATE utf8_unicode_ci NOT NULL,
-  `isChunkingAvailable` INT(11)                 NOT NULL
-)
-  ENGINE = InnoDB;
+  `crackerBinaryTypeId` INT(11)     NOT NULL,
+  `typeName`            VARCHAR(30) NOT NULL,
+  `isChunkingAvailable` TINYINT(4)  NOT NULL
+) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingAvailable`) VALUES
   (1, 'hashcat', 1);
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `File`
---
-
 CREATE TABLE `File` (
-  `fileId`   INT(11)                 NOT NULL,
-  `filename` VARCHAR(100)
-             COLLATE utf8_unicode_ci NOT NULL,
-  `size`     BIGINT(20)              NOT NULL,
-  `isSecret` INT(11)                 NOT NULL,
-  `fileType` INT(11)                 NOT NULL,
-  `accessGroupId` INT(11)            NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `FilePretask`
---
+  `fileId`   INT(11)      NOT NULL,
+  `filename` VARCHAR(100) NOT NULL,
+  `size`     BIGINT(20)   NOT NULL,
+  `isSecret` TINYINT(4)   NOT NULL,
+  `fileType` INT(11)      NOT NULL,
+  `accessGroupId` INT(11) NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `FilePretask` (
   `filePretaskId` INT(11) NOT NULL,
   `fileId`        INT(11) NOT NULL,
   `pretaskId`     INT(11) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `FileTask`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `FileTask` (
   `fileTaskId` INT(11) NOT NULL,
   `fileId`     INT(11) NOT NULL,
   `taskId`     INT(11) NOT NULL
-)
-  ENGINE = InnoDB;
+) ENGINE = InnoDB;
 
 CREATE TABLE `FileDelete` (
-  `fileDeleteId` int(11) NOT NULL,
-  `filename` varchar(256) NOT NULL,
-  `time` int(11) NOT NULL
+  `fileDeleteId` INT(11)      NOT NULL,
+  `filename`     VARCHAR(256) NOT NULL,
+  `time`         BIGINT       NOT NULL
 ) ENGINE=InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Hash`
---
-
 CREATE TABLE `Hash` (
-  `hashId`      INT(11)                 NOT NULL,
-  `hashlistId`  INT(11)                 NOT NULL,
-  `hash`        TEXT
-                COLLATE utf8_unicode_ci NOT NULL,
-  `salt`        VARCHAR(256)
-                COLLATE utf8_unicode_ci DEFAULT NULL,
-  `plaintext`   VARCHAR(256)
-                COLLATE utf8_unicode_ci DEFAULT NULL,
-  `timeCracked` INT(11)                 DEFAULT NULL,
-  `chunkId`     INT(11)                 DEFAULT NULL,
-  `isCracked`   TINYINT(4)              NOT NULL,
-  `crackPos`    BIGINT                  NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashBinary`
---
+  `hashId`      INT(11)      NOT NULL,
+  `hashlistId`  INT(11)      NOT NULL,
+  `hash`        TEXT         NOT NULL,
+  `salt`        VARCHAR(256) DEFAULT NULL,
+  `plaintext`   VARCHAR(256) DEFAULT NULL,
+  `timeCracked` BIGINT       DEFAULT NULL,
+  `chunkId`     INT(11)      DEFAULT NULL,
+  `isCracked`   TINYINT(4)   NOT NULL,
+  `crackPos`    BIGINT       NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `HashBinary` (
-  `hashBinaryId` INT(11)                            NOT NULL,
-  `hashlistId`   INT(11)                            NOT NULL,
-  `essid`        VARCHAR(100)
-                 COLLATE utf8_unicode_ci            NOT NULL,
-  `hash`         MEDIUMTEXT COLLATE utf8_unicode_ci NOT NULL,
-  `plaintext`    VARCHAR(1024)
-                 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `timeCracked`  INT(11)                 DEFAULT NULL,
-  `chunkId`      INT(11)                 DEFAULT NULL,
-  `isCracked`    TINYINT(4)                         NOT NULL,
-  `crackPos`     BIGINT                  NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Hashlist`
---
+  `hashBinaryId` INT(11)       NOT NULL,
+  `hashlistId`   INT(11)       NOT NULL,
+  `essid`        VARCHAR(100)  NOT NULL,
+  `hash`         MEDIUMTEXT    NOT NULL,
+  `plaintext`    VARCHAR(1024) DEFAULT NULL,
+  `timeCracked`  BIGINT        DEFAULT NULL,
+  `chunkId`      INT(11)       DEFAULT NULL,
+  `isCracked`    TINYINT(4)    NOT NULL,
+  `crackPos`     BIGINT        NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `Hashlist` (
-  `hashlistId`    INT(11)                 NOT NULL,
-  `hashlistName`  VARCHAR(100)
-                  COLLATE utf8_unicode_ci NOT NULL,
-  `format`        INT(11)                 NOT NULL,
-  `hashTypeId`    INT(11)                 NOT NULL,
-  `hashCount`     INT(11)                 NOT NULL,
-  `saltSeparator` VARCHAR(10)
-                  COLLATE utf8_unicode_ci DEFAULT NULL,
-  `cracked`       INT(11)                 NOT NULL,
-  `isSecret`      INT(11)                 NOT NULL,
-  `hexSalt`       INT(11)                 NOT NULL,
-  `isSalted`      TINYINT(4)              NOT NULL,
-  `accessGroupId` INT(11)                 NOT NULL,
-  `notes`         TEXT                    NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashlistHashlist`
---
+  `hashlistId`    INT(11)      NOT NULL,
+  `hashlistName`  VARCHAR(100) NOT NULL,
+  `format`        INT(11)      NOT NULL,
+  `hashTypeId`    INT(11)      NOT NULL,
+  `hashCount`     INT(11)      NOT NULL,
+  `saltSeparator` VARCHAR(10)  DEFAULT NULL,
+  `cracked`       INT(11)      NOT NULL,
+  `isSecret`      TINYINT(4)   NOT NULL,
+  `hexSalt`       TINYINT(4)   NOT NULL,
+  `isSalted`      TINYINT(4)   NOT NULL,
+  `accessGroupId` INT(11)      NOT NULL,
+  `notes`         TEXT         NOT NULL,
+  `brainId`       INT(11)      NOT NULL,
+  `brainFeatures` TINYINT(4)   NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `HashlistHashlist` (
   `hashlistHashlistId` INT(11) NOT NULL,
   `parentHashlistId`   INT(11) NOT NULL,
   `hashlistId`         INT(11) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `HashType`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `HashType` (
-  `hashTypeId`  INT(11)                 NOT NULL,
-  `description` VARCHAR(256)
-                COLLATE utf8_unicode_ci NOT NULL,
-  `isSalted`    TINYINT(4)              NOT NULL,
-  `isSlowHash`  TINYINT(4)              NOT NULL
-)
-  ENGINE = InnoDB;
-
---
--- Daten für Tabelle `HashType`
---
+  `hashTypeId`  INT(11)      NOT NULL,
+  `description` VARCHAR(256) NOT NULL,
+  `isSalted`    TINYINT(4)   NOT NULL,
+  `isSlowHash`  TINYINT(4)   NOT NULL
+) ENGINE = InnoDB;
 
 INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) VALUES
-  (0, 'MD5', 0, 0),
-  (10, 'md5($pass.$salt)', 1, 0),
-  (11, 'Joomla < 2.5.18', 1, 0),
-  (12, 'PostgreSQL', 1, 0),
-  (20, 'md5($salt.$pass)', 1, 0),
-  (21, 'osCommerce, xt:Commerce', 1, 0),
-  (22, 'Juniper Netscreen/SSG (ScreenOS)', 1, 0),
-  (23, 'Skype', 1, 0),
-  (30, 'md5(unicode($pass).$salt)', 1, 0),
-  (40, 'md5($salt.unicode($pass))', 1, 0),
-  (50, 'HMAC-MD5 (key = $pass)', 1, 0),
-  (60, 'HMAC-MD5 (key = $salt)', 1, 0),
-  (100, 'SHA1', 0, 0),
-  (101, 'nsldap, SHA-1(Base64), Netscape LDAP SHA', 0, 0),
-  (110, 'sha1($pass.$salt)', 1, 0),
-  (111, 'nsldaps, SSHA-1(Base64), Netscape LDAP SSHA', 0, 0),
-  (112, 'Oracle S: Type (Oracle 11+)', 1, 0),
-  (120, 'sha1($salt.$pass)', 1, 0),
-  (121, 'SMF >= v1.1', 1, 0),
-  (122, 'OS X v10.4, v10.5, v10.6', 0, 0),
-  (123, 'EPi', 0, 0),
-  (124, 'Django (SHA-1)', 0, 0),
-  (125, 'ArubaOS', 0, 0),
-  (130, 'sha1(unicode($pass).$salt)', 1, 0),
-  (131, 'MSSQL(2000)', 0, 0),
-  (132, 'MSSQL(2005)', 0, 0),
-  (133, 'PeopleSoft', 0, 0),
-  (140, 'sha1($salt.unicode($pass))', 1, 0),
-  (141, 'EPiServer 6.x < v4', 0, 0),
-  (150, 'HMAC-SHA1 (key = $pass)', 1, 0),
-  (160, 'HMAC-SHA1 (key = $salt)', 1, 0),
-  (200, 'MySQL323', 0, 0),
-  (300, 'MySQL4.1/MySQL5+', 0, 0),
-  (400, 'phpass, MD5(Wordpress), MD5(Joomla), MD5(phpBB3)', 0, 0),
-  (500, 'md5crypt, MD5(Unix), FreeBSD MD5, Cisco-IOS MD5 2', 0, 0),
-  (501, 'Juniper IVE', 0, 0),
-  (600, 'BLAKE2b-512', 0, 0),
-  (900, 'MD4', 0, 0),
-  (1000, 'NTLM', 0, 0),
-  (1100, 'Domain Cached Credentials (DCC), MS Cache', 1, 0),
-  (1300, 'SHA-224', 0, 0),
-  (1400, 'SHA256', 0, 0),
-  (1410, 'sha256($pass.$salt)', 1, 0),
-  (1411, 'SSHA-256(Base64), LDAP {SSHA256}', 0, 0),
-  (1420, 'sha256($salt.$pass)', 1, 0),
-  (1421, 'hMailServer', 0, 0),
-  (1430, 'sha256(unicode($pass).$salt)', 1, 0),
-  (1440, 'sha256($salt.unicode($pass))', 1, 0),
-  (1441, 'EPiServer 6.x >= v4', 0, 0),
-  (1450, 'HMAC-SHA256 (key = $pass)', 1, 0),
-  (1460, 'HMAC-SHA256 (key = $salt)', 1, 0),
-  (1500, 'descrypt, DES(Unix), Traditional DES', 0, 0),
-  (1600, 'md5apr1, MD5(APR), Apache MD5', 0, 0),
-  (1700, 'SHA512', 0, 0),
-  (1710, 'sha512($pass.$salt)', 1, 0),
-  (1711, 'SSHA-512(Base64), LDAP {SSHA512}', 0, 0),
-  (1720, 'sha512($salt.$pass)', 1, 0),
-  (1722, 'OS X v10.7', 0, 0),
-  (1730, 'sha512(unicode($pass).$salt)', 1, 0),
-  (1731, 'MSSQL(2012), MSSQL(2014)', 0, 0),
-  (1740, 'sha512($salt.unicode($pass))', 1, 0),
-  (1750, 'HMAC-SHA512 (key = $pass)', 1, 0),
-  (1760, 'HMAC-SHA512 (key = $salt)', 1, 0),
-  (1800, 'sha512crypt, SHA512(Unix)', 0, 0),
-  (2100, 'Domain Cached Credentials 2 (DCC2), MS Cache', 0, 1),
-  (2400, 'Cisco-PIX MD5', 0, 0),
-  (2410, 'Cisco-ASA MD5', 1, 0),
-  (2500, 'WPA/WPA2', 0, 1),
-  (2600, 'md5(md5($pass))', 0, 0),
-  (2611, 'vBulletin < v3.8.5', 1, 0),
-  (2612, 'PHPS', 0, 0),
-  (2711, 'vBulletin >= v3.8.5', 1, 0),
-  (2811, 'IPB2+, MyBB1.2+', 1, 0),
-  (3000, 'LM', 0, 0),
-  (3100, 'Oracle H: Type (Oracle 7+), DES(Oracle)', 1, 0),
-  (3200, 'bcrypt, Blowfish(OpenBSD)', 0, 0),
-  (3710, 'md5($salt.md5($pass))', 1, 0),
-  (3711, 'Mediawiki B type', 0, 0),
-  (3800, 'md5($salt.$pass.$salt)', 1, 0),
-  (3910, 'md5(md5($pass).md5($salt))', 1, 0),
-  (4010, 'md5($salt.md5($salt.$pass))', 1, 0),
-  (4110, 'md5($salt.md5($pass.$salt))', 1, 0),
-  (4300, 'md5(strtoupper(md5($pass)))', 0, 0),
-  (4400, 'md5(sha1($pass))', 0, 0),
-  (4500, 'sha1(sha1($pass))', 0, 0),
-  (4520, 'sha1($salt.sha1($pass))', 1, 0),
-  (4521, 'Redmine Project Management Web App', 0, 0),
-  (4522, 'PunBB', 0, 0),
-  (4700, 'sha1(md5($pass))', 0, 0),
-  (4800, 'MD5(Chap), iSCSI CHAP authentication', 1, 0),
-  (4900, 'sha1($salt.$pass.$salt)', 1, 0),
-  (5000, 'SHA-3(Keccak)', 0, 0),
-  (5100, 'Half MD5', 0, 0),
-  (5200, 'Password Safe v3', 0, 1),
-  (5300, 'IKE-PSK MD5', 0, 0),
-  (5400, 'IKE-PSK SHA1', 0, 0),
-  (5500, 'NetNTLMv1-VANILLA / NetNTLMv1+ESS', 0, 0),
-  (5600, 'NetNTLMv2', 0, 0),
-  (5700, 'Cisco-IOS SHA256', 0, 0),
-  (5800, 'Samsung Android Password/PIN', 1, 0),
-  (6000, 'RipeMD160', 0, 0),
-  (6100, 'Whirlpool', 0, 0),
-  (6211, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish', 0, 1),
-  (6212, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
-  (6213, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
-  (6221, 'TrueCrypt 5.0+ SHA512 + AES/Serpent/Twofish', 0, 1),
-  (6222, 'TrueCrypt 5.0+ SHA512 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
-  (6223, 'TrueCrypt 5.0+ SHA512 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
-  (6231, 'TrueCrypt 5.0+ Whirlpool + AES/Serpent/Twofish', 0, 1),
-  (6232, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
-  (6233, 'TrueCrypt 5.0+ Whirlpool + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
-  (6241, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish + boot', 0, 1),
-  (6242, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent + boot', 0, 1),
-  (6243, 'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES + boot', 0, 1),
-  (6300, 'AIX {smd5}', 0, 0),
-  (6400, 'AIX {ssha256}', 0, 1),
-  (6500, 'AIX {ssha512}', 0, 1),
-  (6600, '1Password, Agile Keychain', 0, 1),
-  (6700, 'AIX {ssha1}', 0, 1),
-  (6800, 'Lastpass', 1, 1),
-  (6900, 'GOST R 34.11-94', 0, 0),
-  (7000, 'Fortigate (FortiOS)', 0, 0),
-  (7100, 'OS X v10.8 / v10.9', 0, 1),
-  (7200, 'GRUB 2', 0, 1),
-  (7300, 'IPMI2 RAKP HMAC-SHA1', 1, 0),
-  (7400, 'sha256crypt, SHA256(Unix)', 0, 0),
-  (7500, 'Kerberos 5 AS-REQ Pre-Auth', 0, 0),
-  (7700, 'SAP CODVN B (BCODE)', 0, 0),
-  (7800, 'SAP CODVN F/G (PASSCODE)', 0, 0),
-  (7900, 'Drupal7', 0, 0),
-  (8000, 'Sybase ASE', 0, 0),
-  (8100, 'Citrix Netscaler', 0, 0),
-  (8200, '1Password, Cloud Keychain', 0, 1),
-  (8300, 'DNSSEC (NSEC3)', 1, 0),
-  (8400, 'WBB3, Woltlab Burning Board 3', 1, 0),
-  (8500, 'RACF', 0, 0),
-  (8600, 'Lotus Notes/Domino 5', 0, 0),
-  (8700, 'Lotus Notes/Domino 6', 0, 0),
-  (8800, 'Android FDE <= 4.3', 0, 1),
-  (8900, 'scrypt', 1, 0),
-  (9000, 'Password Safe v2', 0, 0),
-  (9100, 'Lotus Notes/Domino', 0, 1),
-  (9200, 'Cisco $8$', 0, 1),
-  (9300, 'Cisco $9$', 0, 0),
-  (9400, 'Office 2007', 0, 1),
-  (9500, 'Office 2010', 0, 1),
-  (9600, 'Office 2013', 0, 1),
-  (9700, 'MS Office ⇐ 2003 MD5 + RC4, oldoffice$0, oldoffice$1', 0, 0),
-  (9710, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1', 0, 0),
-  (9720, 'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2', 0, 0),
-  (9800, 'MS Office ⇐ 2003 SHA1 + RC4, oldoffice$3, oldoffice$4', 0, 0),
-  (9810, 'MS Office <= 2003 $3, SHA1 + RC4, collider #1', 0, 0),
-  (9820, 'MS Office <= 2003 $3, SHA1 + RC4, collider #2', 0, 0),
-  (9900, 'Radmin2', 0, 0),
+  (0,     'MD5', 0, 0),
+  (10,    'md5($pass.$salt)', 1, 0),
+  (11,    'Joomla < 2.5.18', 1, 0),
+  (12,    'PostgreSQL', 1, 0),
+  (20,    'md5($salt.$pass)', 1, 0),
+  (21,    'osCommerce, xt:Commerce', 1, 0),
+  (22,    'Juniper Netscreen/SSG (ScreenOS)', 1, 0),
+  (23,    'Skype', 1, 0),
+  (30,    'md5(unicode($pass).$salt)', 1, 0),
+  (40,    'md5($salt.unicode($pass))', 1, 0),
+  (50,    'HMAC-MD5 (key = $pass)', 1, 0),
+  (60,    'HMAC-MD5 (key = $salt)', 1, 0),
+  (100,   'SHA1', 0, 0),
+  (101,   'nsldap, SHA-1(Base64), Netscape LDAP SHA', 0, 0),
+  (110,   'sha1($pass.$salt)', 1, 0),
+  (111,   'nsldaps, SSHA-1(Base64), Netscape LDAP SSHA', 0, 0),
+  (112,   'Oracle S: Type (Oracle 11+)', 1, 0),
+  (120,   'sha1($salt.$pass)', 1, 0),
+  (121,   'SMF >= v1.1', 1, 0),
+  (122,   'OS X v10.4, v10.5, v10.6', 0, 0),
+  (123,   'EPi', 0, 0),
+  (124,   'Django (SHA-1)', 0, 0),
+  (125,   'ArubaOS', 0, 0),
+  (130,   'sha1(unicode($pass).$salt)', 1, 0),
+  (131,   'MSSQL(2000)', 0, 0),
+  (132,   'MSSQL(2005)', 0, 0),
+  (133,   'PeopleSoft', 0, 0),
+  (140,   'sha1($salt.unicode($pass))', 1, 0),
+  (141,   'EPiServer 6.x < v4', 0, 0),
+  (150,   'HMAC-SHA1 (key = $pass)', 1, 0),
+  (160,   'HMAC-SHA1 (key = $salt)', 1, 0),
+  (200,   'MySQL323', 0, 0),
+  (300,   'MySQL4.1/MySQL5+', 0, 0),
+  (400,   'phpass, MD5(Wordpress), MD5(Joomla), MD5(phpBB3)', 0, 0),
+  (500,   'md5crypt, MD5(Unix), FreeBSD MD5, Cisco-IOS MD5 2', 0, 0),
+  (501,   'Juniper IVE', 0, 0),
+  (600,   'BLAKE2b-512', 0, 0),
+  (900,   'MD4', 0, 0),
+  (1000,  'NTLM', 0, 0),
+  (1100,  'Domain Cached Credentials (DCC), MS Cache', 1, 0),
+  (1300,  'SHA-224', 0, 0),
+  (1400,  'SHA256', 0, 0),
+  (1410,  'sha256($pass.$salt)', 1, 0),
+  (1411,  'SSHA-256(Base64), LDAP {SSHA256}', 0, 0),
+  (1420,  'sha256($salt.$pass)', 1, 0),
+  (1421,  'hMailServer', 0, 0),
+  (1430,  'sha256(unicode($pass).$salt)', 1, 0),
+  (1440,  'sha256($salt.unicode($pass))', 1, 0),
+  (1441,  'EPiServer 6.x >= v4', 0, 0),
+  (1450,  'HMAC-SHA256 (key = $pass)', 1, 0),
+  (1460,  'HMAC-SHA256 (key = $salt)', 1, 0),
+  (1500,  'descrypt, DES(Unix), Traditional DES', 0, 0),
+  (1600,  'md5apr1, MD5(APR), Apache MD5', 0, 0),
+  (1700,  'SHA512', 0, 0),
+  (1710,  'sha512($pass.$salt)', 1, 0),
+  (1711,  'SSHA-512(Base64), LDAP {SSHA512}', 0, 0),
+  (1720,  'sha512($salt.$pass)', 1, 0),
+  (1722,  'OS X v10.7', 0, 0),
+  (1730,  'sha512(unicode($pass).$salt)', 1, 0),
+  (1731,  'MSSQL(2012), MSSQL(2014)', 0, 0),
+  (1740,  'sha512($salt.unicode($pass))', 1, 0),
+  (1750,  'HMAC-SHA512 (key = $pass)', 1, 0),
+  (1760,  'HMAC-SHA512 (key = $salt)', 1, 0),
+  (1800,  'sha512crypt, SHA512(Unix)', 0, 0),
+  (2100,  'Domain Cached Credentials 2 (DCC2), MS Cache', 0, 1),
+  (2400,  'Cisco-PIX MD5', 0, 0),
+  (2410,  'Cisco-ASA MD5', 1, 0),
+  (2500,  'WPA/WPA2', 0, 1),
+  (2600,  'md5(md5($pass))', 0, 0),
+  (2611,  'vBulletin < v3.8.5', 1, 0),
+  (2612,  'PHPS', 0, 0),
+  (2711,  'vBulletin >= v3.8.5', 1, 0),
+  (2811,  'IPB2+, MyBB1.2+', 1, 0),
+  (3000,  'LM', 0, 0),
+  (3100,  'Oracle H: Type (Oracle 7+), DES(Oracle)', 1, 0),
+  (3200,  'bcrypt, Blowfish(OpenBSD)', 0, 0),
+  (3710,  'md5($salt.md5($pass))', 1, 0),
+  (3711,  'Mediawiki B type', 0, 0),
+  (3800,  'md5($salt.$pass.$salt)', 1, 0),
+  (3910,  'md5(md5($pass).md5($salt))', 1, 0),
+  (4010,  'md5($salt.md5($salt.$pass))', 1, 0),
+  (4110,  'md5($salt.md5($pass.$salt))', 1, 0),
+  (4300,  'md5(strtoupper(md5($pass)))', 0, 0),
+  (4400,  'md5(sha1($pass))', 0, 0),
+  (4500,  'sha1(sha1($pass))', 0, 0),
+  (4520,  'sha1($salt.sha1($pass))', 1, 0),
+  (4521,  'Redmine Project Management Web App', 0, 0),
+  (4522,  'PunBB', 0, 0),
+  (4700,  'sha1(md5($pass))', 0, 0),
+  (4800,  'MD5(Chap), iSCSI CHAP authentication', 1, 0),
+  (4900,  'sha1($salt.$pass.$salt)', 1, 0),
+  (5000,  'SHA-3(Keccak)', 0, 0),
+  (5100,  'Half MD5', 0, 0),
+  (5200,  'Password Safe v3', 0, 1),
+  (5300,  'IKE-PSK MD5', 0, 0),
+  (5400,  'IKE-PSK SHA1', 0, 0),
+  (5500,  'NetNTLMv1-VANILLA / NetNTLMv1+ESS', 0, 0),
+  (5600,  'NetNTLMv2', 0, 0),
+  (5700,  'Cisco-IOS SHA256', 0, 0),
+  (5800,  'Samsung Android Password/PIN', 1, 0),
+  (6000,  'RipeMD160', 0, 0),
+  (6100,  'Whirlpool', 0, 0),
+  (6211,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish', 0, 1),
+  (6212,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
+  (6213,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
+  (6221,  'TrueCrypt 5.0+ SHA512 + AES/Serpent/Twofish', 0, 1),
+  (6222,  'TrueCrypt 5.0+ SHA512 + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
+  (6223,  'TrueCrypt 5.0+ SHA512 + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
+  (6231,  'TrueCrypt 5.0+ Whirlpool + AES/Serpent/Twofish', 0, 1),
+  (6232,  'TrueCrypt 5.0+ Whirlpool + AES-Twofish/Serpent-AES/Twofish-Serpent', 0, 1),
+  (6233,  'TrueCrypt 5.0+ Whirlpool + AES-Twofish-Serpent/Serpent-Twofish-AES', 0, 1),
+  (6241,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES/Serpent/Twofish + boot', 0, 1),
+  (6242,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish/Serpent-AES/Twofish-Serpent + boot', 0, 1),
+  (6243,  'TrueCrypt 5.0+ PBKDF2-HMAC-RipeMD160 + AES-Twofish-Serpent/Serpent-Twofish-AES + boot', 0, 1),
+  (6300,  'AIX {smd5}', 0, 0),
+  (6400,  'AIX {ssha256}', 0, 1),
+  (6500,  'AIX {ssha512}', 0, 1),
+  (6600,  '1Password, Agile Keychain', 0, 1),
+  (6700,  'AIX {ssha1}', 0, 1),
+  (6800,  'Lastpass', 1, 1),
+  (6900,  'GOST R 34.11-94', 0, 0),
+  (7000,  'Fortigate (FortiOS)', 0, 0),
+  (7100,  'OS X v10.8 / v10.9', 0, 1),
+  (7200,  'GRUB 2', 0, 1),
+  (7300,  'IPMI2 RAKP HMAC-SHA1', 1, 0),
+  (7400,  'sha256crypt, SHA256(Unix)', 0, 0),
+  (7500,  'Kerberos 5 AS-REQ Pre-Auth', 0, 0),
+  (7700,  'SAP CODVN B (BCODE)', 0, 0),
+  (7800,  'SAP CODVN F/G (PASSCODE)', 0, 0),
+  (7900,  'Drupal7', 0, 0),
+  (8000,  'Sybase ASE', 0, 0),
+  (8100,  'Citrix Netscaler', 0, 0),
+  (8200,  '1Password, Cloud Keychain', 0, 1),
+  (8300,  'DNSSEC (NSEC3)', 1, 0),
+  (8400,  'WBB3, Woltlab Burning Board 3', 1, 0),
+  (8500,  'RACF', 0, 0),
+  (8600,  'Lotus Notes/Domino 5', 0, 0),
+  (8700,  'Lotus Notes/Domino 6', 0, 0),
+  (8800,  'Android FDE <= 4.3', 0, 1),
+  (8900,  'scrypt', 1, 0),
+  (9000,  'Password Safe v2', 0, 0),
+  (9100,  'Lotus Notes/Domino', 0, 1),
+  (9200,  'Cisco $8$', 0, 1),
+  (9300,  'Cisco $9$', 0, 0),
+  (9400,  'Office 2007', 0, 1),
+  (9500,  'Office 2010', 0, 1),
+  (9600,  'Office 2013', 0, 1),
+  (9700,  'MS Office ⇐ 2003 MD5 + RC4, oldoffice$0, oldoffice$1', 0, 0),
+  (9710,  'MS Office <= 2003 $0/$1, MD5 + RC4, collider #1', 0, 0),
+  (9720,  'MS Office <= 2003 $0/$1, MD5 + RC4, collider #2', 0, 0),
+  (9800,  'MS Office ⇐ 2003 SHA1 + RC4, oldoffice$3, oldoffice$4', 0, 0),
+  (9810,  'MS Office <= 2003 $3, SHA1 + RC4, collider #1', 0, 0),
+  (9820,  'MS Office <= 2003 $3, SHA1 + RC4, collider #2', 0, 0),
+  (9900,  'Radmin2', 0, 0),
   (10000, 'Django (PBKDF2-SHA256)', 0, 1),
   (10100, 'SipHash', 1, 0),
   (10200, 'Cram MD5', 0, 0),
@@ -725,473 +530,291 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (18100, 'TOTP (HMAC-SHA1)', 1, 0),
   (99999, 'Plaintext', 0, 0);
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `LogEntry`
---
-
 CREATE TABLE `LogEntry` (
-  `logEntryId` INT(11)                      NOT NULL,
-  `issuer`     VARCHAR(50)
-               COLLATE utf8_unicode_ci      NOT NULL,
-  `issuerId`   VARCHAR(50)
-               COLLATE utf8_unicode_ci      NOT NULL,
-  `level`      VARCHAR(50)
-               COLLATE utf8_unicode_ci      NOT NULL,
-  `message`    TEXT COLLATE utf8_unicode_ci NOT NULL,
-  `time`       INT(11)                      NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `NotificationSetting`
---
+  `logEntryId` INT(11)     NOT NULL,
+  `issuer`     VARCHAR(50) NOT NULL,
+  `issuerId`   VARCHAR(50) NOT NULL,
+  `level`      VARCHAR(50) NOT NULL,
+  `message`    TEXT        NOT NULL,
+  `time`       BIGINT      NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `NotificationSetting` (
-  `notificationSettingId` INT(11)                 NOT NULL,
-  `action`                VARCHAR(50)
-                          COLLATE utf8_unicode_ci NOT NULL,
-  `objectId`              INT(11)                 NULL,
-  `notification`          VARCHAR(50)
-                          COLLATE utf8_unicode_ci NOT NULL,
-  `userId`                INT(11)                 NOT NULL,
-  `receiver`              VARCHAR(256)
-                          COLLATE utf8_unicode_ci NOT NULL,
-  `isActive`              TINYINT(4)              NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Pretask`
---
+  `notificationSettingId` INT(11)      NOT NULL,
+  `action`                VARCHAR(50)  NOT NULL,
+  `objectId`              INT(11)      NULL,
+  `notification`          VARCHAR(50)  NOT NULL,
+  `userId`                INT(11)      NOT NULL,
+  `receiver`              VARCHAR(256) NOT NULL,
+  `isActive`              TINYINT(4)   NOT NULL
+)ENGINE = InnoDB;
 
 CREATE TABLE `Pretask` (
-  `pretaskId`           INT(11)                 NOT NULL,
-  `taskName`            VARCHAR(100)
-                        COLLATE utf8_unicode_ci NOT NULL,
-  `attackCmd`           VARCHAR(256)
-                        COLLATE utf8_unicode_ci NOT NULL,
-  `chunkTime`           INT(11)                 NOT NULL,
-  `statusTimer`         INT(11)                 NOT NULL,
-  `color`               VARCHAR(20)
-                        COLLATE utf8_unicode_ci NULL,
-  `isSmall`             INT(11)                 NOT NULL,
-  `isCpuTask`           INT(11)                 NOT NULL,
-  `useNewBench`         INT(11)                 NOT NULL,
-  `priority`            INT(11)                 NOT NULL,
-  `isMaskImport`        INT(11)                 NOT NULL,
-  `crackerBinaryTypeId` INT(11)                 NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `RegVoucher`
---
+  `pretaskId`           INT(11)      NOT NULL,
+  `taskName`            VARCHAR(100) NOT NULL,
+  `attackCmd`           VARCHAR(256) NOT NULL,
+  `chunkTime`           INT(11)      NOT NULL,
+  `statusTimer`         INT(11)      NOT NULL,
+  `color`               VARCHAR(20)  NULL,
+  `isSmall`             TINYINT(4)   NOT NULL,
+  `isCpuTask`           TINYINT(4)   NOT NULL,
+  `useNewBench`         TINYINT(4)   NOT NULL,
+  `priority`            INT(11)      NOT NULL,
+  `isMaskImport`        TINYINT(4)   NOT NULL,
+  `crackerBinaryTypeId` INT(11)      NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `RegVoucher` (
-  `regVoucherId` INT(11)                 NOT NULL,
-  `voucher`      VARCHAR(100)
-                 COLLATE utf8_unicode_ci NOT NULL,
-  `time`         INT(11)                 NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `RightGroup`
---
+  `regVoucherId` INT(11)      NOT NULL,
+  `voucher`      VARCHAR(100) NOT NULL,
+  `time`         BIGINT       NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `RightGroup` (
-  `rightGroupId` INT(11)                 NOT NULL,
-  `groupName`    VARCHAR(50)
-                 COLLATE utf8_unicode_ci NOT NULL,
-  `permissions`  TEXT                    NOT NULL
-)
-  ENGINE = InnoDB;
-
---
--- Daten für Tabelle `RightGroup`
---
+  `rightGroupId` INT(11)     NOT NULL,
+  `groupName`    VARCHAR(50) NOT NULL,
+  `permissions`  TEXT        NOT NULL
+) ENGINE = InnoDB;
 
 INSERT INTO `RightGroup` (`rightGroupId`, `groupName`, `permissions`) VALUES
   (1, 'Administrator', 'ALL');
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Session`
---
-
 CREATE TABLE `Session` (
-  `sessionId`        INT(11)                 NOT NULL,
-  `userId`           INT(11)                 NOT NULL,
-  `sessionStartDate` INT(11)                 NOT NULL,
-  `lastActionDate`   INT(11)                 NOT NULL,
-  `isOpen`           INT(11)                 NOT NULL,
-  `sessionLifetime`  INT(11)                 NOT NULL,
-  `sessionKey`       VARCHAR(256)
-                     COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
+  `sessionId`        INT(11)      NOT NULL,
+  `userId`           INT(11)      NOT NULL,
+  `sessionStartDate` BIGINT       NOT NULL,
+  `lastActionDate`   BIGINT       NOT NULL,
+  `isOpen`           TINYINT(4)   NOT NULL,
+  `sessionLifetime`  INT(11)      NOT NULL,
+  `sessionKey`       VARCHAR(256) NOT NULL
+) ENGINE = InnoDB;
 
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `StoredValue`
---
+CREATE TABLE `Speed` (
+  `speedId` INT(11)    NOT NULL,
+  `agentId` INT(11)    NOT NULL,
+  `taskId`  INT(11)    NOT NULL,
+  `speed`   BIGINT(20) NOT NULL,
+  `time`    BIGINT(20) NOT NULL
+) ENGINE=InnoDB;
 
 CREATE TABLE `StoredValue` (
-  `storedValueId` VARCHAR(50)
-                  COLLATE utf8_unicode_ci NOT NULL,
-  `val`           VARCHAR(256)
-                  COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Supertask`
---
+  `storedValueId` VARCHAR(50)  NOT NULL,
+  `val`           VARCHAR(256) NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `Supertask` (
-  `supertaskId`   INT(11)                 NOT NULL,
-  `supertaskName` VARCHAR(50)
-                  COLLATE utf8_unicode_ci NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `SupertaskPretask`
---
+  `supertaskId`   INT(11)     NOT NULL,
+  `supertaskName` VARCHAR(50) NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `SupertaskPretask` (
   `supertaskPretaskId` INT(11) NOT NULL,
   `supertaskId`        INT(11) NOT NULL,
   `pretaskId`          INT(11) NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Task`
---
+) ENGINE = InnoDB;
 
 CREATE TABLE `Task` (
-  `taskId`              INT(11)                 NOT NULL,
-  `taskName`            VARCHAR(256)
-                        COLLATE utf8_unicode_ci NOT NULL,
-  `attackCmd`           VARCHAR(256)
-                        COLLATE utf8_unicode_ci NOT NULL,
-  `chunkTime`           INT(11)                 NOT NULL,
-  `statusTimer`         INT(11)                 NOT NULL,
-  `keyspace`            BIGINT(20)              NOT NULL,
-  `keyspaceProgress`    BIGINT(20)              NOT NULL,
-  `priority`            INT(11)                 NOT NULL,
-  `color`               VARCHAR(20)
-                        COLLATE utf8_unicode_ci NULL,
-  `isSmall`             INT(11)                 NOT NULL,
-  `isCpuTask`           INT(11)                 NOT NULL,
-  `useNewBench`         INT(11)                 NOT NULL,
-  `skipKeyspace`        BIGINT(20)              NOT NULL,
-  `crackerBinaryId`     INT(11) DEFAULT NULL,
-  `crackerBinaryTypeId` INT(11)                 NULL,
-  `taskWrapperId`       INT(11)                 NOT NULL,
-  `isArchived`          INT(11)                 NOT NULL,
-  `isPrince`            INT(11)                 NOT NULL,
-  `notes`               TEXT                    NOT NULL,
-  `staticChunks`        INT(11)                 NOT NULL,
-  `chunkSize`           BIGINT(20)              NOT NULL,
-  `forcePipe`           INT(11)                 NOT NULL
-)
-  ENGINE = InnoDB;
+  `taskId`              INT(11)      NOT NULL,
+  `taskName`            VARCHAR(256) NOT NULL,
+  `attackCmd`           VARCHAR(256) NOT NULL,
+  `chunkTime`           INT(11)      NOT NULL,
+  `statusTimer`         INT(11)      NOT NULL,
+  `keyspace`            BIGINT(20)   NOT NULL,
+  `keyspaceProgress`    BIGINT(20)   NOT NULL,
+  `priority`            INT(11)      NOT NULL,
+  `color`               VARCHAR(20)  NULL,
+  `isSmall`             TINYINT(4)   NOT NULL,
+  `isCpuTask`           TINYINT(4)   NOT NULL,
+  `useNewBench`         TINYINT(4)   NOT NULL,
+  `skipKeyspace`        BIGINT(20)   NOT NULL,
+  `crackerBinaryId`     INT(11)      DEFAULT NULL,
+  `crackerBinaryTypeId` INT(11)      NULL,
+  `taskWrapperId`       INT(11)      NOT NULL,
+  `isArchived`          TINYINT(4)   NOT NULL,
+  `isPrince`            TINYINT(4)   NOT NULL,
+  `notes`               TEXT         NOT NULL,
+  `staticChunks`        INT(11)      NOT NULL,
+  `chunkSize`           BIGINT(20)   NOT NULL,
+  `forcePipe`           TINYINT(4)   NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `TaskDebugOutput` (
-  `taskDebugOutputId` int(11) NOT NULL,
-  `taskId` int(11) NOT NULL,
-  `output` varchar(256) NOT NULL
+  `taskDebugOutputId` INT(11)      NOT NULL,
+  `taskId`            INT(11)      NOT NULL,
+  `output`            VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `TaskWrapper`
---
-
+ 
 CREATE TABLE `TaskWrapper` (
   `taskWrapperId`   INT(11)      NOT NULL,
   `priority`        INT(11)      NOT NULL,
   `taskType`        INT(11)      NOT NULL,
   `hashlistId`      INT(11)      NOT NULL,
-  `accessGroupId`   INT(11) DEFAULT NULL,
+  `accessGroupId`   INT(11)      DEFAULT NULL,
   `taskWrapperName` VARCHAR(100) NOT NULL,
-  `isArchived`      INT(11)      NOT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `User`
---
+  `isArchived`      TINYINT(4)   NOT NULL,
+  `cracked`         INT(11)      NOT NULL
+)ENGINE = InnoDB;
 
 CREATE TABLE `User` (
-  `userId`             INT(11)                 NOT NULL,
-  `username`           VARCHAR(100)
-                       COLLATE utf8_unicode_ci NOT NULL,
-  `email`              VARCHAR(150)
-                       COLLATE utf8_unicode_ci NOT NULL,
-  `passwordHash`       VARCHAR(256)
-                       COLLATE utf8_unicode_ci NOT NULL,
-  `passwordSalt`       VARCHAR(256)
-                       COLLATE utf8_unicode_ci NOT NULL,
-  `isValid`            INT(11)                 NOT NULL,
-  `isComputedPassword` INT(11)                 NOT NULL,
-  `lastLoginDate`      INT(11)                 NOT NULL,
-  `registeredSince`    INT(11)                 NOT NULL,
-  `sessionLifetime`    INT(11)                 NOT NULL,
-  `rightGroupId`       INT(11)                 NOT NULL,
-  `yubikey`            VARCHAR(256)
-                       COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp1`               VARCHAR(256)
-                       COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp2`               VARCHAR(256)
-                       COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp3`               VARCHAR(256)
-                       COLLATE utf8_unicode_ci DEFAULT NULL,
-  `otp4`               VARCHAR(256)
-                       COLLATE utf8_unicode_ci DEFAULT NULL
-)
-  ENGINE = InnoDB;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `Zap`
---
+  `userId`             INT(11)      NOT NULL,
+  `username`           VARCHAR(100) NOT NULL,
+  `email`              VARCHAR(150) NOT NULL,
+  `passwordHash`       VARCHAR(256) NOT NULL,
+  `passwordSalt`       VARCHAR(256) NOT NULL,
+  `isValid`            TINYINT(4)   NOT NULL,
+  `isComputedPassword` TINYINT(4)   NOT NULL,
+  `lastLoginDate`      BIGINT       NOT NULL,
+  `registeredSince`    BIGINT       NOT NULL,
+  `sessionLifetime`    INT(11)      NOT NULL,
+  `rightGroupId`       INT(11)      NOT NULL,
+  `yubikey`            VARCHAR(256) DEFAULT NULL,
+  `otp1`               VARCHAR(256) DEFAULT NULL,
+  `otp2`               VARCHAR(256) DEFAULT NULL,
+  `otp3`               VARCHAR(256) DEFAULT NULL,
+  `otp4`               VARCHAR(256) DEFAULT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
-  `zapId`      INT(11)                 NOT NULL,
-  `hash`       TEXT
-               COLLATE utf8_unicode_ci NOT NULL,
-  `solveTime`  INT(11)                 NOT NULL,
-  `agentId`    INT(11)                 NULL,
-  `hashlistId` INT(11)                 NOT NULL
-)
-  ENGINE = InnoDB;
-
-
+  `zapId`      INT(11) NOT NULL,
+  `hash`       TEXT    NOT NULL,
+  `solveTime`  BIGINT  NOT NULL,
+  `agentId`    INT(11) NULL,
+  `hashlistId` INT(11) NOT NULL
+) ENGINE = InnoDB;
 
 CREATE TABLE `ApiKey` (
-  `apiKeyId` int(11) NOT NULL,
-  `startValid` bigint(20) NOT NULL,
-  `endValid` bigint(20) NOT NULL,
-  `accessKey` varchar(256) NOT NULL,
-  `accessCount` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
-  `apiGroupId` int(11) NOT NULL
+  `apiKeyId`    INT(11)      NOT NULL,
+  `startValid`  BIGINT(20)   NOT NULL,
+  `endValid`    BIGINT(20)   NOT NULL,
+  `accessKey`   VARCHAR(256) NOT NULL,
+  `accessCount` INT(11)      NOT NULL,
+  `userId`      INT(11)      NOT NULL,
+  `apiGroupId`  INT(11)      NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `ApiGroup` (
-  `apiGroupId` int(11) NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `permissions` text NOT NULL
+  `apiGroupId`  INT(11)      NOT NULL,
+  `name`        VARCHAR(100) NOT NULL,
+  `permissions` TEXT         NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `FileDownload` (
-  `fileDownloadId` int(11) NOT NULL,
-  `time` int(11) NOT NULL,
-  `fileId` int(11) NOT NULL,
-  `status` int(11) NOT NULL
+  `fileDownloadId` INT(11) NOT NULL,
+  `time`           BIGINT  NOT NULL,
+  `fileId`         INT(11) NOT NULL,
+  `status`         INT(11) NOT NULL
 ) ENGINE=InnoDB;
 
-INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) VALUES (1, 'Administrators', 'ALL');
+INSERT INTO `ApiGroup` ( `apiGroupId`, `name`, `permissions`) VALUES
+  (1, 'Administrators', 'ALL');
 
 CREATE TABLE `HealthCheck` (
-  `healthCheckId` int(11) NOT NULL,
-  `time` bigint(20) NOT NULL,
-  `status` int(11) NOT NULL,
-  `checkType` int(11) NOT NULL,
-  `hashtypeId` int(11) NOT NULL,
-  `crackerBinaryId` int(11) NOT NULL,
-  `expectedCracks` int(11) NOT NULL,
-  `attackCmd` VARCHAR(256) NOT NULL
+  `healthCheckId`   INT(11)      NOT NULL,
+  `time`            BIGINT(20)   NOT NULL,
+  `status`          INT(11)      NOT NULL,
+  `checkType`       INT(11)      NOT NULL,
+  `hashtypeId`      INT(11)      NOT NULL,
+  `crackerBinaryId` INT(11)      NOT NULL,
+  `expectedCracks`  INT(11)      NOT NULL,
+  `attackCmd`       VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `HealthCheckAgent` (
-  `healthCheckAgentId` int(11) NOT NULL,
-  `healthCheckId` int(11) NOT NULL,
-  `agentId` int(11) NOT NULL,
-  `status` int(11) NOT NULL,
-  `cracked` int(11) NOT NULL,
-  `numGpus` int(11) NOT NULL,
-  `start` bigint(20) NOT NULL,
-  `end` bigint(20) NOT NULL,
-  `errors` text COLLATE utf8_bin NOT NULL
+  `healthCheckAgentId` INT(11)    NOT NULL,
+  `healthCheckId`      INT(11)    NOT NULL,
+  `agentId`            INT(11)    NOT NULL,
+  `status`             INT(11)    NOT NULL,
+  `cracked`            INT(11)    NOT NULL,
+  `numGpus`            INT(11)    NOT NULL,
+  `start`              BIGINT(20) NOT NULL,
+  `end`                BIGINT(20) NOT NULL,
+  `errors`             TEXT       NOT NULL
 ) ENGINE=InnoDB;
 
---
--- Indexes for table `ApiKey`
---
+-- Add Indexes
+ALTER TABLE `AccessGroup`
+  ADD PRIMARY KEY (`accessGroupId`);
+
+ALTER TABLE `AccessGroupAgent`
+  ADD PRIMARY KEY (`accessGroupAgentId`),
+  ADD KEY `accessGroupId` (`accessGroupId`),
+  ADD KEY `agentId` (`agentId`);
+
+ALTER TABLE `AccessGroupUser`
+  ADD PRIMARY KEY (`accessGroupUserId`),
+  ADD KEY `accessGroupId` (`accessGroupId`),
+  ADD KEY `userId` (`userId`);
+
+ALTER TABLE `Agent`
+  ADD PRIMARY KEY (`agentId`),
+  ADD KEY `userId` (`userId`);
+
+ALTER TABLE `AgentBinary`
+  ADD PRIMARY KEY (`agentBinaryId`);
+
+ALTER TABLE `AgentError`
+  ADD PRIMARY KEY (`agentErrorId`),
+  ADD KEY `agentId` (`agentId`),
+  ADD KEY `taskId` (`taskId`);
+
+ALTER TABLE `AgentStat`
+  ADD PRIMARY KEY (`agentStatId`),
+  ADD KEY `agentId` (`agentId`);
+
+ALTER TABLE `AgentZap`
+  ADD PRIMARY KEY (`agentZapId`),
+  ADD KEY `agentId` (`agentId`),
+  ADD KEY `lastZapId` (`lastZapId`);
+
 ALTER TABLE `ApiKey`
   ADD PRIMARY KEY (`apiKeyId`);
 
 ALTER TABLE `ApiGroup`
   ADD PRIMARY KEY (`apiGroupId`);
 
-ALTER TABLE `FileDownload`
-  ADD PRIMARY KEY (`fileDownloadId`);
-
-ALTER TABLE `HealthCheck` 
-  ADD PRIMARY KEY (`healthCheckId`);
-
-ALTER TABLE `HealthCheckAgent` 
-  ADD PRIMARY KEY (`healthCheckAgentId`);
-
-
-ALTER TABLE `FileDelete`
-  ADD PRIMARY KEY (`fileDeleteId`);
-
---
--- Indizes der exportierten Tabellen
---
-
---
--- Indizes für die Tabelle `AccessGroup`
---
-ALTER TABLE `AccessGroup`
-  ADD PRIMARY KEY (`accessGroupId`);
-
---
--- Indizes für die Tabelle `AccessGroupAgent`
---
-ALTER TABLE `AccessGroupAgent`
-  ADD PRIMARY KEY (`accessGroupAgentId`),
-  ADD KEY `accessGroupId` (`accessGroupId`),
-  ADD KEY `agentId` (`agentId`);
-
---
--- Indizes für die Tabelle `AccessGroupUser`
---
-ALTER TABLE `AccessGroupUser`
-  ADD PRIMARY KEY (`accessGroupUserId`),
-  ADD KEY `accessGroupId` (`accessGroupId`),
-  ADD KEY `userId` (`userId`);
-
---
--- Indizes für die Tabelle `Agent`
---
-ALTER TABLE `Agent`
-  ADD PRIMARY KEY (`agentId`),
-  ADD KEY `userId` (`userId`);
-
---
--- Indizes für die Tabelle `AgentBinary`
---
-ALTER TABLE `AgentBinary`
-  ADD PRIMARY KEY (`agentBinaryId`);
-
---
--- Indizes für die Tabelle `AgentError`
---
-ALTER TABLE `AgentError`
-  ADD PRIMARY KEY (`agentErrorId`),
-  ADD KEY `agentId` (`agentId`),
-  ADD KEY `taskId` (`taskId`);
-
---
--- Indizes für die Tabelle `AgentStat`
---
-ALTER TABLE `AgentStat`
-  ADD PRIMARY KEY (`agentStatId`),
-  ADD KEY `agentId` (`agentId`);
-
---
--- Indizes für die Tabelle `AgentZap`
---
-ALTER TABLE `AgentZap`
-  ADD PRIMARY KEY (`agentZapId`),
-  ADD KEY `agentId` (`agentId`),
-  ADD KEY `lastZapId` (`lastZapId`);
-
---
--- Indizes für die Tabelle `Assignment`
---
 ALTER TABLE `Assignment`
   ADD PRIMARY KEY (`assignmentId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `Chunk`
---
 ALTER TABLE `Chunk`
   ADD PRIMARY KEY (`chunkId`),
   ADD KEY `taskId` (`taskId`),
   ADD KEY `agentId` (`agentId`);
 
---
--- Indizes für die Tabelle `Config`
---
 ALTER TABLE `Config`
   ADD PRIMARY KEY (`configId`),
   ADD KEY `configSectionId` (`configSectionId`);
 
---
--- Indizes für die Tabelle `ConfigSection`
---
 ALTER TABLE `ConfigSection`
   ADD PRIMARY KEY (`configSectionId`);
 
---
--- Indizes für die Tabelle `CrackerBinary`
---
 ALTER TABLE `CrackerBinary`
   ADD PRIMARY KEY (`crackerBinaryId`),
   ADD KEY `crackerBinaryTypeId` (`crackerBinaryTypeId`);
 
---
--- Indizes für die Tabelle `CrackerBinaryType`
---
 ALTER TABLE `CrackerBinaryType`
   ADD PRIMARY KEY (`crackerBinaryTypeId`);
 
---
--- Indizes für die Tabelle `File`
---
 ALTER TABLE `File`
   ADD PRIMARY KEY (`fileId`);
 
---
--- Indizes für die Tabelle `FilePretask`
---
+ALTER TABLE `FileDownload`
+  ADD PRIMARY KEY (`fileDownloadId`);
+
+ALTER TABLE `FileDelete`
+  ADD PRIMARY KEY (`fileDeleteId`);
+
 ALTER TABLE `FilePretask`
   ADD PRIMARY KEY (`filePretaskId`),
   ADD KEY `fileId` (`fileId`),
   ADD KEY `pretaskId` (`pretaskId`);
 
---
--- Indizes für die Tabelle `FileTask`
---
 ALTER TABLE `FileTask`
   ADD PRIMARY KEY (`fileTaskId`),
   ADD KEY `fileId` (`fileId`),
   ADD KEY `taskId` (`taskId`);
 
---
--- Indizes für die Tabelle `Hash`
---
 ALTER TABLE `Hash`
   ADD PRIMARY KEY (`hashId`),
   ADD KEY `hashlistId` (`hashlistId`),
@@ -1199,96 +822,63 @@ ALTER TABLE `Hash`
   ADD KEY `isCracked` (`isCracked`),
   ADD KEY `hash` (`hash`(500));
 
---
--- Indizes für die Tabelle `HashBinary`
---
 ALTER TABLE `HashBinary`
   ADD PRIMARY KEY (`hashBinaryId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `chunkId` (`chunkId`);
 
---
--- Indizes für die Tabelle `Hashlist`
---
 ALTER TABLE `Hashlist`
   ADD PRIMARY KEY (`hashlistId`),
   ADD KEY `hashTypeId` (`hashTypeId`);
 
---
--- Indizes für die Tabelle `HashlistHashlist`
---
 ALTER TABLE `HashlistHashlist`
   ADD PRIMARY KEY (`hashlistHashlistId`),
   ADD KEY `parentHashlistId` (`parentHashlistId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
---
--- Indizes für die Tabelle `HashType`
---
 ALTER TABLE `HashType`
   ADD PRIMARY KEY (`hashTypeId`);
 
---
--- Indizes für die Tabelle `LogEntry`
---
+ALTER TABLE `HealthCheck` 
+  ADD PRIMARY KEY (`healthCheckId`);
+
+ALTER TABLE `HealthCheckAgent` 
+  ADD PRIMARY KEY (`healthCheckAgentId`);
+
 ALTER TABLE `LogEntry`
   ADD PRIMARY KEY (`logEntryId`);
 
---
--- Indizes für die Tabelle `NotificationSetting`
---
 ALTER TABLE `NotificationSetting`
   ADD PRIMARY KEY (`notificationSettingId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `Pretask`
---
 ALTER TABLE `Pretask`
   ADD PRIMARY KEY (`pretaskId`);
 
---
--- Indizes für die Tabelle `RegVoucher`
---
 ALTER TABLE `RegVoucher`
   ADD PRIMARY KEY (`regVoucherId`);
 
---
--- Indizes für die Tabelle `RightGroup`
---
 ALTER TABLE `RightGroup`
   ADD PRIMARY KEY (`rightGroupId`);
 
---
--- Indizes für die Tabelle `Session`
---
 ALTER TABLE `Session`
   ADD PRIMARY KEY (`sessionId`),
   ADD KEY `userId` (`userId`);
 
---
--- Indizes für die Tabelle `StoredValue`
---
+ALTER TABLE `Speed`
+  ADD PRIMARY KEY (`speedId`);
+
 ALTER TABLE `StoredValue`
   ADD PRIMARY KEY (`storedValueId`);
 
---
--- Indizes für die Tabelle `Supertask`
---
 ALTER TABLE `Supertask`
   ADD PRIMARY KEY (`supertaskId`);
 
---
--- Indizes für die Tabelle `SupertaskPretask`
---
 ALTER TABLE `SupertaskPretask`
   ADD PRIMARY KEY (`supertaskPretaskId`),
   ADD KEY `supertaskId` (`supertaskId`),
   ADD KEY `pretaskId` (`pretaskId`);
 
---
--- Indizes für die Tabelle `Task`
---
 ALTER TABLE `Task`
   ADD PRIMARY KEY (`taskId`),
   ADD KEY `crackerBinaryId` (`crackerBinaryId`);
@@ -1296,33 +886,46 @@ ALTER TABLE `Task`
 ALTER TABLE `TaskDebugOutput`
   ADD PRIMARY KEY (`taskDebugOutputId`);
 
---
--- Indizes für die Tabelle `TaskWrapper`
---
 ALTER TABLE `TaskWrapper`
   ADD PRIMARY KEY (`taskWrapperId`),
   ADD KEY `hashlistId` (`hashlistId`),
   ADD KEY `accessGroupId` (`accessGroupId`);
 
---
--- Indizes für die Tabelle `User`
---
 ALTER TABLE `User`
   ADD PRIMARY KEY (`userId`),
   ADD UNIQUE KEY `username` (`username`),
   ADD KEY `rightGroupId` (`rightGroupId`);
 
---
--- Indizes für die Tabelle `Zap`
---
 ALTER TABLE `Zap`
   ADD PRIMARY KEY (`zapId`),
   ADD KEY `agentId` (`agentId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
---
--- AUTO_INCREMENT für exportierte Tabellen
---
+-- Add AUTO_INCREMENT for tables
+ALTER TABLE `AccessGroup`
+  MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `AccessGroupAgent`
+  MODIFY `accessGroupAgentId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `AccessGroupUser`
+  MODIFY `accessGroupUserId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Agent`
+  MODIFY `agentId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `AgentBinary`
+  MODIFY `agentBinaryId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
+
+ALTER TABLE `AgentError`
+  MODIFY `agentErrorId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `AgentStat`
+  MODIFY `agentStatId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `AgentZap`
+  MODIFY `agentZapId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `ApiKey`
   MODIFY `apiKeyId` int(11) NOT NULL AUTO_INCREMENT;
@@ -1330,348 +933,216 @@ ALTER TABLE `ApiKey`
 ALTER TABLE `ApiGroup`
   MODIFY `apiGroupId` int(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `Assignment`
+  MODIFY `assignmentId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Chunk`
+  MODIFY `chunkId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Config`
+  MODIFY `configId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 72;
+
+ALTER TABLE `ConfigSection`
+  MODIFY `configSectionId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 8;
+
+ALTER TABLE `CrackerBinary`
+  MODIFY `crackerBinaryId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
+
+ALTER TABLE `CrackerBinaryType`
+  MODIFY `crackerBinaryTypeId` INT(11) NOT NULL AUTO_INCREMENT,
+  AUTO_INCREMENT = 2;
+
+ALTER TABLE `File`
+  MODIFY `fileId` INT(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `FileDownload`
   MODIFY `fileDownloadId` int(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `FileDelete`
   MODIFY `fileDeleteId` int(11) NOT NULL AUTO_INCREMENT;
 
-
---
--- AUTO_INCREMENT für Tabelle `AccessGroup`
---
-ALTER TABLE `AccessGroup`
-  MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AccessGroupAgent`
---
-ALTER TABLE `AccessGroupAgent`
-  MODIFY `accessGroupAgentId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AccessGroupUser`
---
-ALTER TABLE `AccessGroupUser`
-  MODIFY `accessGroupUserId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Agent`
---
-ALTER TABLE `Agent`
-  MODIFY `agentId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AgentBinary`
---
-ALTER TABLE `AgentBinary`
-  MODIFY `agentBinaryId` INT(11) NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 3;
---
--- AUTO_INCREMENT für Tabelle `AgentError`
---
-ALTER TABLE `AgentError`
-  MODIFY `agentErrorId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AgentStat`
---
-ALTER TABLE `AgentStat`
-  MODIFY `agentStatId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `AgentZap`
---
-ALTER TABLE `AgentZap`
-  MODIFY `agentZapId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Assignment`
---
-ALTER TABLE `Assignment`
-  MODIFY `assignmentId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Chunk`
---
-ALTER TABLE `Chunk`
-  MODIFY `chunkId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Config`
---
-ALTER TABLE `Config`
-  MODIFY `configId` INT(11) NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 22;
---
--- AUTO_INCREMENT für Tabelle `ConfigSection`
---
-ALTER TABLE `ConfigSection`
-  MODIFY `configSectionId` INT(11) NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 5;
---
--- AUTO_INCREMENT für Tabelle `CrackerBinary`
---
-ALTER TABLE `CrackerBinary`
-  MODIFY `crackerBinaryId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `CrackerBinaryType`
---
-ALTER TABLE `CrackerBinaryType`
-  MODIFY `crackerBinaryTypeId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `File`
---
-ALTER TABLE `File`
-  MODIFY `fileId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `FilePretask`
---
 ALTER TABLE `FilePretask`
   MODIFY `filePretaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `FileTask`
---
+
 ALTER TABLE `FileTask`
   MODIFY `fileTaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Hash`
---
+
 ALTER TABLE `Hash`
   MODIFY `hashId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashBinary`
---
+
 ALTER TABLE `HashBinary`
   MODIFY `hashBinaryId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Hashlist`
---
+
 ALTER TABLE `Hashlist`
   MODIFY `hashlistId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `HashlistHashlist`
---
+
 ALTER TABLE `HashlistHashlist`
   MODIFY `hashlistHashlistId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `LogEntry`
---
+
+ALTER TABLE `HealthCheck` 
+  MODIFY `healthCheckId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `HealthCheckAgent` 
+  MODIFY `healthCheckAgentId` INT(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `LogEntry`
   MODIFY `logEntryId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `NotificationSetting`
---
+
 ALTER TABLE `NotificationSetting`
   MODIFY `notificationSettingId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Pretask`
---
+
 ALTER TABLE `Pretask`
   MODIFY `pretaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `RegVoucher`
---
+
 ALTER TABLE `RegVoucher`
   MODIFY `regVoucherId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `RightGroup`
---
+
 ALTER TABLE `RightGroup`
   MODIFY `rightGroupId` INT(11) NOT NULL AUTO_INCREMENT,
-  AUTO_INCREMENT = 6;
---
--- AUTO_INCREMENT für Tabelle `Session`
---
+  AUTO_INCREMENT = 2;
+
 ALTER TABLE `Session`
   MODIFY `sessionId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Supertask`
---
+
+ALTER TABLE `Speed`
+  MODIFY `speedId` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `Supertask`
   MODIFY `supertaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `SupertaskPretask`
---
+
 ALTER TABLE `SupertaskPretask`
   MODIFY `supertaskPretaskId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Task`
---
+
 ALTER TABLE `Task`
   MODIFY `taskId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `TaskDebugOutput`
-  MODIFY `taskDebugOutputId` int(11) NOT NULL AUTO_INCREMENT;
-  
---
--- AUTO_INCREMENT für Tabelle `TaskWrapper`
---
+  MODIFY `taskDebugOutputId` INT(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `TaskWrapper`
   MODIFY `taskWrapperId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `User`
---
+
 ALTER TABLE `User`
   MODIFY `userId` INT(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT für Tabelle `Zap`
---
+
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `HealthCheck` 
-  MODIFY `healthCheckId` int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `HealthCheckAgent` 
-  MODIFY `healthCheckAgentId` int(11) NOT NULL AUTO_INCREMENT;
-
-
---
--- Constraints der exportierten Tabellen
---
-
---
--- Constraints der Tabelle `AccessGroupAgent`
---
+-- Add Constraints
 ALTER TABLE `AccessGroupAgent`
   ADD CONSTRAINT `AccessGroupAgent_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
-  ADD CONSTRAINT `AccessGroupAgent_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
+  ADD CONSTRAINT `AccessGroupAgent_ibfk_2` FOREIGN KEY (`agentId`)       REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `AccessGroupUser`
---
 ALTER TABLE `AccessGroupUser`
   ADD CONSTRAINT `AccessGroupUser_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
-  ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+  ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`)        REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `Agent`
---
 ALTER TABLE `Agent`
   ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `AgentError`
---
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `AgentError_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
-  ADD CONSTRAINT `AgentError_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
+  ADD CONSTRAINT `AgentError_ibfk_2` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`);
 
---
--- Constraints der Tabelle `AgentStat`
---
 ALTER TABLE `AgentStat`
   ADD CONSTRAINT `AgentStat_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `AgentZap`
---
 ALTER TABLE `AgentZap`
-  ADD CONSTRAINT `AgentZap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `AgentZap_ibfk_1` FOREIGN KEY (`agentId`)   REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `AgentZap_ibfk_2` FOREIGN KEY (`lastZapId`) REFERENCES `Zap` (`zapId`);
 
---
--- Constraints der Tabelle `Assignment`
---
+ALTER TABLE `ApiKey`
+  ADD CONSTRAINT `ApiKey_ibfk_1` FOREIGN KEY (`userId`)     REFERENCES `User` (`userId`),
+  ADD CONSTRAINT `ApiKey_ibfk_2` FOREIGN KEY (`apiGroupId`) REFERENCES `ApiGroup` (`apiGroupId`);
+
 ALTER TABLE `Assignment`
-  ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Assignment_ibfk_1` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Assignment_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `Chunk`
---
 ALTER TABLE `Chunk`
-  ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`),
+  ADD CONSTRAINT `Chunk_ibfk_1` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`),
   ADD CONSTRAINT `Chunk_ibfk_2` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`);
 
---
--- Constraints der Tabelle `Config`
---
 ALTER TABLE `Config`
   ADD CONSTRAINT `Config_ibfk_1` FOREIGN KEY (`configSectionId`) REFERENCES `ConfigSection` (`configSectionId`);
 
---
--- Constraints der Tabelle `CrackerBinary`
---
 ALTER TABLE `CrackerBinary`
   ADD CONSTRAINT `CrackerBinary_ibfk_1` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`);
 
---
--- Constraints der Tabelle `FilePretask`
---
+ALTER TABLE `File`
+  ADD CONSTRAINT `File_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
+
+ALTER TABLE `FileDownload`
+  ADD CONSTRAINT `FileDownload_ibkf_1` FOREIGN KEY (`fileId`) REFERENCES `File`(`fileId`);
+
 ALTER TABLE `FilePretask`
-  ADD CONSTRAINT `FilePretask_ibfk_1` FOREIGN KEY (`fileId`) REFERENCES `File` (`fileId`),
+  ADD CONSTRAINT `FilePretask_ibfk_1` FOREIGN KEY (`fileId`)    REFERENCES `File` (`fileId`),
   ADD CONSTRAINT `FilePretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);
 
---
--- Constraints der Tabelle `FileTask`
---
 ALTER TABLE `FileTask`
   ADD CONSTRAINT `FileTask_ibfk_1` FOREIGN KEY (`fileId`) REFERENCES `File` (`fileId`),
   ADD CONSTRAINT `FileTask_ibfk_2` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
 
---
--- Constraints der Tabelle `Hash`
---
 ALTER TABLE `Hash`
   ADD CONSTRAINT `Hash_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
+  ADD CONSTRAINT `Hash_ibfk_2` FOREIGN KEY (`chunkId`)    REFERENCES `Chunk` (`chunkId`);
 
---
--- Constraints der Tabelle `HashBinary`
---
 ALTER TABLE `HashBinary`
   ADD CONSTRAINT `HashBinary_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`) REFERENCES `Chunk` (`chunkId`);
+  ADD CONSTRAINT `HashBinary_ibfk_2` FOREIGN KEY (`chunkId`)    REFERENCES `Chunk` (`chunkId`);
 
---
--- Constraints der Tabelle `Hashlist`
---
 ALTER TABLE `Hashlist`
-  ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`) REFERENCES `HashType` (`hashTypeId`);
+  ADD CONSTRAINT `Hashlist_ibfk_1` FOREIGN KEY (`hashTypeId`)    REFERENCES `HashType` (`hashTypeId`),
+  ADD CONSTRAINT `Hashlist_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
 
---
--- Constraints der Tabelle `HashlistHashlist`
---
 ALTER TABLE `HashlistHashlist`
   ADD CONSTRAINT `HashlistHashlist_ibfk_1` FOREIGN KEY (`parentHashlistId`) REFERENCES `Hashlist` (`hashlistId`),
-  ADD CONSTRAINT `HashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
+  ADD CONSTRAINT `HashlistHashlist_ibfk_2` FOREIGN KEY (`hashlistId`)       REFERENCES `Hashlist` (`hashlistId`);
 
---
--- Constraints der Tabelle `NotificationSetting`
---
+ALTER TABLE `HealthCheck`
+  ADD CONSTRAINT `HealthCheck_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
+
+ALTER TABLE `HealthCheckAgent`
+  ADD CONSTRAINT `HealthCheckAgent_ibfk_1` FOREIGN KEY (`agentId`)       REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `HealthCheckAgent_ibfk_2` FOREIGN KEY (`healthCheckId`) REFERENCES `HealthCheck` (`healthCheckId`);
+
 ALTER TABLE `NotificationSetting`
   ADD CONSTRAINT `NotificationSetting_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `Session`
---
+ALTER TABLE `Pretask`
+  ADD CONSTRAINT `Pretask_ibfk_1` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`);
+
 ALTER TABLE `Session`
   ADD CONSTRAINT `Session_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
 
---
--- Constraints der Tabelle `SupertaskPretask`
---
+ALTER TABLE `Speed`
+  ADD CONSTRAINT `Speed_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Speed_ibfk_2` FOREIGN KEY (`taskId`)  REFERENCES `Task` (`taskId`);
+
 ALTER TABLE `SupertaskPretask`
   ADD CONSTRAINT `SupertaskPretask_ibfk_1` FOREIGN KEY (`supertaskId`) REFERENCES `Supertask` (`supertaskId`),
-  ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`) REFERENCES `Pretask` (`pretaskId`);
+  ADD CONSTRAINT `SupertaskPretask_ibfk_2` FOREIGN KEY (`pretaskId`)   REFERENCES `Pretask` (`pretaskId`);
 
---
--- Constraints der Tabelle `Task`
---
 ALTER TABLE `Task`
-  ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
+  ADD CONSTRAINT `Task_ibfk_1` FOREIGN KEY (`crackerBinaryId`)     REFERENCES `CrackerBinary` (`crackerBinaryId`),
+  ADD CONSTRAINT `Task_ibfk_2` FOREIGN KEY (`crackerBinaryTypeId`) REFERENCES `CrackerBinaryType` (`crackerBinaryTypeId`),
+  ADD CONSTRAINT `Task_ibfk_3` FOREIGN KEY (`taskWrapperId`)       REFERENCES `TaskWrapper` (`taskWrapperId`);
 
---
--- Constraints der Tabelle `TaskWrapper`
---
+ALTER TABLE `TaskDebugOutput`
+  ADD CONSTRAINT `TaskDebugOutput_ibfk_1` FOREIGN KEY (`taskId`) REFERENCES `Task` (`taskId`);
+
 ALTER TABLE `TaskWrapper`
-  ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`),
+  ADD CONSTRAINT `TaskWrapper_ibfk_1` FOREIGN KEY (`hashlistId`)    REFERENCES `Hashlist` (`hashlistId`),
   ADD CONSTRAINT `TaskWrapper_ibfk_2` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`);
 
---
--- Constraints der Tabelle `User`
---
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
 
---
--- Constraints der Tabelle `Zap`
---
 ALTER TABLE `Zap`
-  ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
+  ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`)    REFERENCES `Agent` (`agentId`),
   ADD CONSTRAINT `Zap_ibfk_2` FOREIGN KEY (`hashlistId`) REFERENCES `Hashlist` (`hashlistId`);
 
 /*!40101 SET CHARACTER_SET_CLIENT = @OLD_CHARACTER_SET_CLIENT */;

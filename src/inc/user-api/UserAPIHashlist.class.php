@@ -212,7 +212,8 @@ class UserAPIHashlist extends UserAPIBasic {
       UQueryHashlist::HASHLIST_FORMAT,
       UQueryHashlist::HASHLIST_HASHTYPE_ID,
       UQueryHashlist::HASHLIST_ACCESS_GROUP_ID,
-      UQueryHashlist::HASHLIST_DATA
+      UQueryHashlist::HASHLIST_DATA,
+      UQueryHashlist::HASHLIST_USE_BRAIN
     ];
     foreach ($toCheck as $input) {
       if (!isset($QUERY[$input])) {
@@ -232,7 +233,9 @@ class UserAPIHashlist extends UserAPIBasic {
       "paste",
       ['hashfield' => base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA])],
       [],
-      $this->user
+      $this->user, 
+      $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
+      $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
     );
     $this->sendSuccessResponse($QUERY);
   }
@@ -264,7 +267,8 @@ class UserAPIHashlist extends UserAPIBasic {
       UResponseHashlist::HASHLIST_SALTED => ($hashlist->getIsSalted() == 1) ? true : false,
       UResponseHashlist::HASHLIST_SECRET => ($hashlist->getIsSecret() == 1) ? true : false,
       UResponseHashlist::HASHLIST_SALT_SEPARATOR => $hashlist->getSaltSeparator(),
-      UResponseHashlist::HASHLIST_NOTES => $hashlist->getNotes()
+      UResponseHashlist::HASHLIST_NOTES => $hashlist->getNotes(),
+      UResponseHashlist::HASHLIST_BRAIN => ($hashlist->getBrainId())? true : false
     ];
     $this->sendResponse($response);
   }

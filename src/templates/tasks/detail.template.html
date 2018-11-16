@@ -218,7 +218,7 @@
         <tr>
           <td>Keyspace dispatched:</td>
           <td>
-            [[task.getKeyspaceProgress()]] ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%)
+            [[task.getKeyspaceProgress()]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%){{ENDIF}}
             {{IF [[isActive]] == 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
               <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
                 <input type="hidden" name="action" value="[[$DTaskAction::PURGE_TASK]]">
@@ -232,8 +232,8 @@
         <tr>
           <td>Keyspace searched:</td>
           <td>
-            {{IF [[task.getKeyspace()]] > 0}}
-              [[cProgress]] ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%)
+            {{IF [[task.getKeyspace()]] > 0 || ([[task.getIsPrince()]] && [[cProgress]] > 0)}}
+              [[cProgress]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%){{ENDIF}}
             {{ELSE}}
               N/A
             {{ENDIF}}
@@ -281,20 +281,22 @@
             {{ENDIF}}
           </td>
         </tr>
-      </table>
+        {{IF [[task.getKeyspace()]] >= 0}}
+        </table>
+      </div>
     </div>
-  </div>
-  <div class="card">
-    <div class="table-responsive">
-      <table class="table table-bordered">
-        <tr>
-          <td>Visual representation</td>
-        </tr>
-        <tr>
-          <td>
-            <img class='img-fluid' style="height: 32px" src="api/taskimg.php?task=[[task.getId()]]&x=1500&y=32">
-          </td>
-        </tr>
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <tr>
+            <td>Visual representation</td>
+          </tr>
+          <tr>
+            <td>
+              <img class='img-fluid' style="height: 32px" src="api/taskimg.php?task=[[task.getId()]]&x=1500&y=32">
+            </td>
+          </tr>
+        {{ENDIF}}
       {{ENDIF}}
     </table>
   </div>
@@ -330,6 +332,77 @@
       </table>
     </div>
   </div>
+{{ENDIF}}
+{{IF [[taskGraph]] > 0}}
+  <h3>Task Speed</h3>
+  <div class="row">
+    <div class="col col-12">
+      <canvas id="taskSpeed"></canvas>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    var config = {
+      type: 'line',
+      data: {
+        labels: [[taskSpeedXLabels]],
+        datasets: [[taskSpeed]]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        tooltips: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function (tooltipItem, data) {
+              var dataLabel = data.labels[tooltipItem.index];
+              var value = ': ' + data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toLocaleString();
+              
+              if (Chart.helpers.isArray(dataLabel)) {
+                dataLabel = dataLabel.slice();
+                dataLabel[0] += value;
+              } else {
+                dataLabel += value;
+              }
+              return dataLabel;
+            }
+          },
+        },
+        hover: {
+            mode: 'nearest',
+            intersect: true
+        },
+        scales: {
+          xAxes: [{
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'Time'
+            }
+          }],
+          yAxes: [{
+            display: true,
+            scaleLabel: {
+              display: true,
+              labelString: 'H/s'
+            },
+            ticks: {
+              beginAtZero: true,
+              callback: function(value, index, values) {
+                return value.toLocaleString();
+              }
+            }
+          }]
+        }
+      }
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById('taskSpeed').getContext('2d');
+        window.myLine = new Chart(ctx, config);
+    };
+  </script>
 {{ENDIF}}
 <h3>Assigned agents</h3>
 <div class="card">
@@ -564,7 +637,11 @@
             {{ENDIF}}
           </td>
           <td class="num">
-            [[Util::showperc([[chunk.getProgress()]], 10000)]]%
+            {{IF [[chunk.getProgress()]] == null}}
+              N/A
+            {{ELSE}}
+              [[Util::showperc([[chunk.getProgress()]], 10000)]]%
+            {{ENDIF}}
           </td>
           <td>
             {{IF ![[chunk.getAgentId()]]}}

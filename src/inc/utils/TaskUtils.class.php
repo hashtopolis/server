@@ -23,6 +23,7 @@ use DBA\Hashlist;
 use DBA\AccessGroupUser;
 use DBA\TaskDebugOutput;
 use DBA\Factory;
+use DBA\Speed;
 
 class TaskUtils {
   /**
@@ -436,8 +437,9 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
+    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
     $chunk->setState(0);
-    $chunk->setProgress(0);
+    $chunk->setProgress($initialProgress);
     $chunk->setCheckpoint($chunk->getSkip());
     $chunk->setDispatchTime(0);
     $chunk->setSolveTime(0);
@@ -678,7 +680,7 @@ class TaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0);
+    $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     $task = new Task(
@@ -745,8 +747,8 @@ class TaskUtils {
       for ($j = $i; $j < $i + $linesPerFile && $j < sizeof($content); $j++) {
         $copy[] = $content[$j];
       }
-      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy));
-      $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
+      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy). "\n");
+      $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
@@ -760,7 +762,7 @@ class TaskUtils {
     }
     
     // create new tasks as supertask
-    $newWrapper = new TaskWrapper(null, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName(), 0);
+    $newWrapper = new TaskWrapper(null, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName() . " (From Rule Split)", 0, 0);
     $newWrapper = Factory::getTaskWrapperFactory()->save($newWrapper);
     $prio = sizeof($newFiles) + 1;
     foreach ($newFiles as $newFile) {
@@ -930,6 +932,8 @@ class TaskUtils {
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
     $qF = new QueryFilter(TaskDebugOutput::TASK_ID, $task->getId(), "=");
     Factory::getTaskDebugOutputFactory()->massDeletion([Factory::FILTER => $qF]);
+    $qF = new QueryFilter(Speed::TASK_ID, $task->getId(), "=");
+    Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
     
     // test if this task used temporary files
     $qF = new QueryFilter(FileTask::TASK_ID, $task->getId(), "=", Factory::getFileTaskFactory());

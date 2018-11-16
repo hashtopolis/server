@@ -14,6 +14,8 @@ use DBA\QueryFilterWithNull;
 use DBA\TaskDebugOutput;
 use DBA\AgentStat;
 use DBA\Factory;
+use DBA\TaskWrapper;
+use DBA\Speed;
 
 class APISendProgress extends APIBasic {
   public function execute($QUERY = array()) {
@@ -129,7 +131,9 @@ class APISendProgress extends APIBasic {
     /*
      * Save chunk updates
      */
-    $chunk->setProgress($relativeProgress);
+    if(!$task->getIsPrince() && !$task->getForcePipe()){
+      $chunk->setProgress($relativeProgress);
+    }
     $chunk->setCheckpoint($keyspaceProgress);
     $chunk->setSolveTime(time());
     $aborting = false;
@@ -313,6 +317,8 @@ class APISendProgress extends APIBasic {
       $incompleteFilter = new QueryFilter(Chunk::PROGRESS, 10000, "<");
       $taskFilter = new QueryFilter(Chunk::TASK_ID, $taskID, "=");
       $count = Factory::getChunkFactory()->countFilter([Factory::FILTER => [$incompleteFilter, $taskFilter]]);
+      $incompleteFilter = new QueryFilter(Chunk::PROGRESS, null, "=");
+      $count += Factory::getChunkFactory()->countFilter([Factory::FILTER => [$incompleteFilter, $taskFilter]]);
       if ($count == 0) {
         // this was the last incomplete chunk!
         $taskdone = true;
@@ -347,6 +353,8 @@ class APISendProgress extends APIBasic {
     if ($sumCracked > 0) {
       $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $this->agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $totalHashlist));
       NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
+
+      Factory::getTaskWrapperFactory()->inc($taskWrapper, TaskWrapper::CRACKED, $sumCracked);
     }
     
     if ($aborting) {
@@ -426,6 +434,12 @@ class APISendProgress extends APIBasic {
         }
         $chunk->setSpeed($speed);
         Factory::getChunkFactory()->update($chunk);
+
+        // save speed in history
+        if($speed > 0){
+          $s = new Speed(null, $this->agent->getId(), $task->getId(), $speed, time());
+          Factory::getSpeedFactory()->save($s);
+        }
         
         $qF = new QueryFilter(AgentZap::AGENT_ID, $this->agent->getId(), "=");
         $agentZap = Factory::getAgentZapFactory()->filter([Factory::FILTER => $qF], true);

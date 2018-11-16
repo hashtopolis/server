@@ -17,13 +17,14 @@ class ChunkUtils {
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
     
     DServerLog::log(DServerLog::TRACE, "Handling existing chunk...", [$task, $chunk, $assignment]);
+    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
     
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
     if (($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) && $agentChunkSizeMax >= $chunk->getLength()) {
       //chunk has not started yet
       DServerLog::log(DServerLog::TRACE, "Chunk did not start yet and is small enough to give it to agent", [$task, $chunk, $assignment]);
-      $chunk->setProgress(0);
+      $chunk->setProgress($initialProgress);
       $chunk->setDispatchTime(time());
       $chunk->setSolveTime(0);
       $chunk->setState(DHashcatStatus::INIT);
@@ -41,9 +42,9 @@ class ChunkUtils {
       $firstPart->setDispatchTime(time());
       $firstPart->setSolveTime(0);
       $firstPart->setState(DHashcatStatus::INIT);
-      $firstPart->setProgress(0);
+      $firstPart->setProgress($initialProgress);
       Factory::getChunkFactory()->update($firstPart);
-      $secondPart = new Chunk(null, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), 0, DHashcatStatus::INIT, 0, 0);
+      $secondPart = new Chunk(null, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), $initialProgress, DHashcatStatus::INIT, 0, 0);
       $secondPart = Factory::getChunkFactory()->save($secondPart);
       DServerLog::log(DServerLog::TRACE, "Splitting done, resulting in two chunks", [$task, $assignment, $firstPart, $secondPart]);
       return $firstPart;
@@ -67,8 +68,8 @@ class ChunkUtils {
         time(),
         0,
         $chunk->getCheckpoint(),
+        $initialProgress,
         DHashcatStatus::INIT,
-        0,
         0,
         0
       );
@@ -106,10 +107,9 @@ class ChunkUtils {
     if ($remaining / $length <= $disptolerance && $task->getKeyspace() != DPrince::PRINCE_KEYSPACE) {
       $length = $remaining;
     }
-    $newProgress = $task->getKeyspaceProgress() + $length;
-    $task->setKeyspaceProgress($newProgress);
-    Factory::getTaskFactory()->update($task);
-    $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, 0, DHashcatStatus::INIT, 0, 0);
+    Factory::getTaskFactory()->inc($task, Task::KEYSPACE_PROGRESS, $length);
+    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
+    $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
     DServerLog::log(DServerLog::TRACE, "Created new chunk for task", [$task, $chunk, $assignment]);
     return $chunk;

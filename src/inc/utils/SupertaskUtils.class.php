@@ -15,6 +15,18 @@ use DBA\File;
 use DBA\FilePretask;
 
 class SupertaskUtils {
+  /**
+   * @param string $name 
+   * @param string $command 
+   * @param bool $isCpuOnly 
+   * @param bool $isSmall 
+   * @param int $crackerBinaryTypeId 
+   * @param string $benchtype 
+   * @param string[] $basefiles 
+   * @param string[] $iterfiles 
+   * @param User $user 
+   * @throws HTException 
+   */
   public static function bulkSupertask($name, $command, $isCpuOnly, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
@@ -259,7 +271,7 @@ class SupertaskUtils {
       }
     }
     
-    $taskWrapper = new TaskWrapper(null, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0);
+    $taskWrapper = new TaskWrapper(null, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     foreach ($pretasks as $pretask) {

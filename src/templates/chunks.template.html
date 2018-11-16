@@ -52,7 +52,13 @@
               ([[Util::showperc([[chunk.getCheckpoint()]] - [[chunk.getSkip()]], [[chunk.getLength()]])]]%)
             {{ENDIF}}
           </td>
-          <td class="num">[[Util::showperc([[chunk.getProgress()]], 10000)]]%</td>
+          <td class="num">
+            {{IF [[chunk.getProgress()]] == null}}
+              N/A
+            {{ELSE}}
+              [[Util::showperc([[chunk.getProgress()]], 10000)]]%
+            {{ENDIF}}
+          </td>
           <td>
             {{IF [[chunk.getTaskId()]] == null}}
               N/A

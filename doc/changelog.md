@@ -1,3 +1,24 @@
+# v0.9.0 -> v0.x.x
+
+## Features
+
+- Integration of Hashcat Brain feature.
+- Speed data is kept and can be shown in graphs for tasks.
+- Agents can automatically de-register if allowed on the server.
+- Agent updates can now automatically be retrieved, based on selected update track.
+- Update scripts in the future can be handled differently. Applying updates is easier as there is a build number.
+
+## Bugfixes
+
+- Fixed wrong percentage in case of big tasks where percentage was close to 0.
+- Rule splitting can only happen if at least two subparts get created afterwards.
+- Fixed filesize calculation for temporary files after rule splitting.
+
+## Enhancements
+
+- In case of client errors the corresponding chunk now also is saved if available.
+- Make more clear naming on rule splitting tasks, rules have an empty line at the end to increase readability.
+
 # v0.8.0 -> v0.9.0
 
 ## Features

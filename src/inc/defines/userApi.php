@@ -75,6 +75,8 @@ class UQueryHashlist extends UQuery {
   const HASHLIST_HASHTYPE_ID     = "hashtypeId";
   const HASHLIST_ACCESS_GROUP_ID = "accessGroupId";
   const HASHLIST_DATA            = "data";
+  const HASHLIST_USE_BRAIN       = "useBrain";
+  const HASHLIST_BRAIN_FEATURES  = "brainFeatures";
   
   const HASH = "hash";
 }
@@ -304,6 +306,7 @@ class UResponseHashlist extends UResponse {
   const HASHLIST_SECRET         = "isSecret";
   const HASHLIST_SALT_SEPARATOR = "saltSeparator";
   const HASHLIST_NOTES          = "hashlistNotes";
+  const HASHLIST_BRAIN          = "useBrain";
   
   const ZAP_LINES_PROCESSED = "linesProcessed";
   const ZAP_NEW_CRACKED     = "newCracked";

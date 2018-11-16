@@ -148,6 +148,9 @@
           <tr>
             <th colspan="2" class="text-center">
               Advanced Section
+              {{IF [[config.getVal([[$DConfig::HASHCAT_BRAIN_ENABLE]])]]}}
+                <br><span style="font-weight: normal;">Note: If hashcat brain is activated for the hashlist, prince and piped tasks would not be checked against it!</span>
+              {{ENDIF}}
             </th>
           </tr>
           <tr>

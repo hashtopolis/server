@@ -57,6 +57,7 @@ foreach ($tasks as $task) {
   $subSet->addValue('cracked', $taskInfo[1]);
   $subSet->addValue('numAssignments', $chunkInfo[2]);
   $subSet->addValue('performance', $taskInfo[4]);
+  $subSet->addValue('speed', $taskInfo[5]);
   $subtaskList[] = $subSet;
 }
 
