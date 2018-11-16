@@ -20,8 +20,7 @@ class CrackerBinaryUtils {
       }
     }
     if ($newest == null) {
-      // TODO: throw exception here
-      UI::printError("ERROR", "No binary versions available, cannot create tasks!");
+      throw new HTException("No binary versions available, cannot create tasks!");
     }
     return $newest;
   }
