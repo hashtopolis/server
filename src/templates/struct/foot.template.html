@@ -3,7 +3,7 @@
 			<hr>
 			<footer class="footer">
 				<b>
-					[[$APP_NAME]]: [[gitcommit]] [[version]]+[[build]] - <a href='about.php'>About</a> - <a href='help.php'>Help</a>
+					[[$APP_NAME]]: [[version]]{{IF [[build]]}}+[[build]]{{ENDIF}} [[gitcommit]] - <a href='about.php'>About</a> - <a href='help.php'>Help</a>
 					{{IF strlen([[config.getVal([[$DConfig::CONTACT_EMAIL]])]]) > 0}}
 						- <a href="mailto:[[config.getVal([[$DConfig::CONTACT_EMAIL]])]]">Contact Admin</a>
 					{{ENDIF}}
