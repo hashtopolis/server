@@ -6,6 +6,7 @@
 - Speed data is kept and can be shown in graphs for tasks.
 - Agents can automatically de-register if allowed on the server.
 - Agent updates can now automatically be retrieved, based on selected update track.
+- Update scripts in the future can be handled differently. Applying updates is easier as there is a build number.
 
 ## Bugfixes
 
