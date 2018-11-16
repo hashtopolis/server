@@ -119,8 +119,8 @@ class AgentBinaryUtils {
     }
 
     // move file to right place
-    rename(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
-    $sum = hash_file("sha256", dirname(__FILE__) . "/../../static/" . $agentBinary->getFilename());
+    rename(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
+    $sum = hash_file("sha256", dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
     if($sum != $check){
       throw new HTException("Failed to move new agent to right location!");
     }
