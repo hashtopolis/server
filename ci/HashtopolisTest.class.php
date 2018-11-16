@@ -29,6 +29,8 @@ abstract class HashtopolisTest {
   ];
   
   public function initAndUpgrade($fromVersion) {
+    global $VERSION, $BUILD;
+
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
     $this->init($fromVersion);
     
