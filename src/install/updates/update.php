@@ -58,8 +58,6 @@ if($upgradePossible){ // we can actually check if there are upgrades to be appli
     $stores[] = new StoredValue("update_" . $key, "1");
   }
 
-  print_r($stores);
-
   if(sizeof($stores) > 0){
     Factory::getStoredValueFactory()->massSave($stores);
   }
