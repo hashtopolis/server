@@ -42,8 +42,8 @@ if($upgradePossible){ // we can actually check if there are upgrades to be appli
   foreach($allFiles as $file){
     if(Util::startsWith($file, "update_v")){
       // check version
-      $minor = substr($file, 7, 3);
-      if(Util::versionComparison($minor, substr($storedVersion->getVal(), 0, 3)) < 1){
+      $minor = substr($file, 8, strpos($file, "_", 7) - 10);
+      if(Util::versionComparison($minor, substr($storedVersion->getVal(), 0, strpos($storedVersion->getVal(), ".", 2))) < 1){
         // script needs to be checked
         include(dirname(__FILE__) . "/" . $file);
       }
