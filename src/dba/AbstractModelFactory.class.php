@@ -301,7 +301,7 @@ abstract class AbstractModelFactory {
       if ($x < sizeof($models) - 1) {
         $query .= ", ";
       }
-      if ($models[$x]->getId() == 0) {
+      if ($models[$x]->getId() === 0) {
         $models[$x]->setId(null);
       }
       $dict = $models[$x]->getKeyValueDict();
@@ -311,6 +311,8 @@ abstract class AbstractModelFactory {
     }
 
     $dbh = self::getDB();
+    echo $query;
+    print_r($vals);
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     return $stmt;
