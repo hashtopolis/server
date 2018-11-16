@@ -6,6 +6,7 @@ use DBA\AgentBinary;
 
 if (!isset($TEST)) {
   require_once(dirname(__FILE__) . "/../../inc/conf.php");
+  require_once(dirname(__FILE__) . "/../../inc/info.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
 }
@@ -75,6 +76,6 @@ if(!isset($PRESENT["v0.9.0_agentBinaries"])){
     Factory::getAgentBinaryFactory()->update($agent);
   }
 
-  Util::checkAgentVersion("python", "0.3.0", true);
+  Util::checkAgentVersion("python", "0.4.0", true);
   $EXECUTED["v0.9.0_agentBinaries"] = true;
 }
