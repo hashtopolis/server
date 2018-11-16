@@ -46,11 +46,12 @@ $LANG = new Lang();
 UI::add('version', $VERSION);
 UI::add('host', $HOST);
 UI::add('gitcommit', Util::getGitCommit());
+UI::add('build', '');
 
+$updateExecuted = false;
 if($INSTALL){
   // check if update is needed 
   // (note if the version was retrieved with git, but the git folder was removed, smaller updates are not recognized because the build value is missing)
-  $updateExecuted = false;
   $storedVersion = Factory::getStoredValueFactory()->get("version");
   if($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")){
     include(dirname(__FILE__) . "/../install/updates/update.php");
@@ -61,6 +62,13 @@ if($INSTALL){
     if($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")){
       include(dirname(__FILE__) . "/../install/updates/update.php");
       $updateExecuted = true;
+    }
+  }
+
+  if(strlen(Util::getGitCommit()) == 0){
+    $storedBuild = Factory::getStoredValueFactory()->get("build");
+    if($storedBuild != null){
+      UI::add('build', $storedBuild->getVal());
     }
   }
 }
