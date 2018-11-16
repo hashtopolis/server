@@ -8,9 +8,11 @@ use DBA\Factory;
  * the newer update scripts and run all actions which need to be executed.
  */
 
-require_once(dirname(__FILE__) . "/../../inc/conf.php");
-require_once(dirname(__FILE__) . "/../../dba/init.php");
-require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+if (!isset($TEST)) {
+  require_once(dirname(__FILE__) . "/../../inc/conf.php");
+  require_once(dirname(__FILE__) . "/../../dba/init.php");
+  require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+}
 
 $qF = new LikeFilter(StoredValue::STORED_VALUE_ID, "update_%");
 $entries = Factory::getStoredValueFactory()->filter([Factory::FILTER => $qF]);
