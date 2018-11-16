@@ -60,7 +60,7 @@ abstract class HashtopolisTest {
 }
   
   public function init($version) {
-    global $PEPPER, $VERSION;
+    global $PEPPER, $VERSION, $BUILD;
     
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");

@@ -311,8 +311,6 @@ abstract class AbstractModelFactory {
     }
 
     $dbh = self::getDB();
-    echo $query;
-    print_r($vals);
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     return $stmt;
