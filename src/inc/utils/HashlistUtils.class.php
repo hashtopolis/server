@@ -716,6 +716,7 @@ class HashlistUtils {
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
     $hexsalted = ($isHexSalted) ? "1" : "0";
+    $brainId = ($brainId) ? "1" : "0";
     $format = intval($format);
     $hashtype = intval($hashtype);
     $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
