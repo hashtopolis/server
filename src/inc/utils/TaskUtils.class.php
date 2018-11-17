@@ -701,7 +701,6 @@ class TaskUtils {
       $cracker->getCrackerBinaryTypeId(),
       $taskWrapper->getId(),
       0,
-      0,
       $isPrince,
       $notes,
       $staticChunking,
