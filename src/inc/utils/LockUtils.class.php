@@ -5,7 +5,8 @@ class LockUtils {
   private static $locks = array();
   
   /**
-   * @param string $lockFile 
+   * @param string $lockFile
+   * @throws Exception
    */
   public static function get($lockFile) {
     $lock = null;

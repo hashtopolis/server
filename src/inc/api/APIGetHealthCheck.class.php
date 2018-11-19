@@ -23,14 +23,14 @@ class APIGetHealthCheck extends APIBasic {
     $hashes = explode("\n", $hashes);
     
     $this->sendResponse([
-      PResponseGetHealthCheck::ACTION => PActions::GET_HEALTH_CHECK,
-      PResponseGetHealthCheck::RESPONSE => PValues::SUCCESS,
-      PResponseGetHealthCheck::ATTACK => " --hash-type=" . $healthCheck->getHashtypeId() . " " . $healthCheck->getAttackCmd() . " " . $this->agent->getCmdPars(),
-      PResponseGetHealthCheck::CRACKER_BINARY_ID => (int)$healthCheck->getCrackerBinaryId(),
-      PResponseGetHealthCheck::HASHES => $hashes,
-      PResponseGetHealthCheck::CHECK_ID => (int)$healthCheck->getId(),
-      PResponseGetHealthCheck::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)
-    ]
+        PResponseGetHealthCheck::ACTION => PActions::GET_HEALTH_CHECK,
+        PResponseGetHealthCheck::RESPONSE => PValues::SUCCESS,
+        PResponseGetHealthCheck::ATTACK => " --hash-type=" . $healthCheck->getHashtypeId() . " " . $healthCheck->getAttackCmd() . " " . $this->agent->getCmdPars(),
+        PResponseGetHealthCheck::CRACKER_BINARY_ID => (int)$healthCheck->getCrackerBinaryId(),
+        PResponseGetHealthCheck::HASHES => $hashes,
+        PResponseGetHealthCheck::CHECK_ID => (int)$healthCheck->getId(),
+        PResponseGetHealthCheck::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)
+      ]
     );
   }
 }

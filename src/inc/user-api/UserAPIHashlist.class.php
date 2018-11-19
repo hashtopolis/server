@@ -275,7 +275,6 @@ class UserAPIHashlist extends UserAPIBasic {
   
   /**
    * @param array $QUERY
-   * @throws HTException
    */
   private function listHashlists($QUERY) {
     $hashlists = HashlistUtils::getHashlists($this->user);

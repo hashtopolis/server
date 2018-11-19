@@ -178,7 +178,6 @@ class SupertaskUtils {
   
   /**
    * @param int $taskWrapperId
-   * @param User $user
    * @return Task[]
    */
   public static function getRunningSubtasks($taskWrapperId) {
@@ -352,6 +351,7 @@ class SupertaskUtils {
    * @param boolean $useOptimized
    * @param int $crackerBinaryTypeId
    * @param array $masks
+   * @param string $benchtype
    * @throws HTException
    */
   public static function importSupertask($name, $isCpuOnly, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype) {
@@ -390,6 +390,7 @@ class SupertaskUtils {
    * @param $isCpu
    * @param $crackerBinaryType CrackerBinaryType
    * @param bool $useOptimized
+   * @param int $newBench
    * @return array
    */
   private static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType, $useOptimized = false, $newBench = 1) {

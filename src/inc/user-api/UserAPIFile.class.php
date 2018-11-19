@@ -107,6 +107,7 @@ class UserAPIFile extends UserAPIBasic {
         break;
       case DFileType::OTHER:
         $type = 'other';
+        break;
       default:
         throw new HTException("Invalid file type!");
     }
@@ -151,7 +152,6 @@ class UserAPIFile extends UserAPIBasic {
   
   /**
    * @param array $QUERY
-   * @throws HTException
    */
   private function listFiles($QUERY) {
     $files = FileUtils::getFiles($this->user);

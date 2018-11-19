@@ -258,6 +258,7 @@ class AgentUtils {
   /**
    * @param int $agentId
    * @param int $taskId
+   * @param User $user
    * @throws HTException
    */
   public static function assign($agentId, $taskId, $user) {

@@ -147,7 +147,7 @@ class APIGetTask extends APIBasic {
     $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashTypeId());
     
     DServerLog::log(DServerLog::TRACE, "Sending task to agent", [$this->agent, $task, $taskFiles]);
-
+    
     $brain = ($hashlist->getBrainId() && !$task->getForcePipe() && !$task->getIsPrince()) ? true : false;
     
     $response = array(
@@ -169,14 +169,14 @@ class APIGetTask extends APIBasic {
       PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash()) ? true : false,
       PResponseGetTask::USE_BRAIN => $brain,
     );
-
-    if($brain){
+    
+    if ($brain) {
       $response[PResponseGetTask::BRAIN_HOST] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_HOST);
       $response[PResponseGetTask::BRAIN_PORT] = intval(SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_PORT));
       $response[PResponseGetTask::BRAIN_PASS] = SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_PASS);
       $response[PResponseGetTask::BRAIN_FEATURES] = (int)$hashlist->getBrainFeatures();
     }
-
+    
     $this->sendResponse($response);
   }
 }

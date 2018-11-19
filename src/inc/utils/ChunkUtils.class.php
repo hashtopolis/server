@@ -87,6 +87,7 @@ class ChunkUtils {
    * @param Task $task
    * @param Assignment $assignment
    * @return DBA\Chunk|null
+   * @throws HTException
    */
   public static function createNewChunk($task, $assignment) {
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
@@ -125,7 +126,7 @@ class ChunkUtils {
    * @throws HTException
    * @return int
    */
-  public static function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1, $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
+  public static function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1.0, $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     global $QUERY;
     
     if ($chunkTime <= 0) {

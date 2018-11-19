@@ -41,6 +41,7 @@ class HashlistUtils {
    * @param string $hash
    * @param User $user
    * @return Hash
+   * @throws HTException
    */
   public static function getHash($hash, $user) {
     $qF = new QueryFilter(Hash::HASH, $hash, "=");
@@ -930,6 +931,7 @@ class HashlistUtils {
   /**
    * @param int[] $hashlists
    * @param string $name
+   * @param User $user
    * @throws HTException
    */
   public static function createSuperhashlist($hashlists, $name, $user) {

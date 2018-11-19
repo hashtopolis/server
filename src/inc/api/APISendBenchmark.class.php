@@ -3,6 +3,7 @@
 use DBA\Assignment;
 use DBA\QueryFilter;
 use DBA\Factory;
+use DBA\File;
 
 class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
@@ -44,6 +45,7 @@ class APISendBenchmark extends APIBasic {
         if (SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_DISABLE) == 0 && $task->getIsPrince() == 0 && $split[1] > $task->getChunkTime() * 1000 * 2 && $taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
           // test if we have a large rule file
           DServerLog::log(DServerLog::INFO, "Potential rule split required", [$this->agent, $task]);
+          /** @var $files File[] */
           $files = Util::getFileInfo($task, AccessUtils::getAccessGroupsOfAgent($this->agent))[3];
           foreach ($files as $file) {
             if ($file->getFileType() == DFileType::RULE) {

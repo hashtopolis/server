@@ -6,8 +6,9 @@ use DBA\Factory;
 
 class CrackerBinaryUtils {
   /**
-   * @param int $crackerBinaryTypeId 
+   * @param int $crackerBinaryTypeId
    * @return DBA\CrackerBinary|null
+   * @throws HTException
    */
   public static function getNewestVersion($crackerBinaryTypeId) {
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $crackerBinaryTypeId, "=");

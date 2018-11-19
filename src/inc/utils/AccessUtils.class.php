@@ -11,6 +11,7 @@ use DBA\User;
 use DBA\TaskWrapper;
 use DBA\Hashlist;
 use DBA\Factory;
+use DBA\File;
 
 class AccessUtils {
   /**

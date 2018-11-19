@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
 use DBA\Agent;
@@ -81,7 +82,7 @@ else {
   }
   
   UI::add('groups', Factory::getAccessGroupFactory()->filter([]));
-  foreach (UI::get('groups') as $group) {
+  foreach (UI::get('groups') as $group) { /** @var AccessGroup $group */
     if ($users->getVal($group->getId()) === false) {
       $users->addValue($group->getId(), 0);
     }

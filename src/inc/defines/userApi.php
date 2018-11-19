@@ -480,11 +480,11 @@ abstract class UApi {
   }
   
   static function getDescription($section, $constant) {
-    $section = UApi::getSection($section);
-    if ($section == null) {
+    $sectionObject = UApi::getSection($section);
+    if ($sectionObject == null) {
       return "__" . $section . "_" . $constant . "__";
     }
-    return $section->describe($constant);
+    return $sectionObject->describe($constant);
   }
 }
 

@@ -10,6 +10,7 @@ abstract class APIBasic {
   
   /**
    * @param array $QUERY input query sent to the API
+   * @throws HTException
    */
   public abstract function execute($QUERY = array());
   

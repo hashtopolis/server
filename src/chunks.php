@@ -45,6 +45,7 @@ if ($oF == null) {
 else {
   $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => $qF, Factory::JOIN => $jF]);
 }
+/** @var Chunk[] $chunks */
 $chunks = $joined[Factory::getChunkFactory()->getModelName()];
 // TODO: also filter for tasks where access is forbidden because of files from specific group
 

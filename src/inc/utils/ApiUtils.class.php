@@ -9,7 +9,7 @@ class ApiUtils {
   /**
    * @param int $groupId
    * @param array $perm
-   * @param string $section
+   * @param string $sectionName
    * @throws HTException
    */
   public static function update($groupId, $perm, $sectionName) {

@@ -19,8 +19,9 @@ class RunnerUtils {
   
   /**
    * Get the status of the runner service
-   * @throws HTException
+   * @param bool $exception
    * @return string
+   * @throws HTException
    */
   public static function getStatus($exception = true) {
     if (!self::isAvailable()) {

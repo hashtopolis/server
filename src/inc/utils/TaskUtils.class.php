@@ -91,6 +91,7 @@ class TaskUtils {
    * @param int $taskId
    * @param string $notes
    * @param User $user
+   * @throws HTException
    */
   public static function editNotes($taskId, $notes, $user) {
     $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
@@ -147,6 +148,7 @@ class TaskUtils {
   /**
    * @param int $supertaskId
    * @param User $user
+   * @throws HTException
    */
   public static function archiveSupertask($supertaskId, $user) {
     $taskWrapper = TaskUtils::getTaskWrapper($supertaskId, $user);
@@ -160,6 +162,7 @@ class TaskUtils {
   /**
    * @param int $taskId
    * @param User $user
+   * @throws HTException
    */
   public static function archiveTask($taskId, $user) {
     $task = TaskUtils::getTask($taskId, $user);
@@ -329,7 +332,6 @@ class TaskUtils {
   
   /**
    * @param User $user
-   * @throws HTException
    */
   public static function deleteFinished($user) {
     // check every task wrapper (non-archived ones)
@@ -613,11 +615,15 @@ class TaskUtils {
    * @param string $color
    * @param boolean $isCpuOnly
    * @param boolean $isSmall
+   * @param $isPrince
    * @param int $skip
    * @param int $priority
    * @param int[] $files
    * @param int $crackerVersionId
    * @param User $user
+   * @param string $notes
+   * @param int $staticChunking
+   * @param int $chunkSize
    * @throws HTException
    */
   public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {

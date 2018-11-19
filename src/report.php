@@ -108,7 +108,7 @@ else {
 }
 
 // render report
-$template = new Template("report/$r");
+$template = new Template("report/$found");
 $baseName = dirname(__FILE__) . "/tmp/" . time() . "-$type-" . $typeId;
 $tempName = $baseName . ".tex";
 file_put_contents($tempName, $template->render($objects));

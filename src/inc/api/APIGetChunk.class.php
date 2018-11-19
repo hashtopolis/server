@@ -7,6 +7,11 @@ use DBA\QueryFilter;
 use DBA\Factory;
 
 class APIGetChunk extends APIBasic {
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   * @throws Exception
+   */
   public function execute($QUERY = array()) {
     if (!PQueryGetChunk::isValid($QUERY)) {
       $this->sendErrorResponse(PActions::GET_CHUNK, "Invalid chunk query!");
@@ -113,6 +118,7 @@ class APIGetChunk extends APIBasic {
     $oF = new OrderFilter(Chunk::SKIP, "ASC");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
     $qF1 = new QueryFilter(Chunk::PROGRESS, null, "=");
+    /** @var $chunks Chunk[] */
     $chunks = array_merge($chunks, Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]));
     foreach ($chunks as $chunk) {
       if ($chunk->getAgentId() == $this->agent->getId()) {
@@ -147,7 +153,7 @@ class APIGetChunk extends APIBasic {
    * @param $chunk Chunk
    */
   protected function sendChunk($chunk) {
-    if($chunk == null){
+    if ($chunk == null) {
       return; // this can be safely done before the commit/release, because the only sendChunk which comes really at the end check for null before, so a lock which is not released cannot happen
     }
     Factory::getAgentFactory()->getDB()->commit();

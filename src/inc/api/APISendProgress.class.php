@@ -131,7 +131,7 @@ class APISendProgress extends APIBasic {
     /*
      * Save chunk updates
      */
-    if(!$task->getIsPrince() && !$task->getForcePipe()){
+    if (!$task->getIsPrince() && !$task->getForcePipe()) {
       $chunk->setProgress($relativeProgress);
     }
     $chunk->setCheckpoint($keyspaceProgress);
@@ -353,7 +353,7 @@ class APISendProgress extends APIBasic {
     if ($sumCracked > 0) {
       $payload = new DataSet(array(DPayloadKeys::NUM_CRACKED => $sumCracked, DPayloadKeys::AGENT => $this->agent, DPayloadKeys::TASK => $task, DPayloadKeys::HASHLIST => $totalHashlist));
       NotificationHandler::checkNotifications(DNotificationType::HASHLIST_CRACKED_HASH, $payload);
-
+      
       Factory::getTaskWrapperFactory()->inc($taskWrapper, TaskWrapper::CRACKED, $sumCracked);
     }
     
@@ -434,9 +434,9 @@ class APISendProgress extends APIBasic {
         }
         $chunk->setSpeed($speed);
         Factory::getChunkFactory()->update($chunk);
-
+        
         // save speed in history
-        if($speed > 0){
+        if ($speed > 0) {
           $s = new Speed(null, $this->agent->getId(), $task->getId(), $speed, time());
           Factory::getSpeedFactory()->save($s);
         }

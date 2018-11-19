@@ -8,7 +8,7 @@ class UserAPITest extends UserAPIBasic {
   public function execute($QUERY = array()) {
     switch ($QUERY[UQuery::REQUEST]) {
       case USectionTest::CONNECTION:
-        $this->connectionTest($QUERY);
+        $this->connectionTest();
         break;
       case USectionTest::ACCESS:
         $this->accessTest($QUERY);
@@ -18,7 +18,7 @@ class UserAPITest extends UserAPIBasic {
     }
   }
   
-  private function connectionTest($QUERY) {
+  private function connectionTest() {
     $this->sendResponse(array(
         UResponse::SECTION => USection::TEST,
         UResponse::REQUEST => USectionTest::CONNECTION,

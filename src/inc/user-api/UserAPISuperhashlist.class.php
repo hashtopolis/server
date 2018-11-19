@@ -91,7 +91,6 @@ class UserAPISuperhashlist extends UserAPIBasic {
   
   /**
    * @param array $QUERY
-   * @throws HTException
    */
   private function listSuperhashlists($QUERY) {
     $hashlists = HashlistUtils::getSuperhashlists($this->user);
