@@ -14,24 +14,15 @@ install:
   - sudo service apache2 restart
   - php -v
 
-script:
-  # normal hashtopolis test
-  - sudo rm -rf /var/www/html/hashtopolis
-  - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
-  - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
-  - php -f ci/server/setup.php $TRAVIS_BRANCH
-  - php -f ci/run.php master
+env:
+  - VERSION="master"
+  - VERSION="0.8.0"
+  - VERSION="0.9.0"
+  - VERSION="0.10.0"
 
-  # upgrade hashtopolis test
-  ## from v0.8.0
+script:
   - sudo rm -rf /var/www/html/hashtopolis
   - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
   - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
   - php -f ci/server/setup.php $TRAVIS_BRANCH
-  - php -f ci/run.php master 0.8.0
-  ## from v0.9.0
-  - sudo rm -rf /var/www/html/hashtopolis
-  - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
-  - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
-  - php -f ci/server/setup.php $TRAVIS_BRANCH
-  - php -f ci/run.php master 0.9.0
+  - php -f ci/run.php $VERSION
