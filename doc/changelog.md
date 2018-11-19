@@ -1,3 +1,10 @@
+# v0.10.0 -> v0.x.x
+
+## Bugfixes
+
+- Fixed createHashlist API call with wrong brain parameter conversion.
+- Fixed createUser API call with wrong amount of parameters.
+
 # v0.9.0 -> v0.10.0.
 
 ## Features
