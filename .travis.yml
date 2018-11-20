@@ -25,4 +25,4 @@ env:
   - VERSION="0.10.0"
 
 script:
-  - php -f ci/run.php $VERSION
+  - php -f ci/run.php master $VERSION
