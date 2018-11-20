@@ -30,13 +30,12 @@ abstract class HashtopolisTest {
   ];
   
   public function initAndUpgrade($fromVersion) {
-    global $VERSION, $BUILD;
+    global $VERSION, $BUILD, $TEST;
 
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
     $this->init($fromVersion);
     
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running upgrades...");
-    $TEST = true; // required to fix includes in upgrade script
     include("/var/www/html/hashtopolis/src/install/updates/update.php");
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }

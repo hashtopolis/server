@@ -27,6 +27,8 @@ foreach ($dir as $entry) {
   }
 }
 
+$TEST = true;
+
 if (sizeof($argv) < 2) {
   die("Invalid number of arguments!\nphp -f run.php <version> [upgrade]\n");
 }
