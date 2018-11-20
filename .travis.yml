@@ -13,6 +13,10 @@ install:
   - sudo cp -f ci/files/apache.conf /etc/apache2/sites-available/000-default.conf
   - sudo service apache2 restart
   - php -v
+  - sudo rm -rf /var/www/html/hashtopolis
+  - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
+  - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
+  - php -f ci/server/setup.php $TRAVIS_BRANCH
 
 env:
   - VERSION="master"
@@ -20,8 +24,4 @@ env:
   - VERSION="0.10.0"
 
 script:
-  - sudo rm -rf /var/www/html/hashtopolis
-  - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
-  - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
-  - php -f ci/server/setup.php $TRAVIS_BRANCH
   - php -f ci/run.php $VERSION
