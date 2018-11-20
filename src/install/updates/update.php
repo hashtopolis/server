@@ -36,7 +36,7 @@ if($storedVersion == null){
 }
 if($storedBuild == null){
   // we just save the current build and assume that the upgrade was executed up to this build
-  $storedBuild = new StoredValue("version", ($BUILD == 'repository')?Util::getGitCommit(true):$BUILD);
+  $storedBuild = new StoredValue("build", ($BUILD == 'repository')?Util::getGitCommit(true):$BUILD);
   Factory::getStoredValueFactory()->save($storedBuild);
   $upgradePossible = false;
 }
