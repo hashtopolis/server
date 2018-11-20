@@ -16,10 +16,11 @@ install:
   - sudo rm -rf /var/www/html/hashtopolis
   - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
   - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
-  - php -f ci/server/setup.php $TRAVIS_BRANCH
+  - sudo php -f ci/server/setup.php $TRAVIS_BRANCH
 
 env:
   - VERSION="master"
+  - VERSION="0.8.0"
   - VERSION="0.9.0"
   - VERSION="0.10.0"
 
