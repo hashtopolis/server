@@ -33,15 +33,20 @@ if (isset($_GET['view']) && in_array($_GET['view'], array('dict', 'rule', 'other
 }
 
 if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessControl::MANAGE_FILE_ACCESS)) {
-  $file = FileUtils::getFile($_GET['edit'], Login::getInstance()->getUser());
-  if ($file == null) {
-    UI::addMessage(UI::ERROR, "Invalid file ID!");
+  try {
+    $file = FileUtils::getFile($_GET['edit'], Login::getInstance()->getUser());
+    if ($file == null) {
+      UI::addMessage(UI::ERROR, "Invalid file ID!");
+    }
+    else {
+      UI::add('file', $file);
+      Template::loadInstance("files/edit");
+      UI::add('pageTitle', "Edit File " . $file->getFilename());
+      UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
+    }
   }
-  else {
-    UI::add('file', $file);
-    Template::loadInstance("files/edit");
-    UI::add('pageTitle', "Edit File " . $file->getFilename());
-    UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
+  catch (HTException $e) {
+    UI::addMessage(UI::ERROR, "Failed to retrieve file: " . $e->getMessage());
   }
 }
 else {

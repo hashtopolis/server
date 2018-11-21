@@ -24,24 +24,19 @@ abstract class HashtopolisTest {
 
   
   protected $RELEASES = [
-    "0.8.0" => "47e4444c22cbfae08f8e8f974fb6ca6bfa0e944d",
-    "0.9.0" => "cd2951cd10552114c44c29962ac22efcbabf57c7"
+    "0.8.0"  => "47e4444c22cbfae08f8e8f974fb6ca6bfa0e944d",
+    "0.9.0"  => "cd2951cd10552114c44c29962ac22efcbabf57c7",
+    "0.10.0" => "cdc674f4f375115debd556feda4e7f6e4614a2c6"
   ];
   
   public function initAndUpgrade($fromVersion) {
+    global $VERSION, $BUILD, $TEST;
+
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
     $this->init($fromVersion);
     
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running upgrades...");
-    $TEST = true; // required to fix includes in upgrade script
-    switch ($fromVersion) {
-      case "0.8.0":
-        HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.9.0...");
-        include("/var/www/html/hashtopolis/src/install/updates/update_v0.8.0_v0.9.0.php");
-      case "0.9.0":
-        HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Apply 0.9.0+dev...");
-        include("/var/www/html/hashtopolis/src/install/updates/update_v0.9.0_v0.x.x.php");
-    }
+    include("/var/www/html/hashtopolis/src/install/updates/update.php");
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }
 
@@ -59,7 +54,7 @@ abstract class HashtopolisTest {
 }
   
   public function init($version) {
-    global $PEPPER, $VERSION;
+    global $PEPPER, $VERSION, $BUILD;
     
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");

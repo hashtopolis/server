@@ -1,7 +1,6 @@
 <?php
 
 use DBA\AccessGroupUser;
-use DBA\Config;
 use DBA\QueryFilter;
 use DBA\RightGroup;
 use DBA\User;
@@ -59,7 +58,12 @@ switch ($STEP) {
       if ($baseUrl[sizeof($baseUrl) - 1] == "install") {
         unset($baseUrl[sizeof($baseUrl) - 1]);
       }
-      $urlConfig = ConfigUtils::get(DConfig::BASE_URL);
+      try {
+        $urlConfig = ConfigUtils::get(DConfig::BASE_URL);
+      }
+      catch (HTException $e) {
+        die("Failure in config: " . $e->getMessage());
+      }
       $urlConfig->setValue(implode("/", $baseUrl));
       Factory::getConfigFactory()->update($urlConfig);
       setcookie("step", "52", time() + 3600);

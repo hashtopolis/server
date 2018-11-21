@@ -111,6 +111,12 @@ else if (isset($_GET['id'])) {
   // load list of available supertasks
   UI::add('superTasks', Factory::getSupertaskFactory()->filter([]));
   
+  // load binaries and versions for supertask list
+  UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
+  $versions = Factory::getCrackerBinaryFactory()->filter([]);
+  usort($versions, ["Util", "versionComparisonBinary"]);
+  UI::add('versions', $versions);
+  
   UI::add('pageTitle', "Hashlist details for " . $list->getVal('hashlist')->getHashlistName());
   Template::loadInstance("hashlists/detail");
 }

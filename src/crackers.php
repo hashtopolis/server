@@ -64,7 +64,7 @@ else {
   $oF = new OrderFilter(CrackerBinaryType::TYPE_NAME, "ASC");
   UI::add('binaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([Factory::ORDER => $oF]));
   $binariesVersions = new DataSet();
-  foreach (UI::get('binaryTypes') as $binaryType) {
+  foreach (UI::get('binaryTypes') as $binaryType) { /** @var CrackerBinaryType $binaryType */
     $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
     $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
     $arr = array();

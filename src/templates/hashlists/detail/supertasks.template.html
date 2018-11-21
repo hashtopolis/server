@@ -22,7 +22,48 @@
                 <input type='hidden' name='supertask' value='[[supertask.getId()]]'>
                 <input type="hidden" name="csrf" value="[[csrf]]">
                 <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
-                <input type="submit" class='btn btn-light' value="Create Supertask">
+                <select name="crackerBinaryTypeId" id="crackerBinaryTypeId" class="form-control mx-1" title="Cracker Binary">
+                  {{FOREACH binary;[[binaries]]}}
+                    <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
+                  {{ENDFOREACH}}
+                </select>
+                <select name="crackerBinaryVersionId" id="crackerBinaryVersionId" class="form-control mx-1" title="Binary Version">
+                  <option value="0">&nbsp;</option>
+                </select>
+                <script type="text/javascript">
+                    var versions = [];
+                    {{FOREACH version;[[versions]]}}
+                      if ([[version.getCrackerBinaryTypeId()]] in versions) {
+                          versions[ [[version.getCrackerBinaryTypeId()]] ].push(["[[version.getVersion()]]", [[version.getId()]] ]);
+                      }
+                      else{
+                          versions [ [[version.getCrackerBinaryTypeId()]] ] = [ ["[[version.getVersion()]]", [[version.getId()]] ] ];
+                      }
+                    {{ENDFOREACH}}
+
+                    configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
+                    $("#crackerBinaryType").change(function() {
+                        configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
+                    });
+
+                    function configureDropDownLists(ddl1, ddl2) {
+                        ddl2.options.length = 0;
+                        if (ddl1.value.length === 0) {
+                            return;
+                        }
+                        for (i = 0; i < versions[ddl1.value].length; i++){
+                            createOption(ddl2, versions[ddl1.value][i][0], versions[ddl1.value][i][1]);
+                        }
+                    }
+
+                    function createOption(ddl, text, value) {
+                        var opt = document.createElement('option');
+                        opt.value = value;
+                        opt.text = text;
+                        ddl.options.add(opt);
+                    }
+                </script>
+                <input type="submit" class='btn btn-light mx-1' value="Create Supertask">
               </form>
             </td>
           </tr>

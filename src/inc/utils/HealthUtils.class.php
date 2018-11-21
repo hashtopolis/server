@@ -39,7 +39,7 @@ class HealthUtils {
   /**
    * Checks if there is a running health check which the agent has not completed yet.
    * @param Agent $agent
-   * @return HealthCheckAgent
+   * @return HealthCheckAgent|bool
    */
   public static function checkNeeded($agent) {
     $qF1 = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
@@ -189,6 +189,7 @@ class HealthUtils {
       $entries[] = new HealthCheckAgent(null, $healthCheck->getId(), $agent->getId(), DHealthCheckAgentStatus::PENDING, 0, 0, 0, 0, "");
     }
     Factory::getHealthCheckAgentFactory()->massSave($entries);
+    return $healthCheck;
   }
   
   /**

@@ -11,6 +11,7 @@ class AgentBinaryUtils {
    * @param string $os
    * @param string $filename
    * @param string $version
+   * @param string $updateTrack
    * @param User $user
    * @throws HTException
    */
@@ -37,6 +38,7 @@ class AgentBinaryUtils {
    * @param string $os
    * @param string $filename
    * @param string $version
+   * @param string $updateTrack
    * @param User $user
    * @throws HTException
    */
@@ -130,10 +132,11 @@ class AgentBinaryUtils {
     $agentBinary->setUpdateAvailable('');
     Factory::getAgentBinaryFactory()->update($agentBinary);
   }
-
+  
   /**
-   * @param int $binaryId 
+   * @param int $binaryId
    * @return boolean|string
+   * @throws HTException
    */
   public static function checkUpdate($binaryId){
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
@@ -142,13 +145,14 @@ class AgentBinaryUtils {
     Factory::getAgentBinaryFactory()->update($agentBinary);
     return $update;
   }
-
+  
   /**
    * Retrieves the latest version number for the according agent type and track.
-   * 
-   * @param string $agent 
-   * @param string $track 
+   *
+   * @param string $agent
+   * @param string $track
    * @return string
+   * @throws HTException
    */
   public static function getLatestVersion($agent, $track){
     $curl = curl_init();

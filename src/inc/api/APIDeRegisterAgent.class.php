@@ -8,13 +8,13 @@ class APIDeRegisterAgent extends APIBasic {
     }
     $this->checkToken(PActions::DEREGISTER, $QUERY);
     
-    if(!SConfig::getInstance()->getVal(DConfig::ALLOW_DEREGISTER)){
+    if (!SConfig::getInstance()->getVal(DConfig::ALLOW_DEREGISTER)) {
       $this->sendErrorResponse(PActions::DEREGISTER, "De-registration is not allowed on this server!");
     }
-    try{
+    try {
       AgentUtils::delete($this->agent->getId(), null);
     }
-    catch(HTException $e){
+    catch (HTException $e) {
       $this->sendErrorResponse(PActions::DEREGISTER, "Error occured during de-registration: " . $e->getMessage());
     }
     $this->sendResponse(array(

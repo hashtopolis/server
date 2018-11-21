@@ -41,6 +41,7 @@ class HashlistUtils {
    * @param string $hash
    * @param User $user
    * @return Hash
+   * @throws HTException
    */
   public static function getHash($hash, $user) {
     $qF = new QueryFilter(Hash::HASH, $hash, "=");
@@ -716,6 +717,7 @@ class HashlistUtils {
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
     $hexsalted = ($isHexSalted) ? "1" : "0";
+    $brainId = ($brainId) ? "1" : "0";
     $format = intval($format);
     $hashtype = intval($hashtype);
     $accessGroup = Factory::getAccessGroupFactory()->get($accessGroupId);
@@ -929,6 +931,7 @@ class HashlistUtils {
   /**
    * @param int[] $hashlists
    * @param string $name
+   * @param User $user
    * @throws HTException
    */
   public static function createSuperhashlist($hashlists, $name, $user) {

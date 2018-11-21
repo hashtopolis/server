@@ -15,6 +15,9 @@ abstract class HashtopolisNotification {
     self::$instances[$name] = $instance;
   }
   
+  /**
+   * @return HashtopolisNotification[]
+   */
   public static function getInstances() {
     return self::$instances;
   }

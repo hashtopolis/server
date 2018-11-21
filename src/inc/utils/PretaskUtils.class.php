@@ -282,6 +282,7 @@ class PretaskUtils {
    * @param int $benchmarkType
    * @param array $files
    * @param int $crackerBinaryTypeId
+   * @param int $priority
    * @throws HTException
    */
   public static function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $files, $crackerBinaryTypeId, $priority = 0) {

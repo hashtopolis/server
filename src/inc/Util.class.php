@@ -156,7 +156,8 @@ class Util {
   
   /**
    * Get the commit hash and branch (if available) of the Hashtopolis server.
-   * 
+   *
+   * @param bool $hashOnly
    * @return string
    */
   public static function getGitCommit($hashOnly = false) {
@@ -186,6 +187,7 @@ class Util {
   /**
    * @param string $type
    * @param string $version
+   * @param bool $silent
    */
   public static function checkAgentVersion($type, $version, $silent = false) {
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
@@ -254,6 +256,7 @@ class Util {
    * Scan the report template directory for templates. If no type is specified it will return all found.
    *
    * @param string $type
+   * @param bool $pretty
    * @return string[] found report template file names
    */
   public static function scanReportDirectory($type = "", $pretty = false) {
@@ -1204,6 +1207,7 @@ class Util {
    *
    * @param int $length
    *          length of random string to generate
+   * @param string $charset
    * @return string random string
    */
   public static function randomString($length, $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") {

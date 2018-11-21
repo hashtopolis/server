@@ -8,9 +8,12 @@ use DBA\Factory;
  * the newer update scripts and run all actions which need to be executed.
  */
 
-require_once(dirname(__FILE__) . "/../../inc/conf.php");
-require_once(dirname(__FILE__) . "/../../dba/init.php");
-require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+if (!isset($TEST)) {
+  require_once(dirname(__FILE__) . "/../../inc/conf.php");
+  require_once(dirname(__FILE__) . "/../../dba/init.php");
+  require_once(dirname(__FILE__) . "/../../inc/info.php");
+  require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
+}
 
 $qF = new LikeFilter(StoredValue::STORED_VALUE_ID, "update_%");
 $entries = Factory::getStoredValueFactory()->filter([Factory::FILTER => $qF]);
@@ -33,7 +36,7 @@ if($storedVersion == null){
 }
 if($storedBuild == null){
   // we just save the current build and assume that the upgrade was executed up to this build
-  $storedBuild = new StoredValue("version", ($BUILD == 'repository')?Util::getGitCommit(true):$BUILD);
+  $storedBuild = new StoredValue("build", ($BUILD == 'repository')?Util::getGitCommit(true):$BUILD);
   Factory::getStoredValueFactory()->save($storedBuild);
   $upgradePossible = false;
 }
@@ -42,8 +45,8 @@ if($upgradePossible){ // we can actually check if there are upgrades to be appli
   foreach($allFiles as $file){
     if(Util::startsWith($file, "update_v")){
       // check version
-      $minor = substr($file, 7, 3);
-      if(Util::versionComparison($minor, substr($storedVersion->getVal(), 0, 3)) < 1){
+      $minor = substr($file, 8, strpos($file, "_", 7) - 10);
+      if(Util::versionComparison($minor, substr($storedVersion->getVal(), 0, strpos($storedVersion->getVal(), ".", 2))) < 1){
         // script needs to be checked
         include(dirname(__FILE__) . "/" . $file);
       }
@@ -54,6 +57,7 @@ if($upgradePossible){ // we can actually check if there are upgrades to be appli
   foreach($EXECUTED as $key => $val){
     $stores[] = new StoredValue("update_" . $key, "1");
   }
+
   if(sizeof($stores) > 0){
     Factory::getStoredValueFactory()->massSave($stores);
   }

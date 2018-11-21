@@ -301,7 +301,7 @@ abstract class AbstractModelFactory {
       if ($x < sizeof($models) - 1) {
         $query .= ", ";
       }
-      if ($models[$x]->getId() == 0) {
+      if ($models[$x]->getId() === 0) {
         $models[$x]->setId(null);
       }
       $dict = $models[$x]->getKeyValueDict();

@@ -6,6 +6,7 @@ class SConfig {
   private static $instance = null;
   
   /**
+   * @param bool $force
    * @return DataSet
    */
   public static function getInstance($force = false) {

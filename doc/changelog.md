@@ -1,4 +1,13 @@
-# v0.9.0 -> v0.x.x
+# v0.10.0 -> v0.10.1
+
+## Bugfixes
+
+- Fixed createHashlist API call with wrong brain parameter conversion.
+- Fixed createUser API call with wrong amount of parameters.
+- Fixed applying supertasks directly from hashlist view.
+- Fixed wrong saving of build number if it didn't exist.
+
+# v0.9.0 -> v0.10.0.
 
 ## Features
 

@@ -30,6 +30,7 @@ class HashtypeUtils {
    * @param int $hashtypeId
    * @param string $description
    * @param int $isSalted
+   * @param bool $isSlowHash
    * @param User $user
    * @throws HTException
    */

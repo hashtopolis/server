@@ -14,16 +14,16 @@ class UserAPIAgent extends UserAPIBasic {
           $this->createVoucher($QUERY);
           break;
         case USectionAgent::GET_BINARIES:
-          $this->getBinaries($QUERY);
+          $this->getBinaries();
           break;
         case USectionAgent::DELETE_VOUCHER:
           $this->deleteVoucher($QUERY);
           break;
         case USectionAgent::LIST_VOUCHERS:
-          $this->listVouchers($QUERY);
+          $this->listVouchers();
           break;
         case USectionAgent::LIST_AGENTS:
-          $this->listAgents($QUERY);
+          $this->listAgents();
           break;
         case USectionAgent::GET:
           $this->getAgent($QUERY);
@@ -188,7 +188,7 @@ class UserAPIAgent extends UserAPIBasic {
     $this->sendSuccessResponse($QUERY);
   }
   
-  private function listAgents($QUERY) {
+  private function listAgents() {
     $accessGroups = AccessUtils::getAccessGroupsOfUser($this->user);
     
     $qF = new ContainFilter(AccessGroupAgent::ACCESS_GROUP_ID, Util::arrayOfIds($accessGroups));
@@ -230,7 +230,7 @@ class UserAPIAgent extends UserAPIBasic {
     $this->sendSuccessResponse($QUERY);
   }
   
-  private function listVouchers($QUERY) {
+  private function listVouchers() {
     $vouchers = Factory::getRegVoucherFactory()->filter([]);
     $arr = [];
     foreach ($vouchers as $voucher) {
@@ -245,7 +245,7 @@ class UserAPIAgent extends UserAPIBasic {
     );
   }
   
-  private function getBinaries($QUERY) {
+  private function getBinaries() {
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
     unset($url[sizeof($url) - 1]);
@@ -273,6 +273,10 @@ class UserAPIAgent extends UserAPIBasic {
     $this->sendResponse($response);
   }
   
+  /**
+   * @param $QUERY
+   * @throws HTException
+   */
   private function createVoucher($QUERY) {
     $voucher = Util::randomString(10);
     if (isset($QUERY[UQueryAgent::VOUCHER])) {

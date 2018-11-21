@@ -67,6 +67,7 @@ class AccessControl {
   
   /**
    * @param $singlePerm string
+   * @return bool
    */
   public function givenByDependency($singlePerm) {
     $constants = DAccessControl::getConstants();
