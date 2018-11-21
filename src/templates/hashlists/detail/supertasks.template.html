@@ -22,7 +22,7 @@
                 <input type='hidden' name='supertask' value='[[supertask.getId()]]'>
                 <input type="hidden" name="csrf" value="[[csrf]]">
                 <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
-                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control mx-1" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinaryTypeId" class="form-control mx-1" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}

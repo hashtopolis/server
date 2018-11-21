@@ -35,7 +35,7 @@
 				  <td>
             <div class="d-flex">
               <div class="col">
-                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
