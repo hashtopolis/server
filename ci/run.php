@@ -27,6 +27,8 @@ foreach ($dir as $entry) {
   }
 }
 
+$TEST = true;
+
 if (sizeof($argv) < 2) {
   die("Invalid number of arguments!\nphp -f run.php <version> [upgrade]\n");
 }
@@ -34,7 +36,7 @@ $version = $argv[1];
 HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
-if (isset($argv[2])) {
+if (isset($argv[2]) && $argv[2] != 'master') {
   $returnStatus = $framework->executeWithUpgrade($argv[2], HashtopolisTest::RUN_FULL);
 }
 else {

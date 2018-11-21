@@ -19,16 +19,11 @@ $CONFIG .= '$CONN["server"] = "localhost";' . "\n";
 $CONFIG .= '$CONN["db"] = "hashtopolis";' . "\n";
 $CONFIG .= '$CONN["port"] = "3306";' . "\n";
 $CONFIG .= '$INSTALL = true;';
-if ($version == 'v0.8.0') {
-  file_put_contents($envPath . "src/inc/db.php", $CONFIG);
-}
-else {
-  $CONFIG .= '$PEPPER = ["abcd", "bcde", "cdef", "aaaa"];' . "\n";
-  file_put_contents($envPath . "src/inc/conf.php", $CONFIG);
-  
-  // this is to make sure that also old db configs are working
-  file_put_contents($envPath . "src/inc/db.php", $CONFIG);
-}
+$CONFIG .= '$PEPPER = ["abcd", "bcde", "cdef", "aaaa"];' . "\n";
+
+file_put_contents($envPath . "src/inc/conf.php", $CONFIG);
+// this is to make sure that also old db configs are working
+file_put_contents($envPath . "src/inc/db.php", $CONFIG);
 
 $db = new PDO("mysql:host=localhost;port=3306", "root", "");
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
