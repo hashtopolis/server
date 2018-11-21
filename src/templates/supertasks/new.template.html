@@ -57,9 +57,9 @@
 								  }
                 {{ENDFOREACH}}
 
-                configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
                 $("#crackerBinaryType").change(function() {
-                    configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                    configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
                 });
 
                 function configureDropDownLists(ddl1, ddl2) {
