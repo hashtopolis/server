@@ -35,14 +35,14 @@
 				  <td>
             <div class="d-flex">
               <div class="col">
-                <select name="crackerBinaryTypeId" id="crackerBinaryType" class="form-control" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinaryTypeId" class="form-control" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
                 </select>
               </div>
               <div class="col">
-                <select name="crackerBinaryVersionId" id="crackerBinaryVersion" class="form-control" title="Binary Version">
+                <select name="crackerBinaryVersionId" id="crackerBinaryVersionId" class="form-control" title="Binary Version">
                   <option value="0">&nbsp;</option>
                 </select>
               </div>
@@ -57,9 +57,9 @@
 								  }
                 {{ENDFOREACH}}
 
-                configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
                 $("#crackerBinaryType").change(function() {
-                    configureDropDownLists(document.getElementById('crackerBinaryType'), document.getElementById('crackerBinaryVersion'));
+                    configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
                 });
 
                 function configureDropDownLists(ddl1, ddl2) {
