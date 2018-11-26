@@ -1,3 +1,9 @@
+# v0.10.1 -> v0.x.x
+
+## Bugfixes
+
+- Fixed wrong task speed summation for task overview page.
+
 # v0.10.0 -> v0.10.1
 
 ## Bugfixes
