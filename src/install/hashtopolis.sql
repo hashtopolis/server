@@ -166,7 +166,9 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (68, 1, 'hashcatBrainPort', '0'),
   (69, 1, 'hashcatBrainPass', ''),
   (70, 1, 'hashlistImportCheck', '0'),
-  (71, 5, 'allowDeregister', '0');
+  (71, 5, 'allowDeregister', '0'),
+  (72, 4, 'agentTempThreshold1', '70'),
+  (73, 4, 'agentTempThreshold2', '80');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,

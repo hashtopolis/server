@@ -69,15 +69,17 @@ class DConfig {
   const MAX_HASHLIST_SIZE    = "maxHashlistSize";
   
   // Section: UI
-  const TIME_FORMAT           = "timefmt";
-  const DONATE_OFF            = "donateOff";
-  const HIDE_IMPORT_MASKS     = "hideImportMasks";
-  const HASHES_PER_PAGE       = "hashesPerPage";
-  const HIDE_IP_INFO          = "hideIpInfo";
-  const SHOW_TASK_PERFORMANCE = "showTaskPerformance";
-  const AGENT_STAT_LIMIT      = "agentStatLimit";
-  const AGENT_STAT_TENSION    = "agentStatTension";
-  const MAX_SESSION_LENGTH    = "maxSessionLength";
+  const TIME_FORMAT            = "timefmt";
+  const DONATE_OFF             = "donateOff";
+  const HIDE_IMPORT_MASKS      = "hideImportMasks";
+  const HASHES_PER_PAGE        = "hashesPerPage";
+  const HIDE_IP_INFO           = "hideIpInfo";
+  const SHOW_TASK_PERFORMANCE  = "showTaskPerformance";
+  const AGENT_STAT_LIMIT       = "agentStatLimit";
+  const AGENT_STAT_TENSION     = "agentStatTension";
+  const MAX_SESSION_LENGTH     = "maxSessionLength";
+  const AGENT_TEMP_THRESHOLD_1 = "agentTempThreshold1";
+  const AGENT_TEMP_THRESHOLD_2 = "agentTempThreshold2";
   
   // Section: Server
   const BASE_URL          = "baseUrl";
@@ -257,6 +259,10 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::ALLOW_DEREGISTER:
         return DConfigType::TICKBOX;
+      case DConfig::AGENT_TEMP_THRESHOLD_1:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::AGENT_TEMP_THRESHOLD_2:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -381,6 +387,10 @@ class DConfig {
         return "Check all hashes of a hashlist on import in case they are already cracked in another list";
       case DConfig::ALLOW_DEREGISTER:
         return "Allow clients to deregister themselves automatically from the server.";
+      case DConfig::AGENT_TEMP_THRESHOLD_1:
+        return "Temperature threshold from which on an agent is shown in orange on the agent status page";
+      case DConfig::AGENT_TEMP_THRESHOLD_2:
+        return "Temperature threshold from which on an agent is shown in red on the agent status page";
     }
     return $config;
   }
