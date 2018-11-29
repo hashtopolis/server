@@ -40,10 +40,10 @@ class AgentUtils {
     if ($max == 0) {
       return "#FF0000"; // either util 0 for all or an error occurred
     }
-    if ($max <= 70) {
+    if ($max <= SConfig::getInstance()->getVal(DConfig::AGENT_TEMP_THRESHOLD_1)) {
       return "#009933";
     }
-    else if ($max <= 80) {
+    else if ($max <= SConfig::getInstance()->getVal(DConfig::AGENT_TEMP_THRESHOLD_2)) {
       return "#ff9900";
     }
     else {
