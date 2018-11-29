@@ -14,13 +14,13 @@
   </div>
   <div class="row">
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> Utility is good (> [[$DConfig::AGENT_UTIL_THRESHOLD_1]]%)
+      <span style="color: #009933;">■</span> Utility is good (> [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> Utility not ideal (<= [[$DConfig::AGENT_UTIL_THRESHOLD_1]]%)
+      <span style="color: #ff9900;">■</span> Utility not ideal (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> Utility low (<= [[$DConfig::AGENT_UTIL_THRESHOLD_2]]%)
+      <span style="color: #800000;">■</span> Utility low (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_2]])]]%)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
       <span style="color: #CCCCCC;">■</span> Agent is not active
@@ -45,13 +45,13 @@
   </div>
   <div class="row">
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> Temperature good (<= [[$DConfig::AGENT_TEMP_THRESHOLD_1]]°C)
+      <span style="color: #009933;">■</span> Temperature good (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_1]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> Temperature acceptable (<= [[$DConfig::AGENT_TEMP_THRESHOLD_2]]°C)
+      <span style="color: #ff9900;">■</span> Temperature acceptable (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> Temperature too high (> [[$DConfig::AGENT_TEMP_THRESHOLD_2]]°C)
+      <span style="color: #800000;">■</span> Temperature too high (> [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
       <span style="color: #CCCCCC;">■</span> Agent is not active
