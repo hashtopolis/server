@@ -389,7 +389,7 @@ class Util {
       if ($chunk->getSolveTime() > $maxTime) {
         $maxTime = $chunk->getSolveTime();
       }
-      $speed = $chunk->getSpeed();
+      $speed += $chunk->getSpeed();
     }
     
     $isActive = false;

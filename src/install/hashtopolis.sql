@@ -55,7 +55,7 @@ CREATE TABLE `AgentBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
-  (1, 'python', '0.3.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
+  (1, 'python', '0.4.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11) NOT NULL,
@@ -161,8 +161,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (63, 1, 'priority0Start', '0'),
   (64, 5, 'baseUrl', ''),
   (65, 4, 'maxSessionLength', '48'),
-  (66, 1, 'hashcatBrainHost', ''),
-  (67, 1, 'hashcatBrainEnable', '0'),
+  (66, 1, 'hashcatBrainEnable', '0'),
+  (67, 1, 'hashcatBrainHost', ''),
   (68, 1, 'hashcatBrainPort', '0'),
   (69, 1, 'hashcatBrainPass', ''),
   (70, 1, 'hashlistImportCheck', '0'),
