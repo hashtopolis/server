@@ -40,6 +40,7 @@ class TaskTest extends HashtopolisTest {
       "name" => "",
       "hashlistId" => 0,
       "attackCmd" => "",
+      "chunksize" => 600,
       "statusTimer" => 5,
       "benchmarkType" => "speed",
       "color" => "",
