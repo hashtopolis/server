@@ -62,7 +62,7 @@ class TaskTest extends HashtopolisTest {
       $this->testFailed("TaskTest:testCreateTask", "Empty response");
     }
     else if (!$this->validState($response['response'], $assert)) {
-      $this->testFailed("TaskTest:testCreateTask(" . implode(",", $values) . ",$assert)", "Response does not match assert");
+      $this->testFailed("TaskTest:testCreateTask(" . HashtopolisTest::multiImplode(",", $values) . ",$assert)", "Response does not match assert");
     }
     else {
       $this->testSuccess("TaskTest:testListTasks");
