@@ -4,6 +4,10 @@
 
 - Fixed wrong task speed summation for task overview page.
 
+## Enhancements
+
+- Temperature and util thresholds for agent status page can be configured.
+
 # v0.10.0 -> v0.10.1
 
 ## Bugfixes
