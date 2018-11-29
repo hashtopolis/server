@@ -19,3 +19,11 @@ if(!isset($PRESENT["v0.10.x_conf1"])){
   Factory::getConfigFactory()->save($config);
   $EXECUTED["v0.10.x_conf1"] = true;
 }
+
+if(!isset($PRESENT["v0.10.x_conf2"])){
+  $config = new Config(null, 4, DConfig::AGENT_UTIL_THRESHOLD_1, '90');
+  Factory::getConfigFactory()->save($config);
+  $config = new Config(null, 4, DConfig::AGENT_UTIL_THRESHOLD_2, '75');
+  Factory::getConfigFactory()->save($config);
+  $EXECUTED["v0.10.x_conf2"] = true;
+}

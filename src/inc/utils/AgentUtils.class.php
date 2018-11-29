@@ -73,10 +73,10 @@ class AgentUtils {
       return "#FF0000"; // either util 0 for all or an error occurred
     }
     $avg = $sum / sizeof($util);
-    if ($avg > 90) {
+    if ($avg > SConfig::getInstance()->getVal(DConfig::AGENT_UTIL_THRESHOLD_1)) {
       return "#009933";
     }
-    else if ($avg > 75) {
+    else if ($avg > DConfig::AGENT_UTIL_THRESHOLD_2) {
       return "#ff9900";
     }
     else {

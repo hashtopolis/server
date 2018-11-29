@@ -168,7 +168,9 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (70, 1, 'hashlistImportCheck', '0'),
   (71, 5, 'allowDeregister', '0'),
   (72, 4, 'agentTempThreshold1', '70'),
-  (73, 4, 'agentTempThreshold2', '80');
+  (73, 4, 'agentTempThreshold2', '80'),
+  (74, 4, 'agentUtilThreshold1', '90'),
+  (75, 4, 'agentUtilThreshold2', '75');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,

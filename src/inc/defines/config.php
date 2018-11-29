@@ -80,6 +80,8 @@ class DConfig {
   const MAX_SESSION_LENGTH     = "maxSessionLength";
   const AGENT_TEMP_THRESHOLD_1 = "agentTempThreshold1";
   const AGENT_TEMP_THRESHOLD_2 = "agentTempThreshold2";
+  const AGENT_UTIL_THRESHOLD_1 = "agentUtilThreshold1";
+  const AGENT_UTIL_THRESHOLD_2 = "agentUtilThreshold2";
   
   // Section: Server
   const BASE_URL          = "baseUrl";
@@ -263,6 +265,10 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::AGENT_TEMP_THRESHOLD_2:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::AGENT_UTIL_THRESHOLD_1:
+        return DConfigType::NUMBER_INPUT;
+      case DConfig::AGENT_UTIL_THRESHOLD_2:
+        return DConfigType::NUMBER_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -388,9 +394,13 @@ class DConfig {
       case DConfig::ALLOW_DEREGISTER:
         return "Allow clients to deregister themselves automatically from the server.";
       case DConfig::AGENT_TEMP_THRESHOLD_1:
-        return "Temperature threshold from which on an agent is shown in orange on the agent status page";
+        return "Temperature threshold from which on an agent is shown in orange on the agent status page.";
       case DConfig::AGENT_TEMP_THRESHOLD_2:
-        return "Temperature threshold from which on an agent is shown in red on the agent status page";
+        return "Temperature threshold from which on an agent is shown in red on the agent status page.";
+      case DConfig::AGENT_UTIL_THRESHOLD_1:
+        return "Util value where an agent is shown in orange on the agent status page, if below.";
+      case DConfig::AGENT_UTIL_THRESHOLD_2:
+        return "Util value where an agent is shown in red on the agent status page, if below.";
     }
     return $config;
   }
