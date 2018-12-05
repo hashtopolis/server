@@ -439,7 +439,7 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
+    $initialProgress = ($task->getIsPrince() || $task->getForcePipe()) ? null : 0;
     $chunk->setState(0);
     $chunk->setProgress($initialProgress);
     $chunk->setCheckpoint($chunk->getSkip());
@@ -752,7 +752,7 @@ class TaskUtils {
       for ($j = $i; $j < $i + $linesPerFile && $j < sizeof($content); $j++) {
         $copy[] = $content[$j];
       }
-      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy). "\n");
+      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy) . "\n");
       $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
@@ -1083,7 +1083,7 @@ class TaskUtils {
     if ($taskWrapper1->getPriority() > $taskWrapper2->getPriority()) {
       return $task1; // if first task wrapper has more priority, this task should be done
     }
-    else if($taskWrapper1->getPriority() == $taskWrapper2->getPriority() && $task1->getPriority() > $task2->getPriority()){
+    else if ($taskWrapper1->getPriority() == $taskWrapper2->getPriority() && $task1->getPriority() > $task2->getPriority()) {
       return $task1; // if both wrappers have the same priority but the subtask not (this can be the case when comparing supertasks)
     }
     return $task2;
@@ -1151,5 +1151,36 @@ class TaskUtils {
     }
     Factory::getTaskWrapperFactory()->delete($taskWrapper);
     Factory::getAgentFactory()->getDB()->commit();
+  }
+  
+  /**
+   * @param $taskId
+   * @param $user
+   * @return array
+   * @throws HTException
+   */
+  public static function getCrackedHashes($taskId, $user) {
+    $task = TaskUtils::getTask($taskId, $user);
+    $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
+    $hashlist = HashlistUtils::getHashlist($taskWrapper->getHashlistId());
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+    $hashes = [];
+    $chunkIds = Util::arrayOfIds($chunks);
+    $qF1 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
+    $qF2 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
+    $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    foreach ($entries as $entry) {
+      $arr = [
+        "hash" => $entry->getHash(),
+        "plain" => $entry->getPlaintext(),
+        "crackpos" => $entry->getCrackPos()
+      ];
+      if (strlen($entry->getSalt()) > 0) {
+        $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+      }
+      $hashes[] = $arr;
+    }
+    return $hashes;
   }
 }

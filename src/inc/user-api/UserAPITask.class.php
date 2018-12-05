@@ -64,6 +64,9 @@ class UserAPITask extends UserAPIBasic {
         case USectionTask::ARCHIVE_SUPERTASK:
           $this->archiveSupertask($QUERY);
           break;
+        case USectionTask::GET_CRACKED:
+          $this->getCracked($QUERY);
+          break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -71,6 +74,24 @@ class UserAPITask extends UserAPIBasic {
     catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
+  }
+  
+  /**
+   * @param $QUERY
+   * @throws HTException
+   */
+  private function getCracked($QUERY){
+    if (!isset($QUERY[UQueryTask::TASK_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    $cracks = TaskUtils::getCrackedHashes($QUERY[UQueryTask::TASK_ID], $this->user);
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK,
+      UResponseTask::CRACKED => $cracks
+    ];
+    $this->sendResponse($response);
   }
   
   /**

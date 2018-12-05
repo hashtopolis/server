@@ -284,6 +284,8 @@ class UResponseTask extends UResponse {
   const CHUNK_STATE      = "state";
   const CHUNK_CRACKED    = "cracked";
   const CHUNK_SPEED      = "speed";
+  
+  const CRACKED = "cracked";
 }
 
 class UResponseHashlist extends UResponse {
@@ -582,6 +584,7 @@ class USectionTask extends UApi {
   const GET_TASK      = "getTask";
   const LIST_SUBTASKS = "listSubtasks";
   const GET_CHUNK     = "getChunk";
+  const GET_CRACKED   = "getCracked";
   
   const CREATE_TASK   = "createTask";
   const RUN_PRETASK   = "runPretask";
@@ -645,6 +648,8 @@ class USectionTask extends UApi {
         return "Archive tasks";
       case USectionTask::ARCHIVE_SUPERTASK:
         return "Archive supertasks";
+      case USectionTask::GET_CRACKED:
+        return "Retrieve all cracked hashes by a task";
       default:
         return "__" . $constant . "__";
     }
