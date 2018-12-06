@@ -738,10 +738,10 @@ class HashlistUtils {
     else if ($salted == '1' && strlen($saltSeparator) == 0) {
       throw new HTException("Salt separator cannot be empty when hashes are salted!");
     }
-    else if ($brainId && !SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_ENABLE)){
+    else if ($brainId && !SConfig::getInstance()->getVal(DConfig::HASHCAT_BRAIN_ENABLE)) {
       throw new HTException("Hashcat brain cannot be used if not enabled in config!");
     }
-    else if($brainId && $brainFeatures < 1 || $brainFeatures > 3){
+    else if ($brainId && $brainFeatures < 1 || $brainFeatures > 3) {
       throw new HTException("Invalid brain features selected!");
     }
     
@@ -820,23 +820,23 @@ class HashlistUtils {
             continue;
           }
           //TODO: check hash length here
-
+          
           // if selected check if it is cracked
           $found = null;
-          if(SConfig::getInstance()->getVal(DConfig::HASHLIST_IMPORT_CHECK)){
+          if (SConfig::getInstance()->getVal(DConfig::HASHLIST_IMPORT_CHECK)) {
             $qF = new QueryFilter(Hash::HASH, $hash, "=");
             $check = Factory::getHashFactory()->filter([Factory::FILTER => $qF]);
-            foreach($check as $c){
-              if($c->getIsCracked()){
+            foreach ($check as $c) {
+              if ($c->getIsCracked()) {
                 $found = $c;
                 break;
               }
             }
           }
-          if($found == null){
+          if ($found == null) {
             $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, "", 0, null, 0, 0);
           }
-          else{
+          else {
             $values[] = new Hash(null, $hashlist->getId(), $hash, $salt, $found->getPlaintext(), time(), null, 1, 0);
             $preFound++;
           }
@@ -1041,5 +1041,37 @@ class HashlistUtils {
     
     $file = new File(null, $tmpname, Util::filesize($tmpfile), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId());
     return Factory::getFileFactory()->save($file);
+  }
+  
+  /**
+   * @param $hashlistId int
+   * @param $user User
+   * @return array
+   * @throws HTException
+   */
+  public static function getCrackedHashes($hashlistId, $user) {
+    $hashlist = HashlistUtils::getHashlist($hashlistId);
+    $lists = Util::checkSuperHashlist($hashlist);
+    if (!AccessUtils::userCanAccessHashlists($lists, $user)) {
+      throw new HTException("No access to the hashlists!");
+    }
+    
+    $hashlistIds = Util::arrayOfIds($lists);
+    $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
+    $qF2 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
+    $hashes = [];
+    $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    foreach ($entries as $entry) {
+      $arr = [
+        "hash" => $entry->getHash(),
+        "plain" => $entry->getPlaintext(),
+        "crackpos" => $entry->getCrackPos()
+      ];
+      if (strlen($entry->getSalt()) > 0) {
+        $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+      }
+      $hashes[] = $arr;
+    }
+    return $hashes;
   }
 }

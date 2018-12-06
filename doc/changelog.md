@@ -10,6 +10,7 @@
 - Temperature and util thresholds for agent status page can be configured.
 - User API can provide all cracks for a given task.
 - User API provides information if task is complete or not.
+- User API can provide all cracks for a given hashlist.
 
 # v0.10.0 -> v0.10.1
 

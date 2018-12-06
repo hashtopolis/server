@@ -325,6 +325,7 @@ class UResponseHashlist extends UResponse {
   const HASH     = "hash";
   const PLAIN    = "plain";
   const CRACKPOS = "crackpos";
+  const CRACKED  = "cracked";
 }
 
 class UResponseSuperhashlist extends UResponse {
@@ -743,6 +744,7 @@ class USectionHashlist extends UApi {
   
   const DELETE_HASHLIST = "deleteHashlist";
   const GET_HASH        = "getHash";
+  const GET_CRACKED     = "getCracked";
   
   public function describe($constant) {
     switch ($constant) {
@@ -768,6 +770,8 @@ class USectionHashlist extends UApi {
         return "Delete hashlists";
       case USectionHashlist::GET_HASH:
         return "Query for specific hashes";
+      case USectionHashlist::GET_CRACKED:
+        return "Query cracked hashes of a hashlist";
       default:
         return "__" . $constant . "__";
     }

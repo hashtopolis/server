@@ -39,6 +39,9 @@ class UserAPIHashlist extends UserAPIBasic {
         case USectionHashlist::GET_HASH:
           $this->getHash($QUERY);
           break;
+        case USectionHashlist::GET_CRACKED:
+          $this->getCracked($QUERY);
+          break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -46,6 +49,24 @@ class UserAPIHashlist extends UserAPIBasic {
     catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
+  }
+  
+  /**
+   * @param $QUERY
+   * @throws HTException
+   */
+  private function getCracked($QUERY){
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    $cracks = HashlistUtils::getCrackedHashes($QUERY[UQueryHashlist::HASHLIST_ID], $this->user);
+    $response = [
+      UResponseHashlist::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseHashlist::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseHashlist::RESPONSE => UValues::OK,
+      UResponseHashlist::CRACKED => $cracks
+    ];
+    $this->sendResponse($response);
   }
   
   /**
