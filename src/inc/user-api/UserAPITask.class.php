@@ -408,7 +408,7 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::TASK_KEYSPACE => (int)$task->getKeyspace(),
       UResponseTask::TASK_DISPATCHED => (int)$task->getKeyspaceProgress(),
       UResponseTask::TASK_HASHLIST => (int)$taskWrapper->getHashlistId(),
-      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId(),
+      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId()
     ];
     
     $files = TaskUtils::getFilesOfTask($task);
@@ -453,7 +453,9 @@ class UserAPITask extends UserAPIBasic {
         UResponseTask::TASK_AGENTS_SPEED => (int)$speed
       ];
     }
+    
     $response[UResponseTask::TASK_AGENTS] = $arr;
+    $response[UResponseTask::IS_COMPLETE] = TaskUtils::isFinished($task);
     $this->sendResponse($response);
   }
   
