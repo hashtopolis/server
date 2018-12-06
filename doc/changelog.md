@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - Fixed wrong task speed summation for task overview page.
+- Fixed error on hashlist hash retrieval.
 
 ## Enhancements
 

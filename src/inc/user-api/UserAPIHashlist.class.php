@@ -38,6 +38,7 @@ class UserAPIHashlist extends UserAPIBasic {
           break;
         case USectionHashlist::GET_HASH:
           $this->getHash($QUERY);
+          break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
