@@ -4,6 +4,7 @@
 
 - Fixed wrong task speed summation for task overview page.
 - Fixed XSS on hashes view page when printing a hashlist.
+- Fixed missing check for blacklisted characters when editing task.
 
 # v0.10.0 -> v0.10.1
 

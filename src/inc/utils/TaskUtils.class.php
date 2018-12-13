@@ -133,6 +133,9 @@ class TaskUtils {
     else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command must contain the hashlist alias!");
     }
+    else if (Util::containsBlacklistedChars($attackCmd)) {
+      throw new HTException("The attack command must contain no blacklisted characters!");
+    }
     
     $task = TaskUtils::getTask($taskId, $user);
     if ($task->getAttackCmd() == $attackCmd) {
@@ -439,7 +442,7 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
+    $initialProgress = ($task->getIsPrince() || $task->getForcePipe()) ? null : 0;
     $chunk->setState(0);
     $chunk->setProgress($initialProgress);
     $chunk->setCheckpoint($chunk->getSkip());
@@ -752,7 +755,7 @@ class TaskUtils {
       for ($j = $i; $j < $i + $linesPerFile && $j < sizeof($content); $j++) {
         $copy[] = $content[$j];
       }
-      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy). "\n");
+      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy) . "\n");
       $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
@@ -1083,7 +1086,7 @@ class TaskUtils {
     if ($taskWrapper1->getPriority() > $taskWrapper2->getPriority()) {
       return $task1; // if first task wrapper has more priority, this task should be done
     }
-    else if($taskWrapper1->getPriority() == $taskWrapper2->getPriority() && $task1->getPriority() > $task2->getPriority()){
+    else if ($taskWrapper1->getPriority() == $taskWrapper2->getPriority() && $task1->getPriority() > $task2->getPriority()) {
       return $task1; // if both wrappers have the same priority but the subtask not (this can be the case when comparing supertasks)
     }
     return $task2;
