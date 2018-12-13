@@ -133,6 +133,9 @@ class TaskUtils {
     else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command must contain the hashlist alias!");
     }
+    else if (Util::containsBlacklistedChars($attackCmd)) {
+      throw new HTException("The attack command must contain no blacklisted characters!");
+    }
     
     $task = TaskUtils::getTask($taskId, $user);
     if ($task->getAttackCmd() == $attackCmd) {
