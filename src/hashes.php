@@ -209,11 +209,11 @@ foreach ($hashes as $hash) {
   $hash = \DBA\Util::cast($hash, $hashClass);
   if ($displaying == "") {
     if (!$binaryFormat) {
-      $output .= $hash->getHash();
+      $output .= htmlentities($hash->getHash(), ENT_QUOTES, "UTF-8");
     }
     else if ($binaryFormat && $isWpa) {
       /** @var $hash HashBinary */
-      $output .= $hash->getEssid();
+      $output .= htmlentities($hash->getEssid(), ENT_QUOTES, "UTF-8");
     }
     else {
       $output .= "[...]";

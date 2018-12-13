@@ -4,6 +4,7 @@
 
 - Fixed wrong task speed summation for task overview page.
 - Fixed error on hashlist hash retrieval.
+- Fixed XSS on hashes view page when printing a hashlist.
 
 ## Enhancements
 

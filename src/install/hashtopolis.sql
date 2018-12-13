@@ -195,7 +195,7 @@ CREATE TABLE `CrackerBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '5.0.0', 'https://hashcat.net/files/hashcat-5.0.0.7z', 'hashcat');
+  (1, 1, '5.1.0', 'https://hashcat.net/files/hashcat-5.1.0.7z', 'hashcat');
 
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)     NOT NULL,
