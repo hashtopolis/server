@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - Fixed wrong task speed summation for task overview page.
+- Fixed XSS on hashes view page when printing a hashlist.
 
 # v0.10.0 -> v0.10.1
 
