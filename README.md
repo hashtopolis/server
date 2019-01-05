@@ -44,7 +44,7 @@ In an effort to make the Hashtopussy project conform to a more politically neutr
 - Small and/or CPU-only tasks
 - Group assignment for agents and users for fine-grained access-control
 - Compatible with crackers supporting certain flags
-- Report generation fro executed attacks and agent status
+- Report generation for executed attacks and agent status
 - Multiple file distribution variants
 
 ## Setup and Usage
