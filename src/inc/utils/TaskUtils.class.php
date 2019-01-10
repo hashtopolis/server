@@ -627,6 +627,7 @@ class TaskUtils {
    * @param string $notes
    * @param int $staticChunking
    * @param int $chunkSize
+   * @return Task
    * @throws HTException
    */
   public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
@@ -729,6 +730,7 @@ class TaskUtils {
     
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
+    return $task;
   }
   
   /**

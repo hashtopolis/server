@@ -80,7 +80,7 @@ class UserAPITask extends UserAPIBasic {
    * @param $QUERY
    * @throws HTException
    */
-  private function getCracked($QUERY){
+  private function getCracked($QUERY) {
     if (!isset($QUERY[UQueryTask::TASK_ID])) {
       throw new HTException("Invalid query!");
     }
@@ -299,7 +299,7 @@ class UserAPITask extends UserAPIBasic {
         throw new HTException("Invalid query!");
       }
     }
-    TaskUtils::createTask(
+    $task = TaskUtils::createTask(
       $QUERY[UQueryTask::TASK_HASHLIST],
       $QUERY[UQueryTask::TASK_NAME],
       $QUERY[UQueryTask::TASK_ATTACKCMD],
@@ -316,7 +316,13 @@ class UserAPITask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_CRACKER_VERSION],
       $this->user
     );
-    $this->sendSuccessResponse($QUERY);
+    $this->sendResponse(array(
+        UResponseTask::SECTION => $QUERY[UQuery::SECTION],
+        UResponseTask::REQUEST => $QUERY[UQuery::REQUEST],
+        UResponseTask::RESPONSE => UValues::OK,
+        UResponseTask::TASK_ID => (int)$task->getId()
+      )
+    );
   }
   
   /**
