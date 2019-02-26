@@ -19,6 +19,7 @@ use DBA\Chunk;
 use DBA\AgentError;
 use DBA\Zap;
 use DBA\Factory;
+use DBA\Speed;
 
 class HashlistUtils {
   /**
@@ -582,6 +583,8 @@ class HashlistUtils {
       Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
       $qF = new ContainFilter(Chunk::TASK_ID, Util::arrayOfIds($taskList));
       Factory::getChunkFactory()->massDeletion([Factory::FILTER => $qF]);
+      $qF = new ContainFilter(Speed::TASK_ID, Util::arrayOfIds($taskList));
+      Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
       $qF = new ContainFilter(AgentError::TASK_ID, Util::arrayOfIds($taskList));
       Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
     }
