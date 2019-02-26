@@ -1194,6 +1194,6 @@ class TaskUtils {
    * @return bool
    */
   public static function isFinished($task) {
-    return ($task->getKeyspace() > 0 && Util::getTaskInfo($task)[0] == $task->getKeyspace());
+    return ($task->getKeyspace() > 0 && Util::getTaskInfo($task)[0] >= $task->getKeyspace());
   }
 }
