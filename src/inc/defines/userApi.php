@@ -285,8 +285,9 @@ class UResponseTask extends UResponse {
   const CHUNK_CRACKED    = "cracked";
   const CHUNK_SPEED      = "speed";
   
-  const CRACKED     = "cracked";
-  const IS_COMPLETE = "isComplete";
+  const CRACKED       = "cracked";
+  const IS_COMPLETE   = "isComplete";
+  const WORK_POSSIBLE = "workPossible";
 }
 
 class UResponseHashlist extends UResponse {

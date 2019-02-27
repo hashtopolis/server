@@ -393,6 +393,7 @@ class UserAPITask extends UserAPIBasic {
     }
     $task = TaskUtils::getTask($QUERY[UQueryTask::TASK_ID], $this->user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $this->user);
+    $hashlist = HashlistUtils::getHashlist($taskWrapper->getHashlistId());
     
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
@@ -461,7 +462,8 @@ class UserAPITask extends UserAPIBasic {
     }
     
     $response[UResponseTask::TASK_AGENTS] = $arr;
-    $response[UResponseTask::IS_COMPLETE] = TaskUtils::isFinished($task);
+    $response[UResponseTask::IS_COMPLETE] = (bool)TaskUtils::isFinished($task);
+    $response[UResponseTask::WORK_POSSIBLE] = (bool)(TaskUtils::isFinished($task) || $hashlist->getCracked() >= $hashlist->getHashCount());
     $this->sendResponse($response);
   }
   
