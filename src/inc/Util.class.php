@@ -37,27 +37,27 @@ class Util {
   /**
    * Determines the file extension of the given file name (based on the last dot).
    * Returns an empty string if no extension was found.
-   * 
-   * @param string $filename 
+   *
+   * @param string $filename
    * @return string
    */
-  public static function extractFileExtension($filename){
+  public static function extractFileExtension($filename) {
     $split = explode(".", $filename);
-    if(sizeof($split) == 1){
+    if (sizeof($split) == 1) {
       return "";
     }
-    return $split[sizeof($split)-1];
+    return $split[sizeof($split) - 1];
   }
-
+  
   /**
    * Downloads the data at the given url and saves it at the specified destination.
    * It will overwrite files if they already exist.
-   * 
-   * @param string $url 
-   * @param string $dest 
-   * @throws HTException 
+   *
+   * @param string $url
+   * @param string $dest
+   * @throws HTException
    */
-  public static function downloadFromUrl($url, $dest){
+  public static function downloadFromUrl($url, $dest) {
     $furl = fopen($url, "rb");
     if (!$furl) {
       throw new HTException("Failed to open URL!");
@@ -76,55 +76,55 @@ class Util {
     fclose($fileLocation);
     fclose($furl);
   }
-
+  
   /**
    * Loads the last speed data on a specific task. Either for the full task, or a specific agent.
    * The data is provided as an associative array with the timestamps as keys.
-   * 
-   * @param int $taskId  
-   * @param int $limit 
-   * @param int $agentId corresponding agent to show data from, 0 to sum up from all agents on this task 
+   *
+   * @param int $taskId
+   * @param int $limit
+   * @param int $agentId corresponding agent to show data from, 0 to sum up from all agents on this task
    * @param int $delta time distance between the data points
    * @return int[]
    */
-  public static function getSpeedDataSet($taskId, $limit = 50, $agentId = 0, $delta = 10){
+  public static function getSpeedDataSet($taskId, $limit = 50, $agentId = 0, $delta = 10) {
     // if agentId is 0 we need to find out how many agents there are to find how many entries we would need max
     $requestLimit = intval($limit) * $delta / 5;
-    if($agentId == 0){ // This might be to rewritten, it's just an estimation how to calculate an ideal number of entries to be requested
+    if ($agentId == 0) { // This might be to rewritten, it's just an estimation how to calculate an ideal number of entries to be requested
       // we cannot request all entries here as this number might grow quite quickly over time
       $qF = new QueryFilter(Assignment::TASK_ID, $taskId, "=");
       $agentCount = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]) + 1;
       $requestLimit = $agentCount * $limit * $delta / 5;
     }
-
+    
     $qF1 = new QueryFilter(Speed::TASK_ID, $taskId, "=");
     $oF = new OrderFilter(Speed::SPEED_ID, "DESC LIMIT $requestLimit");
-    if($agentId > 0){
+    if ($agentId > 0) {
       $qF2 = new QueryFilter(Speed::AGENT_ID, $agentId, "=");
       $entries = Factory::getSpeedFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
     }
-    else{
+    else {
       $entries = Factory::getSpeedFactory()->filter([Factory::FILTER => $qF1, Factory::ORDER => $oF]);
     }
-
-    if(sizeof($entries) == 0){
+    
+    if (sizeof($entries) == 0) {
       return [];
     }
-
+    
     $data = [];
     $used = [];
-    for($i=0;$i<$limit;$i++){
+    for ($i = 0; $i < $limit; $i++) {
       $data[$i] = 0;
       $used[$i] = [];
     }
-
+    
     $first = $entries[0]->getTime();
-    foreach($entries as $entry){
+    foreach ($entries as $entry) {
       $pos = $limit - 1 - floor(($first - $entry->getTime()) / $delta);
-      if($pos < 0){
+      if ($pos < 0) {
         continue; // too old entry
       }
-      else if(in_array($entry->getAgentId(), $used[$pos])){
+      else if (in_array($entry->getAgentId(), $used[$pos])) {
         continue; // if we already have a newer entry in this range, we ignore it
       }
       $data[$pos] += $entry->getSpeed();
@@ -134,21 +134,21 @@ class Util {
     // prepare with timestamps
     $first = round($first, -log10($delta));
     $timestampData = [];
-    foreach($data as $key => $val){
+    foreach ($data as $key => $val) {
       $timestampData[$first - ($limit - 1 - $key) * $delta] = $val;
     }
     return $timestampData;
   }
-
+  
   /**
    * Get the hashtype name by its ID
-   * 
-   * @param int $hashtypeId 
+   *
+   * @param int $hashtypeId
    * @return string
    */
-  public static function getHashtypeById($hashtypeId){
+  public static function getHashtypeById($hashtypeId) {
     $hashtype = Factory::getHashTypeFactory()->get($hashtypeId);
-    if($hashtype == null){
+    if ($hashtype == null) {
       return "N/A";
     }
     return $hashtype->getDescription();
@@ -168,14 +168,14 @@ class Util {
       $branch = trim(substr($head, strlen("ref: refs/heads/"), -1));
       if (file_exists($gitfolder . "/refs/heads/" . $branch)) {
         $commit = trim(file_get_contents($gitfolder . "/refs/heads/" . $branch));
-        if($hashOnly){
+        if ($hashOnly) {
           return $commit;
         }
         $gitcommit = "commit " . substr($commit, 0, 7) . " branch $branch";
       }
       else {
         $commit = $head;
-        if($hashOnly){
+        if ($hashOnly) {
           return $commit;
         }
         $gitcommit = "commit " . substr($commit, 0, 7);
@@ -194,10 +194,14 @@ class Util {
     $binary = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
     if ($binary != null) {
       if (Util::versionComparison($binary->getVersion(), $version) == 1) {
-        if(!$silent) echo "update $type version... ";
+        if (!$silent) {
+          echo "update $type version... ";
+        }
         $binary->setVersion($version);
         Factory::getAgentBinaryFactory()->update($binary);
-        if(!$silent) echo "OK";
+        if (!$silent) {
+          echo "OK";
+        }
       }
     }
   }
@@ -564,8 +568,8 @@ class Util {
   }
   
   /**
-   * Checks if it is longer than 10 mins since the last time it was checked if there are 
-   * any old agent statistic entries which can be deleted. If necessary, check is executed 
+   * Checks if it is longer than 10 mins since the last time it was checked if there are
+   * any old agent statistic entries which can be deleted. If necessary, check is executed
    * and old entries are deleted.
    */
   public static function agentStatCleaning() {
@@ -624,7 +628,7 @@ class Util {
       return -1;
     }
     $fp = fopen($file, "rb");
-    if ($fp === false){
+    if ($fp === false) {
       return -1;
     }
     $pos = 0;
@@ -1100,7 +1104,10 @@ class Util {
     if ($dec > 0) {
       $pointPosition = strpos($return, ".");
       if ($pointPosition === false) {
-        $return .= ".00";
+        $return .= ".";
+        for ($i = 0; $i < $dec; $i++) {
+          $return .= "0";
+        }
       }
       else {
         while (strlen($return) - $pointPosition <= $dec) {
