@@ -219,7 +219,7 @@ class UResponseTask extends UResponse {
   const TASK_ID               = "taskId";
   const TASK_NAME             = "name";
   const TASK_ATTACK           = "attack";
-  const TASK_CHUNKSIZE        = "cunksize";
+  const TASK_CHUNKSIZE        = "chunksize";
   const TASK_COLOR            = "color";
   const TASK_BENCH_TYPE       = "benchmarkType";
   const TASK_STATUS           = "statusTimer";
