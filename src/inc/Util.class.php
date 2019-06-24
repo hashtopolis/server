@@ -910,6 +910,18 @@ class Util {
   }
   
   /**
+   * @param string $versionString1
+   * @param string $versionString2
+   * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
+   */
+  public static function updateVersionComparison($versionString1, $versionString2) {
+    $version1 = $minor = substr($versionString1, 8, strpos($versionString1, "_", 7) - 10);
+    $version2 = $minor = substr($versionString2, 8, strpos($versionString2, "_", 7) - 10);
+    
+    return Util::versionComparison($version1, $version2);
+  }
+  
+  /**
    * Shows big numbers with the right suffixes (k, M, G)
    * @param int $num integer you want formatted
    * @param int $threshold default 1024
