@@ -915,6 +915,9 @@ class Util {
    * @return int 1 if version2 is newer, 0 if equal and -1 if version1 is newer
    */
   public static function updateVersionComparison($versionString1, $versionString2) {
+    if (!Util::startsWith($versionString1, "update_v") || !Util::startsWith($versionString2, "update_v")) {
+      return 0;
+    }
     $version1 = $minor = substr($versionString1, 8, strpos($versionString1, "_", 7) - 10);
     $version2 = $minor = substr($versionString2, 8, strpos($versionString2, "_", 7) - 10);
     
