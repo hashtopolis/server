@@ -162,7 +162,7 @@ class UserAPIPretask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_COLOR],
       ($QUERY[UQueryTask::TASK_CPU_ONLY]) ? 1 : 0,
       ($QUERY[UQueryTask::TASK_SMALL]) ? 1 : 0,
-      $QUERY[UQueryTask::TASK_BENCHTYPE],
+      ($QUERY[UQueryTask::TASK_BENCHTYPE] == 'speed') ? 1 : 0,
       $QUERY[UQueryTask::TASK_FILES],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],
       $priority

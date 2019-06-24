@@ -6,6 +6,7 @@
 - Fixed error on hashlist hash retrieval.
 - Fixed XSS on hashes view page when printing a hashlist.
 - Fixed missing check for blacklisted characters when editing task.
+- Fixed issue with creating a preconfigured task from the API.
 
 ## Enhancements
 
