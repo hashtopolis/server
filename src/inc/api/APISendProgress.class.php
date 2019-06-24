@@ -187,7 +187,7 @@ class APISendProgress extends APIBasic {
           $hashes = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
           if (sizeof($hashes) == 0) {
             $skipped++;
-            continue;
+            break;
           }
           else if (sizeof($splitLine) == 5) {
             $plain = $splitLine[2]; // if hash is salted
