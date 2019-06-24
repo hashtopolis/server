@@ -104,14 +104,15 @@ class AgentBinaryUtils {
     if(!AgentBinaryUtils::checkUpdate($binaryId)){
       throw new HTException("No update available!");
     }
+    $track = $agentBinary->getUpdateTrack();
 
     $extension = Util::extractFileExtension($agentBinary->getFilename());
     
     // download file to tmp directory
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
     
     // download checksum
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/all/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
 
     // check checksum
     $sum = hash_file("sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
@@ -158,7 +159,7 @@ class AgentBinaryUtils {
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_URL => HTP_AGENT_ARCHIVE . $agent . '/' . $track,
+        CURLOPT_URL => HTP_AGENT_ARCHIVE . $agent . '/' . $track . '/HEAD',
     ));
     $resp = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
