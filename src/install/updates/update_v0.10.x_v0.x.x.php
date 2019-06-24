@@ -27,3 +27,8 @@ if(!isset($PRESENT["v0.10.x_conf2"])){
   Factory::getConfigFactory()->save($config);
   $EXECUTED["v0.10.x_conf2"] = true;
 }
+
+if(!isset($PRESENT["v0.10.x_agentBinaries"])){
+  Util::checkAgentVersion("python", "0.5.0", true);
+  $EXECUTED["v0.10.x_agentBinaries"] = true;
+}
