@@ -676,14 +676,27 @@ class Util {
    * @return Hashlist[] of all superhashlists belonging to the $list
    */
   public static function checkSuperHashlist($hashlist) {
-    if ($hashlist->getFormat() == 3) {
-      $hashlistJoinFilter = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
-      $superHashListFilter = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
-      $joined = Factory::getHashlistHashlistFactory()->filter([Factory::JOIN => $hashlistJoinFilter, Factory::FILTER => $superHashListFilter]);
-      $lists = $joined[Factory::getHashlistFactory()->getModelName()];
-      return $lists;
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+      $jF = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
+      $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
+      $joined = Factory::getHashlistHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
+      return $joined[Factory::getHashlistFactory()->getModelName()];
     }
     return array($hashlist);
+  }
+  
+  /**
+   * @param $hashlist Hashlist
+   * @return Hashlist[] all superhashlists which the hashlist is part of
+   */
+  public static function getParentSuperHashlists($hashlist) {
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+      return [];
+    }
+    $jF = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
+    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=");
+    $joined = Factory::getHashlistHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
+    return $joined[Factory::getHashlistFactory()->getModelName()];
   }
   
   /**

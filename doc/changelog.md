@@ -1,3 +1,9 @@
+# v0.11.0 -> v0.x.x
+
+## Bugfixes
+
+- Fixed increasing the superhashlist cracked count if there are cracks running one of the hashlists alone.
+
 # v0.10.1 -> v0.11.0
 
 ## Bugfixes
