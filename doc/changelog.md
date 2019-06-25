@@ -8,6 +8,7 @@
 - Fixed missing check for blacklisted characters when editing task.
 - Fixed issue with creating a preconfigured task from the API.
 - Fixed wrong rendering of forms when showing supertasks on hashlist pages.
+- Fixed wrong reporting of speed on tasks overview due to cached speeds.
 
 ## Enhancements
 

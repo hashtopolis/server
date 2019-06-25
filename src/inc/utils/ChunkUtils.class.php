@@ -29,6 +29,7 @@ class ChunkUtils {
       $chunk->setSolveTime(0);
       $chunk->setState(DHashcatStatus::INIT);
       $chunk->setAgentId($assignment->getAgentId());
+      $chunk->setSpeed(0);
       Factory::getChunkFactory()->update($chunk);
       return $chunk;
     }
@@ -43,6 +44,7 @@ class ChunkUtils {
       $firstPart->setSolveTime(0);
       $firstPart->setState(DHashcatStatus::INIT);
       $firstPart->setProgress($initialProgress);
+      $firstPart->setSpeed(0);
       Factory::getChunkFactory()->update($firstPart);
       $secondPart = new Chunk(null, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), $initialProgress, DHashcatStatus::INIT, 0, 0);
       $secondPart = Factory::getChunkFactory()->save($secondPart);
@@ -55,6 +57,7 @@ class ChunkUtils {
         // special case when remaining chunk length gets 0
         $chunk->setProgress(10000);
         $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
+        $chunk->setSpeed(0);
         Factory::getChunkFactory()->update($chunk);
         DServerLog::log(DServerLog::TRACE, "Remaining part is 0 for some reason, finished chunk", [$task, $chunk]);
         return ChunkUtils::createNewChunk($task, $assignment);
@@ -76,6 +79,7 @@ class ChunkUtils {
       $chunk->setLength($chunk->getCheckpoint() - $chunk->getSkip());
       $chunk->setProgress(10000);
       $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
+      $chunk->setSpeed(0);
       Factory::getChunkFactory()->update($chunk);
       $newChunk = Factory::getChunkFactory()->save($newChunk);
       DServerLog::log(DServerLog::TRACE, "Trimmed chunk and created new one of the remaining part", [$task, $chunk, $newChunk, $assignment]);
