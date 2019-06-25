@@ -1,4 +1,4 @@
-# v0.10.1 -> v0.x.x
+# v0.10.1 -> v0.11.0
 
 ## Bugfixes
 
@@ -19,6 +19,7 @@
 - User API can provide all cracks for a given task.
 - User API provides information if task is complete or not.
 - User API can provide all cracks for a given hashlist.
+- Support for new Hashcat versions without 32/64-bit naming.
 
 # v0.10.0 -> v0.10.1
 
