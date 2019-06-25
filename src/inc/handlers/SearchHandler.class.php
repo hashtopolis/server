@@ -1,5 +1,6 @@
 <?php
 
+use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
@@ -41,6 +42,7 @@ class SearchHandler implements Handler {
     $query = explode("\n", $query);
     $resultEntries = array();
     $hashlists = new DataSet();
+    $userHashlists = HashlistUtils::getHashlists(Login::getInstance()->getUser());
     foreach ($query as $queryEntry) {
       if (strlen($queryEntry) == 0) {
         continue;
@@ -62,14 +64,16 @@ class SearchHandler implements Handler {
       
       $filters = array();
       $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
+      $filters[] = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists));
       if (strlen($salt) > 0) {
         $filters[] = new QueryFilter(Hash::SALT, $salt, "=");
       }
       $jF = new JoinFilter(Factory::getHashlistFactory(), Hash::HASHLIST_ID, Hashlist::HASHLIST_ID);
       $joined = Factory::getHashFactory()->filter([Factory::FILTER => $filters, Factory::JOIN => $jF]);
       
-      $qF = new LikeFilter(Hash::PLAINTEXT, "%" . $queryEntry . "%");
-      $joined2 = Factory::getHashFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+      $qF1 = new LikeFilter(Hash::PLAINTEXT, "%" . $queryEntry . "%");
+      $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists));
+      $joined2 = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => $jF]);
       for ($i = 0; $i < sizeof($joined2[Factory::getHashFactory()->getModelName()]); $i++) {
         $joined[Factory::getHashFactory()->getModelName()][] = $joined2[Factory::getHashFactory()->getModelName()][$i];
         $joined[Factory::getHashlistFactory()->getModelName()][] = $joined2[Factory::getHashlistFactory()->getModelName()][$i];
