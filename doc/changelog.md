@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - Fixed increasing the superhashlist cracked count if there are cracks running one of the hashlists alone.
+- Fixed hidden superhashlists on task creation page due to filtering.
 
 # v0.10.1 -> v0.11.0
 

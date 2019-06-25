@@ -327,6 +327,13 @@ else if (isset($_GET['new'])) {
     $set->addValue('name', $list->getHashlistName());
     $lists[] = $set;
   }
+  $res = HashlistUtils::getSuperhashlists(Login::getInstance()->getUser());
+  foreach ($res as $list) {
+    $set = new DataSet();
+    $set->addValue('id', $list->getId());
+    $set->addValue('name', $list->getHashlistName());
+    $lists[] = $set;
+  }
   UI::add('lists', $lists);
   
   $origFiles = array();
