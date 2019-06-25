@@ -22,12 +22,12 @@
                 <input type='hidden' name='supertask' value='[[supertask.getId()]]'>
                 <input type="hidden" name="csrf" value="[[csrf]]">
                 <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
-                <select name="crackerBinaryTypeId" id="crackerBinaryTypeId" class="form-control mx-1" title="Cracker Binary">
+                <select name="crackerBinaryTypeId" id="crackerBinaryTypeId-[[supertask.getId()]]" class="form-control mx-1" title="Cracker Binary">
                   {{FOREACH binary;[[binaries]]}}
                     <option value="[[binary.getId()]]">[[binary.getTypeName()]]</option>
                   {{ENDFOREACH}}
                 </select>
-                <select name="crackerBinaryVersionId" id="crackerBinaryVersionId" class="form-control mx-1" title="Binary Version">
+                <select name="crackerBinaryVersionId" id="crackerBinaryVersionId-[[supertask.getId()]]" class="form-control mx-1" title="Binary Version">
                   <option value="0">&nbsp;</option>
                 </select>
                 <script type="text/javascript">
@@ -41,9 +41,9 @@
                       }
                     {{ENDFOREACH}}
 
-                    configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
+                    configureDropDownLists(document.getElementById('crackerBinaryTypeId-[[supertask.getId()]]'), document.getElementById('crackerBinaryVersionId-[[supertask.getId()]]'));
                     $("#crackerBinaryType").change(function() {
-                        configureDropDownLists(document.getElementById('crackerBinaryTypeId'), document.getElementById('crackerBinaryVersionId'));
+                        configureDropDownLists(document.getElementById('crackerBinaryTypeId-[[supertask.getId()]]'), document.getElementById('crackerBinaryVersionId-[[supertask.getId()]]'));
                     });
 
                     function configureDropDownLists(ddl1, ddl2) {
