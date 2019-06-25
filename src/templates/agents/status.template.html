@@ -14,19 +14,19 @@
   </div>
   <div class="row">
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> Utility is good (> 90%)
+      <span style="color: #009933;">■</span> Utility is good (> [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> Utility not ideal (<= 90%)
+      <span style="color: #ff9900;">■</span> Utility not ideal (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> Utility low (<= 75%)
+      <span style="color: #800000;">■</span> Utility low (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_2]])]]%)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
       <span style="color: #CCCCCC;">■</span> Agent is not active
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #42d4f4;">■</span> Agent is active but not working or no data is available
+      <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing data
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
       <span style="color: #FF0000;">■</span> Invalid data from agent or values being 0
@@ -45,19 +45,19 @@
   </div>
   <div class="row">
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> Temperature good (<= 70°C)
+      <span style="color: #009933;">■</span> Temperature good (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_1]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> Temperature acceptable (<= 80°C)
+      <span style="color: #ff9900;">■</span> Temperature acceptable (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> Temperature too high (> 80°C)
+      <span style="color: #800000;">■</span> Temperature too high (> [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
       <span style="color: #CCCCCC;">■</span> Agent is not active
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #42d4f4;">■</span> Agent is active but not working or no data is available
+      <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing data
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
       <span style="color: #FF0000;">■</span> Invalid data from agent or values being 0

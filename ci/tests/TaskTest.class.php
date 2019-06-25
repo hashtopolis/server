@@ -28,37 +28,42 @@ class TaskTest extends HashtopolisTest {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
     $this->prepare();
     $this->testListTasks();
-    $this->testCreateTask();
+    $this->testCreateTask(["name" => "Test Task", "hashlistId" => 1, "attackCmd" => "#HL# -a 0 -r best64.rule example.dict", "priority" => 1, "color" => "5D5D5D", "crackerVersionId" => 1, "files" => [1,2]]);
     $this->testListTasks(['Test Task']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
-  
-  private function testCreateTask() {
-    $response = HashtopolisTestFramework::doRequest([
+
+  public function testCreateTask($values = [], $assert = true){
+    $query = [
       "section" => "task",
       "request" => "createTask",
-      "name" => "Test Task",
-      "hashlistId" => 1,
-      "attackCmd" => "#HL# -a 0 -r best64.rule example.dict",
+      "name" => "",
+      "hashlistId" => 0,
+      "attackCmd" => "",
       "chunksize" => 600,
       "statusTimer" => 5,
       "benchmarkType" => "speed",
-      "color" => "5D5D5D",
+      "color" => "",
       "isCpuOnly" => false,
       "isSmall" => false,
       "skip" => 0,
-      "crackerVersionId" => 1,
-      "files" => [1, 2],
-      "priority" => 1,
+      "crackerVersionId" => 0,
+      "files" => [],
+      "priority" => 0,
       "isPrince" => false,
       "accessKey" => "mykey"
-    ], HashtopolisTestFramework::REQUEST_UAPI
+    ];
+    foreach($values as $key => $value){
+      $query[$key] = $value;
+    }
+
+    $response = HashtopolisTestFramework::doRequest($query, HashtopolisTestFramework::REQUEST_UAPI
     );
     if ($response === false) {
       $this->testFailed("TaskTest:testCreateTask", "Empty response");
     }
-    else if ($response['response'] != 'OK') {
-      $this->testFailed("TaskTest:testCreateTask", "Response not OK");
+    else if (!$this->validState($response['response'], $assert)) {
+      $this->testFailed("TaskTest:testCreateTask(" . HashtopolisTest::multiImplode(",", $values) . ",$assert)", "Response does not match assert");
     }
     else {
       $this->testSuccess("TaskTest:testListTasks");

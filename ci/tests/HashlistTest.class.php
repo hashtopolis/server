@@ -138,7 +138,7 @@ class HashlistTest extends HashtopolisTest {
     }
   }
   
-  private function testHashlistCreate($type = 0) {
+  public function testHashlistCreate($type = 0) {
     $data = "";
     $hashtype = -1;
     switch ($type) {

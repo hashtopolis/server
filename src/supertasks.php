@@ -51,7 +51,7 @@ else if (isset($_GET['id']) && isset($_GET['new']) && AccessControl::getInstance
   Template::loadInstance("supertasks/new");
   $supertask = Factory::getSupertaskFactory()->get($_GET['id']);
   UI::add('orig', $supertask->getId());
-  UI::add('lists', Factory::getHashlistFactory()->filter([]));
+  UI::add('lists', HashlistUtils::getHashlists(Login::getInstance()->getUser()));
   UI::add('binaries', Factory::getCrackerBinaryTypeFactory()->filter([]));
   $versions = Factory::getCrackerBinaryFactory()->filter([]);
   usort($versions, ["Util", "versionComparisonBinary"]);

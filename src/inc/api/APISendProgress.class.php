@@ -68,6 +68,10 @@ class APISendProgress extends APIBasic {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "The given task does not have a corresponding hashlist!");
     }
     $totalHashlist = $hashlist;
+    $isSuperhashlist = false;
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+      $isSuperhashlist = true;
+    }
     $hashlists = Util::checkSuperHashlist($hashlist);
     foreach ($hashlists as $hashlist) {
       if ($hashlist->getIsSecret() > $this->agent->getIsTrusted()) {
@@ -187,7 +191,7 @@ class APISendProgress extends APIBasic {
           $hashes = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
           if (sizeof($hashes) == 0) {
             $skipped++;
-            continue;
+            break;
           }
           else if (sizeof($splitLine) == 5) {
             $plain = $splitLine[2]; // if hash is salted
@@ -298,6 +302,11 @@ class APISendProgress extends APIBasic {
     }
     $chunk = Factory::getChunkFactory()->get($chunk->getId());
     $chunk->setCracked($chunk->getCracked() + $sumCracked);
+    if ($isSuperhashlist) {
+      // if it's a superhashlist, we need to update the count for the superhashlist as well
+      $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
+      Factory::getHashlistFactory()->inc($hashlist, Hashlist::CRACKED, $sumCracked);
+    }
     Factory::getChunkFactory()->update($chunk);
     Factory::getAgentFactory()->getDB()->commit();
     

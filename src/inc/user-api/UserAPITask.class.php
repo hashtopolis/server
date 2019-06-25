@@ -64,6 +64,9 @@ class UserAPITask extends UserAPIBasic {
         case USectionTask::ARCHIVE_SUPERTASK:
           $this->archiveSupertask($QUERY);
           break;
+        case USectionTask::GET_CRACKED:
+          $this->getCracked($QUERY);
+          break;
         default:
           $this->sendErrorResponse($QUERY[UQuery::SECTION], "INV", "Invalid section request!");
       }
@@ -71,6 +74,24 @@ class UserAPITask extends UserAPIBasic {
     catch (HTException $e) {
       $this->sendErrorResponse($QUERY[UQueryTask::SECTION], $QUERY[UQueryTask::REQUEST], $e->getMessage());
     }
+  }
+  
+  /**
+   * @param $QUERY
+   * @throws HTException
+   */
+  private function getCracked($QUERY) {
+    if (!isset($QUERY[UQueryTask::TASK_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    $cracks = TaskUtils::getCrackedHashes($QUERY[UQueryTask::TASK_ID], $this->user);
+    $response = [
+      UResponseTask::SECTION => $QUERY[UQueryTask::SECTION],
+      UResponseTask::REQUEST => $QUERY[UQueryTask::REQUEST],
+      UResponseTask::RESPONSE => UValues::OK,
+      UResponseTask::CRACKED => $cracks
+    ];
+    $this->sendResponse($response);
   }
   
   /**
@@ -278,7 +299,7 @@ class UserAPITask extends UserAPIBasic {
         throw new HTException("Invalid query!");
       }
     }
-    TaskUtils::createTask(
+    $task = TaskUtils::createTask(
       $QUERY[UQueryTask::TASK_HASHLIST],
       $QUERY[UQueryTask::TASK_NAME],
       $QUERY[UQueryTask::TASK_ATTACKCMD],
@@ -295,7 +316,13 @@ class UserAPITask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_CRACKER_VERSION],
       $this->user
     );
-    $this->sendSuccessResponse($QUERY);
+    $this->sendResponse(array(
+        UResponseTask::SECTION => $QUERY[UQuery::SECTION],
+        UResponseTask::REQUEST => $QUERY[UQuery::REQUEST],
+        UResponseTask::RESPONSE => UValues::OK,
+        UResponseTask::TASK_ID => (int)$task->getId()
+      )
+    );
   }
   
   /**
@@ -366,6 +393,7 @@ class UserAPITask extends UserAPIBasic {
     }
     $task = TaskUtils::getTask($QUERY[UQueryTask::TASK_ID], $this->user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $this->user);
+    $hashlist = HashlistUtils::getHashlist($taskWrapper->getHashlistId());
     
     $url = explode("/", $_SERVER['PHP_SELF']);
     unset($url[sizeof($url) - 1]);
@@ -387,7 +415,7 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::TASK_KEYSPACE => (int)$task->getKeyspace(),
       UResponseTask::TASK_DISPATCHED => (int)$task->getKeyspaceProgress(),
       UResponseTask::TASK_HASHLIST => (int)$taskWrapper->getHashlistId(),
-      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId(),
+      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId()
     ];
     
     $files = TaskUtils::getFilesOfTask($task);
@@ -432,7 +460,10 @@ class UserAPITask extends UserAPIBasic {
         UResponseTask::TASK_AGENTS_SPEED => (int)$speed
       ];
     }
+    
     $response[UResponseTask::TASK_AGENTS] = $arr;
+    $response[UResponseTask::IS_COMPLETE] = (bool)TaskUtils::isFinished($task);
+    $response[UResponseTask::WORK_POSSIBLE] = (bool)(TaskUtils::isFinished($task) || $hashlist->getCracked() >= $hashlist->getHashCount());
     $this->sendResponse($response);
   }
   

@@ -627,6 +627,7 @@ class TaskUtils {
    * @param string $notes
    * @param int $staticChunking
    * @param int $chunkSize
+   * @return Task
    * @throws HTException
    */
   public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
@@ -729,6 +730,7 @@ class TaskUtils {
     
     $payload = new DataSet(array(DPayloadKeys::TASK => $task));
     NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
+    return $task;
   }
   
   /**
@@ -1154,5 +1156,44 @@ class TaskUtils {
     }
     Factory::getTaskWrapperFactory()->delete($taskWrapper);
     Factory::getAgentFactory()->getDB()->commit();
+  }
+  
+  /**
+   * @param $taskId
+   * @param $user
+   * @return array
+   * @throws HTException
+   */
+  public static function getCrackedHashes($taskId, $user) {
+    $task = TaskUtils::getTask($taskId, $user);
+    $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
+    $hashlist = HashlistUtils::getHashlist($taskWrapper->getHashlistId());
+    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
+    $hashes = [];
+    $chunkIds = Util::arrayOfIds($chunks);
+    $qF1 = new ContainFilter(Hash::CHUNK_ID, $chunkIds);
+    $qF2 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
+    $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    foreach ($entries as $entry) {
+      $arr = [
+        "hash" => $entry->getHash(),
+        "plain" => $entry->getPlaintext(),
+        "crackpos" => $entry->getCrackPos()
+      ];
+      if (strlen($entry->getSalt()) > 0) {
+        $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+      }
+      $hashes[] = $arr;
+    }
+    return $hashes;
+  }
+  
+  /**
+   * @param $task Task
+   * @return bool
+   */
+  public static function isFinished($task) {
+    return ($task->getKeyspace() > 0 && Util::getTaskInfo($task)[0] >= $task->getKeyspace());
   }
 }

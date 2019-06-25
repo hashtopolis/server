@@ -79,7 +79,7 @@
 				  "taskId": 7587,
 				  "name": "testing",
 				  "attack": "#HL# -a 0 top10000.txt -r dive.rule",
-				  "cunksize": 600,
+				  "chunksize": 600,
 				  "color": null,
 				  "benchmarkType": "speed",
 				  "statusTimer": 5,
@@ -114,7 +114,8 @@
 				      "benchmark": "0",
 				      "speed": 0
 				    }
-				  ]
+				  ],
+				  "isComplete": false
 				}
 				\end{verbatim}
 			}
@@ -257,7 +258,8 @@
 					{
 					  "section": "task",
 					  "request": "createTask",
-					  "response": "OK"
+					  "response": "OK",
+					  "taskId": 101
 					}
 					\end{verbatim}
 				}
@@ -615,6 +617,42 @@
 		  "section": "task",
 		  "request": "archiveSupertask",
 		  "response": "OK"
+		}
+		\end{verbatim}
+	}
+
+\subsection*{\textit{getCracked}}
+	Retrieve all cracked hashes by a given task.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "task",
+		  "request": "getCracked",
+		  "taskId": 100,
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "task",
+		  "request": "getCracked",
+		  "response": "OK",
+		  "cracked": [
+		    {
+		      "hash": "098f6bcd4621d373cade4e832627b4f6",
+		      "plain": "test",
+		      "crackpos": "634721"
+		    },
+		    {
+		      "hash": "5f4dcc3b5aa765d61d8327deb882cf99",
+		      "plain": "password",
+		      "crackpos": "608529"
+		    }
+		  ]
 		}
 		\end{verbatim}
 	}

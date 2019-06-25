@@ -219,7 +219,7 @@ class UResponseTask extends UResponse {
   const TASK_ID               = "taskId";
   const TASK_NAME             = "name";
   const TASK_ATTACK           = "attack";
-  const TASK_CHUNKSIZE        = "cunksize";
+  const TASK_CHUNKSIZE        = "chunksize";
   const TASK_COLOR            = "color";
   const TASK_BENCH_TYPE       = "benchmarkType";
   const TASK_STATUS           = "statusTimer";
@@ -284,6 +284,10 @@ class UResponseTask extends UResponse {
   const CHUNK_STATE      = "state";
   const CHUNK_CRACKED    = "cracked";
   const CHUNK_SPEED      = "speed";
+  
+  const CRACKED       = "cracked";
+  const IS_COMPLETE   = "isComplete";
+  const WORK_POSSIBLE = "workPossible";
 }
 
 class UResponseHashlist extends UResponse {
@@ -322,6 +326,7 @@ class UResponseHashlist extends UResponse {
   const HASH     = "hash";
   const PLAIN    = "plain";
   const CRACKPOS = "crackpos";
+  const CRACKED  = "cracked";
 }
 
 class UResponseSuperhashlist extends UResponse {
@@ -582,6 +587,7 @@ class USectionTask extends UApi {
   const GET_TASK      = "getTask";
   const LIST_SUBTASKS = "listSubtasks";
   const GET_CHUNK     = "getChunk";
+  const GET_CRACKED   = "getCracked";
   
   const CREATE_TASK   = "createTask";
   const RUN_PRETASK   = "runPretask";
@@ -645,6 +651,8 @@ class USectionTask extends UApi {
         return "Archive tasks";
       case USectionTask::ARCHIVE_SUPERTASK:
         return "Archive supertasks";
+      case USectionTask::GET_CRACKED:
+        return "Retrieve all cracked hashes by a task";
       default:
         return "__" . $constant . "__";
     }
@@ -737,6 +745,7 @@ class USectionHashlist extends UApi {
   
   const DELETE_HASHLIST = "deleteHashlist";
   const GET_HASH        = "getHash";
+  const GET_CRACKED     = "getCracked";
   
   public function describe($constant) {
     switch ($constant) {
@@ -762,6 +771,8 @@ class USectionHashlist extends UApi {
         return "Delete hashlists";
       case USectionHashlist::GET_HASH:
         return "Query for specific hashes";
+      case USectionHashlist::GET_CRACKED:
+        return "Query cracked hashes of a hashlist";
       default:
         return "__" . $constant . "__";
     }

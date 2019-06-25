@@ -111,7 +111,8 @@
 		{
 		  "section": "hashlist",
 		  "request": "createHashlist",
-		  "response": "OK"
+		  "response": "OK",
+		  "hashlistId": 101
 		}
 		\end{verbatim}
 	}
@@ -341,7 +342,41 @@
 		}
 		\end{verbatim}
 	}
-
+\subsection*{\textit{getCracked}}
+	Retrieve all cracked hashes of a given hashlist.
+	{
+		\color{blue}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "getCracked",
+		  "hashlistId": "1",
+		  "accessKey": "mykey"
+		}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+		{
+		  "section": "hashlist",
+		  "request": "getCracked",
+		  "response": "OK",
+		  "cracked": [
+		    {
+		      "hash": "098f6bcd4621d373cade4e832627b4f6",
+		      "plain": "test",
+		      "crackpos": "634721"
+		    },
+		    {
+		      "hash": "5f4dcc3b5aa765d61d8327deb882cf99",
+		      "plain": "password",
+		      "crackpos": "608529"
+		    }
+		  ]
+		}
+		\end{verbatim}
+	}
 
 
 

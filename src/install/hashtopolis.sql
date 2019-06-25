@@ -55,7 +55,7 @@ CREATE TABLE `AgentBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
-  (1, 'python', '0.4.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
+  (1, 'python', '0.5.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11) NOT NULL,
@@ -166,7 +166,11 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (68, 1, 'hashcatBrainPort', '0'),
   (69, 1, 'hashcatBrainPass', ''),
   (70, 1, 'hashlistImportCheck', '0'),
-  (71, 5, 'allowDeregister', '0');
+  (71, 5, 'allowDeregister', '0'),
+  (72, 4, 'agentTempThreshold1', '70'),
+  (73, 4, 'agentTempThreshold2', '80'),
+  (74, 4, 'agentUtilThreshold1', '90'),
+  (75, 4, 'agentUtilThreshold2', '75');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -519,6 +523,11 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (16800, 'WPA-PMKID-PBKDF2', 0, 1),
   (16801, 'WPA-PMKID-PMK', 0, 1),
   (16900, 'Ansible Vault', 0, 1),
+  (17200, 'PKZIP (Compressed)', 0, 0),
+  (17210, 'PKZIP (Uncompressed)', 0, 0),
+  (17220, 'PKZIP (Compressed Multi-File)', 0, 0),
+  (17225, 'PKZIP (Mixed Multi-File)', 0, 0),
+  (17230, 'PKZIP (Compressed Multi-File Checksum-Only)', 0, 0),
   (17300, 'SHA3-224', 0, 0),
   (17400, 'SHA3-256', 0, 0),
   (17500, 'SHA3-384', 0, 0),
@@ -528,6 +537,31 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (17900, 'Keccak-384', 0, 0),
   (18000, 'Keccak-512', 0, 0),
   (18100, 'TOTP (HMAC-SHA1)', 1, 0),
+  (18200, 'Kerberos 5 AS-REP etype 23', 0, 1),
+  (18300, 'Apple File System (APFS)', 0, 1),
+  (18400, 'Open Document Format (ODF) 1.2 (SHA-256, AES)', 0, 1),
+  (18500, 'sha1(md5(md5($pass)))', 0, 0),
+  (18600, 'Open Document Format (ODF) 1.1 (SHA-1, Blowfish)', 0, 1),
+  (18700, 'Java Object hashCode()', 0, 1),
+  (18800, 'Blockchain, My Wallet, Second Password (SHA256)', 0, 1),
+  (18900, 'Android Backup', 0, 1),
+  (19000, 'QNX /etc/shadow (MD5)', 0, 1),
+  (19100, 'QNX /etc/shadow (SHA256)', 0, 1),
+  (19200, 'QNX /etc/shadow (SHA512)', 0, 1),
+  (19300, 'sha1($salt1.$pass.$salt2)', 0, 0),
+  (19500, 'Ruby on Rails Restful-Authentication', 0, 0),
+  (19600, 'Kerberos 5 TGS-REP etype 17 (AES128-CTS-HMAC-SHA1-96)', 0, 1),
+  (19700, 'Kerberos 5 TGS-REP etype 18 (AES256-CTS-HMAC-SHA1-96)', 0, 1),
+  (19800, 'Kerberos 5, etype 17, Pre-Auth', 0, 1),
+  (19900, 'Kerberos 5, etype 18, Pre-Auth', 0, 1),
+  (20011, 'DiskCryptor SHA512 + XTS 512 bit (AES) / DiskCryptor SHA512 + XTS 512 bit (Twofish) / DiskCryptor SHA512 + XTS 512 bit (Serpent)', 0, 1),
+  (20012, 'DiskCryptor SHA512 + XTS 1024 bit (AES-Twofish) / DiskCryptor SHA512 + XTS 1024 bit (Twofish-Serpent) / DiskCryptor SHA512 + XTS 1024 bit (Serpent-AES)', 0, 1),
+  (20013, 'DiskCryptor SHA512 + XTS 1536 bit (AES-Twofish-Serpent)', 0, 1),
+  (20200, 'Python passlib pbkdf2-sha512', 0, 1),
+  (20300, 'Python passlib pbkdf2-sha256', 0, 1),
+  (20400, 'Python passlib pbkdf2-sha1', 0, 0),
+  (20500, 'PKZIP Master Key', 0, 0),
+  (20510, 'PKZIP Master Key (6 byte optimization)', 0, 0),
   (99999, 'Plaintext', 0, 0);
 
 CREATE TABLE `LogEntry` (
