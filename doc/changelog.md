@@ -10,6 +10,7 @@
 - Fixed wrong rendering of forms when showing supertasks on hashlist pages.
 - Fixed wrong reporting of speed on tasks overview due to cached speeds.
 - Fixed wrong search value of tasks list on hashlist details page.
+- Fixed missing update of cracked count for superhashlists.
 
 ## Enhancements
 
