@@ -693,7 +693,7 @@ class Util {
     if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
       return [];
     }
-    $jF = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
+    $jF = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::PARENT_HASHLIST_ID);
     $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=", Factory::getHashlistHashlistFactory());
     $joined = Factory::getHashlistHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
     return $joined[Factory::getHashlistFactory()->getModelName()];

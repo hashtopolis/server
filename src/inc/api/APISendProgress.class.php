@@ -296,13 +296,14 @@ class APISendProgress extends APIBasic {
     $sumCracked = 0;
     foreach ($cracked as $listId => $cracks) {
       $list = Factory::getHashlistFactory()->get($listId);
-      $list->setCracked($cracks + $list->getCracked());
-      Factory::getHashlistFactory()->update($list);
+      Factory::getHashlistFactory()->inc($list, Hashlist::CRACKED, $cracks);
+      
       // check if it is part of one or more superhashlists and if yes, update the count there as well
       $superHashlists = Util::getParentSuperHashlists($list);
       foreach ($superHashlists as $superHashlist) {
         Factory::getHashlistFactory()->inc($superHashlist, Hashlist::CRACKED, $cracks);
       }
+      
       $sumCracked += $cracks;
     }
     $chunk = Factory::getChunkFactory()->get($chunk->getId());
