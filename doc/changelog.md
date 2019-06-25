@@ -7,6 +7,7 @@
 - Fixed XSS on hashes view page when printing a hashlist.
 - Fixed missing check for blacklisted characters when editing task.
 - Fixed issue with creating a preconfigured task from the API.
+- Fixed wrong rendering of forms when showing supertasks on hashlist pages.
 
 ## Enhancements
 
