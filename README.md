@@ -5,6 +5,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/s3inlc/hashtopolis/badge)](https://www.codefactor.io/repository/github/s3inlc/hashtopolis)
 [![LoC](https://tokei.rs/b1/github/s3inlc/Hashtopolis?category=code)](https://github.com/s3inlc/Hashtopolis)
 [![Test Status](https://travis-ci.org/s3inlc/hashtopolis.svg?branch=master)](https://travis-ci.org/s3inlc/hashtopolis)
+[![Current Agent](https://img.shields.io/badge/Current%20Agent%20Version-0.5.0-blue.svg)](https://travis-ci.org/s3inlc/hashtopolis-agent-python)
 
 Hashtopolis is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. The main goals for Hashtopolis's development are portability, robustness, multi-user support, and multiple groups management.
 The application has two parts:
