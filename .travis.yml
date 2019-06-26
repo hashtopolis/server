@@ -1,15 +1,16 @@
 language: php
-matrix:
-- php: "7.2"
-- # older versions only tested for master and PRs
-  if: (branch = master OR type = pull_request)
-  php: "7.1"
-- # older versions only tested for master and PRs
-  if: (branch = master OR type = pull_request)
-  php: "7.0"
-- # older versions only tested for master and PRs
-  if: (branch = master OR type = pull_request)
-  php: "5.6"
+php:
+  include:
+    - php: "7.2"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      php: "7.1"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      php: "7.0"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      php: "5.6"
 services:
   - mysql
 install:
