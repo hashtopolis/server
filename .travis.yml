@@ -22,13 +22,13 @@ install:
 matrix:
   exclude:
     - # older versions only tested for master and PRs
-      if: (branch = master OR type = pull_request)
+      if: (branch != master AND type != pull_request)
       php: "7.1"
     - # older versions only tested for master and PRs
-      if: (branch = master OR type = pull_request)
+      if: (branch != master AND type != pull_request)
       php: "7.0"
     - # older versions only tested for master and PRs
-      if: (branch = master OR type = pull_request)
+      if: (branch != master AND type != pull_request)
       php: "5.6"
 
 jobs:
