@@ -67,7 +67,10 @@ class APIDownloadBinary extends APIBasic {
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
             PResponseBinaryDownload::URL => $preprocessor->getUrl(),
             PResponseBinaryDownload::NAME => $preprocessor->getName(),
-            PResponseBinaryDownload::EXECUTABLE => $preprocessor->getBinaryName() . $ext
+            PResponseBinaryDownload::EXECUTABLE => $preprocessor->getBinaryName() . $ext,
+            PResponseBinaryDownload::KEYSPACE_CMD => $preprocessor->getKeyspaceCommand(),
+            PResponseBinaryDownload::SKIP_CMD => $preprocessor->getSkipCommand(),
+            PResponseBinaryDownload::LIMIT_CMD => $preprocessor->getLimitCommand()
           )
         );
         break;
