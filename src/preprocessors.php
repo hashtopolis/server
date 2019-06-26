@@ -1,10 +1,7 @@
 <?php
 
-use DBA\CrackerBinary;
-use DBA\CrackerBinaryType;
 use DBA\OrderFilter;
 use DBA\Preprocessor;
-use DBA\QueryFilter;
 use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/inc/load.php");

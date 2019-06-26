@@ -8,6 +8,7 @@ use DBA\File;
 use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
+use DBA\Preprocessor;
 use DBA\QueryFilter;
 use DBA\Factory;
 
@@ -335,6 +336,10 @@ else if (isset($_GET['new'])) {
     $lists[] = $set;
   }
   UI::add('lists', $lists);
+  
+  $oF = new OrderFilter(Preprocessor::NAME, "ASC");
+  $preprocessors = Factory::getPreprocessorFactory()->filter([Factory::ORDER => $oF]);
+  UI::add('preprocessors', $preprocessors);
   
   $origFiles = array();
   if ($origType == 1) {
