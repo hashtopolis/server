@@ -11,14 +11,14 @@ if (!isset($TEST)) {
 require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/log.php");
 
-if (!isset($PRESENT["v0.11.0_tasks"])) {
+if (!isset($PRESENT["v0.11.x_tasks"])) {
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `usePreprocessor` TINYINT(4) NOT NULL;");
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` ADD `preprocessorCommand` VARCHAR(256) NOT NULL;");
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` DROP COLUMN `isPrince`;");
-  $EXECUTED["v0.11.0_tasks"] = true;
+  $EXECUTED["v0.11.x_tasks"] = true;
 }
 
-if (!isset($PRESENT["v0.11.0_preprocessors"])) {
+if (!isset($PRESENT["v0.11.x_preprocessors"])) {
   Factory::getAgentFactory()->getDB()->query("CREATE TABLE `Preprocessor` (
       `preprocessorId`  INT(11)      NOT NULL,
       `name`            VARCHAR(256) NOT NULL,
@@ -29,5 +29,5 @@ if (!isset($PRESENT["v0.11.0_preprocessors"])) {
     ) ENGINE=InnoDB;");
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Preprocessor` ADD PRIMARY KEY (`preprocessorId`);");
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Preprocessor` MODIFY `preprocessorId` INT(11) NOT NULL AUTO_INCREMENT;");
-  $EXECUTED["v0.11.0_preprocessors"] = true;
+  $EXECUTED["v0.11.x_preprocessors"] = true;
 }
