@@ -19,6 +19,12 @@ install:
   - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
   - sudo php -f ci/server/setup.php $TRAVIS_BRANCH
 
+env:
+  - VERSION="master"
+  - VERSION="0.11.0"
+  - VERSION="0.10.0"
+  - VERSION="0.9.0"
+
 matrix:
   # older versions only tested for master and PRs
   if: (branch != master AND type != pull_request)
@@ -26,23 +32,8 @@ matrix:
     - php: "7.1"
     - php: "7.0"
     - php: "5.6"
-
-jobs:
-  - env: VERSION="master"
-  - env: VERSION="0.11.0"
-  if: (branch = master OR type = pull_request)
-  include:
     - env: VERSION="0.10.0"
     - env: VERSION="0.9.0"
-
-
-#env:
-#  - VERSION="master"
-#  - VERSION="0.11.0"
-#  - VERSION="0.10.0"
-#    if: (branch = master OR type = pull_request)
-#  - VERSION="0.9.0"
-#    if: (branch = master OR type = pull_request)
 
 script:
   - php -f ci/run.php master $VERSION
