@@ -33,12 +33,11 @@ if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessCo
   UI::add('pageTitle', "Add Preprocessor");
 }
 else if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessControl::PREPROCESSORS_ACCESS)) {
-  $binary = Factory::getCrackerBinaryFactory()->get($_GET['id']);
-  if ($binary !== null) {
-    UI::add('binary', $binary);
+  $preprocessor = Factory::getPreprocessorFactory()->get($_GET['id']);
+  if ($preprocessor !== null) {
+    UI::add('preprocessor', $preprocessor);
     Template::loadInstance("preprocessors/edit");
-    UI::add('binaryType', Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId()));
-    UI::add('pageTitle', "Edit Cracker Binary Version for " . UI::get('binaryType')->getTypeName());
+    UI::add('pageTitle', "Edit preprocessor " . htmlentities($preprocessor->getName(), ENT_QUOTES, "UTF-8"));
   }
 }
 else if (isset($_GET['id'])) {

@@ -6,6 +6,9 @@ class DPreprocessorAction {
   
   const ADD_PREPROCESSOR      = "addPreprocessor";
   const ADD_PREPROCESSOR_PERM = DAccessControl::PREPROCESSORS_ACCESS;
+  
+  const EDIT_PREPROCESSOR      = "editPreprocessor";
+  const EDIT_PREPROCESSOR_PERM = DAccessControl::PREPROCESSORS_ACCESS;
 }
 
 
