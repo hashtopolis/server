@@ -28,6 +28,18 @@ class PreprocessorUtils {
     else if (strlen($binaryName) == 0) {
       throw new HTException("Binary basename cannot be empty!");
     }
+    else if (Util::containsBlacklistedChars($binaryName)) {
+      throw new HTException("The binary name must contain no blacklisted characters!");
+    }
+    else if (Util::containsBlacklistedChars($keyspaceCommand)) {
+      throw new HTException("The keyspace command must contain no blacklisted characters!");
+    }
+    else if (Util::containsBlacklistedChars($skipCommand)) {
+      throw new HTException("The skip command must contain no blacklisted characters!");
+    }
+    else if (Util::containsBlacklistedChars($limitCommand)) {
+      throw new HTException("The limit command must contain no blacklisted characters!");
+    }
     else if (strlen($url) == 0) {
       throw new HTException("URL cannot be empty!");
     }
@@ -97,6 +109,18 @@ class PreprocessorUtils {
     }
     else if (strlen($binaryName) == 0) {
       throw new HTException("Binary basename cannot be empty!");
+    }
+    else if (Util::containsBlacklistedChars($binaryName)) {
+      throw new HTException("The binary name must contain no blacklisted characters!");
+    }
+    else if (Util::containsBlacklistedChars($keyspaceCommand)) {
+      throw new HTException("The keyspace command must contain no blacklisted characters!");
+    }
+    else if (Util::containsBlacklistedChars($skipCommand)) {
+      throw new HTException("The skip command must contain no blacklisted characters!");
+    }
+    else if (Util::containsBlacklistedChars($limitCommand)) {
+      throw new HTException("The limit command must contain no blacklisted characters!");
     }
     else if (strlen($url) == 0) {
       throw new HTException("URL cannot be empty!");
