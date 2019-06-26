@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
+
 use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
