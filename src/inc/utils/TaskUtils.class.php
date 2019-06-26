@@ -620,7 +620,8 @@ class TaskUtils {
    * @param string $color
    * @param boolean $isCpuOnly
    * @param boolean $isSmall
-   * @param $isPrince
+   * @param $usePreprocessor
+   * @param $preprocessorCommand
    * @param int $skip
    * @param int $priority
    * @param int[] $files
@@ -632,7 +633,7 @@ class TaskUtils {
    * @return Task
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $isPrince, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     $hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
@@ -664,6 +665,9 @@ class TaskUtils {
     else if (Util::containsBlacklistedChars($attackCmd)) {
       throw new HTException("Attack command contains blacklisted characters!");
     }
+    else if (Util::containsBlacklistedChars($preprocessorCommand)) {
+      throw new HTException("Preprocessor command contains blacklisted characters!");
+    }
     else if (!is_numeric($chunkTime) || $chunkTime < 1) {
       throw new HTException("Invalid chunk size!");
     }
@@ -679,14 +683,19 @@ class TaskUtils {
     }
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
-    $isPrince = ($isPrince) ? 1 : 0;
+    if ($usePreprocessor < 0) {
+      $usePreprocessor = 0;
+    }
+    else if ($usePreprocessor > 0) {
+      $preprocessor = PreprocessorUtils::getPreprocessor($usePreprocessor);
+    }
     if ($skip < 0) {
       $skip = 0;
     }
     if ($priority < 0) {
       $priority = 0;
     }
-    if ($isPrince && $benchtype == 'runtime') {
+    if ($usePreprocessor && $benchtype == 'runtime') {
       // enforce speed benchmark type when using PRINCE
       $benchtype = 'speed';
     }
@@ -695,7 +704,6 @@ class TaskUtils {
     $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
-    // TODO: handle preprocessors
     $task = new Task(
       null,
       $name,
@@ -718,8 +726,8 @@ class TaskUtils {
       $staticChunking,
       $chunkSize,
       0,
-      $isPrince,
-      ''
+      ($preprocessor != null) ? $preprocessor->getId() : 0,
+      ($preprocessor != null) ? $preprocessorCommand : ''
     );
     $task = Factory::getTaskFactory()->save($task);
     
