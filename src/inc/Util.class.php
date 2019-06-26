@@ -1390,6 +1390,16 @@ class Util {
     $split = explode(".", $version);
     return $split[0] . "." . $split[1];
   }
+  
+  public static function databaseColumnExists($table, $column) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+    return $result->rowCount() > 0;
+  }
+  
+  public static function databaseTableExists($table) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW TABLES LIKE '$table';");
+    return $result->rowCount() > 0;
+  }
 }
 
 
