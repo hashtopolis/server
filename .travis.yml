@@ -32,8 +32,8 @@ jobs:
     - env: VERSION="master"
     - env: VERSION="0.11.0"
     if: (branch = master OR type = pull_request)
-    - env: VERSION="0.10.0"
-    - env: VERSION="0.9.0"
+      - env: VERSION="0.10.0"
+      - env: VERSION="0.9.0"
 
 
 #env:
