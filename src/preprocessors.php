@@ -46,7 +46,7 @@ else if (isset($_GET['id'])) {
   if ($preprocessor !== null) {
     UI::add('preprocessor', $preprocessor);
     Template::loadInstance("preprocessors/details");
-    UI::add('pageTitle', "Preprocessor details for " . $preprocessor->getName());
+    UI::add('pageTitle', "Preprocessor details for " . htmlentities($preprocessor->getName(), ENT_QUOTES, "UTF-8"));
   }
 }
 else {
