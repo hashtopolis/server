@@ -217,6 +217,7 @@ class TaskHandler implements Handler {
     $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
+    // TODO: handle preprocessors
     if (AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {
       $task = new Task(
         null,
@@ -236,11 +237,12 @@ class TaskHandler implements Handler {
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
         0,
-        $isPrince,
         $notes,
         $staticChunking,
         $chunkSize,
-        $enforcePipe
+        $enforcePipe,
+        $isPrince,
+        ''
       );
     }
     else {
@@ -268,11 +270,12 @@ class TaskHandler implements Handler {
         $crackerBinaryType->getId(),
         $taskWrapper->getId(),
         0,
-        0,
         $notes,
         0,
         0,
-        0
+        0,
+        0,
+        ''
       );
       $forward = "pretasks.php";
     }

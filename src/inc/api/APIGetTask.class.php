@@ -148,7 +148,7 @@ class APIGetTask extends APIBasic {
     
     DServerLog::log(DServerLog::TRACE, "Sending task to agent", [$this->agent, $task, $taskFiles]);
     
-    $brain = ($hashlist->getBrainId() && !$task->getForcePipe() && !$task->getIsPrince()) ? true : false;
+    $brain = ($hashlist->getBrainId() && !$task->getForcePipe() && !$task->getUsePreprocessor()) ? true : false;
     
     $response = array(
       PResponseGetTask::ACTION => PActions::GET_TASK,
@@ -164,7 +164,7 @@ class APIGetTask extends APIBasic {
       PResponseGetTask::BENCHTYPE => ($task->getUseNewBench() == 1) ? "speed" : "run",
       PResponseGetTask::HASHLIST_ALIAS => SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS),
       PResponseGetTask::KEYSPACE => $task->getKeyspace(),
-      PResponseGetTask::PRINCE => ($task->getIsPrince()) ? true : false,
+      PResponseGetTask::PREPROCESSOR => ($task->getUsePreprocessor()) ? true : false,
       PResponseGetTask::ENFORCE_PIPE => ($task->getForcePipe()) ? true : false,
       PResponseGetTask::SLOW_HASH => ($hashtype->getIsSlowHash()) ? true : false,
       PResponseGetTask::USE_BRAIN => $brain,

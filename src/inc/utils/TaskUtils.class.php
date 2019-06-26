@@ -49,11 +49,12 @@ class TaskUtils {
       $copy->getCrackerBinaryTypeId(),
       0,
       0,
-      0,
       '',
       0,
       0,
-      0
+      0,
+      0,
+      ''
     );
   }
   
@@ -79,11 +80,12 @@ class TaskUtils {
       0,
       0,
       0,
-      0,
       '',
       0,
       0,
-      0
+      0,
+      0,
+      ''
     );
   }
   
@@ -123,8 +125,8 @@ class TaskUtils {
    * @param int $taskId
    * @param string $attackCmd
    * @param User $user
-   * @throws HTException
    * @return void
+   * @throws HTException
    */
   public static function changeAttackCmd($taskId, $attackCmd, $user) {
     if (strlen($attackCmd) == 0) {
@@ -244,8 +246,8 @@ class TaskUtils {
   /**
    * @param int $taskWrapperId
    * @param User $user
-   * @throws HTException
    * @return TaskWrapper
+   * @throws HTException
    */
   public static function getTaskWrapper($taskWrapperId, $user) {
     $taskWrapper = Factory::getTaskWrapperFactory()->get($taskWrapperId);
@@ -261,8 +263,8 @@ class TaskUtils {
   /**
    * @param int $taskId
    * @param User $user
-   * @throws HTException
    * @return Task
+   * @throws HTException
    */
   public static function getTask($taskId, $user) {
     $task = Factory::getTaskFactory()->get($taskId);
@@ -442,7 +444,7 @@ class TaskUtils {
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-    $initialProgress = ($task->getIsPrince() || $task->getForcePipe()) ? null : 0;
+    $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     $chunk->setState(0);
     $chunk->setProgress($initialProgress);
     $chunk->setCheckpoint($chunk->getSkip());
@@ -693,6 +695,7 @@ class TaskUtils {
     $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
+    // TODO: handle preprocessors
     $task = new Task(
       null,
       $name,
@@ -711,11 +714,12 @@ class TaskUtils {
       $cracker->getCrackerBinaryTypeId(),
       $taskWrapper->getId(),
       0,
-      $isPrince,
       $notes,
       $staticChunking,
       $chunkSize,
-      0
+      0,
+      $isPrince,
+      ''
     );
     $task = Factory::getTaskFactory()->save($task);
     
@@ -793,11 +797,12 @@ class TaskUtils {
         $task->getCrackerBinaryTypeId(),
         $newWrapper->getId(),
         0,
-        0,
         '',
         0,
         0,
-        0
+        0,
+        0,
+        ''
       );
       $newTask = Factory::getTaskFactory()->save($newTask);
       $taskFiles = [];
@@ -977,8 +982,8 @@ class TaskUtils {
   /**
    * @param int $chunkId
    * @param User $user
-   * @throws HTException
    * @return Chunk
+   * @throws HTException
    */
   public static function getChunk($chunkId, $user) {
     $chunk = Factory::getChunkFactory()->get($chunkId);
@@ -1007,7 +1012,7 @@ class TaskUtils {
     else if ($task->getKeyspace() == 0) {
       return $task;
     }
-    else if ($task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE) {
+    else if ($task->getUsePreprocessor() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE) {
       return $task;
     }
     

@@ -1,6 +1,6 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Task details{{IF [[task.getIsPrince()]]}} (PRINCE task){{ENDIF}}{{IF [[task.getIsArchived()]]}} (Archived){{ENDIF}}</h2>
+<h2>Task details{{IF [[task.getUsePreprocessor()]]}} (Preprocessor task){{ENDIF}}{{IF [[task.getIsArchived()]]}} (Archived){{ENDIF}}</h2>
 {%TEMPLATE->struct/messages%}
 {%TEMPLATE->tasks/autorefresh%}
 <br>
@@ -232,7 +232,7 @@
         <tr>
           <td>Keyspace searched:</td>
           <td>
-            {{IF [[task.getKeyspace()]] > 0 || ([[task.getIsPrince()]] && [[cProgress]] > 0)}}
+            {{IF [[task.getKeyspace()]] > 0 || ([[task.getUsePreprocessor()]] && [[cProgress]] > 0)}}
               [[cProgress]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%){{ENDIF}}
             {{ELSE}}
               N/A

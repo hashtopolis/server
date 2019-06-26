@@ -31,7 +31,7 @@ class APISendKeyspace extends APIBasic {
     
     if ($task->getKeyspace() == 0) {
       // keyspace is still required
-      if ($task->getIsPrince() && $keyspace == -1) {
+      if ($task->getUsePreprocessor() && $keyspace == -1) {
         // this is the case when the keyspace gets too large, but we still accept it
         DServerLog::log(DServerLog::TRACE, "Keyspace is too large to save, we set it to a specific number", [$this->agent]);
         $keyspace = DPrince::PRINCE_KEYSPACE;

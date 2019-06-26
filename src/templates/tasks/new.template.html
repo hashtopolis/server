@@ -157,8 +157,8 @@
             <td>This is a PRINCE task:</td>
             <td>
               <select name="isPrince" class="form-control" title="Is PRINCE" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-                <option value="0" {{IF [[copy.getIsPrince()]] == 0}} selected{{ENDIF}}>No</option>
-                <option value="1" {{IF [[copy.getIsPrince()]] == 1}} selected{{ENDIF}}>Yes</option>
+                <option value="0" {{IF [[copy.getUsePreprocessor()]] == 0}} selected{{ENDIF}}>No</option>
+                <option value="1" {{IF [[copy.getUsePreprocessor()]] == 1}} selected{{ENDIF}}>Yes</option>
               </select>
             </td>
           </tr>

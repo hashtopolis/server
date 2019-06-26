@@ -84,8 +84,8 @@ class HashlistUtils {
    * @param int $hashlistId
    * @param int[] $pretasks
    * @param User $user
-   * @throws HTException
    * @return int
+   * @throws HTException
    */
   public static function applyPreconfTasks($hashlistId, $pretasks, $user) {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
@@ -132,11 +132,12 @@ class HashlistUtils {
           $task->getCrackerBinaryTypeId(),
           $taskWrapper->getId(),
           0,
-          0,
           '',
           0,
           0,
-          0
+          0,
+          0,
+          ''
         );
         $newTask = Factory::getTaskFactory()->save($newTask);
         $addCount++;
@@ -157,8 +158,8 @@ class HashlistUtils {
   /**
    * @param int $hashlistId
    * @param User $user
-   * @throws HTException
    * @return array
+   * @throws HTException
    */
   public static function createWordlists($hashlistId, $user) {
     // create wordlist from hashlist cracked hashes
@@ -269,8 +270,8 @@ class HashlistUtils {
    * @param array $post
    * @param array $files
    * @param User $user
-   * @throws HTException
    * @return int[]
+   * @throws HTException
    */
   public static function processZap($hashlistId, $separator, $source, $post, $files, $user) {
     // pre-crack hashes processor
@@ -612,8 +613,8 @@ class HashlistUtils {
   
   /**
    * @param int $hashlistId
-   * @throws HTException
    * @return Hashlist
+   * @throws HTException
    */
   public static function getHashlist($hashlistId) {
     $hashlist = Factory::getHashlistFactory()->get($hashlistId);
@@ -712,8 +713,8 @@ class HashlistUtils {
    * @param User $user
    * @param int $brainId
    * @param int $brainFeatures
-   * @throws HTException
    * @return Hashlist
+   * @throws HTException
    */
   public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId, $brainFeatures) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");

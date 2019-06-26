@@ -171,7 +171,7 @@ class PQueryGetFound extends PQuery {
     return true;
   }
   
-  const HASHLIST_ID  = "hashlistId";
+  const HASHLIST_ID = "hashlistId";
 }
 
 class PQueryClientError extends PQuery {
@@ -364,7 +364,7 @@ class PResponseGetTask extends PResponse {
   const HASHLIST_ALIAS = "hashlistAlias";
   const KEYSPACE       = "keyspace";
   const REASON         = "reason";
-  const PRINCE         = "usePrince";
+  const PREPROCESSOR   = "usePreprocessor";
   const ENFORCE_PIPE   = "enforcePipe";
   const SLOW_HASH      = "slowHash";
   const USE_BRAIN      = "useBrain";

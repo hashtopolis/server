@@ -40,6 +40,7 @@ class Factory {
   private static $healthCheckFactory = null;
   private static $healthCheckAgentFactory = null;
   private static $speedFactory = null;
+  private static $preprocessorFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
@@ -414,6 +415,16 @@ class Factory {
       return $f;
     } else {
       return self::$speedFactory;
+    }
+  }
+  
+  public static function getPreprocessorFactory() {
+    if (self::$preprocessorFactory == null) {
+      $f = new PreprocessorFactory();
+      self::$preprocessorFactory = $f;
+      return $f;
+    } else {
+      return self::$preprocessorFactory;
     }
   }
   

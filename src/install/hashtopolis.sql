@@ -665,11 +665,12 @@ CREATE TABLE `Task` (
   `crackerBinaryTypeId` INT(11)      NULL,
   `taskWrapperId`       INT(11)      NOT NULL,
   `isArchived`          TINYINT(4)   NOT NULL,
-  `isPrince`            TINYINT(4)   NOT NULL,
   `notes`               TEXT         NOT NULL,
   `staticChunks`        INT(11)      NOT NULL,
   `chunkSize`           BIGINT(20)   NOT NULL,
-  `forcePipe`           TINYINT(4)   NOT NULL
+  `forcePipe`           TINYINT(4)   NOT NULL,
+  `usePreprocessor`     TINYINT(4)   NOT NULL,
+  `preprocessorCommand` VARCHAR(256) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `TaskDebugOutput` (
@@ -763,6 +764,15 @@ CREATE TABLE `HealthCheckAgent` (
   `start`              BIGINT(20) NOT NULL,
   `end`                BIGINT(20) NOT NULL,
   `errors`             TEXT       NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE `Preprocessor` (
+  `preprocessorId`  INT(11)      NOT NULL,
+  `name`            VARCHAR(256) NOT NULL,
+  `binaryName`      VARCHAR(256) NOT NULL,
+  `keyspaceCommand` VARCHAR(256) NOT NULL,
+  `skipCommand`     VARCHAR(256) NOT NULL,
+  `limitCommand`    VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
 
 -- Add Indexes
@@ -935,6 +945,9 @@ ALTER TABLE `Zap`
   ADD KEY `agentId` (`agentId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
+ALTER TABLE `Preprocessor`
+  ADD PRIMARY KEY (`preprocessorId`);
+
 -- Add AUTO_INCREMENT for tables
 ALTER TABLE `AccessGroup`
   MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
@@ -1064,6 +1077,9 @@ ALTER TABLE `User`
 
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Preprocessor`
+  MODIFY `preprocessorId` INT(11) NOT NULL AUTO_INCREMENT;
 
 -- Add Constraints
 ALTER TABLE `AccessGroupAgent`
