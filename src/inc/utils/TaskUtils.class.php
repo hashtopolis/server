@@ -726,8 +726,8 @@ class TaskUtils {
       $staticChunking,
       $chunkSize,
       0,
-      ($preprocessor != null) ? $preprocessor->getId() : 0,
-      ($preprocessor != null) ? $preprocessorCommand : ''
+      ($usePreprocessor > 0) ? $preprocessor->getId() : 0,
+      ($usePreprocessor > 0) ? $preprocessorCommand : ''
     );
     $task = Factory::getTaskFactory()->save($task);
     
