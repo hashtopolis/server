@@ -1,9 +1,12 @@
 language: php
 php:
-  - "5.6" # 5.6 is only tested for legacy, it's not recommended to be used
-  - "7.0"
-  - "7.1"
   - "7.2"
+  - "7.1"
+    if: (branch = master OR type = pull_request)
+  - "7.0"
+    if: (branch = master OR type = pull_request)
+  - "5.6" # 5.6 is only tested for legacy, it's not recommended to be used
+    if: (branch = master OR type = pull_request)
 services:
   - mysql
 install:
@@ -20,9 +23,11 @@ install:
 
 env:
   - VERSION="master"
-  - VERSION="0.9.0"
-  - VERSION="0.10.0"
   - VERSION="0.11.0"
+  - VERSION="0.10.0"
+    if: (branch = master OR type = pull_request)
+  - VERSION="0.9.0"
+    if: (branch = master OR type = pull_request)
 
 script:
   - php -f ci/run.php master $VERSION
