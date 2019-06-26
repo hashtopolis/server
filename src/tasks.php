@@ -234,6 +234,15 @@ if (isset($_GET['id'])) {
     UI::add('activeChunks', $activeChunksIds);
   }
   
+  if ($task->getUsePreprocessor()) {
+    try {
+      UI::add('preprocessor', PreprocessorUtils::getPreprocessor($task->getUsePreprocessor()));
+    }
+    catch (HTException $e) {
+      UI::printError("ERROR", "Failed to load preprocessor!");
+    }
+  }
+  
   $agents = Factory::getAgentFactory()->filter([]);
   $fullAgents = new DataSet();
   foreach ($agents as $agent) {
