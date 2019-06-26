@@ -17,7 +17,7 @@ class ChunkUtils {
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
     
     DServerLog::log(DServerLog::TRACE, "Handling existing chunk...", [$task, $chunk, $assignment]);
-    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
+    $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe())? null : 0;
     
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
@@ -113,7 +113,7 @@ class ChunkUtils {
       $length = $remaining;
     }
     Factory::getTaskFactory()->inc($task, Task::KEYSPACE_PROGRESS, $length);
-    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
+    $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe())? null : 0;
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
     DServerLog::log(DServerLog::TRACE, "Created new chunk for task", [$task, $chunk, $assignment]);

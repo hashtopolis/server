@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
 
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
@@ -19,6 +19,7 @@ use DBA\Factory;
 
 ini_set("memory_limit", "2G");
 
+/** @noinspection PhpIncludeInspection */
 @include(dirname(__FILE__) . "/../../inc/db.php");
 include(dirname(__FILE__) . "/../../dba/init.php");
 

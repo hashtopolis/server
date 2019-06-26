@@ -292,7 +292,8 @@ class UserAPITask extends UserAPIBasic {
       UQueryTask::TASK_SKIP,
       UQueryTask::TASK_CRACKER_VERSION,
       UQueryTask::TASK_FILES,
-      UQueryTask::TASK_PRINCE
+      UQueryTask::TASK_PREPROCESSOR,
+      UQueryTask::TASK_PREPROCESSOR_COMMAND
     ];
     foreach ($toCheck as $input) {
       if (!isset($QUERY[$input])) {
@@ -309,7 +310,8 @@ class UserAPITask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_COLOR],
       $QUERY[UQueryTask::TASK_CPU_ONLY],
       $QUERY[UQueryTask::TASK_SMALL],
-      $QUERY[UQueryTask::TASK_PRINCE],
+      $QUERY[UQueryTask::TASK_PREPROCESSOR],
+      $QUERY[UQueryTask::TASK_PREPROCESSOR_COMMAND],
       $QUERY[UQueryTask::TASK_SKIP],
       $QUERY[UQueryTask::TASK_PRIORITY],
       $QUERY[UQueryTask::TASK_FILES],
@@ -415,7 +417,10 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::TASK_KEYSPACE => (int)$task->getKeyspace(),
       UResponseTask::TASK_DISPATCHED => (int)$task->getKeyspaceProgress(),
       UResponseTask::TASK_HASHLIST => (int)$taskWrapper->getHashlistId(),
-      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId()
+      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId(),
+      UResponseTask::TASK_USE_PREPROCESSOR => ($task->getUsePreprocessor() > 0) ? true : false,
+      UResponseTask::TASK_PREPROCESSOR_ID => ($task->getUsePreprocessor() > 0) ? $task->getUsePreprocessor() : 0,
+      UResponseTask::TASK_PREPROCESSOR_COMMAND => ($task->getUsePreprocessor() > 0) ? $task->getPreprocessorCommand() : ''
     ];
     
     $files = TaskUtils::getFilesOfTask($task);

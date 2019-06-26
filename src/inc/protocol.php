@@ -171,7 +171,7 @@ class PQueryGetFound extends PQuery {
     return true;
   }
   
-  const HASHLIST_ID  = "hashlistId";
+  const HASHLIST_ID = "hashlistId";
 }
 
 class PQueryClientError extends PQuery {
@@ -197,6 +197,7 @@ class PQueryDownloadBinary extends PQuery {
   
   const BINARY_TYPE       = "type";
   const BINARY_VERSION_ID = "binaryVersionId";
+  const PREPROCESSOR_ID   = "preprocessorId";
 }
 
 class PQueryCheckClientVersion extends PQuery {
@@ -252,10 +253,11 @@ class PValuesTask extends PValues {
 }
 
 class PValuesDownloadBinaryType extends PValues {
-  const EXTRACTOR = "7zr";
-  const CRACKER   = "cracker";
-  const PRINCE    = "prince";
-  const UFTPD     = "uftpd";
+  const EXTRACTOR    = "7zr";
+  const CRACKER      = "cracker";
+  const PRINCE       = "prince";
+  const UFTPD        = "uftpd";
+  const PREPROCESSOR = "preprocessor";
 }
 
 class PValuesBenchmarkType extends PValues {
@@ -327,9 +329,12 @@ class PResponseClientUpdate extends PResponse {
 }
 
 class PResponseBinaryDownload extends PResponse {
-  const EXECUTABLE = "executable";
-  const URL        = "url";
-  const NAME       = "name";
+  const EXECUTABLE   = "executable";
+  const URL          = "url";
+  const NAME         = "name";
+  const KEYSPACE_CMD = "keyspaceCommand";
+  const SKIP_CMD     = "skipCommand";
+  const LIMIT_CMD    = "limitCommand";
 }
 
 class PResponseError extends PResponse {
@@ -352,26 +357,28 @@ class PResponseGetFile extends PResponse {
 }
 
 class PResponseGetTask extends PResponse {
-  const TASK_ID        = "taskId";
-  const CRACKER_ID     = "crackerId";
-  const ATTACK_COMMAND = "attackcmd";
-  const CMD_PARAMETERS = "cmdpars";
-  const HASHLIST_ID    = "hashlistId";
-  const BENCHMARK      = "bench";
-  const STATUS_TIMER   = "statustimer";
-  const FILES          = "files";
-  const BENCHTYPE      = "benchType";
-  const HASHLIST_ALIAS = "hashlistAlias";
-  const KEYSPACE       = "keyspace";
-  const REASON         = "reason";
-  const PRINCE         = "usePrince";
-  const ENFORCE_PIPE   = "enforcePipe";
-  const SLOW_HASH      = "slowHash";
-  const USE_BRAIN      = "useBrain";
-  const BRAIN_HOST     = "brainHost";
-  const BRAIN_PORT     = "brainPort";
-  const BRAIN_PASS     = "brainPass";
-  const BRAIN_FEATURES = "brainFeatures";
+  const TASK_ID              = "taskId";
+  const CRACKER_ID           = "crackerId";
+  const ATTACK_COMMAND       = "attackcmd";
+  const CMD_PARAMETERS       = "cmdpars";
+  const HASHLIST_ID          = "hashlistId";
+  const BENCHMARK            = "bench";
+  const STATUS_TIMER         = "statustimer";
+  const FILES                = "files";
+  const BENCHTYPE            = "benchType";
+  const HASHLIST_ALIAS       = "hashlistAlias";
+  const KEYSPACE             = "keyspace";
+  const REASON               = "reason";
+  const USE_PREPROCESSOR     = "usePreprocessor";
+  const PREPROCESSOR         = "preprocessor";
+  const PREPROCESSOR_COMMAND = "preprocessorCommand";
+  const ENFORCE_PIPE         = "enforcePipe";
+  const SLOW_HASH            = "slowHash";
+  const USE_BRAIN            = "useBrain";
+  const BRAIN_HOST           = "brainHost";
+  const BRAIN_PORT           = "brainPort";
+  const BRAIN_PASS           = "brainPass";
+  const BRAIN_FEATURES       = "brainFeatures";
 }
 
 class PResponseGetChunk extends PResponse {

@@ -8,6 +8,7 @@ use DBA\File;
 use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
+use DBA\Preprocessor;
 use DBA\QueryFilter;
 use DBA\Factory;
 
@@ -233,6 +234,15 @@ if (isset($_GET['id'])) {
     UI::add('activeChunks', $activeChunksIds);
   }
   
+  if ($task->getUsePreprocessor()) {
+    try {
+      UI::add('preprocessor', PreprocessorUtils::getPreprocessor($task->getUsePreprocessor()));
+    }
+    catch (HTException $e) {
+      UI::printError("ERROR", "Failed to load preprocessor!");
+    }
+  }
+  
   $agents = Factory::getAgentFactory()->filter([]);
   $fullAgents = new DataSet();
   foreach ($agents as $agent) {
@@ -335,6 +345,10 @@ else if (isset($_GET['new'])) {
     $lists[] = $set;
   }
   UI::add('lists', $lists);
+  
+  $oF = new OrderFilter(Preprocessor::NAME, "ASC");
+  $preprocessors = Factory::getPreprocessorFactory()->filter([Factory::ORDER => $oF]);
+  UI::add('preprocessors', $preprocessors);
   
   $origFiles = array();
   if ($origType == 1) {

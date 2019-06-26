@@ -397,7 +397,7 @@ class Util {
     }
     
     $isActive = false;
-    if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
+    if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getUsePreprocessor() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
     return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0, $speed);
@@ -521,7 +521,7 @@ class Util {
         $set->addValue('hashlistCracked', $hashlist->getCracked());
         $set->addValue('chunkTime', $task->getChunkTime());
         $set->addValue('isSecret', $hashlist->getIsSecret());
-        $set->addValue('isPrince', $task->getIsPrince());
+        $set->addValue('usePreprocessor', $task->getUsePreprocessor());
         $set->addValue('priority', $task->getPriority());
         $set->addValue('keyspace', $task->getKeyspace());
         $set->addValue('isActive', $taskInfo[2]);
@@ -1384,6 +1384,21 @@ class Util {
       $compressed[] = $device;
     }
     return $compressed;
+  }
+  
+  public static function getMinorVersion($version) {
+    $split = explode(".", $version);
+    return $split[0] . "." . $split[1];
+  }
+  
+  public static function databaseColumnExists($table, $column) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+    return $result->rowCount() > 0;
+  }
+  
+  public static function databaseTableExists($table) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW TABLES LIKE '$table';");
+    return $result->rowCount() > 0;
   }
 }
 
