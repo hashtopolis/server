@@ -26,6 +26,7 @@ if (!isset($PRESENT["v0.11.x_preprocessors"])) {
     Factory::getAgentFactory()->getDB()->query("CREATE TABLE `Preprocessor` (
         `preprocessorId`  INT(11)      NOT NULL,
         `name`            VARCHAR(256) NOT NULL,
+        `url`             VARCHAR(512) NOT NULL,
         `binaryName`      VARCHAR(256) NOT NULL,
         `keyspaceCommand` VARCHAR(256) NOT NULL,
         `skipCommand`     VARCHAR(256) NOT NULL,
