@@ -28,7 +28,8 @@ env:
 matrix:
   # older versions only tested for master and PRs
   exclude:
-    - if: (branch != master AND type != pull_request)
+    -
+      if: (branch != master AND type != pull_request)
       - php: "7.1"
       - php: "7.0"
       - php: "5.6"
