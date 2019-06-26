@@ -1385,6 +1385,11 @@ class Util {
     }
     return $compressed;
   }
+  
+  public static function getMinorVersion($version) {
+    $split = explode(".", $version);
+    return $split[0] . $split[1];
+  }
 }
 
 
