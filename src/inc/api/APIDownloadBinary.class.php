@@ -54,17 +54,23 @@ class APIDownloadBinary extends APIBasic {
         );
         break;
       case PValuesDownloadBinaryType::PRINCE:
-        $url = SConfig::getInstance()->getVal(DConfig::PRINCE_LINK);
-        if (strlen($url) == 0) {
-          $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "No prince binary URL is configured on the server!");
+      case PValuesDownloadBinaryType::PREPROCESSOR:
+        $preprocessor = Factory::getPreprocessorFactory()->get($QUERY[PQueryDownloadBinary::PREPROCESSOR_ID]);
+        if ($preprocessor == null) {
+          $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Invalid preprocessor id!");
         }
-        DServerLog::log(DServerLog::TRACE, "Agent " . $this->agent->getId() . " downloaded prince binary");
+        DServerLog::log(DServerLog::TRACE, "Agent " . $this->agent->getId() . " downloaded preprocessor " . $preprocessor->getId());
+        
+        $ext = Util::getFileExtension($this->agent->getOs());
         $this->sendResponse(array(
             PResponseBinaryDownload::ACTION => PActions::DOWNLOAD_BINARY,
             PResponseBinaryDownload::RESPONSE => PValues::SUCCESS,
-            PResponseBinaryDownload::URL => $url,
+            PResponseBinaryDownload::URL => $preprocessor->getUrl(),
+            PResponseBinaryDownload::NAME => $preprocessor->getName(),
+            PResponseBinaryDownload::EXECUTABLE => $preprocessor->getBinaryName() . $ext
           )
         );
+        break;
       default:
         DServerLog::log(DServerLog::WARNING, "Agent " . $this->agent->getId() . " requested invalid binary download: " . $QUERY[PQueryDownloadBinary::BINARY_TYPE]);
         $this->sendErrorResponse(PActions::DOWNLOAD_BINARY, "Unknown download type!");
