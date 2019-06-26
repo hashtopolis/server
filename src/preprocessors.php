@@ -42,13 +42,11 @@ else if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAc
   }
 }
 else if (isset($_GET['id'])) {
-  $binaryType = Factory::getCrackerBinaryTypeFactory()->get($_GET['id']);
-  if ($binaryType !== null) {
-    UI::add('binaryType', $binaryType);
+  $preprocessor = Factory::getPreprocessorFactory()->get($_GET['id']);
+  if ($preprocessor !== null) {
+    UI::add('preprocessor', $preprocessor);
     Template::loadInstance("preprocessors/details");
-    $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
-    UI::add('binaries', Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]));
-    UI::add('pageTitle', "Cracker Binary details for " . $binaryType->getTypeName());
+    UI::add('pageTitle', "Preprocessor details for " . $preprocessor->getName());
   }
 }
 else {
