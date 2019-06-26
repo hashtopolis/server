@@ -1,15 +1,17 @@
 language: php
-matrix:
-  - php: "7.2"
-  - # older versions only tested for master and PRs
-    if: (branch = master OR type = pull_request)
-    php: "7.1"
-  - # older versions only tested for master and PRs
-    if: (branch = master OR type = pull_request)
-    php: "7.0"
-  - # older versions only tested for master and PRs
-    if: (branch = master OR type = pull_request)
-    php: "5.6"
+php:
+  include:
+    - "7.2"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      "7.1"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      "7.0"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      "5.6"
+
 services:
   - mysql
 install:
@@ -24,6 +26,17 @@ install:
   - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
   - sudo php -f ci/server/setup.php $TRAVIS_BRANCH
 
+matrix:
+  - php: "7.2"
+  - # older versions only tested for master and PRs
+    if: (branch = master OR type = pull_request)
+    php: "7.1"
+  - # older versions only tested for master and PRs
+    if: (branch = master OR type = pull_request)
+    php: "7.0"
+  - # older versions only tested for master and PRs
+    if: (branch = master OR type = pull_request)
+    php: "5.6"
 
 jobs:
   include:
