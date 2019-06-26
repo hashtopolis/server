@@ -1,12 +1,4 @@
 language: php
-php:
-  - "7.2"
-  - "7.1"
-    if: (branch = master OR type = pull_request)
-  - "7.0"
-    if: (branch = master OR type = pull_request)
-  - "5.6" # 5.6 is only tested for legacy, it's not recommended to be used
-    if: (branch = master OR type = pull_request)
 services:
   - mysql
 install:
@@ -21,13 +13,38 @@ install:
   - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
   - sudo php -f ci/server/setup.php $TRAVIS_BRANCH
 
-env:
-  - VERSION="master"
-  - VERSION="0.11.0"
-  - VERSION="0.10.0"
-    if: (branch = master OR type = pull_request)
-  - VERSION="0.9.0"
-    if: (branch = master OR type = pull_request)
+matrix:
+  include:
+    - php: "7.2"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      php: "7.1"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      php: "7.0"
+    - # older versions only tested for master and PRs
+      if: (branch = master OR type = pull_request)
+      php: "5.6"
+
+jobs:
+  include:
+    - env: VERSION="master"
+    - env: VERSION="0.11.0"
+    - # older builds only for master and PRs
+      if: (branch = master OR type = pull_request)
+      env: VERSION="0.10.0"
+    - # older builds only for master and PRs
+      if: (branch = master OR type = pull_request)
+      env: VERSION="0.9.0"
+
+
+#env:
+#  - VERSION="master"
+#  - VERSION="0.11.0"
+#  - VERSION="0.10.0"
+#    if: (branch = master OR type = pull_request)
+#  - VERSION="0.9.0"
+#    if: (branch = master OR type = pull_request)
 
 script:
   - php -f ci/run.php master $VERSION
