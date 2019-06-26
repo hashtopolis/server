@@ -1,5 +1,9 @@
 # v0.11.0 -> v0.x.x
 
+## Features
+
+- Generic preprocessor integration to allow inclusion of any preprocessor supporting chunking.
+
 ## Bugfixes
 
 - Fixed increasing the superhashlist cracked count if there are cracks running one of the hashlists alone.
