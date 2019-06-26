@@ -10,6 +10,11 @@
 			  <th>Name</th>
 			  <th>Action</th>
 		  </tr>
+			<tr>
+				<td colspan="3" class="text-right">
+					<a href="preprocessors.php?new=true" class="btn btn-success">Add</a>
+				</td>
+			</tr>
 		  {{FOREACH preprocessor;[[preprocessors]]}}
 			  <tr>
 				  <td><a href="preprocessors.php?id=[[preprocessor.getId()]]">[[preprocessor.getId()]]</a></td>
