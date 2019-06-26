@@ -3,6 +3,7 @@
 use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
 use DBA\OrderFilter;
+use DBA\Preprocessor;
 use DBA\QueryFilter;
 use DBA\Factory;
 
@@ -51,22 +52,8 @@ else if (isset($_GET['id'])) {
   }
 }
 else {
-  $oF = new OrderFilter(CrackerBinaryType::TYPE_NAME, "ASC");
-  UI::add('binaryTypes', Factory::getCrackerBinaryTypeFactory()->filter([Factory::ORDER => $oF]));
-  $binariesVersions = new DataSet();
-  foreach (UI::get('binaryTypes') as $binaryType) { /** @var CrackerBinaryType $binaryType */
-    $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $binaryType->getId(), "=");
-    $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
-    $arr = array();
-    usort($binaries, ["Util", "versionComparisonBinary"]);
-    foreach ($binaries as $binary) {
-      if (!isset($arr[$binary->getVersion()])) {
-        $arr[$binary->getVersion()] = $binary->getVersion();
-      }
-    }
-    $binariesVersions->addValue($binaryType->getId(), implode("<br>", $arr));
-  }
-  UI::add('versions', $binariesVersions);
+  $oF = new OrderFilter(Preprocessor::NAME, "ASC");
+  UI::add('preprocessors', Factory::getPreprocessorFactory()->filter([Factory::ORDER => $oF]));
   UI::add('pageTitle', "Preprocessors");
 }
 
