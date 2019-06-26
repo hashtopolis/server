@@ -776,6 +776,9 @@ CREATE TABLE `Preprocessor` (
   `limitCommand`    VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
 
+INSERT INTO `Preprocessor` ( `preprocessorId`, `name`, `url`, `binaryName`, `keyspaceCommand`, `skipCommand`, `limitCommand`) VALUES
+  (1, 'Prince', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z', 'pp', '--keyspace', '--skip', '--limit');
+
 -- Add Indexes
 ALTER TABLE `AccessGroup`
   ADD PRIMARY KEY (`accessGroupId`);
