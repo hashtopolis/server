@@ -771,9 +771,9 @@ CREATE TABLE `Preprocessor` (
   `name`            VARCHAR(256) NOT NULL,
   `url`             VARCHAR(512) NOT NULL,
   `binaryName`      VARCHAR(256) NOT NULL,
-  `keyspaceCommand` VARCHAR(256) NOT NULL,
-  `skipCommand`     VARCHAR(256) NOT NULL,
-  `limitCommand`    VARCHAR(256) NOT NULL
+  `keyspaceCommand` VARCHAR(256) NULL,
+  `skipCommand`     VARCHAR(256) NULL,
+  `limitCommand`    VARCHAR(256) NULL
 ) ENGINE=InnoDB;
 
 INSERT INTO `Preprocessor` ( `preprocessorId`, `name`, `url`, `binaryName`, `keyspaceCommand`, `skipCommand`, `limitCommand`) VALUES
