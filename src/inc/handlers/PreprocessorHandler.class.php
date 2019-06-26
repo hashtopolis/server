@@ -18,6 +18,11 @@ class PreprocessorHandler implements Handler {
           PreprocessorUtils::delete($_POST['preprocessorId']);
           UI::addMessage(UI::SUCCESS, "Deleted preprocessor successfully!");
           break;
+        case DPreprocessorAction::EDIT_PREPROCESSOR:
+          AccessControl::getInstance()->checkPermission(DPreprocessorAction::EDIT_PREPROCESSOR_PERM);
+          PreprocessorUtils::editPreprocessor($_POST['preprocessorId'], $_POST['name'], $_POST['binaryName'], $_POST['url'], $_POST['keyspaceCommand'], $_POST['skipCommand'], $_POST['limitCommand']);
+          UI::addMessage(UI::SUCCESS, "Saved changes successfully!");
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
