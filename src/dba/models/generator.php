@@ -229,7 +229,7 @@ $CONF['Task'] = [
   'chunkSize',
   'forcePipe',
   'usePreprocessor',
-  'preprocessorCmd'
+  'preprocessorCommand'
 ];
 $CONF['TaskDebugOutput'] = [
   'taskDebugOutputId',

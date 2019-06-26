@@ -25,9 +25,9 @@ class Task extends AbstractModel {
   private $chunkSize;
   private $forcePipe;
   private $usePreprocessor;
-  private $preprocessorCmd;
+  private $preprocessorCommand;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $notes, $staticChunks, $chunkSize, $forcePipe, $usePreprocessor, $preprocessorCmd) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $notes, $staticChunks, $chunkSize, $forcePipe, $usePreprocessor, $preprocessorCommand) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -50,7 +50,7 @@ class Task extends AbstractModel {
     $this->chunkSize = $chunkSize;
     $this->forcePipe = $forcePipe;
     $this->usePreprocessor = $usePreprocessor;
-    $this->preprocessorCmd = $preprocessorCmd;
+    $this->preprocessorCommand = $preprocessorCommand;
   }
   
   function getKeyValueDict() {
@@ -77,7 +77,7 @@ class Task extends AbstractModel {
     $dict['chunkSize'] = $this->chunkSize;
     $dict['forcePipe'] = $this->forcePipe;
     $dict['usePreprocessor'] = $this->usePreprocessor;
-    $dict['preprocessorCmd'] = $this->preprocessorCmd;
+    $dict['preprocessorCommand'] = $this->preprocessorCommand;
     
     return $dict;
   }
@@ -274,12 +274,12 @@ class Task extends AbstractModel {
     $this->usePreprocessor = $usePreprocessor;
   }
   
-  function getPreprocessorCmd(){
-    return $this->preprocessorCmd;
+  function getPreprocessorCommand(){
+    return $this->preprocessorCommand;
   }
   
-  function setPreprocessorCmd($preprocessorCmd){
-    $this->preprocessorCmd = $preprocessorCmd;
+  function setPreprocessorCommand($preprocessorCommand){
+    $this->preprocessorCommand = $preprocessorCommand;
   }
 
   const TASK_ID = "taskId";
@@ -304,5 +304,5 @@ class Task extends AbstractModel {
   const CHUNK_SIZE = "chunkSize";
   const FORCE_PIPE = "forcePipe";
   const USE_PREPROCESSOR = "usePreprocessor";
-  const PREPROCESSOR_CMD = "preprocessorCmd";
+  const PREPROCESSOR_COMMAND = "preprocessorCommand";
 }
