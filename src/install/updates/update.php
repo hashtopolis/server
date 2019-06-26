@@ -49,7 +49,7 @@ if ($upgradePossible) { // we can actually check if there are upgrades to be app
     if (Util::startsWith($file, "update_v")) {
       // check version
       $minor = Util::getMinorVersion(substr($file, 8, strpos($file, "_", 7) - 8));
-      echo "MINOR: $minor - STORED: " . Util::getMinorVersion($storedVersion->getVal()) . "\n";
+      echo "MINOR: $minor - STORED: " . Util::getMinorVersion($storedVersion->getVal()) . " -> " . Util::versionComparison($minor, Util::getMinorVersion($storedVersion->getVal())) . "\n";
       if (Util::versionComparison($minor, Util::getMinorVersion($storedVersion->getVal())) < 1) {
         // script needs to be checked
         include(dirname(__FILE__) . "/" . $file);
