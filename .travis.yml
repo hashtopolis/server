@@ -1,4 +1,15 @@
 language: php
+matrix:
+- php: "7.2"
+- # older versions only tested for master and PRs
+  if: (branch = master OR type = pull_request)
+  php: "7.1"
+- # older versions only tested for master and PRs
+  if: (branch = master OR type = pull_request)
+  php: "7.0"
+- # older versions only tested for master and PRs
+  if: (branch = master OR type = pull_request)
+  php: "5.6"
 services:
   - mysql
 install:
@@ -12,17 +23,6 @@ install:
   - sudo git clone https://github.com/s3inlc/hashtopolis /var/www/html/hashtopolis
   - sudo /bin/bash ci/files/prepare.sh $TRAVIS_BRANCH
   - sudo php -f ci/server/setup.php $TRAVIS_BRANCH
-
-- php: "7.2"
-- # older versions only tested for master and PRs
-  if: (branch = master OR type = pull_request)
-  php: "7.1"
-- # older versions only tested for master and PRs
-  if: (branch = master OR type = pull_request)
-  php: "7.0"
-- # older versions only tested for master and PRs
-  if: (branch = master OR type = pull_request)
-  php: "5.6"
 
 jobs:
   include:
