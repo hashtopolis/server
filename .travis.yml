@@ -26,18 +26,14 @@ matrix:
     - php: "7.1"
     - php: "7.0"
     - php: "5.6"
-    - env: VERSION=""
 
 jobs:
   include:
     - env: VERSION="master"
     - env: VERSION="0.11.0"
-    - # older builds only for master and PRs
-      if: (branch = master OR type = pull_request)
-      env: VERSION="0.10.0"
-    - # older builds only for master and PRs
-      if: (branch = master OR type = pull_request)
-      env: VERSION="0.9.0"
+    if: (branch = master OR type = pull_request)
+    - env: VERSION="0.10.0"
+    - env: VERSION="0.9.0"
 
 
 #env:
