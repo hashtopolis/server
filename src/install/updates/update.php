@@ -50,7 +50,7 @@ if ($upgradePossible) { // we can actually check if there are upgrades to be app
       // check version
       $minor = Util::getMinorVersion(substr($file, 8, strpos($file, "_", 7) - 8));
       echo "MINOR: $minor - STORED: " . Util::getMinorVersion($storedVersion->getVal()) . " -> " . Util::versionComparison($minor, Util::getMinorVersion($storedVersion->getVal())) . "\n";
-      if (Util::versionComparison($minor, Util::getMinorVersion($storedVersion->getVal())) < 1) {
+      if (Util::versionComparison($minor, Util::getMinorVersion($storedVersion->getVal())) < 1 && $storedBuild != (($BUILD == 'repository') ? Util::getGitCommit(true) : $BUILD)) {
         // script needs to be checked
         include(dirname(__FILE__) . "/" . $file);
       }
