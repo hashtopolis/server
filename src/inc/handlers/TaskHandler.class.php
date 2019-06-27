@@ -149,7 +149,7 @@ class TaskHandler implements Handler {
       $usePreprocessor = 0;
     }
     else if($usePreprocessor > 0){
-      $preprocessor = PreprocessorUtils::getPreprocessor($usePreprocessor);
+      PreprocessorUtils::getPreprocessor($usePreprocessor);
     }
     
     if (strpos($cmdline, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {

@@ -74,13 +74,17 @@ class SearchHandler implements Handler {
       $qF1 = new LikeFilter(Hash::PLAINTEXT, "%" . $queryEntry . "%");
       $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists));
       $joined2 = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => $jF]);
-      for ($i = 0; $i < sizeof($joined2[Factory::getHashFactory()->getModelName()]); $i++) {
+      /** @var $hashes Hash[] */
+      $hashes = $joined2[Factory::getHashFactory()->getModelName()];
+      for ($i = 0; $i < sizeof($hashes); $i++) {
         $joined[Factory::getHashFactory()->getModelName()][] = $joined2[Factory::getHashFactory()->getModelName()][$i];
         $joined[Factory::getHashlistFactory()->getModelName()][] = $joined2[Factory::getHashlistFactory()->getModelName()][$i];
       }
       
       $resultEntry = new DataSet();
-      if (sizeof($joined[Factory::getHashFactory()->getModelName()]) == 0) {
+      /** @var $hashes Hash[] */
+      $hashes = $joined[Factory::getHashFactory()->getModelName()];
+      if (sizeof($hashes) == 0) {
         $resultEntry->addValue("found", false);
         $resultEntry->addValue("query", $queryEntry);
       }
@@ -88,7 +92,7 @@ class SearchHandler implements Handler {
         $resultEntry->addValue("found", true);
         $resultEntry->addValue("query", $queryEntry);
         $matches = array();
-        for ($i = 0; $i < sizeof($joined[Factory::getHashFactory()->getModelName()]); $i++) {
+        for ($i = 0; $i < sizeof($hashes); $i++) {
           /** @var $hash Hash */
           $hash = $joined[Factory::getHashFactory()->getModelName()][$i];
           $matches[] = $hash;
