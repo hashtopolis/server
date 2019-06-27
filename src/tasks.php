@@ -199,11 +199,12 @@ if (isset($_GET['id'])) {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=", Factory::getChunkFactory());
     $jF = new JoinFilter(Factory::getChunkFactory(), Chunk::AGENT_ID, Agent::AGENT_ID);
     $joinedAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    for ($i = 0; $i < sizeof($joinedAgents[Factory::getAgentFactory()->getModelName()]); $i++) {
+    /** @var $agents Agent[] */
+    $agents = $joinedAgents[Factory::getAgentFactory()->getModelName()];
+    for ($i = 0; $i < sizeof($agents); $i++) {
       /** @var $chunk Chunk */
       $chunk = $joinedAgents[Factory::getChunkFactory()->getModelName()][$i];
-      /** @var $agent Agent */
-      $agent = $joinedAgents[Factory::getAgentFactory()->getModelName()][$i];
+      $agent = $agents[$i];
       if ($allAgents->getVal($agent->getId()) == null) {
         $allAgents->addValue($agent->getId(), $agent);
         $agentObjects[] = $agent;

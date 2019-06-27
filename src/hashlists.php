@@ -55,10 +55,12 @@ else if (isset($_GET['id'])) {
   $jF = new JoinFilter(Factory::getHashTypeFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
   $qF = new QueryFilter(Hashlist::HASHLIST_ID, $_GET['id'], "=");
   $joined = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
-  if (sizeof($joined[Factory::getHashlistFactory()->getModelName()]) == 0) {
+  /** @var $hashlists Hashlist[] */
+  $hashlists = $joined[Factory::getHashlistFactory()->getModelName()];
+  if (sizeof($hashlists) == 0) {
     UI::printError("ERROR", "Hashlist not found!");
   }
-  $list = new DataSet(array('hashlist' => $joined[Factory::getHashlistFactory()->getModelName()][0], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][0]));
+  $list = new DataSet(array('hashlist' => $hashlists[0], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][0]));
   UI::add('list', $list);
   UI::add('accessGroup', Factory::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId()));
   
@@ -69,8 +71,10 @@ else if (isset($_GET['id'])) {
     $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $list->getVal('hashlist')->getId(), "=", Factory::getHashlistHashlistFactory());
     $joined = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
     $sublists = array();
-    for ($x = 0; $x < sizeof($joined[Factory::getHashlistFactory()->getModelName()]); $x++) {
-      $sublists[] = new DataSet(['hashlist' => $joined[Factory::getHashlistFactory()->getModelName()][$x], 'superhashlist' => $joined[Factory::getHashlistHashlistFactory()->getModelName()][$x]]);
+    /** @var $hashlists Hashlist[] */
+    $hashlists = $joined[Factory::getHashlistFactory()->getModelName()];
+    for ($x = 0; $x < sizeof($hashlists); $x++) {
+      $sublists[] = new DataSet(['hashlist' => $hashlists[$x], 'superhashlist' => $joined[Factory::getHashlistHashlistFactory()->getModelName()][$x]]);
     }
     UI::add('sublists', $sublists);
   }
@@ -125,10 +129,12 @@ else {
   $jF = new JoinFilter(Factory::getHashTypeFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
   $qF1 = new QueryFilter(Hashlist::FORMAT, "" . DHashlistFormat::SUPERHASHLIST, "<>", Factory::getHashlistFactory());
   $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser())));
-  $joinedHashlists = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => [$qF1, $qF2]]);
+  $joined = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => [$qF1, $qF2]]);
+  /** @var $joinedHashlists Hashlist[] */
+  $joinedHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
   $hashlists = array();
-  for ($x = 0; $x < sizeof($joinedHashlists[Factory::getHashlistFactory()->getModelName()]); $x++) {
-    $hashlists[] = new DataSet(['hashlist' => $joinedHashlists[Factory::getHashlistFactory()->getModelName()][$x], 'hashtype' => $joinedHashlists[Factory::getHashTypeFactory()->getModelName()][$x]]);
+  for ($x = 0; $x < sizeof($joinedHashlists); $x++) {
+    $hashlists[] = new DataSet(['hashlist' => $hashlists[$x], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][$x]]);
   }
   UI::add('hashlists', $hashlists);
   UI::add('numHashlists', sizeof($hashlists));
