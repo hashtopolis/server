@@ -172,7 +172,7 @@ class TaskUtils {
     if ($taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
       Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::IS_ARCHIVED, 1);
     }
-    Factory::getTaskWrapperFactory()->set($task, Task::IS_ARCHIVED, 1);
+    Factory::getTaskFactory()->set($task, Task::IS_ARCHIVED, 1);
   }
   
   /**
