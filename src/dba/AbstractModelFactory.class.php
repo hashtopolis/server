@@ -219,6 +219,36 @@ abstract class AbstractModelFactory {
   }
   
   /**
+   * Atomically sets the given keys of this model to the given values
+   *
+   * Returns the return of PDO::execute()
+   * @param $model AbstractModel primary key of model
+   * @param $arr array key-value associations for update
+   * @return PDOStatement
+   */
+  public function mset(&$model, $arr) {
+    $query = "UPDATE " . $this->getModelTable() . " SET ";
+    $elements = [];
+    $vals = [];
+    foreach ($arr as $key => $val) {
+      $elements[] = "SET " . $key . "=?";
+      $vals[] = $val;
+    }
+    $query .= implode(", ", $elements);
+    
+    $values = [];
+    $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
+    array_push($values, $vals);
+    array_push($values, $model->getPrimaryKeyValue());
+    
+    $stmt = $this->getDB()->prepare($query);
+    $stmt->execute($values);
+    
+    $model = $this->get($model->getPrimaryKeyValue());
+    return $stmt;
+  }
+  
+  /**
    * Atomically sets the given key of this model to the given value
    *
    * Returns the return of PDO::execute()
