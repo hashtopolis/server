@@ -2,6 +2,7 @@
 
 use DBA\Config;
 use DBA\Factory;
+use DBA\QueryFilter;
 
 if (!isset($TEST)) {
   /** @noinspection PhpIncludeInspection */
@@ -42,8 +43,47 @@ if (!isset($PRESENT["v0.11.x_preprocessors"])) {
 }
 
 if (!isset($PRESENT["v0.11.x_conf1"])) {
-  $config = new Config(null, 3, DConfig::UAPI_SEND_TASK_IS_COMPLETE, '0');
-  Factory::getConfigFactory()->save($config);
+  $qF = new QueryFilter(Config::ITEM, DConfig::UAPI_SEND_TASK_IS_COMPLETE, "=");
+  $item = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if (!$item) {
+    $config = new Config(null, 3, DConfig::UAPI_SEND_TASK_IS_COMPLETE, '0');
+    Factory::getConfigFactory()->save($config);
+  }
   $EXECUTED["v0.11.x_conf1"] = true;
+}
+
+if (!isset($PRESENT["v0.11.x_conf2"])) {
+  $qF = new QueryFilter(Config::ITEM, "telegramProxyEnable", "=");
+  $item1 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  $qF = new QueryFilter(Config::ITEM, DConfig::NOTIFICATIONS_PROXY_ENABLE, "=");
+  $item2 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if ($item1 && !$item2) {
+    Factory::getConfigFactory()->set($item1, Config::ITEM, DConfig::NOTIFICATIONS_PROXY_ENABLE);
+  }
+  
+  $qF = new QueryFilter(Config::ITEM, "telegramProxyServer", "=");
+  $item1 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  $qF = new QueryFilter(Config::ITEM, DConfig::NOTIFICATIONS_PROXY_SERVER, "=");
+  $item2 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if ($item1 && !$item2) {
+    Factory::getConfigFactory()->set($item1, Config::ITEM, DConfig::NOTIFICATIONS_PROXY_SERVER);
+  }
+  
+  $qF = new QueryFilter(Config::ITEM, "telegramProxyPort", "=");
+  $item1 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  $qF = new QueryFilter(Config::ITEM, DConfig::NOTIFICATIONS_PROXY_PORT, "=");
+  $item2 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if ($item1 && !$item2) {
+    Factory::getConfigFactory()->set($item1, Config::ITEM, DConfig::NOTIFICATIONS_PROXY_PORT);
+  }
+  
+  $qF = new QueryFilter(Config::ITEM, "telegramProxyType", "=");
+  $item1 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  $qF = new QueryFilter(Config::ITEM, DConfig::NOTIFICATIONS_PROXY_TYPE, "=");
+  $item2 = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if ($item1 && !$item2) {
+    Factory::getConfigFactory()->set($item1, Config::ITEM, DConfig::NOTIFICATIONS_PROXY_TYPE);
+  }
+  $EXECUTED["v0.11.x_conf2"] = true;
 }
 

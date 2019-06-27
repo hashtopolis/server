@@ -53,13 +53,13 @@ if ($config != null) { // just to be sure we check
   Factory::getConfigFactory()->update($config);
 }
 
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_SERVER, '');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_SERVER, '');
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_PORT, '');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_PORT, '');
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_TYPE, 'HTTP');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_TYPE, 'HTTP');
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_ENABLE, '0');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_ENABLE, '0');
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 

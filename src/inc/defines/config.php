@@ -102,11 +102,11 @@ class DConfig {
   const MULTICAST_TR        = "multicastTranserRate";
   
   // Section: Notifications
-  const TELEGRAM_PROXY_ENABLE = "telegramProxyEnable";
-  const TELEGRAM_BOT_TOKEN    = "telegramBotToken";
-  const TELEGRAM_PROXY_SERVER = "telegramProxyServer";
-  const TELEGRAM_PROXY_PORT   = "telegramProxyPort";
-  const TELEGRAM_PROXY_TYPE   = "telegramProxyType";
+  const NOTIFICATIONS_PROXY_ENABLE = "notificationsProxyEnable";
+  const TELEGRAM_BOT_TOKEN         = "telegramBotToken";
+  const NOTIFICATIONS_PROXY_SERVER = "notificationsProxyServer";
+  const NOTIFICATIONS_PROXY_PORT   = "notificationsProxyPort";
+  const NOTIFICATIONS_PROXY_TYPE   = "notificationsProxyType";
   
   static function getConstants() {
     try {
@@ -125,7 +125,7 @@ class DConfig {
    */
   public static function getSelection($config) {
     switch ($config) {
-      case DConfig::TELEGRAM_PROXY_TYPE:
+      case DConfig::NOTIFICATIONS_PROXY_TYPE:
         return new DataSet([
             DProxyTypes::HTTP => DProxyTypes::HTTP,
             DProxyTypes::HTTPS => DProxyTypes::HTTPS,
@@ -234,13 +234,13 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::MULTICAST_TR:
         return DConfigType::NUMBER_INPUT;
-      case DConfig::TELEGRAM_PROXY_ENABLE:
+      case DConfig::NOTIFICATIONS_PROXY_ENABLE:
         return DConfigType::TICKBOX;
-      case DConfig::TELEGRAM_PROXY_PORT:
+      case DConfig::NOTIFICATIONS_PROXY_PORT:
         return DConfigType::NUMBER_INPUT;
-      case DConfig::TELEGRAM_PROXY_SERVER:
+      case DConfig::NOTIFICATIONS_PROXY_SERVER:
         return DConfigType::STRING_INPUT;
-      case DConfig::TELEGRAM_PROXY_TYPE:
+      case DConfig::NOTIFICATIONS_PROXY_TYPE:
         return DConfigType::SELECT;
       case DConfig::DISABLE_TRIMMING:
         return DConfigType::TICKBOX;
@@ -368,13 +368,13 @@ class DConfig {
         return "Instead of the built in UFTP flow control, use a static set transfer rate<br>(Important: Setting this value wrong can affect the functionality, only use this if you are sure this transfer rate is feasible)";
       case DConfig::MULTICAST_TR:
         return "Set static transfer rate in case it is activated (in Kbit/s)";
-      case DConfig::TELEGRAM_PROXY_ENABLE:
+      case DConfig::NOTIFICATIONS_PROXY_ENABLE:
         return "Enable using a proxy for the telegram notification bot.";
-      case DConfig::TELEGRAM_PROXY_PORT:
+      case DConfig::NOTIFICATIONS_PROXY_PORT:
         return "Set the port for the telegram notification proxy.";
-      case DConfig::TELEGRAM_PROXY_SERVER:
+      case DConfig::NOTIFICATIONS_PROXY_SERVER:
         return "Server url of the proxy to use for telegram notifications.";
-      case DConfig::TELEGRAM_PROXY_TYPE:
+      case DConfig::NOTIFICATIONS_PROXY_TYPE:
         return "Proxy type to use for telegram notifications.";
       case DConfig::DISABLE_TRIMMING:
         return "Disable trimming of chunks and redo whole chunks.";
