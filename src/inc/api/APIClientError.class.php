@@ -1,5 +1,6 @@
 <?php
 
+use DBA\Agent;
 use DBA\AgentError;
 use DBA\Assignment;
 use DBA\QueryFilter;
@@ -33,7 +34,7 @@ class APIClientError extends APIBasic {
     if ($this->agent->getIgnoreErrors() <= DAgentIgnoreErrors::IGNORE_SAVE) {
       //save error message
       $chunkId = null;
-      if(isset($QUERY[PQueryClientError::CHUNK_ID])){
+      if (isset($QUERY[PQueryClientError::CHUNK_ID])) {
         $chunkId = intval($QUERY[PQueryClientError::CHUNK_ID]);
       }
       $error = new AgentError(null, $this->agent->getId(), $task->getId(), $chunkId, time(), $QUERY[PQueryClientError::MESSAGE]);
@@ -46,7 +47,7 @@ class APIClientError extends APIBasic {
     
     if ($this->agent->getIgnoreErrors() == DAgentIgnoreErrors::NO) {
       //deactivate agent
-      $this->agent->setIsActive(0);
+      Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
     }
     
     $this->updateAgent(PActions::CLIENT_ERROR);

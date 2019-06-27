@@ -1,5 +1,8 @@
 <?php
 
+use DBA\Agent;
+use DBA\Factory;
+
 class APILogin extends APIBasic {
   public function execute($QUERY = array()) {
     global $VERSION;
@@ -8,7 +11,7 @@ class APILogin extends APIBasic {
       $this->sendErrorResponse(PActions::LOGIN, "Invalid login query!");
     }
     $this->checkToken(PActions::LOGIN, $QUERY);
-    $this->agent->setClientSignature(htmlentities($QUERY[PQueryLogin::CLIENT_SIGNATURE], ENT_QUOTES, "UTF-8"));
+    Factory::getAgentFactory()->set($this->agent, Agent::CLIENT_SIGNATURE, htmlentities($QUERY[PQueryLogin::CLIENT_SIGNATURE], ENT_QUOTES, "UTF-8"));
     $this->updateAgent(PActions::LOGIN);
     
     DServerLog::log(DServerLog::DEBUG, "Agent logged in", [$this->agent]);

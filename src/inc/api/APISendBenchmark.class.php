@@ -1,5 +1,6 @@
 <?php
 
+use DBA\Agent;
 use DBA\Assignment;
 use DBA\QueryFilter;
 use DBA\Factory;
@@ -35,8 +36,7 @@ class APISendBenchmark extends APIBasic {
       case PValuesBenchmarkType::SPEED_TEST:
         $split = explode(":", $benchmark);
         if (sizeof($split) != 2 || !is_numeric($split[0]) || !is_numeric($split[1]) || $split[0] <= 0 || $split[1] <= 0) {
-          $this->agent->setIsActive(0);
-          Factory::getAgentFactory()->update($this->agent);
+          Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
           DServerLog::log(DServerLog::ERROR, "Invalid speed test benchmark result!", [$this->agent, $benchmark]);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
@@ -63,8 +63,7 @@ class APISendBenchmark extends APIBasic {
         break;
       case PValuesBenchmarkType::RUN_TIME:
         if (!is_numeric($benchmark) || $benchmark <= 0) {
-          $this->agent->setIsActive(0);
-          Factory::getAgentFactory()->update($this->agent);
+          Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
           DServerLog::log(DServerLog::ERROR, "Invalid benchmark results for runtime benchmark", [$this->agent, $task, $benchmark]);
           $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark result!");
         }
@@ -73,8 +72,7 @@ class APISendBenchmark extends APIBasic {
         DServerLog::log(DServerLog::TRACE, "Saving normalized runtime benchmark", [$this->agent, $task, $benchmark]);
         break;
       default:
-        $this->agent->setIsActive(0);
-        Factory::getAgentFactory()->update($this->agent);
+        Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
         $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
     }
     
