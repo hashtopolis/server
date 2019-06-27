@@ -33,6 +33,9 @@ class RunnerUtils {
     $dir = self::getDir();
     $out = [];
     exec("cd '$dir' && python3 runner.zip status", $out);
+    if (sizeof($out) == 0) {
+      return "unknown";
+    }
     return $out[0];
   }
   
