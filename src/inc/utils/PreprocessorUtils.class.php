@@ -136,12 +136,14 @@ class PreprocessorUtils {
       $limitCommand = null;
     }
     
-    $preprocessor->setName($name);
-    $preprocessor->setBinaryName($binaryName);
-    $preprocessor->setUrl($url);
-    $preprocessor->setKeyspaceCommand($keyspaceCommand);
-    $preprocessor->setSkipCommand($skipCommand);
-    $preprocessor->setLimitCommand($limitCommand);
-    Factory::getPreprocessorFactory()->update($preprocessor);
+    Factory::getPreprocessorFactory()->mset($preprocessor, [
+        Preprocessor::NAME => $name,
+        Preprocessor::BINARY_NAME => $binaryName,
+        Preprocessor::URL => $url,
+        Preprocessor::KEYSPACE_COMMAND => $keyspaceCommand,
+        Preprocessor::SKIP_COMMAND => $skipCommand,
+        Preprocessor::LIMIT_COMMAND => $limitCommand
+      ]
+    );
   }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use DBA\File;
 use DBA\User;
 use DBA\Task;
 use DBA\Chunk;
@@ -37,8 +38,8 @@ class ConfigUtils {
   
   /**
    * @param string $item
-   * @throws HTException
    * @return Config
+   * @throws HTException
    */
   public static function get($item) {
     $qF = new QueryFilter(Config::ITEM, $item, "=");
@@ -130,8 +131,7 @@ class ConfigUtils {
         $count = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
         if ($count != $chunk->getCracked()) {
           $correctedChunks++;
-          $chunk->setCracked($count);
-          Factory::getChunkFactory()->update($chunk);
+          Factory::getChunkFactory()->set($chunk, Chunk::CRACKED, $count);
         }
       }
     }
@@ -151,8 +151,7 @@ class ConfigUtils {
       $count = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
       if ($count != $hashlist->getCracked()) {
         $correctedHashlists++;
-        $hashlist->setCracked($count);
-        Factory::getHashlistFactory()->update($hashlist);
+        Factory::getHashlistFactory()->set($hashlist, Hashlist::CRACKED, $count);
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
@@ -169,8 +168,7 @@ class ConfigUtils {
       }
       if ($cracked != $superHashlist->getCracked()) {
         $correctedHashlists++;
-        $superHashlist->setCracked($cracked);
-        Factory::getHashlistFactory()->update($superHashlist);
+        Factory::getHashlistFactory()->set($hashlist, Hashlist::CRACKED, $count);
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
@@ -200,8 +198,7 @@ class ConfigUtils {
       else if ($size != $file->getSize()) {
         $allOk = false;
         $messages[] = "File size mismatch of " . $file->getFilename() . ", will be corrected.";
-        $file->setSize($size);
-        Factory::getFileFactory()->update($file);
+        Factory::getFileFactory()->set($file, File::SIZE, $size);
       }
     }
     if (!$allOk) {

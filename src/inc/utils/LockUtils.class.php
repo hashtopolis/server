@@ -28,7 +28,7 @@ class LockUtils {
   }
   
   /**
-   * @param string $lockFile 
+   * @param string $lockFile
    */
   public static function release($lockFile) {
     if (isset(self::$locks[$lockFile])) {

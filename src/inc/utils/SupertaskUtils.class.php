@@ -16,16 +16,16 @@ use DBA\FilePretask;
 
 class SupertaskUtils {
   /**
-   * @param string $name 
-   * @param string $command 
-   * @param bool $isCpuOnly 
-   * @param bool $isSmall 
-   * @param int $crackerBinaryTypeId 
-   * @param string $benchtype 
-   * @param string[] $basefiles 
-   * @param string[] $iterfiles 
-   * @param User $user 
-   * @throws HTException 
+   * @param string $name
+   * @param string $command
+   * @param bool $isCpuOnly
+   * @param bool $isSmall
+   * @param int $crackerBinaryTypeId
+   * @param string $benchtype
+   * @param string[] $basefiles
+   * @param string[] $iterfiles
+   * @param User $user
+   * @throws HTException
    */
   public static function bulkSupertask($name, $command, $isCpuOnly, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
@@ -145,9 +145,7 @@ class SupertaskUtils {
    */
   public static function renameSupertask($supertaskId, $newName) {
     $supertask = SupertaskUtils::getSupertask($supertaskId);
-    $name = htmlentities($newName, ENT_QUOTES, "UTF-8");
-    $supertask->setSupertaskName($name);
-    Factory::getSupertaskFactory()->update($supertask);
+    Factory::getSupertaskFactory()->set($supertask, Supertask::SUPERTASK_NAME, htmlentities($newName, ENT_QUOTES, "UTF-8"));
   }
   
   /**
@@ -163,12 +161,12 @@ class SupertaskUtils {
     $joinedTasks = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     
     Factory::getSupertaskPretaskFactory()->massDeletion([Factory::FILTER => $qF]);
+    /** @var $pretasks Pretask[] */
+    $pretasks = $joinedTasks[Factory::getPretaskFactory()->getModelName()];
     
-    for ($i = 0; $i < sizeof($joinedTasks[Factory::getPretaskFactory()->getModelName()]); $i++) {
-      /** @var $task Pretask */
-      $task = $joinedTasks[Factory::getPretaskFactory()->getModelName()][$i];
-      if ($task->getIsMaskImport() == 1) {
-        Factory::getPretaskFactory()->delete($task);
+    foreach ($pretasks as $pretask) {
+      if ($pretask->getIsMaskImport() == 1) {
+        Factory::getPretaskFactory()->delete($pretask);
       }
     }
     
@@ -189,8 +187,8 @@ class SupertaskUtils {
   /**
    * @param int $taskWrapperId
    * @param User $user
-   * @throws HTException
    * @return TaskWrapper
+   * @throws HTException
    */
   public static function getRunningSupertask($taskWrapperId, $user) {
     $supertask = Factory::getTaskWrapperFactory()->get($taskWrapperId);
@@ -225,8 +223,8 @@ class SupertaskUtils {
   
   /**
    * @param int $supertaskId
-   * @throws HTException
    * @return Supertask
+   * @throws HTException
    */
   public static function getSupertask($supertaskId) {
     $supertask = Factory::getSupertaskFactory()->get($supertaskId);

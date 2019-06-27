@@ -54,8 +54,7 @@ class UserUtils {
    */
   public static function enableUser($userId) {
     $user = UserUtils::getUser($userId);
-    $user->setIsValid(1);
-    Factory::getUserFactory()->update($user);
+    Factory::getUserFactory()->set($user, User::IS_VALID, 1);
   }
   
   /**
@@ -72,8 +71,7 @@ class UserUtils {
     $qF = new QueryFilter(Session::USER_ID, $user->getId(), "=");
     $uS = new UpdateSet(Session::IS_OPEN, "0");
     Factory::getSessionFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-    $user->setIsValid(0);
-    Factory::getUserFactory()->update($user);
+    Factory::getUserFactory()->set($user, User::IS_VALID, 0);
   }
   
   /**
@@ -88,8 +86,7 @@ class UserUtils {
     if ($user->getId() == $adminUser->getId()) {
       throw new HTException("You cannot change your own rights!");
     }
-    $user->setRightGroupId($group->getId());
-    Factory::getUserFactory()->update($user);
+    Factory::getUserFactory()->set($user, User::RIGHT_GROUP_ID, $group->getId());
   }
   
   /**
@@ -106,10 +103,8 @@ class UserUtils {
     
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($password, $newSalt);
-    $user->setPasswordHash($newHash);
-    $user->setPasswordSalt($newSalt);
-    $user->setIsComputedPassword(0);
-    Factory::getUserFactory()->update($user);
+    
+    Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 0]);
   }
   
   /**
@@ -159,8 +154,8 @@ class UserUtils {
   
   /**
    * @param int $userId
-   * @throws HTException
    * @return User
+   * @throws HTException
    */
   public static function getUser($userId) {
     $user = Factory::getUserFactory()->get($userId);

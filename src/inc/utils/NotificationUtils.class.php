@@ -106,8 +106,8 @@ class NotificationUtils {
   
   /**
    * @param int $notification
-   * @throws HTException
    * @return NotificationSetting
+   * @throws HTException
    */
   public static function getNotification($notification) {
     $notification = Factory::getNotificationSettingFactory()->get($notification);

@@ -23,8 +23,7 @@ class PretaskUtils {
     else if (Util::containsBlacklistedChars($attackCmd)) {
       throw new HTException("The command must contain no blacklisted characters!");
     }
-    $pretask->setAttackCmd($attackCmd);
-    Factory::getPretaskFactory()->update($pretask);
+    Factory::getPretaskFactory()->set($pretask, Pretask::ATTACK_CMD, $attackCmd);
   }
   
   /**
@@ -75,14 +74,13 @@ class PretaskUtils {
    */
   public static function setCpuOnlyTask($pretaskId, $isCpuOnly) {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if(is_bool($isCpuOnly)){
+    if (is_bool($isCpuOnly)) {
       $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     }
     if (!is_numeric($isCpuOnly) || $isCpuOnly < 0 || $isCpuOnly > 1) {
       throw new HTException("Invalid boolean value!");
     }
-    $pretask->setIsCpuTask($isCpuOnly);
-    Factory::getPretaskFactory()->update($pretask);
+    Factory::getPretaskFactory()->set($pretask, Pretask::IS_CPU_TASK, $isCpuOnly);
   }
   
   /**
@@ -92,14 +90,13 @@ class PretaskUtils {
    */
   public static function setSmallTask($pretaskId, $isSmall) {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if(is_bool($isSmall)){
+    if (is_bool($isSmall)) {
       $isSmall = ($isSmall) ? 1 : 0;
     }
     if (!is_numeric($isSmall) || $isSmall < 0 || $isSmall > 1) {
       throw new HTException("Invalid boolean value!");
     }
-    $pretask->setIsSmall($isSmall);
-    Factory::getPretaskFactory()->update($pretask);
+    Factory::getPretaskFactory()->set($pretask, Pretask::IS_SMALL, $isSmall);
   }
   
   /**
@@ -109,12 +106,10 @@ class PretaskUtils {
    */
   public static function setPriority($pretaskId, $priority) {
     $pretask = PretaskUtils::getPretask($pretaskId);
-    if(!is_numeric($priority)){
+    if (!is_numeric($priority)) {
       throw new HTException("Priority needs to be a number!");
     }
-    $priority = intval($priority);
-    $pretask->setPriority($priority);
-    Factory::getPretaskFactory()->update($pretask);
+    Factory::getPretaskFactory()->set($pretask, Pretask::PRIORITY, intval($priority));
   }
   
   /**
@@ -127,8 +122,7 @@ class PretaskUtils {
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
       throw new HTException("Invalid color!");
     }
-    $pretask->setColor($color);
-    Factory::getPretaskFactory()->update($pretask);
+    Factory::getPretaskFactory()->set($pretask, Pretask::COLOR, $color);
   }
   
   /**
@@ -142,8 +136,7 @@ class PretaskUtils {
     if ($chunkTime <= 0) {
       throw new HTException("Invalid chunk time!");
     }
-    $pretask->setChunkTime($chunkTime);
-    Factory::getPretaskFactory()->update($pretask);
+    Factory::getPretaskFactory()->set($pretask, Pretask::CHUNK_TIME, $chunkTime);
   }
   
   /**
@@ -156,8 +149,7 @@ class PretaskUtils {
     if (strlen($newName) == 0) {
       throw new HTException("Name cannot be empty!");
     }
-    $pretask->setTaskName(htmlentities($newName, ENT_QUOTES, "UTF-8"));
-    Factory::getPretaskFactory()->update($pretask);
+    Factory::getPretaskFactory()->set($pretask, Pretask::TASK_NAME, htmlentities($newName, ENT_QUOTES, "UTF-8"));
   }
   
   /**
@@ -196,8 +188,8 @@ class PretaskUtils {
   
   /**
    * @param int $pretaskId
-   * @throws HTException
    * @return Pretask
+   * @throws HTException
    */
   public static function getPretask($pretaskId) {
     $pretask = Factory::getPretaskFactory()->get($pretaskId);

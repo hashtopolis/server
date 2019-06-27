@@ -33,9 +33,7 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
-    $hashlist->setNotes($notes);
-    Factory::getHashlistFactory()->update($hashlist);
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::NOTES, htmlentities($notes, ENT_QUOTES, "UTF-8"));
   }
   
   /**
@@ -227,16 +225,16 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    $secret = intval($isSecret);
-    $hashlist->setIsSecret($secret);
-    Factory::getHashlistFactory()->update($hashlist);
-    if ($secret == 1) {
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_SECRET, intval($isSecret));
+    if (intval($isSecret) == 1) {
       //handle agents which are assigned to hashlists which are secret now
       $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Assignment::TASK_ID, Factory::getAssignmentFactory());
       $jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID, Factory::getTaskWrapperFactory());
       $jF3 = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID, Factory::getTaskWrapperFactory());
       $joined = Factory::getAssignmentFactory()->filter([Factory::JOIN => [$jF1, $jF2, $jF3]]);
-      for ($x = 0; $x < sizeof($joined[Factory::getAssignmentFactory()->getModelName()]); $x++) {
+      /** @var $assignments Assignment[] */
+      $assignments = $joined[Factory::getAssignmentFactory()->getModelName()];
+      for ($x = 0; $x < sizeof($assignments); $x++) {
         /** @var $hashlist Hashlist */
         $hashlist = $joined[Factory::getHashlistFactory()->getModelName()][$x];
         if ($hashlist->getId() == $hashlist->getId()) {
@@ -258,9 +256,7 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
-    $hashlist->setHashlistName($name);
-    Factory::getHashlistFactory()->update($hashlist);
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::HASHLIST_NAME, htmlentities($name, ENT_QUOTES, "UTF-8"));
   }
   
   /**
@@ -383,9 +379,7 @@ class HashlistUtils {
           $tooLong++;
           continue;
         }
-        $hashEntry->setPlaintext($plain);
-        $hashEntry->setIsCracked(1);
-        $hashFactory->update($hashEntry);
+        $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1]);
         $newCracked++;
         $crackedIn[$hashEntry->getHashlistId()]++;
         if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
@@ -427,9 +421,7 @@ class HashlistUtils {
             $tooLong++;
             continue;
           }
-          $hashEntry->setPlaintext($plain);
-          $hashEntry->setIsCracked(1);
-          $hashFactory->update($hashEntry);
+          $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1]);
           $crackedIn[$hashEntry->getHashlistId()]++;
           if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
             $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
@@ -441,12 +433,11 @@ class HashlistUtils {
       if ($bufferCount > 1000) {
         foreach ($hashlists as $l) {
           $ll = Factory::getHashlistFactory()->get($l->getId());
-          $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
-          Factory::getHashlistFactory()->update($ll);
+          Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
         }
         Factory::getAgentFactory()->getDB()->commit();
         Factory::getAgentFactory()->getDB()->beginTransaction();
-        $crackedIn = array();
+        $crackedIn = [];
         $bufferCount = 0;
         if (sizeof($zaps) > 0) {
           Factory::getZapFactory()->massSave($zaps);
@@ -463,25 +454,21 @@ class HashlistUtils {
     //finish
     foreach ($hashlists as $l) {
       $ll = Factory::getHashlistFactory()->get($l->getId());
-      $ll->setCracked($ll->getCracked() + $crackedIn[$ll->getId()]);
-      Factory::getHashlistFactory()->update($ll);
+      Factory::getHashlistFactory()->inc($ll, Hashlist::CRACKED, $crackedIn[$ll->getId()]);
     }
     if (sizeof($zaps) > 0) {
       Factory::getZapFactory()->massSave($zaps);
     }
     
     if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
-      $total = array_sum($crackedIn);
       $hashlist = Factory::getHashlistFactory()->get($hashlist->getId());
-      $hashlist->setCracked($hashlist->getCracked() + $total);
-      Factory::getHashlistFactory()->update($hashlist);
+      Factory::getHashlistFactory()->inc($hashlist, Hashlist::CRACKED, array_sum($crackedIn));
     }
     if (sizeof($inSuperHashlists) > 0) {
       $total = array_sum($crackedIn);
       foreach ($inSuperHashlists as $super) {
         $superHashlist = Factory::getHashlistFactory()->get($super->getParentHashlistId());
-        $superHashlist->setCracked($superHashlist->getCracked() + $total);
-        Factory::getHashlistFactory()->update($superHashlist);
+        Factory::getHashlistFactory()->inc($superHashlist, Hashlist::CRACKED, $total);
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
@@ -507,18 +494,14 @@ class HashlistUtils {
     $joined = Factory::getHashlistHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     /** @var $superHashlists Hashlist[] */
     $superHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
-    $toDelete = array();
-    $toUpdate = array();
+    $toDelete = [];
     foreach ($superHashlists as $superHashlist) {
-      $superHashlist->setHashCount($superHashlist->getHashCount() - $hashlist->getHashCount());
-      $superHashlist->setCracked($superHashlist->getCracked() - $hashlist->getCracked());
+      Factory::getHashlistFactory()->dec($superHashlist, $hashlist->getHashCount());
+      Factory::getHashlistFactory()->dec($superHashlist, $hashlist->getCracked());
       
       if ($superHashlist->getHashCount() <= 0) {
         // this superhashlist has no hashlist which belongs to it anymore -> delete it
-        $toDelete = $superHashlist;
-      }
-      else {
-        $toUpdate = $superHashlist;
+        $toDelete[] = $superHashlist;
       }
     }
     Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
@@ -597,12 +580,9 @@ class HashlistUtils {
       Factory::getTaskWrapperFactory()->delete($taskWrapper);
     }
     
-    // update/delete superhashlists (this must wait until here because of constraints
+    // delete superhashlists (this must wait until here because of constraints)
     foreach ($toDelete as $hl) {
       Factory::getHashlistFactory()->delete($hl);
-    }
-    foreacH ($toUpdate as $hl) {
-      Factory::getHashlistFactory()->update($hl);
     }
     
     Factory::getHashlistFactory()->delete($hashlist);
@@ -860,9 +840,7 @@ class HashlistUtils {
         }
         fclose($file);
         unlink($tmpfile);
-        $hashlist->setHashCount($added);
-        $hashlist->setCracked($preFound);
-        Factory::getHashlistFactory()->update($hashlist);
+        Factory::getHashlistFactory()->mset($hashlist, [Hashlist::HASH_COUNT => $added, Hashlist::CRACKED => $preFound]);
         Factory::getAgentFactory()->getDB()->commit();
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
@@ -908,8 +886,7 @@ class HashlistUtils {
         }
         fclose($file);
         unlink($tmpfile);
-        $hashlist->setHashCount($added);
-        Factory::getHashlistFactory()->update($hashlist);
+        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));
@@ -922,8 +899,7 @@ class HashlistUtils {
         }
         fclose($file);
         unlink($tmpfile);
-        $hashlist->setHashCount(1);
-        Factory::getHashlistFactory()->update($hashlist);
+        Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, 1);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         
         NotificationHandler::checkNotifications(DNotificationType::NEW_HASHLIST, new DataSet(array(DPayloadKeys::HASHLIST => $hashlist)));

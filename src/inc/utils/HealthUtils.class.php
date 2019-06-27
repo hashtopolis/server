@@ -27,13 +27,15 @@ class HealthUtils {
     }
     Factory::getHealthCheckFactory()->update($check);
     
-    $checkAgent->setStatus(DHealthCheckAgentStatus::PENDING);
-    $checkAgent->setStart(0);
-    $checkAgent->setEnd(0);
-    $checkAgent->setErrors("");
-    $checkAgent->setCracked(0);
-    $checkAgent->setNumGpus(0);
-    Factory::getHealthCheckAgentFactory()->update($checkAgent);
+    Factory::getHealthCheckAgentFactory()->mset($checkAgent, [
+        HealthCheckAgent::STATUS => DHealthCheckAgentStatus::PENDING,
+        HealthCheckAgent::START => 0,
+        HealthCheckAgent::END => 0,
+        HealthCheckAgent::ERRORS => "",
+        HealthCheckAgent::CRACKED => 0,
+        HealthCheckAgent::NUM_GPUS => 0
+      ]
+    );
   }
   
   /**
@@ -70,14 +72,13 @@ class HealthUtils {
         return; // we can stop here, at least one agent has not finished yet
       }
     }
-    $healthCheck->setStatus(DHealthCheckStatus::COMPLETED);
-    Factory::getHealthCheckFactory()->update($healthCheck);
+    Factory::getHealthCheckFactory()->set($healthCheck, HealthCheck::STATUS, DHealthCheckStatus::COMPLETED);
   }
   
   /**
-   * @param int $type 
-   * @throws HTException 
+   * @param int $type
    * @return string
+   * @throws HTException
    */
   private static function getAttackMode($type) {
     switch ($type) {
@@ -88,10 +89,10 @@ class HealthUtils {
   }
   
   /**
-   * @param int $hashtypeId 
-   * @param int $type 
-   * @throws HTException 
+   * @param int $hashtypeId
+   * @param int $type
    * @return string
+   * @throws HTException
    */
   private static function getAttackInput($hashtypeId, $type) {
     if ($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5) {
@@ -104,11 +105,11 @@ class HealthUtils {
   }
   
   /**
-   * @param int $hashtypeId 
-   * @param int $type 
-   * @param bool $crackable 
-   * @throws HTException 
+   * @param int $hashtypeId
+   * @param int $type
+   * @param bool $crackable
    * @return string
+   * @throws HTException
    */
   private static function getAttackPlain($hashtypeId, $type, $crackable) {
     if ($type == DHealthCheckType::BRUTE_FORCE && $hashtypeId == DHealthCheckMode::MD5) {
@@ -121,7 +122,7 @@ class HealthUtils {
   }
   
   /**
-   * @param int $hashtypeId 
+   * @param int $hashtypeId
    * @return integer
    */
   private static function getAttackNumHashes($hashtypeId) {
@@ -138,8 +139,8 @@ class HealthUtils {
    * @param int $hashtypeId
    * @param int $type
    * @param int $crackerBinaryId
-   * @throws HTException
    * @return HealthCheck
+   * @throws HTException
    */
   public static function createHealthCheck($hashtypeId, $type, $crackerBinaryId) {
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
@@ -195,8 +196,8 @@ class HealthUtils {
   /**
    * @param int $hashtypeId
    * @param string $plain
-   * @throws HTException
    * @return string
+   * @throws HTException
    */
   public static function generateHash($hashtypeId, $plain) {
     switch ($hashtypeId) {
