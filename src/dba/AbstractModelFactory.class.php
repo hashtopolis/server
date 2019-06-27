@@ -231,7 +231,7 @@ abstract class AbstractModelFactory {
     $elements = [];
     $vals = [];
     foreach ($arr as $key => $val) {
-      $elements[] = "SET " . $key . "=?";
+      $elements[] = $key . "=? ";
       $vals[] = $val;
     }
     $query .= implode(", ", $elements);
