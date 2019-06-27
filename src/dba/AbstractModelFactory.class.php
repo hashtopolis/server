@@ -229,16 +229,14 @@ abstract class AbstractModelFactory {
   public function mset(&$model, $arr) {
     $query = "UPDATE " . $this->getModelTable() . " SET ";
     $elements = [];
-    $vals = [];
+    $values = [];
     foreach ($arr as $key => $val) {
       $elements[] = $key . "=? ";
-      $vals[] = $val;
+      array_push($values, $val);
     }
     $query .= implode(", ", $elements);
     
-    $values = [];
     $query = $query . " WHERE " . $model->getPrimaryKey() . "=?";
-    array_push($values, $vals);
     array_push($values, $model->getPrimaryKeyValue());
     
     $stmt = $this->getDB()->prepare($query);
