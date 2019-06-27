@@ -369,13 +369,13 @@ class DConfig {
       case DConfig::MULTICAST_TR:
         return "Set static transfer rate in case it is activated (in Kbit/s)";
       case DConfig::NOTIFICATIONS_PROXY_ENABLE:
-        return "Enable using a proxy for the telegram notification bot.";
+        return "Enable using a proxy for sending notifications.";
       case DConfig::NOTIFICATIONS_PROXY_PORT:
-        return "Set the port for the telegram notification proxy.";
+        return "Set the port for the notifications proxy.";
       case DConfig::NOTIFICATIONS_PROXY_SERVER:
-        return "Server url of the proxy to use for telegram notifications.";
+        return "Server url of the proxy to use for notifications.";
       case DConfig::NOTIFICATIONS_PROXY_TYPE:
-        return "Proxy type to use for telegram notifications.";
+        return "Proxy type to use for notifications.";
       case DConfig::DISABLE_TRIMMING:
         return "Disable trimming of chunks and redo whole chunks.";
       case DConfig::PRIORITY_0_START:
