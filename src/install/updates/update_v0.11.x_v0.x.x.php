@@ -1,5 +1,6 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
+use DBA\Config;
 use DBA\Factory;
 
 if (!isset($TEST)) {
@@ -39,3 +40,10 @@ if (!isset($PRESENT["v0.11.x_preprocessors"])) {
   }
   $EXECUTED["v0.11.x_preprocessors"] = true;
 }
+
+if (!isset($PRESENT["v0.11.x_conf1"])) {
+  $config = new Config(null, 3, DConfig::UAPI_SEND_TASK_IS_COMPLETE, '0');
+  Factory::getConfigFactory()->save($config);
+  $EXECUTED["v0.11.x_conf1"] = true;
+}
+

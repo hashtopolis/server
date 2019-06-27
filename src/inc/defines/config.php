@@ -61,12 +61,13 @@ class DConfig {
   const YUBIKEY_URL = "yubikey_url";
   
   // Section: Finetuning
-  const HASHES_PAGE_SIZE     = "pagingSize";
-  const NUMBER_LOGENTRIES    = "numLogEntries";
-  const BATCH_SIZE           = "batchSize";
-  const PLAINTEXT_MAX_LENGTH = "plainTextMaxLength";
-  const HASH_MAX_LENGTH      = "hashMaxLength";
-  const MAX_HASHLIST_SIZE    = "maxHashlistSize";
+  const HASHES_PAGE_SIZE           = "pagingSize";
+  const NUMBER_LOGENTRIES          = "numLogEntries";
+  const BATCH_SIZE                 = "batchSize";
+  const PLAINTEXT_MAX_LENGTH       = "plainTextMaxLength";
+  const HASH_MAX_LENGTH            = "hashMaxLength";
+  const MAX_HASHLIST_SIZE          = "maxHashlistSize";
+  const UAPI_SEND_TASK_IS_COMPLETE = "uApiSendTaskIsComplete";
   
   // Section: UI
   const TIME_FORMAT            = "timefmt";
@@ -126,21 +127,21 @@ class DConfig {
     switch ($config) {
       case DConfig::TELEGRAM_PROXY_TYPE:
         return new DataSet([
-          DProxyTypes::HTTP => DProxyTypes::HTTP,
-          DProxyTypes::HTTPS => DProxyTypes::HTTPS,
-          DProxyTypes::SOCKS4 => DProxyTypes::SOCKS4,
-          DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
-        ]
+            DProxyTypes::HTTP => DProxyTypes::HTTP,
+            DProxyTypes::HTTPS => DProxyTypes::HTTPS,
+            DProxyTypes::SOCKS4 => DProxyTypes::SOCKS4,
+            DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
+          ]
         );
       case DConfig::SERVER_LOG_LEVEL:
         return new DataSet([
-          DServerLog::TRACE => "TRACE",
-          DServerLog::DEBUG => "DEBUG",
-          DServerLog::INFO => "INFO",
-          DServerLog::WARNING => "WARNING",
-          DServerLog::ERROR => "ERROR",
-          DServerLog::FATAL => "FATAL"
-        ]
+            DServerLog::TRACE => "TRACE",
+            DServerLog::DEBUG => "DEBUG",
+            DServerLog::INFO => "INFO",
+            DServerLog::WARNING => "WARNING",
+            DServerLog::ERROR => "ERROR",
+            DServerLog::FATAL => "FATAL"
+          ]
         );
     }
     return new DataSet(["Not found!"]);
@@ -269,6 +270,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::AGENT_UTIL_THRESHOLD_2:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::UAPI_SEND_TASK_IS_COMPLETE:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -401,6 +404,8 @@ class DConfig {
         return "Util value where an agent is shown in orange on the agent status page, if below.";
       case DConfig::AGENT_UTIL_THRESHOLD_2:
         return "Util value where an agent is shown in red on the agent status page, if below.";
+      case DConfig::UAPI_SEND_TASK_IS_COMPLETE:
+        return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)";
     }
     return $config;
   }

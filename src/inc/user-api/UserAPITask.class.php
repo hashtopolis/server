@@ -501,13 +501,17 @@ class UserAPITask extends UserAPIBasic {
     foreach ($taskWrappers as $taskWrapper) {
       if ($taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
         $task = TaskUtils::getTaskOfWrapper($taskWrapper->getId());
-        $taskList[] = [
+        $taskInfo = [
           UResponseTask::TASKS_ID => (int)$task->getId(),
           UResponseTask::TASKS_NAME => $task->getTaskName(),
           UResponseTask::TASKS_TYPE => 0,
           UResponseTask::TASKS_HASHLIST => (int)$taskWrapper->getHashlistId(),
           UResponseTask::TASKS_PRIORITY => (int)$taskWrapper->getPriority()
         ];
+        if (SConfig::getInstance()->getVal(DConfig::UAPI_SEND_TASK_IS_COMPLETE)) {
+          $taskInfo[UResponseTask::TASKS_IS_COMPLETE] = TaskUtils::isFinished($task);
+        }
+        $taskList[] = $taskInfo;
       }
       else {
         $taskList[] = [

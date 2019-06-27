@@ -217,6 +217,7 @@ class UResponseTask extends UResponse {
   const TASKS_TYPE         = "type";
   const TASKS_HASHLIST     = "hashlistId";
   const TASKS_PRIORITY     = "priority";
+  const TASKS_IS_COMPLETE  = "isComplete";
   
   const TASK_ID                   = "taskId";
   const TASK_NAME                 = "name";
