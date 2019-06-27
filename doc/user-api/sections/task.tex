@@ -486,6 +486,30 @@
 				}
 				\end{verbatim}
 			}
+		\subsection*{\textit{taskUnassignAgent}}
+			Assign an agent to this task. Note that the agent might be re-assigned to another task if there is one with a higher priority.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskAssignAgent",
+				  "agentId": 2,
+				  "taskId": 5,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskAssignAgent",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
 		\subsection*{\textit{deleteTask}}
 			Completely delete a task.
 			{

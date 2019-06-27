@@ -605,6 +605,7 @@ class USectionTask extends UApi {
   const SET_TASK_CPU_ONLY      = "setTaskCpuOnly";
   const SET_TASK_SMALL         = "setTaskSmall";
   const TASK_UNASSIGN_AGENT    = "taskUnassignAgent";
+  const TASK_ASSIGN_AGENT      = "taskAssignAgent";
   const DELETE_TASK            = "deleteTask";
   const PURGE_TASK             = "purgeTask";
   

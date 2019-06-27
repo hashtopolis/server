@@ -9,6 +9,10 @@
 - Fixed increasing the superhashlist cracked count if there are cracks running one of the hashlists alone.
 - Fixed hidden superhashlists on task creation page due to filtering.
 
+## Enhancements
+
+- Agents can be assigned to tasks via user API.
+
 # v0.10.1 -> v0.11.0
 
 ## Bugfixes

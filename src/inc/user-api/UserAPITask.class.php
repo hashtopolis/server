@@ -46,6 +46,9 @@ class UserAPITask extends UserAPIBasic {
         case USectionTask::TASK_UNASSIGN_AGENT:
           $this->unassignAgent($QUERY);
           break;
+        case USectionTask::TASK_ASSIGN_AGENT:
+          $this->assignAgent($QUERY);
+          break;
         case USectionTask::DELETE_TASK:
           $this->deleteTask($QUERY);
           break;
@@ -175,6 +178,18 @@ class UserAPITask extends UserAPIBasic {
       throw new HTException("Invalid query!");
     }
     AgentUtils::assign($QUERY[UQueryTask::AGENT_ID], 0, $this->user);
+    $this->sendSuccessResponse($QUERY);
+  }
+  
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function assignAgent($QUERY) {
+    if (!isset($QUERY[UQueryTask::AGENT_ID]) | !isset($QUERY[UQueryTask::TASK_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    AgentUtils::assign($QUERY[UQueryTask::AGENT_ID], $QUERY[UQueryTask::TASK_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
   
