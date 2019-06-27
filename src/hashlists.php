@@ -134,7 +134,7 @@ else {
   $joinedHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
   $hashlists = array();
   for ($x = 0; $x < sizeof($joinedHashlists); $x++) {
-    $hashlists[] = new DataSet(['hashlist' => $hashlists[$x], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][$x]]);
+    $hashlists[] = new DataSet(['hashlist' => $joinedHashlists[$x], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][$x]]);
   }
   UI::add('hashlists', $hashlists);
   UI::add('numHashlists', sizeof($hashlists));
