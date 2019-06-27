@@ -12,6 +12,7 @@
 ## Enhancements
 
 - Agents can be assigned to tasks via user API.
+- Server can be configured to provide 'isComplete' flag on the user API when requesting all tasks.
 
 # v0.10.1 -> v0.11.0
 
