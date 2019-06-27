@@ -99,8 +99,7 @@ class AccountUtils {
       throw new HTException("Invalid email address!");
     }
     
-    $user->setEmail($email);
-    Factory::getUserFactory()->update($user);
+    Factory::getUserFactory()->set($user, User::EMAIL, $email);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed email!");
   }
   
@@ -115,8 +114,7 @@ class AccountUtils {
       throw new HTException("Lifetime must be larger than 1 minute and smaller than " . SConfig::getInstance()->getVal(DConfig::MAX_SESSION_LENGTH) . " hours!");
     }
     
-    $user->setSessionLifetime($lifetime);
-    Factory::getUserFactory()->update($user);
+    Factory::getUserFactory()->set($user, User::SESSION_LIFETIME, $lifetime);
   }
   
   /**
@@ -142,10 +140,9 @@ class AccountUtils {
     
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
-    $user->setPasswordHash($newHash);
-    $user->setPasswordSalt($newSalt);
-    $user->setIsComputedPassword(0);
-    Factory::getUserFactory()->update($user);
+    
+    Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, USer::IS_COMPUTED_PASSWORD => 0]);
+    
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "User changed password!");
   }
 }

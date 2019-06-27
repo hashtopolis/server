@@ -38,8 +38,7 @@ class ApiUtils {
         }
       }
     }
-    $group->setPermissions(json_encode($newArr));
-    Factory::getApiGroupFactory()->update($group);
+    Factory::getApiGroupFactory()->set($group, ApiGroup::PERMISSIONS, json_encode($newArr));
   }
   
   /**
@@ -63,11 +62,13 @@ class ApiUtils {
     else if ($group == null) {
       throw new HTException("Invalid API group selected!");
     }
-    $key->setUserId($user->getId());
-    $key->setApiGroupId($group->getId());
-    $key->setStartValid(strtotime($startValid));
-    $key->setEndValid(strtotime($endValid));
-    Factory::getApiKeyFactory()->update($key);
+    Factory::getApiKeyFactory()->mset($key, [
+        ApiKey::USER_ID => $user->getId(),
+        ApiKey::API_GROUP_ID => $group->getId(),
+        ApiKey::START_VALID => strtotime($startValid),
+        ApiKey::END_VALID => strtotime($endValid)
+      ]
+    );
   }
   
   /**
@@ -84,12 +85,14 @@ class ApiUtils {
     else if ($group == null) {
       throw new HTException("Invalid API group ID!");
     }
+    
     do {
       // generate a unique key
       $accessKey = Util::randomString(30);
       $qF = new QueryFilter(ApiKey::ACCESS_KEY, $accessKey, "=");
       $count = Factory::getApiKeyFactory()->countFilter([Factory::FILTER => $qF]);
     } while ($count > 0);
+    
     $key = new ApiKey(null, time(), time() + 3600 * 24 * 30, $accessKey, 0, $user->getId(), $group->getId());
     Factory::getApiKeyFactory()->save($key);
   }
