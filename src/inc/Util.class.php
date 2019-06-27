@@ -197,8 +197,7 @@ class Util {
         if (!$silent) {
           echo "update $type version... ";
         }
-        $binary->setVersion($version);
-        Factory::getAgentBinaryFactory()->update($binary);
+        Factory::getAgentBinaryFactory()->set($binary, AgentBinary::VERSION, $version);
         if (!$silent) {
           echo "OK";
         }
@@ -435,16 +434,13 @@ class Util {
    */
   public static function getChunkInfo($task) {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $cracked = 0;
-    foreach ($chunks as $chunk) {
-      $cracked += $chunk->getCracked();
-    }
+    $cracked = Factory::getChunkFactory()->sumFilter([Factory::FILTER => $qF], Chunk::CRACKED);
+    $numChunks = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
     
-    return array(sizeof($chunks), $cracked, $numAssignments);
+    return array($numChunks, $cracked, $numAssignments);
   }
   
   /**
@@ -586,8 +582,7 @@ class Util {
       $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
       Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
       
-      $entry->setVal(time());
-      Factory::getStoredValueFactory()->update($entry);
+      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
     }
   }
   
@@ -612,8 +607,7 @@ class Util {
       
       Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter]);
       
-      $entry->setVal(time());
-      Factory::getStoredValueFactory()->update($entry);
+      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
     }
   }
   
@@ -950,14 +944,13 @@ class Util {
       $num /= $divider;
       $r++;
     }
-    $rs = array(
+    $scales = array(
       "",
       "k",
       "M",
       "G"
     );
-    $return = Util::niceround($num, 2);
-    return $return . " " . $rs[$r];
+    return Util::niceround($num, 2) . " " . $scales[$r];
   }
   
   /**
@@ -980,8 +973,7 @@ class Util {
     else {
       $percentage = 0;
     }
-    $return = Util::niceround($percentage, $decs);
-    return $return;
+    return Util::niceround($percentage, $decs);
   }
   
   /**

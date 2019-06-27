@@ -368,6 +368,48 @@ abstract class AbstractModelFactory {
     return $stmt;
   }
   
+  /**
+   * @param $options array filter options
+   * @param $sumColumn string column to apply OP to
+   * @param $op string either min or max
+   * @return mixed
+   */
+  public function minMaxFilter($options, $sumColumn, $op) {
+    if (strtolower($op) == "min") {
+      $op = "MIN";
+    }
+    else {
+      $op = "MAX";
+    }
+    $query = "SELECT $op($sumColumn) AS column_" . strtolower($op) . " ";
+    $query = $query . " FROM " . $this->getModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists("filter", $options)) {
+      $query .= $this->applyFilters($vals, $options['filter']);
+    }
+    
+    if (!array_key_exists("order", $options)) {
+      // Add a asc order on the primary keys as a standard
+      $oF = new OrderFilter($this->getNullObject()->getPrimaryKey(), "ASC");
+      $orderOptions = array(
+        $oF
+      );
+      $options['order'] = $orderOptions;
+    }
+    if (count($options['order']) != 0) {
+      $query .= $this->applyOrder($this->getOrders($options));
+    }
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row['column_' . strtolower($op)];
+  }
+  
   public function sumFilter($options, $sumColumn) {
     $query = "SELECT SUM($sumColumn) AS sum ";
     $query = $query . " FROM " . $this->getModelTable();
