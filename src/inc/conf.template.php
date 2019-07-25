@@ -15,4 +15,6 @@ $PEPPER = [
 ];
 
 $INSTALL = false; //set this to true if you config the mysql and setup manually
+
+$MASK_API_KEYS = false; // set this to true to restrict access to API keys to their owners
 //END CONFIG
