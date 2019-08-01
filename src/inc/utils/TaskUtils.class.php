@@ -390,8 +390,9 @@ class TaskUtils {
     /** @var $assignments Assignment[] */
     $assignments = $join[Factory::getAssignmentFactory()->getModelName()];
     foreach ($assignments as $assignment) {
-      // TODO: check if this is really correct and needed
-      Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
+      if ($task->getUseNewBench() == 0) {
+        Factory::getAssignmentFactory()->set($assignment, Assignment::BENCHMARK, $assignment->getBenchmark() / $task->getChunkTime() * $chunktime);
+      }
     }
     $task->setChunkTime($chunktime);
     Factory::getTaskFactory()->update($task);

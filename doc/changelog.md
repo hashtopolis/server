@@ -9,6 +9,8 @@
 - Fixed increasing the superhashlist cracked count if there are cracks running one of the hashlists alone.
 - Fixed hidden superhashlists on task creation page due to filtering.
 - Fixed reporting result of health check which resulted in endless loop depending on the used IDs.
+- Fixed reporting outdated speed on tasks page when agent is put inactive directly.
+- Fixed recalculation of benchmark when changing chunk time.
 
 ## Enhancements
 
