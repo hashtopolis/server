@@ -39,11 +39,12 @@ class APISendProgress extends APIBasic {
     if ($chunk == null) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "Invalid chunk id " . intval($QUERY[PQuerySendProgress::CHUNK_ID]));
     }
-    else if ($this->agent->getIsActive() == 0) {
-      $this->sendErrorResponse(PActions::SEND_PROGRESS, "Agent is marked inactive!");
-    }
     else if ($chunk->getAgentId() != $this->agent->getId()) {
       $this->sendErrorResponse(PActions::SEND_PROGRESS, "You are not assigned to this chunk");
+    }
+    else if ($this->agent->getIsActive() == 0) {
+      Factory::getChunkFactory()->set($chunk, Chunk::SPEED, 0);
+      $this->sendErrorResponse(PActions::SEND_PROGRESS, "Agent is marked inactive!");
     }
     
     DServerLog::log(DServerLog::TRACE, "Agent is assigned to this chunk and active", [$this->agent, $chunk]);
