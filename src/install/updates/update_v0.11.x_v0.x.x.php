@@ -87,3 +87,13 @@ if (!isset($PRESENT["v0.11.x_conf2"])) {
   $EXECUTED["v0.11.x_conf2"] = true;
 }
 
+if (!isset($PRESENT["v0.11.x_conf3"])) {
+  $qF = new QueryFilter(Config::ITEM, DConfig::HC_ERROR_IGNORE, "=");
+  $item = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);
+  if (!$item) {
+    $config = new Config(null, 1, DConfig::HC_ERROR_IGNORE, 'DeviceGetFanSpeed');
+    Factory::getConfigFactory()->save($config);
+  }
+  $EXECUTED["v0.11.x_conf3"] = true;
+}
+

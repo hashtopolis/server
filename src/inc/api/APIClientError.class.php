@@ -31,6 +31,19 @@ class APIClientError extends APIBasic {
     }
     
     DServerLog::log(DServerLog::INFO, "Agent " . $this->agent->getId() . " sent error: " . $QUERY[PQueryClientError::MESSAGE]);
+    $whitelist = explode(",", SConfig::getInstance()->getVal(DConfig::HC_ERROR_IGNORE));
+    foreach ($whitelist as $w) {
+      $w = trim($w);
+      if (strpos($QUERY[PQueryClientError::MESSAGE], $w) !== false) {
+        // error can be ignored, we just acknowledge that we received it
+        $this->sendResponse(array(
+            PQueryClientError::ACTION => PActions::CLIENT_ERROR,
+            PResponseError::RESPONSE => PValues::SUCCESS
+          )
+        );
+      }
+    }
+    
     if ($this->agent->getIgnoreErrors() <= DAgentIgnoreErrors::IGNORE_SAVE) {
       //save error message
       $chunkId = null;

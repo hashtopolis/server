@@ -54,6 +54,7 @@ class DConfig {
   const HASHCAT_BRAIN_PORT     = "hashcatBrainPort";
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
+  const HC_ERROR_IGNORE        = "hcErrorIgnore";
   
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -272,6 +273,8 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::UAPI_SEND_TASK_IS_COMPLETE:
         return DConfigType::TICKBOX;
+      case DConfig::HC_ERROR_IGNORE:
+        return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -406,6 +409,8 @@ class DConfig {
         return "Util value where an agent is shown in red on the agent status page, if below.";
       case DConfig::UAPI_SEND_TASK_IS_COMPLETE:
         return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)";
+      case DConfig::HC_ERROR_IGNORE:
+        return "Ignore error messages from crackers which contain given strings (multiple values separated by comma)";
     }
     return $config;
   }
