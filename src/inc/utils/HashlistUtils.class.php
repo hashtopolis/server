@@ -1054,4 +1054,24 @@ class HashlistUtils {
     }
     return $hashes;
   }
+  
+  /**
+   * @param $hashlistId int
+   * @param $accessGroupId int
+   * @param $user User
+   * @throws HTException
+   */
+  public static function changeAccessGroup($hashlistId, $accessGroupId, $user) {
+    $hashlist = HashlistUtils::getHashlist($hashlistId);
+    $accessGroup = AccessGroupUtils::getGroup($accessGroupId);
+    
+    $userAccessGroupIds = Util::getAccessGroupIds($user->getId());
+    if (!in_array($accessGroupId, $userAccessGroupIds) || !in_array($hashlist->getAccessGroupId(), $userAccessGroupIds)) {
+      throw new HTException("No access to this group!");
+    }
+    
+    $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
+    $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, $accessGroup->getId());
+    Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+  }
 }

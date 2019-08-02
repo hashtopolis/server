@@ -17,6 +17,7 @@
 - Agents can be assigned to tasks via user API.
 - Server can be configured to provide 'isComplete' flag on the user API when requesting all tasks.
 - Certain agent errors can be whitelisted to be completely ignored (for such who don't affect the running).
+- Hashlists can be moved to other Access Groups after creation.
 
 # v0.10.1 -> v0.11.0
 

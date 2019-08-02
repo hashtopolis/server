@@ -36,6 +36,9 @@ class DHashlistAction {
   
   const EDIT_NOTES      = "editNotes";
   const EDIT_NOTES_PERM = DAccessControl::MANAGE_HASHLIST_ACCESS;
+  
+  const SET_ACCESS_GROUP      = "setAccessGroup";
+  const SET_ACCESS_GROUP_PERM = DAccessControl::MANAGE_HASHLIST_ACCESS;
 }
 
 class DHashtypeAction {
