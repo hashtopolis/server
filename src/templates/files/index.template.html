@@ -19,9 +19,9 @@
 {{ENDIF}}
   <div class='btn-toolbar'>
     <div class='btn-group'>
-      <button class='btn btn-light{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
-      <button class='btn btn-light{{IF [[view]] == "dict"}} active{{ENDIF}}' onclick="window.location='files.php?view=dict'">Wordlists</button>
-      <button class='btn btn-light{{IF [[view]] == "other"}} active{{ENDIF}}' onclick="window.location='files.php?view=other'">Other</button>
+      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
+      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "dict"}} active{{ENDIF}}' onclick="window.location='files.php?view=dict'">Wordlists</button>
+      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "other"}} active{{ENDIF}}' onclick="window.location='files.php?view=other'">Other</button>
     </div>
   </div>
   <br>
@@ -113,7 +113,7 @@
                         <tr>
                             <th>
                                 Upload files
-                                <button type="button" class='btn btn-light' onclick="addLine('upfiles');">Add file</button>
+                                <button type="button" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="addLine('upfiles');">Add file</button>
                             </th>
                         </tr>
                       <tr>
@@ -128,7 +128,7 @@
                       </tr>
                         <tr>
                             <td>
-                                <input type="submit" class='btn btn-light' value="Upload files">
+                                <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Upload files">
                             </td>
                         </tr>
                     </table>
@@ -170,7 +170,7 @@
                         {{ELSE}}
                         <tr>
                             <td>
-                                <input type="submit" class='btn btn-light' value="Import files">
+                                <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Import files">
                                 <input type="checkbox" onChange="checkAll('impfiles',this.checked);" title="Select All"> Select All
                             </td>
                         </tr>
@@ -207,7 +207,7 @@
                         </tr>
                         <tr>
                             <td colspan="2">
-                                <input type="submit" class='btn btn-light' value="Download file">
+                                <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Download file">
                             </td>
                         </tr>
                     </table>

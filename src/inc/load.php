@@ -48,6 +48,12 @@ UI::add('host', $HOST);
 UI::add('gitcommit', Util::getGitCommit());
 UI::add('build', '');
 
+// Darkmode
+if (isset($_COOKIE['toggledarkmode']) && $_COOKIE['toggledarkmode'] == '1')
+  UI::add('toggledarkmode', 1);
+else
+  UI::add('toggledarkmode', 0);
+
 $updateExecuted = false;
 if($INSTALL){
   // check if update is needed 

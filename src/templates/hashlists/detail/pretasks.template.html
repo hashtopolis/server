@@ -27,7 +27,7 @@
         {{ENDFOREACH}}
         <tr>
           <td colspan="3">
-            <input type="submit" class='btn btn-light' value="Create">
+            <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Create">
             <input type="checkbox" onChange="checkAll('preconf', this.checked);" title="Check All"> Select All
           </td>
         </tr>

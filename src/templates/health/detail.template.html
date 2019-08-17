@@ -33,7 +33,7 @@
                 <option value="[[strtolower([[report]])]]">[[report]]</option>
               {{ENDFOREACH}}
             </select>
-            <button type="submit" class="btn btn-light mx-1">Download</button>
+            <button type="submit" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} mx-1">Download</button>
           </form>
         </td>
       </tr>

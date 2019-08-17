@@ -5,20 +5,20 @@
 
 <div class="btn-toolbar">
   <div class="btn-group" role="group">
-    <button onclick="window.location='config.php?view=1'" type="button" class="btn btn-light{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
-    <button onclick="window.location='config.php?view=2'" type="button" class="btn btn-light{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
-    <button onclick="window.location='config.php?view=3'" type="button" class="btn btn-light{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
-    <button onclick="window.location='config.php?view=4'" type="button" class="btn btn-light{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
-    <button onclick="window.location='config.php?view=5'" type="button" class="btn btn-light{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
-    <button onclick="window.location='config.php?view=6'" type="button" class="btn btn-light{{IF [[configSectionId]] == 6}} active{{ENDIF}}">Multicast</button>
-    <button onclick="window.location='config.php?view=7'" type="button" class="btn btn-light{{IF [[configSectionId]] == 7}} active{{ENDIF}}">Notifications</button>
+    <button onclick="window.location='config.php?view=1'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 1}} active{{ENDIF}}">Cracking/Tasks</button>
+    <button onclick="window.location='config.php?view=2'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 2}} active{{ENDIF}}">Yubikey</button>
+    <button onclick="window.location='config.php?view=3'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 3}} active{{ENDIF}}">Finetuning</button>
+    <button onclick="window.location='config.php?view=4'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 4}} active{{ENDIF}}">UI</button>
+    <button onclick="window.location='config.php?view=5'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 5}} active{{ENDIF}}">Server</button>
+    <button onclick="window.location='config.php?view=6'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 6}} active{{ENDIF}}">Multicast</button>
+    <button onclick="window.location='config.php?view=7'" type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[configSectionId]] == 7}} active{{ENDIF}}">Notifications</button>
   </div>
 </div>
 
 <br>
 
 {{IF [[configSectionId]] == 6}}
-  <div class="alert alert-neutral">
+  <div class="alert {{IF [[toggledarkmode]] > 0}}alert-dark{{ELSE}}alert-neutral{{ENDIF}}">
     Service runner status: [[RunnerUtils::getStatus(false)]]
   </div>
 {{ENDIF}}
@@ -79,7 +79,7 @@
 				  <form action='config.php' method='post'>
 					  <input type='hidden' name='action' value='[[$DConfigAction::REBUILD_CACHE]]'>
 					  <input type="hidden" name="csrf" value="[[csrf]]">
-					  <input type='submit' class='btn btn-light' value='Rebuild chunk cache'>
+					  <input type='submit' class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value='Rebuild chunk cache'>
 				  </form>
 			  </td>
 			  <td>Counts cracked hashes in all chunks and all hashlists using slow but precise COUNT() function.</td>
@@ -89,7 +89,7 @@
 				  <form action='config.php' method='post'>
 					  <input type='hidden' name='action' value='[[$DConfigAction::RESCAN_FILES]]'>
 					  <input type="hidden" name="csrf" value="[[csrf]]">
-					  <input type='submit' class='btn btn-light' value='Rescan global files'>
+					  <input type='submit' class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value='Rescan global files'>
 				  </form>
 			  </td>
 			  <td>Scans all global files for size mismatch or inexistence.</td>
