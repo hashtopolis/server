@@ -1,8 +1,11 @@
 <?php
 
 use DBA\Factory;
+use DBA\APiKey;
+use DBA\QueryFilter;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
+
 
 if (!Login::getInstance()->isLoggedin()) {
   header("Location: index.php?err=4" . time() . "&fw=" . urlencode($_SERVER['PHP_SELF'] . "?" . $_SERVER['QUERY_STRING']));
@@ -26,6 +29,10 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 $group = Factory::getRightGroupFactory()->get(Login::getInstance()->getUser()->getRightGroupId());
 UI::add('group', $group);
+
+$qF = new QueryFilter(ApiKey::USER_ID, Login::getInstance()->getUserID(), "=");
+$apiKeys = Factory::getApiKeyFactory()->filter([Factory::FILTER=>$qF]);
+UI::add('keys', $apiKeys);
 
 echo Template::getInstance()->render(UI::getObjects());
 

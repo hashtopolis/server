@@ -19,12 +19,6 @@ Menu::get()->setActive("users_api");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
-  if($MASK_API_KEYS) {
-    $key = Factory::getApiKeyFactory()->get($_POST['keyId']);
-    if($key->getUserId() != $_POST['userId']){
-      UI::addMessage(UI::ERROR, "Can't change key owner!");
-    }
-  }
   if(UI::getNumMessages() == 0){
     $apiHandler = new ApiHandler();
     $apiHandler->handle($_POST['action']);

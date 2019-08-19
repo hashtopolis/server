@@ -142,4 +142,22 @@
 	  </table>
   </div>
 </div>
+{{IF [[sizeof([[keys]])]] > 0}}
+	<div class="card">
+		<div class="table-responsive">
+	  		<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<th>API Keys</th>
+						<td>
+							{{FOREACH key;[[keys]]}}
+								[[key.getAccessKey()]]</br>
+							{{ENDFOREACH}}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+  	</div>
+{{ENDIF}}
 {%TEMPLATE->struct/foot%}
