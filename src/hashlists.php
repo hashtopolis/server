@@ -63,6 +63,7 @@ else if (isset($_GET['id'])) {
   $list = new DataSet(array('hashlist' => $hashlists[0], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][0]));
   UI::add('list', $list);
   UI::add('accessGroup', Factory::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId()));
+  UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
   
   //check if the list is a superhashlist
   UI::add('sublists', []);

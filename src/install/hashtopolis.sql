@@ -171,7 +171,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (73, 4, 'agentTempThreshold2', '80'),
   (74, 4, 'agentUtilThreshold1', '90'),
   (75, 4, 'agentUtilThreshold2', '75'),
-  (76, 3, 'uApiSendTaskIsComplete', '0');
+  (76, 3, 'uApiSendTaskIsComplete', '0'),
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
