@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
 
 use DBA\AgentBinary;
 use DBA\QueryFilter;
@@ -6,11 +6,10 @@ use DBA\RightGroup;
 use DBA\User;
 use DBA\Factory;
 
+/** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
 require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
-
-Factory = new Factory();
 
 echo "Apply updates...\n";
 

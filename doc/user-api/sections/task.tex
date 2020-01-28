@@ -6,6 +6,7 @@
 				\item[0] Normal Task
 				\item[1] Supertask
 			\end{description}
+			In case it is set in the server configuration, for normal tasks there will be a flag 'isComplete' be set which denotes if the full keyspace of the task was covered.
 			{
 				\color{blue}
 				\begin{verbatim}
@@ -115,7 +116,10 @@
 				      "speed": 0
 				    }
 				  ],
-				  "isComplete": false
+				  "isComplete": false,
+				  "usePreprocessor": false,
+				  "preprocessorId": 0,
+				  "preprocessorCommand": ""
 				}
 				\end{verbatim}
 			}
@@ -223,7 +227,8 @@
 					    2
 					  ],
 					  "priority": 100,
-					  "isPrince": false,
+					  "preprocessorId": 0,
+					  "preprocessorCommand": "",
 					  "accessKey": "mykey"
 					}
 					\end{verbatim}
@@ -247,7 +252,8 @@
 					  "crackerVersionId": 2,
 					  "files": [],
 					  "priority": 99,
-					  "isPrince": false,
+					  "preprocessorId": 0,
+					  "preprocessorCommand": "",
 					  "accessKey": "mykey"
 					}
 					\end{verbatim}
@@ -477,6 +483,30 @@
 				{
 				  "section": "task",
 				  "request": "taskUnassignAgent",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{taskUnassignAgent}}
+			Assign an agent to this task. Note that the agent might be re-assigned to another task if there is one with a higher priority.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskAssignAgent",
+				  "agentId": 2,
+				  "taskId": 5,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "taskAssignAgent",
 				  "response": "OK"
 				}
 				\end{verbatim}

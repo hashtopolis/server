@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
 
 use DBA\AgentBinary;
 use DBA\QueryFilter;

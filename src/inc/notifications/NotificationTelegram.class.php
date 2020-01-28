@@ -21,11 +21,11 @@ class HashtopolisNotificationTelegram extends HashtopolisNotification {
     
     $ch = curl_init("https://api.telegram.org/bot{$botToken}/sendmessage");
     
-    if (SConfig::getInstance()->getVal(DConfig::TELEGRAM_PROXY_ENABLE) == 1) {
-      curl_setopt($ch, CURLOPT_PROXY, SConfig::getInstance()->getVal(DConfig::TELEGRAM_PROXY_SERVER));
-      curl_setopt($ch, CURLOPT_PROXYPORT, SConfig::getInstance()->getVal(DConfig::TELEGRAM_PROXY_PORT));
+    if (SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_ENABLE) == 1) {
+      curl_setopt($ch, CURLOPT_PROXY, SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_SERVER));
+      curl_setopt($ch, CURLOPT_PROXYPORT, SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_PORT));
       $type = CURLPROXY_HTTP;
-      switch (SConfig::getInstance()->getVal(DConfig::TELEGRAM_PROXY_TYPE)) {
+      switch (SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_TYPE)) {
         case DProxyTypes::HTTPS:
           $type = CURLPROXY_HTTPS;
           break;

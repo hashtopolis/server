@@ -224,11 +224,12 @@ $CONF['Task'] = [
   'crackerBinaryTypeId',
   'taskWrapperId',
   'isArchived',
-  'isPrince',
   'notes',
   'staticChunks',
   'chunkSize',
-  'forcePipe'
+  'forcePipe',
+  'usePreprocessor',
+  'preprocessorCommand'
 ];
 $CONF['TaskDebugOutput'] = [
   'taskDebugOutputId',
@@ -322,6 +323,15 @@ $CONF['Speed'] = [
   'taskId',
   'speed',
   'time'
+];
+$CONF['Preprocessor'] = [
+  'preprocessorId',
+  'name',
+  'url',
+  'binaryName',
+  'keyspaceCommand',
+  'skipCommand',
+  'limitCommand'
 ];
 
 // relations

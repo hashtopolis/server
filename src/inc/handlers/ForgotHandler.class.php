@@ -36,14 +36,12 @@ class ForgotHandler implements Handler {
     $newSalt = Util::randomString(20);
     $newPass = Util::randomString(10);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user->setPasswordHash($newHash);
-    $user->setPasswordSalt($newSalt);
-    $user->setIsComputedPassword(1);
+    
     $tmpl = new Template("email/forgot");
     $tmplPlain = new Template("email/forgot.plain");
     $obj = array('username' => $user->getUsername(), 'password' => $newPass);
     if (Util::sendMail($user->getEmail(), "Password reset", $tmpl->render($obj), $tmplPlain->render($obj))) {
-      Factory::getUserFactory()->update($user);
+      Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 1]);
       UI::addMessage(UI::SUCCESS, "Password reset! You should receive an email soon.");
     }
     else {

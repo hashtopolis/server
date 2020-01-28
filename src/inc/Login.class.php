@@ -39,8 +39,8 @@ class Login {
    */
   private function __construct() {
     if (isset($_COOKIE['session'])) {
-      $session = $_COOKIE['session'];
-      $filter1 = new QueryFilter(Session::SESSION_KEY, $session, "=");
+      $session_cookie = $_COOKIE['session'];
+      $filter1 = new QueryFilter(Session::SESSION_KEY, $session_cookie, "=");
       $filter2 = new QueryFilter(Session::IS_OPEN, "1", "=");
       $filter3 = new QueryFilter(Session::LAST_ACTION_DATE, time() - 100000, ">");
       $check = Factory::getSessionFactory()->filter([Factory::FILTER => [$filter1, $filter2, $filter3]]);
@@ -48,18 +48,17 @@ class Login {
         setcookie("session", false, time() - 600); //delete invalid or old cookie
         return;
       }
-      $s = $check[0];
-      $this->user = Factory::getUserFactory()->get($s->getUserId());
+      $session = $check[0];
+      $this->user = Factory::getUserFactory()->get($session->getUserId());
       if ($this->user !== null) {
-        if ($s->getLastActionDate() < time() - $this->user->getSessionLifetime()) {
+        if ($session->getLastActionDate() < time() - $this->user->getSessionLifetime()) {
           setcookie("session", false, time() - 600); //delete invalid or old cookie
           return;
         }
         $this->valid = true;
-        $this->session = $s;
-        $s->setLastActionDate(time());
-        Factory::getSessionFactory()->update($s);
-        setcookie("session", $s->getSessionKey(), time() + $this->user->getSessionLifetime(), "", "", false, true);
+        $this->session = $session;
+        Factory::getSessionFactory()->set($session, Session::LAST_ACTION_DATE, time());
+        setcookie("session", $session->getSessionKey(), time() + $this->user->getSessionLifetime(), "", "", false, true);
       }
     }
   }
@@ -75,8 +74,10 @@ class Login {
    * Logs the current user out and closes his session
    */
   public function logout() {
-    $this->session->setIsOpen(0);
-    Factory::getSessionFactory()->update($this->session);
+    Factory::getSessionFactory()->set($this->session, Session::IS_OPEN, 0);
+    $this->session = null;
+    $this->user = null;
+    $this->valid = false;
     setcookie("session", false, time() - 600);
   }
   
@@ -85,10 +86,16 @@ class Login {
    * in, the uID will be -1
    */
   public function getUserID() {
+    if (!$this->valid) {
+      return -1;
+    }
     return $this->user->getId();
   }
   
   public function getUser() {
+    if (!$this->valid) {
+      return null;
+    }
     return $this->user;
   }
   
@@ -169,17 +176,14 @@ class Login {
     
     /****** Create session ******/
     $startTime = time();
-    $s = new Session(null, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
-    $s = Factory::getSessionFactory()->save($s);
-    if ($s === null) {
+    $session = new Session(null, $this->user->getId(), $startTime, $startTime, 1, $this->user->getSessionLifetime(), "");
+    $session = Factory::getSessionFactory()->save($session);
+    if ($session === null) {
       return false;
     }
-    $sessionKey = Encryption::sessionHash($s->getId(), $startTime, $user->getEmail());
-    $s->setSessionKey($sessionKey);
-    Factory::getSessionFactory()->update($s);
-    
-    $this->user->setLastLoginDate(time());
-    Factory::getUserFactory()->update($this->user);
+    $sessionKey = Encryption::sessionHash($session->getId(), $startTime, $user->getEmail());
+    Factory::getSessionFactory()->set($session, Session::SESSION_KEY, $sessionKey);
+    Factory::getUserFactory()->set($this->user, User::LAST_LOGIN_DATE, time());
     
     $this->valid = true;
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Successful login!");

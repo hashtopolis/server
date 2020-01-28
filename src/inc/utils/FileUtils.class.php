@@ -59,8 +59,7 @@ class FileUtils {
     if ($fileType < DFileType::WORDLIST || $fileType > DFileType::OTHER) {
       throw new HTException("Invalid file type!");
     }
-    $file->setFileType($fileType);
-    Factory::getFileFactory()->update($file);
+    Factory::getFileFactory()->set($file, File::FILE_TYPE, $fileType);
   }
   
   /**
@@ -107,8 +106,8 @@ class FileUtils {
    * @param array $file
    * @param array $post
    * @param string $view
-   * @throws HTException
    * @return integer
+   * @throws HTException
    */
   public static function add($source, $file, $post, $view) {
     $fileCount = 0;
@@ -247,9 +246,7 @@ class FileUtils {
   public static function switchSecret($fileId, $isSecret, $user) {
     // switch global file secret state
     $file = FileUtils::getFile($fileId, $user);
-    $secret = intval($isSecret);
-    $file->setIsSecret($secret);
-    Factory::getFileFactory()->update($file);
+    Factory::getFileFactory()->set($file, File::IS_SECRET, intval($isSecret));
   }
   
   /**
@@ -281,8 +278,7 @@ class FileUtils {
       if ($accessGroup == null) {
         throw new HTException("Invalid access group Id!");
       }
-      $file->setAccessGroupId($accessGroup->getId());
-      Factory::getFileFactory()->update($file);
+      Factory::getFileFactory()->set($file, File::ACCESS_GROUP_ID, $accessGroup->getId());
     }
     
     if ($file->getFilename() == $newName) {
@@ -297,8 +293,7 @@ class FileUtils {
     $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     foreach ($joined[Factory::getTaskFactory()->getModelName()] as $task) {
       /** @var $task Task */
-      $task->setAttackCmd(str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
-      Factory::getTaskFactory()->update($task);
+      Factory::getTaskFactory()->set($task, Task::ATTACK_CMD, str_replace($file->getFilename(), $newName, $task->getAttackCmd()));
     }
     
     //check where the file is used and replace the filename in all the preconfigured tasks
@@ -307,8 +302,7 @@ class FileUtils {
     $joined = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     foreach ($joined[Factory::getPretaskFactory()->getModelName()] as $pretask) {
       /** @var $pretask Pretask */
-      $pretask->setAttackCmd(str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
-      Factory::getPretaskFactory()->update($pretask);
+      Factory::getPretaskFactory()->set($pretask, Pretask::ATTACK_CMD, str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
     }
     
     $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
@@ -316,21 +310,20 @@ class FileUtils {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Failed to rename file!");
     }
-    $file->setFilename($newName);
     
     // check if there are old deletion requests with the same name
     $qF = new QueryFilter(FileDelete::FILENAME, $newName, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
-    
-    Factory::getFileFactory()->update($file);
+  
+    Factory::getFileFactory()->set($file, File::FILENAME, $newName);
     Factory::getAgentFactory()->getDB()->commit();
   }
   
   /**
    * @param int $fileId
    * @param User $user
-   * @throws HTException
    * @return File
+   * @throws HTException
    */
   public static function getFile($fileId, $user) {
     $accessGroups = AccessUtils::getAccessGroupsOfUser($user);

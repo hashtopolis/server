@@ -47,7 +47,7 @@ $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], 
 $task = Factory::getTaskFactory()->get($assignment->getTaskId());
 
 $format = $hashlists[0]->getFormat();
-$brain = ($hashlists[0]->getBrainId() && !$task->getIsPrince() && !$task->getForcePipe()) ? true : false;
+$brain = ($hashlists[0]->getBrainId() && !$task->getUsePreprocessor() && !$task->getForcePipe()) ? true : false;
 $count = 0;
 switch ($format) {
   case DHashlistFormat::PLAIN:

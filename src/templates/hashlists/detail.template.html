@@ -124,6 +124,26 @@
         </td>
       </tr>
       <tr>
+        <td>Access Group:</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
+            <form id="accessgroup" class="form-inline" action="hashlists.php?id=[[list.getVal('hashlist')->getId()]]" method="POST">
+              <input type="hidden" name="hashlist" value="[[list.getVal('hashlist')->getId()]]">
+              <input type="hidden" name="action" value="[[$DHashlistAction::SET_ACCESS_GROUP]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <select name="accessGroupId" class="form-control">
+                {{FOREACH group;[[accessGroups]]}}
+                  <option value="[[group.getId()]]"{{IF [[group.getId()]] == [[accessGroup.getId()]]}} selected{{ENDIF}}>[[group.getGroupName]]</option>
+                {{ENDFOREACH}}
+              </select>
+              <input type="submit" class="btn btn-light mx-1" value="Change Group">
+            </form>
+          {{ELSE}}
+            [[accessGroup.getGroupName()]]
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
         <td>Actions:</td>
         <td>
           <div class="container-fluid" style="padding-left: 0;">

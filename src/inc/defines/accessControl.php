@@ -23,6 +23,7 @@ class DAccessControl {
   const MANAGE_FILE_ACCESS          = "manageFileAccess";
   const ADD_FILE_ACCESS             = "addFileAccess";
   const CRACKER_BINARY_ACCESS       = "crackerBinaryAccess";
+  const PREPROCESSORS_ACCESS        = "preprocessorsAccess";
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
   
@@ -139,6 +140,7 @@ class DViewControl {
   const USERS_VIEW_PERM          = DAccessControl::USER_CONFIG_ACCESS;
   const API_VIEW_PERM            = DAccessControl::USER_CONFIG_ACCESS;
   const HEALTH_VIEW_PERM         = DAccessControl::SERVER_CONFIG_ACCESS;
+  const PREPROCESSORS_VIEW_PERM  = DAccessControl::SERVER_CONFIG_ACCESS;
 }
 
 class DAccessControlAction {

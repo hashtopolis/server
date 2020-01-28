@@ -1,6 +1,8 @@
 <?php
 
 use DBA\Factory;
+use DBA\HealthCheckAgent;
+use DBA\QueryFilter;
 
 class APISendHealthCheck extends APIBasic {
   public function execute($QUERY = array()) {
@@ -10,12 +12,18 @@ class APISendHealthCheck extends APIBasic {
     $this->checkToken(PActions::SEND_HEALTH_CHECK, $QUERY);
     $this->updateAgent(PActions::SEND_HEALTH_CHECK);
     
-    $healthCheckAgent = Factory::getHealthCheckAgentFactory()->get($QUERY[PQuerySendHealthCheck::CHECK_ID]);
-    if ($healthCheckAgent == null) {
+    $healthCheck = Factory::getHealthCheckFactory()->get($QUERY[PQuerySendHealthCheck::CHECK_ID]);
+    if ($healthCheck == null) {
       // for whatever reason there is no check available anymore
       $this->sendErrorResponse(PActions::SEND_HEALTH_CHECK, "Invalid health check id!");
     }
-    $healthCheck = Factory::getHealthCheckFactory()->get($healthCheckAgent->getHealthCheckId());
+    $qF1 = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, $healthCheck->getId(), "=");
+    $qF2 = new QueryFilter(HealthCheckAgent::AGENT_ID, $this->agent->getId(), "=");
+    $healthCheckAgent = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    if ($healthCheckAgent == null) {
+      // for whatever reason there is no check available anymore
+      $this->sendErrorResponse(PActions::SEND_HEALTH_CHECK, "Invalid health check agent id!");
+    }
     
     $numCracked = intval($QUERY[PQuerySendHealthCheck::NUM_CRACKED]);
     $numGpus = intval($QUERY[PQuerySendHealthCheck::NUM_GPUS]);

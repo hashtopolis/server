@@ -1,10 +1,11 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
 
 use DBA\Factory;
 use DBA\File;
 use DBA\Config;
 use DBA\ConfigSection;
 
+/** @noinspection PhpIncludeInspection */
 require_once(dirname(__FILE__) . "/../../inc/db.php");
 require_once(dirname(__FILE__) . "/../../dba/init.php");
 require_once(dirname(__FILE__) . "/../../inc/Util.class.php");

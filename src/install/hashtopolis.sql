@@ -170,7 +170,9 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (72, 4, 'agentTempThreshold1', '70'),
   (73, 4, 'agentTempThreshold2', '80'),
   (74, 4, 'agentUtilThreshold1', '90'),
-  (75, 4, 'agentUtilThreshold2', '75');
+  (75, 4, 'agentUtilThreshold2', '75'),
+  (76, 3, 'uApiSendTaskIsComplete', '0'),
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -665,11 +667,12 @@ CREATE TABLE `Task` (
   `crackerBinaryTypeId` INT(11)      NULL,
   `taskWrapperId`       INT(11)      NOT NULL,
   `isArchived`          TINYINT(4)   NOT NULL,
-  `isPrince`            TINYINT(4)   NOT NULL,
   `notes`               TEXT         NOT NULL,
   `staticChunks`        INT(11)      NOT NULL,
   `chunkSize`           BIGINT(20)   NOT NULL,
-  `forcePipe`           TINYINT(4)   NOT NULL
+  `forcePipe`           TINYINT(4)   NOT NULL,
+  `usePreprocessor`     TINYINT(4)   NOT NULL,
+  `preprocessorCommand` VARCHAR(256) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `TaskDebugOutput` (
@@ -764,6 +767,19 @@ CREATE TABLE `HealthCheckAgent` (
   `end`                BIGINT(20) NOT NULL,
   `errors`             TEXT       NOT NULL
 ) ENGINE=InnoDB;
+
+CREATE TABLE `Preprocessor` (
+  `preprocessorId`  INT(11)      NOT NULL,
+  `name`            VARCHAR(256) NOT NULL,
+  `url`             VARCHAR(512) NOT NULL,
+  `binaryName`      VARCHAR(256) NOT NULL,
+  `keyspaceCommand` VARCHAR(256) NULL,
+  `skipCommand`     VARCHAR(256) NULL,
+  `limitCommand`    VARCHAR(256) NULL
+) ENGINE=InnoDB;
+
+INSERT INTO `Preprocessor` ( `preprocessorId`, `name`, `url`, `binaryName`, `keyspaceCommand`, `skipCommand`, `limitCommand`) VALUES
+  (1, 'Prince', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z', 'pp', '--keyspace', '--skip', '--limit');
 
 -- Add Indexes
 ALTER TABLE `AccessGroup`
@@ -935,6 +951,9 @@ ALTER TABLE `Zap`
   ADD KEY `agentId` (`agentId`),
   ADD KEY `hashlistId` (`hashlistId`);
 
+ALTER TABLE `Preprocessor`
+  ADD PRIMARY KEY (`preprocessorId`);
+
 -- Add AUTO_INCREMENT for tables
 ALTER TABLE `AccessGroup`
   MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
@@ -1064,6 +1083,9 @@ ALTER TABLE `User`
 
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Preprocessor`
+  MODIFY `preprocessorId` INT(11) NOT NULL AUTO_INCREMENT;
 
 -- Add Constraints
 ALTER TABLE `AccessGroupAgent`

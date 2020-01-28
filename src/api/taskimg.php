@@ -98,7 +98,7 @@ else {
   $qF = new QueryFilter(Task::TASK_ID, $task->getId(), "=");
   $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
   foreach ($chunks as $chunk) {
-    if ($task->getIsPrince() == 1 && $task->getKeyspace() <= 0) {
+    if ($task->getUsePreprocessor() == 1 && $task->getKeyspace() <= 0) {
       continue;
     }
     $start = floor(($size[0] - 1) * $chunk->getSkip() / $keyspace);

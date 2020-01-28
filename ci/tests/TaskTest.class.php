@@ -50,7 +50,8 @@ class TaskTest extends HashtopolisTest {
       "crackerVersionId" => 0,
       "files" => [],
       "priority" => 0,
-      "isPrince" => false,
+      "preprocessorId" => 0,
+      "preprocessorCommand" => "",
       "accessKey" => "mykey"
     ];
     foreach($values as $key => $value){

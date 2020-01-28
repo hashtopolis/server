@@ -38,7 +38,7 @@ foreach ($tasks as $task) {
   $subSet->addValue('keyspace', $task->getKeyspace());
   $subSet->addValue('cpuOnly', $task->getIsCpuTask());
   $subSet->addValue('isSmall', $task->getIsSmall());
-  $subSet->addValue('isPrince', $task->getIsPrince());
+  $subSet->addValue('usePreprocessor', $task->getUsePreprocessor());
   $subSet->addValue('chunkTime', $task->getChunkTime());
   $subSet->addValue('taskProgress', $task->getKeyspaceProgress());
   $subSet->addValue('priority', $task->getPriority());

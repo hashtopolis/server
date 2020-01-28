@@ -54,6 +54,7 @@ class DConfig {
   const HASHCAT_BRAIN_PORT     = "hashcatBrainPort";
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
+  const HC_ERROR_IGNORE        = "hcErrorIgnore";
   
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -61,12 +62,13 @@ class DConfig {
   const YUBIKEY_URL = "yubikey_url";
   
   // Section: Finetuning
-  const HASHES_PAGE_SIZE     = "pagingSize";
-  const NUMBER_LOGENTRIES    = "numLogEntries";
-  const BATCH_SIZE           = "batchSize";
-  const PLAINTEXT_MAX_LENGTH = "plainTextMaxLength";
-  const HASH_MAX_LENGTH      = "hashMaxLength";
-  const MAX_HASHLIST_SIZE    = "maxHashlistSize";
+  const HASHES_PAGE_SIZE           = "pagingSize";
+  const NUMBER_LOGENTRIES          = "numLogEntries";
+  const BATCH_SIZE                 = "batchSize";
+  const PLAINTEXT_MAX_LENGTH       = "plainTextMaxLength";
+  const HASH_MAX_LENGTH            = "hashMaxLength";
+  const MAX_HASHLIST_SIZE          = "maxHashlistSize";
+  const UAPI_SEND_TASK_IS_COMPLETE = "uApiSendTaskIsComplete";
   
   // Section: UI
   const TIME_FORMAT            = "timefmt";
@@ -101,11 +103,11 @@ class DConfig {
   const MULTICAST_TR        = "multicastTranserRate";
   
   // Section: Notifications
-  const TELEGRAM_PROXY_ENABLE = "telegramProxyEnable";
-  const TELEGRAM_BOT_TOKEN    = "telegramBotToken";
-  const TELEGRAM_PROXY_SERVER = "telegramProxyServer";
-  const TELEGRAM_PROXY_PORT   = "telegramProxyPort";
-  const TELEGRAM_PROXY_TYPE   = "telegramProxyType";
+  const NOTIFICATIONS_PROXY_ENABLE = "notificationsProxyEnable";
+  const TELEGRAM_BOT_TOKEN         = "telegramBotToken";
+  const NOTIFICATIONS_PROXY_SERVER = "notificationsProxyServer";
+  const NOTIFICATIONS_PROXY_PORT   = "notificationsProxyPort";
+  const NOTIFICATIONS_PROXY_TYPE   = "notificationsProxyType";
   
   static function getConstants() {
     try {
@@ -124,23 +126,23 @@ class DConfig {
    */
   public static function getSelection($config) {
     switch ($config) {
-      case DConfig::TELEGRAM_PROXY_TYPE:
+      case DConfig::NOTIFICATIONS_PROXY_TYPE:
         return new DataSet([
-          DProxyTypes::HTTP => DProxyTypes::HTTP,
-          DProxyTypes::HTTPS => DProxyTypes::HTTPS,
-          DProxyTypes::SOCKS4 => DProxyTypes::SOCKS4,
-          DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
-        ]
+            DProxyTypes::HTTP => DProxyTypes::HTTP,
+            DProxyTypes::HTTPS => DProxyTypes::HTTPS,
+            DProxyTypes::SOCKS4 => DProxyTypes::SOCKS4,
+            DProxyTypes::SOCKS5 => DProxyTypes::SOCKS5
+          ]
         );
       case DConfig::SERVER_LOG_LEVEL:
         return new DataSet([
-          DServerLog::TRACE => "TRACE",
-          DServerLog::DEBUG => "DEBUG",
-          DServerLog::INFO => "INFO",
-          DServerLog::WARNING => "WARNING",
-          DServerLog::ERROR => "ERROR",
-          DServerLog::FATAL => "FATAL"
-        ]
+            DServerLog::TRACE => "TRACE",
+            DServerLog::DEBUG => "DEBUG",
+            DServerLog::INFO => "INFO",
+            DServerLog::WARNING => "WARNING",
+            DServerLog::ERROR => "ERROR",
+            DServerLog::FATAL => "FATAL"
+          ]
         );
     }
     return new DataSet(["Not found!"]);
@@ -233,13 +235,13 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::MULTICAST_TR:
         return DConfigType::NUMBER_INPUT;
-      case DConfig::TELEGRAM_PROXY_ENABLE:
+      case DConfig::NOTIFICATIONS_PROXY_ENABLE:
         return DConfigType::TICKBOX;
-      case DConfig::TELEGRAM_PROXY_PORT:
+      case DConfig::NOTIFICATIONS_PROXY_PORT:
         return DConfigType::NUMBER_INPUT;
-      case DConfig::TELEGRAM_PROXY_SERVER:
+      case DConfig::NOTIFICATIONS_PROXY_SERVER:
         return DConfigType::STRING_INPUT;
-      case DConfig::TELEGRAM_PROXY_TYPE:
+      case DConfig::NOTIFICATIONS_PROXY_TYPE:
         return DConfigType::SELECT;
       case DConfig::DISABLE_TRIMMING:
         return DConfigType::TICKBOX;
@@ -269,6 +271,10 @@ class DConfig {
         return DConfigType::NUMBER_INPUT;
       case DConfig::AGENT_UTIL_THRESHOLD_2:
         return DConfigType::NUMBER_INPUT;
+      case DConfig::UAPI_SEND_TASK_IS_COMPLETE:
+        return DConfigType::TICKBOX;
+      case DConfig::HC_ERROR_IGNORE:
+        return DConfigType::STRING_INPUT;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -365,14 +371,14 @@ class DConfig {
         return "Instead of the built in UFTP flow control, use a static set transfer rate<br>(Important: Setting this value wrong can affect the functionality, only use this if you are sure this transfer rate is feasible)";
       case DConfig::MULTICAST_TR:
         return "Set static transfer rate in case it is activated (in Kbit/s)";
-      case DConfig::TELEGRAM_PROXY_ENABLE:
-        return "Enable using a proxy for the telegram notification bot.";
-      case DConfig::TELEGRAM_PROXY_PORT:
-        return "Set the port for the telegram notification proxy.";
-      case DConfig::TELEGRAM_PROXY_SERVER:
-        return "Server url of the proxy to use for telegram notifications.";
-      case DConfig::TELEGRAM_PROXY_TYPE:
-        return "Proxy type to use for telegram notifications.";
+      case DConfig::NOTIFICATIONS_PROXY_ENABLE:
+        return "Enable using a proxy for sending notifications.";
+      case DConfig::NOTIFICATIONS_PROXY_PORT:
+        return "Set the port for the notifications proxy.";
+      case DConfig::NOTIFICATIONS_PROXY_SERVER:
+        return "Server url of the proxy to use for notifications.";
+      case DConfig::NOTIFICATIONS_PROXY_TYPE:
+        return "Proxy type to use for notifications.";
       case DConfig::DISABLE_TRIMMING:
         return "Disable trimming of chunks and redo whole chunks.";
       case DConfig::PRIORITY_0_START:
@@ -401,6 +407,10 @@ class DConfig {
         return "Util value where an agent is shown in orange on the agent status page, if below.";
       case DConfig::AGENT_UTIL_THRESHOLD_2:
         return "Util value where an agent is shown in red on the agent status page, if below.";
+      case DConfig::UAPI_SEND_TASK_IS_COMPLETE:
+        return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)";
+      case DConfig::HC_ERROR_IGNORE:
+        return "Ignore error messages from crackers which contain given strings (multiple values separated by comma)";
     }
     return $config;
   }
