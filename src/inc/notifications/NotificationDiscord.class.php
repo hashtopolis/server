@@ -3,23 +3,22 @@
 class HashtopolisNotificationDiscordWebhook extends HashtopolisNotification {
   protected     $receiver;
   public static $name = "Discord Webhook";
-  
+
   function getTemplateName() {
     return "notifications/discord";
   }
-  
+
   function getObjects() {
     return array();
   }
-  
+
   function sendMessage($message, $subject = "") {
-    $data = json_encode(array(
+    $json_data = array(
         "content" => $message
-      )
     );
-    
+
     $ch = curl_init($this->receiver);
-  
+
     if (SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_ENABLE) == 1) {
       curl_setopt($ch, CURLOPT_PROXY, SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_SERVER));
       curl_setopt($ch, CURLOPT_PROXYPORT, SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_PORT));
@@ -38,16 +37,21 @@ class HashtopolisNotificationDiscordWebhook extends HashtopolisNotification {
       curl_setopt($ch, CURLOPT_PROXYTYPE, $type);
       curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, "true");
     }
-    
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    
-    return $result;
+
+    $make_json = json_encode($json_data);
+    $ch = curl_init($this->receiver);
+    curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+    curl_setopt( $ch, CURLOPT_POST, 1);
+    curl_setopt( $ch, CURLOPT_POSTFIELDS, $make_json);
+    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, 1);
+    curl_setopt( $ch, CURLOPT_HEADER, 0);
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+
+    $response = curl_exec( $ch );
+
+    return $response;
+
   }
 }
 
 HashtopolisNotification::add('Discord Webhook', new HashtopolisNotificationDiscordWebhook());
-
