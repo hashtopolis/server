@@ -95,9 +95,9 @@
     <div class='col-md-4'>
       <div class='btn-toolbar my-1'>
         <div class='btn-group'>
-          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
-          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
-          <button id="otherButton" class='btn btn-light' onclick="return toggleFiles('other')">Other</button>
+          <button id="ruleButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="return toggleFiles('rules')">Rules</button>
+          <button id="wordlistButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active' onclick="return toggleFiles('wordlists')">Wordlists</button>
+          <button id="otherButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
       <div id="rules">
@@ -192,9 +192,9 @@
             other.style.display = "none";
             rule.style.visibility = "visible"; // or
             rule.style.display = "inline";
-            document.getElementById("ruleButton").className = "btn btn-light active";
-            document.getElementById("wordlistButton").className = "btn btn-light";
-            document.getElementById("otherButton").className = "btn btn-light";
+            document.getElementById("ruleButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active";
+            document.getElementById("wordlistButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("otherButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
           }
           else if (show === 'wordlists') {
             wordlist.style.visibility = "visible"; // or
@@ -203,9 +203,9 @@
             rule.style.display = "none";
             other.style.visibility = "hidden"; // or
             other.style.display = "none";
-            document.getElementById("ruleButton").className = "btn btn-light";
-            document.getElementById("wordlistButton").className = "btn btn-light active";
-            document.getElementById("otherButton").className = "btn btn-light";
+            document.getElementById("ruleButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("wordlistButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active";
+            document.getElementById("otherButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
           }
           else if (show === 'other') {
             other.style.visibility = "visible"; // or
@@ -214,9 +214,9 @@
             rule.style.display = "none";
             wordlist.style.visibility = "hidden"; // or
             wordlist.style.display = "none";
-            document.getElementById("ruleButton").className = "btn btn-light";
-            document.getElementById("wordlistButton").className = "btn btn-light";
-            document.getElementById("otherButton").className = "btn btn-light active";
+            document.getElementById("ruleButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("wordlistButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("otherButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active";
           }
           return false;
         }

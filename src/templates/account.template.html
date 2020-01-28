@@ -24,7 +24,7 @@
 					  <input type='hidden' name='action' value='[[$DAccountAction::SET_EMAIL]]'>
 					  <input type='email' name='email' class='form-control' value='[[user.getEmail()]]' title="Email">&nbsp;&nbsp;
 					  <input type="hidden" name="csrf" value="[[csrf]]">
-            <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+            <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
 				  </form>
 			  </td>	
 		  </tr>
@@ -35,7 +35,7 @@
 					  <input type='hidden' name='action' value='[[$DAccountAction::UPDATE_LIFETIME]]'>
 					  <input type='text' name='lifetime' class='form-control' value='[[user.getSessionLifetime()]]' title="Session Length">&nbsp; seconds &nbsp;
 					  <input type="hidden" name="csrf" value="[[csrf]]">
-            <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+            <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
 				  </form>
 			  </td>	
 		  </tr>
@@ -48,7 +48,7 @@
 					  <input type='password' name='newpass' class='form-control' placeholder='New password here...'>&nbsp;&nbsp;
 					  <input type='password' name='reppass' class='form-control' placeholder='Repeat password...'>&nbsp;&nbsp;
 					  <input type="hidden" name="csrf" value="[[csrf]]">
-					  <input type="submit" class='btn btn-light' value="Change Password">
+					  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Change Password">
 				  </form>
 			  </td>
 		  </tr>
@@ -101,7 +101,7 @@
 						  <input type='hidden' name='action' value='[[$DAccountAction::SET_OTP1]]'>
 						  <input type='text' name='otp1' class='form-control' value='[[user.getOtp1()]]' title="OTP Key">&nbsp;&nbsp;
 						  <input type="hidden" name="csrf" value="[[csrf]]">
-						  <input type="submit" class='btn btn-light' value="Update">
+						  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Update">
 					  </form>
 				  </td>
 			  </tr>
@@ -112,7 +112,7 @@
 						  <input type='hidden' name='action' value='[[$DAccountAction::SET_OTP2]]'>
 						  <input type='text' name='otp2' class='form-control' value='[[user.getOtp2()]]' title="OTP Key">&nbsp;&nbsp;
 						  <input type="hidden" name="csrf" value="[[csrf]]">
-						  <input type="submit" class='btn btn-light' value="Update">
+						  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Update">
 					  </form>
 				  </td>
 			  </tr>
@@ -123,7 +123,7 @@
 						  <input type='hidden' name='action' value='[[$DAccountAction::SET_OTP3]]'>
 						  <input type='text' name='otp3' class='form-control' value='[[user.getOtp3()]]' title="OTP Key">&nbsp;&nbsp;
 						  <input type="hidden" name="csrf" value="[[csrf]]">
-						  <input type="submit" class='btn btn-light' value="Update">
+						  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Update">
 					  </form>
 				  </td>
 			  </tr>
@@ -134,7 +134,7 @@
 						  <input type='hidden' name='action' value='[[$DAccountAction::SET_OTP4]]'>
 						  <input type='text' name='otp4' class='form-control' value='[[user.getOtp4()]]' title="OTP Key">&nbsp;&nbsp;
 						  <input type="hidden" name="csrf" value="[[csrf]]">
-						  <input type="submit" class='btn btn-light' value="Update">
+						  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Update">
 					  </form>
 				  </td>
 			  </tr>

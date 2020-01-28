@@ -29,7 +29,7 @@
 					  {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
 						  <form style ='float: right; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
 							  <input type="hidden" name="csrf" value="[[csrf]]">
-							  <input type="submit" class='btn btn-light' value="Apply to Hashlist">
+							  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Apply to Hashlist">
 						  </form>
 					  {{ENDIF}}
 				  </td>
@@ -63,7 +63,7 @@
 													    <input type="hidden" name="pretaskId" value="[[task.getId()]]">
 													    <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[task.getPriority()]]" title="Priority">&nbsp;&nbsp;
 													    <input type="hidden" name="csrf" value="[[csrf]]">
-													    <input type="submit" class='btn btn-light' value="Set">
+													    <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Set">
 												    </form>
 											    {{ELSE}}
 												    [[task.getPriority()]]

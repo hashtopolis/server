@@ -34,7 +34,7 @@
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]" title="Task Name">&nbsp;&nbsp;
               <input type="hidden" name="csrf" value="[[csrf]]">
-              <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             [[task.getTaskName()]]
@@ -76,7 +76,7 @@
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here...">[[task.getNotes()]]</textarea>
-              <button type="submit" class='btn btn-light my-1' data-toggle="tooltip" data-placement="top" title="Save"><i class="fas fa-save" aria-hidden="true"></i></button>
+              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} my-1' data-toggle="tooltip" data-placement="top" title="Save"><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ENDIF}}
         </td>
@@ -91,7 +91,7 @@
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="text" class='form-control' name="chunktime" size="5" value="[[task.getChunkTime()]]" title="Chunk Length">
               &nbsp;seconds&nbsp;
-              <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             [[task.getChunkTime()]] seconds
@@ -113,7 +113,7 @@
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               #<input type="text" class='form-control color {required:false}' size="6" name="color" value="[[task.getColor()]]" title="Color">&nbsp;&nbsp;
-               <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+               <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             #[[task.getColor()]]
@@ -143,7 +143,7 @@
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="text" class='form-control' name="priority" size="4" value="[[task.getPriority()]]" title="Priority">&nbsp;&nbsp;
-              <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             [[task.getPriority()]]
@@ -162,7 +162,7 @@
                 <option value="0"{{IF [[task.getIsCpuTask()]] == 0}} selected{{ENDIF}}>No</option>
                 <option value="1"{{IF [[task.getIsCpuTask()]] == 1}} selected{{ENDIF}}>Yes</option>
               </select>&nbsp;&nbsp;
-              <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             {{IF [[task.getIsCpuTask()]] == 1}}
@@ -185,7 +185,7 @@
                 <option value="0"{{IF [[task.getIsSmall()]] == 0}} selected{{ENDIF}}>No</option>
                 <option value="1"{{IF [[task.getIsSmall()]] == 1}} selected{{ENDIF}}>Yes</option>
               </select>&nbsp;&nbsp;
-              <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
             </form>
           {{ELSE}}
             {{IF [[task.getIsSmall()]] == 1}}
@@ -436,7 +436,7 @@
               [[agent.getId()]]
             {{ENDIF}}
             {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
-              <img src="static/active.gif" alt="Active">
+              <i class="fas fa-spinner fa-spin"></i>
             {{ENDIF}}
           </td>
           <td>
@@ -459,7 +459,7 @@
                 <input type="hidden" name="agentId" value="[[agent.getId()]]">
                 <input type="hidden" name="csrf" value="[[csrf]]">
                 <input type="text" class='form-control' name="bench" value="[[agentsBench.getVal([[agent.getId()]])]]" size="20" title="Benchmark">&nbsp;
-                <input type="submit" class='btn btn-light' value="Set">
+                <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Set">
               </form>
             {{ELSE}}
               [[agentsBench.getVal([[agent.getId()]])]]
@@ -502,7 +502,7 @@
                 <input type="hidden" name="agentId" value="[[agent.getId()]]">
                 <input type="hidden" name="csrf" value="[[csrf]]">
                 <input type="hidden" name="task" value="">
-                <input type="submit" class='btn btn-light' value="Unassign">
+                <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Unassign">
               </form>
             {{ENDIF}}
           </td>
@@ -531,7 +531,7 @@
                     </select>
                   </div>
                   <div class="col">
-                    <input type="submit" class='btn btn-light' value="Assign">
+                    <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Assign">
                   </div>
                 </div>
               </form>
@@ -587,7 +587,7 @@
                 <span class="fas fa-lock" aria-hidden="true"></span>
               {{ENDIF}}
               {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
-                <img src="static/active.gif" alt="Active">
+                <i class="fas fa-spinner fa-spin"></i>
               {{ENDIF}}
             </td>
             <td class="num">
@@ -633,7 +633,7 @@
           <td>
             [[chunk.getId()]]
             {{IF [[activeChunks.getVal([[chunk.getId()]])]]}}
-              <img src="static/active.gif" alt="Active">
+              <i class="fas fa-spinner fa-spin"></i>
             {{ENDIF}}
           </td>
           <td class="num">[[chunk.getSkip()]]</td>
@@ -697,7 +697,7 @@
                 <input type="hidden" name="action" value="[[$DTaskAction::RESET_CHUNK]]">
                 <input type="hidden" name="chunk" value="[[chunk.getId()]]">
                 <input type="hidden" name="csrf" value="[[csrf]]">
-                <input type="submit" class='btn btn-light' value="Reset">
+                <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Reset">
               </form>
             {{ENDIF}}
             {{IF [[activeChunks.getVal([[chunk.getId()]])]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}

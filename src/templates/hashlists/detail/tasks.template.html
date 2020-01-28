@@ -22,8 +22,8 @@
             <td>
               <a href="tasks.php?id=[[task.getVal('task')->getId()]]" title="[[task.getVal('task')->getAttackCmd()]]">[[task.getVal('task')->getTaskName()]]</a>
               [[Util::tickdone([[task.getVal('task')->getKeyspaceProgress()]], [[task.getVal('task')->getKeyspace()]])]]
-              {{IF [[task.getVal('isActive')]] && [[task.getVal('searched')]] < [[task.getVal('task')->getKeyspace()]]}}
-                <img src="static/active.gif" alt="Active">
+              {{IF [[task.getVal('isActive')]] || [[task.getVal('searched')]] < [[task.getVal('task')->getKeyspace()]]}}
+                <i class="fas fa-spinner fa-spin"></i>
               {{ENDIF}}
             </td>
             <td class="num">

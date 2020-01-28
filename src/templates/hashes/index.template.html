@@ -38,9 +38,9 @@
         <td colspan="2">
           <div class="btn-toolbar my-1" style="justify-content: center; display: flex;">
             <div class='btn-group'>
-              <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[previousPage]]'" {{IF [[previousPage]] == -1}} disabled{{ENDIF}}>[[Util::calculate([[previousPage]]+1)]] &lt;</button>
-              <button class='btn btn-light active'>Page [[Util::calculate([[currentPage]]+1)]]</button>
-              <button class='btn btn-light' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[nextPage]]'" {{IF [[nextPage]] == -1}} disabled{{ENDIF}}>&gt; [[Util::calculate([[currentPage]]+1)]]</button>
+              <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[previousPage]]'" {{IF [[previousPage]] == -1}} disabled{{ENDIF}}>[[Util::calculate([[previousPage]]+1)]] &lt;</button>
+              <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active'>Page [[Util::calculate([[currentPage]]+1)]]</button>
+              <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="window.location='hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[nextPage]]'" {{IF [[nextPage]] == -1}} disabled{{ENDIF}}>&gt; [[Util::calculate([[currentPage]]+1)]]</button>
             </div>
           </div>
           <form class='form-inline my-1' style="justify-content: center; display: flex;" action='hashes.php' method='get'>
@@ -61,9 +61,9 @@
           </form>
           <div class="my-1 text-center">
             {{IF [[crackpos]] == 0}}
-              <a href="hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[currentPage]]&crackpos=true" class="btn btn-light">Show Crackpos</a>
+              <a href="hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[currentPage]]&crackpos=true" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}">Show Crackpos</a>
             {{ELSE}}
-              <a href="hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[currentPage]]" class="btn btn-light">Hide Crackpos</a>
+              <a href="hashes.php?[[src]]=[[srcId]]&filter=[[filtering]]&display=[[displaying]]&page=[[currentPage]]" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}">Hide Crackpos</a>
             {{ENDIF}}
           </div>
         </td>
@@ -95,7 +95,7 @@
           <form class='form-inline' method='get'>
             $HEX[ <input type="text" class='form-control' id="conv" title="HEX Input"> ] ->
             <input type="text" class='form-control' id="convr" readonly title="Converted">&nbsp;
-            <button class='btn btn-light' onclick="document.getElementById('convr').value=hex2a(document.getElementById('conv').value); return false;">Convert</button>
+            <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="document.getElementById('convr').value=hex2a(document.getElementById('conv').value); return false;">Convert</button>
           </form>
         </td>
       </tr>
