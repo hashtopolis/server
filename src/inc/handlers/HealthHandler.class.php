@@ -16,6 +16,10 @@ class HealthHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DHealthCheckAction::RESET_AGENT_PERM);
           HealthUtils::resetAgentCheck(intval($_POST['healthCheckAgentId']));
           break;
+        case DHealthCheckAction::DELETE_HEALTH_CHECK:
+          AccessControl::getInstance()->checkPermission(DHealthCheckAction::DELETE_HEALTH_CHECK_PERM);
+          HealthUtils::deleteHealthCheck(intval($_POST['healthCheckId']));
+          break;
         default:
           throw new HTException("Invalid action!");
       }
