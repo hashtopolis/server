@@ -209,4 +209,18 @@ class HealthUtils {
         throw new HTException("No implementation for this hash type available to generate hashes!");
     }
   }
+  
+  /**
+   * @param int $healthCheckId
+   * @throws HTException
+   */
+  public static function deleteHealthCheck($healthCheckId) {
+    $healthCheck = Factory::getHealthCheckFactory()->get($healthCheckId);
+    if ($healthCheck === null) {
+      throw new HTException("Invalid health check!");
+    }
+    $qF = new QueryFilter(HealthCheckAgent::HEALTH_CHECK_ID, $healthCheck->getId(), "=");
+    Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => $qF]);
+    Factory::getHealthCheckFactory()->delete($healthCheck);
+  }
 }
