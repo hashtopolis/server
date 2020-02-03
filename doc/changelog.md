@@ -3,6 +3,7 @@
 ## Features
 
 - Generic preprocessor integration to allow inclusion of any preprocessor supporting chunking.
+- Dark mode added.
 
 ## Bugfixes
 
@@ -11,6 +12,8 @@
 - Fixed reporting result of health check which resulted in endless loop depending on the used IDs.
 - Fixed reporting outdated speed on tasks page when agent is put inactive directly.
 - Fixed recalculation of benchmark when changing chunk time.
+- Fixed discord notification to work again.
+- Fixed missing index structure on speed measurements table.
 
 ## Enhancements
 
@@ -18,6 +21,8 @@
 - Server can be configured to provide 'isComplete' flag on the user API when requesting all tasks.
 - Certain agent errors can be whitelisted to be completely ignored (for such who don't affect the running).
 - Hashlists can be moved to other Access Groups after creation.
+- Health checks can now be deleted.
+- API keys can get masked if admin is not assigned to them.
 
 # v0.10.1 -> v0.11.0
 
