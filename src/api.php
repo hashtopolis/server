@@ -40,7 +40,7 @@ else if (isset($_GET['id'])) {
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
     $keys = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]);
-    if($MASK_API_KEYS) {
+    if(MASK_API_KEYS) {
       $userID = Login::getInstance()->getUserID();
       foreach ($keys as $key)
         if($key->getUserId() != $userID) {
@@ -91,7 +91,7 @@ else if (isset($_GET['keyId'])) {
   if ($key == null) {
     UI::printError(UI::ERROR, "Invalid API key ID!");
   }
-  if ($MASK_API_KEYS) {
+  if (MASK_API_KEYS) {
     $userID = Login::getInstance()->getUserID();
     $qF = new QueryFilter(User::USER_ID, $key->getUserId(), "=");
     $users = Factory::getUserFactory()->filter([Factory::FILTER=>$qF]);
@@ -121,7 +121,7 @@ else {
   $userID = Login::getInstance()->getUserID();
   foreach ($allApiKeys as $apiKey) {
     $apis[$apiKey->getApiGroupId()]++;
-    if ($MASK_API_KEYS && $apiKey->getUserId() != $userID) {
+    if (MASK_API_KEYS && $apiKey->getUserId() != $userID) {
       $apiKey->setAccessKey("******************************");
     }
   }

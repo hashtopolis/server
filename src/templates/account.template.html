@@ -143,15 +143,16 @@
   </div>
 </div>
 {{IF [[sizeof([[keys]])]] > 0}}
+	<h3>API Access</h3>
 	<div class="card">
 		<div class="table-responsive">
 	  		<table class="table table-bordered">
 				<tbody>
 					<tr>
-						<th>API Keys</th>
+						<th>Keys</th>
 						<td>
 							{{FOREACH key;[[keys]]}}
-								[[key.getAccessKey()]]</br>
+								[[key.getAccessKey()]]<br>
 							{{ENDFOREACH}}
 						</td>
 					</tr>
