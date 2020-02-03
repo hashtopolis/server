@@ -43,10 +43,10 @@ if (!isset($PRESENT["v0.11.x_preprocessors"])) {
 }
 
 if (!isset($PRESENT["v0.11.x_speed-index"])) {
-  if (Util::databaseIndexExists("Speed", "agentId")) {
+  if (!Util::databaseIndexExists("Speed", "agentId")) {
     Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD KEY `agentId` (`agentId`);");
   }
-  if (Util::databaseIndexExists("Speed", "taskId")) {
+  if (!Util::databaseIndexExists("Speed", "taskId")) {
     Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD KEY `taskId` (`taskId`);");
   }
   $EXECUTED["v0.11.x_speed-index"] = true;
