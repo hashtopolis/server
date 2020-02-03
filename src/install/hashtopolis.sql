@@ -916,7 +916,9 @@ ALTER TABLE `Session`
   ADD KEY `userId` (`userId`);
 
 ALTER TABLE `Speed`
-  ADD PRIMARY KEY (`speedId`);
+  ADD PRIMARY KEY (`speedId`),
+  ADD KEY `agentId` (`agentId`),
+  ADD KEY `taskId` (`taskId`);
 
 ALTER TABLE `StoredValue`
   ADD PRIMARY KEY (`storedValueId`);

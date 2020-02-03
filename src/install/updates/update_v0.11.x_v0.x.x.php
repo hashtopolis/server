@@ -42,6 +42,16 @@ if (!isset($PRESENT["v0.11.x_preprocessors"])) {
   $EXECUTED["v0.11.x_preprocessors"] = true;
 }
 
+if (!isset($PRESENT["v0.11.x_speed-index"])) {
+  if (Util::databaseIndexExists("Speed", "agentId")) {
+    Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD KEY `agentId` (`agentId`);");
+  }
+  if (Util::databaseIndexExists("Speed", "taskId")) {
+    Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD KEY `taskId` (`taskId`);");
+  }
+  $EXECUTED["v0.11.x_speed-index"] = true;
+}
+
 if (!isset($PRESENT["v0.11.x_conf1"])) {
   $qF = new QueryFilter(Config::ITEM, DConfig::UAPI_SEND_TASK_IS_COMPLETE, "=");
   $item = Factory::getConfigFactory()->filter([Factory::FILTER => $qF], true);

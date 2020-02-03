@@ -1392,6 +1392,11 @@ class Util {
     $result = Factory::getAgentFactory()->getDB()->query("SHOW TABLES LIKE '$table';");
     return $result->rowCount() > 0;
   }
+  
+  public static function databaseIndexExists($table, $column) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW INDEX FROM `$table` WHERE Column_name='$column'");
+    return $result->rowCount() > 0;
+  }
 }
 
 
