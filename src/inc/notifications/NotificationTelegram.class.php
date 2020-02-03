@@ -19,7 +19,7 @@ class HashtopolisNotificationTelegram extends HashtopolisNotification {
       "text" => $message
     );
     
-    $ch = curl_init("https://api.telegram.org/bot{$botToken}/sendmessage");
+    $ch = curl_init("https://api.telegram.org/bot{$botToken}/sendMessage");
     
     if (SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_ENABLE) == 1) {
       curl_setopt($ch, CURLOPT_PROXY, SConfig::getInstance()->getVal(DConfig::NOTIFICATIONS_PROXY_SERVER));
