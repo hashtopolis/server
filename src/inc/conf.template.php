@@ -15,4 +15,5 @@ $PEPPER = [
 ];
 
 $INSTALL = false; //set this to true if you config the mysql and setup manually
+
 //END CONFIG

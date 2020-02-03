@@ -39,6 +39,8 @@ foreach ($directories as $directory) {
 
 include(dirname(__FILE__) . "/protocol.php");
 
+include(dirname(__FILE__) . "/mask.php");
+
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");
 

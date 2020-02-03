@@ -3,6 +3,7 @@
 use DBA\APiKey;
 use DBA\QueryFilter;
 use DBA\Factory;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -18,10 +19,12 @@ Menu::get()->setActive("users_api");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
-  $apiHandler = new ApiHandler();
-  $apiHandler->handle($_POST['action']);
-  if (UI::getNumMessages() == 0) {
-    Util::refresh();
+  if(UI::getNumMessages() == 0){
+    $apiHandler = new ApiHandler();
+    $apiHandler->handle($_POST['action']);
+    if (UI::getNumMessages() == 0) {
+      Util::refresh();
+    }
   }
 }
 
@@ -36,7 +39,15 @@ else if (isset($_GET['id'])) {
   }
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
-    UI::add('keys', Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]));
+    $keys = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]);
+    if($MASK_API_KEYS) {
+      $userID = Login::getInstance()->getUserID();
+      foreach ($keys as $key)
+        if($key->getUserId() != $userID) {
+          $key->setAccessKey("******************************");
+        }
+    }
+    UI::add('keys', $keys);
     UI::add('sectionConstants', USection::getConstants());
     
     $section = USection::TEST;
@@ -80,8 +91,19 @@ else if (isset($_GET['keyId'])) {
   if ($key == null) {
     UI::printError(UI::ERROR, "Invalid API key ID!");
   }
+  if ($MASK_API_KEYS) {
+    $userID = Login::getInstance()->getUserID();
+    $qF = new QueryFilter(User::USER_ID, $key->getUserId(), "=");
+    $users = Factory::getUserFactory()->filter([Factory::FILTER=>$qF]);
+    if ($key->getUserId() != $userID) {
+      $key->setAccessKey("******************************");
+    }
+  }
+  else {
+    $users = Factory::getUserFactory()->filter([]);
+  }
   UI::add('key', $key);
-  UI::add('users', Factory::getUserFactory()->filter([]));
+  UI::add('users', $users);
   UI::add('groups', Factory::getApiGroupFactory()->filter([]));
   UI::add('pageTitle', "Edit API key");
   Template::loadInstance("api/key");
@@ -96,11 +118,15 @@ else {
   }
   
   $allApiKeys = Factory::getApiKeyFactory()->filter([]);
+  $userID = Login::getInstance()->getUserID();
   foreach ($allApiKeys as $apiKey) {
     $apis[$apiKey->getApiGroupId()]++;
+    if ($MASK_API_KEYS && $apiKey->getUserId() != $userID) {
+      $apiKey->setAccessKey("******************************");
+    }
   }
   
-  UI::add('keys', Factory::getApiKeyFactory()->filter([]));
+  UI::add('keys', $allApiKeys);
   UI::add('apis', new DataSet($apis));
   UI::add('groups', $groups);
   UI::add('pageTitle', "Api Groups");
