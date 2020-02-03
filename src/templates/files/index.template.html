@@ -19,9 +19,9 @@
 {{ENDIF}}
   <div class='btn-toolbar'>
     <div class='btn-group'>
-      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
-      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "dict"}} active{{ENDIF}}' onclick="window.location='files.php?view=dict'">Wordlists</button>
-      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "other"}} active{{ENDIF}}' onclick="window.location='files.php?view=other'">Other</button>
+      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-dark{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "rule"}} active{{ENDIF}}' onclick="window.location='files.php?view=rule'">Rules</button>
+      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-dark{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "dict"}} active{{ENDIF}}' onclick="window.location='files.php?view=dict'">Wordlists</button>
+      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-dark{{ELSE}}btn-light{{ENDIF}}{{IF [[view]] == "other"}} active{{ENDIF}}' onclick="window.location='files.php?view=other'">Other</button>
     </div>
   </div>
   <br>
