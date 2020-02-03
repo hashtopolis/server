@@ -1,4 +1,5 @@
 language: php
+os: linux
 php:
   - "7.2"
   - "7.1"
@@ -25,7 +26,7 @@ env:
   - VERSION="0.10.0"
   - VERSION="0.9.0"
 
-matrix:
+jobs:
   # older versions only tested for master and PRs
   exclude:
     - php: "7.1"
@@ -33,7 +34,7 @@ matrix:
     - php: "5.6"
     - env: VERSION="0.10.0"
     - env: VERSION="0.9.0"
-  if: (branch != master AND type != pull_request)
+    if: (branch != master AND type != pull_request)
 
 script:
   - php -f ci/run.php master $VERSION
