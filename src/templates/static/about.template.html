@@ -1,14 +1,14 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
 <h2>About [[$APP_NAME]]</h2>
-<div class='alert {{IF [[toggledarkmode]] > 0}}alert-dark{{ELSE}}alert-neutral{{ENDIF}}'>
+<div class='alert {{IF [[toggledarkmode]] > 0}}alert-primary{{ELSE}}alert-neutral{{ENDIF}}'>
 	[[$APP_NAME]] version <code>[[version]]</code> running on <code>[[host]]</code>.<br>
 	{{IF [[gitcommit]] != "not versioned"}}
 	[[$APP_NAME]] is running versioned. Updates can be retrieved with <code>git pull</code>. Latest commit:
 		<code>[[gitcommit]]</code>.
 	{{ENDIF}}
 </div>
-<div class='alert {{IF [[toggledarkmode]] > 0}}alert-dark{{ELSE}}alert-neutral{{ENDIF}}'>
+<div class='alert {{IF [[toggledarkmode]] > 0}}alert-primary{{ELSE}}alert-neutral{{ENDIF}}'>
 	Some of the features of [[$APP_NAME]]:<br>
 	<ul>
 		<li>Easy and comfortable to use</li>
@@ -31,7 +31,7 @@
 		<li>Compatible with crackers supporting certain flags</li>
 	</ul>
 </div>
-<div class='alert {{IF [[toggledarkmode]] > 0}}alert-dark{{ELSE}}alert-neutral{{ENDIF}}'>
+<div class='alert {{IF [[toggledarkmode]] > 0}}alert-primary{{ELSE}}alert-neutral{{ENDIF}}'>
 	Thanks to the following people for helping in various ways to make [[$APP_NAME]] work:<br>
 	winxp5421<br>
 	blazer<br>
