@@ -123,7 +123,7 @@ class AgentUtils {
         $pos = (int)($i + sizeof($data) * array_search($entry->getStatType(), $types));
         if (!isset($datasets[$pos])) {
           $datasets[$pos] = array(
-            "label" => "Dev #" . ($i + 1) . " - " . $yLabels[$entry->getStatType()],
+            "label" => "Dev #" . ($i + 1),
             "fill" => false,
             "lineTension" => (SConfig::getInstance()->getVal(DConfig::AGENT_STAT_TENSION) == 1) ? 0 : 0.5,
             "yAxisID" => $entry->getStatType(),

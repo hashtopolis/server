@@ -17,7 +17,7 @@
                 maintainAspectRatio: true,
                 tooltips: {
                     mode: 'index',
-                    intersect: false,
+                    intersect: false
                 },
                 hover: {
                     mode: 'nearest',
@@ -35,14 +35,14 @@
                 }
             }
         };
-        window.onload = function () {
+        $( document ).ready(function() {
             new Chart(document.getElementById('deviceTemp').getContext('2d'), configTemp);
-        }
+        });
     </script>
 {{ENDIF}}
 
 {{IF [[deviceUtilAvailable]] > 0}}
-    <h3>Devices(s) Util</h3>
+    <h3>Device(s) Util</h3>
     <div class="row">
         <div class="col col-12">
             <canvas id="deviceUtil"></canvas>
@@ -60,7 +60,7 @@
                 maintainAspectRatio: true,
                 tooltips: {
                     mode: 'index',
-                    intersect: false,
+                    intersect: false
                 },
                 hover: {
                     mode: 'nearest',
@@ -78,8 +78,8 @@
                 }
             }
         };
-        window.onload = function () {
+        $( document ).ready(function() {
             new Chart(document.getElementById('deviceUtil').getContext('2d'), configUtil);
-        };
+        });
     </script>
 {{ENDIF}}
