@@ -1,0 +1,35 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Forgot password</h2>
+{%TEMPLATE->struct/messages%}
+<div class="alert {{IF [[toggledarkmode]] > 0}}alert-dark" style="background-color: #32383e;{{ELSE}}alert-neutral{{ENDIF}}">
+    <div class="row">
+        <div class='col-md-3'></div>
+        <div class='col-md-6'>
+            <br>
+            <form action='forgot.php' method='post' class="form-horizontal">
+                <input type='hidden' name='action' value='[[$DForgotAction::RESET]]'>
+                <input type="hidden" name="csrf" value="[[csrf]]">
+                <div class="form-group">
+                    <label for="inputUsername" class="col-sm-2 control-label">Username</label>
+                    <div class="col-sm-12">
+                        <input name='username' type="text" class="form-control" id="inputUsername" placeholder="Username" style="background-color: #e8f0fe;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputEmail" class="col-sm-2 control-label">Email</label>
+                    <div class="col-sm-12">
+                        <input name='email' type="email" class="form-control" id="inputEmail" placeholder="Email" style="background-color: #e8f0fe;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-success">Send new password</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class='col-md-3'></div>
+    </div>
+</div>
+{%TEMPLATE->struct/foot%}
