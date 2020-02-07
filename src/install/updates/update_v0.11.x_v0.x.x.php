@@ -42,6 +42,12 @@ if (!isset($PRESENT["v0.11.x_preprocessors"])) {
   $EXECUTED["v0.11.x_preprocessors"] = true;
 }
 
+if (!isset($PRESENT["v0.11.x_prince"])) {
+  $qF = new QueryFilter(Config::ITEM, "princeLink", "=");
+  Factory::getConfigFactory()->massDeletion([Factory::FILTER => $qF]);
+  $EXECUTED["v0.11.x_prince"] = true;
+}
+
 if (!isset($PRESENT["v0.11.x_speed-index"])) {
   if (!Util::databaseIndexExists("Speed", "agentId")) {
     Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Speed` ADD KEY `agentId` (`agentId`);");

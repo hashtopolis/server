@@ -45,7 +45,6 @@ class DConfig {
   const RULE_SPLIT_SMALL_TASKS = "ruleSplitSmallTasks";
   const RULE_SPLIT_ALWAYS      = "ruleSplitAlways";
   const RULE_SPLIT_DISABLE     = "ruleSplitDisable";
-  const PRINCE_LINK            = "princeLink";
   const AGENT_DATA_LIFETIME    = "agentDataLifetime";
   const DISABLE_TRIMMING       = "disableTrimming";
   const PRIORITY_0_START       = "priority0Start";
@@ -219,8 +218,6 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::RULE_SPLIT_DISABLE:
         return DConfigType::TICKBOX;
-      case DConfig::PRINCE_LINK:
-        return DConfigType::STRING_INPUT;
       case DConfig::AGENT_STAT_LIMIT:
         return DConfigType::NUMBER_INPUT;
       case DConfig::AGENT_DATA_LIFETIME:
@@ -355,8 +352,6 @@ class DConfig {
         return "Even do rule splitting when there are not enough rules but just the benchmark is too high.<br>Can result in subtasks with just one rule.";
       case DConfig::RULE_SPLIT_DISABLE:
         return "Disable automatic task splitting with large rule files.";
-      case DConfig::PRINCE_LINK:
-        return "Download link for the prince preprocessor binaries.";
       case DConfig::AGENT_STAT_LIMIT:
         return "Maximal number of data points showing of agent gpu data.";
       case DConfig::AGENT_DATA_LIFETIME:
