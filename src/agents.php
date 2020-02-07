@@ -80,13 +80,13 @@ if (isset($_GET['id'])) {
     UI::add('deviceTemp', json_encode($data['sets']));
     UI::add('deviceTempAvailable', (sizeof($data['sets']) > 0) ? true : false);
     UI::add('deviceTempXLabels', json_encode($data['xlabels']));
-    UI::add('deviceAxes', json_encode($data['axes']));
+    UI::add('deviceTempAxes', json_encode($data['axes']));
 
     $data = AgentUtils::getGraphData($agent, [DAgentStatsType::GPU_UTIL]);
     UI::add('deviceUtil', json_encode($data['sets']));
     UI::add('deviceUtilAvailable', (sizeof($data['sets']) > 0) ? true : false);
     UI::add('deviceUtilXLabels', json_encode($data['xlabels']));
-    UI::add('deviceAxes', json_encode($data['axes']));
+    UI::add('deviceUtilAxes', json_encode($data['axes']));
     
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
