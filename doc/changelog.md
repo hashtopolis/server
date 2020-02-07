@@ -23,6 +23,7 @@
 - Hashlists can be moved to other Access Groups after creation.
 - Health checks can now be deleted.
 - API keys can get masked if admin is not assigned to them.
+- Agent data for temperature and util are split into separate graphs and have more different colors.
 
 # v0.10.1 -> v0.11.0
 
