@@ -99,7 +99,9 @@ class DAccessControl {
       case DAccessControl::VIEW_SUPERTASK_ACCESS[0]:
         return "Can view preconfigured supertasks<br>Also granted with manage/create supertasks permission.";
       case DAccessControl::MANAGE_SUPERTASK_ACCESS:
-        return "Can manage preconfigured supertasks";
+        return "Can manage preconfigured supertasks.";
+      case DAccessControl::PREPROCESSORS_ACCESS:
+        return "Can access preprocessor settings.";
     }
     return "__" . $access . "__";
   }
