@@ -115,7 +115,7 @@
 			{{ENDIF}}
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
-			<li class="nav-item"><a class="nav-link" href="#" onclick="darkMode();"><i class="fas fa-moon" aria-hidden="true"></i></a></li>
+			<li class="nav-item"><a class="nav-link" href="#" onclick="darkMode();"><i class="fas {{IF [[toggledarkmode]] > 0}}fa-sun{{ELSE}}fa-moon{{ENDIF}}" aria-hidden="true"></i></a></li>
 			{{IF [[login.isLoggedin()]]}}
 				<li class="nav-item"><a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt" aria-hidden="true"></i></a></li>
 			{{ENDIF}}
