@@ -4,7 +4,7 @@
 {{IF ![[login.isLoggedin()]]}}
   <h2>Login</h2>
   {%TEMPLATE->struct/messages%}
-  <div class='alert {{IF [[toggledarkmode]] > 0}}alert-dark{{ELSE}}alert-neutral{{ENDIF}}'>
+  <div class="alert {{IF [[toggledarkmode]] > 0}}alert-dark" style="background-color: #32383e;{{ELSE}}alert-neutral{{ENDIF}}">
       <div class="row">
           <div class='col-md-3'></div>
           <div class='col-md-6'>
