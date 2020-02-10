@@ -67,7 +67,7 @@ if (!isset($PRESENT["v0.10.x_hashTypes"])) {
     new HashType(20400, 'Python passlib pbkdf2-sha1', 0, 1),
     new HashType(20500, 'PKZIP Master Key', 0, 0),
     new HashType(20510, 'PKZIP Master Key (6 byte optimization)', 0, 0),
-    new HashType(00000, 'Plaintext', 0, 1)
+    new HashType(99999, 'Plaintext', 0, 0)
   ];
   foreach ($hashtypes as $hashtype) {
     $check = Factory::getHashTypeFactory()->get($hashtype->getId());
