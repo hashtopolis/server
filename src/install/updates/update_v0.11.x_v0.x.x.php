@@ -2,6 +2,7 @@
 
 use DBA\Config;
 use DBA\Factory;
+use DBA\HashType;
 use DBA\QueryFilter;
 
 if (!isset($TEST)) {
@@ -111,5 +112,38 @@ if (!isset($PRESENT["v0.11.x_conf3"])) {
     Factory::getConfigFactory()->save($config);
   }
   $EXECUTED["v0.11.x_conf3"] = true;
+}
+
+if (!isset($PRESENT["v0.11.x_hashTypes"])) {
+  $hashtypes = [
+    new HashType(00000, 'Plaintext', 0, 1),
+    new HashType(20600, 'Oracle Transportation Management (SHA256)', 0, 0),
+    new HashType(20710, 'sha256(sha256($pass).$salt)', 1, 0),
+    new HashType(20711, 'AuthMe sha256', 0, 0),
+    new HashType(20800, 'sha256(md5($pass))', 0, 0),
+    new HashType(20900, 'md5(sha1($pass).md5($pass).sha1($pass))', 0, 0),
+    new HashType(21000, 'BitShares v0.x - sha512(sha512_bin(pass))', 0, 0),
+    new HashType(21100, 'sha1(md5($pass.$salt))', 1, 0),
+    new HashType(21200, 'md5(sha1($salt).md5($pass))', 1, 0),
+    new HashType(21300, 'md5($salt.sha1($salt.$pass))', 1, 0),
+    new HashType(21400, 'sha256(sha256_bin(pass))', 0, 0),
+    new HashType(21500, 'SolarWinds Orion', 0, 0),
+    new HashType(21600, 'Web2py pbkdf2-sha512', 0, 0),
+    new HashType(21700, 'Electrum Wallet (Salt-Type 4)', 0, 0),
+    new HashType(21800, 'Electrum Wallet (Salt-Type 5)', 0, 0),
+    new HashType(22000, 'WPA-PBKDF2-PMKID+EAPOL', 0, 0),
+    new HashType(22001, 'WPA-PMK-PMKID+EAPOL', 0, 0),
+    new HashType(22100, 'BitLocker', 0, 0),
+    new HashType(22200, 'Citrix NetScaler (SHA512)', 0, 0),
+    new HashType(22300, 'sha256($salt.$pass.$salt)', 1, 0),
+    new HashType(22400, 'AES Crypt (SHA256)', 0, 0)
+  ];
+  foreach ($hashtypes as $hashtype) {
+    $check = Factory::getHashTypeFactory()->get($hashtype->getId());
+    if ($check === null) {
+      Factory::getHashTypeFactory()->save($hashtype);
+    }
+  }
+  $EXECUTED["v0.11.x_hashTypes"] = true;
 }
 
