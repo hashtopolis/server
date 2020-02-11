@@ -1,0 +1,39 @@
+.table-bordered th, .table-bordered td {
+    border: 1px solid #3e464a !important;
+}
+
+.table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #3e464a !important;	
+}
+
+.table-bordered {
+    border: 1px solid #3e464a !important;
+}
+
+.alert-success {
+    background-color: #397b39;
+}
+
+.alert-warning {
+    background-color: #b16a06;
+}
+
+.alert-danger {
+    background-color: #bf4d4a;
+}
+
+.btn-success {
+    background-image: linear-gradient(#4a984a, #337533 60%, #347134);
+    background-color: #3a773a;
+}
+
+.btn-danger {
+    background-image: linear-gradient(#d9534f, #8e3533 60%, #963331);
+    background-color: #d9534f;
+}
+
+.btn-warning {
+    background-image: linear-gradient(#b16a06, #bf7205 60%, #bf7205);
+    background-color: #b16a06;
+}
