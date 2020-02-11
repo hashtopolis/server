@@ -24,6 +24,11 @@ if (!isset($PRESENT["v0.11.x_tasks"])) {
   $EXECUTED["v0.11.x_tasks"] = true;
 }
 
+if (!isset($PRESENT["v0.11.x_agentBinaries"])) {
+  Util::checkAgentVersion("python", "0.6.0", true);
+  $EXECUTED["v0.11.x_agentBinaries"] = true;
+}
+
 if (!isset($PRESENT["v0.11.x_preprocessors"])) {
   if (!Util::databaseTableExists("Preprocessor")) {
     Factory::getAgentFactory()->getDB()->query("CREATE TABLE `Preprocessor` (
