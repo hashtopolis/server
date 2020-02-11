@@ -295,7 +295,8 @@ class TaskHandler implements Handler {
     
     $task = Factory::getTaskFactory()->save($task);
     if (isset($_POST["adfile"])) {
-      foreach ($_POST["adfile"] as $fileId) {
+      $adfile = array_unique($_POST['adfile']);
+      foreach ($adfile as $fileId) {
         $taskFile = new FileTask(null, $fileId, $task->getId());
         Factory::getFileTaskFactory()->save($taskFile);
         FileDownloadUtils::addDownload($taskFile->getFileId());
