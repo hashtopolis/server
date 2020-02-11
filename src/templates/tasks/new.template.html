@@ -162,7 +162,7 @@
                   <option value="[[preprocessor.getId()]]" {{IF [[copy.getUsePreprocessor()]] == [[preprocessor.getId()]]}} selected{{ENDIF}}>[[htmlentities([[preprocessor.getName()]], ENT_QUOTES, "UTF-8")]]</option>
                 {{ENDFOREACH}}
               </select><br><br>
-              <input type="text" name="preprocessorCommand" placeholder="Command arguments without binary name and range settings (if files are used, they need to be selected)" value="[[copy.getPreprocessorCommand()]]" class="form-control full-width" title="Preprocessor Command" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              <input type="text" name="preprocessorCommand" id="preprocessorLine" placeholder="Command arguments without binary name and range settings" value="[[copy.getPreprocessorCommand()]]" class="form-control full-width" title="Preprocessor Command" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
             </td>
           </tr>
           <tr>
@@ -234,17 +234,26 @@
         </div>
       </div>
       <div id="wordlists">
+        T: Task<br>
+        P: Preprocessor<br>
         <div class="card">
           <div class="table-responsive">
             <table class="table table-bordered">
               <tr>
+                <th>T</th>
+                <th>P</th>
                 <th>Filename</th>
                 <th>Size</th>
               </tr>
               {{FOREACH file;[[wordlists]]}}
               <tr>
                 <td>
-                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getAttackCmd()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('preprocessorLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getPreprocessorCommand()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                     <span class="fas fa-lock" aria-hidden="true"></span>
@@ -260,17 +269,26 @@
         </div>
       </div>
       <div id="other">
+        T: Task<br>
+        P: Preprocessor<br>
         <div class="card">
           <div class="table-responsive">
             <table class="table table-bordered">
               <tr>
+                <th>T</th>
+                <th>P</th>
                 <th>Filename</th>
                 <th>Size</th>
               </tr>
               {{FOREACH file;[[other]]}}
               <tr>
                 <td>
-                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getAttackCmd()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('preprocessorLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getPreprocessorCommand()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                     <span class="fas fa-lock" aria-hidden="true"></span>
