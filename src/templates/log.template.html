@@ -16,7 +16,7 @@
               <option value="error"{{IF [[level]] == 'error'}} selected{{ENDIF}}>error</option>
               <option value="fatal error"{{IF [[level]] == 'fatal error'}} selected{{ENDIF}}>fatal error</option>
             </select>&nbsp;&nbsp;
-            <input type='submit' class='btn btn-light' value='Show'>
+            <input type='submit' class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value='Show'>
           </form>
 			  </td>
 		  </tr>
@@ -28,7 +28,7 @@
 			  <th>Message</th>
 		  </tr>
 		  {{FOREACH entry;[[entries]]}}
-			  <tr style="background-color: #{{IF [[entry.getLevel()]] == 'information'}}5cb85c{{ENDIF}}{{IF [[entry.getLevel()]] == 'warning'}}ffff00{{ENDIF}}{{IF [[entry.getLevel()]] == 'error'}}d58512{{ENDIF}}{{IF [[entry.getLevel()]] == 'fatal error'}}d43f3a{{ENDIF}}">
+			  <tr style="background-color: #{{IF [[entry.getLevel()]] == 'information'}}397b39{{ENDIF}}{{IF [[entry.getLevel()]] == 'warning'}}b16a06{{ENDIF}}{{IF [[entry.getLevel()]] == 'error'}}8b0010{{ENDIF}}{{IF [[entry.getLevel()]] == 'fatal error'}}750404{{ENDIF}}">
 				  <td>[[entry.getId()]]</td>
 				  <td>[[date("d.m.Y - H:i:s", [[entry.getTime()]])]]</td>
 				  <td>[[entry.getLevel()]]</td>

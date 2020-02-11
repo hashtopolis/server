@@ -154,12 +154,15 @@
             </th>
           </tr>
           <tr>
-            <td>This is a PRINCE task:</td>
+            <td>Set as preprocessor task:</td>
             <td>
-              <select name="isPrince" class="form-control" title="Is PRINCE" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
-                <option value="0" {{IF [[copy.getIsPrince()]] == 0}} selected{{ENDIF}}>No</option>
-                <option value="1" {{IF [[copy.getIsPrince()]] == 1}} selected{{ENDIF}}>Yes</option>
-              </select>
+              <select name="usePreprocessor" class="form-control full-width" title="Preprocessor" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+                <option value="0" {{IF [[copy.getUsePreprocessor()]] == 0}} selected{{ENDIF}}>No</option>
+                {{FOREACH preprocessor;[[preprocessors]]}}
+                  <option value="[[preprocessor.getId()]]" {{IF [[copy.getUsePreprocessor()]] == [[preprocessor.getId()]]}} selected{{ENDIF}}>[[htmlentities([[preprocessor.getName()]], ENT_QUOTES, "UTF-8")]]</option>
+                {{ENDFOREACH}}
+              </select><br><br>
+              <input type="text" name="preprocessorCommand" id="preprocessorLine" placeholder="Command arguments without binary name and range settings" value="[[copy.getPreprocessorCommand()]]" class="form-control full-width" title="Preprocessor Command" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
             </td>
           </tr>
           <tr>
@@ -190,7 +193,7 @@
           </tr>
           <tr>
             <td colspan="2">
-              <input type="submit" class='btn btn-light' value="Create task">
+              <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Create task">
             </td>
           </tr>
         </table>
@@ -199,9 +202,9 @@
     <div class='col-md-4'>
       <div class='btn-toolbar my-1'>
         <div class='btn-group'>
-          <button id="ruleButton" class='btn btn-light' onclick="return toggleFiles('rules')">Rules</button>
-          <button id="wordlistButton" class='btn btn-light active' onclick="return toggleFiles('wordlists')">Wordlists</button>
-          <button id="otherButton" class='btn btn-light' onclick="return toggleFiles('other')">Other</button>
+          <button id="ruleButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="return toggleFiles('rules')">Rules</button>
+          <button id="wordlistButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active' onclick="return toggleFiles('wordlists')">Wordlists</button>
+          <button id="otherButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
       <div id="rules">
@@ -231,17 +234,26 @@
         </div>
       </div>
       <div id="wordlists">
+        T: Task<br>
+        P: Preprocessor<br>
         <div class="card">
           <div class="table-responsive">
             <table class="table table-bordered">
               <tr>
+                <th>T</th>
+                <th>P</th>
                 <th>Filename</th>
                 <th>Size</th>
               </tr>
               {{FOREACH file;[[wordlists]]}}
               <tr>
                 <td>
-                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getAttackCmd()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('preprocessorLine',this.checked,'[[file.getVal('file').getFilename()]]', 'wordlist');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getPreprocessorCommand()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                     <span class="fas fa-lock" aria-hidden="true"></span>
@@ -257,17 +269,26 @@
         </div>
       </div>
       <div id="other">
+        T: Task<br>
+        P: Preprocessor<br>
         <div class="card">
           <div class="table-responsive">
             <table class="table table-bordered">
               <tr>
+                <th>T</th>
+                <th>P</th>
                 <th>Filename</th>
                 <th>Size</th>
               </tr>
               {{FOREACH file;[[other]]}}
               <tr>
                 <td>
-                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('cmdLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getAttackCmd()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
+                  <input title="Add File" type="checkbox" name="adfile[]" value="[[file.getVal('file').getId()]]" onChange="assignFile('preprocessorLine',this.checked,'[[file.getVal('file').getFilename()]]', 'other');" {{IF [[file.getVal('checked')]] == 1 && strpos([[copy.getPreprocessorCommand()]], [[file.getVal('file').getFilename()]]) !== false}} checked{{ENDIF}}{{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} disabled{{ENDIF}}>
+                </td>
+                <td>
                   [[file.getVal('file').getFilename()]]
                   {{IF [[file.getVal('file').getIsSecret()]] == 1}}
                     <span class="fas fa-lock" aria-hidden="true"></span>
@@ -296,9 +317,9 @@
             other.style.display = "none";
             rule.style.visibility = "visible"; // or
             rule.style.display = "inline";
-            document.getElementById("ruleButton").className = "btn btn-light active";
-            document.getElementById("wordlistButton").className = "btn btn-light";
-            document.getElementById("otherButton").className = "btn btn-light";
+            document.getElementById("ruleButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active";
+            document.getElementById("wordlistButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("otherButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
           }
           else if(show === 'wordlists'){
             wordlist.style.visibility = "visible"; // or
@@ -307,9 +328,9 @@
             rule.style.display = "none";
             other.style.visibility = "hidden"; // or
             other.style.display = "none";
-            document.getElementById("ruleButton").className = "btn btn-light";
-            document.getElementById("wordlistButton").className = "btn btn-light active";
-            document.getElementById("otherButton").className = "btn btn-light";
+            document.getElementById("ruleButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("wordlistButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active";
+            document.getElementById("otherButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
           }
           else if (show === 'other') {
             other.style.visibility = "visible"; // or
@@ -318,9 +339,9 @@
             rule.style.display = "none";
             wordlist.style.visibility = "hidden"; // or
             wordlist.style.display = "none";
-            document.getElementById("ruleButton").className = "btn btn-light";
-            document.getElementById("wordlistButton").className = "btn btn-light";
-            document.getElementById("otherButton").className = "btn btn-light active";
+            document.getElementById("ruleButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("wordlistButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}";
+            document.getElementById("otherButton").className = "btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active";
           }
           return false;
         }

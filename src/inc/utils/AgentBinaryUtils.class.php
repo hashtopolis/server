@@ -58,16 +58,18 @@ class AgentBinaryUtils {
       throw new HTException("You cannot have two binaries with the same type!");
     }
     
-    $agentBinary->setType($type);
-    $agentBinary->setOperatingSystems($os);
-    $agentBinary->setFilename($filename);
-    $agentBinary->setVersion($version);
-    if($updateTrack != $agentBinary->getUpdateTrack()){
-      $agentBinary->setUpdateAvailable('');
+    if ($updateTrack != $agentBinary->getUpdateTrack()) {
+      Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, '');
     }
-    $agentBinary->setUpdateTrack($updateTrack);
+    Factory::getAgentBinaryFactory()->mset($agentBinary, [
+        AgentBinary::TYPE => $type,
+        AgentBinary::OPERATING_SYSTEMS => $os,
+        AgentBinary::FILENAME => $filename,
+        AgentBinary::VERSION => $version,
+        AgentBinary::UPDATE_TRACK => $updateTrack
+      ]
+    );
     
-    Factory::getAgentBinaryFactory()->update($agentBinary);
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Binary " . $agentBinary->getFilename() . " was updated!");
   }
   
@@ -83,8 +85,8 @@ class AgentBinaryUtils {
   
   /**
    * @param int $binaryId
-   * @throws HTException
    * @return AgentBinary
+   * @throws HTException
    */
   public static function getBinary($binaryId) {
     $agentBinary = Factory::getAgentBinaryFactory()->get($binaryId);
@@ -93,19 +95,19 @@ class AgentBinaryUtils {
     }
     return $agentBinary;
   }
-
+  
   /**
-   * @param int $binaryId 
-   * @throws HTException 
+   * @param int $binaryId
+   * @throws HTException
    */
-  public static function executeUpgrade($binaryId){
+  public static function executeUpgrade($binaryId) {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     // check if there is really an update available
-    if(!AgentBinaryUtils::checkUpdate($binaryId)){
+    if (!AgentBinaryUtils::checkUpdate($binaryId)) {
       throw new HTException("No update available!");
     }
     $track = $agentBinary->getUpdateTrack();
-
+    
     $extension = Util::extractFileExtension($agentBinary->getFilename());
     
     // download file to tmp directory
@@ -113,25 +115,23 @@ class AgentBinaryUtils {
     
     // download checksum
     Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
-
+    
     // check checksum
     $sum = hash_file("sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
     $check = file_get_contents(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
-    if($sum != $check){
+    if ($sum != $check) {
       throw new HTException("Checksum check for updated agent failed!");
     }
-
+    
     // move file to right place
     rename(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
     $sum = hash_file("sha256", dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
-    if($sum != $check){
+    if ($sum != $check) {
       throw new HTException("Failed to move new agent to right location!");
     }
-
+    
     // update version number of agent and reset flag
-    $agentBinary->setVersion($agentBinary->getUpdateAvailable());
-    $agentBinary->setUpdateAvailable('');
-    Factory::getAgentBinaryFactory()->update($agentBinary);
+    Factory::getAgentBinaryFactory()->mset($agentBinary, [AgentBinary::VERSION => $agentBinary->getUpdateAvailable(), AgentBinary::UPDATE_AVAILABLE => '']);
   }
   
   /**
@@ -139,11 +139,10 @@ class AgentBinaryUtils {
    * @return boolean|string
    * @throws HTException
    */
-  public static function checkUpdate($binaryId){
+  public static function checkUpdate($binaryId) {
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
     $update = AgentBinaryUtils::getAgentUpdate($agentBinary->getType(), $agentBinary->getUpdateTrack());
-    $agentBinary->setUpdateAvailable(($update)?$update:'');
-    Factory::getAgentBinaryFactory()->update($agentBinary);
+    Factory::getAgentBinaryFactory()->set($agentBinary, AgentBinary::UPDATE_AVAILABLE, ($update) ? $update : '');
     return $update;
   }
   
@@ -155,38 +154,39 @@ class AgentBinaryUtils {
    * @return string
    * @throws HTException
    */
-  public static function getLatestVersion($agent, $track){
+  public static function getLatestVersion($agent, $track) {
     $curl = curl_init();
     curl_setopt_array($curl, array(
         CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_URL => HTP_AGENT_ARCHIVE . $agent . '/' . $track . '/HEAD',
-    ));
+      )
+    );
     $resp = curl_exec($curl);
     $http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-    if($http_code != 200){
+    if ($http_code != 200) {
       throw new HTException("Invalid HTTP status code: $http_code");
     }
     curl_close($curl);
     return trim($resp);
   }
-
+  
   /**
-   * @param string $agent 
-   * @param string $track 
-   * @throws HTException 
+   * @param string $agent
+   * @param string $track
    * @return boolean|string
+   * @throws HTException
    */
-  public static function getAgentUpdate($agent, $track){
+  public static function getAgentUpdate($agent, $track) {
     $qF = new QueryFilter(AgentBinary::TYPE, $agent, "=");
     $agent = Factory::getAgentBinaryFactory()->filter([Factory::FILTER => $qF], true);
-    if($agent == null){
+    if ($agent == null) {
       throw new HTException("Invalid agent binary type!");
     }
     $latest = AgentBinaryUtils::getLatestVersion($agent->getType(), $track);
-    if(strlen($latest) == 0){
+    if (strlen($latest) == 0) {
       throw new HTException("Failed to retrieve latest version!");
     }
-    if(Util::versionComparison($agent->getVersion(), $latest) > 0){
+    if (Util::versionComparison($agent->getVersion(), $latest) > 0) {
       return $latest;
     }
     return false;

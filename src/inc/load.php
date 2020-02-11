@@ -39,6 +39,8 @@ foreach ($directories as $directory) {
 
 include(dirname(__FILE__) . "/protocol.php");
 
+include(dirname(__FILE__) . "/mask.php");
+
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");
 
@@ -47,6 +49,12 @@ UI::add('version', $VERSION);
 UI::add('host', $HOST);
 UI::add('gitcommit', Util::getGitCommit());
 UI::add('build', '');
+
+// Darkmode
+if (isset($_COOKIE['toggledarkmode']) && $_COOKIE['toggledarkmode'] == '1')
+  UI::add('toggledarkmode', 1);
+else
+  UI::add('toggledarkmode', 0);
 
 $updateExecuted = false;
 if($INSTALL){

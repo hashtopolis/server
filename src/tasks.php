@@ -8,6 +8,7 @@ use DBA\File;
 use DBA\FileTask;
 use DBA\JoinFilter;
 use DBA\OrderFilter;
+use DBA\Preprocessor;
 use DBA\QueryFilter;
 use DBA\Factory;
 
@@ -198,11 +199,12 @@ if (isset($_GET['id'])) {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=", Factory::getChunkFactory());
     $jF = new JoinFilter(Factory::getChunkFactory(), Chunk::AGENT_ID, Agent::AGENT_ID);
     $joinedAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    for ($i = 0; $i < sizeof($joinedAgents[Factory::getAgentFactory()->getModelName()]); $i++) {
+    /** @var $agents Agent[] */
+    $agents = $joinedAgents[Factory::getAgentFactory()->getModelName()];
+    for ($i = 0; $i < sizeof($agents); $i++) {
       /** @var $chunk Chunk */
       $chunk = $joinedAgents[Factory::getChunkFactory()->getModelName()][$i];
-      /** @var $agent Agent */
-      $agent = $joinedAgents[Factory::getAgentFactory()->getModelName()][$i];
+      $agent = $agents[$i];
       if ($allAgents->getVal($agent->getId()) == null) {
         $allAgents->addValue($agent->getId(), $agent);
         $agentObjects[] = $agent;
@@ -231,6 +233,15 @@ if (isset($_GET['id'])) {
     UI::add('chunkFilter', 0);
     UI::add('chunks', $activeChunks);
     UI::add('activeChunks', $activeChunksIds);
+  }
+  
+  if ($task->getUsePreprocessor()) {
+    try {
+      UI::add('preprocessor', PreprocessorUtils::getPreprocessor($task->getUsePreprocessor()));
+    }
+    catch (HTException $e) {
+      UI::printError("ERROR", "Failed to load preprocessor!");
+    }
   }
   
   $agents = Factory::getAgentFactory()->filter([]);
@@ -327,7 +338,18 @@ else if (isset($_GET['new'])) {
     $set->addValue('name', $list->getHashlistName());
     $lists[] = $set;
   }
+  $res = HashlistUtils::getSuperhashlists(Login::getInstance()->getUser());
+  foreach ($res as $list) {
+    $set = new DataSet();
+    $set->addValue('id', $list->getId());
+    $set->addValue('name', $list->getHashlistName());
+    $lists[] = $set;
+  }
   UI::add('lists', $lists);
+  
+  $oF = new OrderFilter(Preprocessor::NAME, "ASC");
+  $preprocessors = Factory::getPreprocessorFactory()->filter([Factory::ORDER => $oF]);
+  UI::add('preprocessors', $preprocessors);
   
   $origFiles = array();
   if ($origType == 1) {

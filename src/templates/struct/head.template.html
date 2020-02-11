@@ -10,21 +10,40 @@
 
 		<title>[[$APP_NAME]] [[version]] [ [[host]] ]{{IF strlen([[pageTitle]]) > 0}} - [[pageTitle]]{{ENDIF}}</title>
 
-		<link href="static/bootstrap.min.css" rel="stylesheet">
+		<link id="bootstrapCSS" href="static/bootstrap{{IF [[toggledarkmode]] > 0}}.dark{{ENDIF}}.min.css" rel="stylesheet">
+
 		<link href="static/navbar.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="static/datatables.min.css">
+		{{IF [[toggledarkmode]] > 0}}<link href="static/bootstrap.dark.custom.css" rel="stylesheet">{{ENDIF}}
+                <link rel="stylesheet" type="text/css" href="static/datatables.min.css">
 		<script type="text/javascript" src="jscolor/jscolor.js"></script>
 		<script src="static/jquery.min.js"></script>
+		<script src="static/js.cookie.min.js"></script>
 		<script src="static/popper.min.js"></script>
 		<script src="static/bootstrap.min.js"></script>
 		<script src="static/chartjs.bundle.min.js"></script>
-        <script type="text/javascript" src="static/datatables.min.js"></script>
+                <script type="text/javascript" src="static/datatables.min.js"></script>
 
 			{{IF [[autorefresh]] > 0}}
 				<meta http-equiv="refresh" content="[[autorefresh]]{{IF [[strlen([[autorefreshUrl]])]] > 0}}; URL=[[autorefreshUrl]]{{ENDIF}}">
 			{{ENDIF}}
 
 			<script type='text/javascript'>
+			/*$( window ).on( "load", function() {
+				if (typeof Cookies.get('toggledarkmode') === "undefined")
+					$('#bootstrapCSS').attr('href','static/bootstrap.dark.min.css');
+				else 
+					$('#bootstrapCSS').attr('href','static/bootstrap.min.css');
+			});*/
+
+			function darkMode() {
+				if (typeof Cookies.get('toggledarkmode') === "undefined")
+					Cookies.set('toggledarkmode', '1', { expires: 365 });
+				else
+					Cookies.remove('toggledarkmode');
+				
+				window.location.reload();
+			}
+
 			function sourceChange(valu) {
 				var pasteObject = document
 						.getElementById("pasteLine");

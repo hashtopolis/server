@@ -128,10 +128,10 @@
 	  "url":"https://example.com/getclient.php"
 	}
 	\end{verbatim}
-	with 'url' providing the download url for the new version.
+	with 'url' providing the download URL for the new version.
 	
 	\subsection*{Download Binary}
-	This command is used to either download the 7z binary to extract Hashcat, PRINCE, or to get information where to download the newest Hashcat/Cracker version and some additional informations about it.
+	This command is used to either download the 7z binary to extract Hashcat, Preprocessors, or to get information where to download the newest Hashcat/Cracker version and some additional informations about it.
 	\begin{verbatim}
 	{
 	  "action":"downloadBinary",
@@ -139,7 +139,7 @@
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
-	The server then will send a url where to downooad the binary:
+	The server then will send a URL where to download the binary:
 	\begin{verbatim}
 	{
 	  "action":"downloadBinary",
@@ -147,7 +147,7 @@
 	  "url":"https://example.com/getapp.php"
 	}
 	\end{verbatim}
-	The PRINCE download link must be configured on the server, then the client can retrieve the url.
+	The PRINCE download link must be configured on the server, then the client can retrieve the URL. This function is DEPRECATED.
 	\begin{verbatim}
 	{
 	  "action":"downloadBinary",
@@ -155,12 +155,34 @@
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
-	The server then will send a url where to download the binary:
+	The server then will send a URL where to download the binary:
 	\begin{verbatim}
 	{
 	  "action":"downloadBinary",
 	  "response":"SUCCESS",
 	  "url":"https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z"
+	}
+	\end{verbatim}
+	The preprocessor settings must be configured on the server, then the client can retrieve the required information.
+	\begin{verbatim}
+	{
+	  "action":"downloadBinary",
+	  "type":"preprocessor",
+	  "preprocessorId": 1,
+	  "token":"GHhgdf(/&"
+	}
+	\end{verbatim}
+	The server then will send a URL where to download the binary and the corresponding binary names to call. Also including the information which flags are used for the required chunking parameters:
+	\begin{verbatim}
+	{
+	  "action":"downloadBinary",
+	  "response":"SUCCESS",
+	  "url":"https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z"
+	  "name": "Prince",
+	  "executable": "pp.bin",
+	  "keyspaceCommand": "--keyspace",
+	  "skipCommand": "--limit",
+	  "limitCommand": "--skip"
 	}
 	\end{verbatim}
 	To download the Hashcat/Cracker binary, following command is used.
@@ -251,7 +273,7 @@
 	  "token":"GHhgdf(/&"
 	}
 	\end{verbatim}
-	The server will send then a task to do (benchType can be 'speed' or 'run'):
+	The server will send then a task to do (benchType can be 'speed' or 'run'). The preprocessor values are only filled with information is the flag is set to true, otherwise the values will be empty.
 	\begin{verbatim}
 	{
 	  "action":"getTask",
@@ -269,7 +291,9 @@
 	    "wordlist.txt"
 	  ],
 	  "keyspace":0,
-	  "usePrince": false,
+	  "usePreprocessor": true,
+	  "preprocessor": 2,
+	  "preprocessorCommand": "wordlist.txt"
 	  "enforcePipe": false,
 	  "slowHash": false,
 	  "useBrain": false

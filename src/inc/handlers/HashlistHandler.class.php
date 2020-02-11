@@ -105,6 +105,10 @@ class HashlistHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DHashlistAction::EDIT_NOTES_PERM);
           HashlistUtils::editNotes($_POST['hashlist'], $_POST['notes'], Login::getInstance()->getUser());
           break;
+        case DHashlistAction::SET_ACCESS_GROUP:
+          AccessControl::getInstance()->checkPermission(DHashlistAction::SET_ACCESS_GROUP_PERM);
+          HashlistUtils::changeAccessGroup($_POST['hashlist'], $_POST['accessGroupId'], Login::getInstance()->getUser());
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;

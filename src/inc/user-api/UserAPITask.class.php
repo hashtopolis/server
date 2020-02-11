@@ -46,6 +46,9 @@ class UserAPITask extends UserAPIBasic {
         case USectionTask::TASK_UNASSIGN_AGENT:
           $this->unassignAgent($QUERY);
           break;
+        case USectionTask::TASK_ASSIGN_AGENT:
+          $this->assignAgent($QUERY);
+          break;
         case USectionTask::DELETE_TASK:
           $this->deleteTask($QUERY);
           break;
@@ -182,6 +185,18 @@ class UserAPITask extends UserAPIBasic {
    * @param array $QUERY
    * @throws HTException
    */
+  private function assignAgent($QUERY) {
+    if (!isset($QUERY[UQueryTask::AGENT_ID]) | !isset($QUERY[UQueryTask::TASK_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    AgentUtils::assign($QUERY[UQueryTask::AGENT_ID], $QUERY[UQueryTask::TASK_ID], $this->user);
+    $this->sendSuccessResponse($QUERY);
+  }
+  
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
   private function setSmallTask($QUERY) {
     if (!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_SMALL])) {
       throw new HTException("Invalid query!");
@@ -292,7 +307,8 @@ class UserAPITask extends UserAPIBasic {
       UQueryTask::TASK_SKIP,
       UQueryTask::TASK_CRACKER_VERSION,
       UQueryTask::TASK_FILES,
-      UQueryTask::TASK_PRINCE
+      UQueryTask::TASK_PREPROCESSOR,
+      UQueryTask::TASK_PREPROCESSOR_COMMAND
     ];
     foreach ($toCheck as $input) {
       if (!isset($QUERY[$input])) {
@@ -309,7 +325,8 @@ class UserAPITask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_COLOR],
       $QUERY[UQueryTask::TASK_CPU_ONLY],
       $QUERY[UQueryTask::TASK_SMALL],
-      $QUERY[UQueryTask::TASK_PRINCE],
+      $QUERY[UQueryTask::TASK_PREPROCESSOR],
+      $QUERY[UQueryTask::TASK_PREPROCESSOR_COMMAND],
       $QUERY[UQueryTask::TASK_SKIP],
       $QUERY[UQueryTask::TASK_PRIORITY],
       $QUERY[UQueryTask::TASK_FILES],
@@ -415,7 +432,10 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::TASK_KEYSPACE => (int)$task->getKeyspace(),
       UResponseTask::TASK_DISPATCHED => (int)$task->getKeyspaceProgress(),
       UResponseTask::TASK_HASHLIST => (int)$taskWrapper->getHashlistId(),
-      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId()
+      UResponseTask::TASK_IMAGE => Util::buildServerUrl() . implode("/", $url) . "/taskimg.php?task=" . $task->getId(),
+      UResponseTask::TASK_USE_PREPROCESSOR => ($task->getUsePreprocessor() > 0) ? true : false,
+      UResponseTask::TASK_PREPROCESSOR_ID => ($task->getUsePreprocessor() > 0) ? $task->getUsePreprocessor() : 0,
+      UResponseTask::TASK_PREPROCESSOR_COMMAND => ($task->getUsePreprocessor() > 0) ? $task->getPreprocessorCommand() : ''
     ];
     
     $files = TaskUtils::getFilesOfTask($task);
@@ -481,13 +501,17 @@ class UserAPITask extends UserAPIBasic {
     foreach ($taskWrappers as $taskWrapper) {
       if ($taskWrapper->getTaskType() == DTaskTypes::NORMAL) {
         $task = TaskUtils::getTaskOfWrapper($taskWrapper->getId());
-        $taskList[] = [
+        $taskInfo = [
           UResponseTask::TASKS_ID => (int)$task->getId(),
           UResponseTask::TASKS_NAME => $task->getTaskName(),
           UResponseTask::TASKS_TYPE => 0,
           UResponseTask::TASKS_HASHLIST => (int)$taskWrapper->getHashlistId(),
           UResponseTask::TASKS_PRIORITY => (int)$taskWrapper->getPriority()
         ];
+        if (SConfig::getInstance()->getVal(DConfig::UAPI_SEND_TASK_IS_COMPLETE)) {
+          $taskInfo[UResponseTask::TASKS_IS_COMPLETE] = TaskUtils::isFinished($task);
+        }
+        $taskList[] = $taskInfo;
       }
       else {
         $taskList[] = [

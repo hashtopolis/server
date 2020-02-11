@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-md mb-4 navbar-light rounded" style="background-color: #f8f8f8; border: 1px solid #e7e7e7;">
-	<a href="#" class="navbar-left"><img src="static/logo.png" alt="logo" style="width: 40px; margin: 5px 5px 5px -5px;"></a><a class="navbar-brand" href="index.php">[[$APP_NAME]]</a>
+<nav class="navbar navbar-expand-md mb-4 {{IF [[toggledarkmode]] > 0}}navbar-dark{{ENDIF}}{{IF [[toggledarkmode]] <= 0}}navbar-light{{ENDIF}} rounded" style="{{IF [[toggledarkmode]] > 0}}background-color: #32383e; border: 1px solid #3e464a;{{ENDIF}}{{IF [[toggledarkmode]] <= 0}}background-color: #f8f8f8; border: 1px solid #e7e7e7;{{ENDIF}}">
+	<a href="#" class="navbar-left"><img src="{{IF [[toggledarkmode]] > 0}}static/logo_red.png{{ELSE}}static/logo.png{{ENDIF}}" alt="logo" style="width: 40px; margin: 5px 5px 5px -5px;"></a><a class="navbar-brand" href="index.php">[[$APP_NAME]]</a>
 	<button type="button" class="navbar-toggler"
 		data-toggle="collapse" data-target="#navbar" aria-expanded="false"
 		aria-controls="navbar" aria-label="Toggle navigation">
@@ -98,6 +98,7 @@
 						<a class="dropdown-item[[menu.isActive('config_binaries')]]" href="binaries.php">Agent Binaries</a>
 						<a class="dropdown-item[[menu.isActive('config_log')]]" href="log.php">Log</a>
 						<a class="dropdown-item[[menu.isActive('config_health')]]" href="health.php">Health Checks</a>
+						<a class="dropdown-item[[menu.isActive('config_preprocessors')]]" href="preprocessors.php">Preprocessors</a>
 					</div>
 				</li>
             {{ENDIF}}
@@ -114,6 +115,7 @@
 			{{ENDIF}}
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
+			<li class="nav-item"><a class="nav-link" href="#" onclick="darkMode();"><i class="fas {{IF [[toggledarkmode]] > 0}}fa-sun{{ELSE}}fa-moon{{ENDIF}}" aria-hidden="true"></i></a></li>
 			{{IF [[login.isLoggedin()]]}}
 				<li class="nav-item"><a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt" aria-hidden="true"></i></a></li>
 			{{ENDIF}}

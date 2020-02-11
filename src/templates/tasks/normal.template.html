@@ -6,7 +6,7 @@
     <a href="tasks.php?id=[[set.getVal('taskId')]]">[[set.getVal('taskName')]]</a>
     [[Util::tickdone([[set.getVal('sumProgress')]], [[set.getVal('keyspace')]])]]
     {{IF [[set.getVal('isActive')]]}}
-      <img src="static/active.gif" alt="Active">
+      <i class="fas fa-spinner fa-spin"></i>
     {{ENDIF}}
     {{IF [[set.getVal('isCpu')]] == 1}}
       <br>CPU only
@@ -74,7 +74,7 @@
         <input type="hidden" name="task" value="[[set.getVal('taskId')]]">
         <input type="hidden" name="csrf" value="[[csrf]]">
         <input type="text" class='form-control' style='width: 60px;' name="priority" size="4" value="[[set.getVal('priority')]]" title="Priority">
-        <button type="submit" class='btn btn-light mx-1' data-toggle="tooltip" data-placement="top" title="Set Priority"><i class="fas fa-save" aria-hidden="true"></i></button>
+        <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} mx-1' data-toggle="tooltip" data-placement="top" title="Set Priority"><i class="fas fa-save" aria-hidden="true"></i></button>
       </form>
     {{ELSE}}
       [[set.getVal('priority')]]
@@ -97,11 +97,11 @@
         </form>
       {{ENDIF}}
       <form class="float-right mx-1" action="tasks.php?new=true&copy=[[set.getVal('taskId')]]" method="post">
-        <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy to Task"><i class="fas fa-copy" aria-hidden="true"></i></button>
+        <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Copy to Task"><i class="fas fa-copy" aria-hidden="true"></i></button>
       </form>
       {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
 				<form class="float-right mx-1" action="pretasks.php?new=true&copyTask=[[set.getVal('taskId')]]" method="POST">
-          <button type="submit" class='btn btn-light' data-toggle="tooltip" data-placement="top" title="Copy to Pretask"><i class="fas fa-bookmark" aria-hidden="true"></i></button>
+          <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Copy to Pretask"><i class="fas fa-bookmark" aria-hidden="true"></i></button>
 				</form>
 			{{ENDIF}}
     {{ENDIF}}

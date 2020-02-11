@@ -36,7 +36,7 @@ class CrackerUtils {
       throw new HTException("This binary type already exists!");
     }
     else if (strlen($typeName) == 0) {
-      throw new HTException("Cracker name cannot be empmty!");
+      throw new HTException("Cracker name cannot be empty!");
     }
     $binaryType = new CrackerBinaryType(null, $typeName, 1);
     Factory::getCrackerBinaryTypeFactory()->save($binaryType);
@@ -47,8 +47,8 @@ class CrackerUtils {
    * @param string $name
    * @param string $url
    * @param int $binaryTypeId
-   * @throws HTException
    * @return CrackerBinaryType
+   * @throws HTException
    */
   public static function createBinary($version, $name, $url, $binaryTypeId) {
     $binaryType = CrackerUtils::getBinaryType($binaryTypeId);
@@ -91,7 +91,7 @@ class CrackerUtils {
     if (sizeof($check) > 0) {
       throw new HTException("There are tasks which use binaries of this cracker!");
     }
-
+    
     // check if there are pretasks using this type
     $qF2 = new QueryFilter(Pretask::CRACKER_BINARY_TYPE_ID, $binaryTypeId, "=");
     $check = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF2]);
@@ -109,25 +109,27 @@ class CrackerUtils {
    * @param string $name
    * @param string $url
    * @param int $binaryId
-   * @throws HTException
    * @return CrackerBinaryType
+   * @throws HTException
    */
   public static function updateBinary($version, $name, $url, $binaryId) {
     $binary = CrackerUtils::getBinary($binaryId);
     if (strlen($version) == 0 || strlen($name) == 0 || strlen($url) == 0) {
       throw new HTException("Please provide all information!");
     }
-    $binary->setBinaryName(htmlentities($name, ENT_QUOTES, "UTF-8"));
-    $binary->setDownloadUrl($url);
-    $binary->setVersion($version);
-    Factory::getCrackerBinaryFactory()->update($binary);
+    Factory::getCrackerBinaryFactory()->mset($binary, [
+        CrackerBinary::BINARY_NAME => htmlentities($name, ENT_QUOTES, "UTF-8"),
+        CrackerBinary::DOWNLOAD_URL => $url,
+        CrackerBinary::VERSION => $version
+      ]
+    );
     return Factory::getCrackerBinaryTypeFactory()->get($binary->getCrackerBinaryTypeId());
   }
   
   /**
    * @param int $binaryTypeId
-   * @throws HTException
    * @return CrackerBinaryType
+   * @throws HTException
    */
   public static function getBinaryType($binaryTypeId) {
     $binaryType = Factory::getCrackerBinaryTypeFactory()->get($binaryTypeId);
@@ -139,8 +141,8 @@ class CrackerUtils {
   
   /**
    * @param int $binaryId
-   * @throws HTException
    * @return CrackerBinary
+   * @throws HTException
    */
   public static function getBinary($binaryId) {
     $binary = Factory::getCrackerBinaryFactory()->get($binaryId);

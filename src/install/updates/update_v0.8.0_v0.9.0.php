@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
 
 use DBA\ConfigSection;
 use DBA\Factory;
@@ -8,6 +8,7 @@ use DBA\HashType;
 use DBA\AgentBinary;
 
 if (!isset($TEST)) {
+  /** @noinspection PhpIncludeInspection */
   require_once(dirname(__FILE__) . "/../../inc/db.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
@@ -52,13 +53,13 @@ if ($config != null) { // just to be sure we check
   Factory::getConfigFactory()->update($config);
 }
 
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_SERVER, '');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_SERVER, '');
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_PORT, '');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_PORT, '');
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_TYPE, 'HTTP');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_TYPE, 'HTTP');
 Factory::getConfigFactory()->save($config);
-$config = new Config(null, 7, DConfig::TELEGRAM_PROXY_ENABLE, '0');
+$config = new Config(null, 7, DConfig::NOTIFICATIONS_PROXY_ENABLE, '0');
 Factory::getConfigFactory()->save($config);
 echo "OK\n";
 

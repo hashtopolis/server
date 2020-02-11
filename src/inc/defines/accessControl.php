@@ -98,7 +98,7 @@ class DAccessControl {
       case DAccessControl::VIEW_SUPERTASK_ACCESS[0]:
         return "Can view preconfigured supertasks<br>Also granted with manage/create supertasks permission.";
       case DAccessControl::MANAGE_SUPERTASK_ACCESS:
-        return "Can manage preconfigured supertasks";
+        return "Can manage preconfigured supertasks.";
     }
     return "__" . $access . "__";
   }
@@ -139,6 +139,7 @@ class DViewControl {
   const USERS_VIEW_PERM          = DAccessControl::USER_CONFIG_ACCESS;
   const API_VIEW_PERM            = DAccessControl::USER_CONFIG_ACCESS;
   const HEALTH_VIEW_PERM         = DAccessControl::SERVER_CONFIG_ACCESS;
+  const PREPROCESSORS_VIEW_PERM  = DAccessControl::SERVER_CONFIG_ACCESS;
 }
 
 class DAccessControlAction {

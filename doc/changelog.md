@@ -1,3 +1,32 @@
+# v0.11.0 -> v0.x.x
+
+## Features
+
+- Generic preprocessor integration to allow inclusion of any preprocessor supporting chunking.
+- Dark mode added.
+
+## Bugfixes
+
+- Fixed increasing the superhashlist cracked count if there are cracks running one of the hashlists alone.
+- Fixed hidden superhashlists on task creation page due to filtering.
+- Fixed reporting result of health check which resulted in endless loop depending on the used IDs.
+- Fixed reporting outdated speed on tasks page when agent is put inactive directly.
+- Fixed recalculation of benchmark when changing chunk time.
+- Fixed discord notification to work again.
+- Fixed missing index structure on speed measurements table.
+
+## Enhancements
+
+- Agents can be assigned to tasks via user API.
+- Server can be configured to provide 'isComplete' flag on the user API when requesting all tasks.
+- Certain agent errors can be whitelisted to be completely ignored (for such who don't affect the running).
+- Hashlists can be moved to other Access Groups after creation.
+- Health checks can now be deleted.
+- API keys can get masked if admin is not assigned to them.
+- Agent data for temperature and util are split into separate graphs and have more different colors.
+- Files can now be selected for either the cracker task or the preprocessor and are filled in the corresponding field.
+- Included new Hashcat modes included in newest beta.
+
 # v0.10.1 -> v0.11.0
 
 ## Bugfixes

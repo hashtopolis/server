@@ -50,8 +50,7 @@ class AccessControlUtils {
         }
       }
     }
-    $group->setPermissions(json_encode($newArr));
-    Factory::getRightGroupFactory()->update($group);
+    Factory::getRightGroupFactory()->set($group, RightGroup::PERMISSIONS, json_encode($newArr));
     
     $acl = AccessControl::getInstance(null, $group->getId());
     $arr = $newArr;
@@ -65,8 +64,7 @@ class AccessControlUtils {
         $changes = true;
       }
     }
-    $group->setPermissions(json_encode($arr));
-    Factory::getRightGroupFactory()->update($group);
+    Factory::getRightGroupFactory()->set($group, RightGroup::PERMISSIONS, json_encode($arr));
     
     return $changes;
   }

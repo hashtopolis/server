@@ -21,10 +21,7 @@ abstract class APIBasic {
   }
   
   protected function updateAgent($action) {
-    $this->agent->setLastIp(Util::getIP());
-    $this->agent->setLastAct($action);
-    $this->agent->setLastTime(time());
-    Factory::getAgentFactory()->update($this->agent);
+    Factory::getAgentFactory()->mset($this->agent, [Agent::LAST_IP => Util::getIP(), Agent::LAST_ACT => $action, Agent::LAST_TIME => time()]);
   }
   
   public function sendErrorResponse($action, $msg) {

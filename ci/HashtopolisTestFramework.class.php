@@ -60,7 +60,7 @@ class HashtopolisTestFramework {
   /**
    * @param array $request
    * @param int $requestType
-   * @return array
+   * @return array|bool
    */
   public static function doRequest($request, $requestType = HashtopolisTestFramework::REQUEST_CLIENT) {
     switch ($requestType) {

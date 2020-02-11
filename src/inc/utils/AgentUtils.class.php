@@ -105,7 +105,23 @@ class AgentUtils {
     $axes = [];
     $yLabels = [DAgentStatsType::GPU_TEMP => 'Temp (Celsius)', DAgentStatsType::GPU_UTIL => 'Util (%)'];
     $position = 'left';
-    $colors = ["#FF0000", "#00CCCC", "#008000", "#CCCC00", "#FF9333", "#800080", "#0000FF"];
+    $colors = [
+        "#013220",
+        "#FF4500",
+        "#000080",
+        "#B03060",
+        "#008080",
+        "#A0522D",
+        "#FFA500",
+        "#FF00FF",
+        "#00FFFF",
+        "#FF0000",
+        "#00FF00",
+        "#A52A2A",
+        "#2E0854",
+        "#BDECB6",
+        "#ADD8E6"
+    ];
     foreach ($entries as $entry) {
       $found = false;
       foreach ($axes as $axis) {
@@ -123,7 +139,7 @@ class AgentUtils {
         $pos = (int)($i + sizeof($data) * array_search($entry->getStatType(), $types));
         if (!isset($datasets[$pos])) {
           $datasets[$pos] = array(
-            "label" => "Dev #" . ($i + 1) . " - " . $yLabels[$entry->getStatType()],
+            "label" => "Dev #" . ($i + 1),
             "fill" => false,
             "lineTension" => (SConfig::getInstance()->getVal(DConfig::AGENT_STAT_TENSION) == 1) ? 0 : 0.5,
             "yAxisID" => $entry->getStatType(),
@@ -149,9 +165,7 @@ class AgentUtils {
    */
   public static function setAgentCpu($agentId, $isCpuOnly, $user) {
     $agent = AgentUtils::getAgent($agentId, $user);
-    $isCpuOnly = ($isCpuOnly) ? 1 : 0;
-    $agent->setCpuOnly($isCpuOnly);
-    Factory::getAgentFactory()->update($agent);
+    Factory::getAgentFactory()->set($agent, Agent::CPU_ONLY, ($isCpuOnly) ? 1 : 0);
   }
   
   /**
@@ -178,8 +192,7 @@ class AgentUtils {
     if (strlen($name) == 0) {
       throw new HTException("Agent name cannot be empty!");
     }
-    $agent->setAgentName($name);
-    Factory::getAgentFactory()->update($agent);
+    Factory::getAgentFactory()->set($agent, Agent::AGENT_NAME, $name);
   }
   
   /**
@@ -198,7 +211,7 @@ class AgentUtils {
     
     if (AgentUtils::deleteDependencies($agent)) {
       Factory::getAgentFactory()->getDB()->commit();
-      Util::createLogEntry("User", (($user == null)?0:($user->getId())), DLogEntry::INFO, "Agent " . $name . " got deleted.");
+      Util::createLogEntry("User", (($user == null) ? 0 : ($user->getId())), DLogEntry::INFO, "Agent " . $name . " got deleted.");
     }
     else {
       Factory::getAgentFactory()->getDB()->rollBack();
@@ -228,10 +241,10 @@ class AgentUtils {
     
     $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentZapFactory()->massDeletion([Factory::FILTER => $qF]);
-
+    
     $qF = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
     Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => $qF]);
-
+    
     $qF = new QueryFilter(Speed::AGENT_ID, $agent->getId(), "=");
     Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
     
@@ -301,10 +314,7 @@ class AgentUtils {
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
         Factory::getAssignmentFactory()->delete($assignments[$i]);
       }
-      $assignment = $assignments[0];
-      $assignment->setTaskId($task->getId());
-      $assignment->setBenchmark($benchmark);
-      Factory::getAssignmentFactory()->update($assignment);
+      Factory::getAssignmentFactory()->mset($assignments[0], [Assignment::TASK_ID => $task->getId(), Assignment::BENCHMARK => $benchmark]);
     }
     else {
       $assignment = new Assignment(null, $task->getId(), $agent->getId(), $benchmark);
@@ -328,15 +338,14 @@ class AgentUtils {
     if ($ignore != 0 && $ignore != 1 && $ignore != 2) {
       throw new HTException("Invalid Ignore state!");
     }
-    $agent->setIgnoreErrors($ignore);
-    Factory::getAgentFactory()->update($agent);
+    Factory::getAgentFactory()->set($agent, Agent::IGNORE_ERRORS, $ignore);
   }
   
   /**
    * @param int $agentId
    * @param User $user
-   * @throws HTException
    * @return Agent
+   * @throws HTException
    */
   public static function getAgent($agentId, $user = null) {
     $agent = Factory::getAgentFactory()->get($agentId);
@@ -357,9 +366,7 @@ class AgentUtils {
    */
   public static function setTrusted($agentId, $trusted, $user) {
     $agent = AgentUtils::getAgent($agentId, $user);
-    $trusted = ($trusted) ? 1 : 0;
-    $agent->setIsTrusted($trusted);
-    Factory::getAgentFactory()->update($agent);
+    Factory::getAgentFactory()->set($agent, Agent::IS_TRUSTED, ($trusted) ? 1 : 0);
   }
   
   /**
@@ -371,29 +378,24 @@ class AgentUtils {
   public static function changeOwner($agentId, $ownerId, $user) {
     $agent = AgentUtils::getAgent($agentId, $user);
     if ($ownerId == 0) {
-      $agent->setUserId(null);
       $username = "NONE";
-      Factory::getAgentFactory()->update($agent);
-    }
-    else if (is_numeric($ownerId)) {
-      $owner = Factory::getUserFactory()->get(intval($ownerId));
-      if (!$owner) {
-        throw new HTException("Invalid user selected!");
-      }
-      $username = $user->getUsername();
-      $agent->setUserId($owner->getId());
+      Factory::getAgentFactory()->set($agent, Agent::USER_ID, null);
     }
     else {
-      $qF = new QueryFilter(User::USERNAME, $ownerId, "=");
-      $owner = Factory::getUserFactory()->filter([Factory::FILTER => $qF], true);
+      if (is_numeric($ownerId)) {
+        $owner = Factory::getUserFactory()->get(intval($ownerId));
+      }
+      else {
+        $qF = new QueryFilter(User::USERNAME, $ownerId, "=");
+        $owner = Factory::getUserFactory()->filter([Factory::FILTER => $qF], true);
+      }
       if (!$owner) {
         throw new HTException("Invalid user selected!");
       }
       $username = $user->getUsername();
-      $agent->setUserId($owner->getId());
+      Factory::getAgentFactory()->set($agent, Agent::USER_ID, $owner->getId());
     }
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Owner for agent " . $agent->getAgentName() . " was changed to " . $username);
-    Factory::getAgentFactory()->update($agent);
   }
   
   /**
@@ -407,8 +409,7 @@ class AgentUtils {
     if (Util::containsBlacklistedChars($cmdParameters)) {
       throw new HTException("Parameters must contain no blacklisted characters!");
     }
-    $agent->setCmdPars($cmdParameters);
-    Factory::getAgentFactory()->update($agent);
+    Factory::getAgentFactory()->set($agent, Agent::CMD_PARS, $cmdParameters);
   }
   
   /**
@@ -427,17 +428,13 @@ class AgentUtils {
       throw new HTException("No access to this agent!");
     }
     
-    if ($toggle && $agent->getIsActive() == 1) {
-      $agent->setIsActive(0);
-    }
-    else if ($toggle) {
-      $agent->setIsActive(1);
+    if ($toggle) {
+      $set = ($agent->getIsActive() == 1) ? 0 : 1;
     }
     else {
-      $active = ($active) ? 1 : 0;
-      $agent->setIsActive($active);
+      $set = ($active) ? 1 : 0;
     }
-    Factory::getAgentFactory()->update($agent);
+    Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, $set);
   }
   
   /**

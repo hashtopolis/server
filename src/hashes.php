@@ -73,11 +73,12 @@ else if (isset($_GET['chunk'])) {
   $jF1 = new JoinFilter(Factory::getTaskFactory(), Task::TASK_ID, Chunk::TASK_ID, Factory::getChunkFactory());
   $qF = new QueryFilter(Chunk::CHUNK_ID, $_GET['chunk'], "=", Factory::getChunkFactory());
   $joined = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF1]);
-  if (sizeof($joined[Factory::getChunkFactory()->getModelName()]) == null) {
+  /** @var $chunks Chunk[] */
+  $chunks = $joined[Factory::getChunkFactory()->getModelName()];
+  if (sizeof($chunks) == null) {
     UI::printError("ERROR", "Invalid chunk!");
   }
-  /** @var $chunk Chunk */
-  $chunk = $joined[Factory::getChunkFactory()->getModelName()][0];
+  $chunk = $chunks[0];
   $hashlists = Util::checkSuperHashlist(Factory::getHashlistFactory()->get(Factory::getTaskWrapperFactory()->get(Factory::getTaskFactory()->get($chunk->getTaskId())->getTaskWrapperId())->getHashlistId()));
   if ($hashlists[0]->getFormat() == DHashlistFormat::PLAIN) {
     $hashFactory = Factory::getHashFactory();

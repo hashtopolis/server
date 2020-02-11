@@ -17,20 +17,22 @@ class ChunkUtils {
     $disptolerance = 1 + SConfig::getInstance()->getVal(DConfig::DISP_TOLERANCE) / 100;
     
     DServerLog::log(DServerLog::TRACE, "Handling existing chunk...", [$task, $chunk, $assignment]);
-    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
+    $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     
     $agentChunkSize = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), 1, $task->getStaticChunks(), $task->getChunkSize());
     $agentChunkSizeMax = ChunkUtils::calculateChunkSize($task->getKeyspace(), $assignment->getBenchmark(), $task->getChunkTime(), $disptolerance, $task->getStaticChunks(), $task->getChunkSize());
     if (($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) && $agentChunkSizeMax >= $chunk->getLength()) {
       //chunk has not started yet
       DServerLog::log(DServerLog::TRACE, "Chunk did not start yet and is small enough to give it to agent", [$task, $chunk, $assignment]);
-      $chunk->setProgress($initialProgress);
-      $chunk->setDispatchTime(time());
-      $chunk->setSolveTime(0);
-      $chunk->setState(DHashcatStatus::INIT);
-      $chunk->setAgentId($assignment->getAgentId());
-      $chunk->setSpeed(0);
-      Factory::getChunkFactory()->update($chunk);
+      Factory::getChunkFactory()->mset($chunk, [
+          Chunk::PROGRESS => $initialProgress,
+          Chunk::DISPATCH_TIME => time(),
+          Chunk::SOLVE_TIME => 0,
+          Chunk::STATE => DHashcatStatus::INIT,
+          Chunk::AGENT_ID => $assignment->getAgentId(),
+          Chunk::SPEED => 0
+        ]
+      );
       return $chunk;
     }
     else if ($chunk->getCheckpoint() == $chunk->getSkip() || SConfig::getInstance()->getVal(DConfig::DISABLE_TRIMMING)) {
@@ -38,14 +40,16 @@ class ChunkUtils {
       DServerLog::log(DServerLog::TRACE, "Chunk has not started, but needs to be split", [$task, $chunk, $assignment]);
       $originalLength = $chunk->getLength();
       $firstPart = $chunk;
-      $firstPart->setLength($agentChunkSize);
-      $firstPart->setAgentId($assignment->getAgentId());
-      $firstPart->setDispatchTime(time());
-      $firstPart->setSolveTime(0);
-      $firstPart->setState(DHashcatStatus::INIT);
-      $firstPart->setProgress($initialProgress);
-      $firstPart->setSpeed(0);
-      Factory::getChunkFactory()->update($firstPart);
+      Factory::getChunkFactory()->mset($firstPart, [
+          Chunk::LENGTH => $agentChunkSize,
+          Chunk::AGENT_ID => $assignment->getAgentId(),
+          Chunk::DISPATCH_TIME => time(),
+          Chunk::SOLVE_TIME => 0,
+          Chunk::STATE => DHashcatStatus::INIT,
+          Chunk::PROGRESS => $initialProgress,
+          Chunk::SPEED => 0
+        ]
+      );
       $secondPart = new Chunk(null, $task->getId(), $firstPart->getSkip() + $firstPart->getLength(), $originalLength - $firstPart->getLength(), null, 0, 0, $firstPart->getSkip() + $firstPart->getLength(), $initialProgress, DHashcatStatus::INIT, 0, 0);
       $secondPart = Factory::getChunkFactory()->save($secondPart);
       DServerLog::log(DServerLog::TRACE, "Splitting done, resulting in two chunks", [$task, $assignment, $firstPart, $secondPart]);
@@ -55,10 +59,12 @@ class ChunkUtils {
       DServerLog::log(DServerLog::TRACE, "Chunk was started and reached a checkpoint", [$task, $chunk, $assignment]);
       if ($chunk->getLength() + $chunk->getSkip() - $chunk->getCheckpoint() == 0) {
         // special case when remaining chunk length gets 0
-        $chunk->setProgress(10000);
-        $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
-        $chunk->setSpeed(0);
-        Factory::getChunkFactory()->update($chunk);
+        Factory::getChunkFactory()->mset($chunk, [
+            Chunk::PROGRESS => 10000,
+            Chunk::STATE => DHashcatStatus::ABORTED_CHECKPOINT,
+            Chunk::SPEED => 0
+          ]
+        );
         DServerLog::log(DServerLog::TRACE, "Remaining part is 0 for some reason, finished chunk", [$task, $chunk]);
         return ChunkUtils::createNewChunk($task, $assignment);
       }
@@ -76,12 +82,14 @@ class ChunkUtils {
         0,
         0
       );
-      $chunk->setLength($chunk->getCheckpoint() - $chunk->getSkip());
-      $chunk->setProgress(10000);
-      $chunk->setState(DHashcatStatus::ABORTED_CHECKPOINT);
-      $chunk->setSpeed(0);
-      Factory::getChunkFactory()->update($chunk);
       $newChunk = Factory::getChunkFactory()->save($newChunk);
+      Factory::getChunkFactory()->mset($chunk, [
+          Chunk::LENGTH => $chunk->getCheckpoint() - $chunk->getSkip(),
+          Chunk::PROGRESS => 10000,
+          Chunk::STATE => DHashcatStatus::ABORTED_CHECKPOINT,
+          Chunk::SPEED => 0
+        ]
+      );
       DServerLog::log(DServerLog::TRACE, "Trimmed chunk and created new one of the remaining part", [$task, $chunk, $newChunk, $assignment]);
       return $newChunk;
     }
@@ -98,8 +106,7 @@ class ChunkUtils {
     
     // if we have set a skip keyspace we set the the current progress to the skip which was set initially
     if ($task->getSkipKeyspace() > $task->getKeyspaceProgress()) {
-      $task->setKeyspaceProgress($task->getSkipKeyspace());
-      Factory::getTaskFactory()->update($task);
+      Factory::getTaskFactory()->set($task, Task::KEYSPACE_PROGRESS, $task->getSkipKeyspace());
     }
     
     $remaining = $task->getKeyspace() - $task->getKeyspaceProgress();
@@ -113,7 +120,7 @@ class ChunkUtils {
       $length = $remaining;
     }
     Factory::getTaskFactory()->inc($task, Task::KEYSPACE_PROGRESS, $length);
-    $initialProgress = ($task->getIsPrince() || $task->getForcePipe())? null : 0;
+    $initialProgress = ($task->getUsePreprocessor() || $task->getForcePipe()) ? null : 0;
     $chunk = new Chunk(null, $task->getId(), $start, $length, $assignment->getAgentId(), time(), 0, $start, $initialProgress, DHashcatStatus::INIT, 0, 0);
     $chunk = Factory::getChunkFactory()->save($chunk);
     DServerLog::log(DServerLog::TRACE, "Created new chunk for task", [$task, $chunk, $assignment]);
@@ -127,8 +134,8 @@ class ChunkUtils {
    * @param float $tolerance
    * @param int $staticChunking
    * @param int $chunkSize
-   * @throws HTException
    * @return int
+   * @throws HTException
    */
   public static function calculateChunkSize($keyspace, $benchmark, $chunkTime, $tolerance = 1.0, $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     global $QUERY;

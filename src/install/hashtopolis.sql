@@ -144,7 +144,6 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (37, 1, 'ruleSplitSmallTasks', '0'),
   (38, 1, 'ruleSplitAlways', '0'),
   (39, 1, 'ruleSplitDisable', '0'),
-  (40, 1, 'princeLink', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z'),
   (41, 4, 'agentStatLimit', '100'),
   (42, 1, 'agentDataLifetime', '3600'),
   (43, 4, 'agentStatTension', '0'),
@@ -170,7 +169,9 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (72, 4, 'agentTempThreshold1', '70'),
   (73, 4, 'agentTempThreshold2', '80'),
   (74, 4, 'agentUtilThreshold1', '90'),
-  (75, 4, 'agentUtilThreshold2', '75');
+  (75, 4, 'agentUtilThreshold2', '75'),
+  (76, 3, 'uApiSendTaskIsComplete', '0'),
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -562,6 +563,26 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (20400, 'Python passlib pbkdf2-sha1', 0, 0),
   (20500, 'PKZIP Master Key', 0, 0),
   (20510, 'PKZIP Master Key (6 byte optimization)', 0, 0),
+  (20600, 'Oracle Transportation Management (SHA256)', 0, 0),
+  (20710, 'sha256(sha256($pass).$salt)', 1, 0),
+  (20711, 'AuthMe sha256', 0, 0),
+  (20800, 'sha256(md5($pass))', 0, 0),
+  (20900, 'md5(sha1($pass).md5($pass).sha1($pass))', 0, 0),
+  (21000, 'BitShares v0.x - sha512(sha512_bin(pass))', 0, 0),
+  (21100, 'sha1(md5($pass.$salt))', 1, 0),
+  (21200, 'md5(sha1($salt).md5($pass))', 1, 0),
+  (21300, 'md5($salt.sha1($salt.$pass))', 1, 0),
+  (21400, 'sha256(sha256_bin(pass))', 0, 0),
+  (21500, 'SolarWinds Orion', 0, 0),
+  (21600, 'Web2py pbkdf2-sha512', 0, 0),
+  (21700, 'Electrum Wallet (Salt-Type 4)', 0, 0),
+  (21800, 'Electrum Wallet (Salt-Type 5)', 0, 0),
+  (22000, 'WPA-PBKDF2-PMKID+EAPOL', 0, 0),
+  (22001, 'WPA-PMK-PMKID+EAPOL', 0, 0),
+  (22100, 'BitLocker', 0, 0),
+  (22200, 'Citrix NetScaler (SHA512)', 0, 0),
+  (22300, 'sha256($salt.$pass.$salt)', 1, 0),
+  (22400, 'AES Crypt (SHA256)', 0, 0),
   (99999, 'Plaintext', 0, 0);
 
 CREATE TABLE `LogEntry` (
@@ -665,11 +686,12 @@ CREATE TABLE `Task` (
   `crackerBinaryTypeId` INT(11)      NULL,
   `taskWrapperId`       INT(11)      NOT NULL,
   `isArchived`          TINYINT(4)   NOT NULL,
-  `isPrince`            TINYINT(4)   NOT NULL,
   `notes`               TEXT         NOT NULL,
   `staticChunks`        INT(11)      NOT NULL,
   `chunkSize`           BIGINT(20)   NOT NULL,
-  `forcePipe`           TINYINT(4)   NOT NULL
+  `forcePipe`           TINYINT(4)   NOT NULL,
+  `usePreprocessor`     TINYINT(4)   NOT NULL,
+  `preprocessorCommand` VARCHAR(256) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `TaskDebugOutput` (
@@ -764,6 +786,19 @@ CREATE TABLE `HealthCheckAgent` (
   `end`                BIGINT(20) NOT NULL,
   `errors`             TEXT       NOT NULL
 ) ENGINE=InnoDB;
+
+CREATE TABLE `Preprocessor` (
+  `preprocessorId`  INT(11)      NOT NULL,
+  `name`            VARCHAR(256) NOT NULL,
+  `url`             VARCHAR(512) NOT NULL,
+  `binaryName`      VARCHAR(256) NOT NULL,
+  `keyspaceCommand` VARCHAR(256) NULL,
+  `skipCommand`     VARCHAR(256) NULL,
+  `limitCommand`    VARCHAR(256) NULL
+) ENGINE=InnoDB;
+
+INSERT INTO `Preprocessor` ( `preprocessorId`, `name`, `url`, `binaryName`, `keyspaceCommand`, `skipCommand`, `limitCommand`) VALUES
+  (1, 'Prince', 'https://github.com/hashcat/princeprocessor/releases/download/v0.22/princeprocessor-0.22.7z', 'pp', '--keyspace', '--skip', '--limit');
 
 -- Add Indexes
 ALTER TABLE `AccessGroup`
@@ -900,7 +935,9 @@ ALTER TABLE `Session`
   ADD KEY `userId` (`userId`);
 
 ALTER TABLE `Speed`
-  ADD PRIMARY KEY (`speedId`);
+  ADD PRIMARY KEY (`speedId`),
+  ADD KEY `agentId` (`agentId`),
+  ADD KEY `taskId` (`taskId`);
 
 ALTER TABLE `StoredValue`
   ADD PRIMARY KEY (`storedValueId`);
@@ -934,6 +971,9 @@ ALTER TABLE `Zap`
   ADD PRIMARY KEY (`zapId`),
   ADD KEY `agentId` (`agentId`),
   ADD KEY `hashlistId` (`hashlistId`);
+
+ALTER TABLE `Preprocessor`
+  ADD PRIMARY KEY (`preprocessorId`);
 
 -- Add AUTO_INCREMENT for tables
 ALTER TABLE `AccessGroup`
@@ -1064,6 +1104,9 @@ ALTER TABLE `User`
 
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Preprocessor`
+  MODIFY `preprocessorId` INT(11) NOT NULL AUTO_INCREMENT;
 
 -- Add Constraints
 ALTER TABLE `AccessGroupAgent`

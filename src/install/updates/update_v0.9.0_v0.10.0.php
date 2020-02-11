@@ -1,10 +1,12 @@
-<?php
+<?php /** @noinspection SqlNoDataSourceInspection */
+
 use DBA\Config;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\AgentBinary;
 
 if (!isset($TEST)) {
+  /** @noinspection PhpIncludeInspection */
   require_once(dirname(__FILE__) . "/../../inc/conf.php");
   require_once(dirname(__FILE__) . "/../../inc/info.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");

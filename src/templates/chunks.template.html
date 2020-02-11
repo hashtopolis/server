@@ -41,7 +41,7 @@
           <td data-sort="[[chunk.getId()]]">
             [[chunk.getId()]]
             {{IF [[max([[chunk.getSolveTime()]], [[chunk.getDispatchTime()]])]] > [[time()]] - [[config.getVal('chunktimeout')]] && [[chunk.getProgress()]] < [[chunk.getLength()]] && [[chunk.getState()]] < 4}}
-              <img src="static/active.gif" alt="Active" title="[[Util::nicenum([[chunk.getSpeed()]], 100000, 1000)]]H/s">
+              <i class="fas fa-spinner fa-spin" title="[[Util::nicenum([[chunk.getSpeed()]], 100000, 1000)]]H/s"></i>
             {{ENDIF}}
           </td>
           <td class="num">[[chunk.getSkip()]]</td>

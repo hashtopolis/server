@@ -197,8 +197,7 @@ class Util {
         if (!$silent) {
           echo "update $type version... ";
         }
-        $binary->setVersion($version);
-        Factory::getAgentBinaryFactory()->update($binary);
+        Factory::getAgentBinaryFactory()->set($binary, AgentBinary::VERSION, $version);
         if (!$silent) {
           echo "OK";
         }
@@ -397,7 +396,7 @@ class Util {
     }
     
     $isActive = false;
-    if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getIsPrince() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
+    if (time() - $maxTime < SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) && ($progress < $task->getKeyspace() || $task->getUsePreprocessor() && $task->getKeyspace() == DPrince::PRINCE_KEYSPACE)) {
       $isActive = true;
     }
     return array($progress, $cracked, $isActive, sizeof($chunks), ($totalTimeSpent > 0) ? round($cracked * 60 / $totalTimeSpent, 2) : 0, $speed);
@@ -435,16 +434,13 @@ class Util {
    */
   public static function getChunkInfo($task) {
     $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
-    $cracked = 0;
-    foreach ($chunks as $chunk) {
-      $cracked += $chunk->getCracked();
-    }
+    $cracked = Factory::getChunkFactory()->sumFilter([Factory::FILTER => $qF], Chunk::CRACKED);
+    $numChunks = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
     
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => $qF]);
     
-    return array(sizeof($chunks), $cracked, $numAssignments);
+    return array($numChunks, $cracked, $numAssignments);
   }
   
   /**
@@ -521,7 +517,7 @@ class Util {
         $set->addValue('hashlistCracked', $hashlist->getCracked());
         $set->addValue('chunkTime', $task->getChunkTime());
         $set->addValue('isSecret', $hashlist->getIsSecret());
-        $set->addValue('isPrince', $task->getIsPrince());
+        $set->addValue('usePreprocessor', $task->getUsePreprocessor());
         $set->addValue('priority', $task->getPriority());
         $set->addValue('keyspace', $task->getKeyspace());
         $set->addValue('isActive', $taskInfo[2]);
@@ -586,8 +582,7 @@ class Util {
       $qF = new QueryFilter(AgentStat::TIME, time() - $lifetime, "<=");
       Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
       
-      $entry->setVal(time());
-      Factory::getStoredValueFactory()->update($entry);
+      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
     }
   }
   
@@ -612,8 +607,7 @@ class Util {
       
       Factory::getZapFactory()->massDeletion([Factory::FILTER => $zapFilter]);
       
-      $entry->setVal(time());
-      Factory::getStoredValueFactory()->update($entry);
+      Factory::getStoredValueFactory()->set($entry, StoredValue::VAL, time());
     }
   }
   
@@ -676,14 +670,27 @@ class Util {
    * @return Hashlist[] of all superhashlists belonging to the $list
    */
   public static function checkSuperHashlist($hashlist) {
-    if ($hashlist->getFormat() == 3) {
-      $hashlistJoinFilter = new JoinFilter(Factory::getHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
-      $superHashListFilter = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
-      $joined = Factory::getHashlistHashlistFactory()->filter([Factory::JOIN => $hashlistJoinFilter, Factory::FILTER => $superHashListFilter]);
-      $lists = $joined[Factory::getHashlistFactory()->getModelName()];
-      return $lists;
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+      $jF = new JoinFilter(Factory::getHashlistFactory(), HashlistHashlist::HASHLIST_ID, Hashlist::HASHLIST_ID);
+      $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $hashlist->getId(), "=");
+      $joined = Factory::getHashlistHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
+      return $joined[Factory::getHashlistFactory()->getModelName()];
     }
     return array($hashlist);
+  }
+  
+  /**
+   * @param $hashlist Hashlist
+   * @return Hashlist[] all superhashlists which the hashlist is part of
+   */
+  public static function getParentSuperHashlists($hashlist) {
+    if ($hashlist->getFormat() == DHashlistFormat::SUPERHASHLIST) {
+      return [];
+    }
+    $jF = new JoinFilter(Factory::getHashlistFactory(), HashlistHashlist::PARENT_HASHLIST_ID, Hashlist::HASHLIST_ID);
+    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=", Factory::getHashlistHashlistFactory());
+    $joined = Factory::getHashlistHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => $qF]);
+    return $joined[Factory::getHashlistFactory()->getModelName()];
   }
   
   /**
@@ -937,14 +944,13 @@ class Util {
       $num /= $divider;
       $r++;
     }
-    $rs = array(
+    $scales = array(
       "",
       "k",
       "M",
       "G"
     );
-    $return = Util::niceround($num, 2);
-    return $return . " " . $rs[$r];
+    return Util::niceround($num, 2) . " " . $scales[$r];
   }
   
   /**
@@ -967,8 +973,7 @@ class Util {
     else {
       $percentage = 0;
     }
-    $return = Util::niceround($percentage, $decs);
-    return $return;
+    return Util::niceround($percentage, $decs);
   }
   
   /**
@@ -1371,6 +1376,26 @@ class Util {
       $compressed[] = $device;
     }
     return $compressed;
+  }
+  
+  public static function getMinorVersion($version) {
+    $split = explode(".", $version);
+    return $split[0] . "." . $split[1];
+  }
+  
+  public static function databaseColumnExists($table, $column) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+    return $result->rowCount() > 0;
+  }
+  
+  public static function databaseTableExists($table) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW TABLES LIKE '$table';");
+    return $result->rowCount() > 0;
+  }
+  
+  public static function databaseIndexExists($table, $column) {
+    $result = Factory::getAgentFactory()->getDB()->query("SHOW INDEX FROM `$table` WHERE Column_name='$column'");
+    return $result->rowCount() > 0;
   }
 }
 

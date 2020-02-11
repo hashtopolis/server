@@ -28,7 +28,7 @@
 <div class='btn-toolbar'>
   <div class='btn-group'>
     {{FOREACH section;[[sectionConstants]]}}
-      <button class='btn btn-light{{IF [[section]] == [[currentSection]]}} active{{ENDIF}}' onclick="window.location='api.php?id=[[group.getId()]]&section=[[section]]'">[[ucfirst([[section]])]]</button>
+      <button class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}{{IF [[section]] == [[currentSection]]}} active{{ENDIF}}' onclick="window.location='api.php?id=[[group.getId()]]&section=[[section]]'">[[ucfirst([[section]])]]</button>
     {{ENDFOREACH}}
   </div>
 </div>
