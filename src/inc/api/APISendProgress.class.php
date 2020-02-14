@@ -235,12 +235,12 @@ class APISendProgress extends APIBasic {
           // save cracked wpa password
           // result sent: [a895f7d62ccc3e892fa9e9f9146232c1:]aef50f22801c:987bdcf9f950:8381533406003807685881523	hashcat!	6861736863617421	12
           $split = explode(":", $splitLine[0]);
-          if (sizeof($split) == 4) {
+          if (sizeof($split) == 4) { // this format was sent up to (and including) release 5.1.0
             $mac_ap = $split[1];
             $mac_cli = $split[2];
             $essid = $split[3];
           }
-          else {
+          else { // this format is used in the current state of hashcat
             $mac_ap = $split[0];
             $mac_cli = $split[1];
             $essid = $split[2];
