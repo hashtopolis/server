@@ -16,6 +16,7 @@
 	}
 
   var hashtypes = [[allHashtypes]];
+	var activated = false;
 
 	function hashtypeChange(){
     var id = $( "#hashtype" ).val();
@@ -25,8 +26,11 @@
     else{
         $("#salted").prop("checked", false);
     }
-    if(id === 2500 || id === 16800 || id === 16801){
+    if(parseInt(id) === 2500 || parseInt(id) === 16800 || parseInt(id) === 16801){
 			$("#hashlistFormat option[value='1']").prop('selected', true);
+			activated = true;
+		}else if(activated){
+			$("#hashlistFormat option[value='1']").prop('selected', false);
 		}
   }
 </script>
