@@ -252,7 +252,7 @@ class APISendProgress extends APIBasic {
             $mac_ap = $split[0];
             $mac_cli = $split[1];
           }
-          if (Util::startsWith('$HEX[', $essid) && Util::endsWith("]", $essid) && strlen($essid) % 2 == 0) {
+          if (Util::startsWith($essid, '$HEX[') && Util::endsWith($essid, "]") && strlen($essid) % 2 == 0) {
             $essid = substr($essid, 5, strlen($essid) - 6);
           }
           else if (sizeof($split) < 4) { // for the new formats, if the SSID is not given in hex, we need to convert it back, as the input is always in hex
