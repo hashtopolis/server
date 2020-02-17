@@ -881,7 +881,6 @@ class HashlistUtils {
               $mac_cli .= $data[$i];
             }
             $mac_cli = Util::bintohex($mac_cli);
-            // we cannot save the network name here, as on the submission we don't get this
             $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0, 0);
             Factory::getHashBinaryFactory()->save($hash);
             $added++;
@@ -895,16 +894,23 @@ class HashlistUtils {
               // in case the other format with * as separator was used, we convert it to : to be consistent with the newest format
               $line = str_replace("*", ":", $line);
             }
-            $values[] = new Hash(null, $hashlist->getId(), $line, "", "", 0, null, 0, 0);
+            $split = explode(":", $line);
+            $mac_ap = $split[1];
+            $mac_cli = $split[2];
+            if (sizeof($split) > 3) { // -m 16800
+              $network = $split[3];
+              $identification = $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network;
+            }
+            else { // -m 16801
+              $identification = $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli;
+            }
+            $hash = new HashBinary(null, $hashlist->getId(), $identification, Util::bintohex($line . "\n"), null, 0, null, 0, 0);
+            Factory::getHashBinaryFactory()->save($hash);
             $added++;
           }
         }
         fclose($file);
         unlink($tmpfile);
-        
-        if (sizeof($values) > 0) { // if we have PMKID hashes, save them all now
-          Factory::getHashFactory()->massSave($values);
-        }
         
         Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
