@@ -25,6 +25,9 @@
     else{
         $("#salted").prop("checked", false);
     }
+    if(id === 2500 || id === 16800 || id === 16801){
+    	$('#hashlistFormat').val('1');
+		}
   }
 </script>
 <form class='form-inline' action="hashlists.php" method="POST" enctype="multipart/form-data">
@@ -76,9 +79,9 @@
 			<tr>
 				<td>Hashlist format:</td>
 				<td>
-					<select class='form-control' name="format" onChange="formatChange(this.value);" title="Hashlist Format">
+					<select class='form-control' id='hashlistFormat' name="format" onChange="formatChange(this.value);" title="Hashlist Format">
 						<option value="0">Text file</option>
-						<option value="1">HCCAPX file</option>
+						<option value="1">HCCAPX file / PMKID hash</option>
 						<option value="2">Binary file (single hash)</option>
 					</select>
 					<span class="textopt">
@@ -109,7 +112,7 @@
 				<td>
 					<select name="accessGroupId" class="form-control" title="accessGroupId">
 						{{FOREACH accessGroup;[[accessGroups]]}}
-						<option value="[[accessGroup.getId()]]">[[accessGroup.getGroupName()]]</option>
+							<option value="[[accessGroup.getId()]]">[[accessGroup.getGroupName()]]</option>
 						{{ENDFOREACH}}
 					</select>
 				</td>
