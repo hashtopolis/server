@@ -848,44 +848,70 @@ class HashlistUtils {
         break;
       case DHashlistFormat::WPA:
         $added = 0;
+        $values = [];
         while (!feof($file)) {
-          $data = fread($file, 393);
-          if (strlen($data) == 0) {
-            break;
-          }
-          if (strlen($data) != 393) {
-            UI::printError("ERROR", "Data file only contains " . strlen($data) . " bytes!");
-          }
-          // get the SSID
-          $network = "";
-          for ($i = 10; $i < 42; $i++) {
-            $byte = $data[$i];
-            if ($byte != "\x00") {
-              $network .= $byte;
-            }
-            else {
+          if ($hashlist->getHashTypeId() == 2500) { // HCCAPX hashes
+            $data = fread($file, 393);
+            if (strlen($data) == 0) {
               break;
             }
+            if (strlen($data) != 393) {
+              UI::printError("ERROR", "Data file only contains " . strlen($data) . " bytes!");
+            }
+            // get the SSID
+            $network = "";
+            for ($i = 10; $i < 42; $i++) {
+              $byte = $data[$i];
+              if ($byte != "\x00") {
+                $network .= $byte;
+              }
+              else {
+                break;
+              }
+            }
+            // get the AP MAC
+            $mac_ap = "";
+            for ($i = 59; $i < 65; $i++) {
+              $mac_ap .= $data[$i];
+            }
+            $mac_ap = Util::bintohex($mac_ap);
+            // get the Client MAC
+            $mac_cli = "";
+            for ($i = 97; $i < 103; $i++) {
+              $mac_cli .= $data[$i];
+            }
+            $mac_cli = Util::bintohex($mac_cli);
+            $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . Util::bintohex($network), Util::bintohex($data), null, 0, null, 0, 0);
+            Factory::getHashBinaryFactory()->save($hash);
+            $added++;
           }
-          // get the AP MAC
-          $mac_ap = "";
-          for ($i = 59; $i < 65; $i++) {
-            $mac_ap .= $data[$i];
+          else { // PMKID hashes
+            $line = trim(fgets($file));
+            if (strlen($line) == 0) {
+              continue;
+            }
+            if (strpos($line, "*") !== false) {
+              // in case the other format with * as separator was used, we convert it to : to be consistent with the newest format
+              $line = str_replace("*", ":", $line);
+            }
+            $split = explode(":", $line);
+            $mac_ap = $split[1];
+            $mac_cli = $split[2];
+            if (sizeof($split) > 3) { // -m 16800
+              $network = $split[3];
+              $identification = $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network;
+            }
+            else { // -m 16801
+              $identification = $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli;
+            }
+            $hash = new HashBinary(null, $hashlist->getId(), $identification, Util::bintohex($line . "\n"), null, 0, null, 0, 0);
+            Factory::getHashBinaryFactory()->save($hash);
+            $added++;
           }
-          $mac_ap = Util::bintohex($mac_ap);
-          // get the Client MAC
-          $mac_cli = "";
-          for ($i = 97; $i < 103; $i++) {
-            $mac_cli .= $data[$i];
-          }
-          $mac_cli = Util::bintohex($mac_cli);
-          // we cannot save the network name here, as on the submission we don't get this
-          $hash = new HashBinary(null, $hashlist->getId(), $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $network, Util::bintohex($data), null, 0, null, 0, 0);
-          Factory::getHashBinaryFactory()->save($hash);
-          $added++;
         }
         fclose($file);
         unlink($tmpfile);
+        
         Factory::getHashlistFactory()->set($hashlist, Hashlist::HASH_COUNT, $added);
         Util::createLogEntry("User", $user->getId(), DLogEntry::INFO, "New Hashlist created: " . $hashlist->getHashlistName());
         

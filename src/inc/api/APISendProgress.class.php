@@ -232,22 +232,39 @@ class APISendProgress extends APIBasic {
           }
           break;
         case DHashlistFormat::WPA:
-          // save cracked wpa password
-          // result sent: [a895f7d62ccc3e892fa9e9f9146232c1:]aef50f22801c:987bdcf9f950:8381533406003807685881523	hashcat!	6861736863617421	12
+          // save cracked wpa / pmkid password
+          // possible results:
+          // HCCAPX:        [a895f7d62ccc3e892fa9e9f9146232c1:]aef50f22801c:987bdcf9f950:8381533406003807685881523	hashcat!	6861736863617421	12
+          // PMKID (16800): 4604ba734d4e:89acf0e761f4:$HEX[ed487162465a774bfba60eb603a39f3a]        hashcat!        6861736863617421        31
+          // PMKID (16801): 4604ba734d4e:89acf0e761f4       5b13d4babb3714ccc62c9f71864bc984efd6a55f237c7a87fc2151e1ca658a9-        3562313364346261626233373134636363363263396637313836346263393834656664366135356632333763376138376663323135316531636136353861392d   14
           $split = explode(":", $splitLine[0]);
-          if (sizeof($split) == 4) { // this format was sent up to (and including) release 5.1.0
+          if (sizeof($split) == 4) { // this format was sent up to (and including) release 5.1.0 for -m 2500
             $mac_ap = $split[1];
             $mac_cli = $split[2];
             $essid = $split[3];
           }
-          else { // this format is used in the current state of hashcat
+          else if (sizeof($split) == 3) { // this format is used in the current state of hashcat for -m 2500,16800
             $mac_ap = $split[0];
             $mac_cli = $split[1];
             $essid = $split[2];
           }
+          else { // this format is used for -m 16801
+            $mac_ap = $split[0];
+            $mac_cli = $split[1];
+          }
+          if (Util::startsWith($essid, '$HEX[') && Util::endsWith($essid, "]") && strlen($essid) % 2 == 0) {
+            $essid = substr($essid, 5, strlen($essid) - 6);
+          }
+          else if (sizeof($split) < 4) { // for the new formats, if the SSID is not given in hex, we need to convert it back, as the input is always in hex
+            $essid = Util::strToHex($essid);
+          }
+          $identification = $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli;
+          if (sizeof($split) > 2) {
+            $identification .= SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $essid;
+          }
           $plain = $splitLine[1];
           $crackPos = $splitLine[3];
-          $qF1 = new QueryFilter(HashBinary::ESSID, $mac_ap . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $mac_cli . SConfig::getInstance()->getVal(DConfig::FIELD_SEPARATOR) . $essid, "=");
+          $qF1 = new QueryFilter(HashBinary::ESSID, $identification, "=");
           $qF2 = new QueryFilter(HashBinary::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
           if (sizeof($hashes) == 0) {

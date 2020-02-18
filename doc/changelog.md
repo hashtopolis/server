@@ -27,6 +27,7 @@
 - Files can now be selected for either the cracker task or the preprocessor and are filled in the corresponding field.
 - Included new Hashcat modes included in newest beta.
 - Adjusted to new format of Hashcat printing cracked WPA hashes.
+- Adjusted to PMKID handling of Hashcat.
 
 # v0.10.1 -> v0.11.0
 

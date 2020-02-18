@@ -16,6 +16,7 @@
 	}
 
   var hashtypes = [[allHashtypes]];
+	var activated = false;
 
 	function hashtypeChange(){
     var id = $( "#hashtype" ).val();
@@ -25,6 +26,12 @@
     else{
         $("#salted").prop("checked", false);
     }
+    if(parseInt(id) === 2500 || parseInt(id) === 16800 || parseInt(id) === 16801){
+			$("#hashlistFormat option[value='1']").prop('selected', true);
+			activated = true;
+		}else if(activated){
+			$("#hashlistFormat option[value='1']").prop('selected', false);
+		}
   }
 </script>
 <form class='form-inline' action="hashlists.php" method="POST" enctype="multipart/form-data">
@@ -76,9 +83,9 @@
 			<tr>
 				<td>Hashlist format:</td>
 				<td>
-					<select class='form-control' name="format" onChange="formatChange(this.value);" title="Hashlist Format">
+					<select class='form-control' id='hashlistFormat' name="format" onChange="formatChange(this.value);" title="Hashlist Format">
 						<option value="0">Text file</option>
-						<option value="1">HCCAPX file</option>
+						<option value="1">HCCAPX file / PMKID hash</option>
 						<option value="2">Binary file (single hash)</option>
 					</select>
 					<span class="textopt">
@@ -109,7 +116,7 @@
 				<td>
 					<select name="accessGroupId" class="form-control" title="accessGroupId">
 						{{FOREACH accessGroup;[[accessGroups]]}}
-						<option value="[[accessGroup.getId()]]">[[accessGroup.getGroupName()]]</option>
+							<option value="[[accessGroup.getId()]]">[[accessGroup.getGroupName()]]</option>
 						{{ENDFOREACH}}
 					</select>
 				</td>
