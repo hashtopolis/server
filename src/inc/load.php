@@ -28,7 +28,8 @@ require_once(dirname(__FILE__) . "/handlers/Handler.class.php");
 require_once(dirname(__FILE__) . "/notifications/Notification.class.php");
 require_once(dirname(__FILE__) . "/api/APIBasic.class.php");
 require_once(dirname(__FILE__) . "/user-api/UserAPIBasic.class.php");
-$directories = array('handlers', 'api', 'defines', 'utils', 'notifications', 'user-api');
+require_once(dirname(__FILE__) . "/setup/HashtopolisSetup.class.php");
+$directories = array('handlers', 'api', 'defines', 'utils', 'notifications', 'user-api', 'setup');
 foreach ($directories as $directory) {
   $dir = scandir(dirname(__FILE__) . "/$directory/");
   foreach ($dir as $entry) {
