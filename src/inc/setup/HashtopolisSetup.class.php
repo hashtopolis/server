@@ -1,8 +1,8 @@
 <?php
 
 abstract class HashtopolisSetup {
-  protected static $applicableTested = false;
-  protected static $applicableCache  = false;
+  protected $applicableTested = false;
+  protected $applicableCache  = false;
   
   private static $instances = [];
   
@@ -24,16 +24,16 @@ abstract class HashtopolisSetup {
   abstract function getDescription();
   
   protected function isApplicableTested() {
-    return self::$applicableTested;
+    return $this->applicableTested;
   }
   
   protected function getApplicableTestCache() {
-    return self::$applicableCache;
+    return $this->applicableCache;
   }
   
   protected function setApplicableResult($flag) {
-    self::$applicableTested = true;
-    self::$applicableCache = $flag;
+    $this->applicableTested = true;
+    $this->applicableCache = $flag;
   }
   
   /**

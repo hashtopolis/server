@@ -53,7 +53,7 @@
 							<input type="hidden" name="action" value="[[$DSetupAction::EXECUTE_SETUP]]">
 							<input type="hidden" name="identifier" value="[[cleanup.getIdentifier()]]">
 							<input type="hidden" name="csrf" value="[[csrf]]">
-							<button type="submit" class='btn btn-warning' data-toggle="tooltip" data-placement="top" title="Run"{{IF ![[cleanup.isApplicable()]]}} disabled{{ENDIF}}><i class="fas fa-power-off" aria-hidden="true"></i></button>
+							<button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Run"{{IF ![[cleanup.isApplicable()]]}} disabled{{ENDIF}}><i class="fas fa-power-off" aria-hidden="true"></i></button>
 						</form>
 					</td>
 				</tr>
