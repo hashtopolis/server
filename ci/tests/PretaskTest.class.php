@@ -4,12 +4,12 @@ class PretaskTest extends HashtopolisTest {
   protected $minVersion = "0.7.0";
   protected $maxVersion = "master";
   protected $runType    = HashtopolisTest::RUN_FAST;
-
+  
   public function init($version) {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing " . $this->getTestName() . "...");
     parent::init($version);
   }
-
+  
   public function run() {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
     $this->testListPretasks([]);
@@ -60,7 +60,7 @@ class PretaskTest extends HashtopolisTest {
     $this->testListPretasks([2 => ['name' => "Pretask #2", 'priority' => 0], 3 => ['name' => "Pretask #3", 'priority' => 0]]);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
-
+  
   private function testDeletePretask($pretaskId, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -79,7 +79,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testDeletePretask($pretaskId,$assert)");
     }
   }
-
+  
   private function testSetPretaskSmall($pretaskId, $isSmall, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -99,7 +99,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testSetPretaskSmall($pretaskId,$isSmall,$assert)");
     }
   }
-
+  
   private function testSetPretaskCpuOnly($pretaskId, $isCpuOnly, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -119,7 +119,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testSetPretaskCpuOnly($pretaskId,$isCpuOnly,$assert)");
     }
   }
-
+  
   private function testSetPretaskChunksize($pretaskId, $chunksize, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -139,7 +139,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testSetPretaskChunksize($pretaskId,$chunksize,$assert)");
     }
   }
-
+  
   private function testSetPretaskColor($pretaskId, $color, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -159,7 +159,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testSetPretaskColor($pretaskId,$color,$assert)");
     }
   }
-
+  
   private function testSetPretaskName($pretaskId, $name, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -179,7 +179,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testSetPretaskName($pretaskId,$name,$assert)");
     }
   }
-
+  
   private function testSetPretaskPriority($pretaskId, $priority, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -199,8 +199,8 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testChangePassword($pretaskId,$priority,$assert)");
     }
   }
-
-  private function testListPretasks($data, $assert = true){
+  
+  private function testListPretasks($data, $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
       "request" => "listPretasks",
@@ -223,7 +223,7 @@ class PretaskTest extends HashtopolisTest {
         return;
       }
       foreach ($response['pretasks'] as $pretask) {
-        foreach($data[$pretask['pretaskId']] as $key => $val){
+        foreach ($data[$pretask['pretaskId']] as $key => $val) {
           if (!array_key_exists($key, $pretask) || $val != $pretask[$key]) {
             $this->testFailed("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)", "Response OK, but wrong content");
             return;
@@ -233,7 +233,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testListPretasks([" . HashtopolisTest::multiImplode(", ", $data) . "],$assert)");
     }
   }
-
+  
   private function testCreatePretask($name, $cmd, $assert = true, $chunksize = 600, $statusTimer = 5, $benchmarkType = "speed", $crackerTypeId = 1, $files = [], $priority = 0, $color = "", $isCpuOnly = false, $isSmall = false) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -262,7 +262,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testCreatePretask($name,$cmd,$chunksize,$statusTimer,$benchmarkType,$crackerTypeId,[" . implode(",", $files) . "],$priority,$color,$isCpuOnly,$isSmall,$assert)");
     }
   }
-
+  
   private function testGetPretask($pretaskId, $data, $files = [], $assert = true) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "pretask",
@@ -297,7 +297,7 @@ class PretaskTest extends HashtopolisTest {
       $this->testSuccess("PretaskTest:testGetPretask([" . implode(", ", $data) . "],[" . implode(", ", $files) . "],$assert)");
     }
   }
-
+  
   public function getTestName() {
     return "Pretask Test";
   }
