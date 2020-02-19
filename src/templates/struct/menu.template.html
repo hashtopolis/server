@@ -99,10 +99,13 @@
 						<a class="dropdown-item[[menu.isActive('config_log')]]" href="log.php">Log</a>
 						<a class="dropdown-item[[menu.isActive('config_health')]]" href="health.php">Health Checks</a>
 						<a class="dropdown-item[[menu.isActive('config_preprocessors')]]" href="preprocessors.php">Preprocessors</a>
+						{{IF [[config.getVal([[$DConfig::ENABLE_DEVELOPMENT]])]]}}
+							<a class="dropdown-item[[menu.isActive('config_dev')]]" href="development.php">Development Tool</a>
+						{{ENDIF}}
 					</div>
 				</li>
-            {{ENDIF}}
-            {{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
+      {{ENDIF}}
+			{{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
 				<li class="nav-item dropdown[[menu.isActive('users', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownUsers" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
 					<div class="dropdown-menu" aria-labelledby="dropdownUsers">
 						<a class="dropdown-item[[menu.isActive('users_list')]]" href="users.php">All users</a>

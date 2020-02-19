@@ -85,15 +85,16 @@ class DConfig {
   const AGENT_UTIL_THRESHOLD_2 = "agentUtilThreshold2";
   
   // Section: Server
-  const BASE_URL          = "baseUrl";
-  const BASE_HOST         = "baseHost";
-  const EMAIL_SENDER      = "emailSender";
-  const EMAIL_SENDER_NAME = "emailSenderName";
-  const CONTACT_EMAIL     = "contactEmail";
-  const VOUCHER_DELETION  = "voucherDeletion";
-  const S_NAME            = "jeSuisHashtopussy";
-  const SERVER_LOG_LEVEL  = "serverLogLevel";
-  const ALLOW_DEREGISTER  = "allowDeregister";
+  const BASE_URL           = "baseUrl";
+  const BASE_HOST          = "baseHost";
+  const EMAIL_SENDER       = "emailSender";
+  const EMAIL_SENDER_NAME  = "emailSenderName";
+  const CONTACT_EMAIL      = "contactEmail";
+  const VOUCHER_DELETION   = "voucherDeletion";
+  const S_NAME             = "jeSuisHashtopussy";
+  const SERVER_LOG_LEVEL   = "serverLogLevel";
+  const ALLOW_DEREGISTER   = "allowDeregister";
+  const ENABLE_DEVELOPMENT = "enableDevelopment";
   
   // Section: Multicast
   const MULTICAST_ENABLE    = "multicastEnable";
@@ -272,6 +273,8 @@ class DConfig {
         return DConfigType::TICKBOX;
       case DConfig::HC_ERROR_IGNORE:
         return DConfigType::STRING_INPUT;
+      case DConfig::ENABLE_DEVELOPMENT:
+        return DConfigType::TICKBOX;
     }
     return DConfigType::STRING_INPUT;
   }
@@ -403,9 +406,11 @@ class DConfig {
       case DConfig::AGENT_UTIL_THRESHOLD_2:
         return "Util value where an agent is shown in red on the agent status page, if below.";
       case DConfig::UAPI_SEND_TASK_IS_COMPLETE:
-        return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)";
+        return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance).";
       case DConfig::HC_ERROR_IGNORE:
-        return "Ignore error messages from crackers which contain given strings (multiple values separated by comma)";
+        return "Ignore error messages from crackers which contain given strings (multiple values separated by comma).";
+      case DConfig::ENABLE_DEVELOPMENT:
+        return "Activate development tools page to support certain setup/test actions.";
     }
     return $config;
   }

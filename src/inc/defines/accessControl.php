@@ -140,6 +140,7 @@ class DViewControl {
   const API_VIEW_PERM            = DAccessControl::USER_CONFIG_ACCESS;
   const HEALTH_VIEW_PERM         = DAccessControl::SERVER_CONFIG_ACCESS;
   const PREPROCESSORS_VIEW_PERM  = DAccessControl::SERVER_CONFIG_ACCESS;
+  const DEVELOPMENT_VIEW_PERM    = DAccessControl::SERVER_CONFIG_ACCESS;
 }
 
 class DAccessControlAction {
