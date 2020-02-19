@@ -32,6 +32,9 @@ abstract class HashtopolisTest {
   ];
   
   public function initAndUpgrade($fromVersion) {
+    // these global variables are needed in the included update.php script
+    global $VERSION, $BUILD, $TEST;
+    
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
     $this->init($fromVersion);
     
