@@ -21,8 +21,19 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-// load setups
-UI::add('setups', HashtopolisSetup::getInstances());
+$setups = [];
+$cleanups = [];
+foreach (HashtopolisSetup::getInstances() as $instance) {
+  if ($instance->getSetupType() == DSetupType::REMOVAL) {
+    $cleanups[] = $instance;
+  }
+  else {
+    $setups[] = $instance;
+  }
+}
+
+UI::add('setups', $setups);
+UI::add('cleanups', $cleanups);
 UI::add('pageTitle', "Development Tools");
 
 echo Template::getInstance()->render(UI::getObjects());

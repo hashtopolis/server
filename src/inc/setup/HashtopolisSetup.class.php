@@ -46,6 +46,7 @@ abstract class HashtopolisSetup {
    * Executes this specific action
    * @param $options array
    * @return bool true on success
+   * @throws HTException
    */
   public abstract function execute($options);
 }
