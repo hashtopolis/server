@@ -47,3 +47,5 @@ class SetupAccessGroups extends HashtopolisSetup {
     return true;
   }
 }
+
+HashtopolisSetup::add('SetupAccessGroups', new SetupAccessGroups());

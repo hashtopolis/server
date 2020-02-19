@@ -8,6 +8,19 @@ abstract class HashtopolisSetup {
   protected static $applicableTested = false;
   protected static $applicableCache  = false;
   
+  private static $instances = [];
+  
+  public static function add($name, $instance) {
+    self::$instances[$name] = $instance;
+  }
+  
+  /**
+   * @return HashtopolisSetup[]
+   */
+  public static function getInstances() {
+    return self::$instances;
+  }
+  
   public function getIdentifier() {
     return self::$identifier;
   }

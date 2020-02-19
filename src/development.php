@@ -21,6 +21,8 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
+// load setups
+UI::add('setups', HashtopolisSetup::getInstances());
 UI::add('pageTitle', "Development Tools");
 
 echo Template::getInstance()->render(UI::getObjects());
