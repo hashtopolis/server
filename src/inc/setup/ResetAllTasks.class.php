@@ -18,8 +18,13 @@ class ResetAllTasks extends HashtopolisSetup {
     $taskWrappers = Factory::getTaskWrapperFactory()->filter([Factory::FILTER => $qF]);
     $qF = new ContainFilter(Task::TASK_WRAPPER_ID, Util::arrayOfIds($taskWrappers));
     $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF]);
-    foreach($tasks as $task) {
-      TaskUtils::purgeTask($task->getId(), Login::getInstance()->getUser());
+    foreach ($tasks as $task) {
+      try {
+        TaskUtils::purgeTask($task->getId(), Login::getInstance()->getUser());
+      }
+      catch (HTException $e) {
+        // we silently ignore it, as this happens when we iterate through tasks from other groups which this user does not see
+      }
     }
     return true;
   }
