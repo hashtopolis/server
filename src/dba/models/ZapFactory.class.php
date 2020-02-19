@@ -18,7 +18,7 @@ class ZapFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return Zap
    */
@@ -26,7 +26,7 @@ class ZapFactory extends AbstractModelFactory {
     $o = new Zap(-1, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class ZapFactory extends AbstractModelFactory {
     $o = new Zap($dict['zapId'], $dict['hash'], $dict['solveTime'], $dict['agentId'], $dict['hashlistId']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class ZapFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), Zap::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, Zap::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return Zap
@@ -71,7 +71,7 @@ class ZapFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), Zap::class);
   }
-
+  
   /**
    * @param Zap $model
    * @return Zap

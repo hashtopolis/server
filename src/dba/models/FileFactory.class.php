@@ -18,7 +18,7 @@ class FileFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return File
    */
@@ -26,7 +26,7 @@ class FileFactory extends AbstractModelFactory {
     $o = new File(-1, null, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class FileFactory extends AbstractModelFactory {
     $o = new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class FileFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), File::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, File::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return File
@@ -71,7 +71,7 @@ class FileFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), File::class);
   }
-
+  
   /**
    * @param File $model
    * @return File

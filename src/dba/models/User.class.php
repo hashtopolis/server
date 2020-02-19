@@ -76,7 +76,7 @@ class User extends AbstractModel {
   function setId($id) {
     $this->userId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -84,127 +84,127 @@ class User extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getUsername(){
+  
+  function getUsername() {
     return $this->username;
   }
   
-  function setUsername($username){
+  function setUsername($username) {
     $this->username = $username;
   }
   
-  function getEmail(){
+  function getEmail() {
     return $this->email;
   }
   
-  function setEmail($email){
+  function setEmail($email) {
     $this->email = $email;
   }
   
-  function getPasswordHash(){
+  function getPasswordHash() {
     return $this->passwordHash;
   }
   
-  function setPasswordHash($passwordHash){
+  function setPasswordHash($passwordHash) {
     $this->passwordHash = $passwordHash;
   }
   
-  function getPasswordSalt(){
+  function getPasswordSalt() {
     return $this->passwordSalt;
   }
   
-  function setPasswordSalt($passwordSalt){
+  function setPasswordSalt($passwordSalt) {
     $this->passwordSalt = $passwordSalt;
   }
   
-  function getIsValid(){
+  function getIsValid() {
     return $this->isValid;
   }
   
-  function setIsValid($isValid){
+  function setIsValid($isValid) {
     $this->isValid = $isValid;
   }
   
-  function getIsComputedPassword(){
+  function getIsComputedPassword() {
     return $this->isComputedPassword;
   }
   
-  function setIsComputedPassword($isComputedPassword){
+  function setIsComputedPassword($isComputedPassword) {
     $this->isComputedPassword = $isComputedPassword;
   }
   
-  function getLastLoginDate(){
+  function getLastLoginDate() {
     return $this->lastLoginDate;
   }
   
-  function setLastLoginDate($lastLoginDate){
+  function setLastLoginDate($lastLoginDate) {
     $this->lastLoginDate = $lastLoginDate;
   }
   
-  function getRegisteredSince(){
+  function getRegisteredSince() {
     return $this->registeredSince;
   }
   
-  function setRegisteredSince($registeredSince){
+  function setRegisteredSince($registeredSince) {
     $this->registeredSince = $registeredSince;
   }
   
-  function getSessionLifetime(){
+  function getSessionLifetime() {
     return $this->sessionLifetime;
   }
   
-  function setSessionLifetime($sessionLifetime){
+  function setSessionLifetime($sessionLifetime) {
     $this->sessionLifetime = $sessionLifetime;
   }
   
-  function getRightGroupId(){
+  function getRightGroupId() {
     return $this->rightGroupId;
   }
   
-  function setRightGroupId($rightGroupId){
+  function setRightGroupId($rightGroupId) {
     $this->rightGroupId = $rightGroupId;
   }
   
-  function getYubikey(){
+  function getYubikey() {
     return $this->yubikey;
   }
   
-  function setYubikey($yubikey){
+  function setYubikey($yubikey) {
     $this->yubikey = $yubikey;
   }
   
-  function getOtp1(){
+  function getOtp1() {
     return $this->otp1;
   }
   
-  function setOtp1($otp1){
+  function setOtp1($otp1) {
     $this->otp1 = $otp1;
   }
   
-  function getOtp2(){
+  function getOtp2() {
     return $this->otp2;
   }
   
-  function setOtp2($otp2){
+  function setOtp2($otp2) {
     $this->otp2 = $otp2;
   }
   
-  function getOtp3(){
+  function getOtp3() {
     return $this->otp3;
   }
   
-  function setOtp3($otp3){
+  function setOtp3($otp3) {
     $this->otp3 = $otp3;
   }
   
-  function getOtp4(){
+  function getOtp4() {
     return $this->otp4;
   }
   
-  function setOtp4($otp4){
+  function setOtp4($otp4) {
     $this->otp4 = $otp4;
   }
-
+  
   const USER_ID = "userId";
   const USERNAME = "username";
   const EMAIL = "email";

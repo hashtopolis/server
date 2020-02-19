@@ -18,7 +18,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return AgentBinary
    */
@@ -26,7 +26,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
     $o = new AgentBinary(-1, null, null, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
     $o = new AgentBinary($dict['agentBinaryId'], $dict['type'], $dict['version'], $dict['operatingSystems'], $dict['filename'], $dict['updateTrack'], $dict['updateAvailable']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class AgentBinaryFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), AgentBinary::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, AgentBinary::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return AgentBinary
@@ -71,7 +71,7 @@ class AgentBinaryFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), AgentBinary::class);
   }
-
+  
   /**
    * @param AgentBinary $model
    * @return AgentBinary

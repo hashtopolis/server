@@ -106,21 +106,21 @@ class AgentUtils {
     $yLabels = [DAgentStatsType::GPU_TEMP => 'Temp (Celsius)', DAgentStatsType::GPU_UTIL => 'Util (%)'];
     $position = 'left';
     $colors = [
-        "#013220",
-        "#FF4500",
-        "#000080",
-        "#B03060",
-        "#008080",
-        "#A0522D",
-        "#FFA500",
-        "#FF00FF",
-        "#00FFFF",
-        "#FF0000",
-        "#00FF00",
-        "#A52A2A",
-        "#2E0854",
-        "#BDECB6",
-        "#ADD8E6"
+      "#013220",
+      "#FF4500",
+      "#000080",
+      "#B03060",
+      "#008080",
+      "#A0522D",
+      "#FFA500",
+      "#FF00FF",
+      "#00FFFF",
+      "#FF0000",
+      "#00FF00",
+      "#A52A2A",
+      "#2E0854",
+      "#BDECB6",
+      "#ADD8E6"
     ];
     foreach ($entries as $entry) {
       $found = false;

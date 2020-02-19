@@ -113,7 +113,7 @@ $CONF['Hash'] = [
   'timeCracked',
   'chunkId',
   'isCracked',
-	'crackPos'
+  'crackPos'
 ];
 $CONF['HashBinary'] = [
   'hashBinaryId',
@@ -124,7 +124,7 @@ $CONF['HashBinary'] = [
   'timeCracked',
   'chunkId',
   'isCracked',
-	'crackPos'
+  'crackPos'
 ];
 $CONF['Hashlist'] = [
   'hashlistId',
@@ -378,8 +378,8 @@ foreach ($CONF as $NAME => $COLUMNS) {
   $variables = array();
   foreach ($COLUMNS as $col) {
     if (sizeof($vars) > 0) {
-      $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "(){\n    return \$this->$col;\n  }";
-      $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "(\$$col){\n    \$this->$col = \$$col;\n  }";
+      $getter = "function get" . strtoupper($col[0]) . substr($col, 1) . "() {\n    return \$this->$col;\n  }";
+      $setter = "function set" . strtoupper($col[0]) . substr($col, 1) . "(\$$col) {\n    \$this->$col = \$$col;\n  }";
       $functions[] = $getter;
       $functions[] = $setter;
     }

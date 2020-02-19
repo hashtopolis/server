@@ -70,7 +70,7 @@ class Hashlist extends AbstractModel {
   function setId($id) {
     $this->hashlistId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -78,111 +78,111 @@ class Hashlist extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getHashlistName(){
+  
+  function getHashlistName() {
     return $this->hashlistName;
   }
   
-  function setHashlistName($hashlistName){
+  function setHashlistName($hashlistName) {
     $this->hashlistName = $hashlistName;
   }
   
-  function getFormat(){
+  function getFormat() {
     return $this->format;
   }
   
-  function setFormat($format){
+  function setFormat($format) {
     $this->format = $format;
   }
   
-  function getHashTypeId(){
+  function getHashTypeId() {
     return $this->hashTypeId;
   }
   
-  function setHashTypeId($hashTypeId){
+  function setHashTypeId($hashTypeId) {
     $this->hashTypeId = $hashTypeId;
   }
   
-  function getHashCount(){
+  function getHashCount() {
     return $this->hashCount;
   }
   
-  function setHashCount($hashCount){
+  function setHashCount($hashCount) {
     $this->hashCount = $hashCount;
   }
   
-  function getSaltSeparator(){
+  function getSaltSeparator() {
     return $this->saltSeparator;
   }
   
-  function setSaltSeparator($saltSeparator){
+  function setSaltSeparator($saltSeparator) {
     $this->saltSeparator = $saltSeparator;
   }
   
-  function getCracked(){
+  function getCracked() {
     return $this->cracked;
   }
   
-  function setCracked($cracked){
+  function setCracked($cracked) {
     $this->cracked = $cracked;
   }
   
-  function getIsSecret(){
+  function getIsSecret() {
     return $this->isSecret;
   }
   
-  function setIsSecret($isSecret){
+  function setIsSecret($isSecret) {
     $this->isSecret = $isSecret;
   }
   
-  function getHexSalt(){
+  function getHexSalt() {
     return $this->hexSalt;
   }
   
-  function setHexSalt($hexSalt){
+  function setHexSalt($hexSalt) {
     $this->hexSalt = $hexSalt;
   }
   
-  function getIsSalted(){
+  function getIsSalted() {
     return $this->isSalted;
   }
   
-  function setIsSalted($isSalted){
+  function setIsSalted($isSalted) {
     $this->isSalted = $isSalted;
   }
   
-  function getAccessGroupId(){
+  function getAccessGroupId() {
     return $this->accessGroupId;
   }
   
-  function setAccessGroupId($accessGroupId){
+  function setAccessGroupId($accessGroupId) {
     $this->accessGroupId = $accessGroupId;
   }
   
-  function getNotes(){
+  function getNotes() {
     return $this->notes;
   }
   
-  function setNotes($notes){
+  function setNotes($notes) {
     $this->notes = $notes;
   }
   
-  function getBrainId(){
+  function getBrainId() {
     return $this->brainId;
   }
   
-  function setBrainId($brainId){
+  function setBrainId($brainId) {
     $this->brainId = $brainId;
   }
   
-  function getBrainFeatures(){
+  function getBrainFeatures() {
     return $this->brainFeatures;
   }
   
-  function setBrainFeatures($brainFeatures){
+  function setBrainFeatures($brainFeatures) {
     $this->brainFeatures = $brainFeatures;
   }
-
+  
   const HASHLIST_ID = "hashlistId";
   const HASHLIST_NAME = "hashlistName";
   const FORMAT = "format";

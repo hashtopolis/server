@@ -43,7 +43,7 @@ class Zap extends AbstractModel {
   function setId($id) {
     $this->zapId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -51,39 +51,39 @@ class Zap extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getHash(){
+  
+  function getHash() {
     return $this->hash;
   }
   
-  function setHash($hash){
+  function setHash($hash) {
     $this->hash = $hash;
   }
   
-  function getSolveTime(){
+  function getSolveTime() {
     return $this->solveTime;
   }
   
-  function setSolveTime($solveTime){
+  function setSolveTime($solveTime) {
     $this->solveTime = $solveTime;
   }
   
-  function getAgentId(){
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getHashlistId(){
+  function getHashlistId() {
     return $this->hashlistId;
   }
   
-  function setHashlistId($hashlistId){
+  function setHashlistId($hashlistId) {
     $this->hashlistId = $hashlistId;
   }
-
+  
   const ZAP_ID = "zapId";
   const HASH = "hash";
   const SOLVE_TIME = "solveTime";

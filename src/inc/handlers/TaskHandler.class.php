@@ -148,7 +148,7 @@ class TaskHandler implements Handler {
     if ($usePreprocessor < 0) {
       $usePreprocessor = 0;
     }
-    else if($usePreprocessor > 0){
+    else if ($usePreprocessor > 0) {
       PreprocessorUtils::getPreprocessor($usePreprocessor);
     }
     

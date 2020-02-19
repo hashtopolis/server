@@ -43,7 +43,7 @@ class AgentStat extends AbstractModel {
   function setId($id) {
     $this->agentStatId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -51,39 +51,39 @@ class AgentStat extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getAgentId(){
+  
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getStatType(){
+  function getStatType() {
     return $this->statType;
   }
   
-  function setStatType($statType){
+  function setStatType($statType) {
     $this->statType = $statType;
   }
   
-  function getTime(){
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
   
-  function getValue(){
+  function getValue() {
     return $this->value;
   }
   
-  function setValue($value){
+  function setValue($value) {
     $this->value = $value;
   }
-
+  
   const AGENT_STAT_ID = "agentStatId";
   const AGENT_ID = "agentId";
   const STAT_TYPE = "statType";

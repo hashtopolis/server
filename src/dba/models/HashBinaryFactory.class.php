@@ -18,7 +18,7 @@ class HashBinaryFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return HashBinary
    */
@@ -26,7 +26,7 @@ class HashBinaryFactory extends AbstractModelFactory {
     $o = new HashBinary(-1, null, null, null, null, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class HashBinaryFactory extends AbstractModelFactory {
     $o = new HashBinary($dict['hashBinaryId'], $dict['hashlistId'], $dict['essid'], $dict['hash'], $dict['plaintext'], $dict['timeCracked'], $dict['chunkId'], $dict['isCracked'], $dict['crackPos']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class HashBinaryFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), HashBinary::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, HashBinary::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return HashBinary
@@ -71,7 +71,7 @@ class HashBinaryFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), HashBinary::class);
   }
-
+  
   /**
    * @param HashBinary $model
    * @return HashBinary

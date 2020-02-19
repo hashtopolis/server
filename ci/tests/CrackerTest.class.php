@@ -22,9 +22,9 @@ class CrackerTest extends HashtopolisTest {
     $this->testCreateVersion(1, '', 'hashcat', 'http://blub.com', false); // empty version
     $this->testCreateVersion(2, '1.2.3', 'hashcat', 'http://blub.com', false); // invalid cracker
     $this->testGetCracker(1, [1, 2], [
-      1 => ['binaryBasename' => 'hashcat'],
-      2 => ['version' => '1.2.3', 'downloadUrl' => 'http://blub.com', 'binaryBasename' => 'hashcat']
-    ]
+        1 => ['binaryBasename' => 'hashcat'],
+        2 => ['version' => '1.2.3', 'downloadUrl' => 'http://blub.com', 'binaryBasename' => 'hashcat']
+      ]
     );
     $this->testDeleteVersion(5, false); // invalid version id
     $this->testDeleteVersion(1);

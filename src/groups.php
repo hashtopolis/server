@@ -82,7 +82,8 @@ else {
   }
   
   UI::add('groups', Factory::getAccessGroupFactory()->filter([]));
-  foreach (UI::get('groups') as $group) { /** @var AccessGroup $group */
+  foreach (UI::get('groups') as $group) {
+    /** @var AccessGroup $group */
     if ($users->getVal($group->getId()) === false) {
       $users->addValue($group->getId(), 0);
     }

@@ -64,7 +64,7 @@ class Pretask extends AbstractModel {
   function setId($id) {
     $this->pretaskId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -72,95 +72,95 @@ class Pretask extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTaskName(){
+  
+  function getTaskName() {
     return $this->taskName;
   }
   
-  function setTaskName($taskName){
+  function setTaskName($taskName) {
     $this->taskName = $taskName;
   }
   
-  function getAttackCmd(){
+  function getAttackCmd() {
     return $this->attackCmd;
   }
   
-  function setAttackCmd($attackCmd){
+  function setAttackCmd($attackCmd) {
     $this->attackCmd = $attackCmd;
   }
   
-  function getChunkTime(){
+  function getChunkTime() {
     return $this->chunkTime;
   }
   
-  function setChunkTime($chunkTime){
+  function setChunkTime($chunkTime) {
     $this->chunkTime = $chunkTime;
   }
   
-  function getStatusTimer(){
+  function getStatusTimer() {
     return $this->statusTimer;
   }
   
-  function setStatusTimer($statusTimer){
+  function setStatusTimer($statusTimer) {
     $this->statusTimer = $statusTimer;
   }
   
-  function getColor(){
+  function getColor() {
     return $this->color;
   }
   
-  function setColor($color){
+  function setColor($color) {
     $this->color = $color;
   }
   
-  function getIsSmall(){
+  function getIsSmall() {
     return $this->isSmall;
   }
   
-  function setIsSmall($isSmall){
+  function setIsSmall($isSmall) {
     $this->isSmall = $isSmall;
   }
   
-  function getIsCpuTask(){
+  function getIsCpuTask() {
     return $this->isCpuTask;
   }
   
-  function setIsCpuTask($isCpuTask){
+  function setIsCpuTask($isCpuTask) {
     $this->isCpuTask = $isCpuTask;
   }
   
-  function getUseNewBench(){
+  function getUseNewBench() {
     return $this->useNewBench;
   }
   
-  function setUseNewBench($useNewBench){
+  function setUseNewBench($useNewBench) {
     $this->useNewBench = $useNewBench;
   }
   
-  function getPriority(){
+  function getPriority() {
     return $this->priority;
   }
   
-  function setPriority($priority){
+  function setPriority($priority) {
     $this->priority = $priority;
   }
   
-  function getIsMaskImport(){
+  function getIsMaskImport() {
     return $this->isMaskImport;
   }
   
-  function setIsMaskImport($isMaskImport){
+  function setIsMaskImport($isMaskImport) {
     $this->isMaskImport = $isMaskImport;
   }
   
-  function getCrackerBinaryTypeId(){
+  function getCrackerBinaryTypeId() {
     return $this->crackerBinaryTypeId;
   }
   
-  function setCrackerBinaryTypeId($crackerBinaryTypeId){
+  function setCrackerBinaryTypeId($crackerBinaryTypeId) {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
-
+  
   const PRETASK_ID = "pretaskId";
   const TASK_NAME = "taskName";
   const ATTACK_CMD = "attackCmd";

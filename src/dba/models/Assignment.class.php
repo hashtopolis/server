@@ -40,7 +40,7 @@ class Assignment extends AbstractModel {
   function setId($id) {
     $this->assignmentId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -48,31 +48,31 @@ class Assignment extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTaskId(){
+  
+  function getTaskId() {
     return $this->taskId;
   }
   
-  function setTaskId($taskId){
+  function setTaskId($taskId) {
     $this->taskId = $taskId;
   }
   
-  function getAgentId(){
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getBenchmark(){
+  function getBenchmark() {
     return $this->benchmark;
   }
   
-  function setBenchmark($benchmark){
+  function setBenchmark($benchmark) {
     $this->benchmark = $benchmark;
   }
-
+  
   const ASSIGNMENT_ID = "assignmentId";
   const TASK_ID = "taskId";
   const AGENT_ID = "agentId";

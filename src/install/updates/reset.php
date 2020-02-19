@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/../../inc/load.php");
@@ -15,12 +16,12 @@ switch ($argv[1]) {
   case "password":
     $newPassword = "EnterPasswordToSetHere";
     $userId = "0"; // fill in the user id of the admin account
-
+    
     $user = Factory::getUserFactory()->get($userId);
     if ($user == null) {
       die("User not found!\n");
     }
-
+    
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPassword, $newSalt);
     $user->setPasswordHash($newHash);

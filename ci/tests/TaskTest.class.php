@@ -28,12 +28,12 @@ class TaskTest extends HashtopolisTest {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
     $this->prepare();
     $this->testListTasks();
-    $this->testCreateTask(["name" => "Test Task", "hashlistId" => 1, "attackCmd" => "#HL# -a 0 -r best64.rule example.dict", "priority" => 1, "color" => "5D5D5D", "crackerVersionId" => 1, "files" => [1,2]]);
+    $this->testCreateTask(["name" => "Test Task", "hashlistId" => 1, "attackCmd" => "#HL# -a 0 -r best64.rule example.dict", "priority" => 1, "color" => "5D5D5D", "crackerVersionId" => 1, "files" => [1, 2]]);
     $this->testListTasks(['Test Task']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
-
-  public function testCreateTask($values = [], $assert = true){
+  
+  public function testCreateTask($values = [], $assert = true) {
     $query = [
       "section" => "task",
       "request" => "createTask",
@@ -54,10 +54,10 @@ class TaskTest extends HashtopolisTest {
       "preprocessorCommand" => "",
       "accessKey" => "mykey"
     ];
-    foreach($values as $key => $value){
+    foreach ($values as $key => $value) {
       $query[$key] = $value;
     }
-
+    
     $response = HashtopolisTestFramework::doRequest($query, HashtopolisTestFramework::REQUEST_UAPI
     );
     if ($response === false) {

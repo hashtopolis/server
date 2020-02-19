@@ -128,8 +128,8 @@ class FileTest extends HashtopolisTest {
     $url = 'http://localhost/getFile.php?file=1&apiKey=mykey';
     $ch = curl_init($url);
     curl_setopt_array($ch, array(
-      CURLOPT_RETURNTRANSFER => TRUE
-    )
+        CURLOPT_RETURNTRANSFER => TRUE
+      )
     );
     $response = curl_exec($ch);
     if ($response != $testContent) {

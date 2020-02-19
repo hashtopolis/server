@@ -46,7 +46,7 @@ class File extends AbstractModel {
   function setId($id) {
     $this->fileId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -54,47 +54,47 @@ class File extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getFilename(){
+  
+  function getFilename() {
     return $this->filename;
   }
   
-  function setFilename($filename){
+  function setFilename($filename) {
     $this->filename = $filename;
   }
   
-  function getSize(){
+  function getSize() {
     return $this->size;
   }
   
-  function setSize($size){
+  function setSize($size) {
     $this->size = $size;
   }
   
-  function getIsSecret(){
+  function getIsSecret() {
     return $this->isSecret;
   }
   
-  function setIsSecret($isSecret){
+  function setIsSecret($isSecret) {
     $this->isSecret = $isSecret;
   }
   
-  function getFileType(){
+  function getFileType() {
     return $this->fileType;
   }
   
-  function setFileType($fileType){
+  function setFileType($fileType) {
     $this->fileType = $fileType;
   }
   
-  function getAccessGroupId(){
+  function getAccessGroupId() {
     return $this->accessGroupId;
   }
   
-  function setAccessGroupId($accessGroupId){
+  function setAccessGroupId($accessGroupId) {
     $this->accessGroupId = $accessGroupId;
   }
-
+  
   const FILE_ID = "fileId";
   const FILENAME = "filename";
   const SIZE = "size";

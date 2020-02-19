@@ -37,7 +37,7 @@ class SupertaskPretask extends AbstractModel {
   function setId($id) {
     $this->supertaskPretaskId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class SupertaskPretask extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getSupertaskId(){
+  
+  function getSupertaskId() {
     return $this->supertaskId;
   }
   
-  function setSupertaskId($supertaskId){
+  function setSupertaskId($supertaskId) {
     $this->supertaskId = $supertaskId;
   }
   
-  function getPretaskId(){
+  function getPretaskId() {
     return $this->pretaskId;
   }
   
-  function setPretaskId($pretaskId){
+  function setPretaskId($pretaskId) {
     $this->pretaskId = $pretaskId;
   }
-
+  
   const SUPERTASK_PRETASK_ID = "supertaskPretaskId";
   const SUPERTASK_ID = "supertaskId";
   const PRETASK_ID = "pretaskId";

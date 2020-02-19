@@ -18,7 +18,7 @@ class HashTypeFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return HashType
    */
@@ -26,7 +26,7 @@ class HashTypeFactory extends AbstractModelFactory {
     $o = new HashType(-1, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class HashTypeFactory extends AbstractModelFactory {
     $o = new HashType($dict['hashTypeId'], $dict['description'], $dict['isSalted'], $dict['isSlowHash']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class HashTypeFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), HashType::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, HashType::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return HashType
@@ -71,7 +71,7 @@ class HashTypeFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), HashType::class);
   }
-
+  
   /**
    * @param HashType $model
    * @return HashType

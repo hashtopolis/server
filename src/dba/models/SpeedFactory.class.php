@@ -18,7 +18,7 @@ class SpeedFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return Speed
    */
@@ -26,7 +26,7 @@ class SpeedFactory extends AbstractModelFactory {
     $o = new Speed(-1, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class SpeedFactory extends AbstractModelFactory {
     $o = new Speed($dict['speedId'], $dict['agentId'], $dict['taskId'], $dict['speed'], $dict['time']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class SpeedFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), Speed::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, Speed::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return Speed
@@ -71,7 +71,7 @@ class SpeedFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), Speed::class);
   }
-
+  
   /**
    * @param Speed $model
    * @return Speed

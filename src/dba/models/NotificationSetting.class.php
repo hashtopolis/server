@@ -49,7 +49,7 @@ class NotificationSetting extends AbstractModel {
   function setId($id) {
     $this->notificationSettingId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -57,55 +57,55 @@ class NotificationSetting extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getAction(){
+  
+  function getAction() {
     return $this->action;
   }
   
-  function setAction($action){
+  function setAction($action) {
     $this->action = $action;
   }
   
-  function getObjectId(){
+  function getObjectId() {
     return $this->objectId;
   }
   
-  function setObjectId($objectId){
+  function setObjectId($objectId) {
     $this->objectId = $objectId;
   }
   
-  function getNotification(){
+  function getNotification() {
     return $this->notification;
   }
   
-  function setNotification($notification){
+  function setNotification($notification) {
     $this->notification = $notification;
   }
   
-  function getUserId(){
+  function getUserId() {
     return $this->userId;
   }
   
-  function setUserId($userId){
+  function setUserId($userId) {
     $this->userId = $userId;
   }
   
-  function getReceiver(){
+  function getReceiver() {
     return $this->receiver;
   }
   
-  function setReceiver($receiver){
+  function setReceiver($receiver) {
     $this->receiver = $receiver;
   }
   
-  function getIsActive(){
+  function getIsActive() {
     return $this->isActive;
   }
   
-  function setIsActive($isActive){
+  function setIsActive($isActive) {
     $this->isActive = $isActive;
   }
-
+  
   const NOTIFICATION_SETTING_ID = "notificationSettingId";
   const ACTION = "action";
   const OBJECT_ID = "objectId";

@@ -62,10 +62,10 @@ class ApiUtils {
     else if ($group == null) {
       throw new HTException("Invalid API group selected!");
     }
-    else if(MASK_API_KEYS && ($key->getUserId() != $userId)){
+    else if (MASK_API_KEYS && ($key->getUserId() != $userId)) {
       throw new HTException("Can't change key owner!");
     }
-
+    
     Factory::getApiKeyFactory()->mset($key, [
         ApiKey::USER_ID => $user->getId(),
         ApiKey::API_GROUP_ID => $group->getId(),

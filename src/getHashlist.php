@@ -60,7 +60,7 @@ switch ($format) {
         $oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT $limit,$size");
         $qF1 = new QueryFilter(Hash::HASHLIST_ID, $hashlist->getId(), "=");
         $qF2 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
-        if($brain){
+        if ($brain) {
           $current = Factory::getHashFactory()->filter([Factory::FILTER => $qF1, Factory::ORDER => $oF]);
         }
         else {

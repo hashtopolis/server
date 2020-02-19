@@ -76,10 +76,10 @@ class HashtopolisTestFramework {
     $ch = curl_init($url);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_DEBUG, $url . " <- " . substr(json_encode($request), 0, 500));
     curl_setopt_array($ch, array(
-      CURLOPT_POST => TRUE,
-      CURLOPT_RETURNTRANSFER => TRUE,
-      CURLOPT_POSTFIELDS => json_encode($request)
-    )
+        CURLOPT_POST => TRUE,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_POSTFIELDS => json_encode($request)
+      )
     );
     $response = curl_exec($ch);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_DEBUG, $url . " -> " . $response);

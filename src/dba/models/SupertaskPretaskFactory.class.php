@@ -18,7 +18,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return SupertaskPretask
    */
@@ -26,7 +26,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
     $o = new SupertaskPretask(-1, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
     $o = new SupertaskPretask($dict['supertaskPretaskId'], $dict['supertaskId'], $dict['pretaskId']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), SupertaskPretask::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, SupertaskPretask::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return SupertaskPretask
@@ -71,7 +71,7 @@ class SupertaskPretaskFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), SupertaskPretask::class);
   }
-
+  
   /**
    * @param SupertaskPretask $model
    * @return SupertaskPretask

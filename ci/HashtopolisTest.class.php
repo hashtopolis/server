@@ -21,19 +21,20 @@ abstract class HashtopolisTest {
   
   const RUN_FULL = 0;
   const RUN_FAST = 1;
-
+  
   
   protected $RELEASES = [
-    "0.8.0"  => "47e4444c22cbfae08f8e8f974fb6ca6bfa0e944d",
-    "0.9.0"  => "cd2951cd10552114c44c29962ac22efcbabf57c7",
+    "0.8.0" => "47e4444c22cbfae08f8e8f974fb6ca6bfa0e944d",
+    "0.9.0" => "cd2951cd10552114c44c29962ac22efcbabf57c7",
     "0.10.0" => "cdc674f4f375115debd556feda4e7f6e4614a2c6",
     "0.11.0" => "9cdbffcffb46da613c14d2f46266c1c3672e61e7",
     "0.12.0" => "b53f529f664c866e4d22f5cb348d22eb6f542901"
   ];
   
   public function initAndUpgrade($fromVersion) {
+    // these global variables are needed in the included update.php script
     global $VERSION, $BUILD, $TEST;
-
+    
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialize old version $fromVersion...");
     $this->init($fromVersion);
     
@@ -41,22 +42,23 @@ abstract class HashtopolisTest {
     include("/var/www/html/hashtopolis/src/install/updates/update.php");
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }
-
+  
   public static function multiImplode($glue, $array) {
     $output = "";
     foreach ($array as $item) {
       if (is_array($item)) {
         $output .= HashtopolisTest::multiImplode($glue, $item) . $glue;
-      } else {
+      }
+      else {
         $output .= $item . $glue;
       }
     }
     $ret = substr($output, 0, 0 - strlen($glue));
     return $ret;
-}
+  }
   
   public function init($version) {
-    global $PEPPER, $VERSION, $BUILD;
+    global $PEPPER, $VERSION;
     
     // drop old data and create empty DB
     Factory::getAgentFactory()->getDB()->query("DROP DATABASE IF EXISTS hashtopolis");
@@ -83,9 +85,9 @@ abstract class HashtopolisTest {
     Factory::getAccessGroupUserFactory()->save($accessGroup);
     $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, $this->user->getId(), 1);
     $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
-    $versionStore = new StoredValue("version", ($version == 'master')?explode("+", $VERSION)[0]:$version);
+    $versionStore = new StoredValue("version", ($version == 'master') ? explode("+", $VERSION)[0] : $version);
     Factory::getStoredValueFactory()->save($versionStore);
-    $buildStore = new StoredValue("build", ($version == 'master')?Util::getGitCommit(true):$this->RELEASES[$version]);
+    $buildStore = new StoredValue("build", ($version == 'master') ? Util::getGitCommit(true) : $this->RELEASES[$version]);
     Factory::getStoredValueFactory()->save($buildStore);
   }
   

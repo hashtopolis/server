@@ -55,7 +55,7 @@ class HealthCheckAgent extends AbstractModel {
   function setId($id) {
     $this->healthCheckAgentId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -63,71 +63,71 @@ class HealthCheckAgent extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getHealthCheckId(){
+  
+  function getHealthCheckId() {
     return $this->healthCheckId;
   }
   
-  function setHealthCheckId($healthCheckId){
+  function setHealthCheckId($healthCheckId) {
     $this->healthCheckId = $healthCheckId;
   }
   
-  function getAgentId(){
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getStatus(){
+  function getStatus() {
     return $this->status;
   }
   
-  function setStatus($status){
+  function setStatus($status) {
     $this->status = $status;
   }
   
-  function getCracked(){
+  function getCracked() {
     return $this->cracked;
   }
   
-  function setCracked($cracked){
+  function setCracked($cracked) {
     $this->cracked = $cracked;
   }
   
-  function getNumGpus(){
+  function getNumGpus() {
     return $this->numGpus;
   }
   
-  function setNumGpus($numGpus){
+  function setNumGpus($numGpus) {
     $this->numGpus = $numGpus;
   }
   
-  function getStart(){
+  function getStart() {
     return $this->start;
   }
   
-  function setStart($start){
+  function setStart($start) {
     $this->start = $start;
   }
   
-  function getEnd(){
+  function getEnd() {
     return $this->end;
   }
   
-  function setEnd($end){
+  function setEnd($end) {
     $this->end = $end;
   }
   
-  function getErrors(){
+  function getErrors() {
     return $this->errors;
   }
   
-  function setErrors($errors){
+  function setErrors($errors) {
     $this->errors = $errors;
   }
-
+  
   const HEALTH_CHECK_AGENT_ID = "healthCheckAgentId";
   const HEALTH_CHECK_ID = "healthCheckId";
   const AGENT_ID = "agentId";

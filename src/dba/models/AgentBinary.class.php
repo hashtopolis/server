@@ -49,7 +49,7 @@ class AgentBinary extends AbstractModel {
   function setId($id) {
     $this->agentBinaryId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -57,55 +57,55 @@ class AgentBinary extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getType(){
+  
+  function getType() {
     return $this->type;
   }
   
-  function setType($type){
+  function setType($type) {
     $this->type = $type;
   }
   
-  function getVersion(){
+  function getVersion() {
     return $this->version;
   }
   
-  function setVersion($version){
+  function setVersion($version) {
     $this->version = $version;
   }
   
-  function getOperatingSystems(){
+  function getOperatingSystems() {
     return $this->operatingSystems;
   }
   
-  function setOperatingSystems($operatingSystems){
+  function setOperatingSystems($operatingSystems) {
     $this->operatingSystems = $operatingSystems;
   }
   
-  function getFilename(){
+  function getFilename() {
     return $this->filename;
   }
   
-  function setFilename($filename){
+  function setFilename($filename) {
     $this->filename = $filename;
   }
   
-  function getUpdateTrack(){
+  function getUpdateTrack() {
     return $this->updateTrack;
   }
   
-  function setUpdateTrack($updateTrack){
+  function setUpdateTrack($updateTrack) {
     $this->updateTrack = $updateTrack;
   }
   
-  function getUpdateAvailable(){
+  function getUpdateAvailable() {
     return $this->updateAvailable;
   }
   
-  function setUpdateAvailable($updateAvailable){
+  function setUpdateAvailable($updateAvailable) {
     $this->updateAvailable = $updateAvailable;
   }
-
+  
   const AGENT_BINARY_ID = "agentBinaryId";
   const TYPE = "type";
   const VERSION = "version";

@@ -19,7 +19,7 @@ Menu::get()->setActive("users_api");
 
 //catch actions here...
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
-  if(UI::getNumMessages() == 0){
+  if (UI::getNumMessages() == 0) {
     $apiHandler = new ApiHandler();
     $apiHandler->handle($_POST['action']);
     if (UI::getNumMessages() == 0) {
@@ -40,12 +40,13 @@ else if (isset($_GET['id'])) {
   else {
     $qF = new QueryFilter(ApiKey::API_GROUP_ID, $group->getId(), "=");
     $keys = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]);
-    if(MASK_API_KEYS) {
+    if (MASK_API_KEYS) {
       $userID = Login::getInstance()->getUserID();
-      foreach ($keys as $key)
-        if($key->getUserId() != $userID) {
+      foreach ($keys as $key) {
+        if ($key->getUserId() != $userID) {
           $key->setAccessKey("******************************");
         }
+      }
     }
     UI::add('keys', $keys);
     UI::add('sectionConstants', USection::getConstants());
@@ -94,7 +95,7 @@ else if (isset($_GET['keyId'])) {
   if (MASK_API_KEYS) {
     $userID = Login::getInstance()->getUserID();
     $qF = new QueryFilter(User::USER_ID, $key->getUserId(), "=");
-    $users = Factory::getUserFactory()->filter([Factory::FILTER=>$qF]);
+    $users = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
     if ($key->getUserId() != $userID) {
       $key->setAccessKey("******************************");
     }

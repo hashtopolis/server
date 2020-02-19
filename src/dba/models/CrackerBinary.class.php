@@ -43,7 +43,7 @@ class CrackerBinary extends AbstractModel {
   function setId($id) {
     $this->crackerBinaryId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -51,39 +51,39 @@ class CrackerBinary extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getCrackerBinaryTypeId(){
+  
+  function getCrackerBinaryTypeId() {
     return $this->crackerBinaryTypeId;
   }
   
-  function setCrackerBinaryTypeId($crackerBinaryTypeId){
+  function setCrackerBinaryTypeId($crackerBinaryTypeId) {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
   
-  function getVersion(){
+  function getVersion() {
     return $this->version;
   }
   
-  function setVersion($version){
+  function setVersion($version) {
     $this->version = $version;
   }
   
-  function getDownloadUrl(){
+  function getDownloadUrl() {
     return $this->downloadUrl;
   }
   
-  function setDownloadUrl($downloadUrl){
+  function setDownloadUrl($downloadUrl) {
     $this->downloadUrl = $downloadUrl;
   }
   
-  function getBinaryName(){
+  function getBinaryName() {
     return $this->binaryName;
   }
   
-  function setBinaryName($binaryName){
+  function setBinaryName($binaryName) {
     $this->binaryName = $binaryName;
   }
-
+  
   const CRACKER_BINARY_ID = "crackerBinaryId";
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const VERSION = "version";

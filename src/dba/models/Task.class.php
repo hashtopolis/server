@@ -97,7 +97,7 @@ class Task extends AbstractModel {
   function setId($id) {
     $this->taskId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -105,183 +105,183 @@ class Task extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTaskName(){
+  
+  function getTaskName() {
     return $this->taskName;
   }
   
-  function setTaskName($taskName){
+  function setTaskName($taskName) {
     $this->taskName = $taskName;
   }
   
-  function getAttackCmd(){
+  function getAttackCmd() {
     return $this->attackCmd;
   }
   
-  function setAttackCmd($attackCmd){
+  function setAttackCmd($attackCmd) {
     $this->attackCmd = $attackCmd;
   }
   
-  function getChunkTime(){
+  function getChunkTime() {
     return $this->chunkTime;
   }
   
-  function setChunkTime($chunkTime){
+  function setChunkTime($chunkTime) {
     $this->chunkTime = $chunkTime;
   }
   
-  function getStatusTimer(){
+  function getStatusTimer() {
     return $this->statusTimer;
   }
   
-  function setStatusTimer($statusTimer){
+  function setStatusTimer($statusTimer) {
     $this->statusTimer = $statusTimer;
   }
   
-  function getKeyspace(){
+  function getKeyspace() {
     return $this->keyspace;
   }
   
-  function setKeyspace($keyspace){
+  function setKeyspace($keyspace) {
     $this->keyspace = $keyspace;
   }
   
-  function getKeyspaceProgress(){
+  function getKeyspaceProgress() {
     return $this->keyspaceProgress;
   }
   
-  function setKeyspaceProgress($keyspaceProgress){
+  function setKeyspaceProgress($keyspaceProgress) {
     $this->keyspaceProgress = $keyspaceProgress;
   }
   
-  function getPriority(){
+  function getPriority() {
     return $this->priority;
   }
   
-  function setPriority($priority){
+  function setPriority($priority) {
     $this->priority = $priority;
   }
   
-  function getColor(){
+  function getColor() {
     return $this->color;
   }
   
-  function setColor($color){
+  function setColor($color) {
     $this->color = $color;
   }
   
-  function getIsSmall(){
+  function getIsSmall() {
     return $this->isSmall;
   }
   
-  function setIsSmall($isSmall){
+  function setIsSmall($isSmall) {
     $this->isSmall = $isSmall;
   }
   
-  function getIsCpuTask(){
+  function getIsCpuTask() {
     return $this->isCpuTask;
   }
   
-  function setIsCpuTask($isCpuTask){
+  function setIsCpuTask($isCpuTask) {
     $this->isCpuTask = $isCpuTask;
   }
   
-  function getUseNewBench(){
+  function getUseNewBench() {
     return $this->useNewBench;
   }
   
-  function setUseNewBench($useNewBench){
+  function setUseNewBench($useNewBench) {
     $this->useNewBench = $useNewBench;
   }
   
-  function getSkipKeyspace(){
+  function getSkipKeyspace() {
     return $this->skipKeyspace;
   }
   
-  function setSkipKeyspace($skipKeyspace){
+  function setSkipKeyspace($skipKeyspace) {
     $this->skipKeyspace = $skipKeyspace;
   }
   
-  function getCrackerBinaryId(){
+  function getCrackerBinaryId() {
     return $this->crackerBinaryId;
   }
   
-  function setCrackerBinaryId($crackerBinaryId){
+  function setCrackerBinaryId($crackerBinaryId) {
     $this->crackerBinaryId = $crackerBinaryId;
   }
   
-  function getCrackerBinaryTypeId(){
+  function getCrackerBinaryTypeId() {
     return $this->crackerBinaryTypeId;
   }
   
-  function setCrackerBinaryTypeId($crackerBinaryTypeId){
+  function setCrackerBinaryTypeId($crackerBinaryTypeId) {
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
   
-  function getTaskWrapperId(){
+  function getTaskWrapperId() {
     return $this->taskWrapperId;
   }
   
-  function setTaskWrapperId($taskWrapperId){
+  function setTaskWrapperId($taskWrapperId) {
     $this->taskWrapperId = $taskWrapperId;
   }
   
-  function getIsArchived(){
+  function getIsArchived() {
     return $this->isArchived;
   }
   
-  function setIsArchived($isArchived){
+  function setIsArchived($isArchived) {
     $this->isArchived = $isArchived;
   }
   
-  function getNotes(){
+  function getNotes() {
     return $this->notes;
   }
   
-  function setNotes($notes){
+  function setNotes($notes) {
     $this->notes = $notes;
   }
   
-  function getStaticChunks(){
+  function getStaticChunks() {
     return $this->staticChunks;
   }
   
-  function setStaticChunks($staticChunks){
+  function setStaticChunks($staticChunks) {
     $this->staticChunks = $staticChunks;
   }
   
-  function getChunkSize(){
+  function getChunkSize() {
     return $this->chunkSize;
   }
   
-  function setChunkSize($chunkSize){
+  function setChunkSize($chunkSize) {
     $this->chunkSize = $chunkSize;
   }
   
-  function getForcePipe(){
+  function getForcePipe() {
     return $this->forcePipe;
   }
   
-  function setForcePipe($forcePipe){
+  function setForcePipe($forcePipe) {
     $this->forcePipe = $forcePipe;
   }
   
-  function getUsePreprocessor(){
+  function getUsePreprocessor() {
     return $this->usePreprocessor;
   }
   
-  function setUsePreprocessor($usePreprocessor){
+  function setUsePreprocessor($usePreprocessor) {
     $this->usePreprocessor = $usePreprocessor;
   }
   
-  function getPreprocessorCommand(){
+  function getPreprocessorCommand() {
     return $this->preprocessorCommand;
   }
   
-  function setPreprocessorCommand($preprocessorCommand){
+  function setPreprocessorCommand($preprocessorCommand) {
     $this->preprocessorCommand = $preprocessorCommand;
   }
-
+  
   const TASK_ID = "taskId";
   const TASK_NAME = "taskName";
   const ATTACK_CMD = "attackCmd";

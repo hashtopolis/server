@@ -18,7 +18,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return NotificationSetting
    */
@@ -26,7 +26,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
     $o = new NotificationSetting(-1, null, null, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
     $o = new NotificationSetting($dict['notificationSettingId'], $dict['action'], $dict['objectId'], $dict['notification'], $dict['userId'], $dict['receiver'], $dict['isActive']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class NotificationSettingFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), NotificationSetting::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, NotificationSetting::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return NotificationSetting
@@ -71,7 +71,7 @@ class NotificationSettingFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), NotificationSetting::class);
   }
-
+  
   /**
    * @param NotificationSetting $model
    * @return NotificationSetting

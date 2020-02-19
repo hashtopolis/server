@@ -47,7 +47,7 @@ class Factory {
   private static $filePretaskFactory = null;
   private static $supertaskPretaskFactory = null;
   private static $hashlistHashlistFactory = null;
-
+  
   public static function getAccessGroupFactory() {
     if (self::$accessGroupFactory == null) {
       $f = new AccessGroupFactory();
@@ -487,7 +487,7 @@ class Factory {
       return self::$hashlistHashlistFactory;
     }
   }
-
+  
   const FILTER = "filter";
   const JOIN = "join";
   const ORDER = "order";

@@ -31,7 +31,7 @@ class __MODEL_NAME__ extends AbstractModel {
   function setId($id) {
     $this->__MODEL_PK__ = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -39,8 +39,8 @@ class __MODEL_NAME__ extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
+  
   __MODEL_GETTER_SETTER__
-
+  
   __MODEL_VARIABLE_NAMES__
 }
