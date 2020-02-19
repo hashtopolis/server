@@ -1,10 +1,6 @@
 <?php
 
 abstract class HashtopolisSetup {
-  protected static $identifier  = "undefined";
-  protected static $type        = "undefined";
-  protected static $description = "";
-  
   protected static $applicableTested = false;
   protected static $applicableCache  = false;
   
@@ -21,17 +17,11 @@ abstract class HashtopolisSetup {
     return self::$instances;
   }
   
-  public function getIdentifier() {
-    return self::$identifier;
-  }
+  abstract function getIdentifier();
   
-  public function getSetupType() {
-    return self::$type;
-  }
+  abstract function getSetupType();
   
-  public function getDescription() {
-    return self::$description;
-  }
+  abstract function getDescription();
   
   protected function isApplicableTested() {
     return self::$applicableTested;

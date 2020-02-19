@@ -5,10 +5,6 @@ use DBA\Factory;
 use DBA\RightGroup;
 
 class SetupAccessGroups extends HashtopolisSetup {
-  protected static $identifier  = "setupAccessGroups";
-  protected static $type        = DSetupType::INSTALLATION;
-  protected static $description = "Sets up some useful access group types beside the default 'Administrators' to be used for various access control.";
-  
   private static $levels = [
     "Superuser" => ["viewHashlistAccess" => true, "manageHashlistAccess" => true, "createHashlistAccess" => true, "createSuperhashlistAccess" => true, "viewHashesAccess" => true, "viewAgentsAccess" => true, "manageAgentAccess" => true, "createAgentAccess" => true, "viewTaskAccess" => true, "runTaskAccess" => true, "createTaskAccess" => true, "manageTaskAccess" => true, "viewPretaskAccess" => true, "createPretaskAccess" => true, "managePretaskAccess" => true, "viewSupertaskAccess" => true, "createSupertaskAccess" => true, "manageSupertaskAccess" => true, "viewFileAccess" => true, "manageFileAccess" => true, "addFileAccess" => true, "crackerBinaryAccess" => true, "serverConfigAccess" => true, "userConfigAccess" => false],
     "User" => ["viewHashlistAccess" => true, "manageHashlistAccess" => true, "createHashlistAccess" => true, "createSuperhashlistAccess" => true, "viewHashesAccess" => true, "viewAgentsAccess" => true, "manageAgentAccess" => true, "createAgentAccess" => false, "viewTaskAccess" => true, "runTaskAccess" => true, "createTaskAccess" => true, "manageTaskAccess" => true, "viewPretaskAccess" => true, "createPretaskAccess" => true, "managePretaskAccess" => true, "viewSupertaskAccess" => true, "createSupertaskAccess" => true, "manageSupertaskAccess" => true, "viewFileAccess" => true, "manageFileAccess" => true, "addFileAccess" => true, "crackerBinaryAccess" => false, "serverConfigAccess" => false, "userConfigAccess" => false],
@@ -45,6 +41,18 @@ class SetupAccessGroups extends HashtopolisSetup {
     }
     $this->setApplicableResult(true);
     return true;
+  }
+  
+  function getIdentifier() {
+    return "setupAccessGroups";
+  }
+  
+  function getSetupType() {
+    return DSetupType::INSTALLATION;
+  }
+  
+  function getDescription() {
+    return "Sets up some useful access group types beside the default 'Administrators' to be used for various access control.";
   }
 }
 
