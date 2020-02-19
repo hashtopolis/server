@@ -64,7 +64,7 @@ class Chunk extends AbstractModel {
   function setId($id) {
     $this->chunkId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -72,95 +72,95 @@ class Chunk extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTaskId(){
+  
+  function getTaskId() {
     return $this->taskId;
   }
   
-  function setTaskId($taskId){
+  function setTaskId($taskId) {
     $this->taskId = $taskId;
   }
   
-  function getSkip(){
+  function getSkip() {
     return $this->skip;
   }
   
-  function setSkip($skip){
+  function setSkip($skip) {
     $this->skip = $skip;
   }
   
-  function getLength(){
+  function getLength() {
     return $this->length;
   }
   
-  function setLength($length){
+  function setLength($length) {
     $this->length = $length;
   }
   
-  function getAgentId(){
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getDispatchTime(){
+  function getDispatchTime() {
     return $this->dispatchTime;
   }
   
-  function setDispatchTime($dispatchTime){
+  function setDispatchTime($dispatchTime) {
     $this->dispatchTime = $dispatchTime;
   }
   
-  function getSolveTime(){
+  function getSolveTime() {
     return $this->solveTime;
   }
   
-  function setSolveTime($solveTime){
+  function setSolveTime($solveTime) {
     $this->solveTime = $solveTime;
   }
   
-  function getCheckpoint(){
+  function getCheckpoint() {
     return $this->checkpoint;
   }
   
-  function setCheckpoint($checkpoint){
+  function setCheckpoint($checkpoint) {
     $this->checkpoint = $checkpoint;
   }
   
-  function getProgress(){
+  function getProgress() {
     return $this->progress;
   }
   
-  function setProgress($progress){
+  function setProgress($progress) {
     $this->progress = $progress;
   }
   
-  function getState(){
+  function getState() {
     return $this->state;
   }
   
-  function setState($state){
+  function setState($state) {
     $this->state = $state;
   }
   
-  function getCracked(){
+  function getCracked() {
     return $this->cracked;
   }
   
-  function setCracked($cracked){
+  function setCracked($cracked) {
     $this->cracked = $cracked;
   }
   
-  function getSpeed(){
+  function getSpeed() {
     return $this->speed;
   }
   
-  function setSpeed($speed){
+  function setSpeed($speed) {
     $this->speed = $speed;
   }
-
+  
   const CHUNK_ID = "chunkId";
   const TASK_ID = "taskId";
   const SKIP = "skip";

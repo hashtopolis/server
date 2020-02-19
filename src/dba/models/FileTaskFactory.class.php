@@ -18,7 +18,7 @@ class FileTaskFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return FileTask
    */
@@ -26,7 +26,7 @@ class FileTaskFactory extends AbstractModelFactory {
     $o = new FileTask(-1, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class FileTaskFactory extends AbstractModelFactory {
     $o = new FileTask($dict['fileTaskId'], $dict['fileId'], $dict['taskId']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class FileTaskFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), FileTask::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, FileTask::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return FileTask
@@ -71,7 +71,7 @@ class FileTaskFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), FileTask::class);
   }
-
+  
   /**
    * @param FileTask $model
    * @return FileTask

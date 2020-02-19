@@ -52,7 +52,7 @@ class TaskWrapper extends AbstractModel {
   function setId($id) {
     $this->taskWrapperId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -60,63 +60,63 @@ class TaskWrapper extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getPriority(){
+  
+  function getPriority() {
     return $this->priority;
   }
   
-  function setPriority($priority){
+  function setPriority($priority) {
     $this->priority = $priority;
   }
   
-  function getTaskType(){
+  function getTaskType() {
     return $this->taskType;
   }
   
-  function setTaskType($taskType){
+  function setTaskType($taskType) {
     $this->taskType = $taskType;
   }
   
-  function getHashlistId(){
+  function getHashlistId() {
     return $this->hashlistId;
   }
   
-  function setHashlistId($hashlistId){
+  function setHashlistId($hashlistId) {
     $this->hashlistId = $hashlistId;
   }
   
-  function getAccessGroupId(){
+  function getAccessGroupId() {
     return $this->accessGroupId;
   }
   
-  function setAccessGroupId($accessGroupId){
+  function setAccessGroupId($accessGroupId) {
     $this->accessGroupId = $accessGroupId;
   }
   
-  function getTaskWrapperName(){
+  function getTaskWrapperName() {
     return $this->taskWrapperName;
   }
   
-  function setTaskWrapperName($taskWrapperName){
+  function setTaskWrapperName($taskWrapperName) {
     $this->taskWrapperName = $taskWrapperName;
   }
   
-  function getIsArchived(){
+  function getIsArchived() {
     return $this->isArchived;
   }
   
-  function setIsArchived($isArchived){
+  function setIsArchived($isArchived) {
     $this->isArchived = $isArchived;
   }
   
-  function getCracked(){
+  function getCracked() {
     return $this->cracked;
   }
   
-  function setCracked($cracked){
+  function setCracked($cracked) {
     $this->cracked = $cracked;
   }
-
+  
   const TASK_WRAPPER_ID = "taskWrapperId";
   const PRIORITY = "priority";
   const TASK_TYPE = "taskType";

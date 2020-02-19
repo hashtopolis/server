@@ -18,7 +18,7 @@ class AgentErrorFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return AgentError
    */
@@ -26,7 +26,7 @@ class AgentErrorFactory extends AbstractModelFactory {
     $o = new AgentError(-1, null, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class AgentErrorFactory extends AbstractModelFactory {
     $o = new AgentError($dict['agentErrorId'], $dict['agentId'], $dict['taskId'], $dict['chunkId'], $dict['time'], $dict['error']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class AgentErrorFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), AgentError::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, AgentError::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return AgentError
@@ -71,7 +71,7 @@ class AgentErrorFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), AgentError::class);
   }
-
+  
   /**
    * @param AgentError $model
    * @return AgentError

@@ -46,7 +46,7 @@ class LogEntry extends AbstractModel {
   function setId($id) {
     $this->logEntryId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -54,47 +54,47 @@ class LogEntry extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getIssuer(){
+  
+  function getIssuer() {
     return $this->issuer;
   }
   
-  function setIssuer($issuer){
+  function setIssuer($issuer) {
     $this->issuer = $issuer;
   }
   
-  function getIssuerId(){
+  function getIssuerId() {
     return $this->issuerId;
   }
   
-  function setIssuerId($issuerId){
+  function setIssuerId($issuerId) {
     $this->issuerId = $issuerId;
   }
   
-  function getLevel(){
+  function getLevel() {
     return $this->level;
   }
   
-  function setLevel($level){
+  function setLevel($level) {
     $this->level = $level;
   }
   
-  function getMessage(){
+  function getMessage() {
     return $this->message;
   }
   
-  function setMessage($message){
+  function setMessage($message) {
     $this->message = $message;
   }
   
-  function getTime(){
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
-
+  
   const LOG_ENTRY_ID = "logEntryId";
   const ISSUER = "issuer";
   const ISSUER_ID = "issuerId";

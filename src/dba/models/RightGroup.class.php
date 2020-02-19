@@ -37,7 +37,7 @@ class RightGroup extends AbstractModel {
   function setId($id) {
     $this->rightGroupId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class RightGroup extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getGroupName(){
+  
+  function getGroupName() {
     return $this->groupName;
   }
   
-  function setGroupName($groupName){
+  function setGroupName($groupName) {
     $this->groupName = $groupName;
   }
   
-  function getPermissions(){
+  function getPermissions() {
     return $this->permissions;
   }
   
-  function setPermissions($permissions){
+  function setPermissions($permissions) {
     $this->permissions = $permissions;
   }
-
+  
   const RIGHT_GROUP_ID = "rightGroupId";
   const GROUP_NAME = "groupName";
   const PERMISSIONS = "permissions";

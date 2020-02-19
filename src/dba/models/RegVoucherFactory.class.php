@@ -18,7 +18,7 @@ class RegVoucherFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return RegVoucher
    */
@@ -26,7 +26,7 @@ class RegVoucherFactory extends AbstractModelFactory {
     $o = new RegVoucher(-1, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class RegVoucherFactory extends AbstractModelFactory {
     $o = new RegVoucher($dict['regVoucherId'], $dict['voucher'], $dict['time']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class RegVoucherFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), RegVoucher::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, RegVoucher::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return RegVoucher
@@ -71,7 +71,7 @@ class RegVoucherFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), RegVoucher::class);
   }
-
+  
   /**
    * @param RegVoucher $model
    * @return RegVoucher

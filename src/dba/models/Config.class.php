@@ -40,7 +40,7 @@ class Config extends AbstractModel {
   function setId($id) {
     $this->configId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -48,31 +48,31 @@ class Config extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getConfigSectionId(){
+  
+  function getConfigSectionId() {
     return $this->configSectionId;
   }
   
-  function setConfigSectionId($configSectionId){
+  function setConfigSectionId($configSectionId) {
     $this->configSectionId = $configSectionId;
   }
   
-  function getItem(){
+  function getItem() {
     return $this->item;
   }
   
-  function setItem($item){
+  function setItem($item) {
     $this->item = $item;
   }
   
-  function getValue(){
+  function getValue() {
     return $this->value;
   }
   
-  function setValue($value){
+  function setValue($value) {
     $this->value = $value;
   }
-
+  
   const CONFIG_ID = "configId";
   const CONFIG_SECTION_ID = "configSectionId";
   const ITEM = "item";

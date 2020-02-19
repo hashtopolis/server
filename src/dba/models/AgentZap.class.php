@@ -37,7 +37,7 @@ class AgentZap extends AbstractModel {
   function setId($id) {
     $this->agentZapId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class AgentZap extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getAgentId(){
+  
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getLastZapId(){
+  function getLastZapId() {
     return $this->lastZapId;
   }
   
-  function setLastZapId($lastZapId){
+  function setLastZapId($lastZapId) {
     $this->lastZapId = $lastZapId;
   }
-
+  
   const AGENT_ZAP_ID = "agentZapId";
   const AGENT_ID = "agentId";
   const LAST_ZAP_ID = "lastZapId";

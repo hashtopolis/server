@@ -37,7 +37,7 @@ class FileTask extends AbstractModel {
   function setId($id) {
     $this->fileTaskId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class FileTask extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getFileId(){
+  
+  function getFileId() {
     return $this->fileId;
   }
   
-  function setFileId($fileId){
+  function setFileId($fileId) {
     $this->fileId = $fileId;
   }
   
-  function getTaskId(){
+  function getTaskId() {
     return $this->taskId;
   }
   
-  function setTaskId($taskId){
+  function setTaskId($taskId) {
     $this->taskId = $taskId;
   }
-
+  
   const FILE_TASK_ID = "fileTaskId";
   const FILE_ID = "fileId";
   const TASK_ID = "taskId";

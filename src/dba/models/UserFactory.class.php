@@ -18,7 +18,7 @@ class UserFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return User
    */
@@ -26,7 +26,7 @@ class UserFactory extends AbstractModelFactory {
     $o = new User(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class UserFactory extends AbstractModelFactory {
     $o = new User($dict['userId'], $dict['username'], $dict['email'], $dict['passwordHash'], $dict['passwordSalt'], $dict['isValid'], $dict['isComputedPassword'], $dict['lastLoginDate'], $dict['registeredSince'], $dict['sessionLifetime'], $dict['rightGroupId'], $dict['yubikey'], $dict['otp1'], $dict['otp2'], $dict['otp3'], $dict['otp4']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class UserFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), User::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, User::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return User
@@ -71,7 +71,7 @@ class UserFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), User::class);
   }
-
+  
   /**
    * @param User $model
    * @return User

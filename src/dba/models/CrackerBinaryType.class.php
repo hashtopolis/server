@@ -37,7 +37,7 @@ class CrackerBinaryType extends AbstractModel {
   function setId($id) {
     $this->crackerBinaryTypeId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class CrackerBinaryType extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTypeName(){
+  
+  function getTypeName() {
     return $this->typeName;
   }
   
-  function setTypeName($typeName){
+  function setTypeName($typeName) {
     $this->typeName = $typeName;
   }
   
-  function getIsChunkingAvailable(){
+  function getIsChunkingAvailable() {
     return $this->isChunkingAvailable;
   }
   
-  function setIsChunkingAvailable($isChunkingAvailable){
+  function setIsChunkingAvailable($isChunkingAvailable) {
     $this->isChunkingAvailable = $isChunkingAvailable;
   }
-
+  
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const TYPE_NAME = "typeName";
   const IS_CHUNKING_AVAILABLE = "isChunkingAvailable";

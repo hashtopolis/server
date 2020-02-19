@@ -34,7 +34,7 @@ class StoredValue extends AbstractModel {
   function setId($id) {
     $this->storedValueId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -42,15 +42,15 @@ class StoredValue extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getVal(){
+  
+  function getVal() {
     return $this->val;
   }
   
-  function setVal($val){
+  function setVal($val) {
     $this->val = $val;
   }
-
+  
   const STORED_VALUE_ID = "storedValueId";
   const VAL = "val";
 }

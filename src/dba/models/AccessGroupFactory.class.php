@@ -18,7 +18,7 @@ class AccessGroupFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return AccessGroup
    */
@@ -26,7 +26,7 @@ class AccessGroupFactory extends AbstractModelFactory {
     $o = new AccessGroup(-1, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class AccessGroupFactory extends AbstractModelFactory {
     $o = new AccessGroup($dict['accessGroupId'], $dict['groupName']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class AccessGroupFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), AccessGroup::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, AccessGroup::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return AccessGroup
@@ -71,7 +71,7 @@ class AccessGroupFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), AccessGroup::class);
   }
-
+  
   /**
    * @param AccessGroup $model
    * @return AccessGroup

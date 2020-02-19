@@ -40,7 +40,7 @@ class FileDownload extends AbstractModel {
   function setId($id) {
     $this->fileDownloadId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -48,31 +48,31 @@ class FileDownload extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTime(){
+  
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
   
-  function getFileId(){
+  function getFileId() {
     return $this->fileId;
   }
   
-  function setFileId($fileId){
+  function setFileId($fileId) {
     $this->fileId = $fileId;
   }
   
-  function getStatus(){
+  function getStatus() {
     return $this->status;
   }
   
-  function setStatus($status){
+  function setStatus($status) {
     $this->status = $status;
   }
-
+  
   const FILE_DOWNLOAD_ID = "fileDownloadId";
   const TIME = "time";
   const FILE_ID = "fileId";

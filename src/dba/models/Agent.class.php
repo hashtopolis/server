@@ -76,7 +76,7 @@ class Agent extends AbstractModel {
   function setId($id) {
     $this->agentId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -84,127 +84,127 @@ class Agent extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getAgentName(){
+  
+  function getAgentName() {
     return $this->agentName;
   }
   
-  function setAgentName($agentName){
+  function setAgentName($agentName) {
     $this->agentName = $agentName;
   }
   
-  function getUid(){
+  function getUid() {
     return $this->uid;
   }
   
-  function setUid($uid){
+  function setUid($uid) {
     $this->uid = $uid;
   }
   
-  function getOs(){
+  function getOs() {
     return $this->os;
   }
   
-  function setOs($os){
+  function setOs($os) {
     $this->os = $os;
   }
   
-  function getDevices(){
+  function getDevices() {
     return $this->devices;
   }
   
-  function setDevices($devices){
+  function setDevices($devices) {
     $this->devices = $devices;
   }
   
-  function getCmdPars(){
+  function getCmdPars() {
     return $this->cmdPars;
   }
   
-  function setCmdPars($cmdPars){
+  function setCmdPars($cmdPars) {
     $this->cmdPars = $cmdPars;
   }
   
-  function getIgnoreErrors(){
+  function getIgnoreErrors() {
     return $this->ignoreErrors;
   }
   
-  function setIgnoreErrors($ignoreErrors){
+  function setIgnoreErrors($ignoreErrors) {
     $this->ignoreErrors = $ignoreErrors;
   }
   
-  function getIsActive(){
+  function getIsActive() {
     return $this->isActive;
   }
   
-  function setIsActive($isActive){
+  function setIsActive($isActive) {
     $this->isActive = $isActive;
   }
   
-  function getIsTrusted(){
+  function getIsTrusted() {
     return $this->isTrusted;
   }
   
-  function setIsTrusted($isTrusted){
+  function setIsTrusted($isTrusted) {
     $this->isTrusted = $isTrusted;
   }
   
-  function getToken(){
+  function getToken() {
     return $this->token;
   }
   
-  function setToken($token){
+  function setToken($token) {
     $this->token = $token;
   }
   
-  function getLastAct(){
+  function getLastAct() {
     return $this->lastAct;
   }
   
-  function setLastAct($lastAct){
+  function setLastAct($lastAct) {
     $this->lastAct = $lastAct;
   }
   
-  function getLastTime(){
+  function getLastTime() {
     return $this->lastTime;
   }
   
-  function setLastTime($lastTime){
+  function setLastTime($lastTime) {
     $this->lastTime = $lastTime;
   }
   
-  function getLastIp(){
+  function getLastIp() {
     return $this->lastIp;
   }
   
-  function setLastIp($lastIp){
+  function setLastIp($lastIp) {
     $this->lastIp = $lastIp;
   }
   
-  function getUserId(){
+  function getUserId() {
     return $this->userId;
   }
   
-  function setUserId($userId){
+  function setUserId($userId) {
     $this->userId = $userId;
   }
   
-  function getCpuOnly(){
+  function getCpuOnly() {
     return $this->cpuOnly;
   }
   
-  function setCpuOnly($cpuOnly){
+  function setCpuOnly($cpuOnly) {
     $this->cpuOnly = $cpuOnly;
   }
   
-  function getClientSignature(){
+  function getClientSignature() {
     return $this->clientSignature;
   }
   
-  function setClientSignature($clientSignature){
+  function setClientSignature($clientSignature) {
     $this->clientSignature = $clientSignature;
   }
-
+  
   const AGENT_ID = "agentId";
   const AGENT_NAME = "agentName";
   const UID = "uid";

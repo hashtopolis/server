@@ -49,7 +49,7 @@ class Session extends AbstractModel {
   function setId($id) {
     $this->sessionId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -57,55 +57,55 @@ class Session extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getUserId(){
+  
+  function getUserId() {
     return $this->userId;
   }
   
-  function setUserId($userId){
+  function setUserId($userId) {
     $this->userId = $userId;
   }
   
-  function getSessionStartDate(){
+  function getSessionStartDate() {
     return $this->sessionStartDate;
   }
   
-  function setSessionStartDate($sessionStartDate){
+  function setSessionStartDate($sessionStartDate) {
     $this->sessionStartDate = $sessionStartDate;
   }
   
-  function getLastActionDate(){
+  function getLastActionDate() {
     return $this->lastActionDate;
   }
   
-  function setLastActionDate($lastActionDate){
+  function setLastActionDate($lastActionDate) {
     $this->lastActionDate = $lastActionDate;
   }
   
-  function getIsOpen(){
+  function getIsOpen() {
     return $this->isOpen;
   }
   
-  function setIsOpen($isOpen){
+  function setIsOpen($isOpen) {
     $this->isOpen = $isOpen;
   }
   
-  function getSessionLifetime(){
+  function getSessionLifetime() {
     return $this->sessionLifetime;
   }
   
-  function setSessionLifetime($sessionLifetime){
+  function setSessionLifetime($sessionLifetime) {
     $this->sessionLifetime = $sessionLifetime;
   }
   
-  function getSessionKey(){
+  function getSessionKey() {
     return $this->sessionKey;
   }
   
-  function setSessionKey($sessionKey){
+  function setSessionKey($sessionKey) {
     $this->sessionKey = $sessionKey;
   }
-
+  
   const SESSION_ID = "sessionId";
   const USER_ID = "userId";
   const SESSION_START_DATE = "sessionStartDate";

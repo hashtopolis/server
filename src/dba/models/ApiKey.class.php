@@ -49,7 +49,7 @@ class ApiKey extends AbstractModel {
   function setId($id) {
     $this->apiKeyId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -57,55 +57,55 @@ class ApiKey extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getStartValid(){
+  
+  function getStartValid() {
     return $this->startValid;
   }
   
-  function setStartValid($startValid){
+  function setStartValid($startValid) {
     $this->startValid = $startValid;
   }
   
-  function getEndValid(){
+  function getEndValid() {
     return $this->endValid;
   }
   
-  function setEndValid($endValid){
+  function setEndValid($endValid) {
     $this->endValid = $endValid;
   }
   
-  function getAccessKey(){
+  function getAccessKey() {
     return $this->accessKey;
   }
   
-  function setAccessKey($accessKey){
+  function setAccessKey($accessKey) {
     $this->accessKey = $accessKey;
   }
   
-  function getAccessCount(){
+  function getAccessCount() {
     return $this->accessCount;
   }
   
-  function setAccessCount($accessCount){
+  function setAccessCount($accessCount) {
     $this->accessCount = $accessCount;
   }
   
-  function getUserId(){
+  function getUserId() {
     return $this->userId;
   }
   
-  function setUserId($userId){
+  function setUserId($userId) {
     $this->userId = $userId;
   }
   
-  function getApiGroupId(){
+  function getApiGroupId() {
     return $this->apiGroupId;
   }
   
-  function setApiGroupId($apiGroupId){
+  function setApiGroupId($apiGroupId) {
     $this->apiGroupId = $apiGroupId;
   }
-
+  
   const API_KEY_ID = "apiKeyId";
   const START_VALID = "startValid";
   const END_VALID = "endValid";

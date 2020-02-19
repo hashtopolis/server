@@ -2,7 +2,7 @@
 
 namespace DBA;
 
-class JoinFilter extends Join  {
+class JoinFilter extends Join {
   /**
    * @var AbstractModelFactory
    */
@@ -66,8 +66,8 @@ class JoinFilter extends Join  {
   /**
    * @return AbstractModelFactory
    */
-  function getOverrideOwnFactory(){
-      return $this->overrideOwnFactory;
+  function getOverrideOwnFactory() {
+    return $this->overrideOwnFactory;
   }
 }
 

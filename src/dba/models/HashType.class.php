@@ -40,7 +40,7 @@ class HashType extends AbstractModel {
   function setId($id) {
     $this->hashTypeId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -48,31 +48,31 @@ class HashType extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getDescription(){
+  
+  function getDescription() {
     return $this->description;
   }
   
-  function setDescription($description){
+  function setDescription($description) {
     $this->description = $description;
   }
   
-  function getIsSalted(){
+  function getIsSalted() {
     return $this->isSalted;
   }
   
-  function setIsSalted($isSalted){
+  function setIsSalted($isSalted) {
     $this->isSalted = $isSalted;
   }
   
-  function getIsSlowHash(){
+  function getIsSlowHash() {
     return $this->isSlowHash;
   }
   
-  function setIsSlowHash($isSlowHash){
+  function setIsSlowHash($isSlowHash) {
     $this->isSlowHash = $isSlowHash;
   }
-
+  
   const HASH_TYPE_ID = "hashTypeId";
   const DESCRIPTION = "description";
   const IS_SALTED = "isSalted";

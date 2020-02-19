@@ -37,7 +37,7 @@ class HashlistHashlist extends AbstractModel {
   function setId($id) {
     $this->hashlistHashlistId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class HashlistHashlist extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getParentHashlistId(){
+  
+  function getParentHashlistId() {
     return $this->parentHashlistId;
   }
   
-  function setParentHashlistId($parentHashlistId){
+  function setParentHashlistId($parentHashlistId) {
     $this->parentHashlistId = $parentHashlistId;
   }
   
-  function getHashlistId(){
+  function getHashlistId() {
     return $this->hashlistId;
   }
   
-  function setHashlistId($hashlistId){
+  function setHashlistId($hashlistId) {
     $this->hashlistId = $hashlistId;
   }
-
+  
   const HASHLIST_HASHLIST_ID = "hashlistHashlistId";
   const PARENT_HASHLIST_ID = "parentHashlistId";
   const HASHLIST_ID = "hashlistId";

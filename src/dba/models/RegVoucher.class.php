@@ -37,7 +37,7 @@ class RegVoucher extends AbstractModel {
   function setId($id) {
     $this->regVoucherId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class RegVoucher extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getVoucher(){
+  
+  function getVoucher() {
     return $this->voucher;
   }
   
-  function setVoucher($voucher){
+  function setVoucher($voucher) {
     $this->voucher = $voucher;
   }
   
-  function getTime(){
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
-
+  
   const REG_VOUCHER_ID = "regVoucherId";
   const VOUCHER = "voucher";
   const TIME = "time";

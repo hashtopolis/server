@@ -37,7 +37,7 @@ class TaskDebugOutput extends AbstractModel {
   function setId($id) {
     $this->taskDebugOutputId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class TaskDebugOutput extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTaskId(){
+  
+  function getTaskId() {
     return $this->taskId;
   }
   
-  function setTaskId($taskId){
+  function setTaskId($taskId) {
     $this->taskId = $taskId;
   }
   
-  function getOutput(){
+  function getOutput() {
     return $this->output;
   }
   
-  function setOutput($output){
+  function setOutput($output) {
     $this->output = $output;
   }
-
+  
   const TASK_DEBUG_OUTPUT_ID = "taskDebugOutputId";
   const TASK_ID = "taskId";
   const OUTPUT = "output";

@@ -1,11 +1,11 @@
 <?php
 
 /** @var $CONN array */
-define("DBA_SERVER", (isset($CONN['server']))?$CONN['server']:"");
-define("DBA_DB",  (isset($CONN['db']))?$CONN['db']:"");
-define("DBA_USER", (isset($CONN['user']))?$CONN['user']:"");
-define("DBA_PASS", (isset($CONN['pass']))?$CONN['pass']:"");
-define("DBA_PORT", (isset($CONN['port']))?$CONN['port']:"");
+define("DBA_SERVER", (isset($CONN['server'])) ? $CONN['server'] : "");
+define("DBA_DB", (isset($CONN['db'])) ? $CONN['db'] : "");
+define("DBA_USER", (isset($CONN['user'])) ? $CONN['user'] : "");
+define("DBA_PASS", (isset($CONN['pass'])) ? $CONN['pass'] : "");
+define("DBA_PORT", (isset($CONN['port'])) ? $CONN['port'] : "");
 
 require_once(dirname(__FILE__) . "/AbstractModel.class.php");
 require_once(dirname(__FILE__) . "/AbstractModelFactory.class.php");

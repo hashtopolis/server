@@ -18,7 +18,7 @@ class HashlistFactory extends AbstractModelFactory {
   function getCacheValidTime() {
     return -1;
   }
-
+  
   /**
    * @return Hashlist
    */
@@ -26,7 +26,7 @@ class HashlistFactory extends AbstractModelFactory {
     $o = new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null);
     return $o;
   }
-
+  
   /**
    * @param string $pk
    * @param array $dict
@@ -36,7 +36,7 @@ class HashlistFactory extends AbstractModelFactory {
     $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures']);
     return $o;
   }
-
+  
   /**
    * @param array $options
    * @param bool $single
@@ -47,23 +47,23 @@ class HashlistFactory extends AbstractModelFactory {
     if (array_key_exists('join', $options)) {
       $join = true;
     }
-    if($single){
-      if($join){
+    if ($single) {
+      if ($join) {
         return parent::filter($options, $single);
       }
       return Util::cast(parent::filter($options, $single), Hashlist::class);
     }
     $objects = parent::filter($options, $single);
-    if($join){
+    if ($join) {
       return $objects;
     }
     $models = array();
-    foreach($objects as $object){
+    foreach ($objects as $object) {
       $models[] = Util::cast($object, Hashlist::class);
     }
     return $models;
   }
-
+  
   /**
    * @param string $pk
    * @return Hashlist
@@ -71,7 +71,7 @@ class HashlistFactory extends AbstractModelFactory {
   function get($pk) {
     return Util::cast(parent::get($pk), Hashlist::class);
   }
-
+  
   /**
    * @param Hashlist $model
    * @return Hashlist

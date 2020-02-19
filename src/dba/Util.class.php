@@ -11,7 +11,7 @@ class Util {
    * @return mixed|null
    */
   public static function cast($obj, $to_class) {
-    if($obj == null){
+    if ($obj == null) {
       return null;
     }
     else if (class_exists($to_class)) {

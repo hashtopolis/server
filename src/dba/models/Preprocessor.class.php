@@ -49,7 +49,7 @@ class Preprocessor extends AbstractModel {
   function setId($id) {
     $this->preprocessorId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -57,55 +57,55 @@ class Preprocessor extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getName(){
+  
+  function getName() {
     return $this->name;
   }
   
-  function setName($name){
+  function setName($name) {
     $this->name = $name;
   }
   
-  function getUrl(){
+  function getUrl() {
     return $this->url;
   }
   
-  function setUrl($url){
+  function setUrl($url) {
     $this->url = $url;
   }
   
-  function getBinaryName(){
+  function getBinaryName() {
     return $this->binaryName;
   }
   
-  function setBinaryName($binaryName){
+  function setBinaryName($binaryName) {
     $this->binaryName = $binaryName;
   }
   
-  function getKeyspaceCommand(){
+  function getKeyspaceCommand() {
     return $this->keyspaceCommand;
   }
   
-  function setKeyspaceCommand($keyspaceCommand){
+  function setKeyspaceCommand($keyspaceCommand) {
     $this->keyspaceCommand = $keyspaceCommand;
   }
   
-  function getSkipCommand(){
+  function getSkipCommand() {
     return $this->skipCommand;
   }
   
-  function setSkipCommand($skipCommand){
+  function setSkipCommand($skipCommand) {
     $this->skipCommand = $skipCommand;
   }
   
-  function getLimitCommand(){
+  function getLimitCommand() {
     return $this->limitCommand;
   }
   
-  function setLimitCommand($limitCommand){
+  function setLimitCommand($limitCommand) {
     $this->limitCommand = $limitCommand;
   }
-
+  
   const PREPROCESSOR_ID = "preprocessorId";
   const NAME = "name";
   const URL = "url";

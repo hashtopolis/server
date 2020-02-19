@@ -37,7 +37,7 @@ class FileDelete extends AbstractModel {
   function setId($id) {
     $this->fileDeleteId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class FileDelete extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getFilename(){
+  
+  function getFilename() {
     return $this->filename;
   }
   
-  function setFilename($filename){
+  function setFilename($filename) {
     $this->filename = $filename;
   }
   
-  function getTime(){
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
-
+  
   const FILE_DELETE_ID = "fileDeleteId";
   const FILENAME = "filename";
   const TIME = "time";

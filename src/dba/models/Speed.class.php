@@ -43,7 +43,7 @@ class Speed extends AbstractModel {
   function setId($id) {
     $this->speedId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -51,39 +51,39 @@ class Speed extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getAgentId(){
+  
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getTaskId(){
+  function getTaskId() {
     return $this->taskId;
   }
   
-  function setTaskId($taskId){
+  function setTaskId($taskId) {
     $this->taskId = $taskId;
   }
   
-  function getSpeed(){
+  function getSpeed() {
     return $this->speed;
   }
   
-  function setSpeed($speed){
+  function setSpeed($speed) {
     $this->speed = $speed;
   }
   
-  function getTime(){
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
-
+  
   const SPEED_ID = "speedId";
   const AGENT_ID = "agentId";
   const TASK_ID = "taskId";

@@ -52,7 +52,7 @@ class HealthCheck extends AbstractModel {
   function setId($id) {
     $this->healthCheckId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -60,63 +60,63 @@ class HealthCheck extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getTime(){
+  
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
   
-  function getStatus(){
+  function getStatus() {
     return $this->status;
   }
   
-  function setStatus($status){
+  function setStatus($status) {
     $this->status = $status;
   }
   
-  function getCheckType(){
+  function getCheckType() {
     return $this->checkType;
   }
   
-  function setCheckType($checkType){
+  function setCheckType($checkType) {
     $this->checkType = $checkType;
   }
   
-  function getHashtypeId(){
+  function getHashtypeId() {
     return $this->hashtypeId;
   }
   
-  function setHashtypeId($hashtypeId){
+  function setHashtypeId($hashtypeId) {
     $this->hashtypeId = $hashtypeId;
   }
   
-  function getCrackerBinaryId(){
+  function getCrackerBinaryId() {
     return $this->crackerBinaryId;
   }
   
-  function setCrackerBinaryId($crackerBinaryId){
+  function setCrackerBinaryId($crackerBinaryId) {
     $this->crackerBinaryId = $crackerBinaryId;
   }
   
-  function getExpectedCracks(){
+  function getExpectedCracks() {
     return $this->expectedCracks;
   }
   
-  function setExpectedCracks($expectedCracks){
+  function setExpectedCracks($expectedCracks) {
     $this->expectedCracks = $expectedCracks;
   }
   
-  function getAttackCmd(){
+  function getAttackCmd() {
     return $this->attackCmd;
   }
   
-  function setAttackCmd($attackCmd){
+  function setAttackCmd($attackCmd) {
     $this->attackCmd = $attackCmd;
   }
-
+  
   const HEALTH_CHECK_ID = "healthCheckId";
   const TIME = "time";
   const STATUS = "status";

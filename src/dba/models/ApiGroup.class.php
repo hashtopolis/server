@@ -37,7 +37,7 @@ class ApiGroup extends AbstractModel {
   function setId($id) {
     $this->apiGroupId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class ApiGroup extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getPermissions(){
+  
+  function getPermissions() {
     return $this->permissions;
   }
   
-  function setPermissions($permissions){
+  function setPermissions($permissions) {
     $this->permissions = $permissions;
   }
   
-  function getName(){
+  function getName() {
     return $this->name;
   }
   
-  function setName($name){
+  function setName($name) {
     $this->name = $name;
   }
-
+  
   const API_GROUP_ID = "apiGroupId";
   const PERMISSIONS = "permissions";
   const NAME = "name";

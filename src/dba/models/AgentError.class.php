@@ -46,7 +46,7 @@ class AgentError extends AbstractModel {
   function setId($id) {
     $this->agentErrorId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -54,47 +54,47 @@ class AgentError extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getAgentId(){
+  
+  function getAgentId() {
     return $this->agentId;
   }
   
-  function setAgentId($agentId){
+  function setAgentId($agentId) {
     $this->agentId = $agentId;
   }
   
-  function getTaskId(){
+  function getTaskId() {
     return $this->taskId;
   }
   
-  function setTaskId($taskId){
+  function setTaskId($taskId) {
     $this->taskId = $taskId;
   }
   
-  function getChunkId(){
+  function getChunkId() {
     return $this->chunkId;
   }
   
-  function setChunkId($chunkId){
+  function setChunkId($chunkId) {
     $this->chunkId = $chunkId;
   }
   
-  function getTime(){
+  function getTime() {
     return $this->time;
   }
   
-  function setTime($time){
+  function setTime($time) {
     $this->time = $time;
   }
   
-  function getError(){
+  function getError() {
     return $this->error;
   }
   
-  function setError($error){
+  function setError($error) {
     $this->error = $error;
   }
-
+  
   const AGENT_ERROR_ID = "agentErrorId";
   const AGENT_ID = "agentId";
   const TASK_ID = "taskId";

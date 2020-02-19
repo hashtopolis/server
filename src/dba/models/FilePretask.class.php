@@ -37,7 +37,7 @@ class FilePretask extends AbstractModel {
   function setId($id) {
     $this->filePretaskId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -45,23 +45,23 @@ class FilePretask extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getFileId(){
+  
+  function getFileId() {
     return $this->fileId;
   }
   
-  function setFileId($fileId){
+  function setFileId($fileId) {
     $this->fileId = $fileId;
   }
   
-  function getPretaskId(){
+  function getPretaskId() {
     return $this->pretaskId;
   }
   
-  function setPretaskId($pretaskId){
+  function setPretaskId($pretaskId) {
     $this->pretaskId = $pretaskId;
   }
-
+  
   const FILE_PRETASK_ID = "filePretaskId";
   const FILE_ID = "fileId";
   const PRETASK_ID = "pretaskId";

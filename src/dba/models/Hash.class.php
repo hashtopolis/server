@@ -55,7 +55,7 @@ class Hash extends AbstractModel {
   function setId($id) {
     $this->hashId = $id;
   }
-
+  
   /**
    * Used to serialize the data contained in the model
    * @return array
@@ -63,71 +63,71 @@ class Hash extends AbstractModel {
   public function expose() {
     return get_object_vars($this);
   }
-
-  function getHashlistId(){
+  
+  function getHashlistId() {
     return $this->hashlistId;
   }
   
-  function setHashlistId($hashlistId){
+  function setHashlistId($hashlistId) {
     $this->hashlistId = $hashlistId;
   }
   
-  function getHash(){
+  function getHash() {
     return $this->hash;
   }
   
-  function setHash($hash){
+  function setHash($hash) {
     $this->hash = $hash;
   }
   
-  function getSalt(){
+  function getSalt() {
     return $this->salt;
   }
   
-  function setSalt($salt){
+  function setSalt($salt) {
     $this->salt = $salt;
   }
   
-  function getPlaintext(){
+  function getPlaintext() {
     return $this->plaintext;
   }
   
-  function setPlaintext($plaintext){
+  function setPlaintext($plaintext) {
     $this->plaintext = $plaintext;
   }
   
-  function getTimeCracked(){
+  function getTimeCracked() {
     return $this->timeCracked;
   }
   
-  function setTimeCracked($timeCracked){
+  function setTimeCracked($timeCracked) {
     $this->timeCracked = $timeCracked;
   }
   
-  function getChunkId(){
+  function getChunkId() {
     return $this->chunkId;
   }
   
-  function setChunkId($chunkId){
+  function setChunkId($chunkId) {
     $this->chunkId = $chunkId;
   }
   
-  function getIsCracked(){
+  function getIsCracked() {
     return $this->isCracked;
   }
   
-  function setIsCracked($isCracked){
+  function setIsCracked($isCracked) {
     $this->isCracked = $isCracked;
   }
   
-  function getCrackPos(){
+  function getCrackPos() {
     return $this->crackPos;
   }
   
-  function setCrackPos($crackPos){
+  function setCrackPos($crackPos) {
     $this->crackPos = $crackPos;
   }
-
+  
   const HASH_ID = "hashId";
   const HASHLIST_ID = "hashlistId";
   const HASH = "hash";
