@@ -8,6 +8,10 @@ class DevelopmentHandler implements Handler {
   public function handle($action) {
     try {
       switch ($action) {
+        case DSetupAction::EXECUTE_SETUP:
+          AccessControl::getInstance()->checkPermission(DSetupAction::EXECUTE_SETUP_PERM);
+          DevelopmentUtils::runSetup($_POST['identifier']);
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;

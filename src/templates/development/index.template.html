@@ -22,7 +22,7 @@
 					<td>
 						<form style="float: right;" action="development.php" method="POST" onSubmit="if (!confirm('Are you sure you want to execute this tool?')) return false;">
 							<input type="hidden" name="action" value="[[$DSetupAction::EXECUTE_SETUP]]">
-							<input type="hidden" name="setupId" value="[[setup.getIdentifier()]]">
+							<input type="hidden" name="identifier" value="[[setup.getIdentifier()]]">
 							<input type="hidden" name="csrf" value="[[csrf]]">
 							<button type="submit" class='btn btn-warning' data-toggle="tooltip" data-placement="top" title="Run"{{IF ![[setup.isApplicable()]]}} disabled{{ENDIF}}><i class="fas fa-power-off" aria-hidden="true"></i></button>
 						</form>
