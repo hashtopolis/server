@@ -36,8 +36,8 @@ class AccessGroupUtils {
   
   /**
    * @param string $groupName
-   * @throws HTException
    * @return AccessGroup
+   * @throws HTException
    */
   public static function createGroup($groupName) {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
@@ -165,8 +165,8 @@ class AccessGroupUtils {
   
   /**
    * @param int $groupId
-   * @throws HTException
    * @return AccessGroup
+   * @throws HTException
    */
   public static function getGroup($groupId) {
     $group = Factory::getAccessGroupFactory()->get($groupId);

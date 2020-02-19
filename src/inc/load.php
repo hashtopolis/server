@@ -1,4 +1,5 @@
 <?php
+
 use DBA\Factory;
 use DBA\StoredValue;
 
@@ -51,31 +52,33 @@ UI::add('gitcommit', Util::getGitCommit());
 UI::add('build', '');
 
 // Darkmode
-if (isset($_COOKIE['toggledarkmode']) && $_COOKIE['toggledarkmode'] == '1')
+if (isset($_COOKIE['toggledarkmode']) && $_COOKIE['toggledarkmode'] == '1') {
   UI::add('toggledarkmode', 1);
-else
+}
+else {
   UI::add('toggledarkmode', 0);
+}
 
 $updateExecuted = false;
-if($INSTALL){
+if ($INSTALL) {
   // check if update is needed 
   // (note if the version was retrieved with git, but the git folder was removed, smaller updates are not recognized because the build value is missing)
   $storedVersion = Factory::getStoredValueFactory()->get("version");
-  if($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")){
+  if ($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
     include(dirname(__FILE__) . "/../install/updates/update.php");
     $updateExecuted = $upgradePossible;
   }
-  else{ // in case it is not a version upgrade, but the person retrieved a new version via git or copying
+  else { // in case it is not a version upgrade, but the person retrieved a new version via git or copying
     $storedBuild = Factory::getStoredValueFactory()->get("build");
-    if($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")){
+    if ($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
       include(dirname(__FILE__) . "/../install/updates/update.php");
       $updateExecuted = $upgradePossible;
     }
   }
-
-  if(strlen(Util::getGitCommit()) == 0){
+  
+  if (strlen(Util::getGitCommit()) == 0) {
     $storedBuild = Factory::getStoredValueFactory()->get("build");
-    if($storedBuild != null){
+    if ($storedBuild != null) {
       UI::add('build', $storedBuild->getVal());
     }
   }
@@ -84,7 +87,7 @@ if($INSTALL){
 UI::add('menu', Menu::get());
 UI::add('messages', []);
 
-if($updateExecuted){
+if ($updateExecuted) {
   UI::addMessage(UI::SUCCESS, "An automatic upgrade was executed! " . sizeof($EXECUTED) . " changes applied on DB!");
 }
 

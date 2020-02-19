@@ -46,7 +46,7 @@ class HashtopolisNotificationDiscordWebhook extends HashtopolisNotification {
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-  
+    
     return curl_exec($ch);
     
   }

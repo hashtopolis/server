@@ -31,7 +31,7 @@ $group = Factory::getRightGroupFactory()->get(Login::getInstance()->getUser()->g
 UI::add('group', $group);
 
 $qF = new QueryFilter(ApiKey::USER_ID, Login::getInstance()->getUserID(), "=");
-$apiKeys = Factory::getApiKeyFactory()->filter([Factory::FILTER=>$qF]);
+$apiKeys = Factory::getApiKeyFactory()->filter([Factory::FILTER => $qF]);
 UI::add('keys', $apiKeys);
 
 echo Template::getInstance()->render(UI::getObjects());

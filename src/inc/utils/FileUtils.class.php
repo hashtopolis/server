@@ -314,7 +314,7 @@ class FileUtils {
     // check if there are old deletion requests with the same name
     $qF = new QueryFilter(FileDelete::FILENAME, $newName, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
-  
+    
     Factory::getFileFactory()->set($file, File::FILENAME, $newName);
     Factory::getAgentFactory()->getDB()->commit();
   }

@@ -26,10 +26,10 @@ class AgentBinaryHandler implements Handler {
           break;
         case DAgentBinaryAction::CHECK_UPDATE:
           AccessControl::getInstance()->checkPermission(DAgentBinaryAction::CHECK_UPDATE_PERM);
-          if(AgentBinaryUtils::checkUpdate($_POST['binaryId'])){
+          if (AgentBinaryUtils::checkUpdate($_POST['binaryId'])) {
             UI::addMessage(UI::SUCCESS, "New update is available!");
           }
-          else{
+          else {
             UI::addMessage(UI::WARN, "No update available!");
           }
           break;

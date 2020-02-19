@@ -25,8 +25,8 @@ class AccessControlUtils {
   /**
    * @param int $groupId
    * @param array $perm
-   * @throws HTException
    * @return boolean
+   * @throws HTException
    */
   public static function updateGroupPermissions($groupId, $perm) {
     $group = AccessControlUtils::getGroup($groupId);
@@ -71,8 +71,8 @@ class AccessControlUtils {
   
   /**
    * @param string $groupName
-   * @throws HTException
    * @return RightGroup
+   * @throws HTException
    */
   public static function createGroup($groupName) {
     if (strlen($groupName) == 0 || strlen($groupName) > DLimits::ACCESS_GROUP_MAX_LENGTH) {
@@ -107,8 +107,8 @@ class AccessControlUtils {
   
   /**
    * @param int $groupId
-   * @throws HTException
    * @return RightGroup
+   * @throws HTException
    */
   public static function getGroup($groupId) {
     $group = Factory::getRightGroupFactory()->get($groupId);
