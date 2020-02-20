@@ -45,7 +45,7 @@ class HashlistUtils {
     $hashlist = HashlistUtils::getHashlist($hashlistId);
     $lists = Util::checkSuperHashlist($hashlist);
     if (sizeof($lists) == 0) {
-      throw new HTException("Failed to determine the hashlists which should get exported!");
+      throw new HTException("Failed to determine the hashlists which should get purged!");
     }
     else if (!AccessUtils::userCanAccessHashlists($lists, $user)) {
       throw new HTException("No access to hashlist!");
@@ -57,7 +57,6 @@ class HashlistUtils {
       if ($list->getFormat() != 0) {
         $hashFactory = Factory::getHashBinaryFactory();
       }
-      //get number of hashes we need to export
       $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list->getId(), "=");
       $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
       $uS1 = new UpdateSet(Hash::PLAINTEXT, "");
