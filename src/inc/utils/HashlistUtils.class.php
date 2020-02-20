@@ -37,6 +37,48 @@ class HashlistUtils {
   }
   
   /**
+   * @param $hashlistId
+   * @param $user
+   * @throws HTException
+   */
+  public static function purgeHashlist($hashlistId, $user) {
+    $hashlist = HashlistUtils::getHashlist($hashlistId);
+    $lists = Util::checkSuperHashlist($hashlist);
+    if (sizeof($lists) == 0) {
+      throw new HTException("Failed to determine the hashlists which should get exported!");
+    }
+    else if (!AccessUtils::userCanAccessHashlists($lists, $user)) {
+      throw new HTException("No access to hashlist!");
+    }
+    
+    Factory::getAgentFactory()->getDB()->beginTransaction();
+    foreach ($lists as $list) {
+      $hashFactory = Factory::getHashFactory();
+      if ($list->getFormat() != 0) {
+        $hashFactory = Factory::getHashBinaryFactory();
+      }
+      //get number of hashes we need to export
+      $qF1 = new QueryFilter(Hash::HASHLIST_ID, $list->getId(), "=");
+      $qF2 = new QueryFilter(Hash::IS_CRACKED, "1", "=");
+      $uS1 = new UpdateSet(Hash::PLAINTEXT, "");
+      $uS2 = new UpdateSet(Hash::IS_CRACKED, 0);
+      $hashFactory->massUpdate([Factory::FILTER => [$qF1, $qF2], Factory::UPDATE => [$uS1, $uS2]]);
+      
+      // update crack count of parental hashlists
+      $superhashlists = Util::getParentSuperHashlists($list);
+      foreach ($superhashlists as $superhashlist) {
+        Factory::getHashlistFactory()->dec($superhashlist, Hashlist::CRACKED, $list->getCracked());
+      }
+      
+      Factory::getHashlistFactory()->set($list, Hashlist::CRACKED, 0);
+    }
+    if (!in_array($hashlist->getId(), Util::arrayOfIds($lists))) {
+      Factory::getHashlistFactory()->set($list, Hashlist::CRACKED, 0);
+    }
+    Factory::getAgentFactory()->getDB()->commit();
+  }
+  
+  /**
    * @param string $hash
    * @param User $user
    * @return Hash
