@@ -25,11 +25,11 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
-if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::PREPROCESSORS_ACCESS)) {
+if (isset($_GET['new']) && AccessControl::getInstance()->hasPermission(DAccessControl::SERVER_CONFIG_ACCESS)) {
   Template::loadInstance("preprocessors/new");
   UI::add('pageTitle', "Add Preprocessor");
 }
-else if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessControl::PREPROCESSORS_ACCESS)) {
+else if (isset($_GET['edit']) && AccessControl::getInstance()->hasPermission(DAccessControl::SERVER_CONFIG_ACCESS)) {
   $preprocessor = Factory::getPreprocessorFactory()->get($_GET['id']);
   if ($preprocessor !== null) {
     UI::add('preprocessor', $preprocessor);
