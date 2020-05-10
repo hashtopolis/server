@@ -64,7 +64,7 @@ class SearchHandler implements Handler {
       
       $filters = array();
       $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
-      $filters[] = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists));
+      $filters[] = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists), Factory::getHashFactory());
       if (strlen($salt) > 0) {
         $filters[] = new QueryFilter(Hash::SALT, $salt, "=");
       }
