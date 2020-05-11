@@ -1,3 +1,9 @@
+# v0.12.0 -> v0.x.x
+
+## Bugfixes
+
+- Fixed search hash function.
+
 # v0.11.0 -> v0.12.0
 
 ## Features

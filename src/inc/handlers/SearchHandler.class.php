@@ -64,7 +64,7 @@ class SearchHandler implements Handler {
       
       $filters = array();
       $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
-      $filters[] = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists));
+      $filters[] = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists), Factory::getHashFactory());
       if (strlen($salt) > 0) {
         $filters[] = new QueryFilter(Hash::SALT, $salt, "=");
       }
@@ -72,7 +72,7 @@ class SearchHandler implements Handler {
       $joined = Factory::getHashFactory()->filter([Factory::FILTER => $filters, Factory::JOIN => $jF]);
       
       $qF1 = new LikeFilter(Hash::PLAINTEXT, "%" . $queryEntry . "%");
-      $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists));
+      $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists), Factory::getHashFactory());
       $joined2 = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => $jF]);
       /** @var $hashes Hash[] */
       $hashes = $joined2[Factory::getHashFactory()->getModelName()];
