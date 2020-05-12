@@ -19,7 +19,7 @@ class AgentBinaryUtils {
     if (strlen($version) == 0) {
       throw new HTException("Version cannot be empty!");
     }
-    else if (!file_exists(dirname(__FILE__) . "/../../bin/$filename")) {
+    else if (!file_exists(dirname(__FILE__) . "/../../bin/" . basename($filename))) {
       throw new HTException("Provided filename does not exist!");
     }
     $qF = new QueryFilter(AgentBinary::TYPE, $type, "=");
@@ -46,7 +46,7 @@ class AgentBinaryUtils {
     if (strlen($version) == 0) {
       throw new HTException("Version cannot be empty!");
     }
-    else if (!file_exists(dirname(__FILE__) . "/../../bin/$filename")) {
+    else if (!file_exists(dirname(__FILE__) . "/../../bin/" . basename($filename))) {
       throw new HTException("Provided filename does not exist!");
     }
     $agentBinary = AgentBinaryUtils::getBinary($binaryId);
