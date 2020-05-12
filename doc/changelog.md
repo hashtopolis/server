@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - Fixed search hash function.
+- Fixed possible path traversal vulnerability on filename check.
 
 # v0.11.0 -> v0.12.0
 
