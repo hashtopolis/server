@@ -355,7 +355,7 @@ class DConfig {
       case DConfig::AGENT_STAT_LIMIT:
         return "Maximal number of data points showing of agent gpu data.";
       case DConfig::AGENT_DATA_LIFETIME:
-        return "Minimum time in seconds how long agent data about gpu temperature and utility is kept on the server.";
+        return "Minimum time in seconds how long agent gpu/cpu utilisation and gpu temperature data is kept on the server.";
       case DConfig::AGENT_STAT_TENSION:
         return "Draw straigth lines in agent data graph  instead of bezier curves.";
       case DConfig::MULTICAST_ENABLE:

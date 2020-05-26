@@ -28,6 +28,7 @@ class DAgentIgnoreErrors {
 class DAgentStatsType {
   const GPU_TEMP = 1;
   const GPU_UTIL = 2;
+  const CPU_UTIL = 3;
 }
 
 class DAgentAction {

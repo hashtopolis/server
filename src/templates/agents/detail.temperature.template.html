@@ -1,16 +1,17 @@
-{{IF [[deviceTempAvailable]] > 0}}
-    <h3>Device(s) Temperature</h3>
+{{IF [[deviceGpuTempAvailable]] > 0}}
+    <hr>
+    <h3>Device(s) GPU Temperature</h3>
     <div class="row">
         <div class="col col-12">
-            <canvas id="deviceTemp"></canvas>
+            <canvas id="deviceGpuTemp"></canvas>
         </div>
     </div>
     <script type="text/javascript">
         var configTemp = {
             type: 'line',
             data: {
-                labels: [[deviceTempXLabels]],
-                datasets: [[deviceTemp]]
+                labels: [[deviceGpuTempXLabels]],
+                datasets: [[deviceGpuTemp]]
             },
             options: {
                 responsive: true,
@@ -31,29 +32,33 @@
                             labelString: 'Time'
                         }
                     }],
-                    yAxes: [[deviceTempAxes]]
+                    yAxes: [[deviceGpuTempAxes]]
                 }
             }
         };
         $( document ).ready(function() {
-            new Chart(document.getElementById('deviceTemp').getContext('2d'), configTemp);
+            new Chart(document.getElementById('deviceGpuTemp').getContext('2d'), configTemp);
         });
     </script>
+{{ELSE}}
+    <hr>
+    <i>GPU temperature data unavailable</i>
 {{ENDIF}}
 
-{{IF [[deviceUtilAvailable]] > 0}}
-    <h3>Device(s) Util</h3>
+{{IF [[deviceGpuUtilAvailable]] > 0}}
+    <hr>
+    <h3>Device(s) GPU utilisation</h3>
     <div class="row">
         <div class="col col-12">
-            <canvas id="deviceUtil"></canvas>
+            <canvas id="deviceGpuUtil"></canvas>
         </div>
     </div>
     <script type="text/javascript">
         var configUtil = {
             type: 'line',
             data: {
-                labels: [[deviceUtilXLabels]],
-                datasets: [[deviceUtil]]
+                labels: [[deviceGpuUtilXLabels]],
+                datasets: [[deviceGpuUtil]]
             },
             options: {
                 responsive: true,
@@ -74,12 +79,62 @@
                             labelString: 'Time'
                         }
                     }],
-                    yAxes: [[deviceUtilAxes]]
+                    yAxes: [[deviceGpuUtilAxes]]
                 }
             }
         };
         $( document ).ready(function() {
-            new Chart(document.getElementById('deviceUtil').getContext('2d'), configUtil);
+            new Chart(document.getElementById('deviceGpuUtil').getContext('2d'), configUtil);
         });
     </script>
+{{ELSE}}
+    <hr>
+    <i>GPU utilisation data unavailable</i>
+{{ENDIF}}
+
+{{IF [[deviceCpuUtilAvailable]] > 0}}
+    <hr>
+    <h3>Agent average CPU utilisation</h3>
+    <div class="row">
+        <div class="col col-12">
+            <canvas id="deviceCpuUtil"></canvas>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var configCpuUtil = {
+            type: 'line',
+            data: {
+                labels: [[deviceCpuUtilXLabels]],
+                datasets: [[deviceCpuUtil]]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [[deviceCpuUtilAxes]]
+                }
+            }
+        };
+        $( document ).ready(function() {
+            new Chart(document.getElementById('deviceCpuUtil').getContext('2d'), configCpuUtil);
+        });
+    </script>
+{{ELSE}}
+    <hr>
+    <i>CPU utilisation data unavailable</i>
 {{ENDIF}}

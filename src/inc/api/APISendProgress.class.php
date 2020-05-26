@@ -106,7 +106,17 @@ class APISendProgress extends APIBasic {
       $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::GPU_UTIL, $dataTime, $data);
       Factory::getAgentStatFactory()->save($agentStat);
     }
-    
+    if (isset($QUERY[PQuerySendProgress::CPU_UTIL])) {
+      for ($i = 0; $i < sizeof($QUERY[PQuerySendProgress::CPU_UTIL]); $i++) {
+        if (!is_numeric($QUERY[PQuerySendProgress::CPU_UTIL][$i]) || $QUERY[PQuerySendProgress::CPU_UTIL][$i] < 0) {
+          unset($QUERY[PQuerySendProgress::CPU_UTIL][$i]);
+        }
+      }
+      $data = implode(",", $QUERY[PQuerySendProgress::CPU_UTIL]);
+      $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::CPU_UTIL, $dataTime, $data);
+      Factory::getAgentStatFactory()->save($agentStat);
+    }
+
     // agent is assigned to this chunk (not necessarily task!)
     // it can be already assigned to other task, but is still computing this chunk until it realizes it
     $skip = $chunk->getSkip();
