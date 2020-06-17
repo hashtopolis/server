@@ -47,3 +47,8 @@ if (!isset($PRESENT["v0.12.x_hashTypes"])) {
   $EXECUTED["v0.12.x_hashTypes"] = true;
 }
 
+if (!isset($PRESENT["v0.12.x_agentBinaries"])) {
+  Util::checkAgentVersion("python", "0.6.0.10", true);
+  $EXECUTED["v0.12.x_agentBinaries"] = true;
+}
+
