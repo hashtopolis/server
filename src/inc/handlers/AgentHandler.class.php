@@ -41,7 +41,10 @@ class AgentHandler implements Handler {
           AgentUtils::changeIgnoreErrors($_POST['agentId'], $_POST['ignore'], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_PARAMETERS:
-          AccessControl::getInstance()->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
+          $agent = Factory::getAgentFactory()->get($_POST['agentId']);
+          if ($agent == null || Login::getInstance()->getUserID() != $agent->getUserId()) {
+            AccessControl::getInstance()->checkPermission(DAgentAction::SET_PARAMETERS_PERM);
+          }
           AgentUtils::changeCmdParameters($_POST['agentId'], $_POST["cmdpars"], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_ACTIVE:
