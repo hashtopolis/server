@@ -21,11 +21,17 @@ class AgentHandler implements Handler {
     try {
       switch ($action) {
         case DAgentAction::CLEAR_ERRORS:
-          AccessControl::getInstance()->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
+          $agent = Factory::getAgentFactory()->get($_POST['agentId']);
+          if ($agent == null || Login::getInstance()->getUserID() != $agent->getUserId()) {
+            AccessControl::getInstance()->checkPermission(DAgentAction::CLEAR_ERRORS_PERM);
+          }
           AgentUtils::clearErrors($_POST['agentId'], Login::getInstance()->getUser());
           break;
         case DAgentAction::RENAME_AGENT:
-          AccessControl::getInstance()->checkPermission(DAgentAction::RENAME_AGENT_PERM);
+          $agent = Factory::getAgentFactory()->get($_POST['agentId']);
+          if ($agent == null || Login::getInstance()->getUserID() != $agent->getUserId()) {
+            AccessControl::getInstance()->checkPermission(DAgentAction::RENAME_AGENT_PERM);
+          }
           AgentUtils::rename($_POST['agentId'], $_POST['name'], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_OWNER:
@@ -37,7 +43,10 @@ class AgentHandler implements Handler {
           AgentUtils::setTrusted($_POST['agentId'], $_POST["trusted"], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_IGNORE:
-          AccessControl::getInstance()->checkPermission(DAgentAction::SET_IGNORE_PERM);
+          $agent = Factory::getAgentFactory()->get($_POST['agentId']);
+          if ($agent == null || Login::getInstance()->getUserID() != $agent->getUserId()) {
+            AccessControl::getInstance()->checkPermission(DAgentAction::SET_IGNORE_PERM);
+          }
           AgentUtils::changeIgnoreErrors($_POST['agentId'], $_POST['ignore'], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_PARAMETERS:
@@ -48,7 +57,10 @@ class AgentHandler implements Handler {
           AgentUtils::changeCmdParameters($_POST['agentId'], $_POST["cmdpars"], Login::getInstance()->getUser());
           break;
         case DAgentAction::SET_ACTIVE:
-          AccessControl::getInstance()->checkPermission(DAgentAction::SET_ACTIVE_PERM);
+          $agent = Factory::getAgentFactory()->get($_POST['agentId']);
+          if ($agent == null || Login::getInstance()->getUserID() != $agent->getUserId()) {
+            AccessControl::getInstance()->checkPermission(DAgentAction::SET_ACTIVE_PERM);
+          }
           AgentUtils::setActive($_POST['agentId'], false, Login::getInstance()->getUser(), true);
           break;
         case DAgentAction::DELETE_AGENT:
@@ -72,7 +84,10 @@ class AgentHandler implements Handler {
           $this->downloadAgent($_POST['binary']);
           break;
         case DAgentAction::SET_CPU:
-          AccessControl::getInstance()->checkPermission(DAgentAction::SET_CPU_PERM);
+          $agent = Factory::getAgentFactory()->get($_POST['agentId']);
+          if ($agent == null || Login::getInstance()->getUserID() != $agent->getUserId()) {
+            AccessControl::getInstance()->checkPermission(DAgentAction::SET_CPU_PERM);
+          }
           AgentUtils::setAgentCpu($_POST['agentId'], $_POST['cpuOnly'], Login::getInstance()->getUser());
           break;
         default:

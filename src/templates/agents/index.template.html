@@ -26,7 +26,7 @@
                 <input type='hidden' name='action' value='[[$DAgentAction::SET_ACTIVE]]'>
                 <input type="hidden" name="agentId" value="[[agent.getId()]]">
                 <input type="hidden" name="csrf" value="[[csrf]]">
-                <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} {{IF [[agent.getUserId()]] != [[login.getUserId()]] && ![[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}readonly{{ENDIF}} onChange="document.getElementById('active[[agent.getId()]]').submit();" title="Is Active">
+                <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} {{IF [[agent.getUserId()]] != [[login.getUserId()]] && ![[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}disabled{{ENDIF}} onChange="document.getElementById('active[[agent.getId()]]').submit();" title="Is Active">
               </form>
             </td>
             <td data-sort="[[agent.getAgentName()]]">
