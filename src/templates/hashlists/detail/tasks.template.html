@@ -33,10 +33,10 @@
               [[Util::showperc([[task.getVal('searched')]], [[task.getVal('task')->getKeyspace()]])]]%
             </td>
             <td class="num">
-              {{IF [[task.getVal('cracked')]] > 0}}
+              {{IF [[task.getVal('cracked')]] > 0 && [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
                 <a href="hashes.php?task=[[task.getVal('task')->getId()]]">[[task.getVal('cracked')]]</a>
               {{ELSE}}
-                0
+                [[task.getVal('cracked')]]
               {{ENDIF}}
             </td>
           </tr>
