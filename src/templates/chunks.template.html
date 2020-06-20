@@ -96,8 +96,10 @@
             [[Util::getStaticArray([[chunk.getState()]], 'states')]]
           </td>
           <td class="num">
-            {{IF [[chunk.getCracked()]] > 0}}
+            {{IF [[chunk.getCracked()]] > 0 && [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
               <a href="hashes.php?chunk=[[chunk.getId()]]">[[chunk.getCracked()]]</a>
+            {{ELSE}}
+              [[chunk.getCracked()]]
             {{ENDIF}}
           </td>
         </tr>
