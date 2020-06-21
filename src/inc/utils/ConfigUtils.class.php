@@ -168,7 +168,7 @@ class ConfigUtils {
       }
       if ($cracked != $superHashlist->getCracked()) {
         $correctedHashlists++;
-        Factory::getHashlistFactory()->set($hashlist, Hashlist::CRACKED, $count);
+        Factory::getHashlistFactory()->set($superHashlist, Hashlist::CRACKED, $count);
       }
     }
     Factory::getAgentFactory()->getDB()->commit();
