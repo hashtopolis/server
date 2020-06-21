@@ -437,7 +437,9 @@ class HashlistUtils {
         }
         Factory::getAgentFactory()->getDB()->commit();
         Factory::getAgentFactory()->getDB()->beginTransaction();
-        $crackedIn = [];
+        foreach ($hashlists as $l) {
+          $crackedIn[$l->getId()] = 0;
+        }
         $bufferCount = 0;
         if (sizeof($zaps) > 0) {
           Factory::getZapFactory()->massSave($zaps);
