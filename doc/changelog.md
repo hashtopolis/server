@@ -8,6 +8,7 @@
 - Fixed availability of cracked hashes link on restrained permissions.
 - Fixed access controls for owners of agents.
 - Fixed improper updating of superhashlist counts on deletion of hashlists.
+- Fixed missing .map files for javascript dependencies.
 
 # v0.11.0 -> v0.12.0
 
