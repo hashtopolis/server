@@ -59,6 +59,7 @@ class PQuerySendProgress extends PQuery {
   const DEBUG_OUTPUT = "debugOutput";
   const GPU_TEMP     = "gpuTemp";
   const GPU_UTIL     = "gpuUtil";
+  const CPU_UTIL     = "cpuUtil";
 }
 
 class PQuerySendBenchmark extends PQuery {

@@ -77,17 +77,23 @@ if (isset($_GET['id'])) {
     
     // load agent detail data
     $data = AgentUtils::getGraphData($agent, [DAgentStatsType::GPU_TEMP]);
-    UI::add('deviceTemp', json_encode($data['sets']));
-    UI::add('deviceTempAvailable', (sizeof($data['sets']) > 0) ? true : false);
-    UI::add('deviceTempXLabels', json_encode($data['xlabels']));
-    UI::add('deviceTempAxes', json_encode($data['axes']));
+    UI::add('deviceGpuTemp', json_encode($data['sets']));
+    UI::add('deviceGpuTempAvailable', (sizeof($data['sets']) > 0) ? true : false);
+    UI::add('deviceGpuTempXLabels', json_encode($data['xlabels']));
+    UI::add('deviceGpuTempAxes', json_encode($data['axes']));
     
     $data = AgentUtils::getGraphData($agent, [DAgentStatsType::GPU_UTIL]);
-    UI::add('deviceUtil', json_encode($data['sets']));
-    UI::add('deviceUtilAvailable', (sizeof($data['sets']) > 0) ? true : false);
-    UI::add('deviceUtilXLabels', json_encode($data['xlabels']));
-    UI::add('deviceUtilAxes', json_encode($data['axes']));
-    
+    UI::add('deviceGpuUtil', json_encode($data['sets']));
+    UI::add('deviceGpuUtilAvailable', (sizeof($data['sets']) > 0) ? true : false);
+    UI::add('deviceGpuUtilXLabels', json_encode($data['xlabels']));
+    UI::add('deviceGpuUtilAxes', json_encode($data['axes']));
+
+    $data = AgentUtils::getGraphData($agent, [DAgentStatsType::CPU_UTIL]);
+    UI::add('deviceCpuUtil', json_encode($data['sets']));
+    UI::add('deviceCpuUtilAvailable', (sizeof($data['sets']) > 0) ? true : false);
+    UI::add('deviceCpuUtilXLabels', json_encode($data['xlabels']));
+    UI::add('deviceCpuUtilAxes', json_encode($data['axes']));
+
     $qF = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
     $currentTask = 0;

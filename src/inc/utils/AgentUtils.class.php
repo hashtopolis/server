@@ -20,25 +20,58 @@ use DBA\Speed;
 
 class AgentUtils {
   /**
-   * @param AgentStat $temp
+   * @param AgentStat $gpuUtil
    * @param Agent $agent
    * @return string
    */
-  public static function getTempStatusColor($temp, $agent) {
-    if ($temp === false) {
-      if (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)) {
+  public static function getGpuUtilStatusColor($gpuUtil, $agent) {
+    if ($gpuUtil === false) {
+      if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
       }
       return "#CCCCCC";
     }
-    $temp = $temp->getValue();
-    $temp = explode(",", $temp);
+    $gpuUtil = $gpuUtil->getValue();
+    $gpuUtil = explode(",", $gpuUtil);
+    $sum = 0;
+    foreach ($gpuUtil as $u) {
+      $sum += $u;
+    }
+    if ($sum == 0) {
+      return "#FF0000"; // either util 0 for all or an error occurred
+    }
+    $avg = $sum / sizeof($gpuUtil);
+    if ($avg > SConfig::getInstance()->getVal(DConfig::AGENT_UTIL_THRESHOLD_1)) {
+      return "#009933";
+    }
+    else if ($avg > SConfig::getInstance()->getVal(DConfig::AGENT_UTIL_THRESHOLD_2)) {
+      return "#ff9900";
+    }
+    else {
+      return "#800000";
+    }
+  }
+
+  /**
+   * @param AgentStat $gpuTemp
+   * @param Agent $agent
+   * @return string
+   */
+  public static function getGpuTempStatusColor($gpuTemp, $agent) {
+    if ($gpuTemp === false) {
+      if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
+        return "#42d4f4";
+      }
+      return "#CCCCCC";
+    }
+    $gpuTemp = $gpuTemp->getValue();
+    $gpuTemp = explode(",", $gpuTemp);
     $max = 0;
-    foreach ($temp as $t) {
+    foreach ($gpuTemp as $t) {
       $max = ($t > $max) ? $t : $max;
     }
     if ($max == 0) {
-      return "#FF0000"; // either util 0 for all or an error occurred
+      return "#FF0000"; // either temp 0 for all or an error occurred
     }
     if ($max <= SConfig::getInstance()->getVal(DConfig::AGENT_TEMP_THRESHOLD_1)) {
       return "#009933";
@@ -50,40 +83,40 @@ class AgentUtils {
       return "#800000";
     }
   }
-  
+
   /**
-   * @param AgentStat $util
+   * @param AgentStat $cpuUtil
    * @param Agent $agent
    * @return string
    */
-  public static function getUtilStatusColor($util, $agent) {
-    if ($util === false) {
-      if (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT)) {
+  public static function getCpuUtilStatusColor($cpuUtil, $agent) {
+    if ($cpuUtil === false) {
+      if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
       }
       return "#CCCCCC";
     }
-    $util = $util->getValue();
-    $util = explode(",", $util);
+    $cpuUtil = $cpuUtil->getValue();
+    $cpuUtil = explode(",", $cpuUtil);
     $sum = 0;
-    foreach ($util as $u) {
+    foreach ($cpuUtil as $u) {
       $sum += $u;
     }
     if ($sum == 0) {
       return "#FF0000"; // either util 0 for all or an error occurred
     }
-    $avg = $sum / sizeof($util);
+    $avg = $sum / sizeof($cpuUtil);
     if ($avg > SConfig::getInstance()->getVal(DConfig::AGENT_UTIL_THRESHOLD_1)) {
       return "#009933";
     }
-    else if ($avg > DConfig::AGENT_UTIL_THRESHOLD_2) {
+    else if ($avg > SConfig::getInstance()->getVal(DConfig::AGENT_UTIL_THRESHOLD_2)) {
       return "#ff9900";
     }
     else {
       return "#800000";
     }
   }
-  
+
   /**
    * @param Agent $agent
    * @param mixed $types
@@ -103,7 +136,7 @@ class AgentUtils {
     $xlabels = [];
     $datasets = [];
     $axes = [];
-    $yLabels = [DAgentStatsType::GPU_TEMP => 'Temp (Celsius)', DAgentStatsType::GPU_UTIL => 'Util (%)'];
+    $yLabels = [DAgentStatsType::GPU_TEMP => 'GPU Temp (Celsius)', DAgentStatsType::GPU_UTIL => 'GPU Util (%)', DAgentStatsType::CPU_UTIL => 'CPU Util (%)'];
     $position = 'left';
     $colors = [
       "#013220",
@@ -139,7 +172,7 @@ class AgentUtils {
         $pos = (int)($i + sizeof($data) * array_search($entry->getStatType(), $types));
         if (!isset($datasets[$pos])) {
           $datasets[$pos] = array(
-            "label" => "Dev #" . ($i + 1),
+            "label" => "Device #" . ($i + 1),
             "fill" => false,
             "lineTension" => (SConfig::getInstance()->getVal(DConfig::AGENT_STAT_TENSION) == 1) ? 0 : 0.5,
             "yAxisID" => $entry->getStatType(),

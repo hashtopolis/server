@@ -55,7 +55,7 @@ foreach ($stats as $stat) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
-UI::add('stats', $agentStats);
+UI::add('gpuStats', $agentStats);
 
 $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
@@ -69,7 +69,21 @@ foreach ($stats as $stat) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
-UI::add('temps', $agentStats);
+UI::add('gpuTemps', $agentStats);
+
+$oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
+$oF2 = new OrderFilter(AgentStat::TIME, "DESC");
+$qF1 = new ContainFilter(AgentStat::AGENT_ID, $agentIds);
+$qF2 = new QueryFilter(AgentStat::STAT_TYPE, DAgentStatsType::CPU_UTIL, "=");
+$qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT), ">");
+$stats = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => [$oF1, $oF2]]);
+$agentStats = new DataSet();
+foreach ($stats as $stat) {
+    if ($agentStats->getVal($stat->getAgentId()) === false) {
+        $agentStats->addValue($stat->getAgentId(), $stat);
+    }
+}
+UI::add('cpuStats', $agentStats);
 
 echo Template::getInstance()->render(UI::getObjects());
 
