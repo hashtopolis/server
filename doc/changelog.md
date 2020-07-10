@@ -7,6 +7,7 @@
 - Fixed pre-crack import of lists with >1000 lines.
 - Fixed availability of cracked hashes link on restrained permissions.
 - Fixed access controls for owners of agents.
+- Fixed improper updating of superhashlist counts on deletion of hashlists.
 
 # v0.11.0 -> v0.12.0
 
