@@ -30,8 +30,7 @@
             <td>
               <select class="form-control" name="updateTrack" title="Update Track">
                 <option value="release">Release</option>
-                <option value="stable" selected>Stable</option>
-                <option value="dev">Dev</option>
+                <option value="dev" selected>Dev</option>
               </select>
             </td>
           </tr>
@@ -74,7 +73,6 @@
             <td>
               <select class="form-control" name="updateTrack" title="Update Track">
                 <option value="release"{{IF [[bin.getUpdateTrack()]] == 'release'}} selected{{ENDIF}}>Release</option>
-                <option value="stable"{{IF [[bin.getUpdateTrack()]] == 'stable'}} selected{{ENDIF}}>Stable</option>
                 <option value="dev"{{IF [[bin.getUpdateTrack()]] == 'dev'}} selected{{ENDIF}}>Dev</option>
               </select>
             </td>
