@@ -55,7 +55,7 @@ foreach ($stats as $stat) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
-UI::add('gpuStats', $agentStats);
+UI::add('deviceStats', $agentStats);
 
 $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
@@ -69,7 +69,7 @@ foreach ($stats as $stat) {
     $agentStats->addValue($stat->getAgentId(), $stat);
   }
 }
-UI::add('gpuTemps', $agentStats);
+UI::add('deviceTemps', $agentStats);
 
 $oF1 = new OrderFilter(AgentStat::AGENT_ID, "ASC");
 $oF2 = new OrderFilter(AgentStat::TIME, "DESC");
@@ -79,9 +79,9 @@ $qF3 = new QueryFilter(AgentStat::TIME, time() - SConfig::getInstance()->getVal(
 $stats = Factory::getAgentStatFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::ORDER => [$oF1, $oF2]]);
 $agentStats = new DataSet();
 foreach ($stats as $stat) {
-    if ($agentStats->getVal($stat->getAgentId()) === false) {
-        $agentStats->addValue($stat->getAgentId(), $stat);
-    }
+  if ($agentStats->getVal($stat->getAgentId()) === false) {
+    $agentStats->addValue($stat->getAgentId(), $stat);
+  }
 }
 UI::add('cpuStats', $agentStats);
 

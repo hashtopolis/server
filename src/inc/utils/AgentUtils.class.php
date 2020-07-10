@@ -20,27 +20,27 @@ use DBA\Speed;
 
 class AgentUtils {
   /**
-   * @param AgentStat $gpuUtil
+   * @param AgentStat $deviceUtil
    * @param Agent $agent
    * @return string
    */
-  public static function getGpuUtilStatusColor($gpuUtil, $agent) {
-    if ($gpuUtil === false) {
+  public static function getGpuUtilStatusColor($deviceUtil, $agent) {
+    if ($deviceUtil === false) {
       if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
       }
       return "#CCCCCC";
     }
-    $gpuUtil = $gpuUtil->getValue();
-    $gpuUtil = explode(",", $gpuUtil);
+    $deviceUtil = $deviceUtil->getValue();
+    $deviceUtil = explode(",", $deviceUtil);
     $sum = 0;
-    foreach ($gpuUtil as $u) {
+    foreach ($deviceUtil as $u) {
       $sum += $u;
     }
     if ($sum == 0) {
       return "#FF0000"; // either util 0 for all or an error occurred
     }
-    $avg = $sum / sizeof($gpuUtil);
+    $avg = $sum / sizeof($deviceUtil);
     if ($avg > SConfig::getInstance()->getVal(DConfig::AGENT_UTIL_THRESHOLD_1)) {
       return "#009933";
     }
@@ -53,21 +53,21 @@ class AgentUtils {
   }
 
   /**
-   * @param AgentStat $gpuTemp
+   * @param AgentStat $deviceTemp
    * @param Agent $agent
    * @return string
    */
-  public static function getGpuTempStatusColor($gpuTemp, $agent) {
-    if ($gpuTemp === false) {
+  public static function getGpuTempStatusColor($deviceTemp, $agent) {
+    if ($deviceTemp === false) {
       if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
       }
       return "#CCCCCC";
     }
-    $gpuTemp = $gpuTemp->getValue();
-    $gpuTemp = explode(",", $gpuTemp);
+    $deviceTemp = $deviceTemp->getValue();
+    $deviceTemp = explode(",", $deviceTemp);
     $max = 0;
-    foreach ($gpuTemp as $t) {
+    foreach ($deviceTemp as $t) {
       $max = ($t > $max) ? $t : $max;
     }
     if ($max == 0) {
@@ -136,7 +136,7 @@ class AgentUtils {
     $xlabels = [];
     $datasets = [];
     $axes = [];
-    $yLabels = [DAgentStatsType::GPU_TEMP => 'GPU Temp (Celsius)', DAgentStatsType::GPU_UTIL => 'GPU Util (%)', DAgentStatsType::CPU_UTIL => 'CPU Util (%)'];
+    $yLabels = [DAgentStatsType::GPU_TEMP => 'Device Temp (Celsius)', DAgentStatsType::GPU_UTIL => 'Device Util (%)', DAgentStatsType::CPU_UTIL => 'CPU Util (%)'];
     $position = 'left';
     $colors = [
       "#013220",
@@ -172,7 +172,7 @@ class AgentUtils {
         $pos = (int)($i + sizeof($data) * array_search($entry->getStatType(), $types));
         if (!isset($datasets[$pos])) {
           $datasets[$pos] = array(
-            "label" => "Device #" . ($i + 1),
+            "label" => "Dev #" . ($i + 1), // note: it is written as Dev instead of Device to avoid too wide legends if there are multiple devices
             "fill" => false,
             "lineTension" => (SConfig::getInstance()->getVal(DConfig::AGENT_STAT_TENSION) == 1) ? 0 : 0.5,
             "yAxisID" => $entry->getStatType(),
