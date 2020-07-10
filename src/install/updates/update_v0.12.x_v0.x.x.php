@@ -52,14 +52,14 @@ if (!isset($PRESENT["v0.12.x_agentBinaries"])) {
   $EXECUTED["v0.12.x_agentBinaries"] = true;
 }
 
-if (!isset($PRESENT["v0.12.x_agentBinariesTrack"])) {
+if (!isset($PRESENT["v0.12.x_agentBinariesUpdateTrack"])) {
   $agentBinaries = Factory::getAgentBinaryFactory()->filter([]);
   foreach ($agentBinaries as $agentBinary) {
-    if ($agentBinary->getUpdateTrack() == 'stable') {
-      $agentBinary->setUpdateTrack('dev');
+    if ($agentBinary->getUpdateTrack() == 'dev') {
+      $agentBinary->setUpdateTrack('stable');
     }
     Factory::getAgentBinaryFactory()->update($agentBinary);
   }
-  $EXECUTED["v0.12.x_agentBinariesTrack"] = true;
+  $EXECUTED["v0.12.x_agentBinariesUpdateTrack"] = true;
 }
 
