@@ -92,9 +92,11 @@ class APISendProgress extends APIBasic {
           unset($QUERY[PQuerySendProgress::GPU_TEMP][$i]);
         }
       }
-      $data = implode(",", $QUERY[PQuerySendProgress::GPU_TEMP]);
-      $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::GPU_TEMP, $dataTime, $data);
-      Factory::getAgentStatFactory()->save($agentStat);
+      if (sizeof($QUERY[PQuerySendProgress::GPU_TEMP]) > 0) {
+        $data = implode(",", $QUERY[PQuerySendProgress::GPU_TEMP]);
+        $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::GPU_TEMP, $dataTime, $data);
+        Factory::getAgentStatFactory()->save($agentStat);
+      }
     }
     if (isset($QUERY[PQuerySendProgress::GPU_UTIL])) {
       for ($i = 0; $i < sizeof($QUERY[PQuerySendProgress::GPU_UTIL]); $i++) {
@@ -102,9 +104,11 @@ class APISendProgress extends APIBasic {
           unset($QUERY[PQuerySendProgress::GPU_UTIL][$i]);
         }
       }
-      $data = implode(",", $QUERY[PQuerySendProgress::GPU_UTIL]);
-      $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::GPU_UTIL, $dataTime, $data);
-      Factory::getAgentStatFactory()->save($agentStat);
+      if (sizeof($QUERY[PQuerySendProgress::GPU_UTIL]) > 0) {
+        $data = implode(",", $QUERY[PQuerySendProgress::GPU_UTIL]);
+        $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::GPU_UTIL, $dataTime, $data);
+        Factory::getAgentStatFactory()->save($agentStat);
+      }
     }
     if (isset($QUERY[PQuerySendProgress::CPU_UTIL])) {
       for ($i = 0; $i < sizeof($QUERY[PQuerySendProgress::CPU_UTIL]); $i++) {
@@ -112,11 +116,13 @@ class APISendProgress extends APIBasic {
           unset($QUERY[PQuerySendProgress::CPU_UTIL][$i]);
         }
       }
-      $data = implode(",", $QUERY[PQuerySendProgress::CPU_UTIL]);
-      $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::CPU_UTIL, $dataTime, $data);
-      Factory::getAgentStatFactory()->save($agentStat);
+      if (sizeof($QUERY[PQuerySendProgress::CPU_UTIL]) > 0) {
+        $data = implode(",", $QUERY[PQuerySendProgress::CPU_UTIL]);
+        $agentStat = new AgentStat(null, $this->agent->getId(), DAgentStatsType::CPU_UTIL, $dataTime, $data);
+        Factory::getAgentStatFactory()->save($agentStat);
+      }
     }
-
+    
     // agent is assigned to this chunk (not necessarily task!)
     // it can be already assigned to other task, but is still computing this chunk until it realizes it
     $skip = $chunk->getSkip();
