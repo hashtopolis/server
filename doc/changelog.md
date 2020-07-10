@@ -1,5 +1,9 @@
 # v0.12.0 -> v0.x.x
 
+## Features
+
+- Added monitoring of CPU utilization of agents.
+
 ## Bugfixes
 
 - Fixed search hash function.
