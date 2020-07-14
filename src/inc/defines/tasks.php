@@ -117,4 +117,7 @@ class DTaskAction {
   
   const EDIT_NOTES      = "editNotes";
   const EDIT_NOTES_PERM = DAccessControl::MANAGE_TASK_ACCESS;
+  
+  const SET_STATUS_TIMER = "setStatusTimer";
+  const SET_STATUS_TIMER_PERM = DAccessControl::MANAGE_TASK_ACCESS;
 }

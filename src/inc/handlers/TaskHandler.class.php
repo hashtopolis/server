@@ -69,6 +69,10 @@ class TaskHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DTaskAction::DELETE_TASK_PERM);
           TaskUtils::delete($_POST['task'], Login::getInstance()->getUser());
           break;
+        case DTaskAction::SET_STATUS_TIMER:
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_STATUS_TIMER_PERM);
+          TaskUtils::updateStatusTimer($_POST['task'], $_POST['statusTimer'], Login::getInstance()->getUser());
+          break;
         case DTaskAction::SET_PRIORITY:
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_PRIORITY_PERM);
           TaskUtils::updatePriority($_POST["task"], $_POST['priority'], Login::getInstance()->getUser());
