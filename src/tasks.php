@@ -222,17 +222,56 @@ if (isset($_GET['id'])) {
     UI::add('allAgentsSpent', $allAgentsSpent);
   }
   
+  UI::add('activeChunks', $activeChunksIds);
+  
   if (isset($_GET['all'])) {
-    UI::add('chunkFilter', 1);
-    $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
-    $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT 100");
-    UI::add('chunks', Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]));
-    UI::add('activeChunks', $activeChunksIds);
+    if ($_GET['all'] == 1) {
+      //  show last 100
+      UI::add('chunkFilter', 1);
+      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+      $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT 100");
+      UI::add('chunks', Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]));
+    }
+    else if ($_GET['all'] == 2) {
+      UI::add('chunkFilter', 2);
+      //  show all, page by page
+  
+      if (!isset($_GET['pagesize'])) {
+        $chunkPageSize = 100;
+      }
+      if (isset($_GET['pagesize'])) {
+        $page = intval($_GET['pagesize']);
+      }
+      if (!isset($_GET['page'])) {
+        $page = 0;
+      }
+      if (isset($_GET['page'])) {
+        $page = intval($_GET['page']);
+      }
+      UI::add('page', $page);
+      $limit = $page * $chunkPageSize;
+      $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $chunkPageSize", Factory::getChunkFactory());
+      UI::add('chunksPageTitle', "All chunks (page " . ($page + 1) . ")");
+  
+      $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
+      $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
+      
+      $numEntries = Factory::getChunkFactory()->countFilter([Factory::FILTER => $qF]);
+      UI::add('maxpage', floor($numEntries / $chunkPageSize));
+      
+      UI::add('chunks', Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => [$oF, $oFp]]));
+      UI::add('activeChunks', $activeChunksIds);
+    }
+    else {
+      //  show active only
+      UI::add('chunkFilter', 0);
+      UI::add('chunks', $activeChunks);
+    }
   }
   else {
+    //  show active only by default
     UI::add('chunkFilter', 0);
     UI::add('chunks', $activeChunks);
-    UI::add('activeChunks', $activeChunksIds);
   }
   
   if ($task->getUsePreprocessor()) {

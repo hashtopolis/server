@@ -609,25 +609,52 @@
     </div>
   </div>
 {{ENDIF}}
-<h3>Dispatched chunks {{IF [[chunkFilter]] != 1}}(showing active only -
-<a href="tasks.php?id=[[task.getId()]]&all=1">show latest 100</a>){{ENDIF}}{{IF [[chunkFilter]] == 1}}(show latest 100){{ENDIF}}</h3>
+<h3>
+  Dispatched chunks
+  {{IF [[chunkFilter]] == 0}}
+    (Showing active only -
+    <a href="tasks.php?id=[[task.getId()]]&all=1">Show latest 100</a> -
+    <a href="tasks.php?id=[[task.getId()]]&all=2">Show all</a>)
+  {{ENDIF}}
+  {{IF [[chunkFilter]] == 1}}
+    (Showing latest 100 -
+    <a href="tasks.php?id=[[task.getId()]]&all=0">Show active only</a> -
+    <a href="tasks.php?id=[[task.getId()]]&all=2">Show all</a>)
+  {{ENDIF}}
+  {{IF [[chunkFilter]] == 2}}
+    (Showing entries [[Util::calculate(([[page]] * 100) + 1)]] to [[Util::calculate(([[page]] + 1) * 100)]] -
+    <a href="tasks.php?id=[[task.getId()]]&all=0">Show active only</a> -
+    <a href="tasks.php?id=[[task.getId()]]&all=1">Show latest 100</a>)
+  {{ENDIF}}
+</h3>
+{{IF [[chunkFilter]] == 2}}
+  <div class="panel panel-default" style="text-align: center">
+    <div class="btn-group" role="group">
+      <a href="tasks.php?id=[[task.getId()]]&all=2&page=[[Util::calculate([[page]] - 1)]]"><button type="button" class="btn btn-default" {{IF [[page]] == 0}} disabled{{ENDIF}}>&lt;</button></a>
+      <a href="#"><button type="button" class="btn btn-default" disabled>Page [[page]]</button></a>
+      <a href="tasks.php?id=[[task.getId()]]&all=2&page=[[Util::calculate([[page]] + 1)]]"><button type="button" class="btn btn-default" {{IF [[page]] == [[maxpage]]}} disabled{{ENDIF}}>&gt;</button></a>
+    </div>
+  </div>
+{{ENDIF}}
 <div class="card">
   <div class="table-responsive">
-    <table class="table table-bordered">
-      <tr>
-        <th>ID</th>
-        <th>Start</th>
-        <th>Length</th>
-        <th>Checkpoint</th>
-        <th>Progress</th>
-        <th>Agent</th>
-        <th>Dispatch time</th>
-        <th>Last activity</th>
-        <th>Time spent</th>
-        <th>State</th>
-        <th>Cracked</th>
-        <th>Action</th>
-      </tr>
+    <table class="table table-bordered" id="chunks">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Start</th>
+          <th>Length</th>
+          <th>Checkpoint</th>
+          <th>Progress</th>
+          <th>Agent</th>
+          <th>Dispatch time</th>
+          <th>Last activity</th>
+          <th>Time spent</th>
+          <th>State</th>
+          <th>Cracked</th>
+          <th>Action</th>
+        </tr>
+      </thead>
       {{FOREACH chunk;[[chunks]]}}
         <tr>
           <td>
@@ -712,6 +739,28 @@
         </tr>
       {{ENDFOREACH}}
     </table>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#chunks').DataTable({
+                bInfo : false,
+                bPaginate: false,
+                pageLength: 100,
+                "order": [ [7, 'desc'], [0, 'asc'] ],
+                "columnDefs": [
+                    { "orderable": false, "targets": [11] },
+                    { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
+                ]
+            });
+        });
+        $(document).ready(function () {
+            $('td[rel=popover]').popover({
+                html: true,
+                trigger: 'hover',
+                container: 'body',
+                content: function () { return '<img style="width: 100%; height: 6px; padding: 0px;" src="' + $(this).data('img') + '">'; }
+            });
+        });
+    </script>
   </div>
 </div>
 {%TEMPLATE->struct/foot%}
