@@ -85,6 +85,31 @@ foreach ($stats as $stat) {
 }
 UI::add('cpuStats', $agentStats);
 
+$agentTasks = new DataSet();
+$agentSpeeds = new DataSet();
+$agentChunks = new DataSet();
+$agentAssignments = new DataSet();
+$agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
+foreach ($agents as $agent) {
+  $qF1 = new QueryFilter(\DBA\Chunk::AGENT_ID, $agent->getId(), "=");
+  $qF2 = new QueryFilter(\DBA\Chunk::SPEED, 0, ">");
+  $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+  foreach ($chunks as $chunk) {
+    $agentTasks->addValue($agent->getId(), $chunk->getTaskId());
+    $agentSpeeds->addValue($agent->getId(), $chunk->getSpeed());
+    $agentChunks->addValue($agent->getId(), $chunk->getId());
+  }
+  $qF = new QueryFilter(\DBA\Assignment::AGENT_ID, $agent->getId(), "=");
+  $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF], true);
+  if ($assignment != null) {
+    $agentAssignments->addValue($agent->getId(), $assignment->getTaskId());
+  }
+}
+UI::add('agentAssignments', $agentAssignments);
+UI::add('agentSpeeds', $agentSpeeds);
+UI::add('agentTasks', $agentTasks);
+UI::add('agentChunks', $agentChunks);
+
 echo Template::getInstance()->render(UI::getObjects());
 
 
