@@ -13,6 +13,9 @@ class UserAPIGroup extends UserAPIBasic {
         case USectionGroup::CREATE_GROUP:
           $this->createGroup($QUERY);
           break;
+        case USectionGroup::ABORT_CHUNKS_GROUP:
+          $this->abortChunksGroup($QUERY);
+          break;
         case USectionGroup::DELETE_GROUP:
           $this->deleteGroup($QUERY);
           break;
@@ -106,6 +109,18 @@ class UserAPIGroup extends UserAPIBasic {
       throw new HTException("Invalid query!");
     }
     AccessGroupUtils::createGroup($QUERY[UQueryGroup::GROUP_NAME]);
+    $this->sendSuccessResponse($QUERY);
+  }
+  
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function abortChunksGroup($QUERY) {
+    if (!isset($QUERY[UQueryGroup::GROUP_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    AccessGroupUtils::abortChunksGroup($QUERY[UQueryGroup::GROUP_ID], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
   
