@@ -28,8 +28,14 @@ class UserAPITask extends UserAPIBasic {
         case USectionTask::SET_TASK_PRIORITY:
           $this->setTaskPriority($QUERY);
           break;
+        case USectionTask::SET_TASK_TOP_PRIORITY:
+          $this->setTaskPriority($QUERY, true);
+          break;
         case USectionTask::SET_SUPERTASK_PRIORITY:
           $this->setSuperTaskPriority($QUERY);
+          break;
+        case USectionTask::SET_SUPERTASK_TOP_PRIORITY:
+          $this->setSuperTaskPriority($QUERY, true);
           break;
         case USectionTask::SET_TASK_NAME:
           $this->setTaskName($QUERY);
@@ -243,25 +249,43 @@ class UserAPITask extends UserAPIBasic {
   
   /**
    * @param array $QUERY
+   * @param bool $topPriority
    * @throws HTException
    */
-  private function setTaskPriority($QUERY) {
+  private function setTaskPriority($QUERY, $topPriority = false) {
     if (!isset($QUERY[UQueryTask::TASK_ID]) || !isset($QUERY[UQueryTask::TASK_PRIORITY])) {
       throw new HTException("Invalid query!");
     }
-    TaskUtils::updatePriority($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_PRIORITY], $this->user);
+    if ($topPriority) {
+      TaskUtils::updatePriority($QUERY[UQueryTask::TASK_ID], -1, $this->user, true);
+    }
+    else {
+      if (!isset($QUERY[UQueryTask::TASK_PRIORITY])) {
+        throw new HTException("Invalid query!");
+      }
+      TaskUtils::updatePriority($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_PRIORITY], $this->user);
+    }
     $this->sendSuccessResponse($QUERY);
   }
   
   /**
    * @param array $QUERY
+   * @param bool $topPriority
    * @throws HTException
    */
-  private function setSupertaskPriority($QUERY) {
+  private function setSupertaskPriority($QUERY, $topPriority = false) {
     if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_PRIORITY])) {
       throw new HTException("Invalid query!");
     }
-    TaskUtils::setSupertaskPriority($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_PRIORITY], $this->user);
+    if ($topPriority) {
+      TaskUtils::setSupertaskPriority($QUERY[UQueryTask::SUPERTASK_ID], -1, $this->user, true);
+    }
+    else {
+      if (!isset($QUERY[UQueryTask::SUPERTASK_PRIORITY])) {
+        throw new HTException("Invalid query!");
+      }
+      TaskUtils::setSupertaskPriority($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_PRIORITY], $this->user);
+    }
     $this->sendSuccessResponse($QUERY);
   }
   
