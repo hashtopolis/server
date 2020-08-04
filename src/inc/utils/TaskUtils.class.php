@@ -1197,14 +1197,14 @@ class TaskUtils {
    */
   public static function getCrackerInfo($task, $modifier = "info") {
     if (AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
-      $qF = new QueryFilter(DBA\CrackerBinary::CRACKER_BINARY_ID, $task->getCrackerBinaryId(), "=");
+      $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_ID, $task->getCrackerBinaryId(), "=");
       $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
       foreach ($binaries as $binary) {
         if ($modifier == "info") {
           return "Version: " . $binary->getVersion() . " — Binary Name: " . $binary->getBinaryName();
         }
         elseif ($modifier == "id") {
-          return $binary->getKeyValueDict()['crackerBinaryTypeId'];
+          return $binary->getCrackerBinaryTypeId();
         }
         else {
           return "Invalid modifier";
