@@ -297,7 +297,7 @@ class DConfig {
       case DConfig::HASHLIST_ALIAS:
         return "The string used as hashlist alias when creating a task.";
       case DConfig::STATUS_TIMER:
-        return "Interval in seconds clients should report back to the server. (cracks, status, and progress).";
+        return "Default interval in seconds clients should report back to the server for a task. (cracks, status, and progress).";
       case DConfig::BLACKLIST_CHARS:
         return "Characters that are not allowed to be used in attack command inputs.";
       case DConfig::NUMBER_LOGENTRIES:

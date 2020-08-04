@@ -577,6 +577,37 @@ class TaskUtils {
   
   /**
    * @param int $taskId
+   * @param int $statusTimer
+   * @param User $user
+   * @throws HTException
+   */
+  public static function updateStatusTimer($taskId, $statusTimer, $user) {
+    // change the statusTimer value, the interval in seconds clients should report back to the server
+    $task = TaskUtils::getTask($taskId, $user);
+    if ($task == null) {
+      throw new HTException("No such task!");
+    }
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
+      throw new HTException("No access to this task!");
+    }
+    $statusTimer = intval($statusTimer);
+    
+    if (($statusTimer <= 0) || !is_numeric($statusTimer )) {
+      throw new HTException("Invalid status interval!");
+    }
+    if ($statusTimer > $task->getChunkTime()) {
+      throw new HTException("Chunk time must be higher than status timer!");
+    }
+    
+    Factory::getAgentFactory()->getDB()->beginTransaction();
+    Factory::getTaskFactory()->set($task, Task::STATUS_TIMER, $statusTimer);
+    Factory::getTaskFactory()->update($task);
+    Factory::getAgentFactory()->getDB()->commit();
+  }
+  
+  /**
+   * @param int $taskId
    * @param int $priority
    * @param User $user
    * @throws HTException
