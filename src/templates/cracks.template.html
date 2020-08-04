@@ -1,0 +1,92 @@
+{%TEMPLATE->struct/head%}
+{%TEMPLATE->struct/menu%}
+<h2>Cracks</h2>
+{%TEMPLATE->struct/messages%}
+
+<h3>Number of cracked hashes: [[count]]</h3>
+<div class="card">
+  <div class="table-responsive">
+    {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+      <table class="table table-bordered" id="cracks">
+        <thead>
+          <tr>
+            <th>Time found</th>
+            <th>Plaintext</th>
+            <th>Hash</th>
+            <th>Hashlist</th>
+            <th>Agent</th>
+            <th>Task</th>
+            <th>Chunk</th>
+            <th>Type</th>
+            <th>Salt</th>
+          </tr>
+        </thead>
+        {{FOREACH crack;[[cracks]]}}
+          <tr>
+            <td data-sort="[[crackDetailsPrimary.getVal([[crack.getId()]]).getTimeCracked()]]">
+              [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[crackDetailsPrimary.getVal([[crack.getId()]]).getTimeCracked()]])]]
+            </td>
+            <td>
+              [[crackDetailsPrimary.getVal([[crack.getId()]]).getPlaintext()]]
+            </td>
+            <td>
+              [[crackDetailsPrimary.getVal([[crack.getId()]]).getHash()]]
+            </td>
+            <td>
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHLIST_ACCESS]])]]}}
+              <a href="hashlists.php?id=[[crackDetailsPrimary.getVal([[crack.getId()]]).getHashlistId()]]">[[crackDetailsPrimary.getVal([[crack.getId()]]).getHashlistId()]]</a>
+              {{ELSE}}
+                [[crackDetailsPrimary.getVal([[crack.getId()]]).getHashlistId()]]
+              {{ENDIF}}
+            </td>
+            <td>
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+                <a href="agents.php?id=[[crackChunkAgent.getVal([[crack.getId()]])]]">[[crackChunkAgent.getVal([[crack.getId()]])]]</a>
+              {{ELSE}}
+                [[crackChunkAgent.getVal([[crack.getId()]])]]
+              {{ENDIF}}
+            </td>
+            <td>
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+              <a href="tasks.php?id=[[crackChunkTask.getVal([[crack.getId()]])]]">[[crackChunkTask.getVal([[crack.getId()]])]]</a>
+              {{ELSE}}
+              [[crackChunkTask.getVal([[crack.getId()]])]]
+              {{ENDIF}}
+            </td>
+            <td>
+              [[crackDetailsPrimary.getVal([[crack.getId()]]).getChunkId()]]
+            </td>
+            <td>
+              [[crackHashType.getVal([[crack.getId()]])]]
+            </td>
+            <td>
+              [[crackDetailsPrimary.getVal([[crack.getId()]]).getSalt()]]
+            </td>
+          </tr>
+        {{ENDFOREACH}}
+      </table>
+      <script type="text/javascript">
+          $(document).ready(function () {
+              $('#cracks').DataTable({
+                  pageLength: 100,
+                  "order": [ [0, 'desc'] ],
+                  "columnDefs": [
+                      { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8] }
+                  ]
+              });
+          });
+          $(document).ready(function () {
+              $('td[rel=popover]').popover({
+                  html: true,
+                  trigger: 'hover',
+                  container: 'body',
+                  content: function () { return '<img style="width: 100%; height: 6px; padding: 0px;" src="' + $(this).data('img') + '">'; }
+              });
+          });
+      </script>
+    {{ELSE}}
+      Access denied.
+    {{ENDIF}}
+  </div>
+</div>
+{%TEMPLATE->struct/foot%}

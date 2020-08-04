@@ -65,6 +65,9 @@
 						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
 							<a class="dropdown-item[[menu.isActive('lists_search')]]" href="search.php">Search Hash</a>
 						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
+						<a class="dropdown-item[[menu.isActive('lists_cracks')]]" href="cracks.php">Show cracks</a>
+						{{ENDIF}}
 					</div>
 				</li>
 			{{ENDIF}}
