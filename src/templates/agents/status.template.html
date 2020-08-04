@@ -69,9 +69,9 @@
 <div class="container-fluid">
   <div class="row">
     {{FOREACH agent;[[agents]]}}
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getCpuUtilStatusColor([[cpuStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
-      <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
-    </div>
+      <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getCpuUtilStatusColor([[cpuStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+        <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
+      </div>
     {{ENDFOREACH}}
   </div>
   <div class="row">
@@ -107,65 +107,65 @@
         <th>Last activity</th>
       </tr>
       {{FOREACH agent;[[agents]]}}
-      <tr>
-        <td>
-          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
-          <a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a>
-          {{ELSE}}
-          [[agent.getId()]]
-          {{ENDIF}}
-          {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
-          <i class="fas fa-spinner fa-spin"></i>
-          {{ENDIF}}
-        </td>
-        <td>
-          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
-          <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
-          {{ELSE}}
-          [[agent.getAgentName()]]
-          {{ENDIF}}
-          {{IF [[agent.getIsTrusted()]] == 1}}
-          <span class="fas fa-lock" aria-hidden="true"></span>
-          {{ENDIF}}
-          {{IF [[agent.getIsActive()]] == 0}}
-          <span class="fas fa-pause" aria-hidden="true"></span>
-          {{ENDIF}}
-        </td>
-        <td>
-          {{IF [[agentTasks.getVal([[agent.getId()]])]]}}
-          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
-          <a href="tasks.php?id=[[agentTasks.getVal([[agent.getId()]])]]">Task [[agentTasks.getVal([[agent.getId()]])]]</a>,
-          at [[Util::nicenum([[agentSpeeds.getVal([[agent.getId()]])]], 10000, 1000)]]H/s,
-          working on chunk [[agentChunks.getVal([[agent.getId()]])]] <i class="fas fa-spinner fa-spin"></i>
-          {{ELSE}}
-          Task Id [[agentTasks.getVal([[agent.getId()]])]] <i class="fas fa-spinner fa-spin"></i>
-          {{ENDIF}}
-          {{ELSE}}
-          ---
-          {{ENDIF}}
-        </td>
-        <td>
-          {{IF [[agentAssignments.getVal([[agent.getId()]])]]}}
-          {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
-          <a href="tasks.php?id=[[agentAssignments.getVal([[agent.getId()]])]]">Task [[agentAssignments.getVal([[agent.getId()]])]]</a><br>
-          {{ELSE}}
-          Task [[agentAssignments.getVal([[agent.getId()]])]]<br>
-          {{ENDIF}}
-          {{ELSE}}
-          ---
-          {{ENDIF}}
-        </td>
-        <td>
-          Action: [[agent.getLastAct()]]<br>
-          Time: [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
-          IP:
-          {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
-          <code>[[agent.getLastIp()]]</code>
-          {{ELSE}}
-          <code>Hidden</code>
-          {{ENDIF}}
-        </td>
-      </tr>
+        <tr>
+          <td>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+              <a href="agents.php?id=[[agent.getId()]]">[[agent.getId()]]</a>
+            {{ELSE}}
+              [[agent.getId()]]
+            {{ENDIF}}
+            {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
+              <i class="fas fa-spinner fa-spin"></i>
+            {{ENDIF}}
+          </td>
+          <td>
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
+              <a href="agents.php?id=[[agent.getId()]]">[[agent.getAgentName()]]</a>
+            {{ELSE}}
+              [[agent.getAgentName()]]
+            {{ENDIF}}
+            {{IF [[agent.getIsTrusted()]] == 1}}
+              <span class="fas fa-lock" aria-hidden="true"></span>
+            {{ENDIF}}
+            {{IF [[agent.getIsActive()]] == 0}}
+              <span class="fas fa-pause" aria-hidden="true"></span>
+            {{ENDIF}}
+          </td>
+          <td>
+            {{IF [[agentTasks.getVal([[agent.getId()]])]]}}
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+                <a href="tasks.php?id=[[agentTasks.getVal([[agent.getId()]])]]">Task [[agentTasks.getVal([[agent.getId()]])]]</a>,
+                at [[Util::nicenum([[agentSpeeds.getVal([[agent.getId()]])]], 10000, 1000)]]H/s,
+                working on chunk [[agentChunks.getVal([[agent.getId()]])]] <i class="fas fa-spinner fa-spin"></i>
+              {{ELSE}}
+                Task Id [[agentTasks.getVal([[agent.getId()]])]] <i class="fas fa-spinner fa-spin"></i>
+              {{ENDIF}}
+            {{ELSE}}
+              ---
+            {{ENDIF}}
+          </td>
+          <td>
+            {{IF [[agentAssignments.getVal([[agent.getId()]])]]}}
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
+                <a href="tasks.php?id=[[agentAssignments.getVal([[agent.getId()]])]]">Task [[agentAssignments.getVal([[agent.getId()]])]]</a><br>
+              {{ELSE}}
+                Task [[agentAssignments.getVal([[agent.getId()]])]]<br>
+              {{ENDIF}}
+            {{ELSE}}
+              ---
+            {{ENDIF}}
+          </td>
+          <td>
+            Action: [[agent.getLastAct()]]<br>
+            Time: [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
+            IP:
+            {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
+              <code>[[agent.getLastIp()]]</code>
+            {{ELSE}}
+              <code>Hidden</code>
+            {{ENDIF}}
+          </td>
+        </tr>
       {{ENDFOREACH}}
     </table>
   </div>
