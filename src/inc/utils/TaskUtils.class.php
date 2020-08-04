@@ -6,6 +6,7 @@ use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
 use DBA\ContainFilter;
+use DBA\CrackerBinary;
 use DBA\File;
 use DBA\FileTask;
 use DBA\JoinFilter;
