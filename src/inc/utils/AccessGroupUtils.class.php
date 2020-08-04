@@ -68,9 +68,8 @@ class AccessGroupUtils {
     $groupAgents = AccessGroupUtils::getAgents($groupId);
     foreach ($groupAgents as $groupAgent) {
       $agentId = $groupAgent->getAgentId();
-      $qF1 = new QueryFilter(\DBA\Chunk::AGENT_ID, $agentId, "=");
-      $qF2 = new \DBA\ContainFilter(\DBA\Chunk::STATE, [0,2]);
-      // Chunk state 0 means INIT, state 2 is RUNNING, see src/inc/defines/hashcat.php
+      $qF1 = new QueryFilter(Chunk::AGENT_ID, $agentId, "=");
+      $qF2 = new ContainFilter(Chunk::STATE, [DHashcatStatus::INIT, DHashcatStatus::RUNNING]);
       $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
       foreach ($chunks as $chunk) {
         TaskUtils::abortChunk($chunk->getId(), $user);
