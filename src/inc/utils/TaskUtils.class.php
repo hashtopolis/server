@@ -593,17 +593,14 @@ class TaskUtils {
     }
     $statusTimer = intval($statusTimer);
     
-    if (($statusTimer <= 0) || !is_numeric($statusTimer )) {
+    if ($statusTimer <= 0 || !is_numeric($statusTimer)) {
       throw new HTException("Invalid status interval!");
     }
     if ($statusTimer > $task->getChunkTime()) {
       throw new HTException("Chunk time must be higher than status timer!");
     }
     
-    Factory::getAgentFactory()->getDB()->beginTransaction();
     Factory::getTaskFactory()->set($task, Task::STATUS_TIMER, $statusTimer);
-    Factory::getTaskFactory()->update($task);
-    Factory::getAgentFactory()->getDB()->commit();
   }
   
   /**

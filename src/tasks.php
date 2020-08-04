@@ -235,24 +235,24 @@ if (isset($_GET['id'])) {
     else if ($_GET['all'] == 2) {
       UI::add('chunkFilter', 2);
       //  show all, page by page
-  
+      
       if (!isset($_GET['pagesize'])) {
         $chunkPageSize = 100;
       }
-      if (isset($_GET['pagesize'])) {
-        $page = intval($_GET['pagesize']);
+      else {
+        $chunkPageSize = intval($_GET['pagesize']);
       }
       if (!isset($_GET['page'])) {
         $page = 0;
       }
-      if (isset($_GET['page'])) {
+      else {
         $page = intval($_GET['page']);
       }
       UI::add('page', $page);
       $limit = $page * $chunkPageSize;
       $oFp = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT $limit, $chunkPageSize", Factory::getChunkFactory());
       UI::add('chunksPageTitle', "All chunks (page " . ($page + 1) . ")");
-  
+      
       $qF = new QueryFilter(Chunk::TASK_ID, $task->getId(), "=");
       $oF = new OrderFilter(Chunk::SOLVE_TIME, "DESC");
       
