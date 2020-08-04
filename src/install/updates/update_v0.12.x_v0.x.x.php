@@ -49,7 +49,6 @@ if (!isset($PRESENT["v0.12.x_hashTypes"])) {
 
 if (!isset($PRESENT["v0.12.x_hashTypes_2"])) {
   $hashtypes = [
-    new HashType(22400, 'AES Crypt (SHA256)', 0, 0),
     new HashType(22600, 'Telegram Desktop App Passcode (PBKDF2-HMAC-SHA1)', 0, 0),
     new HashType(22700, 'MultiBit HD (scrypt)', 0, 1),
     new HashType(23001, 'SecureZIP AES-128', 0, 0),
