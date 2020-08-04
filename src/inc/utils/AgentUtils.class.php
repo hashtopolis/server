@@ -24,7 +24,7 @@ class AgentUtils {
    * @param Agent $agent
    * @return string
    */
-  public static function getGpuUtilStatusColor($deviceUtil, $agent) {
+  public static function getDeviceUtilStatusColor($deviceUtil, $agent) {
     if ($deviceUtil === false) {
       if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
@@ -57,7 +57,7 @@ class AgentUtils {
    * @param Agent $agent
    * @return string
    */
-  public static function getGpuTempStatusColor($deviceTemp, $agent) {
+  public static function getDeviceTempStatusColor($deviceTemp, $agent) {
     if ($deviceTemp === false) {
       if (($agent->getIsActive() == 1) && (time() - $agent->getLastTime() < SConfig::getInstance()->getVal(DConfig::AGENT_TIMEOUT))) {
         return "#42d4f4";
@@ -127,7 +127,7 @@ class AgentUtils {
     if ($limit <= 0) {
       $limit = 100;
     }
-    
+
     $qF1 = new ContainFilter(AgentStat::STAT_TYPE, $types);
     $qF2 = new QueryFilter(AgentStat::AGENT_ID, $agent->getId(), "=");
     $oF1 = new OrderFilter(AgentStat::TIME, "DESC");
@@ -189,7 +189,7 @@ class AgentUtils {
     }
     return ["xlabels" => $xlabels, "sets" => $datasets, "axes" => $axes];
   }
-  
+
   /**
    * @param int $agentId
    * @param boolean $isCpuOnly
@@ -200,7 +200,7 @@ class AgentUtils {
     $agent = AgentUtils::getAgent($agentId, $user);
     Factory::getAgentFactory()->set($agent, Agent::CPU_ONLY, ($isCpuOnly) ? 1 : 0);
   }
-  
+
   /**
    * @param int $agentId
    * @param User $user
@@ -208,11 +208,11 @@ class AgentUtils {
    */
   public static function clearErrors($agentId, $user) {
     $agent = AgentUtils::getAgent($agentId, $user);
-    
+
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
   }
-  
+
   /**
    * @param int $agentId
    * @param string $newname
@@ -227,7 +227,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::AGENT_NAME, $name);
   }
-  
+
   /**
    * @param int $agentId
    * @param User $user
@@ -235,13 +235,13 @@ class AgentUtils {
    */
   public static function delete($agentId, $user) {
     $agent = AgentUtils::getAgent($agentId, $user);
-    
+
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $name = $agent->getAgentName();
-    
+
     $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
-    
+
     if (AgentUtils::deleteDependencies($agent)) {
       Factory::getAgentFactory()->getDB()->commit();
       Util::createLogEntry("User", (($user == null) ? 0 : ($user->getId())), DLogEntry::INFO, "Agent " . $name . " got deleted.");
@@ -251,7 +251,7 @@ class AgentUtils {
       throw new HTException("Error occured on deletion of agent!");
     }
   }
-  
+
   /**
    * @param Agent $agent
    * @return boolean
@@ -268,26 +268,26 @@ class AgentUtils {
     }
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(AgentStat::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentZapFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
     Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(Speed::AGENT_ID, $agent->getId(), "=");
     Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
     $uS = new UpdateSet(Zap::AGENT_ID, null);
     Factory::getZapFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-    
+
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
     Factory::getAccessGroupAgentFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
     $chunkIds = array();
     foreach ($chunks as $chunk) {
@@ -300,7 +300,7 @@ class AgentUtils {
     Factory::getAgentFactory()->delete($agent);
     return true;
   }
-  
+
   /**
    * @param int $agentId
    * @param int $taskId
@@ -309,7 +309,7 @@ class AgentUtils {
    */
   public static function assign($agentId, $taskId, $user) {
     $agent = AgentUtils::getAgent($agentId, $user);
-    
+
     if ($taskId == 0) { // unassign
       $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
       Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
@@ -319,7 +319,7 @@ class AgentUtils {
       }
       return;
     }
-    
+
     $task = Factory::getTaskFactory()->get(intval($taskId));
     if ($task == null) {
       throw new HTException("Invalid task!");
@@ -327,21 +327,21 @@ class AgentUtils {
     else if (!AccessUtils::agentCanAccessTask($agent, $task)) {
       throw new HTException("This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
     }
-    
+
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-    
+
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
     if ($task->getIsSmall() && sizeof($assignments) > 0) {
       throw new HTException("You cannot assign agent to this task as the limit of assignments is reached!");
     }
-    
+
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
-    
+
     $benchmark = 0;
     if (sizeof($assignments) > 0) {
       for ($i = 1; $i < sizeof($assignments); $i++) { // clean up if required
@@ -358,7 +358,7 @@ class AgentUtils {
       die();
     }
   }
-  
+
   /**
    * @param int $agentId
    * @param int $ignoreErrors
@@ -373,7 +373,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::IGNORE_ERRORS, $ignore);
   }
-  
+
   /**
    * @param int $agentId
    * @param User $user
@@ -390,7 +390,7 @@ class AgentUtils {
     }
     return $agent;
   }
-  
+
   /**
    * @param int $agentId
    * @param boolean $trusted
@@ -401,7 +401,7 @@ class AgentUtils {
     $agent = AgentUtils::getAgent($agentId, $user);
     Factory::getAgentFactory()->set($agent, Agent::IS_TRUSTED, ($trusted) ? 1 : 0);
   }
-  
+
   /**
    * @param int $agentId
    * @param int|string $ownerId
@@ -430,7 +430,7 @@ class AgentUtils {
     }
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Owner for agent " . $agent->getAgentName() . " was changed to " . $username);
   }
-  
+
   /**
    * @param int $agentId
    * @param string $cmdParameters
@@ -444,7 +444,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::CMD_PARS, $cmdParameters);
   }
-  
+
   /**
    * @param int $agentId
    * @param boolean $active
@@ -460,7 +460,7 @@ class AgentUtils {
     else if (!AccessUtils::userCanAccessAgent($agent, $user)) {
       throw new HTException("No access to this agent!");
     }
-    
+
     if ($toggle) {
       $set = ($agent->getIsActive() == 1) ? 0 : 1;
     }
@@ -469,7 +469,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, $set);
   }
-  
+
   /**
    * @param string $newVoucher
    * @throws HTException
@@ -480,12 +480,12 @@ class AgentUtils {
     if ($check != null) {
       throw new HTException("Same voucher already exists!");
     }
-    
+
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(null, $key, time());
     Factory::getRegVoucherFactory()->save($voucher);
   }
-  
+
   /**
    * @param int|string $voucher
    * @throws HTException
