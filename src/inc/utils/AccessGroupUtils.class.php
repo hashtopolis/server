@@ -1,6 +1,8 @@
 <?php
 
 use DBA\AccessGroup;
+use DBA\Chunk;
+use DBA\ContainFilter;
 use DBA\TaskWrapper;
 use DBA\QueryFilter;
 use DBA\AccessGroupUser;

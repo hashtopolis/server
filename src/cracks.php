@@ -3,7 +3,7 @@
 use DBA\AccessGroupUser;
 use DBA\Chunk;
 use DBA\ContainFilter;
-use DBA\HashType;
+use DBA\Hashlist;
 use DBA\Factory;
 use DBA\Hash;
 use DBA\OrderFilter;

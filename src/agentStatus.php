@@ -2,6 +2,8 @@
 
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
+use DBA\Assignment;
+use DBA\Chunk;
 use DBA\ContainFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
