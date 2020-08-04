@@ -55,6 +55,30 @@ class AccessGroupUtils {
   }
   
   /**
+   * @param int $groupId
+   * @param $user
+   * @throws HTException
+   */
+  public static function abortChunksGroup($groupId, $user) {
+    $accessGroups = Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user));
+    if (!in_array($groupId, $accessGroups)) {
+      throw new HTException("User is not a member of this access group!");
+    }
+    
+    $groupAgents = AccessGroupUtils::getAgents($groupId);
+    foreach ($groupAgents as $groupAgent) {
+      $agentId = $groupAgent->getAgentId();
+      $qF1 = new QueryFilter(\DBA\Chunk::AGENT_ID, $agentId, "=");
+      $qF2 = new \DBA\ContainFilter(\DBA\Chunk::STATE, [0,2]);
+      // Chunk state 0 means INIT, state 2 is RUNNING, see src/inc/defines/hashcat.php
+      $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+      foreach ($chunks as $chunk) {
+        TaskUtils::abortChunk($chunk->getId(), $user);
+      }
+    }
+  }
+  
+  /**
    * @param int $agentId
    * @param int $groupId
    * @throws HTException

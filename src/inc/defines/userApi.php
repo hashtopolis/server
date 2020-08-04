@@ -926,10 +926,11 @@ class USectionUser extends UApi {
 }
 
 class USectionGroup extends UApi {
-  const LIST_GROUPS  = "listGroups";
-  const GET_GROUP    = "getGroup";
-  const CREATE_GROUP = "createGroup";
-  const DELETE_GROUP = "deleteGroup";
+  const LIST_GROUPS        = "listGroups";
+  const GET_GROUP          = "getGroup";
+  const CREATE_GROUP       = "createGroup";
+  const ABORT_CHUNKS_GROUP = "abortChunksGroup";
+  const DELETE_GROUP       = "deleteGroup";
   
   const ADD_AGENT    = "addAgent";
   const ADD_USER     = "addUser";
@@ -944,6 +945,8 @@ class USectionGroup extends UApi {
         return "Get details of a group";
       case USectionGroup::CREATE_GROUP:
         return "Create new groups";
+      case USectionGroup::ABORT_CHUNKS_GROUP:
+        return "Abort all chunks dispatched to agents of this group";
       case USectionGroup::DELETE_GROUP:
         return "Delete groups";
       case USectionGroup::ADD_AGENT:
