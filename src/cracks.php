@@ -40,7 +40,7 @@ foreach ($userGroups as $userGroup) {
 }
 
 // load all hashlists which are in an access group the user has access to
-$qF = new ContainFilter(\DBA\Hashlist::ACCESS_GROUP_ID, $accessGroupIds);
+$qF = new ContainFilter(Hashlist::ACCESS_GROUP_ID, $accessGroupIds);
 $accessGroupHashlists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF]);
 $hashlistIds = array();
 foreach ($accessGroupHashlists as $accessGroupHashlist) {
@@ -76,19 +76,19 @@ UI::add('currentPage', $currentPage);
 
 $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
 $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-$oF = new OrderFilter($hashFactory->getNullObject()->getPrimaryKey(), "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+$oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
 $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
 
 $crackDetailsPrimary = new DataSet();
-$crackChunkTask      = new DataSet();
-$crackChunkAgent     = new DataSet();
-$crackHashType       = new DataSet();
+$crackChunkTask = new DataSet();
+$crackChunkAgent = new DataSet();
+$crackHashType = new DataSet();
 
 $oF1 = new OrderFilter(Chunk::SOLVE_TIME, "DESC LIMIT 1");
 foreach ($hashes as $hash) {
   $crackDetailsPrimary->addValue($hash->getId(), $hash);
   if (!is_null($hash->getChunkId())) {
-    $qF1 = new QueryFilter(\DBA\Chunk::CHUNK_ID, $hash->getChunkId(), "=");
+    $qF1 = new QueryFilter(Chunk::CHUNK_ID, $hash->getChunkId(), "=");
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF1, Factory::ORDER => $oF1]);
     foreach ($chunks as $chunk) {
       $crackChunkTask->addValue($hash->getId(), $chunk->getTaskId());
@@ -98,7 +98,7 @@ foreach ($hashes as $hash) {
   else {
     $crackChunkTask->addValue($hash->getId(), null);
   }
-  $qF2 = new QueryFilter(\DBA\Hashlist::HASHLIST_ID, $hash->getHashlistId(), "=");
+  $qF2 = new QueryFilter(Hashlist::HASHLIST_ID, $hash->getHashlistId(), "=");
   $hashlists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF2]);
   foreach ($hashlists as $hashlist) {
     $crackHashType->addValue($hash->getId(), $hashlist->getHashTypeId());
