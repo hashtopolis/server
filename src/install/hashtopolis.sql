@@ -196,7 +196,7 @@ CREATE TABLE `CrackerBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '6.0.0', 'https://hashcat.net/files/hashcat-6.0.0.7z', 'hashcat');
+  (1, 1, '6.1.1', 'https://hashcat.net/files/hashcat-6.1.1.7z', 'hashcat');
 
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)     NOT NULL,
@@ -604,6 +604,14 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (22301, 'Telegram client app passcode (SHA256)', 0, 0),
   (22400, 'AES Crypt (SHA256)', 0, 0),
   (22500, 'MultiBit Classic .key (MD5)', 0, 0),
+  (22400, 'AES Crypt (SHA256)', 0, 0),
+  (22600, 'Telegram Desktop App Passcode (PBKDF2-HMAC-SHA1)', 0, 0),
+  (22700, 'MultiBit HD (scrypt)', 0, 1),
+  (23001, 'SecureZIP AES-128', 0, 0),
+  (23002, 'SecureZIP AES-192', 0, 0),
+  (23003, 'SecureZIP AES-256', 0, 0),
+  (23100, 'Apple Keychain', 0, 1),
+  (23200, 'XMPP SCRAM PBKDF2-SHA1', 0, 0),
   (99999, 'Plaintext', 0, 0);
 
 CREATE TABLE `LogEntry` (

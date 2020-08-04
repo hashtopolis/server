@@ -47,6 +47,26 @@ if (!isset($PRESENT["v0.12.x_hashTypes"])) {
   $EXECUTED["v0.12.x_hashTypes"] = true;
 }
 
+if (!isset($PRESENT["v0.12.x_hashTypes_2"])) {
+  $hashtypes = [
+    new HashType(22400, 'AES Crypt (SHA256)', 0, 0),
+    new HashType(22600, 'Telegram Desktop App Passcode (PBKDF2-HMAC-SHA1)', 0, 0),
+    new HashType(22700, 'MultiBit HD (scrypt)', 0, 1),
+    new HashType(23001, 'SecureZIP AES-128', 0, 0),
+    new HashType(23002, 'SecureZIP AES-192', 0, 0),
+    new HashType(23003, 'SecureZIP AES-256', 0, 0),
+    new HashType(23100, 'Apple Keychain', 0, 1),
+    new HashType(23200, 'XMPP SCRAM PBKDF2-SHA1', 0, 0)
+  ];
+  foreach ($hashtypes as $hashtype) {
+    $check = Factory::getHashTypeFactory()->get($hashtype->getId());
+    if ($check === null) {
+      Factory::getHashTypeFactory()->save($hashtype);
+    }
+  }
+  $EXECUTED["v0.12.x_hashTypes_2"] = true;
+}
+
 if (!isset($PRESENT["v0.12.x_agentBinaries"])) {
   Util::checkAgentVersion("python", "0.6.0.10", true);
   $EXECUTED["v0.12.x_agentBinaries"] = true;
