@@ -3,6 +3,8 @@
 ## Features
 
 - Added monitoring of CPU utilization of agents.
+- Cracked hashes for all hashlists can be shown together (caution: only use when having smaller hashlists).
+- Allow abort all chunks of a specific access group from the User API.
 
 ## Bugfixes
 
@@ -13,6 +15,14 @@
 - Fixed access controls for owners of agents.
 - Fixed improper updating of superhashlist counts on deletion of hashlists.
 - Fixed missing .map files for javascript dependencies.
+
+## Enhancements
+
+- Cracker version and name are shown on task details.
+- Task notes and cracker version are copied.
+- Agent activity is also shown on the agent status page.
+- Chunks for a task can be all view, instead of only the last 100.
+- Allow changing the status interval for created tasks.
 
 # v0.11.0 -> v0.12.0
 

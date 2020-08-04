@@ -60,7 +60,7 @@
 							<a class="dropdown-item[[menu.isActive('lists_super')]]" href="superhashlists.php">Superhashlists</a>
 						{{ENDIF}}
 						{{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_SUPERHASHLIST_ACCESS]])]]}}
-							<a class="dropdown-item[[menu.isActive('lists_new')]]" href="superhashlists.php?new=true">New superhashlist</a>
+							<a class="dropdown-item[[menu.isActive('lists_snew')]]" href="superhashlists.php?new=true">New superhashlist</a>
 						{{ENDIF}}
 						{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_HASHES_ACCESS]])]]}}
 							<a class="dropdown-item[[menu.isActive('lists_search')]]" href="search.php">Search Hash</a>
