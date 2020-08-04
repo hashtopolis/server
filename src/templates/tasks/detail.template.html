@@ -653,7 +653,7 @@
   <div class="panel panel-default" style="text-align: center">
     <div class="btn-group" role="group">
       <a href="tasks.php?id=[[task.getId()]]&all=2&page=[[Util::calculate([[page]] - 1)]]#dispatched-chunks"><button type="button" class="btn btn-default" {{IF [[page]] == 0}} disabled{{ENDIF}}>&lt;</button></a>
-      <a href="#"><button type="button" class="btn btn-default">Page [[page]]</button></a>
+      <button type="button" class="btn btn-default">Page [[page]]</button>
       <a href="tasks.php?id=[[task.getId()]]&all=2&page=[[Util::calculate([[page]] + 1)]]#dispatched-chunks"><button type="button" class="btn btn-default" {{IF [[page]] == [[maxpage]]}} disabled{{ENDIF}}>&gt;</button></a>
     </div>
   </div>
