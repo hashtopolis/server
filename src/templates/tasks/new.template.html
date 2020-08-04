@@ -49,7 +49,7 @@
           <tr>
             <td>Task notes:</td>
             <td>
-              <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here..."></textarea>
+              <textarea class="form-control my-1" style="width: 100%" name="notes" title="Task Notes" placeholder="Write task notes here..." {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getNotes()]]</textarea>
             </td>
           </tr>
           <tr>
@@ -138,6 +138,9 @@
 
                   function createOption(ddl, text, value) {
                     var opt = document.createElement('option');
+                    if (value === [[copy.getCrackerBinaryId()]]) {
+                        opt.selected = true
+                    }
                     opt.value = value;
                     opt.text = text;
                     ddl.options.add(opt);
