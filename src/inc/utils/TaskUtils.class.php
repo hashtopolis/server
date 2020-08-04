@@ -1189,4 +1189,31 @@ class TaskUtils {
   public static function isFinished($task) {
     return ($task->getKeyspace() > 0 && Util::getTaskInfo($task)[0] >= $task->getKeyspace());
   }
+  
+  /**
+   * @param Task $task
+   * @param string $modifier
+   * @return string
+   */
+  public static function getCrackerInfo($task, $modifier = "info") {
+    if (AccessControl::getInstance()->hasPermission(DAccessControl::CRACKER_BINARY_ACCESS)) {
+      $qF = new QueryFilter(DBA\CrackerBinary::CRACKER_BINARY_ID, $task->getCrackerBinaryId(), "=");
+      $binaries = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qF]);
+      foreach ($binaries as $binary) {
+        if ($modifier == "info") {
+          return "Version: " . $binary->getVersion() . " — Binary Name: " . $binary->getBinaryName();
+        }
+        elseif ($modifier == "id") {
+          return $binary->getKeyValueDict()['crackerBinaryTypeId'];
+        }
+        else {
+          return "Invalid modifier";
+        }
+      }
+      return "No binaries found";
+    }
+    else {
+      return "Access denied";
+    }
+  }
 }

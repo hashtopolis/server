@@ -289,6 +289,16 @@
             {{ENDIF}}
           </td>
         </tr>
+        {{IF [[accessControl.hasPermission([[$DAccessControl::CRACKER_BINARY_ACCESS]])]]}}
+          <tr>
+            <td>
+              Cracker binary
+            </td>
+            <td>
+              <a href ="crackers.php?id=[[TaskUtils::getCrackerInfo([[task]],'id')]]">[[TaskUtils::getCrackerInfo([[task]])]]</a>
+            </td>
+          </tr>
+        {{ENDIF}}
         {{IF [[task.getKeyspace()]] >= 0}}
         </table>
       </div>
