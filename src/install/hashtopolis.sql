@@ -604,7 +604,6 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (22301, 'Telegram client app passcode (SHA256)', 0, 0),
   (22400, 'AES Crypt (SHA256)', 0, 0),
   (22500, 'MultiBit Classic .key (MD5)', 0, 0),
-  (22400, 'AES Crypt (SHA256)', 0, 0),
   (22600, 'Telegram Desktop App Passcode (PBKDF2-HMAC-SHA1)', 0, 0),
   (22700, 'MultiBit HD (scrypt)', 0, 1),
   (23001, 'SecureZIP AES-128', 0, 0),
