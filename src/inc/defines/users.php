@@ -38,6 +38,12 @@ class DUserAction {
   
   const DISABLE_USER      = "disableUser";
   const DISABLE_USER_PERM = DAccessControl::USER_CONFIG_ACCESS;
+
+  const ENABLE_LDAP      = "enableLDAP";
+  const ENABLE_LDAP_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  
+  const DISABLE_LDAP      = "disableLDAP";
+  const DISABLE_LDAP_PERM = DAccessControl::USER_CONFIG_ACCESS;
   
   const SET_RIGHTS      = "setRights";
   const SET_RIGHTS_PERM = DAccessControl::USER_CONFIG_ACCESS;

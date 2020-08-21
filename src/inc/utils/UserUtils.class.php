@@ -73,7 +73,26 @@ class UserUtils {
     Factory::getSessionFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
     Factory::getUserFactory()->set($user, User::IS_VALID, 0);
   }
+
+  /**
+   * @param int $userId
+   * @throws HTException
+   */
+  public static function enableLDAP($userId) {
+    $user = UserUtils::getUser($userId);
+    Factory::getUserFactory()->set($user, User::IS_LDAP, 1);
+  }
+
+  /**
+   * @param int $userId
+   * @throws HTException
+   */
+  public static function disableLDAP($userId) {
+    $user = UserUtils::getUser($userId);
+    Factory::getUserFactory()->set($user, User::IS_LDAP, 0);
+  }
   
+
   /**
    * @param int $userId
    * @param int $groupId
@@ -134,7 +153,7 @@ class UserUtils {
     $newPass = Util::randomString(10);
     $newSalt = Util::randomString(20);
     $newHash = Encryption::passwordHash($newPass, $newSalt);
-    $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+    $user = new User(null, $username, $email, $newHash, $newSalt, 1, 0,1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
     Factory::getUserFactory()->save($user);
     
     // add user to default group
