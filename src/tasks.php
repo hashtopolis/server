@@ -74,6 +74,10 @@ if (isset($_GET['id'])) {
   }
   
   $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
+  if (!AccessUtils::userCanAccessHashlists($hashlist, Login::getInstance()->getUser())) {
+    UI::printError("ERROR", "No access to this task!");
+  }
+
   UI::add('hashlist', $hashlist);
   $hashtype = Factory::getHashTypeFactory()->get($hashlist->getHashtypeId());
   UI::add('hashtype', $hashtype);
