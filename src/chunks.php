@@ -2,9 +2,12 @@
 
 use DBA\AccessGroupUser;
 use DBA\Chunk;
+use DBA\ComparisonFilter;
 use DBA\ContainFilter;
 use DBA\OrderFilter;
 use DBA\JoinFilter;
+use DBA\File;
+use DBA\FileTask;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\QueryFilter;
@@ -52,15 +55,38 @@ $jF1 = new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
 $jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_ID, TaskWrapper::TASK_WRAPPER_ID);
 $qF1 = new QueryFilter(Task::IS_ARCHIVED, 1, "<>", Factory::getTaskFactory());
 $qF2 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
+$qF3 = new ComparisonFilter("(SELECT COUNT(*) FROM " 
+                              . Factory::getFileTaskFactory()->getModelTable() 
+                              . " WHERE " 
+                              . Factory::getFileTaskFactory()->getModelTable() . "." . FileTask::TASK_ID 
+                              . "=" 
+                              . Factory::getTaskFactory()->getModelTable() . "." . Task::TASK_ID 
+                              . ")",
+                            "(SELECT COUNT(*) FROM "
+                              . Factory::getFileFactory()->getModelTable()
+                              . " JOIN " 
+                              . Factory::getFileTaskFactory()->getModelTable() 
+                              . " ON "
+                              . Factory::getFileTaskFactory()->getModelTable() . "." . FileTask::FILE_ID 
+                              . "="
+                              . Factory::getFileFactory()->getModelTable() . "." . File::FILE_ID
+                              . " WHERE "
+                               . Factory::getFileTaskFactory()->getModelTable() . "." . FileTask::TASK_ID 
+                               . "="
+                              . Factory::getTaskFactory()->getModelTable() . "." . Task::TASK_ID 
+                              . " AND "
+                               . Factory::getFileFactory()->getModelTable() . "." . File::ACCESS_GROUP_ID
+                                . " IN (" . implode(',', $accessGroupIds) . "))",
+                            "=");
+
 if ($oF == null) {
-  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2]]);
+  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3], Factory::JOIN => [$jF1, $jF2]]);
 }
 else {
-  $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2]]);
+  $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => [$qF1, $qF2, $qF3], Factory::JOIN => [$jF1, $jF2]]);
 }
 /** @var Chunk[] $chunks */
 $chunks = $joined[Factory::getChunkFactory()->getModelName()];
-// TODO: also filter for tasks where access is forbidden because of files from specific group
 
 $spent = new DataSet();
 foreach ($chunks as $chunk) {
