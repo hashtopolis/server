@@ -1,9 +1,12 @@
 <?php
 
+use DBA\AccessGroupUser;
 use DBA\Chunk;
+use DBA\ContainFilter;
 use DBA\OrderFilter;
 use DBA\JoinFilter;
 use DBA\Task;
+use DBA\TaskWrapper;
 use DBA\QueryFilter;
 use DBA\Factory;
 
@@ -37,13 +40,23 @@ if (!isset($_GET['show'])) {
   UI::add('pageTitle', "Chunks Activity (page " . ($page + 1) . ")");
 }
 
-$jF = new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
-$qF = new QueryFilter(Task::IS_ARCHIVED, 1, "<>", Factory::getTaskFactory());
+// load groups for user
+$qF = new QueryFilter(AccessGroupUser::USER_ID, Login::getInstance()->getUserID(), "=");
+$userGroups = Factory::getAccessGroupUserFactory()->filter([Factory::FILTER => $qF]);
+$accessGroupIds = array();
+foreach ($userGroups as $userGroup) {
+  $accessGroupIds[] = $userGroup->getAccessGroupId();
+}
+
+$jF1 = new JoinFilter(Factory::getTaskFactory(), Chunk::TASK_ID, Task::TASK_ID);
+$jF2 = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_ID, TaskWrapper::TASK_WRAPPER_ID);
+$qF1 = new QueryFilter(Task::IS_ARCHIVED, 1, "<>", Factory::getTaskFactory());
+$qF2 = new ContainFilter(TaskWrapper::ACCESS_GROUP_ID, $accessGroupIds);
 if ($oF == null) {
-  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+  $joined = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2]]);
 }
 else {
-  $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => $qF, Factory::JOIN => $jF]);
+  $joined = Factory::getChunkFactory()->filter([Factory::ORDER => $oF, Factory::FILTER => [$qF1, $qF2], Factory::JOIN => [$jF1, $jF2]]);
 }
 /** @var Chunk[] $chunks */
 $chunks = $joined[Factory::getChunkFactory()->getModelName()];
