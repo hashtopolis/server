@@ -307,8 +307,6 @@
           </div>
         </div>
       </div>
-      <script src="static/optparse.js"></script>
-      <script src="static/optparse.hashtopolis.js"></script>
       <script type='text/javascript'>
         toggleFiles('wordlists');
 
@@ -385,6 +383,8 @@
     </div>
   </div>
 </form>
+<script src="https://cdn.jsdelivr.net/gh/shivanraptor/optparse-js@1.0.6/lib/optparse.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/shivanraptor/optparse-js@1.0.6/lib/optparse.hashtopolis.js"></script>
 <script>
 $('#cmdLine').on('change', function(event) {
 	$('#cmdLine').removeClass('is-invalid is-valid');
@@ -392,7 +392,7 @@ $('#cmdLine').on('change', function(event) {
 });
 $('#frm_task').submit(function(event) {
 	event.preventDefault();
-	// resetting
+	// resetting options
 	$('#cmdLine').removeClass('is-invalid is-valid');
 	$('#cmdLineError').html('');
 	
