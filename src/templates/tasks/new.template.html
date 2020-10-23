@@ -2,7 +2,7 @@
 {%TEMPLATE->struct/menu%}
 <h2>New task</h2>
 {%TEMPLATE->struct/messages%}
-<form class='form-inline' action="tasks.php{{IF [[orig]] > 0 && [[origType]] == 2}}?new=true&copyPre=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data">
+<form class='form-inline' action="tasks.php{{IF [[orig]] > 0 && [[origType]] == 2}}?new=true&copyPre=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data" id="frm_task">
   <div class="row" style="width: 110%">
     <div class='col-md-8'>
       <input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
@@ -19,7 +19,7 @@
           <tr>
             <td>Name:</td>
             <td>
-              <input type="text" class='form-control full-width' name="name" value="[[copy.getTaskName()]]">
+              <input type="text" class='form-control full-width' name="name" value="[[copy.getTaskName()]]" required>
             </td>
           </tr>
           <tr>
@@ -36,8 +36,9 @@
             <td>Command line:</td>
             <td>
               <textarea name="cmdline" class='form-control my-1 full-width' id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
-              Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
-              If you have Linux agents, please mind the filename case sensitivity!
+              <div class="invalid-feedback" id="cmdLineError">Invalid command</div>
+              <p>Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
+              If you have Linux agents, please mind the filename case sensitivity!</p>
             </td>
           </tr>
           <tr>
@@ -306,6 +307,8 @@
           </div>
         </div>
       </div>
+      <script src="static/optparse.js"></script>
+      <script src="static/optparse.hashtopolis.js"></script>
       <script type='text/javascript'>
         toggleFiles('wordlists');
 
@@ -382,4 +385,35 @@
     </div>
   </div>
 </form>
+<script>
+$('#cmdLine').on('change', function(event) {
+	$('#cmdLine').removeClass('is-invalid is-valid');
+	$('#cmdLineError').html('');
+});
+$('#frm_task').submit(function(event) {
+	event.preventDefault();
+	// resetting
+	$('#cmdLine').removeClass('is-invalid is-valid');
+	$('#cmdLineError').html('');
+	
+	var cmd = $('#cmdLine').val();
+	if(cmd.length > 200) { // Check Command Length (DB is VARCHAR(256))
+		$('#cmdLine').addClass('is-invalid');
+		$('#cmdLineError').html('The command is too long');
+		return false;
+	} else {
+		var response = startParse($('#cmdLine').val(), true);
+		if(response.result === false) {
+			$('#cmdLine').addClass('is-invalid');
+			$('#cmdLineError').html(response.reason);
+			return false;
+		} else {
+			$('#cmdLine').addClass('is-valid');
+			$('#cmdLineError').html('');
+			$('#frm_task').unbind('submit').submit();
+			return true;
+		}
+	}
+});
+</script>
 {%TEMPLATE->struct/foot%}
