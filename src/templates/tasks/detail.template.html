@@ -229,7 +229,7 @@
           <td>Keyspace size:</td>
           <td>
             {{IF [[task.getKeyspace()]] > 0}}
-              [[task.getKeyspace()]]
+              [[number_format([[task.getKeyspace()]])]]
             {{ELSE}}
               N/A
             {{ENDIF}}
@@ -238,7 +238,7 @@
         <tr>
           <td>Keyspace dispatched:</td>
           <td>
-            [[task.getKeyspaceProgress()]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%){{ENDIF}}
+            [[number_format([[task.getKeyspaceProgress()]])]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]], 3)]]%){{ENDIF}}
             {{IF [[isActive]] == 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
               <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
                 <input type="hidden" name="action" value="[[$DTaskAction::PURGE_TASK]]">
@@ -253,7 +253,7 @@
           <td>Keyspace searched:</td>
           <td>
             {{IF [[task.getKeyspace()]] > 0 || ([[task.getUsePreprocessor()]] && [[cProgress]] > 0)}}
-              [[cProgress]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%){{ENDIF}}
+              [[number_format([[cProgress]])]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[cProgress]], [[task.getKeyspace()]], 3)]]%){{ENDIF}}
             {{ELSE}}
               N/A
             {{ENDIF}}
@@ -282,9 +282,9 @@
         <tr>
           <td>
             {{IF [[hashlist.getFormat()]] == 3}}
-              Superhashlist
+              Superhashlist:
             {{ELSE}}
-              Hashlist
+              Hashlist:
             {{ENDIF}}
           </td>
           <td>
@@ -304,7 +304,7 @@
         {{IF [[accessControl.hasPermission([[$DAccessControl::CRACKER_BINARY_ACCESS]])]]}}
           <tr>
             <td>
-              Cracker binary
+              Cracker binary:
             </td>
             <td>
               <a href ="crackers.php?id=[[TaskUtils::getCrackerInfo([[task]],'id')]]">[[TaskUtils::getCrackerInfo([[task]])]]</a>

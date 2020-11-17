@@ -785,7 +785,7 @@ class Util {
       if($days > 365.25) { // taken leap year into consideration
       	$years = floor($days / 365.25);
       	$days = $days  % 365.25;
-      	$return = $years . "y " . $days . "d ";
+      	$return = number_format($years) . "y " . $days . "d ";
       }
     }
     $return .= gmdate("H:i:s", $seconds);
