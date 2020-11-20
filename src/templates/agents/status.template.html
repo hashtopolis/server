@@ -3,12 +3,14 @@
 <h2>Agents status ([[sizeof([[agents]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <hr>
-<h3>Average Device utilisation</h3>
+<h3>Average device utilisation</h3>
 <div class="container-fluid">
   <div class="row">
     {{FOREACH agent;[[agents]]}}
       <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getDeviceUtilStatusColor([[deviceStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+        <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
         <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
+        <i style="color:black;font-size:12px"><br />[[AgentUtils::getDeviceUtilStatusValue([[deviceStats.getVal([[agent.getId()]])]])]] <br /></i>
       </div>
     {{ENDFOREACH}}
   </div>
@@ -34,24 +36,26 @@
   </div>
 </div>
 <hr>
-<h3>Highest Device Temperature</h3>
+<h3>Highest device temperature</h3>
 <div class="container-fluid">
   <div class="row">
     {{FOREACH agent;[[agents]]}}
     <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getDeviceTempStatusColor([[deviceTemps.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+      <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
       <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
+      <i style="color:black;font-size:12px"><br />[[AgentUtils::getDeviceTempStatusValue([[deviceTemps.getVal([[agent.getId()]])]])]] <br /></i>
     </div>
     {{ENDFOREACH}}
   </div>
   <div class="row">
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> Device Temperatures good (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_1]])]]°C)
+      <span style="color: #009933;">■</span> Device temperatures good (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_1]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> Device Temperatures acceptable (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
+      <span style="color: #ff9900;">■</span> Device temperatures acceptable (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> Device Temperatures too high (> [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
+      <span style="color: #800000;">■</span> Device temperatures too high (> [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
     </div>
     <div class="col-lg-2 col-md-4 col-sm-12">
       <span style="color: #CCCCCC;">■</span> Agent is not active
@@ -70,7 +74,9 @@
   <div class="row">
     {{FOREACH agent;[[agents]]}}
       <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getCpuUtilStatusColor([[cpuStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+        <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
         <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
+        <i style="color:black;font-size:12px"><br />[[AgentUtils::getCpuUtilStatusValue([[cpuStats.getVal([[agent.getId()]])]])]] <br /></i>
       </div>
     {{ENDFOREACH}}
   </div>
