@@ -135,7 +135,7 @@ class AgentUtils {
       $sum += $u;
     }
     $avg = $sum / sizeof($deviceUtil);
-    return $avg."%";
+    return round($avg, 1)."%";
   }
 
   /**
@@ -176,7 +176,7 @@ class AgentUtils {
       $sum += $u;
     }
     $avg = $sum / sizeof($cpuUtil);
-    return $avg."%";
+    return round($avg, 1)."%";
   }
 
   /**
