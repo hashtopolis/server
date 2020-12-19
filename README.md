@@ -28,6 +28,7 @@ In an effort to make the Hashtopussy project conform to a more politically neutr
 ## Features
 
 - Easy and comfortable to use
+- Dark and light theme
 - Accessible from anywhere via web interface
 - Server component highly compatible with common web hosting setups
 - Unattended agents
