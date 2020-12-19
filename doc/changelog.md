@@ -16,6 +16,8 @@
 - Fixed access controls for owners of agents.
 - Fixed improper updating of superhashlist counts on deletion of hashlists.
 - Fixed missing .map files for javascript dependencies.
+- Fixed users being able to access tasks with hashlists they would not be allowed to view.
+- Fixed users being able to access hashlists they are not allowed to see.
 
 ## Enhancements
 
