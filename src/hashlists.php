@@ -95,7 +95,7 @@ else if (isset($_GET['id'])) {
     $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => $qF]);
     $sum = ['dispatched' => $task->getKeyspaceProgress(), 'searched' => 0, 'cracked' => 0];
     foreach ($chunks as $chunk) {
-      $sum['searched'] += $chunk->getCheckpoint();
+      $sum['searched'] += $chunk->getCheckpoint() - $chunk->getSkip();
       $sum['cracked'] += $chunk->getCracked();
       if (time() - SConfig::getInstance()->getVal(DConfig::CHUNK_TIMEOUT) < max($chunk->getDispatchTime(), $chunk->getSolveTime())) {
         $isActive = true;
