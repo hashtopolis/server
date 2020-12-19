@@ -105,14 +105,18 @@
 					</div>
 				</li>
             {{ENDIF}}
-            {{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
+            {{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]] || [[accessControl.hasPermission([[$DAccessControl::MANAGE_ACCESS_GROUP_ACCESS]])]]}}
 				<li class="nav-item dropdown[[menu.isActive('users', 'classonly')]]"><a href="#" class="nav-link dropdown-toggle" id="dropdownUsers" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Users <span class="caret"></span></a>
 					<div class="dropdown-menu" aria-labelledby="dropdownUsers">
-						<a class="dropdown-item[[menu.isActive('users_list')]]" href="users.php">All users</a>
-						<a class="dropdown-item[[menu.isActive('users_new')]]" href="users.php?new=true">New User</a>
-						<a class="dropdown-item[[menu.isActive('users_access')]]" href="access.php">Access Management</a>
-						<a class="dropdown-item[[menu.isActive('users_api')]]" href="api.php">API Management</a>
-						<a class="dropdown-item[[menu.isActive('users_groups')]]" href="groups.php">Groups</a>
+						{{IF [[accessControl.hasPermission([[$DAccessControl::USER_CONFIG_ACCESS]])]]}}
+  						<a class="dropdown-item[[menu.isActive('users_list')]]" href="users.php">All users</a>
+	  					<a class="dropdown-item[[menu.isActive('users_new')]]" href="users.php?new=true">New User</a>
+		  				<a class="dropdown-item[[menu.isActive('users_access')]]" href="access.php">Access Management</a>
+			  			<a class="dropdown-item[[menu.isActive('users_api')]]" href="api.php">API Management</a>
+						{{ENDIF}}
+						{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_ACCESS_GROUP_ACCESS]])]]}}
+  						<a class="dropdown-item[[menu.isActive('users_groups')]]" href="groups.php">Groups</a>
+						{{ENDIF}}
 					</div>
 				</li>
 			{{ENDIF}}
