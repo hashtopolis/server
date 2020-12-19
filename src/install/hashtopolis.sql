@@ -250,7 +250,7 @@ CREATE TABLE `HashBinary` (
   `hashBinaryId` INT(11)       NOT NULL,
   `hashlistId`   INT(11)       NOT NULL,
   `essid`        VARCHAR(100)  NOT NULL,
-  `hash`         MEDIUMTEXT    NOT NULL,
+  `hash`         LONGTEXT    NOT NULL,
   `plaintext`    VARCHAR(1024) DEFAULT NULL,
   `timeCracked`  BIGINT        DEFAULT NULL,
   `chunkId`      INT(11)       DEFAULT NULL,
