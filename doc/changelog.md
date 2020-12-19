@@ -5,6 +5,7 @@
 - Added monitoring of CPU utilization of agents.
 - Cracked hashes for all hashlists can be shown together (caution: only use when having smaller hashlists).
 - Allow abort all chunks of a specific access group from the User API.
+- Tasks can be set to top priority (to be first in the list) by the User API.
 
 ## Bugfixes
 
