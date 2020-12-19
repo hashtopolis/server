@@ -118,6 +118,68 @@ class AgentUtils {
   }
 
   /**
+   * @param AgentStat $deviceUtil
+   * @return string
+   */
+  public static function getDeviceUtilStatusValue($deviceUtil) {
+    if ($deviceUtil === false) {
+      return "No data";
+    }
+    $deviceUtil = $deviceUtil->getValue();
+    if ($deviceUtil === false) {
+      return "No valid data";
+    }
+    $deviceUtil = explode(",", $deviceUtil);
+    $sum = 0;
+    foreach ($deviceUtil as $u) {
+      $sum += $u;
+    }
+    $avg = $sum / sizeof($deviceUtil);
+    return round($avg, 1)."%";
+  }
+
+  /**
+   * @param AgentStat $deviceTemp
+   * @return string
+   */
+  public static function getDeviceTempStatusValue($deviceTemp) {
+    if ($deviceTemp === false) {
+      return 'No data';
+    }
+    $deviceTemp = $deviceTemp->getValue();
+    if ($deviceTemp === false) {
+      return 'No valid data';
+    }
+    $deviceTemp = explode(",", $deviceTemp);
+    $max = 0;
+    foreach ($deviceTemp as $t) {
+      $max = ($t > $max) ? $t : $max;
+    }
+    return strval($max)."°";
+  }
+
+  /**
+   * @param AgentStat $cpuUtil
+   * @return string
+   */
+  public static function getCpuUtilStatusValue($cpuUtil) {
+    if ($cpuUtil === false) {
+      return "No data";
+    }
+    $cpuUtil = $cpuUtil->getValue();
+    if ($cpuUtil === false) {
+      return "No valid data";
+    }
+    $cpuUtil = explode(",", $cpuUtil);
+    $sum = 0;
+    foreach ($cpuUtil as $u) {
+      $sum += $u;
+    }
+    $avg = $sum / sizeof($cpuUtil);
+    return round($avg, 1)."%";
+  }
+
+  /**
    * @param Agent $agent
    * @param mixed $types
    * @return array
