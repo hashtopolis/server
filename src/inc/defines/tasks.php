@@ -94,6 +94,9 @@ class DTaskAction {
   const SET_PRIORITY      = "setPriority";
   const SET_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
   
+  const SET_TOP_PRIORITY = "setTopPriority";
+  const SET_TOP_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
+  
   const CREATE_TASK      = "createTask";
   const CREATE_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
   
@@ -102,6 +105,9 @@ class DTaskAction {
   
   const SET_SUPERTASK_PRIORITY      = "setSupertaskPriority";
   const SET_SUPERTASK_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
+  
+  const SET_SUPERTASK_TOP_PRIORITY      = "setSupertaskTopPriority";
+  const SET_SUPERTASK_TOP_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
   
   const ARCHIVE_TASK      = "archiveTask";
   const ARCHIVE_TASK_PERM = DAccessControl::CREATE_TASK_ACCESS;
