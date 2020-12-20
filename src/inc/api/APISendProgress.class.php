@@ -9,6 +9,7 @@ use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\HashBinary;
 use DBA\Hashlist;
+use DBA\LikeFilter;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\Zap;
@@ -187,6 +188,14 @@ class APISendProgress extends APIBasic {
     $timeUpdates = [];
     $zaps = [];
     
+    $isNewWPA = false;
+    foreach ($hashlists as $hashlist) {
+      if ($hashlist->getHashTypeId() == 22000) {
+        $isNewWPA = true;
+        break;
+      }
+    }
+    
     for ($i = 0; $i < sizeof($crackedHashes); $i++) {
       // hash[:salt]:plain:hex_plain:crack_pos
       $crackedHash = $crackedHashes[$i];
@@ -204,7 +213,18 @@ class APISendProgress extends APIBasic {
       }
       switch ($format) {
         case DHashlistFormat::PLAIN:
-          $qF1 = new QueryFilter(Hash::HASH, $splitLine[0], "=");
+          if ($isNewWPA) { // special 22000 handle, hashcat prints it completely different than the input looks like
+            $split = explode(":", $splitLine[0]);
+            if (sizeof($split) == 4) { // this format was sent up to (and including) release 5.1.0 for -m 2500
+              $split[3] = Util::strToHex($split[3]);
+              $identifier = "WPA*%*" . implode("*", $split) . "%";
+            }
+            $qF1 = new LikeFilter(Hash::HASH, $identifier);
+          }
+          else { // we use the exact match for all other hashes to avoid performance loss
+            $qF1 = new QueryFilter(Hash::HASH, $splitLine[0], "=");
+          }
+          
           $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($hashlists));
           $qF3 = new QueryFilter(Hash::IS_CRACKED, 0, "=");
           $hashes = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
