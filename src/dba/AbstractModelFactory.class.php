@@ -872,7 +872,7 @@ abstract class AbstractModelFactory {
       if ($test) {
         return null;
       }
-      die("Fatal Error ! Database connection failed: " . $e->getMessage());
+      die("Fatal Error! Database connection failed: please check your credentials or the permissions/existence of the database");
     }
   }
 }
