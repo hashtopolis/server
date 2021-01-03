@@ -3,106 +3,109 @@
 <h2>Agents status ([[sizeof([[agents]])]])</h2>
 {%TEMPLATE->struct/messages%}
 <hr>
-<h3>Average device utilisation</h3>
-<div class="container-fluid">
-  <div class="row">
-    {{FOREACH agent;[[agents]]}}
-      <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getDeviceUtilStatusColor([[deviceStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+{{IF [[sizeof([[agents]])>=1]]}}
+  <h3>Average device utilisation</h3>
+  <div class="container-fluid">
+    <div class="row">
+      {{FOREACH agent;[[agents]]}}
+        <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getDeviceUtilStatusColor([[deviceStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+          <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
+          <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
+          <i style="color:black;font-size:12px"><br />[[AgentUtils::getDeviceUtilStatusValue([[deviceStats.getVal([[agent.getId()]])]])]] <br /></i>
+        </div>
+      {{ENDFOREACH}}
+    </div>
+    <div class="row">
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #009933;">■</span> Device utilisation is good (> [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #ff9900;">■</span> Device utilisation not ideal (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #800000;">■</span> Device utilisation low (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_2]])]]%)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #CCCCCC;">■</span> Agent is not active
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing device data
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #FF0000;">■</span> Invalid device data from agent or values being 0
+      </div>
+    </div>  
+  </div>
+  <hr>
+
+  <h3>Highest device temperature</h3>
+  <div class="container-fluid">
+    <div class="row">
+      {{FOREACH agent;[[agents]]}}
+      <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getDeviceTempStatusColor([[deviceTemps.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
         <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
         <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
-        <i style="color:black;font-size:12px"><br />[[AgentUtils::getDeviceUtilStatusValue([[deviceStats.getVal([[agent.getId()]])]])]] <br /></i>
+        <i style="color:black;font-size:12px"><br />[[AgentUtils::getDeviceTempStatusValue([[deviceTemps.getVal([[agent.getId()]])]])]] <br /></i>
       </div>
-    {{ENDFOREACH}}
-  </div>
-  <div class="row">
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> Device utilisation is good (> [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
+      {{ENDFOREACH}}
     </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> Device utilisation not ideal (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> Device utilisation low (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_2]])]]%)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #CCCCCC;">■</span> Agent is not active
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing device data
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #FF0000;">■</span> Invalid device data from agent or values being 0
-    </div>
-  </div>
-</div>
-<hr>
-<h3>Highest device temperature</h3>
-<div class="container-fluid">
-  <div class="row">
-    {{FOREACH agent;[[agents]]}}
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getDeviceTempStatusColor([[deviceTemps.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
-      <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
-      <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
-      <i style="color:black;font-size:12px"><br />[[AgentUtils::getDeviceTempStatusValue([[deviceTemps.getVal([[agent.getId()]])]])]] <br /></i>
-    </div>
-    {{ENDFOREACH}}
-  </div>
-  <div class="row">
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> Device temperatures good (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_1]])]]°C)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> Device temperatures acceptable (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> Device temperatures too high (> [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #CCCCCC;">■</span> Agent is not active
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing device data
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #FF0000;">■</span> Invalid device data from agent or values being 0
-    </div>
-  </div>
-</div>
-<hr>
-<h3>Average CPU utilisation</h3>
-<div class="container-fluid">
-  <div class="row">
-    {{FOREACH agent;[[agents]]}}
-      <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getCpuUtilStatusColor([[cpuStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
-        <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
-        <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
-        <i style="color:black;font-size:12px"><br />[[AgentUtils::getCpuUtilStatusValue([[cpuStats.getVal([[agent.getId()]])]])]] <br /></i>
+    <div class="row">
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #009933;">■</span> Device temperatures good (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_1]])]]°C)
       </div>
-    {{ENDFOREACH}}
-  </div>
-  <div class="row">
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #009933;">■</span> CPU utilisation is good (> [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #ff9900;">■</span> CPU utilisation not ideal (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #800000;">■</span> CPU utilisation low (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_2]])]]%)
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #CCCCCC;">■</span> Agent is not active
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing CPU data
-    </div>
-    <div class="col-lg-2 col-md-4 col-sm-12">
-      <span style="color: #FF0000;">■</span> Invalid CPU data from agent or values being 0
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #ff9900;">■</span> Device temperatures acceptable (<= [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #800000;">■</span> Device temperatures too high (> [[config.getVal([[$DConfig::AGENT_TEMP_THRESHOLD_2]])]]°C)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #CCCCCC;">■</span> Agent is not active
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing device data
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #FF0000;">■</span> Invalid device data from agent or values being 0
+      </div>
     </div>
   </div>
-</div>
-<hr>
-<h3>Agents activity ([[sizeof([[agents]])]])</h3>
+  <hr>
+  <h3>Average CPU utilisation</h3>
+  <div class="container-fluid">
+    <div class="row">
+      {{FOREACH agent;[[agents]]}}
+        <div class="col-lg-1 col-md-2 col-sm-3 col-4 text-center" style="background-color: [[AgentUtils::getCpuUtilStatusColor([[cpuStats.getVal([[agent.getId()]])]], [[agent]])]]; border: 1px solid #808080;">
+          <i style="color:black;font-size:12px">ID: [[agent.getId()]] <br /></i>
+          <a href="agents.php?id=[[agent.getId()]]" class="btn btn-light my-1" data-toggle="tooltip" data-placement="top" title="View Agent ([[agent.getAgentName()]])"><i class="fas fa-eye" aria-hidden="true"></i></a>
+          <i style="color:black;font-size:12px"><br />[[AgentUtils::getCpuUtilStatusValue([[cpuStats.getVal([[agent.getId()]])]])]] <br /></i>
+        </div>
+      {{ENDFOREACH}}
+    </div>
+    <div class="row">
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #009933;">■</span> CPU utilisation is good (> [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #ff9900;">■</span> CPU utilisation not ideal (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_1]])]]%)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #800000;">■</span> CPU utilisation low (<= [[config.getVal([[$DConfig::AGENT_UTIL_THRESHOLD_2]])]]%)
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #CCCCCC;">■</span> Agent is not active
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #42d4f4;">■</span> Agent is active but not working or not providing CPU data
+      </div>
+      <div class="col-lg-2 col-md-4 col-sm-12">
+        <span style="color: #FF0000;">■</span> Invalid CPU data from agent or values being 0
+      </div>
+    </div>
+  </div>
+  <hr>
+  <h3>Agents activity ([[sizeof([[agents]])]])</h3>
+{{ENDIF}}
 <div class="card">
   <div class="table-responsive">
     <table class="table table-bordered">
