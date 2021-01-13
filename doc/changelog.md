@@ -5,6 +5,7 @@
 - Added monitoring of CPU utilization of agents.
 - Cracked hashes for all hashlists can be shown together (caution: only use when having smaller hashlists).
 - Allow abort all chunks of a specific access group from the User API.
+- Tasks can be set to top priority (to be first in the list) by the User API.
 
 ## Bugfixes
 
@@ -15,6 +16,8 @@
 - Fixed access controls for owners of agents.
 - Fixed improper updating of superhashlist counts on deletion of hashlists.
 - Fixed missing .map files for javascript dependencies.
+- Fixed users being able to access tasks with hashlists they would not be allowed to view.
+- Fixed users being able to access hashlists they are not allowed to see.
 
 ## Enhancements
 
@@ -23,6 +26,8 @@
 - Agent activity is also shown on the agent status page.
 - Chunks for a task can be all view, instead of only the last 100.
 - Allow changing the status interval for created tasks.
+- Permissions for managing access groups is separate from the permission to manage users.
+- The agent status page shows more detailed information on temperature and usage.
 
 # v0.11.0 -> v0.12.0
 

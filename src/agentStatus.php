@@ -94,9 +94,8 @@ $agentAssignments = new DataSet();
 $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
 foreach ($agents as $agent) {
   $qF1 = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
-  $qF2 = new QueryFilter(Chunk::SOLVE_TIME, time() - SConfig::getInstance()->getVal(DConfig::STATUS_TIMER) * 2, "=");
-  $qF3 = new QueryFilter(Chunk::SPEED, 0, ">");
-  $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
+  $qF2 = new QueryFilter(Chunk::SPEED, 0, ">");
+  $chunks = Factory::getChunkFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
   foreach ($chunks as $chunk) {
     $agentTasks->addValue($agent->getId(), $chunk->getTaskId());
     $agentSpeeds->addValue($agent->getId(), $chunk->getSpeed());
