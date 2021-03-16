@@ -359,8 +359,12 @@ class Util {
     // check if there is an old deletion request for the same filename
     $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
-    
-    $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
+    if ($fileType == 1) {
+      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::rulefileLineCount($path));
+    }
+    else {
+      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::fileLineCount($path));
+    }
     $file = Factory::getFileFactory()->save($file);
     if ($file == null) {
       return false;
@@ -647,7 +651,48 @@ class Util {
     
     return $pos;
   }
+
+  /**
+   * This counts the number of lines in a given file
+   * @param $file string Filepath you want to get the size from
+   * @return int -1 if the file doesn't exist, else filesize
+   */
+  public static function fileLineCount($file) {
+    if (!file_exists($file)) {
+      return -1;
+    }
+    // TODO: find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
+    ini_set('max_execution_time', '7200');
+    $file = new \SplFileObject($file, 'r');
+    $file->seek(PHP_INT_MAX);
+
+    return $file->key();
+  }
   
+  /**
+   * This counts the number of lines in a rule file, excluding lines starting with # and empty lines
+   * @param $file string Filepath you want to get the size from
+   * @return int -1 if the file doesn't exist, else filesize
+   */
+  public static function rulefileLineCount($file) {
+    if (!file_exists($file)) {
+      return -1;
+    }
+    // TODO: find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
+    ini_set('max_execution_time', '7200');
+    $lineCount = 0;
+    $handle = fopen($file, "r");
+    while(!feof($handle)){
+      $line = fgets($handle);
+      if (!(Util::startsWith($line, '#') or trim($line) == "")) {
+        $lineCount = $lineCount + 1;
+      }
+    }
+    
+    fclose($handle);
+    return $lineCount;
+  }
+
   /**
    * Refreshes the page with the current url, also includes the query string.
    */
@@ -1348,7 +1393,9 @@ class Util {
     }
     return $arr;
   }
-  
+
+  // new function added: fileLineCount(). This function is independent of OS.
+  // TODO check whether we can remove one of these functions
   public static function countLines($tmpfile) {
     if (stripos(PHP_OS, "WIN") === 0) {
       // windows line count

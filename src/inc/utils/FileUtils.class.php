@@ -338,4 +338,30 @@ class FileUtils {
     }
     return $file;
   }
+  
+  /**
+   * @param $fileId
+   * @throws HTException
+   */
+  public static function fileCountLines($fileId) {
+    $file = Factory::getFileFactory()->get($fileId);
+    $fileName = $file->getFilename();
+    $filePath = dirname(__FILE__) . "/../../files/" . $fileName;
+    if (!file_exists($filePath)) {
+      throw new HTException("File not found!");
+    }
+    if ($file->getFileType() == 1) {
+      $count = Util::rulefileLineCount($filePath);
+    }
+    else {
+      $count = Util::fileLineCount($filePath);
+    }
+    
+    if ($count == -1) {
+      throw new HTException("Could not determine line count.");
+    }
+    else {
+      Factory::getFileFactory()->set($file, File::LINE_COUNT, $count);
+    }
+  }
 }
