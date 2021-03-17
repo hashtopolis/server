@@ -83,6 +83,6 @@ if (!isset($PRESENT["v0.12.x_agentBinariesUpdateTrack"])) {
 }
 
 if (!isset($PRESENT["v0.12.x_fileLineCount"])) {
-  Factory::getFileFactory()->getDB()->query("ALTER TABLE `File` ADD `lineCount` INT NULL;");
+  Factory::getFileFactory()->getDB()->query("ALTER TABLE `File` ADD `lineCount` BIGINT NULL;");
   $EXECUTED["v0.12.x_fileLineCount"] = true;
 }
