@@ -212,20 +212,26 @@
             // console.log(options);
 
             function customCharsetToOptions(mask) {
-                numA = (mask.match(/\?a/g) || []).length;
-                numD = (mask.match(/\?d/g) || []).length;
-                numL = (mask.match(/\?l/g) || []).length;
-                numU = (mask.match(/\?u/g) || []).length;
-                numS = (mask.match(/\?s/g) || []).length;
+                numA  = (mask.match(/\?a/g) || []).length;
+                numD  = (mask.match(/\?d/g) || []).length;
+                numL  = (mask.match(/\?l/g) || []).length;
+                numU  = (mask.match(/\?u/g) || []).length;
+                numS  = (mask.match(/\?s/g) || []).length;
+                numLH = (mask.match(/\?h/g) || []).length;
+                numUH = (mask.match(/\?H/g) || []).length;
+                numB  = (mask.match(/\?b/g) || []).length;
                 var charsetOptions = 95 * Math.min(1, numA);
                 charsetOptions = charsetOptions + 10 * Math.min(1, numD);
                 charsetOptions = charsetOptions + 26 * Math.min(1, numL);
                 charsetOptions = charsetOptions + 26 * Math.min(1, numU);
                 charsetOptions = charsetOptions + 33 * Math.min(1, numS);
+                charsetOptions = charsetOptions + 16 * Math.min(1, numLH);
+                charsetOptions = charsetOptions + 16 * Math.min(1, numUH);
+                charsetOptions = charsetOptions + 256 * Math.min(1, numB);
                 // add single characters that are part of the custom charset
                 // TODO: we assume no duplicate single characters are present in the custom charset!
                 //       i.e. -1 abbc is considered to be a charset of 4 different characters in the calculation
-                charsetOptions = charsetOptions + mask.length - 2*numA - 2*numD - 2*numL -2*numU -2*numS;
+                charsetOptions = charsetOptions + mask.length - 2 * (numA + numD + numL + numU + numS + numLH + numUH + numB);
                 // console.log("mask = " + mask + " this is " + charsetOptions+ " many options")
                 return charsetOptions;
             }
@@ -255,6 +261,9 @@
                 keyspaceRegularMask = keyspaceRegularMask * Math.pow(26, (mask.match(/\?l/g) || []).length);
                 keyspaceRegularMask = keyspaceRegularMask * Math.pow(26, (mask.match(/\?u/g) || []).length);
                 keyspaceRegularMask = keyspaceRegularMask * Math.pow(33, (mask.match(/\?s/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(16, (mask.match(/\?h/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(16, (mask.match(/\?H/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(256, (mask.match(/\?b/g) || []).length);
                 // console.log("total keyspace: "+keyspaceRegularMask +" * "+ keyspaceCustomMask);
 
                 return keyspaceRegularMask * keyspaceCustomMask;
