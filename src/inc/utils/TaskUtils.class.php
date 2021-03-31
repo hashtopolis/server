@@ -291,11 +291,12 @@ class TaskUtils {
    * @param int $supertaskId
    * @param int $priority
    * @param User $user
+   * @param bool $topPriority
    * @throws HTException
    */
   public static function setSupertaskPriority($supertaskId, $priority, $user, $topPriority = false) {
-    $supertask = TaskUtils::getTask($supertaskId, $user);
-    $supertaskWrapper = TaskUtils::getTaskWrapper($supertask->getTaskWrapperId(), $user);
+    // note that supertaskId here corresponds with the taskwrapper Id of the underlying subtasks of the running supertask
+    $supertaskWrapper = TaskUtils::getTaskWrapper($supertaskId, $user);
     if ($supertaskWrapper === null) {
       throw new HTException("Invalid supertask!");
     }

@@ -7,6 +7,7 @@
 				\item[1] Supertask
 			\end{description}
 			In case it is set in the server configuration, for normal tasks there will be a flag 'isComplete' be set which denotes if the full keyspace of the task was covered.
+			For tasks, the task Id is returned, for supertasks the taskwrapper Id is returned.
 			{
 				\color{blue}
 				\begin{verbatim}
@@ -346,6 +347,8 @@
 			}		
 		\subsection*{\textit{setSupertaskPriority}}
 			Set the priority for a supertask.
+			The required supertaskId parameter corresponds to the taskwrapper Id of the running supertask.
+			Note that the required taskwrapper Id can be queried by the API call listTasks.
 			{
 				\color{blue}
 				\begin{verbatim}
