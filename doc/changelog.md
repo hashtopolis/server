@@ -74,6 +74,7 @@
 - Fixed wrong search value of tasks list on hashlist details page.
 - Fixed missing update of cracked count for superhashlists.
 - Fixed listing of hashlists and hashes of lists which should not be accessible by user.
+- Fixed pagination of hashes on cracks page.
 
 ## Enhancements
 
