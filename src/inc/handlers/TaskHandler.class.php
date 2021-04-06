@@ -153,6 +153,10 @@ class TaskHandler implements Handler {
     
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
+    if (!isset($_POST['hashlist'])) {
+        UI::addMessage(UI::ERROR, "Create some hashlist first!");
+        return;
+    }
     $hashlist = Factory::getHashlistFactory()->get($_POST["hashlist"]);
     if ($hashlist != null) {
       $accessGroup = Factory::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
