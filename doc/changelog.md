@@ -18,6 +18,8 @@
 - Fixed missing .map files for javascript dependencies.
 - Fixed users being able to access tasks with hashlists they would not be allowed to view.
 - Fixed users being able to access hashlists they are not allowed to see.
+- Fixed pagination of hashes on cracks page.
+- Time of Zaps inserted is now saved.
 
 ## Enhancements
 
@@ -74,7 +76,6 @@
 - Fixed wrong search value of tasks list on hashlist details page.
 - Fixed missing update of cracked count for superhashlists.
 - Fixed listing of hashlists and hashes of lists which should not be accessible by user.
-- Fixed pagination of hashes on cracks page.
 
 ## Enhancements
 
