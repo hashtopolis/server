@@ -2,10 +2,10 @@
 {%TEMPLATE->struct/menu%}
 <h2>New task</h2>
 {%TEMPLATE->struct/messages%}
-<form class='form-inline' action="tasks.php{{IF [[orig]] > 0 && [[origType]] == 2}}?new=true&copyPre=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data" id="frm_task">
+<form class="form-inline" action="tasks.php{{IF [[orig]] > 0 && [[origType]] == 2}}?new=true&copyPre=[[orig]]{{ENDIF}}" method="POST" enctype="multipart/form-data" id="frm_task">
   <div class="row" style="width: 110%">
     <div class='col-md-8'>
-      <input type='hidden' name='action' value='[[$DTaskAction::CREATE_TASK]]'>
+      <input type="hidden" name="action" value="[[$DTaskAction::CREATE_TASK]]">
       {{IF [[orig]] > 0 && [[origType]] == 2}}
         <input type="hidden" name="copy" value="[[orig]]">
       {{ENDIF}}
@@ -19,13 +19,13 @@
           <tr>
             <td>Name:</td>
             <td>
-              <input type="text" class='form-control full-width' name="name" value="[[copy.getTaskName()]]" required>
+              <input type="text" class="form-control full-width" name="name" value="[[copy.getTaskName()]]" required>
             </td>
           </tr>
           <tr>
             <td>Hashlist:</td>
             <td>
-              <select class='form-control full-width' name="hashlist">
+              <select class="form-control full-width" name="hashlist">
                 {{FOREACH list;[[lists]]}}
                 <option value="[[list.getVal('id')]]" {{IF [[list.getVal('id')]] == [[hashlistId]]}} selected{{ENDIF}}>[[list.getVal('name')]]</option>
                 {{ENDFOREACH}}
@@ -35,7 +35,7 @@
           <tr>
             <td>Command line:</td>
             <td>
-              <textarea name="cmdline" class='form-control my-1 full-width' id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
+              <textarea name="cmdline" class="form-control my-1 full-width" id="cmdLine" title="Cmd Line" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>[[copy.getAttackCmd()]]</textarea>
               <div class="invalid-feedback" id="cmdLineError">Invalid command</div>
               <p>Use <b>[[config.getVal('hashlistAlias')]]</b> for hash list and assume all files in current directory.<br>
               If you have Linux agents, please mind the filename case sensitivity!</p>
@@ -44,7 +44,7 @@
           <tr>
             <td>Priority:</td>
             <td>
-              <input type="number" class='form-control' name="priority" value="[[copy.getPriority()]]" title="Priority">
+              <input type="number" class="form-control" name="priority" value="[[copy.getPriority()]]" title="Priority">
             </td>
           </tr>
           <tr>
@@ -56,20 +56,20 @@
           <tr>
             <td>Color:</td>
             <td>
-              #<input type="text" class='form-control color {required:false}' name="color" size="6" value="[[copy.getColor()]]" title="Color" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              #<input type="text" class="form-control color {required:false}" name="color" size="6" value="[[copy.getColor()]]" title="Color" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
             </td>
           </tr>
           <tr>
             <td>Chunk size:</td>
             <td>
-              <input type="number" class='form-control' name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              <input type="number" class="form-control" name="chunk" value="[[copy.getChunkTime()]]" title="Chunk Time" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
               seconds
             </td>
           </tr>
           <tr>
             <td>Status timer:</td>
             <td>
-              <input type="number" class='form-control' name="status" value="[[copy.getStatusTimer()]]" title="Status Timer" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
+              <input type="number" class="form-control" name="status" value="[[copy.getStatusTimer()]]" title="Status Timer" {{IF ![[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}} readonly{{ENDIF}}>
               seconds
             </td>
           </tr>
@@ -197,7 +197,7 @@
           </tr>
           <tr>
             <td colspan="2">
-              <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Create task">
+              <input type="submit" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}" value="Create task">
             </td>
           </tr>
         </table>
@@ -206,9 +206,9 @@
     <div class='col-md-4'>
       <div class='btn-toolbar my-1'>
         <div class='btn-group'>
-          <button id="ruleButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="return toggleFiles('rules')">Rules</button>
-          <button id="wordlistButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active' onclick="return toggleFiles('wordlists')">Wordlists</button>
-          <button id="otherButton" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' onclick="return toggleFiles('other')">Other</button>
+          <button id="ruleButton" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}" onclick="return toggleFiles('rules')">Rules</button>
+          <button id="wordlistButton" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} active" onclick="return toggleFiles('wordlists')">Wordlists</button>
+          <button id="otherButton" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}" onclick="return toggleFiles('other')">Other</button>
         </div>
       </div>
       <div id="rules">
@@ -383,8 +383,8 @@
     </div>
   </div>
 </form>
-<script src="https://cdn.jsdelivr.net/gh/shivanraptor/optparse-js@1.1.1/lib/optparse.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/shivanraptor/optparse-js@1.1.1/lib/optparse.hashtopolis.js"></script>
+<script src="static/optparse.js"></script>
+<script src="static/optparse.hashtopolis.js"></script>
 <script>
 $('#cmdLine').on('change', function(event) {
 	$('#cmdLine').removeClass('is-invalid is-valid');
