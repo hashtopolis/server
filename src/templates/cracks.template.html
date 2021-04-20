@@ -4,6 +4,12 @@
 {%TEMPLATE->struct/messages%}
 
 <h3>Number of cracked hashes: [[count]]</h3>
+<div class="btn-group" role="group">
+  <a href="cracks.php?page=[[Util::calculate([[currentPage]] - 1)]]"><button type="button" class="btn btn-default" {{IF [[currentPage]] == 1}} disabled{{ENDIF}}>&lt;</button></a>
+  <a href="#"><button type="button" class="btn {{IF [[toggledarkmode]] > 0}}btn-default{{ELSE}}btn-light{{ENDIF}}" disabled>Viewing page [[currentPage]] of [[numPages]]</button></a>
+  <a href="cracks.php?page=[[Util::calculate([[currentPage]] + 1)]]"><button type="button" class="btn btn-default" {{IF [[currentPage]] == [[numPages]]}} disabled{{ENDIF}}>&gt;</button></a>
+</div>
+<hr>
 <div class="card">
   <div class="table-responsive">
     <table class="table table-bordered" id="cracks">
@@ -67,7 +73,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#cracks').DataTable({
-                pageLength: 100,
+                pageLength: [[hashesPerPage]],
                 "order": [ [0, 'desc'] ],
                 "columnDefs": [
                     { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8] }
