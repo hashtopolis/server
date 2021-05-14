@@ -80,14 +80,14 @@
 						  {{IF [[user.getYubikey()]] == 1}}
 							  <form class='form-inline' action="account.php" method="post">
 								  Yubikey OTP currently enabled
-								  <input type='hidden' name='action' value='[[$DAccountAction::YUBKEY_DISABLE]]'>
+								  <input type='hidden' name='action' value='[[$DAccountAction::YUBIKEY_DISABLE]]'>
 								  <input type="hidden" name="csrf" value="[[csrf]]">
 								  <input type="submit" class='btn btn-warning' value="Disable">
 							  </form>
 						  {{ELSE}}
 							  <form class='form-inline' action="account.php" method="post">
 								  Yubikey OTP is currently disabled
-								  <input type='hidden' name='action' value='[[$DAccountAction::YUBKEY_ENABLE]]'>
+								  <input type='hidden' name='action' value='[[$DAccountAction::YUBIKEY_ENABLE]]'>
 								  <input type="hidden" name="csrf" value="[[csrf]]">
 								  <input type="submit" class='btn btn-success' value="Enable">
 							  </form>

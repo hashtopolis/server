@@ -379,7 +379,7 @@ class HashlistUtils {
           $tooLong++;
           continue;
         }
-        $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1]);
+        $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
         $newCracked++;
         $crackedIn[$hashEntry->getHashlistId()]++;
         if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
@@ -421,7 +421,7 @@ class HashlistUtils {
             $tooLong++;
             continue;
           }
-          $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1]);
+          $hashFactory->mset($hashEntry, [Hash::PLAINTEXT => $plain, Hash::IS_CRACKED => 1, Hash::TIME_CRACKED => time()]);
           $crackedIn[$hashEntry->getHashlistId()]++;
           if ($hashlist->getFormat() == DHashlistFormat::PLAIN) {
             $zaps[] = new Zap(null, $hashEntry->getHash(), time(), null, $hashlist->getId());
