@@ -661,7 +661,7 @@ class Util {
     if (!file_exists($file)) {
       return -1;
     }
-    // TODO: find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
+    // find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
     ini_set('max_execution_time', '7200');
     $file = new \SplFileObject($file, 'r');
     $file->seek(PHP_INT_MAX);
@@ -678,7 +678,7 @@ class Util {
     if (!file_exists($file)) {
       return -1;
     }
-    // TODO: find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
+    // find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
     ini_set('max_execution_time', '7200');
     $lineCount = 0;
     $handle = fopen($file, "r");
@@ -1395,7 +1395,7 @@ class Util {
   }
 
   // new function added: fileLineCount(). This function is independent of OS.
-  // TODO check whether we can remove one of these functions
+  // check whether we can remove one of these functions
   public static function countLines($tmpfile) {
     if (stripos(PHP_OS, "WIN") === 0) {
       // windows line count

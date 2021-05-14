@@ -759,7 +759,7 @@ class HashlistUtils {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Required file does not exist!");
     }
-    // TODO: replace countLines with fileLineCount? Seems like a better option, not OS-dependent
+    // replace countLines with fileLineCount? Seems like a better option, not OS-dependent
     else if (Util::countLines($tmpfile) > SConfig::getInstance()->getVal(DConfig::MAX_HASHLIST_SIZE)) {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Hashlist has too many lines!");
