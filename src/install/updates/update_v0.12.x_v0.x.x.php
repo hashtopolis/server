@@ -97,8 +97,8 @@ if (!isset($PRESENT["v0.12.x_hashTypes_3"])) {
     new HashType(24700, 'Stuffit5', 0, 0),
     new HashType(24500, 'Telegram Desktop >= v2.1.14 (PBKDF2-HMAC-SHA512)', 0, 0),
     new HashType(24800, 'Umbraco HMAC-SHA1', 0, 0),
-    new HashType(24300, 'sha1($salt.sha1($pass.$salt))', 0, 0),
-    new HashType(4510, 'sha1(sha1($pass).$salt)', 0, 0),
+    new HashType(24300, 'sha1($salt.sha1($pass.$salt))', 1, 0),
+    new HashType(4510, 'sha1(sha1($pass).$salt)', 1, 0),
   ];
   foreach ($hashtypes as $hashtype) {
     $check = Factory::getHashTypeFactory()->get($hashtype->getId());
