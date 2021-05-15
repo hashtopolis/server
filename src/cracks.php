@@ -52,31 +52,23 @@ $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
 $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
 
 $count = $hashFactory->countFilter([Factory::FILTER => [$qF1, $qF2]]);
-$numPages = $count / SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE);
-if ($numPages * SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) != $count) {
+$numPages = ceil($count / SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+if ($numPages * SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) < $count) {
   $numPages++;
 }
-$currentPage = 0;
-$nextPage = -1;
-$previousPage = -1;
-if (isset($_GET['page']) && $_GET['page'] >= 0 && $_GET['page'] < $numPages) {
+
+$currentPage = 1;
+if (isset($_GET['page'])) {
   $currentPage = intval($_GET['page']);
 }
-if ($currentPage > 0) {
-  $previousPage = $currentPage - 1;
-}
-if ($currentPage < $numPages - 1) {
-  $nextPage = $currentPage + 1;
-}
+UI::add('hashesPerPage', SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
 UI::add('count', $count);
 UI::add('numPages', $numPages);
-UI::add('nextPage', $nextPage);
-UI::add('previousPage', $previousPage);
 UI::add('currentPage', $currentPage);
 
 $qF1 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
 $qF2 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
-$oF = new OrderFilter(Hash::HASH_ID, "ASC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * $currentPage) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
+$oF = new OrderFilter(Hash::TIME_CRACKED, "DESC LIMIT " . (SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE) * ($currentPage - 1)) . ", " . SConfig::getInstance()->getVal(DConfig::HASHES_PER_PAGE));
 $hashes = $hashFactory->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]);
 
 $crackDetailsPrimary = new DataSet();

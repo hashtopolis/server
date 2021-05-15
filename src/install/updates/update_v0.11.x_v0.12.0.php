@@ -132,7 +132,7 @@ if (!isset($PRESENT["v0.11.x_hashTypes"])) {
     new HashType(21200, 'md5(sha1($salt).md5($pass))', 1, 0),
     new HashType(21300, 'md5($salt.sha1($salt.$pass))', 1, 0),
     new HashType(21400, 'sha256(sha256_bin(pass))', 0, 0),
-    new HashType(21500, 'SolarWinds Orion', 0, 0),
+    new HashType(21500, 'SolarWinds Orion', 0, 1),
     new HashType(21600, 'Web2py pbkdf2-sha512', 0, 0),
     new HashType(21700, 'Electrum Wallet (Salt-Type 4)', 0, 0),
     new HashType(21800, 'Electrum Wallet (Salt-Type 5)', 0, 0),
