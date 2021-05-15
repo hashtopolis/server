@@ -99,7 +99,7 @@ class ConfigTest extends HashtopolisTest {
         $items[$item['item']] = true;
       }
       foreach ($configs as $c) {
-        if ($c == 'jeSuisHashtopussy') {
+        if ($c == 'jeSuisHashtopussy' || $c == 'donateOff') {
           continue;
         }
         if (!isset($items[$c])) {
