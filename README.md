@@ -10,7 +10,7 @@
 Hashtopolis is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. The main goals for Hashtopolis's development are portability, robustness, multi-user support, and multiple groups management.
 The application has two parts:
 
-- **Agent** Multiple clients (C#, Python), easily customizable to suit any need.
+- **Agent** Python client, easily customizable to suit any need.
 - **Server** several PHP/CSS files operating on two endpoints: an Admin GUI and an Agent Connection Point
 
 Aiming for high usability even on restricted networks, Hashtopolis communicates over HTTP(S) using a human-readable, hashing-specific dialect of JSON.
@@ -29,13 +29,13 @@ In an effort to make the Hashtopussy project conform to a more politically neutr
 
 - Easy and comfortable to use
 - Dark and light theme
-- Accessible from anywhere via web interface
+- Accessible from anywhere via web interface or user API
 - Server component highly compatible with common web hosting setups
 - Unattended agents
 - File management for word lists, rules, ...
 - Self-updating of both Hashtopolis and Hashcat
 - Cracking multiple hashlists of the same hash type as though they were a single hashlist
-- Running the same client on Windows, Linux and OS X
+- Running the same client on Windows, Linux and macOS
 - Files and hashes marked as "secret" are only distributed to agents marked as "trusted"
 - Many data import and export options
 - Rich statistics on hashes and running tasks
@@ -63,15 +63,6 @@ We are open to all kinds of contributions. If it's a bug fix or a new feature, f
 * Try to stick with the code style used (especially in the PHP parts). IntelliJ/PHPStorm users can get a code style XML [here](https://gist.github.com/s3inlc/226ed78b05eb6dc8f60f18d6fd310d74).
 
 The pull request will then be reviewed by at least one member and merged after approval. Don't be discouraged just because the first review is not approved, often these are just small changes.
-
-## Support us
-
-[PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7P3KXV8DQ5XKE)
-
-```
-BTC: 15gi3X5L4VPa5S2yygztYaN7MF7VA26Zaf
-ETH: 0x06B3Ae7561AD763eF58Df9C37deB6757bDA2BC0c
-```
 
 ## Thanks
 
