@@ -376,7 +376,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (4300,  'md5(strtoupper(md5($pass)))', 0, 0),
   (4400,  'md5(sha1($pass))', 0, 0),
   (4500,  'sha1(sha1($pass))', 0, 0),
-  (4510, 'sha1(sha1($pass).$salt)', 1, 0),
+  (4510,  'sha1(sha1($pass).$salt)', 1, 0),
   (4520,  'sha1($salt.sha1($pass))', 1, 0),
   (4521,  'Redmine Project Management Web App', 0, 0),
   (4522,  'PunBB', 0, 0),
