@@ -28,3 +28,11 @@ Arguments:
 `-m` and `-w` are used to specify the type of attack, but these options are not mandatory to look like this.
 
 Please note that not all Hashtopolis clients are compatible with generic cracker binaries (check their README) and if there are slight differences in the cracker compared to the generic requirements there might be changes required on the client to adapt to another handling schema.
+
+## Slow Algorithms
+
+To extract all Hashcat modes which are flagged as slow hashes, following command can be run inside the hashcat directory:
+
+```
+grep -Hr SLOW_HASH src/modules/ | cut -d: -f1 | sort | cut -d'.' -f1 | sed 's/src\/modules\/module_[0]\?//g'
+```

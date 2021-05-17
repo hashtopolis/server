@@ -19,6 +19,7 @@
 - Fixed missing .map files for javascript dependencies.
 - Fixed users being able to access tasks with hashlists they would not be allowed to view.
 - Fixed users being able to access hashlists they are not allowed to see.
+- Adjusted handling to be able to deal with changed mode 22000 output.
 - Fixed pagination of hashes on cracks page.
 - Time of Zaps inserted is now saved.
 
