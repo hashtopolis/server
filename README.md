@@ -1,11 +1,11 @@
 # Hashtopolis
 
-<img src="https://github.com/s3inlc/hashtopolis/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
+<img src="https://github.com/hashtopolis/server/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
 
-[![CodeFactor](https://www.codefactor.io/repository/github/s3inlc/hashtopolis/badge)](https://www.codefactor.io/repository/github/s3inlc/hashtopolis)
+[![CodeFactor](https://www.codefactor.io/repository/github/hashtopolis/server/badge)](https://www.codefactor.io/repository/github/hashtopolis/server)
 [![LoC](https://tokei.rs/b1/github/s3inlc/Hashtopolis?category=code)](https://github.com/s3inlc/Hashtopolis)
-[![Test Status](https://travis-ci.org/s3inlc/hashtopolis.svg?branch=master)](https://travis-ci.org/s3inlc/hashtopolis)
-[![Current Agent](https://img.shields.io/badge/Current%20Agent%20Version-0.6.0-blue.svg)](https://travis-ci.org/s3inlc/hashtopolis-agent-python)
+[![Build Status](https://travis-ci.com/hashtopolis/server.svg?branch=master)](https://travis-ci.com/hashtopolis/server)
+[![Current Agent](https://img.shields.io/badge/Current%20Agent%20Version-0.6.0-blue.svg)](https://travis-ci.org/hashtopolis/agent-python)
 
 Hashtopolis is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. The main goals for Hashtopolis's development are portability, robustness, multi-user support, and multiple groups management.
 The application has two parts:
@@ -51,7 +51,7 @@ In an effort to make the Hashtopussy project conform to a more politically neutr
 
 ## Setup and Usage
 
-Please visit the [wiki](https://github.com/s3inlc/hashtopolis/wiki) for more information on setup and upgrade.
+Please visit the [wiki](https://github.com/hashtopolis/server/wiki) for more information on setup and upgrade.
 
 Some screenshots of Hashtopolis (by winxp5421 and s3in!c): [Imgur1](http://imgur.com/gallery/Fj0s0) [Imgur2](http://imgur.com/gallery/LzTsI)
 
