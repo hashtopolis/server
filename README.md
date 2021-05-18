@@ -3,7 +3,7 @@
 <img src="https://github.com/hashtopolis/server/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
 
 [![CodeFactor](https://www.codefactor.io/repository/github/hashtopolis/server/badge)](https://www.codefactor.io/repository/github/hashtopolis/server)
-[![LoC](https://tokei.rs/b1/github/s3inlc/Hashtopolis?category=code)](https://github.com/s3inlc/Hashtopolis)
+[![LoC](https://tokei.rs/b1/github/hashtopolis/server?category=code)](https://github.com/hashtopolis/server)
 [![Build Status](https://travis-ci.com/hashtopolis/server.svg?branch=master)](https://travis-ci.com/hashtopolis/server)
 [![Current Agent](https://img.shields.io/badge/Current%20Agent%20Version-0.6.0-blue.svg)](https://travis-ci.org/hashtopolis/agent-python)
 
