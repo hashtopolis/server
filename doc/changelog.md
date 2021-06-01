@@ -32,6 +32,7 @@
 - Permissions for managing access groups is separate from the permission to manage users.
 - The agent status page shows more detailed information on temperature and usage.
 - JQuery updated to v3.6.0.
+- Print database connection error in UI theme.
 
 # v0.11.0 -> v0.12.0
 
