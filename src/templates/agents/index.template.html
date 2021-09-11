@@ -50,9 +50,7 @@
               {{ENDIF}}
             </td>
             <td>
-              {{FOREACH device;[[agent.getDevices()]]}}
-                [[Util::shortenstring([[device]], 20)]]<br>
-              {{ENDFOREACH}}
+              [[str_replace("\n","<br>",[[agent.getDevices()]])]]
             </td>
             <td>
               {{IF [[agent.getCpuOnly()]] == 0}}
