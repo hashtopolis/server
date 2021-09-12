@@ -12,6 +12,5 @@ src/files/*
 *.phpproj.user
 
 # for docker stuff
-/db/
-data/conf.php
+data/
 .env
