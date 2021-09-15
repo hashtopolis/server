@@ -7,7 +7,7 @@ services:
     volumes:
       - ./src/import/:/var/www/html/import/:Z
       - ./src/files/:/var/www/html/files/:Z
-      - ./data/conf.php:/var/www/html/inc/conf.php:Z
+      - ./src/inc/:/var/www/html/inc/:Z
     depends_on:
       - db
     ports:
