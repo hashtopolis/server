@@ -25,7 +25,7 @@ services:
     image: mysql:5.7
     restart: always
     volumes:
-      - ./data/db:/var/lib/mysql:Z
+      - db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASS
       MYSQL_DATABASE: $MYSQL_DB
@@ -41,3 +41,5 @@ services:
       # used for the gosu binary
       - CAP_SETGID
       - CAP_SETUID
+volumes:
+  db:   
