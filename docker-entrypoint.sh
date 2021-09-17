@@ -1,26 +1,13 @@
 #!/usr/bin/env bash
+paths=(install inc/Encryption.class.php inc/load.php files templates inc files lang .)
 
-if test -f /var/www/html/inc/conf.php; then
-  if chown www-data:www-data /var/www/html/inc/conf.php ; then
-    echo "conf.php was chown'ed properly"
+for path in ${paths[@]}; do
+  if chown www-data:www-data /var/www/html/${path} ; then
+    echo "${path} was chown'ed properly"
   else
-    echo "There were some errors while chown'ing conf.php"
+    echo "There was an error while chown'ing ${path}"
     exit 1
   fi
-fi
-
-if chown -R www-data:www-data /var/www/html/import/ ; then
-  echo "import folder was chown'ed properly"
-else
-  echo "There were some errors while chown'ing the import folder"
-  exit 1
-fi
-
-if chown -R www-data:www-data /var/www/html/files/ ; then
-  echo "files folder was chown'ed properly"
-else
-  echo "There were some errors while chown'ing files folder"
-  exit 1
-fi
+done
 
 docker-php-entrypoint apache2-foreground
