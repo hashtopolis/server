@@ -10,3 +10,4 @@ src/files/*
 *.phpproj
 *.sln
 *.phpproj.user
+.DS_Store

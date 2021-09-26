@@ -16,7 +16,7 @@
         <td>
           <code>[[task.getId()]]</code>
           {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
-            <form style ='float: right;' action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
+            <form style="float: right;" action="tasks.php" method="POST" onSubmit="if (!confirm('Really delete task [[task.getId()]]?')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::DELETE_TASK]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
@@ -29,7 +29,7 @@
         <td>Name:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+            <form class="form-inline" action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::RENAME_TASK]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="text" class='form-control' name="name" size="25" value="[[task.getTaskName()]]" title="Task Name">&nbsp;&nbsp;
@@ -45,7 +45,7 @@
         <td>Attack command:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_TASK_ACCESS]])]]}}
-            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" onsubmit="return confirm('Do you really want to change the attack command? If the task already was started, it will be completely purged before and reset to an initial state. (Note that you cannot change files)')" method="POST">
+            <form class="form-inline" action="tasks.php?id=[[task.getId()]]" onsubmit="return confirm('Do you really want to change the attack command? If the task already was started, it will be completely purged before and reset to an initial state. (Note that you cannot change files)')" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::CHANGE_ATTACK]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
@@ -71,7 +71,7 @@
         </td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+            <form class="form-inline" action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::EDIT_NOTES]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
@@ -85,7 +85,7 @@
         <td>Chunk size:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+            <form class="form-inline" action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::SET_TIME]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
@@ -108,7 +108,7 @@
         <td>Color:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-            <form class='form-inline' id="taskcolor" action="tasks.php?id=[[task.getId()]]" method="POST">
+            <form class="form-inline" id="taskcolor" action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::SET_COLOR]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
@@ -134,7 +134,7 @@
         <td>Status timer:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('This change only takes effect on an agent running this task when either a chunk is aborted or the agent is reactivated/restarted.')) return false;">
+            <form class="form-inline" action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('This change only takes effect on an agent running this task when either a chunk is aborted or the agent is reactivated/restarted.')) return false;">
               <input type="hidden" name="action" value="[[$DTaskAction::SET_STATUS_TIMER]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
@@ -150,7 +150,7 @@
         <td>Priority:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
-            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+            <form class="form-inline" action="tasks.php?id=[[task.getId()]]" method="POST">
               <input type="hidden" name="action" value="[[$DTaskAction::SET_PRIORITY]]">
               <input type="hidden" name="task" value="[[task.getId()]]">
               <input type="hidden" name="csrf" value="[[csrf]]">
@@ -229,7 +229,7 @@
           <td>Keyspace size:</td>
           <td>
             {{IF [[task.getKeyspace()]] > 0}}
-              [[task.getKeyspace()]]
+              [[number_format([[task.getKeyspace()]])]]
             {{ELSE}}
               N/A
             {{ENDIF}}
@@ -238,7 +238,7 @@
         <tr>
           <td>Keyspace dispatched:</td>
           <td>
-            [[task.getKeyspaceProgress()]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]])]]%){{ENDIF}}
+            [[number_format([[task.getKeyspaceProgress()]])]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[task.getKeyspaceProgress()]], [[task.getKeyspace()]], 3)]]%){{ENDIF}}
             {{IF [[isActive]] == 0 && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
               <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST" onSubmit="if (!confirm('Really completely purge task [[task.getId()]]?')) return false;">
                 <input type="hidden" name="action" value="[[$DTaskAction::PURGE_TASK]]">
@@ -253,7 +253,7 @@
           <td>Keyspace searched:</td>
           <td>
             {{IF [[task.getKeyspace()]] > 0 || ([[task.getUsePreprocessor()]] && [[cProgress]] > 0)}}
-              [[cProgress]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[cProgress]], [[task.getKeyspace()]])]]%){{ENDIF}}
+              [[number_format([[cProgress]])]]{{IF [[task.getKeyspace()]] > 0}} ([[Util::showperc([[cProgress]], [[task.getKeyspace()]], 3)]]%){{ENDIF}}
             {{ELSE}}
               N/A
             {{ENDIF}}
@@ -282,9 +282,9 @@
         <tr>
           <td>
             {{IF [[hashlist.getFormat()]] == 3}}
-              Superhashlist
+              Superhashlist:
             {{ELSE}}
-              Hashlist
+              Hashlist:
             {{ENDIF}}
           </td>
           <td>
@@ -304,7 +304,7 @@
         {{IF [[accessControl.hasPermission([[$DAccessControl::CRACKER_BINARY_ACCESS]])]]}}
           <tr>
             <td>
-              Cracker binary
+              Cracker binary:
             </td>
             <td>
               <a href ="crackers.php?id=[[TaskUtils::getCrackerInfo([[task]],'id')]]">[[TaskUtils::getCrackerInfo([[task]])]]</a>
@@ -746,7 +746,7 @@
                 <input type="hidden" name="action" value="[[$DTaskAction::RESET_CHUNK]]">
                 <input type="hidden" name="chunk" value="[[chunk.getId()]]">
                 <input type="hidden" name="csrf" value="[[csrf]]">
-                <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Reset">
+                <input type="submit" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}" value="Reset">
               </form>
             {{ENDIF}}
             {{IF [[activeChunks.getVal([[chunk.getId()]])]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
@@ -754,7 +754,7 @@
                 <input type="hidden" name="action" value="[[$DTaskAction::ABORT_CHUNK]]">
                 <input type="hidden" name="chunk" value="[[chunk.getId()]]">
                 <input type="hidden" name="csrf" value="[[csrf]]">
-                <input type="submit" class='btn btn-danger' value="Abort">
+                <input type="submit" class="btn btn-danger" value="Abort">
               </form>
             {{ENDIF}}
           </td>
