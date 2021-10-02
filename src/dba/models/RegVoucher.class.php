@@ -6,11 +6,13 @@ class RegVoucher extends AbstractModel {
   private $regVoucherId;
   private $voucher;
   private $time;
+  private $trusted;
   
-  function __construct($regVoucherId, $voucher, $time) {
+  function __construct($regVoucherId, $voucher, $time, $trusted) {
     $this->regVoucherId = $regVoucherId;
     $this->voucher = $voucher;
     $this->time = $time;
+    $this->trusted = $trusted;
   }
   
   function getKeyValueDict() {
@@ -18,6 +20,7 @@ class RegVoucher extends AbstractModel {
     $dict['regVoucherId'] = $this->regVoucherId;
     $dict['voucher'] = $this->voucher;
     $dict['time'] = $this->time;
+    $dict['trusted'] = $this->trusted;
     
     return $dict;
   }
@@ -60,6 +63,14 @@ class RegVoucher extends AbstractModel {
   
   function setTime($time) {
     $this->time = $time;
+  }
+
+  function getTrusted() {
+    return $this->trusted;
+  }
+
+  function setTrusted($trusted) {
+    $this->trusted = $trusted;
   }
   
   const REG_VOUCHER_ID = "regVoucherId";

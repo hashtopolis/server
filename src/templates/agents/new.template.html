@@ -75,6 +75,9 @@
 				  <td>
 					  <input type="text" class='form-control' name="newvoucher" value="[[Util::randomString(8)]]" title="Voucher Code">
 				  </td>
+					<td>
+						<input type="checkbox" name="trusted" value="FALSE" title="Trusted Voucher">
+					</td>
 				  <td>
 					  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Create">
 				  </td>
