@@ -125,3 +125,9 @@ if (!isset($PRESENT["v0.12.x_agentBinariesUpdateTrack"])) {
   $EXECUTED["v0.12.x_agentBinariesUpdateTrack"] = true;
 }
 
+if (!isset($PRESENT["v0.12.x_TrustedVoucher"])) {
+  if (!Util::databaseColumnExists("RegVoucher", "trusted")) {
+    Factory::getAgentFactory()->getDB()->query("ALTER TABLE `RegVoucher` ADD `trusted` TINYINT(4) NOT NULL;");
+  }
+  $EXECUTED["v0.12.x_TrustedVoucher"] = true;
+}
