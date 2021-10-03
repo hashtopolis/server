@@ -544,7 +544,8 @@ class AgentUtils {
     }
 
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
-    $voucher = new RegVoucher(null, $key, time(), $isTrusted);
+    $trusted = ($isTrusted) ? 1 : 0;
+    $voucher = new RegVoucher(null, $key, time(), $trusted);
     Factory::getRegVoucherFactory()->save($voucher);
   }
 

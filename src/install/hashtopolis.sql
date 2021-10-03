@@ -680,7 +680,8 @@ CREATE TABLE `Pretask` (
 CREATE TABLE `RegVoucher` (
   `regVoucherId` INT(11)      NOT NULL,
   `voucher`      VARCHAR(100) NOT NULL,
-  `time`         BIGINT       NOT NULL
+  `time`         BIGINT       NOT NULL,
+  `trusted`      TINYINT(4)   NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `RightGroup` (

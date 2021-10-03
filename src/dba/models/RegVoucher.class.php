@@ -76,4 +76,5 @@ class RegVoucher extends AbstractModel {
   const REG_VOUCHER_ID = "regVoucherId";
   const VOUCHER = "voucher";
   const TIME = "time";
+  const TRUSTED= "trusted";
 }

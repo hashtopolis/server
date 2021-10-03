@@ -50,6 +50,7 @@
 				  <tr>
 					  <td><code>[[voucher.getVoucher()]]</code></td>
           			  <td>[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[voucher.getTime()]])]]</td>
+									<td>[[voucher.getTrusted() ? "Trusted" : "Untrusted"]]</td>
           			  <td>
           				  <form action="agents.php?new=true" method="POST" onSubmit="if (!confirm('Really delete this voucher?')) return false;">
           					  <input type="hidden" name="action" value="[[$DAgentAction::DELETE_VOUCHER]]">
@@ -76,7 +77,7 @@
 					  <input type="text" class='form-control' name="newvoucher" value="[[Util::randomString(8)]]" title="Voucher Code">
 				  </td>
 					<td>
-						<input type="checkbox" name="trusted" value="FALSE" title="Trusted Voucher">
+						<input type="checkbox" name="trusted" value="[[false]]" title="Trusted Voucher"><label for="trusted">Automatically trust agents?</label>
 					</td>
 				  <td>
 					  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Create">
