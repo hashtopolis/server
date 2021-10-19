@@ -446,7 +446,7 @@ class APISendProgress extends APIBasic {
         if($timeTaken < 0) break; // prevent math & logic errors
 
         $differenceToChunk = $task->getChunkTime() / $timeTaken;
-        if($task->getStaticChunks() === 0 && $differenceToChunk < 0.9 && $differenceToChunk > 1.1) { // Not static chunks & difference in chunk time > 10%
+        if($task->getStaticChunks() === 0 && ($differenceToChunk < 0.9 || $differenceToChunk > 1.1)) { // Not static chunks & difference in chunk time > 10%
             $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
             $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
             $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]])[0];
