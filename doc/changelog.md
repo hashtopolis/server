@@ -33,6 +33,7 @@
 - The agent status page shows more detailed information on temperature and usage.
 - JQuery updated to v3.6.0.
 - Print database connection error in UI theme.
+- Agents overview page and agent detail page now show counter for repeating devices
 
 # v0.11.0 -> v0.12.0
 
