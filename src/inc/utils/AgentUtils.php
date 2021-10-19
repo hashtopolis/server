@@ -71,7 +71,7 @@ class AgentUtils {
       return "#800000";
     }
   }
-  
+
   /**
    * @param ?AgentStat $deviceTemp
    * @param Agent $agent
@@ -104,7 +104,7 @@ class AgentUtils {
       return "#800000";
     }
   }
-  
+
   /**
    * @param ?AgentStat $cpuUtil
    * @param Agent $agent
@@ -138,7 +138,7 @@ class AgentUtils {
       return "#800000";
     }
   }
-  
+
   /**
    * @param ?AgentStat $deviceUtil
    * @return string
@@ -159,7 +159,7 @@ class AgentUtils {
     $avg = $sum / sizeof($deviceUtil);
     return round($avg, 1) . "%";
   }
-  
+
   /**
    * @param ?AgentStat $deviceTemp
    * @return string
@@ -179,7 +179,7 @@ class AgentUtils {
     }
     return $max . "°";
   }
-  
+
   /**
    * @param ?AgentStat $cpuUtil
    * @return string
@@ -200,7 +200,7 @@ class AgentUtils {
     $avg = $sum / sizeof($cpuUtil);
     return round($avg, 1) . "%";
   }
-  
+
   /**
    * @param Agent $agent
    * @param mixed $types
@@ -212,7 +212,7 @@ class AgentUtils {
     if ($limit <= 0) {
       $limit = 100;
     }
-    
+
     $qF1 = new ContainFilter(AgentStat::STAT_TYPE, $types);
     $qF2 = new QueryFilter(AgentStat::AGENT_ID, $agent->getId(), "=");
     $oF1 = new OrderFilter(AgentStat::TIME, "DESC");
@@ -274,7 +274,7 @@ class AgentUtils {
     }
     return ["xlabels" => $xlabels, "sets" => $datasets, "axes" => $axes];
   }
-  
+
   /**
    * @param int $agentId
    * @param boolean $isCpuOnly
@@ -286,7 +286,7 @@ class AgentUtils {
     $agent = AgentUtils::getAgent($agentId, $user);
     Factory::getAgentFactory()->set($agent, Agent::CPU_ONLY, ($isCpuOnly) ? 1 : 0);
   }
-  
+
   /**
    * @param int $agentId
    * @param User $user
@@ -295,11 +295,11 @@ class AgentUtils {
    */
   public static function clearErrors(int $agentId, User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
-    
+
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
   }
-  
+
   /**
    * @param int $agentId
    * @param string $newname
@@ -315,7 +315,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::AGENT_NAME, $name);
   }
-  
+
   /**
    * @param int $agentId
    * @param ?User $user
@@ -324,13 +324,13 @@ class AgentUtils {
    */
   public static function delete(int $agentId, ?User $user): void {
     $agent = AgentUtils::getAgent($agentId, $user);
-    
+
     Factory::getAgentFactory()->getDB()->beginTransaction();
     $name = $agent->getAgentName();
-    
+
     $payload = new DataSet(array(DPayloadKeys::AGENT => $agent));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_AGENT, $payload);
-    
+
     if (AgentUtils::deleteDependencies($agent)) {
       Factory::getAgentFactory()->getDB()->commit();
       Util::createLogEntry("User", (($user == null) ? 0 : ($user->getId())), DLogEntry::INFO, "Agent " . $name . " got deleted.");
@@ -340,7 +340,7 @@ class AgentUtils {
       throw new HTException("Error occured on deletion of agent!");
     }
   }
-  
+
   /**
    * @param Agent $agent
    * @return boolean
@@ -358,34 +358,34 @@ class AgentUtils {
     }
     $qF = new QueryFilter(AgentError::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentErrorFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(AgentStat::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentStatFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(AgentZap::AGENT_ID, $agent->getId(), "=");
     Factory::getAgentZapFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(HealthCheckAgent::AGENT_ID, $agent->getId(), "=");
     Factory::getHealthCheckAgentFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(Speed::AGENT_ID, $agent->getId(), "=");
     Factory::getSpeedFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(Zap::AGENT_ID, $agent->getId(), "=");
     $uS = new UpdateSet(Zap::AGENT_ID, null);
     Factory::getZapFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-    
+
     $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $agent->getId(), "=");
     Factory::getAccessGroupAgentFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
     $qF = new QueryFilter(Chunk::AGENT_ID, $agent->getId(), "=");
     $uS = new UpdateSet(Chunk::AGENT_ID, null);
     Factory::getChunkFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-    
+
     Factory::getAgentFactory()->delete($agent);
     return true;
   }
-  
+
   /**
    * @param int $agentId
    * @param int $taskId
@@ -397,7 +397,7 @@ class AgentUtils {
    */
   public static function assign(int $agentId, int $taskId, User $user): ?Assignment {
     $agent = AgentUtils::getAgent($agentId, $user);
-    
+
     if ($taskId == 0) { // unassign
       $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
       Factory::getAssignmentFactory()->massDeletion([Factory::FILTER => $qF]);
@@ -407,7 +407,7 @@ class AgentUtils {
       }
       return null;
     }
-    
+
     $task = Factory::getTaskFactory()->get($taskId);
     if ($task == null) {
       throw new HttpError("Invalid task!");
@@ -415,21 +415,21 @@ class AgentUtils {
     else if (!AccessUtils::agentCanAccessTask($agent, $task)) {
       throw new HttpError("This agent cannot access this task - either group mismatch, or agent is not configured as Trusted to access secret tasks");
     }
-    
+
     $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
     if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
       throw new HttpError("No access to this task!");
     }
-    
+
     $qF = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
     if ($task->getIsSmall() && sizeof($assignments) > 0) {
       throw new HttpError("You cannot assign agent to this task as the limit of assignments is reached!");
     }
-    
+
     $qF = new QueryFilter(Agent::AGENT_ID, $agent->getId(), "=");
     $assignments = Factory::getAssignmentFactory()->filter([Factory::FILTER => $qF]);
-    
+
     $benchmark = 0;
     if (sizeof($assignments) > 0) {
       if ($assignments[0]->getTaskId() === $taskId) {
@@ -451,7 +451,7 @@ class AgentUtils {
     }
     return $assignment;
   }
-  
+
   /**
    * @param int $agentId
    * @param int $ignoreErrors
@@ -466,7 +466,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::IGNORE_ERRORS, $ignoreErrors);
   }
-  
+
   /**
    * @param int $agentId
    * @param ?User $user
@@ -484,7 +484,7 @@ class AgentUtils {
     }
     return $agent;
   }
-  
+
   /**
    * @param int $agentId
    * @param boolean $trusted
@@ -496,7 +496,7 @@ class AgentUtils {
     $agent = AgentUtils::getAgent($agentId, $user);
     Factory::getAgentFactory()->set($agent, Agent::IS_TRUSTED, ($trusted) ? 1 : 0);
   }
-  
+
   /**
    * @param int $agentId
    * @param int|string $ownerId
@@ -526,7 +526,7 @@ class AgentUtils {
     }
     Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::INFO, "Owner for agent " . $agent->getAgentName() . " was changed to " . $username);
   }
-  
+
   /**
    * @param int $agentId
    * @param string $cmdParameters
@@ -541,7 +541,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::CMD_PARS, $cmdParameters);
   }
-  
+
   /**
    * @param int $agentId
    * @param boolean $active
@@ -558,7 +558,7 @@ class AgentUtils {
     else if (!AccessUtils::userCanAccessAgent($agent, $user)) {
       throw new HTException("No access to this agent!");
     }
-    
+
     if ($toggle) {
       $set = ($agent->getIsActive() == 1) ? 0 : 1;
     }
@@ -567,7 +567,7 @@ class AgentUtils {
     }
     Factory::getAgentFactory()->set($agent, Agent::IS_ACTIVE, $set);
   }
-  
+
   /**
    * @param string $newVoucher
    * @return RegVoucher
@@ -580,12 +580,12 @@ class AgentUtils {
     if ($check != null) {
       throw new HttpConflict("Same voucher already exists!");
     }
-    
+
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
     $voucher = new RegVoucher(null, $key, time());
     return Factory::getRegVoucherFactory()->save($voucher);
   }
-  
+
   /**
    * @param int|string $voucher
    * @throws HTException
@@ -604,7 +604,7 @@ class AgentUtils {
     }
     Factory::getRegVoucherFactory()->delete($voucher);
   }
-  
+
   /**
    * Get the aggregate cracking time of an agent or
    * (if task ID is specified) of an agent on a specific task.
@@ -627,7 +627,7 @@ class AgentUtils {
     $results = Factory::getChunkFactory()->multicolAggregationFilter([Factory::FILTER => array_filter([$qF1, $qF2, $qF3, $qF4])], [$agg1, $agg2]);
     return $results[$agg1->getName()] - $results[$agg2->getName()];
   }
-  
+
   /**
    * Get the aggregate number of hashes cracked by an agent or
    *  (if task ID is specified) by an agent on a specific task.
