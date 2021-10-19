@@ -437,10 +437,29 @@ class APISendProgress extends APIBasic {
     }
     
     switch ($state) {
-      case DHashcatStatus::EXHAUSTED:
+        case DHashcatStatus::EXHAUSTED: # TODO
         // the chunk has finished (exhausted)
         Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
         DServerLog::log(DServerLog::TRACE, "Chunk is exhausted (cracker status)", [$this->agent, $chunk]);
+
+        $timeTaken = $chunk->getSolveTime() - $chunk->getDispatchTime();
+        if($timeTaken < 0) break; // prevent math & logic errors
+
+        $differenceToChunk = ($task->getChunkTime() - $timeTaken) / $task->getChunkTime();
+        if($task->getStaticChunks() === 0 && abs($differenceToChunk) > 0.1) { // Not static chunks & difference in chunk time > 10%
+            $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
+            $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
+            $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+
+            $benchmark = $assignment[0]->getBenchmark();
+            $benchmark_parts = explode(":", $benchmark);
+            if($benchmark_parts[0] == 0) break;
+            $newBenchmark = (1 + $differenceToChunk) * $benchmark_parts[0];
+            $assignment[0]->setBenchmark(round($newBenchmark).":".round($benchmark_parts[1]));
+            Factory::getAssignmentFactory()->update($assignment[0]);
+        }
+
+
         break;
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
