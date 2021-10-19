@@ -503,17 +503,16 @@ class APISendProgress extends APIBasic {
         if($task->getStaticChunks() === 0 && abs($differenceToChunk) > 0.1) { // Not static chunks & difference in chunk time > 10%
             $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
             $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
-            $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+            $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]])[0];
 
-            $benchmark = $assignment[0]->getBenchmark();
+            $benchmark = $assignment->getBenchmark();
             $benchmark_parts = explode(":", $benchmark);
             if($benchmark_parts[0] == 0) break;
             $newBenchmark = (1 + $differenceToChunk) * $benchmark_parts[0];
-            $assignment[0]->setBenchmark(round($newBenchmark).":".round($benchmark_parts[1]));
-            Factory::getAssignmentFactory()->update($assignment[0]);
+            $assignment->setBenchmark(round($newBenchmark).":".round($benchmark_parts[1]));
+            DServerLog::log(DServerLog::TRACE, "Multiplied the benchmark of agent by ".round(1 + $differenceToChunk,2), [$this->agent, $assignment]);
+            Factory::getAssignmentFactory()->update($assignment);
         }
-
-
         break;
       case DHashcatStatus::CRACKED:
         // the chunk has finished (cracked whole hashList)
