@@ -491,7 +491,7 @@ class APISendProgress extends APIBasic {
     }
     
     switch ($state) {
-        case DHashcatStatus::EXHAUSTED: # TODO
+        case DHashcatStatus::EXHAUSTED:
         // the chunk has finished (exhausted)
         $chunk = Factory::getChunkFactory()->mset($chunk, [Chunk::SPEED => 0, Chunk::PROGRESS => 10000, Chunk::CHECKPOINT => $chunk->getSkip() + $chunk->getLength()]);
         DServerLog::log(DServerLog::TRACE, "Chunk is exhausted (cracker status)", [$this->agent, $chunk]);
