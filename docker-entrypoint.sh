@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-paths=(install inc/Encryption.class.php inc/load.php files templates inc files lang .)
+paths=(install inc/Encryption.class.php inc/load.php files templates inc files lang . inc/utils/locks)
 
 for path in ${paths[@]}; do
   if chown www-data:www-data /var/www/html/${path} ; then

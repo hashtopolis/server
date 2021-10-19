@@ -10,6 +10,7 @@ src/files/*
 *.phpproj
 *.sln
 *.phpproj.user
+*.lock
 
 # for docker stuff
 .env
