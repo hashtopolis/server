@@ -452,10 +452,10 @@ class APISendProgress extends APIBasic {
             $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]])[0];
 
             $benchmark = $assignment->getBenchmark();
-            $benchmark_parts = explode(":", $benchmark);
-            if($benchmark_parts[0] == 0) break;
-            $newBenchmark = $differenceToChunk * $benchmark_parts[0];
-            $assignment->setBenchmark(round($newBenchmark).":".round($benchmark_parts[1]));
+            $benchmarkParts = explode(":", $benchmark);
+            if($benchmarkParts[0] == 0) break;
+            $newBenchmark = $differenceToChunk * $benchmarkParts[0];
+            $assignment->setBenchmark(round($newBenchmark).":".round($benchmarkParts[1]));
             DServerLog::log(DServerLog::TRACE, "Multiplied the benchmark of agent by ".round($differenceToChunk,2), [$this->agent, $assignment]);
             Factory::getAssignmentFactory()->update($assignment);
         }
