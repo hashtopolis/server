@@ -1,3 +1,4 @@
+dist: focal
 language: php
 os: linux
 php:
