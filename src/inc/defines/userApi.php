@@ -599,16 +599,18 @@ class USectionTask extends UApi {
   const RUN_PRETASK   = "runPretask";
   const RUN_SUPERTASK = "runSupertask";
   
-  const SET_TASK_PRIORITY      = "setTaskPriority";
-  const SET_SUPERTASK_PRIORITY = "setSupertaskPriority";
-  const SET_TASK_NAME          = "setTaskName";
-  const SET_TASK_COLOR         = "setTaskColor";
-  const SET_TASK_CPU_ONLY      = "setTaskCpuOnly";
-  const SET_TASK_SMALL         = "setTaskSmall";
-  const TASK_UNASSIGN_AGENT    = "taskUnassignAgent";
-  const TASK_ASSIGN_AGENT      = "taskAssignAgent";
-  const DELETE_TASK            = "deleteTask";
-  const PURGE_TASK             = "purgeTask";
+  const SET_TASK_PRIORITY          = "setTaskPriority";
+  const SET_TASK_TOP_PRIORITY      = "setTaskTopPriority";
+  const SET_SUPERTASK_PRIORITY     = "setSupertaskPriority";
+  const SET_SUPERTASK_TOP_PRIORITY = "setSupertaskTopPriority";
+  const SET_TASK_NAME              = "setTaskName";
+  const SET_TASK_COLOR             = "setTaskColor";
+  const SET_TASK_CPU_ONLY          = "setTaskCpuOnly";
+  const SET_TASK_SMALL             = "setTaskSmall";
+  const TASK_UNASSIGN_AGENT        = "taskUnassignAgent";
+  const TASK_ASSIGN_AGENT          = "taskAssignAgent";
+  const DELETE_TASK                = "deleteTask";
+  const PURGE_TASK                 = "purgeTask";
   
   const SET_SUPERTASK_NAME = "setSupertaskName";
   const DELETE_SUPERTASK   = "deleteSupertask";
@@ -634,8 +636,12 @@ class USectionTask extends UApi {
         return "Run a configured supertask with a hashlist";
       case USectionTask::SET_TASK_PRIORITY:
         return "Set the priority of a task";
+      case USectionTask::SET_TASK_TOP_PRIORITY:
+        return "Set task priority to the previous highest plus one hundred";
       case USectionTask::SET_SUPERTASK_PRIORITY:
         return "Set the priority of a supertask";
+      case USectionTask::SET_SUPERTASK_TOP_PRIORITY:
+        return "Set supertask priority to the previous highest plus one hundred";
       case USectionTask::SET_TASK_NAME:
         return "Rename a task";
       case USectionTask::SET_TASK_COLOR:

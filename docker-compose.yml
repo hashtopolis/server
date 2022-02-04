@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  hashtopolis:
+    container_name: hashtopolis
+    build: .
+    restart: always
+    volumes:
+      - ./src/import/:/var/www/html/import/:Z
+      - ./src/files/:/var/www/html/files/:Z
+      - ./src/inc/:/var/www/html/inc/:Z
+    depends_on:
+      - db
+    ports:
+      - 8080:80
+    cap_drop:
+      - ALL
+    cap_add:
+      # used to change files since non-priv user
+      - CHOWN
+      # used by apache to drop privs
+      - CAP_SETGID
+      - CAP_SETUID
+  db:
+    container_name: db
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASS
+      MYSQL_DATABASE: $MYSQL_DB
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASSWORD: $MYSQL_PASS
+    cap_drop:
+      - ALL
+    cap_add:
+      # used to change files since non-priv user
+      - CHOWN
+      # used because container uses find command
+      - CAP_DAC_READ_SEARCH
+      # used for the gosu binary
+      - CAP_SETGID
+      - CAP_SETUID
+volumes:
+  db:   

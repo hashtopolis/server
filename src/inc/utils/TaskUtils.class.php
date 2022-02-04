@@ -291,17 +291,49 @@ class TaskUtils {
    * @param int $supertaskId
    * @param int $priority
    * @param User $user
+   * @param bool $topPriority
    * @throws HTException
    */
-  public static function setSupertaskPriority($supertaskId, $priority, $user) {
-    $supertask = Factory::getTaskWrapperFactory()->get($supertaskId);
-    if ($supertask === null) {
+  public static function setSupertaskPriority($supertaskId, $priority, $user, $topPriority = false) {
+    // note that supertaskId here corresponds with the taskwrapper Id of the underlying subtasks of the running supertask
+    $supertaskWrapper = TaskUtils::getTaskWrapper($supertaskId, $user);
+    if ($supertaskWrapper === null) {
       throw new HTException("Invalid supertask!");
     }
-    else if (!AccessUtils::userCanAccessTask($supertask, $user)) {
+    else if (!AccessUtils::userCanAccessTask($supertaskWrapper, $user)) {
       throw new HTException("No access to this task!");
     }
-    Factory::getTaskWrapperFactory()->set($supertask, TaskWrapper::PRIORITY, ($priority < 0) ? 0 : $priority);
+    $priority = self::getIntegerPriorityValue($priority, $topPriority, $user, $supertaskWrapper);
+    Factory::getTaskWrapperFactory()->set($supertaskWrapper, TaskWrapper::PRIORITY, $priority);
+  }
+  
+  /**
+   * @param int $priority
+   * @param bool $topPriority
+   * @param $user
+   * @param $taskWrapper
+   * @return int
+   */
+  public static function getIntegerPriorityValue($priority, $topPriority, $user, $taskWrapper) {
+    if ($topPriority) {
+      // determine the current highest priority of all tasks this user has access to
+      $auxTaskWrappers = TaskUtils::getTaskWrappersForUser($user);
+      $highestPriority = 0;
+      foreach ($auxTaskWrappers as $auxTaskWrapper) {
+        if ($auxTaskWrapper != $taskWrapper) {
+          if ($auxTaskWrapper->getPriority() > $highestPriority) {
+            $highestPriority = $auxTaskWrapper->getPriority();
+          }
+        }
+      }
+      // set task priority to the current highest priority plus one hundred
+      $priority = $highestPriority + 100;
+    }
+    else {
+      $priority = intval($priority);
+      $priority = ($priority < 0) ? 0 : $priority;
+    }
+    return $priority;
   }
   
   /**
@@ -608,14 +640,14 @@ class TaskUtils {
    * @param int $taskId
    * @param int $priority
    * @param User $user
+   * @param bool $top
    * @throws HTException
    */
-  public static function updatePriority($taskId, $priority, $user) {
+  public static function updatePriority($taskId, $priority, $user, $topPriority = false) {
     // change task priority
     $task = TaskUtils::getTask($taskId, $user);
     $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
-    $priority = intval($priority);
-    $priority = ($priority < 0) ? 0 : $priority;
+    $priority = self::getIntegerPriorityValue($priority, $topPriority, $user, $taskWrapper);
     Factory::getTaskFactory()->set($task, Task::PRIORITY, $priority);
     if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
       Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, $priority);

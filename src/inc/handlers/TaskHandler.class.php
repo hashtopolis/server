@@ -77,6 +77,10 @@ class TaskHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_PRIORITY_PERM);
           TaskUtils::updatePriority($_POST["task"], $_POST['priority'], Login::getInstance()->getUser());
           break;
+        case DTaskAction::SET_TOP_PRIORITY:
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_PRIORITY_PERM);
+          TaskUtils::updatePriority($_POST["task"], -1, Login::getInstance()->getUser(), true);
+          break;
         case DTaskAction::CREATE_TASK:
           AccessControl::getInstance()->checkPermission(array_merge(DTaskAction::CREATE_TASK_PERM, DAccessControl::RUN_TASK_ACCESS));
           $this->create();
@@ -88,6 +92,10 @@ class TaskHandler implements Handler {
         case DTaskAction::SET_SUPERTASK_PRIORITY:
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
           TaskUtils::setSupertaskPriority($_POST['supertaskId'], $_POST['priority'], Login::getInstance()->getUser());
+          break;
+        case DTaskAction::SET_SUPERTASK_TOP_PRIORITY:
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
+          TaskUtils::setSupertaskPriority($_POST['supertaskId'], -1, Login::getInstance()->getUser(), true);
           break;
         case DTaskAction::ARCHIVE_TASK:
           AccessControl::getInstance()->checkPermission(DTaskAction::ARCHIVE_TASK_PERM);
@@ -146,9 +154,11 @@ class TaskHandler implements Handler {
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryVersionId);
     $hashlist = Factory::getHashlistFactory()->get($_POST["hashlist"]);
-    if ($hashlist != null) {
-      $accessGroup = Factory::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
+    if ($hashlist == null) {
+      UI::addMessage(UI::ERROR, "No hashlist was selected!");
+      return;
     }
+    $accessGroup = Factory::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
     if ($usePreprocessor < 0) {
       $usePreprocessor = 0;
     }

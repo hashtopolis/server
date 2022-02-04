@@ -25,6 +25,7 @@ class DAccessControl {
   const CRACKER_BINARY_ACCESS       = "crackerBinaryAccess";
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
+  const MANAGE_ACCESS_GROUP_ACCESS  = "manageAccessGroupAccess";
   
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";
@@ -99,6 +100,8 @@ class DAccessControl {
         return "Can view preconfigured supertasks<br>Also granted with manage/create supertasks permission.";
       case DAccessControl::MANAGE_SUPERTASK_ACCESS:
         return "Can manage preconfigured supertasks.";
+      case DAccessControl::MANAGE_ACCESS_GROUP_ACCESS:
+        return "Can manage access groups.";
     }
     return "__" . $access . "__";
   }
@@ -121,7 +124,7 @@ class DViewControl {
   const FORGOT_VIEW_PERM         = DAccessControl::PUBLIC_ACCESS;
   const GETFILE_VIEW_PERM        = DAccessControl::PUBLIC_ACCESS;
   const GETHASHLIST_VIEW_PERM    = DAccessControl::PUBLIC_ACCESS;
-  const GROUPS_VIEW_PERM         = DAccessControl::USER_CONFIG_ACCESS;
+  const GROUPS_VIEW_PERM         = DAccessControl::MANAGE_ACCESS_GROUP_ACCESS;
   const HASHES_VIEW_PERM         = DAccessControl::VIEW_HASHES_ACCESS;
   const HASHLISTS_VIEW_PERM      = DAccessControl::VIEW_HASHLIST_ACCESS;
   const HASHTYPES_VIEW_PERM      = DAccessControl::SERVER_CONFIG_ACCESS;
@@ -144,10 +147,10 @@ class DViewControl {
 
 class DAccessControlAction {
   const CREATE_GROUP      = "createGroup";
-  const CREATE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  const CREATE_GROUP_PERM = DAccessControl::MANAGE_ACCESS_GROUP_ACCESS;
   
   const DELETE_GROUP      = "deleteGroup";
-  const DELETE_GROUP_PERM = DAccessControl::USER_CONFIG_ACCESS;
+  const DELETE_GROUP_PERM = DAccessControl::MANAGE_ACCESS_GROUP_ACCESS;
   
   const EDIT      = "edit";
   const EDIT_PERM = DAccessControl::USER_CONFIG_ACCESS;

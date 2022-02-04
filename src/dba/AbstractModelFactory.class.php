@@ -4,6 +4,7 @@ namespace DBA;
 
 use MassUpdateSet;
 use PDO, PDOStatement, PDOException;
+use UI;
 
 /**
  * Abstraction of all ModelFactories.
@@ -872,7 +873,8 @@ abstract class AbstractModelFactory {
       if ($test) {
         return null;
       }
-      die("Fatal Error ! Database connection failed: " . $e->getMessage());
+      UI::printError(UI::ERROR, "Fatal Error! Database connection failed: " . $e->getMessage());
+      return null;
     }
   }
 }
