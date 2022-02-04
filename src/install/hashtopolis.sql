@@ -172,7 +172,8 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (76, 3, 'uApiSendTaskIsComplete', '0'),
   (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed'),
   (78, 8, 'ldap_server', ''),
-  (79, 8, 'ldap_domain', '');
+  (79, 8, 'ldap_basedn', ''),
+  (80, 8, 'ldap_uid', '');
 
 
 CREATE TABLE `ConfigSection` (
@@ -761,7 +762,7 @@ CREATE TABLE `TaskDebugOutput` (
   `taskId`            INT(11)      NOT NULL,
   `output`            VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
- 
+
 CREATE TABLE `TaskWrapper` (
   `taskWrapperId`   INT(11)      NOT NULL,
   `priority`        INT(11)      NOT NULL,
@@ -971,10 +972,10 @@ ALTER TABLE `HashlistHashlist`
 ALTER TABLE `HashType`
   ADD PRIMARY KEY (`hashTypeId`);
 
-ALTER TABLE `HealthCheck` 
+ALTER TABLE `HealthCheck`
   ADD PRIMARY KEY (`healthCheckId`);
 
-ALTER TABLE `HealthCheckAgent` 
+ALTER TABLE `HealthCheckAgent`
   ADD PRIMARY KEY (`healthCheckAgentId`);
 
 ALTER TABLE `LogEntry`
@@ -1119,10 +1120,10 @@ ALTER TABLE `Hashlist`
 ALTER TABLE `HashlistHashlist`
   MODIFY `hashlistHashlistId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `HealthCheck` 
+ALTER TABLE `HealthCheck`
   MODIFY `healthCheckId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `HealthCheckAgent` 
+ALTER TABLE `HealthCheckAgent`
   MODIFY `healthCheckAgentId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `LogEntry`
