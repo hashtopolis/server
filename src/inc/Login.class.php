@@ -123,6 +123,22 @@ class Login {
     if ($user->getIsValid() != 1) {
       return false;
     }
+    else if ($user->getIsLDAP() == 1) {
+      $domain = SConfig::getInstance()->getVal(DConfig::LDAP_DOMAIN);
+      $ldap_conn = ldap_connect(SConfig::getInstance()->getVal(DConfig::LDAP_SERVER));
+      $ldapbind=false;
+      if(ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3))
+         if(ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0))
+            if(ldap_start_tls($ldap_conn))
+              $ldapbind = @ldap_bind($ldap_conn, $username."@".$domain, $password);
+      ldap_close($ldap_conn);
+      if (!$ldapbind) {
+        Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed LDAP login attempt due to wrong password!");
+        $payload = new DataSet(array(DPayloadKeys::USER => $user));
+        NotificationHandler::checkNotifications(DNotificationType::USER_LOGIN_FAILED, $payload);
+        return false;
+      }
+    }
     else if (!Encryption::passwordVerify($password, $user->getPasswordSalt(), $user->getPasswordHash())) {
       Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
       
@@ -191,7 +207,3 @@ class Login {
     return true;
   }
 }
-
-
-
-

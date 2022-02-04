@@ -21,7 +21,7 @@ class ConfigHandler implements Handler {
         case DConfigAction::RESCAN_FILES:
           AccessControl::getInstance()->checkPermission(DConfigAction::RESCAN_FILES_PERM);
           ConfigUtils::scanFiles();
-          UI::addMessage(UI::SUCCESS, "File scan was successfull, no actions required!");
+          UI::addMessage(UI::SUCCESS, "File scan was successful, no actions required!");
           break;
         case DConfigAction::CLEAR_ALL:
           AccessControl::getInstance()->checkPermission(DConfigAction::CLEAR_ALL_PERM);
