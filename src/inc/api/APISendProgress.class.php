@@ -446,17 +446,23 @@ class APISendProgress extends APIBasic {
         if($timeTaken < 0) break; // prevent math & logic errors
 
         $differenceToChunk = $task->getChunkTime() / $timeTaken;
-        if($task->getStaticChunks() === 0 && ($differenceToChunk < 0.9 || $differenceToChunk > 1.1)) { // Not static chunks & difference in chunk time > 10%
+        // Limit how much difference a chunk can have to the previous.
+        $differenceToChunk = ($differenceToChunk > 1.5) ? 1.5 : $differenceToChunk;
+        $differenceToChunk = ($differenceToChunk < (2/3)) ? (2/3) : $differenceToChunk;
+        if (0.8 > $differenceToChunk && $differenceToChunk < 1.2) break;
+
+        if($task->getStaticChunks() === 0) { // Not static chunks
             $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
             $qF2 = new QueryFilter(Assignment::TASK_ID, $chunk->getTaskId(), "=");
             $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]])[0];
 
             $benchmark = $assignment->getBenchmark();
             $benchmarkParts = explode(":", $benchmark);
-            if($benchmarkParts[0] == 0) break;
+            if($benchmarkParts[0] == 0 || count($benchmarkParts) != 2) break;
             $newBenchmark = $differenceToChunk * $benchmarkParts[0];
             $assignment->setBenchmark(round($newBenchmark).":".round($benchmarkParts[1]));
-            DServerLog::log(DServerLog::TRACE, "Multiplied the benchmark of agent by ".round($differenceToChunk,2), [$this->agent, $assignment]);
+            DServerLog::log(DServerLog::INFO, "{$timeTaken}---{$task->getChunkTime}", [$this->agent, $assignment]);
+            DServerLog::log(DServerLog::INFO, "Multiplied the benchmark of agent by ".round($differenceToChunk,2), [$this->agent, $assignment]);
             Factory::getAssignmentFactory()->update($assignment);
         }
         break;
