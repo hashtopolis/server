@@ -449,7 +449,7 @@ class APISendProgress extends APIBasic {
         // Limit how much difference a chunk can have to the previous.
         $differenceToChunk = ($differenceToChunk > 1.5) ? 1.5 : $differenceToChunk;
         $differenceToChunk = ($differenceToChunk < (2/3)) ? (2/3) : $differenceToChunk;
-        if (0.8 > $differenceToChunk && $differenceToChunk < 1.2) break;
+        if ($differenceToChunk > 0.8 && $differenceToChunk < 1.2) break;
 
         if($task->getStaticChunks() === 0) { // Not static chunks
             $qF1 = new QueryFilter(Assignment::AGENT_ID, $chunk->getAgentId(), "=");
