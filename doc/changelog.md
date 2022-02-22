@@ -21,6 +21,7 @@
 - Adjusted handling to be able to deal with changed mode 22000 output.
 - Fixed pagination of hashes on cracks page.
 - Time of Zaps inserted is now saved.
+- Fixed unable to unassign agent from the task detail screen
 
 ## Enhancements
 
