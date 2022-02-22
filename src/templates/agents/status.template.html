@@ -121,9 +121,6 @@
             {{ELSE}}
               [[agent.getId()]]
             {{ENDIF}}
-            {{IF [[activeAgents.getVal([[agent.getId()]])]] == 1}}
-              <i class="fas fa-spinner fa-spin"></i>
-            {{ENDIF}}
           </td>
           <td>
             {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
@@ -137,15 +134,18 @@
             {{IF [[agent.getIsActive()]] == 0}}
               <span class="fas fa-pause" aria-hidden="true"></span>
             {{ENDIF}}
+            {{IF [[agentTasks.getVal([[agent.getId()]])]]}}
+            <i class="fas fa-spinner fa-spin"></i>
+            {{ENDIF}}
           </td>
           <td>
             {{IF [[agentTasks.getVal([[agent.getId()]])]]}}
               {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_TASK_ACCESS]])]]}}
                 <a href="tasks.php?id=[[agentTasks.getVal([[agent.getId()]])]]">Task [[agentTasks.getVal([[agent.getId()]])]]</a>,
                 at [[Util::nicenum([[agentSpeeds.getVal([[agent.getId()]])]], 10000, 1000)]]H/s,
-                working on chunk [[agentChunks.getVal([[agent.getId()]])]] <i class="fas fa-spinner fa-spin"></i>
+                working on chunk [[agentChunks.getVal([[agent.getId()]])]]
               {{ELSE}}
-                Task Id [[agentTasks.getVal([[agent.getId()]])]] <i class="fas fa-spinner fa-spin"></i>
+                Task Id [[agentTasks.getVal([[agent.getId()]])]]
               {{ENDIF}}
             {{ELSE}}
               ---
