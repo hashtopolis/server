@@ -296,7 +296,7 @@ if (isset($_GET['id'])) {
   UI::add('pageTitle', "Task details for " . $task->getTaskName());
   
   // load graph data
-  $data = Util::getSpeedDataSet($task->getId());
+  $data = Util::getSpeedDataSet($task->getId(), 50, 0, $task->getStatusTimer());
   if (sizeof($data) > 0) {
     $xlabels = [];
     $rawData = [];
