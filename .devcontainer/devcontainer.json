@@ -1,0 +1,25 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"name": "PHP 7 with Apache",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "hashtopolis",
+	"runServices": ["db"],
+			
+	"appPort": [8080],
+	// Uncomment this like if you want to keep your containers running after VS Code shuts down.
+	// "shutdownAction": "none",
+
+	"workspaceMount": "src=${localWorkspaceFolder},dst=/var/www/html,type=bind,consistency=cached",
+	"workspaceFolder": "/var/www/html",
+	// Uncomment the next line if you want to add in default container specific settings.json values
+	// "settings":  { "workbench.colorTheme": "Quiet Light" },
+
+	// "postCreateCommand": "",
+
+	// "extensions": [
+	// 	"felixfbecker.php-debug",
+	// 	"bmewburn.vscode-intelephense-client",
+	// 	"ikappas.phpcs"
+	// ]
+	"remoteUser": "www-data",
+}
