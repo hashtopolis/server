@@ -35,6 +35,7 @@
 - JQuery updated to v3.6.0.
 - Print database connection error in UI theme.
 - Agents overview page and agent detail page now show counter for repeating devices
+- Agent detail page now has a hide/show button for the config parameters.
 
 # v0.11.0 -> v0.12.0
 
