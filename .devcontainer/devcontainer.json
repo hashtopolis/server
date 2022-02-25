@@ -16,10 +16,10 @@
 
 	// "postCreateCommand": "",
 
-	// "extensions": [
-	// 	"felixfbecker.php-debug",
-	// 	"bmewburn.vscode-intelephense-client",
-	// 	"ikappas.phpcs"
-	// ]
+	"extensions": [
+		"xdebug.php-debug",
+		"bmewburn.vscode-intelephense-client",
+		// "ikappas.phpcs"
+	],
 	"remoteUser": "www-data",
 }
