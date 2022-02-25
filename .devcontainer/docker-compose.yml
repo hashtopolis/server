@@ -19,7 +19,7 @@ services:
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
     # Overrides default command so things don't shut down after the process ends.
-    command: docker-php-entrypoint apache2-foreground
+    #command: docker-php-entrypoint apache2-foreground
   db:
     container_name: db
     image: mysql:5.7

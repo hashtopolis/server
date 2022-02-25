@@ -12,6 +12,7 @@ RUN apt-get update \
     #
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
+    && apt-get -y install mariadb-client \
     #
     # Install xdebug
     && yes | pecl install xdebug \
@@ -49,3 +50,5 @@ RUN rm -rf /etc/apache2/sites-enabled \
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
+COPY docker-entrypoint.sh /usr/local/bin
+ENTRYPOINT [ "docker-entrypoint.sh" ]
