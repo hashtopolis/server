@@ -23,7 +23,7 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @return RegVoucher
    */
   function getNullObject() {
-    $o = new RegVoucher(-1, null, null);
+    $o = new RegVoucher(-1, null, null, false);
     return $o;
   }
   
@@ -33,7 +33,7 @@ class RegVoucherFactory extends AbstractModelFactory {
    * @return RegVoucher
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new RegVoucher($dict['regVoucherId'], $dict['voucher'], $dict['time']);
+    $o = new RegVoucher($dict['regVoucherId'], $dict['voucher'], $dict['time'], $dict['trusted']);
     return $o;
   }
   

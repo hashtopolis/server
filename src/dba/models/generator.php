@@ -182,7 +182,8 @@ $CONF['Pretask'] = [
 $CONF['RegVoucher'] = [
   'regVoucherId',
   'voucher',
-  'time'
+  'time',
+  'trusted'
 ];
 $CONF['RightGroup'] = [
   'rightGroupId',

@@ -536,7 +536,7 @@ class AgentUtils {
    * @param string $newVoucher
    * @throws HTException
    */
-  public static function createVoucher($newVoucher) {
+  public static function createVoucher($newVoucher, $isTrusted) {
     $qF = new QueryFilter(RegVoucher::VOUCHER, $newVoucher, "=");
     $check = Factory::getRegVoucherFactory()->filter([Factory::FILTER => $qF]);
     if ($check != null) {
@@ -544,7 +544,8 @@ class AgentUtils {
     }
 
     $key = htmlentities($newVoucher, ENT_QUOTES, "UTF-8");
-    $voucher = new RegVoucher(null, $key, time());
+    $trusted = ($isTrusted) ? 1 : 0;
+    $voucher = new RegVoucher(null, $key, time(), $trusted);
     Factory::getRegVoucherFactory()->save($voucher);
   }
 

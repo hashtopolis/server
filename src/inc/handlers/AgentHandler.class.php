@@ -73,7 +73,7 @@ class AgentHandler implements Handler {
           break;
         case DAgentAction::CREATE_VOUCHER:
           AccessControl::getInstance()->checkPermission(DAgentAction::CREATE_VOUCHER_PERM);
-          AgentUtils::createVoucher($_POST["newvoucher"]);
+          AgentUtils::createVoucher($_POST["newvoucher"], $_POST["trusted"]);
           break;
         case DAgentAction::DELETE_VOUCHER:
           AccessControl::getInstance()->checkPermission(DAgentAction::DELETE_VOUCHER_PERM);
