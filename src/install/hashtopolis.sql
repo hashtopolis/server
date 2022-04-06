@@ -71,7 +71,7 @@ CREATE TABLE `AgentStat` (
   `agentId`     INT(11)     NOT NULL,
   `statType`    INT(11)     NOT NULL,
   `time`        BIGINT      NOT NULL,
-  `value`       VARCHAR(64) NOT NULL
+  `value`       VARCHAR(128) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `AgentZap` (
