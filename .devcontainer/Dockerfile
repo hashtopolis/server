@@ -20,7 +20,6 @@ RUN apt-get update \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.client_host" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	#
 	# Install extensions (optional)

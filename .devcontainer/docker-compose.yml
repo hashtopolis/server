@@ -1,7 +1,7 @@
 version: "3"
 services:
   hashtopolis:
-    container_name: hashtopolis_dev
+    container_name: hashtopolis
     # Uncomment the next line to use a non-root user. On Linux, this will prevent
     # new files getting created as root, but you may need to update the USER_UID
     # and USER_GID in .devcontainer/Dockerfile to match your user if not 1000.
@@ -45,3 +45,7 @@ services:
       - CAP_SETUID
 volumes:
   db:
+
+networks:
+  default:
+    name: hashtopolis_dev
