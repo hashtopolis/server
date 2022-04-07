@@ -20,7 +20,16 @@ RUN apt-get update \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/xdebug.ini \
+
+	# Configuring PHP
+    && touch "/usr/local/etc/php/conf.d/custom.ini" \
+	&& echo "display_errors = on" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
+	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini \
+
 	#
 	# Install extensions (optional)
 	# && apt-get -y install libicu-dev \
