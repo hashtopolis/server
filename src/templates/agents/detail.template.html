@@ -8,11 +8,6 @@
       <tr>
         <td>Agent ID:</td>
         <td>[[agent.getId()]]</td>
-        <td>
-          <form style ='float: right; padding-right: 5px;'>
-            <a class="btn btn-primary accordion-toggle" role="button" onclick="window.location.reload();expansionCheck('#showAgentDetails[[agent.getId()]]')" href="#showAgentDetails[[agent.getId()]]" data-toggle="collapse">Show/Hide details</a>
-          </form>
-        </td>
       </tr>
 
       <tr>
@@ -45,6 +40,8 @@
         </td>
       </tr>
     </table>
+
+    <a class="btn btn-primary accordion-toggle" role="button" onclick="window.location.reload();expansionCheck('#showAgentDetails[[agent.getId()]]')" href="#showAgentDetails[[agent.getId()]]" data-toggle="collapse">Show/Hide details</a>
 
     <table class="table table-bordered accordion-body collapse" id="showAgentDetails[[agent.getId()]]" aria-expanded="true">
       <tr>
