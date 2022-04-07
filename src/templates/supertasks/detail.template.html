@@ -174,7 +174,7 @@
                   <input type="hidden" name="csrf" value="[[csrf]]">
                   <input type="hidden" name="benchmarka0" value="[[benchmarka0]]">
                   <input type="hidden" name="benchmarka3" value="[[benchmarka3]]">
-                  <input type="submit" class='btn btn-danger' value="Add">
+                  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Add">
                 </form>
               {{ENDIF}}
             </td>
