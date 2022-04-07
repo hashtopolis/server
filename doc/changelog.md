@@ -21,7 +21,8 @@
 - Adjusted handling to be able to deal with changed mode 22000 output.
 - Fixed pagination of hashes on cracks page.
 - Time of Zaps inserted is now saved.
-- Fixed unable to unassign agent from the task detail screen
+- Fixed unable to unassign agent from the task detail screen.
+- Fixed speed graph incorrect when status timer is different from servers default.
 
 ## Enhancements
 
@@ -34,8 +35,9 @@
 - The agent status page shows more detailed information on temperature and usage.
 - JQuery updated to v3.6.0.
 - Print database connection error in UI theme.
-- Agents overview page and agent detail page now show counter for repeating devices
 - Agent detail page now has a hide/show button for the config parameters.
+- Agents overview page and agent detail page now show counter for repeating devices.
+- Increase size of database column for storing agentstats.
 
 # v0.11.0 -> v0.12.0
 
