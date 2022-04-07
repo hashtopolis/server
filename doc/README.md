@@ -7,7 +7,7 @@ The documentation for the User API can be found in `user-api/user-api.pdf`, list
 
 ## Generic Crackers
 
-Custom crackers which should be able to get distributed with Hashtopolis need to fulfill some minimal requirements as command line options. Shown here with the help function of a generic example implementation (which is available [here](https://github.com/s3inlc/hashtopolis-generic-cracker)):
+Custom crackers which should be able to get distributed with Hashtopolis need to fulfill some minimal requirements as command line options. Shown here with the help function of a generic example implementation (which is available [here](https://github.com/hashtopolis/generic-cracker)):
 
 ```
 cracker.exe [options] action

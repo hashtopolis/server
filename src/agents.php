@@ -63,6 +63,14 @@ if (isset($_GET['id'])) {
     UI::printError("ERROR", "No access to this agent!");
   }
   else {
+    // uniq devices lines and prepend with count
+    $tmp_devices_tuple = array_count_values(explode("\n", $agent->getDevices()));
+    $devices_tuple = array();
+    foreach ($tmp_devices_tuple as $key => $value) {
+      $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
+    }
+    $agent->setDevices(implode("\n", $devices_tuple));
+
     UI::add('agent', $agent);
     UI::add('users', Factory::getUserFactory()->filter([]));
     UI::add('pageTitle', "Agent details for " . $agent->getAgentName());
@@ -149,7 +157,13 @@ else {
     $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $accessGroupAgents->addValue($agent->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()]);
-    $agent->setDevices(Util::compressDevices(explode("\n", $agent->getDevices())));
+    // uniq devices lines and prepend with count
+    $tmp_devices_tuple = array_count_values(explode("\n", $agent->getDevices()));
+    $devices_tuple = array();
+    foreach ($tmp_devices_tuple as $key => $value) {
+      $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
+    }
+    $agent->setDevices(implode("\n", $devices_tuple));
   }
   
   UI::add('accessGroupAgents', $accessGroupAgents);

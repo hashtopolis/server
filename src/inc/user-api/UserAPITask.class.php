@@ -274,13 +274,17 @@ class UserAPITask extends UserAPIBasic {
    * @throws HTException
    */
   private function setSupertaskPriority($QUERY, $topPriority = false) {
-    if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_PRIORITY])) {
-      throw new HTException("Invalid query!");
+    // check whether an Id is submitted
+    // note that supertaskId here corresponds with the taskwrapper Id of the underlying subtasks of the running supertask
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID])) {
+      throw new HTException("Invalid query! No ID!");
     }
+    // set priority depending on $topPriority
     if ($topPriority) {
       TaskUtils::setSupertaskPriority($QUERY[UQueryTask::SUPERTASK_ID], -1, $this->user, true);
     }
     else {
+      // check whether a priority is submitted
       if (!isset($QUERY[UQueryTask::SUPERTASK_PRIORITY])) {
         throw new HTException("Invalid query!");
       }

@@ -71,7 +71,7 @@ CREATE TABLE `AgentStat` (
   `agentId`     INT(11)     NOT NULL,
   `statType`    INT(11)     NOT NULL,
   `time`        BIGINT      NOT NULL,
-  `value`       VARCHAR(64) NOT NULL
+  `value`       VARCHAR(128) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `AgentZap` (
@@ -90,12 +90,12 @@ CREATE TABLE `Assignment` (
 CREATE TABLE `Chunk` (
   `chunkId`      INT(11)    NOT NULL,
   `taskId`       INT(11)    NOT NULL,
-  `skip`         BIGINT(20) NOT NULL,
-  `length`       BIGINT(20) NOT NULL,
+  `skip`         BIGINT(20) UNSIGNED NOT NULL,
+  `length`       BIGINT(20) UNSIGNED NOT NULL,
   `agentId`      INT(11)    NULL,
   `dispatchTime` BIGINT     NOT NULL,
   `solveTime`    BIGINT     NOT NULL,
-  `checkpoint`   BIGINT(20) NOT NULL,
+  `checkpoint`   BIGINT(20) UNSIGNED NOT NULL,
   `progress`     INT(11)    NULL,
   `state`        INT(11)    NOT NULL,
   `cracked`      INT(11)    NOT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE `CrackerBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '6.2.1', 'https://hashcat.net/files/hashcat-6.2.1.7z', 'hashcat');
+  (1, 1, '6.2.5', 'https://hashcat.net/files/hashcat-6.2.5.7z', 'hashcat');
 
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)     NOT NULL,

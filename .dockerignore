@@ -10,7 +10,11 @@ src/files/*
 *.phpproj
 *.sln
 *.phpproj.user
-*.lock
 
 # for docker stuff
+/db/
+data/conf.php
 .env
+src/ipmort/*
+.gitignore
+.dockerignore

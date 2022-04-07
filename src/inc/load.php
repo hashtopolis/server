@@ -108,8 +108,10 @@ if ($INSTALL) {
 }
 UI::add('accessControl', AccessControl::getInstance());
 
-// CSRF setup
-CSRF::init();
+if ($INSTALL) {
+  // CSRF setup
+  CSRF::init();
+}
 
 
 
