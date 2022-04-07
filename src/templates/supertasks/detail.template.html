@@ -38,7 +38,6 @@
         <tr>
           <th>
             Estimate runtime
-            <i class="fas fa-info-circle" aria-hidden="true" title="The benchmark to enter is the total speed the user expects the tasks to be run at. The estimated runtime will be a summation of the keyspace size of all tasks, divided by the benchmark entered by the user.&#x0a;Actual runtime will depend on how many agents will be assigned, at what speed those agents will run, and how much time agents spend on overhead such as task initialisation. &#x0a"></i>
           </th>
           <td>
             <form style ='float: left;' action="supertasks.php?id=[[supertask.getId()]]" method="POST" id="keyspaceCalculation">
@@ -51,14 +50,19 @@
           </td>
         </tr>
         {{IF [[benchmarka0]] != 0 AND [[benchmarka3]] != 0}}
-          <tr>
-            <th>
-              Estimated total runtime of supertask
-            </th>
-            <td class="runtimeOfSupertask">
-            </td>
-          </tr>
-        {{ENDIF}}
+        <tr>
+          <th>
+            Estimated total runtime of supertask
+          </th>
+          <td class="runtimeOfSupertask">
+          </td>
+        </tr>
+      {{ENDIF}}
+        <tr>
+          <td colspan="2">
+            The benchmark number to enter above is the total amount of hashes per second per attack type of all of the agents combined that will run the supertask.
+          </td>
+        </tr>
       </table>
     </div>
   </div>
