@@ -95,9 +95,12 @@ class NotificationHandler implements Handler {
       case DNotificationType::AGENT_ERROR:
       case DNotificationType::OWN_AGENT_ERROR:
       case DNotificationType::DELETE_AGENT:
-      case DNotificationType::NEW_AGENT:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
         return AccessUtils::userCanAccessAgent($agent, self::getUserFromNotification($notification));
+
+      case DNotificationType::NEW_AGENT:
+        $accessControl = AccessControl::getInstance(self::getUserFromNotification($notification));
+        return $accessControl->hasPermission(DAccessControl::MANAGE_AGENT_ACCESS);
 
       // Users
       case DNotificationType::USER_DELETED:
