@@ -98,8 +98,6 @@ class NotificationHandler implements Handler {
       case DNotificationType::NEW_AGENT:
         $agent = $payload->getVal(DPayloadKeys::AGENT);
         return AccessUtils::userCanAccessAgent($agent, self::getUserFromNotification($notification));
-        // FIXME - only allow if user has access to the agent
-//        return true;
 
       // Users
       case DNotificationType::USER_DELETED:
@@ -111,8 +109,8 @@ class NotificationHandler implements Handler {
       case DNotificationType::LOG_ERROR:
       case DNotificationType::LOG_WARN:
       case DNotificationType::LOG_FATAL:
-        // FIXME - check something here?
-        return true;
+        $accessControl = AccessControl::getInstance(self::getUserFromNotification($notification));
+        return $accessControl->hasPermission(DAccessControl::SERVER_CONFIG_ACCESS);
     }
 
     return false;
