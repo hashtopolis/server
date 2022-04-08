@@ -359,7 +359,7 @@ class Util {
     // check if there is an old deletion request for the same filename
     $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
-    if ($fileType == 1) {
+    if ($fileType == DFileType::RULE) {
       $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::rulefileLineCount($path));
     }
     else {

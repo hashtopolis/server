@@ -350,7 +350,7 @@ class FileUtils {
     if (!file_exists($filePath)) {
       throw new HTException("File not found!");
     }
-    if ($file->getFileType() == 1) {
+    if ($file->getFileType() == DFileType::RULE) {
       $count = Util::rulefileLineCount($filePath);
     }
     else {
