@@ -15,4 +15,14 @@
 		"bmewburn.vscode-intelephense-client",
 	],
 	"remoteUser": "www-data",
+	"settings": {
+		"terminal.integrated.profiles.linux":{
+			"bash": {
+			  "path": "bash",
+			  "icon": "terminal-bash",
+			  "user": "root",
+			}
+		  },
+		"terminal.integrated.defaultProfile.linux": "bash",
+	},
 }
