@@ -13,7 +13,6 @@
 	"extensions": [
 		"xdebug.php-debug",
 		"bmewburn.vscode-intelephense-client",
-		// "ikappas.phpcs"
 	],
 	"remoteUser": "www-data",
 }

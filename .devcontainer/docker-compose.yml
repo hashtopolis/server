@@ -2,11 +2,6 @@ version: "3"
 services:
   hashtopolis:
     container_name: hashtopolis
-    # Uncomment the next line to use a non-root user. On Linux, this will prevent
-    # new files getting created as root, but you may need to update the USER_UID
-    # and USER_GID in .devcontainer/Dockerfile to match your user if not 1000.
-    # user: vscode
-    # Using a Dockerfile is optional, but included for completeness.
     build:
       context: .
       dockerfile: Dockerfile
@@ -18,8 +13,6 @@ services:
       # This is where VS Code should expect to find your project's source code
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
-    # Overrides default command so things don't shut down after the process ends.
-    #command: docker-php-entrypoint apache2-foreground
   db:
     container_name: db
     image: mysql:5.7
@@ -48,4 +41,5 @@ volumes:
 
 networks:
   default:
+    # This network will also be used by the python-agent
     name: hashtopolis_dev

@@ -6,14 +6,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Configure apt and install packages
 RUN apt-get update \
     && apt-get -y install --no-install-recommends apt-utils zip unzip nano ncdu 2>&1 \
-	#
-	# Webgrind prereqs
-	# && apt-get -y install --no-install-recommends python graphviz 2>&1 \
     #
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
-    #
+
     # Install xdebug
     && yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
@@ -30,22 +27,9 @@ RUN apt-get update \
 	&& echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini \
 
-	#
 	# Install extensions (optional)
-	# && apt-get -y install libicu-dev \
-	# && docker-php-ext-install intl pdo_mysql opcache \
 	&& docker-php-ext-install pdo_mysql \
 
-	# && pecl install apcu && docker-php-ext-enable apcu \
-	# && echo "apc.enable_cli=1" > /usr/local/etc/php/php.ini \
-	# && echo "apc.enable=1" > /usr/local/etc/php/php.ini \
-	# && a2enmod rewrite \
-	#
-	# Install composer
-	# && curl -s https://getcomposer.org/installer | php \
-	# && mv composer.phar /usr/local/bin/composer \
-	# && composer global require hirak/prestissimo \
-    #
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
