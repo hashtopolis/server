@@ -73,7 +73,7 @@ class NotificationHandler implements Handler {
     }
   }
 
-  private static function isAuthorizedToReceiveNotification($action, NotificationSetting $notification, DataSet $payload): bool {
+  private static function isAuthorizedToReceiveNotification($action, $notification, $payload): bool {
     switch ($action) {
       // Hashlists
       case DNotificationType::HASHLIST_ALL_CRACKED:
