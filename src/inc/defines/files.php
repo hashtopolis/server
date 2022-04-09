@@ -19,4 +19,7 @@ class DFileAction {
   
   const EDIT_FILE      = "editFile";
   const EDIT_FILE_PERM = DAccessControl::MANAGE_FILE_ACCESS;
+  
+  const COUNT_FILE_LINES      = "countFileLines";
+  const COUNT_FILE_LINES_PERM = DAccessControl::MANAGE_FILE_ACCESS;
 }

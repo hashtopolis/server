@@ -207,12 +207,13 @@ INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingA
   (1, 'hashcat', 1);
 
 CREATE TABLE `File` (
-  `fileId`   INT(11)      NOT NULL,
-  `filename` VARCHAR(100) NOT NULL,
-  `size`     BIGINT(20)   NOT NULL,
-  `isSecret` TINYINT(4)   NOT NULL,
-  `fileType` INT(11)      NOT NULL,
-  `accessGroupId` INT(11) NOT NULL
+  `fileId`        INT(11)      NOT NULL,
+  `filename`      VARCHAR(100) NOT NULL,
+  `size`          BIGINT(20)   NOT NULL,
+  `isSecret`      TINYINT(4)   NOT NULL,
+  `fileType`      INT(11)      NOT NULL,
+  `accessGroupId` INT(11)      NOT NULL,
+  `lineCount`     BIGINT(20)   DEFAULT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `FilePretask` (

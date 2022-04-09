@@ -29,6 +29,14 @@ class SupertaskHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DSupertaskAction::BULK_SUPERTASK_PERM);
           SupertaskUtils::bulkSupertask($_POST['name'], $_POST['command'], $_POST['isCpu'], $_POST['isSmall'], $_POST['crackerBinaryTypeId'], $_POST['benchtype'], @$_POST['basefile'], @$_POST['iterfile'], Login::getInstance()->getUser());
           break;
+        case DSupertaskAction::REMOVE_PRETASK_FROM_SUPERTASK:
+          AccessControl::getInstance()->checkPermission(DSupertaskAction::REMOVE_PRETASK_FROM_SUPERTASK_PERM);
+          SupertaskUtils::removePretaskFromSupertask($_POST['supertaskId'], $_POST['pretaskId']);
+          break;
+        case DSupertaskAction::ADD_PRETASK_TO_SUPERTASK:
+          AccessControl::getInstance()->checkPermission(DSupertaskAction::ADD_PRETASK_TO_SUPERTASK_PERM);
+          SupertaskUtils::addPretaskToSupertask($_POST['supertaskId'], $_POST['pretaskId']);
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;

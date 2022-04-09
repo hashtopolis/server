@@ -800,6 +800,7 @@ class TaskUtils {
   public static function splitByRules($task, $taskWrapper, $files, $splitFile, $split) {
     // calculate how much we need to split
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
+    // replace countLines with fileLineCount? Could be a better option: not OS-dependent
     $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
     $linesPerFile = floor($numLines / $numSplits) + 1;
     
