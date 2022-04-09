@@ -659,10 +659,17 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (27500, 'VirtualBox (PBKDF2-HMAC-SHA256 & AES-128-XTS)', 0, 0),
   (27600, 'VirtualBox (PBKDF2-HMAC-SHA256 & AES-256-XTS)', 0, 0),
   (27700, 'MultiBit Classic .wallet (scrypt)', 0, 0),
-  (27800, 'MurmurHash3', 0, 0),
-  (27900, 'CRC32C', 0, 0),
-  (28000, 'CRC64Jones', 0, 0),
+  (27800, 'MurmurHash3', 1, 0),
+  (27900, 'CRC32C', 1, 0),
+  (28000, 'CRC64Jones', 1, 0),
   (28100, 'Windows Hello PIN/Password', 0, 0),
+  (28200, 'Exodus Desktop Wallet (scrypt)', 0, 0),
+  (28300, 'Teamspeak 3 (channel hash)', 0, 0),
+  (28400, 'bcrypt(sha512($pass)) / bcryptsha512', 0, 0),
+  (28600, 'PostgreSQL SCRAM-SHA-256', 0, 0),
+  (28700, 'Amazon AWS4-HMAC-SHA256', 0, 0),
+  (28800, 'Kerberos 5, etype 17, DB', 0, 0),
+  (28900, 'Kerberos 5, etype 18, DB', 0, 0),
   (99999, 'Plaintext', 0, 0);
 
 CREATE TABLE `LogEntry` (
