@@ -36,6 +36,7 @@
 - The agent status page shows more detailed information on temperature and usage.
 - JQuery updated to v3.6.0.
 - Print database connection error in UI theme.
+- Agent detail page now has a hide/show button for the config parameters.
 - Agents overview page and agent detail page now show counter for repeating devices.
 - Increase size of database column for storing agentstats.
 
