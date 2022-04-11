@@ -66,6 +66,49 @@ if (!isset($PRESENT["v0.12.x_hashTypes_2"])) {
   $EXECUTED["v0.12.x_hashTypes_2"] = true;
 }
 
+if (!isset($PRESENT["v0.12.x_hashTypes_3"])) {
+  $hashtypes = [
+    new HashType(23300, 'Apple iWork', 0, 1),
+    new HashType(23500, 'AxCrypt 2 AES-128', 0, 1),
+    new HashType(23600, 'AxCrypt 2 AES-256', 0, 1),
+    new HashType(23900, 'BestCrypt v3 Volume Encryption', 0, 0),
+    new HashType(23400, 'Bitwarden', 0, 1),
+    new HashType(24900, 'Dahua Authentication MD5', 0, 0),
+    new HashType(25900, 'KNX IP Secure - Device Authentication Code', 0, 1),
+    new HashType(24100, 'MongoDB ServerKey SCRAM-SHA-1', 0, 1),
+    new HashType(24200, 'MongoDB ServerKey SCRAM-SHA-256', 0, 1),
+    new HashType(26000, 'Mozilla key3.db', 0, 0),
+    new HashType(26100, 'Mozilla key4.db', 0, 1),
+    new HashType(25300, 'MS Office 2016 - SheetProtection', 0, 1),
+    new HashType(25400, 'PDF 1.4 - 1.6 (Acrobat 5 - 8) - edit password', 0, 0),
+    new HashType(24410, 'PKCS#8 Private Keys (PBKDF2-HMAC-SHA1 + 3DES/AES)', 0, 1),
+    new HashType(24420, 'PKCS#8 Private Keys (PBKDF2-HMAC-SHA256 + 3DES/AES)', 0, 1),
+    new HashType(23700, 'RAR3-p (Uncompressed)', 0, 0),
+    new HashType(23800, 'RAR3-p (Compressed)', 0, 0),
+    new HashType(22911, 'RSA/DSA/EC/OPENSSH Private Keys ($0$)', 0, 0),
+    new HashType(22921, 'RSA/DSA/EC/OPENSSH Private Keys ($6$)', 0, 0),
+    new HashType(22931, 'RSA/DSA/EC/OPENSSH Private Keys ($1, $3$)', 0, 0),
+    new HashType(22941, 'RSA/DSA/EC/OPENSSH Private Keys ($4$)', 0, 0),
+    new HashType(22951, 'RSA/DSA/EC/OPENSSH Private Keys ($5$)', 0, 0),
+    new HashType(21501, 'SolarWinds Orion v2', 0, 1),
+    new HashType(24, 'SolarWinds Serv-U', 0, 0),
+    new HashType(24600, 'SQLCipher', 0, 1),
+    new HashType(25500, 'Stargazer Stellar Wallet XLM', 0, 1),
+    new HashType(24700, 'Stuffit5', 0, 0),
+    new HashType(24500, 'Telegram Desktop >= v2.1.14 (PBKDF2-HMAC-SHA512)', 0, 1),
+    new HashType(24800, 'Umbraco HMAC-SHA1', 0, 0),
+    new HashType(24300, 'sha1($salt.sha1($pass.$salt))', 1, 0),
+    new HashType(4510, 'sha1(sha1($pass).$salt)', 1, 0),
+  ];
+  foreach ($hashtypes as $hashtype) {
+    $check = Factory::getHashTypeFactory()->get($hashtype->getId());
+    if ($check === null) {
+      Factory::getHashTypeFactory()->save($hashtype);
+    }
+  }
+  $EXECUTED["v0.12.x_hashTypes_3"] = true;
+}
+
 if (!isset($PRESENT["v0.12.x_agentBinaries"])) {
   Util::checkAgentVersion("python", "0.6.0.10", true);
   $EXECUTED["v0.12.x_agentBinaries"] = true;
@@ -82,3 +125,12 @@ if (!isset($PRESENT["v0.12.x_agentBinariesUpdateTrack"])) {
   $EXECUTED["v0.12.x_agentBinariesUpdateTrack"] = true;
 }
 
+if (!isset($PRESENT["v0.12.x_agentStatValue"])) {
+  Factory::getFileFactory()->getDB()->query("ALTER TABLE `AgentStat` MODIFY `value` VARCHAR(128);");
+  $EXECUTED["v0.12.x_agentStatValue"] = true;
+}
+
+if (!isset($PRESENT["v0.12.x_fileLineCount"])) {
+  Factory::getFileFactory()->getDB()->query("ALTER TABLE `File` ADD `lineCount` BIGINT NULL;");
+  $EXECUTED["v0.12.x_fileLineCount"] = true;
+}

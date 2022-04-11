@@ -463,4 +463,38 @@ class SupertaskUtils {
       $masks[$i] = $mask;
     }
   }
+  
+  /**
+   * @param $supertaskId
+   * @param $pretaskId
+   * @throws HTException
+   */
+  public static function removePretaskFromSupertask($supertaskId, $pretaskId) {
+    if ($supertaskId == null) {
+      throw new HTException("Invalid supertask ID!");
+    }
+    if ($pretaskId == null) {
+      throw new HTException("Invalid pretask ID!");
+    }
+    $qF1 = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=");
+    $qF2 = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretaskId, "=");
+    $supertaskPretask = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    Factory::getSupertaskPretaskFactory()->delete($supertaskPretask);
+  }
+  
+  /**
+   * @param $supertaskId
+   * @param $pretaskId
+   * @throws HTException
+   */
+  public static function addPretaskToSupertask($supertaskId, $pretaskId) {
+    if ($supertaskId == null) {
+      throw new HTException("Invalid supertask ID!");
+    }
+    if ($pretaskId == null) {
+      throw new HTException("Invalid pretask ID!");
+    }
+    $supertaskPretask = new SupertaskPretask(null, $supertaskId, $pretaskId);
+    Factory::getSupertaskPretaskFactory()->save($supertaskPretask);
+  }
 }

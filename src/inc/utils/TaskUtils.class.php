@@ -291,11 +291,12 @@ class TaskUtils {
    * @param int $supertaskId
    * @param int $priority
    * @param User $user
+   * @param bool $topPriority
    * @throws HTException
    */
   public static function setSupertaskPriority($supertaskId, $priority, $user, $topPriority = false) {
-    $supertask = TaskUtils::getTask($supertaskId, $user);
-    $supertaskWrapper = TaskUtils::getTaskWrapper($supertask->getTaskWrapperId(), $user);
+    // note that supertaskId here corresponds with the taskwrapper Id of the underlying subtasks of the running supertask
+    $supertaskWrapper = TaskUtils::getTaskWrapper($supertaskId, $user);
     if ($supertaskWrapper === null) {
       throw new HTException("Invalid supertask!");
     }
@@ -799,6 +800,7 @@ class TaskUtils {
   public static function splitByRules($task, $taskWrapper, $files, $splitFile, $split) {
     // calculate how much we need to split
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
+    // replace countLines with fileLineCount? Could be a better option: not OS-dependent
     $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
     $linesPerFile = floor($numLines / $numSplits) + 1;
     

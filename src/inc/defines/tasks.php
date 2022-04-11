@@ -55,6 +55,12 @@ class DSupertaskAction {
   
   const BULK_SUPERTASK      = "bulkSupertaskCreation";
   const BULK_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
+  
+  const REMOVE_PRETASK_FROM_SUPERTASK      = "removePretaskFromSupertask";
+  const REMOVE_PRETASK_FROM_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
+  
+  const ADD_PRETASK_TO_SUPERTASK      = "addPretaskToSupertask";
+  const ADD_PRETASK_TO_SUPERTASK_PERM = DAccessControl::CREATE_SUPERTASK_ACCESS;
 }
 
 class DTaskAction {

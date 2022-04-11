@@ -6,6 +6,7 @@
 - Cracked hashes for all hashlists can be shown together (caution: only use when having smaller hashlists).
 - Allow abort all chunks of a specific access group from the User API.
 - Tasks can be set to top priority (to be first in the list) by the User API.
+- Supertask runtime can be estimated on the supertask detail page by entering expected attack speeds for hashcat wordlist and bruteforce attacks
 
 ## Bugfixes
 
@@ -18,8 +19,11 @@
 - Fixed missing .map files for javascript dependencies.
 - Fixed users being able to access tasks with hashlists they would not be allowed to view.
 - Fixed users being able to access hashlists they are not allowed to see.
+- Adjusted handling to be able to deal with changed mode 22000 output.
 - Fixed pagination of hashes on cracks page.
 - Time of Zaps inserted is now saved.
+- Fixed unable to unassign agent from the task detail screen.
+- Fixed speed graph incorrect when status timer is different from servers default.
 
 ## Enhancements
 
@@ -31,6 +35,10 @@
 - Permissions for managing access groups is separate from the permission to manage users.
 - The agent status page shows more detailed information on temperature and usage.
 - JQuery updated to v3.6.0.
+- Print database connection error in UI theme.
+- Agent detail page now has a hide/show button for the config parameters.
+- Agents overview page and agent detail page now show counter for repeating devices.
+- Increase size of database column for storing agentstats.
 
 # v0.11.0 -> v0.12.0
 
@@ -301,7 +309,7 @@
 
 ## Bugfixes
 
-- Various vulnerabilities (CVE-2017-11680, CVE-2017-11681, CVE-2017-11682) fixed, see [issue #241](https://github.com/s3inlc/hashtopolis/issues/241)
+- Various vulnerabilities (CVE-2017-11680, CVE-2017-11681, CVE-2017-11682) fixed, see [issue #241](https://github.com/hashtopolis/server/issues/241)
 
 ## Technical
 

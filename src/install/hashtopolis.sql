@@ -71,7 +71,7 @@ CREATE TABLE `AgentStat` (
   `agentId`     INT(11)     NOT NULL,
   `statType`    INT(11)     NOT NULL,
   `time`        BIGINT      NOT NULL,
-  `value`       VARCHAR(64) NOT NULL
+  `value`       VARCHAR(128) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `AgentZap` (
@@ -90,12 +90,12 @@ CREATE TABLE `Assignment` (
 CREATE TABLE `Chunk` (
   `chunkId`      INT(11)    NOT NULL,
   `taskId`       INT(11)    NOT NULL,
-  `skip`         BIGINT(20) NOT NULL,
-  `length`       BIGINT(20) NOT NULL,
+  `skip`         BIGINT(20) UNSIGNED NOT NULL,
+  `length`       BIGINT(20) UNSIGNED NOT NULL,
   `agentId`      INT(11)    NULL,
   `dispatchTime` BIGINT     NOT NULL,
   `solveTime`    BIGINT     NOT NULL,
-  `checkpoint`   BIGINT(20) NOT NULL,
+  `checkpoint`   BIGINT(20) UNSIGNED NOT NULL,
   `progress`     INT(11)    NULL,
   `state`        INT(11)    NOT NULL,
   `cracked`      INT(11)    NOT NULL,
@@ -125,7 +125,6 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (18, 2, 'yubikey_id', ''),
   (19, 2, 'yubikey_key', ''),
   (20, 2, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
-  (21, 4, 'donateOff', '0'),
   (22, 3, 'pagingSize', '5000'),
   (23, 3, 'plainTextMaxLength', '200'),
   (24, 3, 'hashMaxLength', '1024'),
@@ -196,7 +195,7 @@ CREATE TABLE `CrackerBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '6.1.1', 'https://hashcat.net/files/hashcat-6.1.1.7z', 'hashcat');
+  (1, 1, '6.2.5', 'https://hashcat.net/files/hashcat-6.2.5.7z', 'hashcat');
 
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)     NOT NULL,
@@ -208,12 +207,13 @@ INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingA
   (1, 'hashcat', 1);
 
 CREATE TABLE `File` (
-  `fileId`   INT(11)      NOT NULL,
-  `filename` VARCHAR(100) NOT NULL,
-  `size`     BIGINT(20)   NOT NULL,
-  `isSecret` TINYINT(4)   NOT NULL,
-  `fileType` INT(11)      NOT NULL,
-  `accessGroupId` INT(11) NOT NULL
+  `fileId`        INT(11)      NOT NULL,
+  `filename`      VARCHAR(100) NOT NULL,
+  `size`          BIGINT(20)   NOT NULL,
+  `isSecret`      TINYINT(4)   NOT NULL,
+  `fileType`      INT(11)      NOT NULL,
+  `accessGroupId` INT(11)      NOT NULL,
+  `lineCount`     BIGINT(20)   DEFAULT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `FilePretask` (
@@ -297,6 +297,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (21,    'osCommerce, xt:Commerce', 1, 0),
   (22,    'Juniper Netscreen/SSG (ScreenOS)', 1, 0),
   (23,    'Skype', 1, 0),
+  (24,    'SolarWinds Serv-U', 0, 0),
   (30,    'md5(unicode($pass).$salt)', 1, 0),
   (40,    'md5($salt.unicode($pass))', 1, 0),
   (50,    'HMAC-MD5 (key = $pass)', 1, 0),
@@ -375,6 +376,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (4300,  'md5(strtoupper(md5($pass)))', 0, 0),
   (4400,  'md5(sha1($pass))', 0, 0),
   (4500,  'sha1(sha1($pass))', 0, 0),
+  (4510,  'sha1(sha1($pass).$salt)', 1, 0),
   (4520,  'sha1($salt.sha1($pass))', 1, 0),
   (4521,  'Redmine Project Management Web App', 0, 0),
   (4522,  'PunBB', 0, 0),
@@ -593,6 +595,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (21300, 'md5($salt.sha1($salt.$pass))', 1, 0),
   (21400, 'sha256(sha256_bin(pass))', 0, 0),
   (21500, 'SolarWinds Orion', 0, 0),
+  (21501, 'SolarWinds Orion v2', 0, 0),
   (21600, 'Web2py pbkdf2-sha512', 0, 0),
   (21700, 'Electrum Wallet (Salt-Type 4)', 0, 0),
   (21800, 'Electrum Wallet (Salt-Type 5)', 0, 0),
@@ -606,11 +609,39 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (22500, 'MultiBit Classic .key (MD5)', 0, 0),
   (22600, 'Telegram Desktop App Passcode (PBKDF2-HMAC-SHA1)', 0, 0),
   (22700, 'MultiBit HD (scrypt)', 0, 1),
+  (22911, 'RSA/DSA/EC/OPENSSH Private Keys ($0$)', 0, 0),
+  (22921, 'RSA/DSA/EC/OPENSSH Private Keys ($6$)', 0, 0),
+  (22931, 'RSA/DSA/EC/OPENSSH Private Keys ($1, $3$)', 0, 0),
+  (22941, 'RSA/DSA/EC/OPENSSH Private Keys ($4$)', 0, 0),
+  (22951, 'RSA/DSA/EC/OPENSSH Private Keys ($5$)', 0, 0),
   (23001, 'SecureZIP AES-128', 0, 0),
   (23002, 'SecureZIP AES-192', 0, 0),
   (23003, 'SecureZIP AES-256', 0, 0),
   (23100, 'Apple Keychain', 0, 1),
   (23200, 'XMPP SCRAM PBKDF2-SHA1', 0, 0),
+  (23300, 'Apple iWork', 0, 0),
+  (23400, 'Bitwarden', 0, 0),
+  (23500, 'AxCrypt 2 AES-128', 0, 0),
+  (23600, 'AxCrypt 2 AES-256', 0, 0),
+  (23700, 'RAR3-p (Uncompressed)', 0, 0),
+  (23800, 'RAR3-p (Compressed)', 0, 0),
+  (23900, 'BestCrypt v3 Volume Encryption', 0, 0),
+  (24100, 'MongoDB ServerKey SCRAM-SHA-1', 0, 0),
+  (24200, 'MongoDB ServerKey SCRAM-SHA-256', 0, 0),
+  (24300, 'sha1($salt.sha1($pass.$salt))', 1, 0),
+  (24410, 'PKCS#8 Private Keys (PBKDF2-HMAC-SHA1 + 3DES/AES)', 0, 0),
+  (24420, 'PKCS#8 Private Keys (PBKDF2-HMAC-SHA256 + 3DES/AES)', 0, 0),
+  (24500, 'Telegram Desktop >= v2.1.14 (PBKDF2-HMAC-SHA512)', 0, 0),
+  (24600, 'SQLCipher', 0, 0),
+  (24700, 'Stuffit5', 0, 0),
+  (24800, 'Umbraco HMAC-SHA1', 0, 0),
+  (24900, 'Dahua Authentication MD5', 0, 0),
+  (25300, 'MS Office 2016 - SheetProtection', 0, 0),
+  (25400, 'PDF 1.4 - 1.6 (Acrobat 5 - 8) - edit password', 0, 0),
+  (25500, 'Stargazer Stellar Wallet XLM', 0, 0),
+  (25900, 'KNX IP Secure - Device Authentication Code', 0, 0),
+  (26000, 'Mozilla key3.db', 0, 0),
+  (26100, 'Mozilla key4.db', 0, 0),
   (99999, 'Plaintext', 0, 0);
 
 CREATE TABLE `LogEntry` (

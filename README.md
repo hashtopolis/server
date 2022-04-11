@@ -1,16 +1,16 @@
 # Hashtopolis
 
-<img src="https://github.com/s3inlc/hashtopolis/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
+<img src="https://github.com/hashtopolis/server/blob/master/src/static/logo.png" alt='Hashtopolis' width="100">
 
-[![CodeFactor](https://www.codefactor.io/repository/github/s3inlc/hashtopolis/badge)](https://www.codefactor.io/repository/github/s3inlc/hashtopolis)
-[![LoC](https://tokei.rs/b1/github/s3inlc/Hashtopolis?category=code)](https://github.com/s3inlc/Hashtopolis)
-[![Test Status](https://travis-ci.org/s3inlc/hashtopolis.svg?branch=master)](https://travis-ci.org/s3inlc/hashtopolis)
-[![Current Agent](https://img.shields.io/badge/Current%20Agent%20Version-0.6.0-blue.svg)](https://travis-ci.org/s3inlc/hashtopolis-agent-python)
+[![CodeFactor](https://www.codefactor.io/repository/github/hashtopolis/server/badge)](https://www.codefactor.io/repository/github/hashtopolis/server)
+[![LoC](https://tokei.rs/b1/github/hashtopolis/server?category=code)](https://github.com/hashtopolis/server)
+[![Build Status](https://travis-ci.com/hashtopolis/server.svg?branch=master)](https://travis-ci.com/hashtopolis/server)
+[![Current Agent](https://img.shields.io/badge/Current%20Agent%20Version-0.6.0-blue.svg)](https://travis-ci.org/hashtopolis/agent-python)
 
 Hashtopolis is a multi-platform client-server tool for distributing hashcat tasks to multiple computers. The main goals for Hashtopolis's development are portability, robustness, multi-user support, and multiple groups management.
 The application has two parts:
 
-- **Agent** Multiple clients (C#, Python), easily customizable to suit any need.
+- **Agent** Python client, easily customizable to suit any need.
 - **Server** several PHP/CSS files operating on two endpoints: an Admin GUI and an Agent Connection Point
 
 Aiming for high usability even on restricted networks, Hashtopolis communicates over HTTP(S) using a human-readable, hashing-specific dialect of JSON.
@@ -29,13 +29,13 @@ In an effort to make the Hashtopussy project conform to a more politically neutr
 
 - Easy and comfortable to use
 - Dark and light theme
-- Accessible from anywhere via web interface
+- Accessible from anywhere via web interface or user API
 - Server component highly compatible with common web hosting setups
 - Unattended agents
 - File management for word lists, rules, ...
 - Self-updating of both Hashtopolis and Hashcat
 - Cracking multiple hashlists of the same hash type as though they were a single hashlist
-- Running the same client on Windows, Linux and OS X
+- Running the same client on Windows, Linux and macOS
 - Files and hashes marked as "secret" are only distributed to agents marked as "trusted"
 - Many data import and export options
 - Rich statistics on hashes and running tasks
@@ -51,7 +51,7 @@ In an effort to make the Hashtopussy project conform to a more politically neutr
 
 ## Setup and Usage
 
-Please visit the [wiki](https://github.com/s3inlc/hashtopolis/wiki) for more information on setup and upgrade.
+Please visit the [wiki](https://github.com/hashtopolis/server/wiki) for more information on setup and upgrade.
 
 Some screenshots of Hashtopolis (by winxp5421 and s3in!c): [Imgur1](http://imgur.com/gallery/Fj0s0) [Imgur2](http://imgur.com/gallery/LzTsI)
 
@@ -63,15 +63,6 @@ We are open to all kinds of contributions. If it's a bug fix or a new feature, f
 * Try to stick with the code style used (especially in the PHP parts). IntelliJ/PHPStorm users can get a code style XML [here](https://gist.github.com/s3inlc/226ed78b05eb6dc8f60f18d6fd310d74).
 
 The pull request will then be reviewed by at least one member and merged after approval. Don't be discouraged just because the first review is not approved, often these are just small changes.
-
-## Support us
-
-[PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=7P3KXV8DQ5XKE)
-
-```
-BTC: 15gi3X5L4VPa5S2yygztYaN7MF7VA26Zaf
-ETH: 0x06B3Ae7561AD763eF58Df9C37deB6757bDA2BC0c
-```
 
 ## Thanks
 
