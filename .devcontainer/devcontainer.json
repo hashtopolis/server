@@ -19,8 +19,7 @@
 		"terminal.integrated.profiles.linux":{
 			"bash": {
 			  "path": "bash",
-			  "icon": "terminal-bash",
-			  "user": "root",
+			  "icon": "terminal-bash"
 			}
 		  },
 		"terminal.integrated.defaultProfile.linux": "bash",
