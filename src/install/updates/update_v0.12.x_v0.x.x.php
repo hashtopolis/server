@@ -133,6 +133,6 @@ if (!isset($PRESENT["v0.12.x_agentStatValue"])) {
 if (!isset($PRESENT["v0.12.x_fileLineCount"])) {
   if (!Util::databaseColumnExists("File", "lineCount")) {
     Factory::getFileFactory()->getDB()->query("ALTER TABLE `File` ADD `lineCount` BIGINT NULL;");
-    $EXECUTED["v0.12.x_fileLineCount"] = true;
   }
+  $EXECUTED["v0.12.x_fileLineCount"] = true;
 }
