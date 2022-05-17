@@ -120,6 +120,7 @@ class SupertaskUtils {
         $benchtype,
         $priority,
         0,
+        0,
         $crackerBinaryType->getId()
       );
       $pretask = Factory::getPretaskFactory()->save($pretask);
@@ -286,6 +287,7 @@ class SupertaskUtils {
         0,
         0,
         $pretask->getPriority(),
+        $pretask->getMaxAgents(),
         $pretask->getColor(),
         $pretask->getIsSmall(),
         $pretask->getIsCpuTask(),
@@ -431,6 +433,7 @@ class SupertaskUtils {
         $isCpu,
         $newBench,
         $priority,
+        0,
         1,
         $crackerBinaryType->getId()
       );
