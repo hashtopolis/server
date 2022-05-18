@@ -50,14 +50,14 @@ class MaxAgentsTest extends HashtopolisTest {
     // verify agent 1 is assigned to task 1
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent1["token"]]);
     if ($response["taskId"] != $task1Id) {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
       return;
     }
 
     // verify agent 2 is assigned to task 1
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent2["token"]]);
     if ($response["taskId"] != $task1Id) {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected task with id '%d' for agent 2, instead got: %s", $task1Id, implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected task with id '%d' for agent 2, instead got: %s", $task1Id, implode(", ", $response)));
       return;
     }
 
@@ -87,7 +87,7 @@ class MaxAgentsTest extends HashtopolisTest {
     // verify agent 2 is NOT assigned to task 1
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent2["token"]]);
     if ($response["taskId"] == $task1Id) {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected no task for agent 2, instead got: %s", implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected no task for agent 2, instead got: %s", implode(", ", $response)));
       return;
     }
     // verify getting chunk by agent 2 for task 1 now fails, because the task is already saturated
@@ -96,7 +96,7 @@ class MaxAgentsTest extends HashtopolisTest {
       "taskId" => $task1Id,
       "token" => $agent2["token"]]);
     if ($response["response"] !== "ERROR" || $response["message"] != "Task already saturated by other agents, no other task available!") {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected getChunk to fail, instead got: %s", implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected getChunk to fail, instead got: %s", implode(", ", $response)));
       return;
     }
 
@@ -111,7 +111,7 @@ class MaxAgentsTest extends HashtopolisTest {
     // verify agent 1 is assigned to task 1
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent1["token"]]);
     if ($response["taskId"] != $task1Id) {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
       return;
     }
 
@@ -130,14 +130,14 @@ class MaxAgentsTest extends HashtopolisTest {
     // verify agent 1 is assigned to task 1
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent1["token"]]);
     if ($response["taskId"] != $task1Id) {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
       return;
     }
 
     // verify agent 2 is assigned to task 2
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent2["token"]]);
     if ($response["taskId"] != $task2Id) {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task2Id, implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task2Id, implode(", ", $response)));
       return;
     }
 
@@ -147,7 +147,7 @@ class MaxAgentsTest extends HashtopolisTest {
       "taskId" => $task2Id,
       "token" => $agent2["token"]]);
     if ($response["response"] !== "SUCCESS") {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected getChunk to succeed, instead got: %s", implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected getChunk to succeed, instead got: %s", implode(", ", $response)));
       return;
     }
 
@@ -163,7 +163,7 @@ class MaxAgentsTest extends HashtopolisTest {
     // verify agent 2 is assigned to task 1 (since it has higher priority than task 2)
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent2["token"]]);
     if ($response["taskId"] != $task1Id) {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
       return;
     }
 
@@ -173,10 +173,10 @@ class MaxAgentsTest extends HashtopolisTest {
       "taskId" => $task1Id,
       "token" => $agent2["token"]]);
     if ($response["response"] !== "SUCCESS") {
-      $this->testFailed("TaskTest:testListTasks()", sprintf("Expected getChunk to succeed, instead got: %s", implode(", ", $response)));
+      $this->testFailed("MaxAgentsTest:testMaxAgents()", sprintf("Expected getChunk to succeed, instead got: %s", implode(", ", $response)));
       return;
     }
-    $this->testSuccess("TaskTest:testListTasks()");
+    $this->testSuccess("MaxAgentsTest:testMaxAgents()");
   }
 
   private function addFile($name, $type) {
