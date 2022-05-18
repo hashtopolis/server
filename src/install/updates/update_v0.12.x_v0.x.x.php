@@ -109,6 +109,47 @@ if (!isset($PRESENT["v0.12.x_hashTypes_3"])) {
   $EXECUTED["v0.12.x_hashTypes_3"] = true;
 }
 
+if (!isset($PRESENT["v0.12.x_hashTypes_4"])) {
+  $hashtypes = [
+    new HashType(26200, 'OpenEdge Progress Encode', 0, 0),
+    new HashType(26300, 'FortiGate256 (FortiOS256)', 0, 0),
+    new HashType(26401, 'AES-128-ECB NOKDF (PT = $salt, key = $pass)', 0, 0),
+    new HashType(26402, 'AES-192-ECB NOKDF (PT = $salt, key = $pass)', 0, 0),
+    new HashType(26403, 'AES-256-ECB NOKDF (PT = $salt, key = $pass)', 0, 0),
+    new HashType(26500, 'iPhone passcode (UID key + System Keybag)', 0, 0),
+    new HashType(26600, 'MetaMask Wallet', 0, 1),
+    new HashType(26700, 'SNMPv3 HMAC-SHA224-128', 0, 0),
+    new HashType(26800, 'SNMPv3 HMAC-SHA256-192', 0, 0),
+    new HashType(26900, 'SNMPv3 HMAC-SHA384-256', 0, 0),
+    new HashType(27000, 'NetNTLMv1 / NetNTLMv1+ESS (NT)', 0, 0),
+    new HashType(27100, 'NetNTLMv2 (NT)', 0, 0),
+    new HashType(27200, 'Ruby on Rails Restful Auth (one round, no sitekey)', 1, 0),
+    new HashType(27300, 'SNMPv3 HMAC-SHA512-384', 0, 0),
+    new HashType(27400, 'VMware VMX (PBKDF2-HMAC-SHA1 + AES-256-CBC)', 0, 0),
+    new HashType(27500, 'VirtualBox (PBKDF2-HMAC-SHA256 & AES-128-XTS)', 0, 1),
+    new HashType(27600, 'VirtualBox (PBKDF2-HMAC-SHA256 & AES-256-XTS)', 0, 1),
+    new HashType(27700, 'MultiBit Classic .wallet (scrypt)', 0, 0),
+    new HashType(27800, 'MurmurHash3', 1, 0),
+    new HashType(27900, 'CRC32C', 1, 0),
+    new HashType(28000, 'CRC64Jones', 1, 0),
+    new HashType(28100, 'Windows Hello PIN/Password', 0, 1),
+    new HashType(28200, 'Exodus Desktop Wallet (scrypt)', 0, 0),
+    new HashType(28300, 'Teamspeak 3 (channel hash)', 0, 0),
+    new HashType(28400, 'bcrypt(sha512($pass)) / bcryptsha512', 0, 0),
+    new HashType(28600, 'PostgreSQL SCRAM-SHA-256', 0, 1),
+    new HashType(28700, 'Amazon AWS4-HMAC-SHA256', 0, 0),
+    new HashType(28800, 'Kerberos 5, etype 17, DB', 0, 1),
+    new HashType(28900, 'Kerberos 5, etype 18, DB', 0, 1),
+  ];
+  foreach ($hashtypes as $hashtype) {
+    $check = Factory::getHashTypeFactory()->get($hashtype->getId());
+    if ($check === null) {
+      Factory::getHashTypeFactory()->save($hashtype);
+    }
+  }
+  $EXECUTED["v0.12.x_hashTypes_4"] = true;
+}
+
 if (!isset($PRESENT["v0.12.x_agentBinaries"])) {
   Util::checkAgentVersion("python", "0.6.0.10", true);
   $EXECUTED["v0.12.x_agentBinaries"] = true;
