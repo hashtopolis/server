@@ -24,6 +24,7 @@
 - Time of Zaps inserted is now saved.
 - Fixed unable to unassign agent from the task detail screen.
 - Fixed speed graph incorrect when status timer is different from servers default.
+- Fixed access group not being changed on Hashlist detailed screen.
 
 ## Enhancements
 
