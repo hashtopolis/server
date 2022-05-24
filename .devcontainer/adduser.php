@@ -44,3 +44,4 @@ Factory::getAgentFactory()->getDB()->commit();
 
 // Create voucher for dev agent
 AgentUtils::createVoucher("devvoucher");
+ConfigUtils::updateConfig(array("config_voucherDeletion" => "1"));
