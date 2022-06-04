@@ -136,8 +136,16 @@ else {
   /** @var $joinedHashlists Hashlist[] */
   $joinedHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
   $hashlists = array();
+
+  // Get User Factory
+  $UserFactory = Factory::getUserFactory();
+
   for ($x = 0; $x < sizeof($joinedHashlists); $x++) {
-    $hashlists[] = new DataSet(['hashlist' => $joinedHashlists[$x], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][$x]]);
+    // Add the creator details to the dataset in order to render a username, not just the ID of the user
+    $creatorId = $joinedHashlists[$x]->getCreator();
+    $creatorUsername = $UserFactory->get($creatorId)->getUsername();
+    
+    $hashlists[] = new DataSet(['hashlist' => $joinedHashlists[$x], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][$x], 'creator' => $creatorUsername]);
   }
   UI::add('hashlists', $hashlists);
   UI::add('numHashlists', sizeof($hashlists));
