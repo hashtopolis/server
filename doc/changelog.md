@@ -7,6 +7,7 @@
 - Allow abort all chunks of a specific access group from the User API.
 - Tasks can be set to top priority (to be first in the list) by the User API.
 - Supertask runtime can be estimated on the supertask detail page by entering expected attack speeds for hashcat wordlist and bruteforce attacks
+- Number of agents per task can be limited (pull request #764).
 
 ## Bugfixes
 
@@ -24,7 +25,8 @@
 - Time of Zaps inserted is now saved.
 - Fixed unable to unassign agent from the task detail screen.
 - Fixed speed graph incorrect when status timer is different from servers default.
-- Fixed access group not being changed on Hashlist detailed screen.
+- Fixed access group not being changed on Hashlist detailed screen (issue #765).
+- Fixed missing check on permissions for sending notifications (issue #757).
 
 ## Enhancements
 

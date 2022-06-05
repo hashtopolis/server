@@ -121,6 +121,7 @@ class HashlistUtils {
           0,
           0,
           $taskPriority,
+          $task->getMaxAgents(),
           $task->getColor(),
           $task->getIsSmall(),
           $task->getIsCpuTask(),
@@ -142,7 +143,7 @@ class HashlistUtils {
         
         TaskUtils::copyPretaskFiles($task, $newTask);
         
-        $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+        $payload = new DataSet(array(DPayloadKeys::TASK => $newTask));
         NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
       }
     }

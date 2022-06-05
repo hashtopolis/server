@@ -177,3 +177,13 @@ if (!isset($PRESENT["v0.12.x_fileLineCount"])) {
   }
   $EXECUTED["v0.12.x_fileLineCount"] = true;
 }
+
+if (!isset($PRESENT["v0.12.x_maxAgents_pretask_task"])) {
+  if (!Util::databaseColumnExists("Pretask", "maxAgents")) {
+    Factory::getFileFactory()->getDB()->query("ALTER TABLE `Pretask` ADD `maxAgents` INT(11) NOT NULL;");
+  }
+  if (!Util::databaseColumnExists("Task", "maxAgents")) {
+    Factory::getFileFactory()->getDB()->query("ALTER TABLE `Task` ADD `maxAgents` INT(11) NOT NULL;");
+  }
+  $EXECUTED["v0.12.x_maxAgents_pretask_task"] = true;
+}

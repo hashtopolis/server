@@ -163,6 +163,22 @@
         </td>
       </tr>
       <tr>
+        <td>Max agents:</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+            <form class='form-inline' action="tasks.php?id=[[task.getId()]]" method="POST">
+              <input type="hidden" name="action" value="[[$DTaskAction::SET_MAX_AGENTS]]">
+              <input type="hidden" name="task" value="[[task.getId()]]">
+              <input type="hidden" name="csrf" value="[[csrf]]">
+              <input type="text" class='form-control' name="maxAgents" size="4" value="[[task.getMaxAgents()]]" title="Max agents">&nbsp;&nbsp;
+              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+            </form>
+          {{ELSE}}
+            [[task.getMaxAgents()]]
+          {{ENDIF}}
+        </td>
+      </tr>
+      <tr>
         <td>Is CPU only task:</td>
         <td>
           {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}

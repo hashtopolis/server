@@ -33,6 +33,10 @@ class PretaskHandler implements Handler {
             die();
           }
           break;
+        case DPretaskAction::SET_MAX_AGENTS:
+          AccessControl::getInstance()->checkPermission(DPretaskAction::SET_MAX_AGENTS_PERM);
+          PretaskUtils::setMaxAgents($_POST['pretaskId'], $_POST['maxAgents']);
+          break;
         case DPretaskAction::SET_CPU_TASK:
           AccessControl::getInstance()->checkPermission(DPretaskAction::SET_CPU_TASK_PERM);
           PretaskUtils::setCpuOnlyTask($_POST['pretaskId'], $_POST['isCpu']);
@@ -43,7 +47,7 @@ class PretaskHandler implements Handler {
           break;
         case DPretaskAction::CREATE_TASK:
           AccessControl::getInstance()->checkPermission(DPretaskAction::CREATE_TASK_PERM);
-          PretaskUtils::createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType'], $_POST['adfile'], $_POST['crackerBinaryTypeId']);
+          PretaskUtils::createPretask($_POST['name'], $_POST['cmdline'], $_POST['chunk'], $_POST['status'], $_POST['color'], $_POST['cpuOnly'], $_POST['isSmall'], $_POST['benchType'], $_POST['adfile'], $_POST['crackerBinaryTypeId'], $_POST['maxAgents']);
           header("Location: pretasks.php");
           die();
         case DPretaskAction::CHANGE_ATTACK:

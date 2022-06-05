@@ -249,6 +249,7 @@ class PretaskTest extends HashtopolisTest {
       "crackerTypeId" => $crackerTypeId,
       "files" => $files,
       "priority" => $priority,
+      "maxAgents" => 16,
       "accessKey" => "mykey"
     ], HashtopolisTestFramework::REQUEST_UAPI
     );

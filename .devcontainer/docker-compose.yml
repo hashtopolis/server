@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - DEV_CONTAINER_USER_CMD
     depends_on:
       - db
     ports:
