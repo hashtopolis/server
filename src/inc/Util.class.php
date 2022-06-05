@@ -523,6 +523,7 @@ class Util {
         $set->addValue('isSecret', $hashlist->getIsSecret());
         $set->addValue('usePreprocessor', $task->getUsePreprocessor());
         $set->addValue('priority', $task->getPriority());
+        $set->addValue('maxAgents', $task->getMaxAgents());
         $set->addValue('keyspace', $task->getKeyspace());
         $set->addValue('isActive', $taskInfo[2]);
         $set->addValue('sumProgress', $taskInfo[0]);

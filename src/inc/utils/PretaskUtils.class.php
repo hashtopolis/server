@@ -42,6 +42,7 @@ class PretaskUtils {
       $copy->getIsCpuTask(),
       $copy->getUseNewBench(),
       0,
+      $copy->getMaxAgents(),
       0,
       $copy->getCrackerBinaryTypeId()
     );
@@ -61,6 +62,7 @@ class PretaskUtils {
       0,
       0,
       SConfig::getInstance()->getVal(DConfig::DEFAULT_BENCH),
+      0,
       0,
       0,
       0
@@ -110,6 +112,20 @@ class PretaskUtils {
       throw new HTException("Priority needs to be a number!");
     }
     Factory::getPretaskFactory()->set($pretask, Pretask::PRIORITY, intval($priority));
+  }
+
+    /**
+   * @param int $pretaskId
+   * @param int $maxAgents
+   * @throws HTException
+   */
+  public static function setMaxAgents($pretaskId, $maxAgents) {
+    $pretask = PretaskUtils::getPretask($pretaskId);
+    if (!is_numeric($maxAgents)) {
+      throw new HTException("Max agents needs to be a number!");
+    }
+    $maxAgents = intval($maxAgents);
+    Factory::getPretaskFactory()->set($pretask, Pretask::MAX_AGENTS, $maxAgents);
   }
   
   /**
@@ -240,6 +256,7 @@ class PretaskUtils {
       0,
       0,
       $pretask->getPriority(),
+      $pretask->getMaxAgents(),
       $pretask->getColor(),
       $pretask->getIsSmall(),
       $pretask->getIsCpuTask(),
@@ -275,10 +292,11 @@ class PretaskUtils {
    * @param int $benchmarkType
    * @param array $files
    * @param int $crackerBinaryTypeId
+   * @param int $maxAgents
    * @param int $priority
    * @throws HTException
    */
-  public static function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $files, $crackerBinaryTypeId, $priority = 0) {
+  public static function createPretask($name, $cmdLine, $chunkTime, $statusTimer, $color, $cpuOnly, $isSmall, $benchmarkType, $files, $crackerBinaryTypeId, $maxAgents, $priority = 0) {
     $crackerBinaryType = Factory::getCrackerBinaryTypeFactory()->get($crackerBinaryTypeId);
     
     if (strlen($name) == 0) {
@@ -295,6 +313,7 @@ class PretaskUtils {
     }
     $chunkTime = intval($chunkTime);
     $statusTimer = intval($statusTimer);
+    $maxAgents = intval($maxAgents);
     if (strlen($color) > 0 && preg_match("/[0-9A-Fa-f]{6}/", $color) == 0) {
       $color = "";
     }
@@ -323,6 +342,7 @@ class PretaskUtils {
       $cpuOnly,
       $benchmarkType,
       $priority,
+      $maxAgents,
       0,
       $crackerBinaryType->getId()
     );

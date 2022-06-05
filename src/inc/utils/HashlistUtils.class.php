@@ -121,6 +121,7 @@ class HashlistUtils {
           0,
           0,
           $taskPriority,
+          $task->getMaxAgents(),
           $task->getColor(),
           $task->getIsSmall(),
           $task->getIsCpuTask(),
@@ -142,7 +143,7 @@ class HashlistUtils {
         
         TaskUtils::copyPretaskFiles($task, $newTask);
         
-        $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+        $payload = new DataSet(array(DPayloadKeys::TASK => $newTask));
         NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
       }
     }
@@ -1099,6 +1100,10 @@ class HashlistUtils {
       throw new HTException("No access to this group!");
     }
     
+    $qF = new QueryFilter(Hashlist::HASHLIST_ID, $hashlist->getId(), "=");
+    $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
+    Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+
     $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, $accessGroup->getId());
     Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);

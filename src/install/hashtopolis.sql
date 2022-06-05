@@ -703,6 +703,7 @@ CREATE TABLE `Pretask` (
   `isCpuTask`           TINYINT(4)   NOT NULL,
   `useNewBench`         TINYINT(4)   NOT NULL,
   `priority`            INT(11)      NOT NULL,
+  `maxAgents`           INT(11)      NOT NULL,
   `isMaskImport`        TINYINT(4)   NOT NULL,
   `crackerBinaryTypeId` INT(11)      NOT NULL
 ) ENGINE = InnoDB;
@@ -765,6 +766,7 @@ CREATE TABLE `Task` (
   `keyspace`            BIGINT(20)   NOT NULL,
   `keyspaceProgress`    BIGINT(20)   NOT NULL,
   `priority`            INT(11)      NOT NULL,
+  `maxAgents`           INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
   `isSmall`             TINYINT(4)   NOT NULL,
   `isCpuTask`           TINYINT(4)   NOT NULL,

@@ -41,6 +41,7 @@ class TaskUtils {
       0,
       0,
       $copy->getPriority(),
+      $copy->getMaxAgents(),
       $copy->getColor(),
       $copy->getIsSmall(),
       $copy->getIsCpuTask(),
@@ -69,6 +70,7 @@ class TaskUtils {
       "",
       SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
       SConfig::getInstance()->getVal(DConfig::STATUS_TIMER),
+      0,
       0,
       0,
       0,
@@ -580,6 +582,18 @@ class TaskUtils {
     }
     Factory::getTaskFactory()->set($task, Task::IS_SMALL, $isSmall);
   }
+
+    /**
+   * @param int $taskId
+   * @param int $maxAgents
+   * @param User $user
+   * @throws HTException
+   */
+  public static function setTaskMaxAgents($taskId, $maxAgents, $user) {
+    $task = TaskUtils::getTask($taskId, $user);
+    $maxAgents = intval($maxAgents);
+    Factory::getTaskFactory()->set($task, Task::MAX_AGENTS, $maxAgents);
+  }
   
   /**
    * @param int $taskId
@@ -653,6 +667,32 @@ class TaskUtils {
       Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, $priority);
     }
   }
+
+    /**
+   * @param int $taskId
+   * @param int $maxAgents
+   * @param User $user
+   * @throws HTException
+   */
+  public static function updateMaxAgents($taskId, $maxAgents, $user) {
+    $task = TaskUtils::getTask($taskId, $user);
+    if ($task == null) {
+      throw new HTException("No such task!");
+    }
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
+      throw new HTException("No access to this task!");
+    }
+    if (!is_numeric($maxAgents)) {
+      throw new HTException("Invalid number of agents!");
+    }
+    $maxAgents = intval($maxAgents);
+    if ($maxAgents < 0) {
+      throw new HTException("Invalid number of agents!");
+    }
+    
+    Factory::getTaskFactory()->set($task, Task::MAX_AGENTS, $maxAgents);
+  }
   
   /**
    * @param int $hashlistId
@@ -668,6 +708,7 @@ class TaskUtils {
    * @param $preprocessorCommand
    * @param int $skip
    * @param int $priority
+   * @param int $maxAgents
    * @param int[] $files
    * @param int $crackerVersionId
    * @param User $user
@@ -677,7 +718,7 @@ class TaskUtils {
    * @return Task
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $maxAgents, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     $hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
@@ -757,6 +798,7 @@ class TaskUtils {
       0,
       0,
       $priority,
+      $maxAgents,
       $color,
       $isSmall,
       $isCpuOnly,
@@ -841,6 +883,7 @@ class TaskUtils {
         0,
         0,
         $prio,
+        $task->getMaxAgents(),
         $task->getColor(),
         (SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_SMALL_TASKS) == 0) ? 0 : 1,
         $task->getIsCpuTask(),
@@ -924,12 +967,21 @@ class TaskUtils {
       else if ($fullyCracked) {
         continue; // all hashes of this hashlist are cracked, so we continue
       }
+
+      $candidateTasks = [];
       
       // load assigned tasks for this TaskWrapper
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
       $oF = new OrderFilter(Task::PRIORITY, "DESC");
       $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
       foreach ($tasks as $task) {
+        // check if it's a small task or maxAgents limits the number of assignments
+        if ($task->getIsSmall() == 1 || $task->getMaxAgents() > 0) {
+          if (self::isSaturatedByOtherAgents($task, $agent)) {
+            continue;
+          }
+        }
+
         // check if a task suits to this agent
         $files = TaskUtils::getFilesOfTask($task);
         $permitted = true;
@@ -950,28 +1002,21 @@ class TaskUtils {
         if ($task == null) {
           continue; // if it is completed we go to the next
         }
-        
-        // check if it's a small task
-        if ($task->getIsSmall() == 1) {
-          $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-          $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "<>");
-          $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
-          if ($numAssignments > 0) {
-            continue; // at least one agent is already assigned here
-          }
-        }
+
         // check if it's a cpu/gpu task
         if ($task->getIsCpuTask() != $agent->getCpuOnly()) {
           continue;
         }
         
-        // this task is available for this user regarding permissions
-        if ($all) {
-          $allTasks[] = $task;
-          continue;
+        if (!$all) {
+          return $task;
         }
-        return $task;
+        // accumulate all candidate tasks
+        $candidateTasks[] = $task;
       }
+
+      // These tasks are available for this user regarding permissions, assignments.
+      $allTasks = array_merge($allTasks, $candidateTasks);
     }
     if ($all) {
       return $allTasks;
@@ -1277,5 +1322,21 @@ class TaskUtils {
     else {
       return "Access denied";
     }
+  }
+
+  /**
+   * Check if a task already has enough agents - apart from given agent - working on it,
+   * with respect to the 'maxAgents' configuration
+   *
+   * @param Task $task
+   * @param Agent $agent
+   * @return boolean true if maxAgents != 0 and number of assigned agents >= maxAgents, false otherwise
+   */
+  public static function isSaturatedByOtherAgents($task, $agent) {
+    $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "<>");
+    $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+    return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
+           ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
   }
 }
