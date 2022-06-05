@@ -26,6 +26,12 @@ foreach ($dir as $entry) {
     require_once(dirname(__FILE__) . "/tests/" . $entry);
   }
 }
+$dir = scandir(dirname(__FILE__) . "/tests/integration/");
+foreach ($dir as $entry) {
+  if (strpos($entry, ".php") !== false) {
+    require_once(dirname(__FILE__) . "/tests/integration/" . $entry);
+  }
+}
 
 $TEST = true;
 

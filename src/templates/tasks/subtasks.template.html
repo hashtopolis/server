@@ -14,6 +14,9 @@
         [[subTask.getVal('taskName')]]
       {{ENDIF}}
       [[Util::tickdone([[subTask.getVal('sumProgress')]], [[subTask.getVal('keyspace')]])]]
+      {{IF [[subTask.getVal('fileSecret')]]}}
+      <span class="fas fa-lock" aria-hidden="true"></span>
+      {{ENDIF}}
       {{IF [[subTask.getVal('isActive')]] == 1 && [[subTask.getVal('sumProgress')]] < [[subTask.getVal('keyspace')]]}}
         <i class="fas fa-spinner fa-spin"></i>
       {{ENDIF}}
@@ -52,17 +55,6 @@
         {{ENDIF}}
       {{ENDIF}}
     </td>
-    <td style='min-width: 95px' data-sort="[[subTask.getVal('filesSize')]]">
-      {{IF [[subTask.getVal('numFiles')]] > 0}}
-        [[subTask.getVal('numFiles')]]
-      {{ENDIF}}
-      {{IF [[subTask.getVal('fileSecret')]]}}
-        <span class="fas fa-lock" aria-hidden="true"></span>
-      {{ENDIF}}
-      {{IF [[subTask.getVal('numFiles')]] > 0}}
-        <br>([[Util::nicenum([[subTask.getVal('filesSize')]])]]B)
-      {{ENDIF}}
-    </td>
     <td style='min-width: 130px' data-sort="[[subTask.getVal('priority')]]">
       {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
         <form class="form-inline" action="tasks.php" method="POST">
@@ -74,6 +66,19 @@
         </form>
       {{ELSE}}
         [[subTask.getVal('priority')]]
+      {{ENDIF}}
+    </td>
+    <td style='min-width: 130px' data-sort="[[subTask.getVal('maxAgents')]]">
+      {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+      <form class="form-inline" action="tasks.php" method="POST">
+        <input type='hidden' name='action' value='[[$DTaskAction::SET_MAX_AGENTS]]'>
+        <input type="hidden" name="task" value="[[subTask.getVal('taskId')]]">
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <input type="text" class='form-control' style='width: 60px;' name="maxAgents" size="4" value="[[subTask.getVal('maxAgents')]]" title="Max agents">
+        <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} mx-1' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+      </form>
+      {{ELSE}}
+        [[subTask.getVal('maxAgents')]]
       {{ENDIF}}
     </td>
     <td style='min-width: 120px'>

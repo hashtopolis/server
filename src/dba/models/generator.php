@@ -177,6 +177,7 @@ $CONF['Pretask'] = [
   'isCpuTask',
   'useNewBench',
   'priority',
+  'maxAgents',
   'isMaskImport',
   'crackerBinaryTypeId'
 ];
@@ -216,6 +217,7 @@ $CONF['Task'] = [
   'keyspace',
   'keyspaceProgress',
   'priority',
+  'maxAgents',
   'color',
   'isSmall',
   'isCpuTask',

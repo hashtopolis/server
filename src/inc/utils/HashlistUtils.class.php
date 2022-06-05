@@ -121,6 +121,7 @@ class HashlistUtils {
           0,
           0,
           $taskPriority,
+          $task->getMaxAgents(),
           $task->getColor(),
           $task->getIsSmall(),
           $task->getIsCpuTask(),
