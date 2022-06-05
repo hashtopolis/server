@@ -142,7 +142,7 @@ class HashlistUtils {
         
         TaskUtils::copyPretaskFiles($task, $newTask);
         
-        $payload = new DataSet(array(DPayloadKeys::TASK => $task));
+        $payload = new DataSet(array(DPayloadKeys::TASK => $newTask));
         NotificationHandler::checkNotifications(DNotificationType::NEW_TASK, $payload);
       }
     }
