@@ -1100,6 +1100,10 @@ class HashlistUtils {
       throw new HTException("No access to this group!");
     }
     
+    $qF = new QueryFilter(Hashlist::HASHLIST_ID, $hashlist->getId(), "=");
+    $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
+    Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
+
     $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, $accessGroup->getId());
     Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
