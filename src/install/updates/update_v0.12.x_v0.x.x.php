@@ -177,3 +177,10 @@ if (!isset($PRESENT["v0.12.x_fileLineCount"])) {
   }
   $EXECUTED["v0.12.x_fileLineCount"] = true;
 }
+
+if (!isset($PRESENT["v0.12.x_creatorColumn"])) {
+  if (!Util::databaseColumnExists("Hashlist", "creatorId")) {
+    Factory::getFileFactory()->getDB()->query("ALTER TABLE `Hashlist` ADD `creatorId` INT(11) NULL;");
+  }
+  $EXECUTED["v0.12.x_creatorColumn"] = true;
+}
