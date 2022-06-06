@@ -43,6 +43,7 @@ class UQueryTask extends UQuery {
   const TASK_CRACKER_VERSION      = "crackerVersionId";
   const TASK_FILES                = "files";
   const TASK_PRIORITY             = "priority";
+  const TASK_MAX_AGENTS           = "maxAgents";
   const TASK_PRINCE               = "isPrince";  // DEPRECATED
   const TASK_PREPROCESSOR_COMMAND = "preprocessorCommand";
   const TASK_PREPROCESSOR         = "preprocessorId";
@@ -57,12 +58,13 @@ class UQueryTask extends UQuery {
   const TASK_BASEFILES     = "basefiles";
   const TASK_ITERFILES     = "iterfiles";
   
-  const PRETASK_PRIORITY  = "priority";
-  const PRETASK_NAME      = "name";
-  const PRETASK_COLOR     = "color";
-  const PRETASK_CHUNKSIZE = "chunksize";
-  const PRETASK_CPU_ONLY  = "isCpuOnly";
-  const PRETASK_SMALL     = "isSmall";
+  const PRETASK_PRIORITY   = "priority";
+  const PRETASK_MAX_AGENTS = "maxAgents";
+  const PRETASK_NAME       = "name";
+  const PRETASK_COLOR      = "color";
+  const PRETASK_CHUNKSIZE  = "chunksize";
+  const PRETASK_CPU_ONLY   = "isCpuOnly";
+  const PRETASK_SMALL      = "isSmall";
 }
 
 class UQueryHashlist extends UQuery {
@@ -227,6 +229,7 @@ class UResponseTask extends UResponse {
   const TASK_BENCH_TYPE           = "benchmarkType";
   const TASK_STATUS               = "statusTimer";
   const TASK_PRIORITY             = "priority";
+  const TASK_MAX_AGENTS           = "maxAgents";
   const TASK_CPU_ONLY             = "isCpuOnly";
   const TASK_SMALL                = "isSmall";
   const TASK_SKIP                 = "skipKeyspace";
@@ -264,6 +267,7 @@ class UResponseTask extends UResponse {
   const PRETASK_BENCH_TYPE = "benchmarkType";
   const PRETASK_STATUS     = "statusTimer";
   const PRETASK_PRIORITY   = "priority";
+  const PRETASK_MAX_AGENTS = "maxAgents";
   const PRETASK_CPU_ONLY   = "isCpuOnly";
   const PRETASK_SMALL      = "isSmall";
   const PRETASK_FILES      = "files";
@@ -607,6 +611,7 @@ class USectionTask extends UApi {
   const SET_TASK_COLOR             = "setTaskColor";
   const SET_TASK_CPU_ONLY          = "setTaskCpuOnly";
   const SET_TASK_SMALL             = "setTaskSmall";
+  const SET_TASK_MAX_AGENTS        = "setTaskMaxAgents";
   const TASK_UNASSIGN_AGENT        = "taskUnassignAgent";
   const TASK_ASSIGN_AGENT          = "taskAssignAgent";
   const DELETE_TASK                = "deleteTask";
@@ -677,13 +682,14 @@ class USectionPretask extends UApi {
   const GET_PRETASK    = "getPretask";
   const CREATE_PRETASK = "createPretask";
   
-  const SET_PRETASK_PRIORITY  = "setPretaskPriority";
-  const SET_PRETASK_NAME      = "setPretaskName";
-  const SET_PRETASK_COLOR     = "setPretaskColor";
-  const SET_PRETASK_CHUNKSIZE = "setPretaskChunksize";
-  const SET_PRETASK_CPU_ONLY  = "setPretaskCpuOnly";
-  const SET_PRETASK_SMALL     = "setPretaskSmall";
-  const DELETE_PRETASK        = "deletePretask";
+  const SET_PRETASK_PRIORITY   = "setPretaskPriority";
+  const SET_PRETASK_MAX_AGENTS = "setPretaskMaxAgents";
+  const SET_PRETASK_NAME       = "setPretaskName";
+  const SET_PRETASK_COLOR      = "setPretaskColor";
+  const SET_PRETASK_CHUNKSIZE  = "setPretaskChunksize";
+  const SET_PRETASK_CPU_ONLY   = "setPretaskCpuOnly";
+  const SET_PRETASK_SMALL      = "setPretaskSmall";
+  const DELETE_PRETASK         = "deletePretask";
   
   public function describe($constant) {
     switch ($constant) {

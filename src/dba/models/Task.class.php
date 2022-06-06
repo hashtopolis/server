@@ -11,6 +11,7 @@ class Task extends AbstractModel {
   private $keyspace;
   private $keyspaceProgress;
   private $priority;
+  private $maxAgents;
   private $color;
   private $isSmall;
   private $isCpuTask;
@@ -27,7 +28,7 @@ class Task extends AbstractModel {
   private $usePreprocessor;
   private $preprocessorCommand;
   
-  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $notes, $staticChunks, $chunkSize, $forcePipe, $usePreprocessor, $preprocessorCommand) {
+  function __construct($taskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $keyspace, $keyspaceProgress, $priority, $maxAgents, $color, $isSmall, $isCpuTask, $useNewBench, $skipKeyspace, $crackerBinaryId, $crackerBinaryTypeId, $taskWrapperId, $isArchived, $notes, $staticChunks, $chunkSize, $forcePipe, $usePreprocessor, $preprocessorCommand) {
     $this->taskId = $taskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -36,6 +37,7 @@ class Task extends AbstractModel {
     $this->keyspace = $keyspace;
     $this->keyspaceProgress = $keyspaceProgress;
     $this->priority = $priority;
+    $this->maxAgents = $maxAgents;
     $this->color = $color;
     $this->isSmall = $isSmall;
     $this->isCpuTask = $isCpuTask;
@@ -63,6 +65,7 @@ class Task extends AbstractModel {
     $dict['keyspace'] = $this->keyspace;
     $dict['keyspaceProgress'] = $this->keyspaceProgress;
     $dict['priority'] = $this->priority;
+    $dict['maxAgents'] = $this->maxAgents;
     $dict['color'] = $this->color;
     $dict['isSmall'] = $this->isSmall;
     $dict['isCpuTask'] = $this->isCpuTask;
@@ -162,6 +165,14 @@ class Task extends AbstractModel {
     $this->priority = $priority;
   }
   
+  function getMaxAgents() {
+    return $this->maxAgents;
+  }
+  
+  function setMaxAgents($maxAgents) {
+    $this->maxAgents = $maxAgents;
+  }
+
   function getColor() {
     return $this->color;
   }
@@ -290,6 +301,7 @@ class Task extends AbstractModel {
   const KEYSPACE = "keyspace";
   const KEYSPACE_PROGRESS = "keyspaceProgress";
   const PRIORITY = "priority";
+  const MAX_AGENTS = "maxAgents";
   const COLOR = "color";
   const IS_SMALL = "isSmall";
   const IS_CPU_TASK = "isCpuTask";

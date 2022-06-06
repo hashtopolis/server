@@ -13,10 +13,11 @@ class Pretask extends AbstractModel {
   private $isCpuTask;
   private $useNewBench;
   private $priority;
+  private $maxAgents;
   private $isMaskImport;
   private $crackerBinaryTypeId;
   
-  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $isMaskImport, $crackerBinaryTypeId) {
+  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $maxAgents, $isMaskImport, $crackerBinaryTypeId) {
     $this->pretaskId = $pretaskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -27,6 +28,7 @@ class Pretask extends AbstractModel {
     $this->isCpuTask = $isCpuTask;
     $this->useNewBench = $useNewBench;
     $this->priority = $priority;
+    $this->maxAgents = $maxAgents;
     $this->isMaskImport = $isMaskImport;
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
@@ -43,6 +45,7 @@ class Pretask extends AbstractModel {
     $dict['isCpuTask'] = $this->isCpuTask;
     $dict['useNewBench'] = $this->useNewBench;
     $dict['priority'] = $this->priority;
+    $dict['maxAgents'] = $this->maxAgents;
     $dict['isMaskImport'] = $this->isMaskImport;
     $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     
@@ -144,6 +147,14 @@ class Pretask extends AbstractModel {
   function setPriority($priority) {
     $this->priority = $priority;
   }
+
+  function getMaxAgents() {
+    return $this->maxAgents;
+  }
+  
+  function setMaxAgents($maxAgents) {
+    $this->maxAgents = $maxAgents;
+  }
   
   function getIsMaskImport() {
     return $this->isMaskImport;
@@ -171,6 +182,7 @@ class Pretask extends AbstractModel {
   const IS_CPU_TASK = "isCpuTask";
   const USE_NEW_BENCH = "useNewBench";
   const PRIORITY = "priority";
+  const MAX_AGENTS = "maxAgents";
   const IS_MASK_IMPORT = "isMaskImport";
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
 }
