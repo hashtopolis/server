@@ -8,6 +8,7 @@
 - Tasks can be set to top priority (to be first in the list) by the User API.
 - Supertask runtime can be estimated on the supertask detail page by entering expected attack speeds for hashcat wordlist and bruteforce attacks
 - Number of agents per task can be limited (pull request #764).
+- The creator of a hashlist will now be stored and shown, to make supporting users in a larger environment easier.
 
 ## Bugfixes
 
