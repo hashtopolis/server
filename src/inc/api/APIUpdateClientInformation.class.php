@@ -19,7 +19,7 @@ class APIUpdateClientInformation extends APIBasic {
     $cpuOnly = 1;
     foreach ($devices as $device) {
       $device = strtolower($device);
-      if ((strpos($device, "amd") !== false) || (strpos($device, "ati ") !== false) || (strpos($device, "radeon") !== false) || strpos($device, "nvidia") !== false || strpos($device, "gtx") !== false || strpos($device, "ti") !== false) {
+      if ((strpos($device, "amd") !== false) || (strpos($device, "ati ") !== false) || (strpos($device, "radeon") !== false) || strpos($device, "nvidia") !== false || strpos($device, "gtx") !== false || strpos($device, "ti") !== false|| strpos($device, "microsoft") != false) {
         $cpuOnly = 0;
       }
     }

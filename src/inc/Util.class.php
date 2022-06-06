@@ -523,6 +523,7 @@ class Util {
         $set->addValue('isSecret', $hashlist->getIsSecret());
         $set->addValue('usePreprocessor', $task->getUsePreprocessor());
         $set->addValue('priority', $task->getPriority());
+        $set->addValue('maxAgents', $task->getMaxAgents());
         $set->addValue('keyspace', $task->getKeyspace());
         $set->addValue('isActive', $taskInfo[2]);
         $set->addValue('sumProgress', $taskInfo[0]);
@@ -1256,7 +1257,6 @@ class Util {
     
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "From: " . SConfig::getInstance()->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . SConfig::getInstance()->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
-    $headers .= "To: " . $address . "\r\n";
     $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
     
     $plainMessage = "\r\n\r\n--" . $boundary . "\r\n";
