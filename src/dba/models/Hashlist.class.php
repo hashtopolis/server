@@ -125,14 +125,6 @@ class Hashlist extends AbstractModel {
   function getCracked() {
     return $this->cracked;
   }
-
-  function getCreatorId() {
-    return $this->creator;
-  }
-
-  function setCreatorId($creatorId) {
-    $this->creatorId = $creatorId;
-  }
   
   function setCracked($cracked) {
     $this->cracked = $cracked;
@@ -192,6 +184,14 @@ class Hashlist extends AbstractModel {
   
   function setBrainFeatures($brainFeatures) {
     $this->brainFeatures = $brainFeatures;
+  }
+
+  function getCreatorId() {
+    return $this->creatorId;
+  }
+
+  function setCreatorId($creatorId) {
+    $this->creatorId = $creatorId;
   }
   
   const HASHLIST_ID = "hashlistId";
