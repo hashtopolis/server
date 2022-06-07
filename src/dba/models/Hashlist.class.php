@@ -208,5 +208,5 @@ class Hashlist extends AbstractModel {
   const NOTES = "notes";
   const BRAIN_ID = "brainId";
   const BRAIN_FEATURES = "brainFeatures";
-  const CREATOR = "creatorId";
+  const CREATOR_ID = "creatorId";
 }
