@@ -6,8 +6,7 @@ ARG DEV_CONTAINER_USER_CMD
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Check for and run optional user-supplied command to enable (advanced) customizations of the dev container
-RUN [ -n "${DEV_CONTAINER_USER_CMD}" ] \
-    && echo "${DEV_CONTAINER_USER_CMD}" | sh
+RUN if [ -n "${DEV_CONTAINER_USER_CMD}" ]; then echo "${DEV_CONTAINER_USER_CMD}" | sh ; fi
 
 # Configure apt and install packages
 RUN apt-get update \
