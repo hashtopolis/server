@@ -190,6 +190,13 @@ if (!isset($PRESENT["v0.12.x_maxAgents_pretask_task"])) {
 if (!isset($PRESENT["v0.12.x_creatorColumn"])) {
   if (!Util::databaseColumnExists("Hashlist", "creatorId")) {
     Factory::getFileFactory()->getDB()->query("ALTER TABLE `Hashlist` ADD `creatorId` INT(11) NULL;");
+    
+    // Retrieve all users from database
+    $users = Factory::getUserFactory()->filter([]);
+    // Get the first database user and the userId (should be the Administrator)
+    $firstDatabaseUserId = $users[0]->getId();
+    // Set the owner of all existing hashlists to the first user in the database
+    Factory::getFileFactory()->getDB()->query("UPDATE `Hashlist` SET `creatorId`=$firstDatabaseUserId;");
   }
   $EXECUTED["v0.12.x_creatorColumn"] = true;
 }
