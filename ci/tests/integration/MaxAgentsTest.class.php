@@ -21,10 +21,30 @@ class MaxAgentsTest extends HashtopolisTest {
     }
   }
 
+  private function cleanup() {
+    $status = true;
+    // delete the created tasks
+    $status &= $this->deleteTaskIfExists("task-1");
+    $status &= $this->deleteTaskIfExists("task-2");
+
+    // remove the added files
+    $status &= $this->deleteFileIfExists("example.dict");
+    $status &= $this->deleteFileIfExists("best64.rule");
+
+    if (!$status) {
+      HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Some cleanup failed, deleting task or deleting files not succesful!");
+    }
+  }
+
   public function run() {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
     $this->prepare();
-    $this->testMaxAgents();
+    try {
+      $this->testMaxAgents();
+    }
+    finally {
+      $this->cleanup();
+    }
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
 
