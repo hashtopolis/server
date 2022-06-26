@@ -18,6 +18,7 @@ use DBA\Assignment;
 use DBA\Chunk;
 use DBA\AgentError;
 use DBA\Zap;
+use DBA\AgentZap;
 use DBA\Factory;
 use DBA\Speed;
 
@@ -507,10 +508,16 @@ class HashlistUtils {
         $toDelete[] = $superHashlist;
       }
     }
-    Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
-    
+
+    // when we delete all zaps, we have to make sure that from agentZap, there are no references to zaps of this hashlist
     $qF = new QueryFilter(Zap::HASHLIST_ID, $hashlist->getId(), "=");
+    $zapIds = Util::arrayOfIds(Factory::getAgentZapFactory()->filter([Factory::FILTER => $qF]));
+    $qF1 = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
+    $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
+    Factory::getAgentZapFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF1]);
     Factory::getZapFactory()->massDeletion([Factory::FILTER => $qF]);
+
+    Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
     
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
