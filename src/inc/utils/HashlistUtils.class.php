@@ -511,7 +511,7 @@ class HashlistUtils {
 
     // when we delete all zaps, we have to make sure that from agentZap, there are no references to zaps of this hashlist
     $qF = new QueryFilter(Zap::HASHLIST_ID, $hashlist->getId(), "=");
-    $zapIds = Util::arrayOfIds(Factory::getAgentZapFactory()->filter([Factory::FILTER => $qF]));
+    $zapIds = Util::arrayOfIds(Factory::getZapFactory()->filter([Factory::FILTER => $qF]));
     $qF1 = new ContainFilter(AgentZap::LAST_ZAP_ID, $zapIds);
     $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
     Factory::getAgentZapFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF1]);
@@ -521,7 +521,7 @@ class HashlistUtils {
     
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
-    
+
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $hashlist->getId(), "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF]);
     foreach ($notifications as $notification) {
