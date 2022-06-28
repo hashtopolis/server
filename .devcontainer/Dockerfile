@@ -45,6 +45,13 @@ RUN apt-get update \
 RUN rm -rf /etc/apache2/sites-enabled \
 	&& ln -s /var/www/html/.devcontainer/sites-enabled /etc/apache2/sites-enabled
 
+# Adding VSCode user and fixing permissions
+RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
+    && chown -R www-data:www-data /var/www \
+    && chmod g+w /var/www
+WORKDIR /var/www
+USER vscode
+
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
 COPY docker-entrypoint.sh /usr/local/bin
