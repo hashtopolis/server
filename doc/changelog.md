@@ -28,6 +28,7 @@
 - Fixed sending two to headers when sending emails (issue #751).
 - Fixed access group not being changed on Hashlist detailed screen (issue #765).
 - Fixed missing check on permissions for sending notifications (issue #757).
+- Fixed not deleting all references (related to zaps) when deleting hashlist (issue #747).
 
 ## Enhancements
 
