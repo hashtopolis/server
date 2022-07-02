@@ -41,7 +41,7 @@
     });
   }) // Set focus to the select2 search field when opening the select2 element
   .on('select2:open', () => {
-    document.querySelector('.select2-search__field').focus();
+    setTimeout(() => document.querySelector('.select2-container--open .select2-search__field').focus(), 100);
   });
 </script>
 <form class='form-inline' action="hashlists.php" method="POST" enctype="multipart/form-data">
