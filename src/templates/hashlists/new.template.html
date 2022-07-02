@@ -36,7 +36,9 @@
 
   // Initialize select2
   $(document).ready(function() {
-    $('#hashtype').select2();
+    $('#hashtype').select2({
+      width: '100%'
+    });
   }) // Set focus to the select2 search field when opening the select2 element
   .on('select2:open', () => {
     document.querySelector('.select2-search__field').focus();
