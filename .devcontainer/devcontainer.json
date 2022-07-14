@@ -14,7 +14,7 @@
 		"xdebug.php-debug",
 		"bmewburn.vscode-intelephense-client",
 	],
-	"remoteUser": "www-data",
+	"remoteUser": "vscode",
 	"settings": {
 		"terminal.integrated.profiles.linux":{
 			"bash": {

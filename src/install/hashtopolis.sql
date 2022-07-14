@@ -142,7 +142,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (36, 4, 'showTaskPerformance', '0'),
   (37, 1, 'ruleSplitSmallTasks', '0'),
   (38, 1, 'ruleSplitAlways', '0'),
-  (39, 1, 'ruleSplitDisable', '0'),
+  (39, 1, 'ruleSplitDisable', '1'),
   (41, 4, 'agentStatLimit', '100'),
   (42, 1, 'agentDataLifetime', '3600'),
   (43, 4, 'agentStatTension', '0'),

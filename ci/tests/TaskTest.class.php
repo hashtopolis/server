@@ -24,12 +24,32 @@ class TaskTest extends HashtopolisTest {
     }
   }
   
+  private function cleanup() {
+    $status = true;
+    // delete the created task
+    $status &= $this->deleteTaskIfExists("Test Task");
+
+    // remove the added files
+    $status &= $this->deleteFileIfExists("example.dict");
+    $status &= $this->deleteFileIfExists("best64.rule");
+
+    if (!$status) {
+      HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Some cleanup failed, deleting task or deleting files not succesful!");
+    }
+  }
+
   public function run() {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running " . $this->getTestName() . "...");
     $this->prepare();
-    $this->testListTasks();
-    $this->testCreateTask(["name" => "Test Task", "hashlistId" => 1, "attackCmd" => "#HL# -a 0 -r best64.rule example.dict", "priority" => 1, "color" => "5D5D5D", "crackerVersionId" => 1, "files" => [1, 2]]);
-    $this->testListTasks(['Test Task']);
+    try { 
+      $this->testListTasks();
+      $this->testCreateTask(["name" => "Test Task", "hashlistId" => 1, "attackCmd" => "#HL# -a 0 -r best64.rule example.dict", "priority" => 1, "color" => "5D5D5D", "crackerVersionId" => 1, "files" => [1, 2]]);
+      $this->testListTasks(['Test Task']);
+    }
+    finally {
+      $this->cleanup();
+    }
+
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
   
@@ -148,10 +168,9 @@ class TaskTest extends HashtopolisTest {
     }
     return true;
   }
-  
+
   public function getTestName() {
     return "Task Test";
   }
 }
-
 HashtopolisTestFramework::register(new TaskTest());

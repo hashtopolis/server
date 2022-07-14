@@ -6,8 +6,7 @@ ARG DEV_CONTAINER_USER_CMD
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Check for and run optional user-supplied command to enable (advanced) customizations of the dev container
-RUN [ -n "${DEV_CONTAINER_USER_CMD}" ] \
-    && echo "${DEV_CONTAINER_USER_CMD}" | sh
+RUN if [ -n "${DEV_CONTAINER_USER_CMD}" ]; then echo "${DEV_CONTAINER_USER_CMD}" | sh ; fi
 
 # Configure apt and install packages
 RUN apt-get update \
@@ -45,6 +44,13 @@ RUN apt-get update \
 # Link our site config to the devcontainer
 RUN rm -rf /etc/apache2/sites-enabled \
 	&& ln -s /var/www/html/.devcontainer/sites-enabled /etc/apache2/sites-enabled
+
+# Adding VSCode user and fixing permissions
+RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
+    && chown -R www-data:www-data /var/www \
+    && chmod g+w /var/www
+WORKDIR /var/www
+USER vscode
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog
