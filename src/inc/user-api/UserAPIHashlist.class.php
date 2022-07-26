@@ -322,7 +322,7 @@ class UserAPIHashlist extends UserAPIBasic {
    */
   private function listHashlists($QUERY) {
     $archived = false;
-    if (isset($QUERY[UQueryHashlist::IS_ARCHIVED]) && $QUERY[UQueryHashlist::IS_ARCHIVED] == true) {
+    if (isset($QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED]) && $QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED] == true) {
       $archived = true;
     }
     $hashlists = HashlistUtils::getHashlists($this->user, $archived);
