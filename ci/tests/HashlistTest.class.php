@@ -57,6 +57,7 @@ class HashlistTest extends HashtopolisTest {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "hashlist",
       "request" => "setArchived",
+      "isArchived" => true,
       "hashlistId" => $hashlistId,
       "accessKey" => "mykey"
     ], HashtopolisTestFramework::REQUEST_UAPI
