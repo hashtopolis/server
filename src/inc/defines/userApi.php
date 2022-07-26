@@ -758,6 +758,7 @@ class USectionHashlist extends UApi {
   const CREATE_HASHLIST   = "createHashlist";
   const SET_HASHLIST_NAME = "setHashlistName";
   const SET_SECRET        = "setSecret";
+  const SET_ARCHIVED      = "setArchived";
   
   const IMPORT_CRACKED    = "importCracked";
   const EXPORT_CRACKED    = "exportCracked";
@@ -765,7 +766,6 @@ class USectionHashlist extends UApi {
   const EXPORT_LEFT       = "exportLeft";
   
   const DELETE_HASHLIST  = "deleteHashlist";
-  const ARCHIVE_HASHLIST = "archiveHashlist";
   const GET_HASH         = "getHash";
   const GET_CRACKED      = "getCracked";
   
@@ -795,7 +795,7 @@ class USectionHashlist extends UApi {
         return "Query for specific hashes";
       case USectionHashlist::GET_CRACKED:
         return "Query cracked hashes of a hashlist";
-      case USectionHashlist::ARCHIVE_HASHLIST:
+      case USectionHashlist::SET_ARCHIVED:
         return "Query to archive/un-archie hashlist";
       default:
         return "__" . $constant . "__";
