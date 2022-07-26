@@ -63,10 +63,11 @@ class HashlistUtils {
    * @param User $user
    * @return Hashlist[]
    */
-  public static function getHashlists($user) {
+  public static function getHashlists($user, $archived = false) {
     $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
-    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    $qF3 = new QueryFilter(Hashlist::IS_ARCHIVED, $archived ? 1 : 0, "=");
+    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
   }
   
   /**
@@ -244,6 +245,22 @@ class HashlistUtils {
         }
       }
     }
+  }
+  
+    /**
+   * @param int $hashlistId
+   * @param int $isSecret
+   * @param User $user
+   * @throws HTException
+   */
+  public static function setArchived($hashlistId, $isArchived, $user) {
+    // switch hashlist archived state
+    $hashlist = HashlistUtils::getHashlist($hashlistId);
+    if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
+      throw new HTException("No access to hashlist!");
+    }
+    // TODO: check if there is any active task, and if yes we maybe should not allow to archive
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isSecret));
   }
   
   /**
