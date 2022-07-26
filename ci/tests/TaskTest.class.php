@@ -70,16 +70,16 @@ class TaskTest extends HashtopolisTest {
 	"preprocessorId" => 0,
         "preprocessorCommand" => "",
         "files" => [
-          {
+          [
             "fileId" => 1,
             "filename" => "example.dict",
             "size" => 1080240
-          },
-          {
+          ],
+          [
             "fileId" => 2,
             "filename" => "best64.rule",
             "size" => 1035
-          }
+          ]
         ]
       ]);
     }
