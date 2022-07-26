@@ -45,12 +45,78 @@ class TaskTest extends HashtopolisTest {
       $this->testListTasks();
       $this->testCreateTask(["name" => "Test Task", "hashlistId" => 1, "attackCmd" => "#HL# -a 0 -r best64.rule example.dict", "priority" => 1, "color" => "5D5D5D", "crackerVersionId" => 1, "files" => [1, 2]]);
       $this->testListTasks(['Test Task']);
+      $this->testGetTask(1, [
+        "taskId" => 1,
+        "name" => "Test Task",
+        "hashlistId" => 1,
+        "attack" => "#HL# -a 0 -r best64.rule example.dict",
+        "chunksize" => 600,
+        "priority" => 1,
+        "color" => "5D5D5D",
+        "benchmarkType" => "speed",
+        "statusTimer" => 5,
+        "isCpuOnly" => false,
+        "isSmall" => false,
+        "skipKeyspace" => 0,
+        "keyspace" => 0,
+        "dispatched" => 0,
+        "imageUrl" => "http://localhost/api/taskimg.php?task=1",
+        "speed" => 0,
+        "searched" => 0,
+        "chunkIds" => [],
+        "agents" => [],
+        "isComplete" => false,
+        "usePreprocessor" => false,
+	"preprocessorId" => 0,
+        "preprocessorCommand" => "",
+        "files" => [
+          {
+            "fileId" => 1,
+            "filename" => "example.dict",
+            "size" => 1080240
+          },
+          {
+            "fileId" => 2,
+            "filename" => "best64.rule",
+            "size" => 1035
+          }
+        ]
+      ]);
     }
     finally {
       $this->cleanup();
     }
 
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
+  }
+  
+  private function testGetTask($taskId, $assert = []) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "getTask",
+      "hashlistId" => $taskId,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("TaskTest:testGetTask($taskId," . implode(",", $assert) . ")", "Empty response");
+    }
+    else if ($response['response'] != 'OK') {
+      $this->testFailed("TaskTest:testGetTask($taskId," . implode(",", $assert) . ")", "Response not OK");
+    }
+    else {
+      foreach ($assert as $key => $value) {
+        if (!isset($response[$key])) {
+          $this->testFailed("TaskTest:testGetTask($taskId," . implode(",", $assert) . ")", "$key not in response but in assert");
+          return;
+        }
+        else if ($response[$key] != $value) {
+          $this->testFailed("TaskTest:testGetTask($taskId," . implode(",", $assert) . ")", "Value from key ($key) not in response but in assert");
+          return;
+        }
+      }
+      $this->testSuccess("TaskTest:testGetTask($taskId," . implode(",", $assert) . ")");
+    }
   }
   
   public function testCreateTask($values = [], $assert = true) {
