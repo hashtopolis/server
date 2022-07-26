@@ -29,6 +29,7 @@
 - Fixed access group not being changed on Hashlist detailed screen (issue #765).
 - Fixed missing check on permissions for sending notifications (issue #757).
 - Fixed not deleting all references (related to zaps) when deleting hashlist (issue #747).
+- Fixed missing flag isArchived on User API getTask requests (issue #794).
 
 ## Enhancements
 

@@ -94,7 +94,7 @@ class TaskTest extends HashtopolisTest {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "task",
       "request" => "getTask",
-      "hashlistId" => $taskId,
+      "taskId" => $taskId,
       "accessKey" => "mykey"
     ], HashtopolisTestFramework::REQUEST_UAPI
     );
