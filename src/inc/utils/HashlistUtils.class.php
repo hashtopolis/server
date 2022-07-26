@@ -260,7 +260,7 @@ class HashlistUtils {
       throw new HTException("No access to hashlist!");
     }
     // TODO: check if there is any active task, and if yes we maybe should not allow to archive
-    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isSecret));
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isArchived));
   }
   
   /**
