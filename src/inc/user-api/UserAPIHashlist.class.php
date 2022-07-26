@@ -21,6 +21,9 @@ class UserAPIHashlist extends UserAPIBasic {
         case USectionHashlist::SET_SECRET:
           $this->setSecret($QUERY);
           break;
+        case USectionHashlist::SET_ARCHIVED:
+          $this->setArchived($QUERY);
+          break;
         case USectionHashlist::IMPORT_CRACKED:
           $this->importCracked($QUERY);
           break;

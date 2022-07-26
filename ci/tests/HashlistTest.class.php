@@ -28,6 +28,7 @@ class HashlistTest extends HashtopolisTest {
     $this->testGetHash("00112233445566778899aabbccddeeff", false);
     $this->testDeleteHashlist(3);
     $this->testListHashlists(['Hashlist 0', 'Hashlist 1']);
+    $this->testArchiveHashlist(1);
     $this->testDeleteHashlist(1);
     $this->testListHashlists(['Hashlist 1']);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
@@ -49,6 +50,25 @@ class HashlistTest extends HashtopolisTest {
     }
     else {
       $this->testSuccess("HashlistTest:testDeleteHashlist($hashlistId)");
+    }
+  }
+  
+  private function testArchiveHashlist($hashlistId) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "hashlist",
+      "request" => "archiveHashlist",
+      "hashlistId" => $hashlistId,
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response === false) {
+      $this->testFailed("HashlistTest:testArchiveHashlist($hashlistId)", "Empty response");
+    }
+    else if ($response['response'] != 'OK') {
+      $this->testFailed("HashlistTest:testArchiveHashlist($hashlistId)", "Response not OK");
+    }
+    else {
+      $this->testSuccess("HashlistTest:testArchiveHashlist($hashlistId)");
     }
   }
   
