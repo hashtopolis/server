@@ -192,5 +192,5 @@ if (!isset($PRESENT["v0.12.x_hashlist_isArchived"])) {
   if (!Util::databaseColumnExists("Hashlist", "isArchived")) {
     Factory::getFileFactory()->getDB()->query("ALTER TABLE `Hashlist` ADD `isArchived` TINYINT(4) NOT NULL;");
   }
-  $EXECUTED["v0.12_x_hashlist_isArchived"] = true;
+  $EXECUTED["v0.12.x_hashlist_isArchived"] = true;
 }
