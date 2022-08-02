@@ -232,6 +232,7 @@ class UResponseTask extends UResponse {
   const TASK_MAX_AGENTS           = "maxAgents";
   const TASK_CPU_ONLY             = "isCpuOnly";
   const TASK_SMALL                = "isSmall";
+  const TASK_ARCHIVED             = "isArchived";
   const TASK_SKIP                 = "skipKeyspace";
   const TASK_KEYSPACE             = "keyspace";
   const TASK_DISPATCHED           = "dispatched";
