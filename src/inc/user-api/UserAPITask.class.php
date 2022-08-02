@@ -473,6 +473,7 @@ class UserAPITask extends UserAPIBasic {
       UResponseTask::TASK_MAX_AGENTS => (int)$task->getMaxAgents(),
       UResponseTask::TASK_CPU_ONLY => ($task->getIsCpuTask() == 1) ? true : false,
       UResponseTask::TASK_SMALL => ($task->getIsSmall() == 1) ? true : false,
+      UResponseTask::TASK_ARCHIVED => ($task->getIsArchived() == 1) ? true : false,
       UResponseTask::TASK_SKIP => (int)$task->getSkipKeyspace(),
       UResponseTask::TASK_KEYSPACE => (int)$task->getKeyspace(),
       UResponseTask::TASK_DISPATCHED => (int)$task->getKeyspaceProgress(),
