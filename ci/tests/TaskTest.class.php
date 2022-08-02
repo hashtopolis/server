@@ -67,7 +67,7 @@ class TaskTest extends HashtopolisTest {
         "agents" => [],
         "isComplete" => false,
         "usePreprocessor" => false,
-	"preprocessorId" => 0,
+        "preprocessorId" => 0,
         "preprocessorCommand" => "",
         "files" => [
           [
