@@ -17,4 +17,12 @@ RUN { \
     echo "max_execution_time = 60"; \
 } > "$PHP_INI_DIR/conf.d/custom.ini"
 
+# workaround for the copy of git HEAD, as when called without ./build.sh, this file does not exist
+
+RUN mkdir -p /var/www/.git
+
+COPY LICENSE.txt HEAD* /var/www/.git/
+
+RUN rm /var/www/.git/LICENSE.txt
+
 COPY --chown=www-data:www-data ./src/ /var/www/html/
