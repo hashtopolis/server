@@ -141,7 +141,8 @@ $CONF['Hashlist'] = [
   'accessGroupId',
   'notes',
   'brainId',
-  'brainFeatures'
+  'brainFeatures',
+  'creatorId'
 ];
 $CONF['HashType'] = [
   'hashTypeId',

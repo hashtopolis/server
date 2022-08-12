@@ -62,7 +62,15 @@ else if (isset($_GET['id'])) {
   } else if (!AccessUtils::userCanAccessHashlists($hashlists, Login::getInstance()->getUser())) {
     UI::printError("ERROR", "No access to this hashlist!");
   }
-  $list = new DataSet(array('hashlist' => $hashlists[0], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][0]));
+
+  // Get User Factory
+  $UserFactory = Factory::getUserFactory();
+  // Get creator ID of the hashlist
+  $creatorId = $hashlists[0]->getCreatorId();
+  // Get the username of the creator
+  $creatorUsername = $UserFactory->get($creatorId)->getUsername();
+
+  $list = new DataSet(array('hashlist' => $hashlists[0], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][0], 'creator' => $creatorUsername));
   UI::add('list', $list);
   UI::add('accessGroup', Factory::getAccessGroupFactory()->get($list->getVal('hashlist')->getAccessGroupId()));
   UI::add('accessGroups', AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser()));
@@ -136,8 +144,16 @@ else {
   /** @var $joinedHashlists Hashlist[] */
   $joinedHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
   $hashlists = array();
+
+  // Get User Factory
+  $UserFactory = Factory::getUserFactory();
+
   for ($x = 0; $x < sizeof($joinedHashlists); $x++) {
-    $hashlists[] = new DataSet(['hashlist' => $joinedHashlists[$x], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][$x]]);
+    // Add the creator details to the dataset in order to render a username, not just the ID of the user
+    $creatorId = $joinedHashlists[$x]->getCreatorId();
+    $creatorUsername = $UserFactory->get($creatorId)->getUsername();
+
+    $hashlists[] = new DataSet(['hashlist' => $joinedHashlists[$x], 'hashtype' => $joined[Factory::getHashTypeFactory()->getModelName()][$x], 'creator' => $creatorUsername]);
   }
   UI::add('hashlists', $hashlists);
   UI::add('numHashlists', sizeof($hashlists));
