@@ -25,4 +25,6 @@ COPY LICENSE.txt HEAD* /var/www/.git/
 
 RUN rm /var/www/.git/LICENSE.txt
 
+RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
+
 COPY --chown=www-data:www-data ./src/ /var/www/html/
