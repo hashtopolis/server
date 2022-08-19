@@ -124,7 +124,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (16, 3, 'batchSize', '50000'),
   (18, 2, 'yubikey_id', ''),
   (19, 2, 'yubikey_key', ''),
-  (20, 2, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
+  (20, 2, 'yubikey_url', 'https://api.yubico.com/wsapi/2.0/verify'),
   (22, 3, 'pagingSize', '5000'),
   (23, 3, 'plainTextMaxLength', '200'),
   (24, 3, 'hashMaxLength', '1024'),
