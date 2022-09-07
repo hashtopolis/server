@@ -1,0 +1,15 @@
+{
+    "name": "hashtopolis/hashtopolis",
+    "require": {
+      "restler/framework": "^5.0"
+    },
+    "require-dev": {
+      "behat/behat": "^3.10",
+      "guzzlehttp/guzzle": "^7.4"
+    },
+    "authors": [
+      {
+        "name": "hashtopolis"
+      }
+    ]
+  }

@@ -5,7 +5,7 @@
 	"service": "hashtopolis",
 	"runServices": ["db"],
 			
-	"appPort": [8080],
+	"appPort": [8080, 4200],
 
 	"workspaceMount": "src=${localWorkspaceFolder},dst=/var/www/html,type=bind,consistency=cached",
 	"workspaceFolder": "/var/www/html",

@@ -1,0 +1,9 @@
+default:
+  formatters:
+      pretty: true
+  suites:
+    default:
+      contexts:
+        - FeatureContext
+        - RestContext:
+            baseUrl: http://localhost:80/

@@ -1,0 +1,58 @@
+<table mat-table [dataSource]="entries" class="mat-elevation-z0">
+    <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let entry"> {{entry.id}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let entry"> {{entry.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="hashlist">
+        <th mat-header-cell *matHeaderCellDef> Hashlist </th>
+        <td mat-cell *matCellDef="let entry"> {{entry.hashlist.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="priority">
+        <th mat-header-cell *matHeaderCellDef> Task Priority </th>
+        <td mat-cell *matCellDef="let entry">
+            <div class="container" fxLayout>
+                <form class="example-form">
+                    <mat-form-field appearance="standard" style="width:100px">
+                        <input matInput [(ngModel)]="entry.priority" name="priority" value="{{entry.priority}}">
+                    </mat-form-field>
+                    <button mat-icon-button color="primary" (click)="updateEntry(entry)">
+                        <mat-icon>save</mat-icon>
+                    </button>
+                </form>
+            </div>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="maxAgents">
+        <th mat-header-cell *matHeaderCellDef> Max agents </th>
+        <td mat-cell *matCellDef="let entry">
+            <form class="example-form">
+                <mat-form-field appearance="standard" style="width:100px">
+                    <input matInput [(ngModel)]="entry.maxAgents" name="maxAgents" value="{{entry.maxAgents}}">
+                </mat-form-field>
+                <button mat-icon-button color="primary" (click)="updateEntry(entry)">
+                    <mat-icon>save</mat-icon>
+                </button>
+            </form>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let entry">
+            <button mat-icon-button color="primary" (click)="deleteEntry(entry)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

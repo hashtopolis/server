@@ -12,6 +12,13 @@ src/files/*
 *.sln
 *.phpproj.user
 *.lock
+vendor/
+/ci/apiv2/behat-guzzle-cookie-data.json
 
 # for docker stuff
 .env
+
+# for Angular stuff
+dist/
+node_modules/
+.angular

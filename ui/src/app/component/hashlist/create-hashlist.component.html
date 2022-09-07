@@ -1,0 +1,56 @@
+<table class="mat-table">
+    <tr class="mat-header-row">
+        <th class="mat-header-cell">Property:</th>
+        <th class="mat-header-cell">Value:</th>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">Name:</td>
+        <td class="mat-cell">
+            <mat-form-field appearance="standard">
+                <input matInput [(ngModel)]="hashlist.name" name="name" value="{{hashlist.name}}">
+            </mat-form-field>
+        </td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">Hashtype:</td>
+        <td class="mat-cell">
+            <mat-form-field appearance="standard">
+                <mat-select [(ngModel)]="hashlist.hashtypeId" name="hashtypeId" value="{{hashlist.hashtypeId}}">
+                    <mat-option *ngFor="let hashtype of hashtypes" value="{{hashtype.id}}">{{hashtype.id}} - {{hashtype.description}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">Hashlist format:</td>
+        <td class="mat-cell">
+            <mat-form-field appearance="standard">
+                <mat-select [(ngModel)]="hashlist.format" name="format" value="{{hashlist.format}}">
+                  <mat-option *ngFor="let format of hashlistFormats" value="{{format.id}}">{{format.description}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+        </td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">Access group:</td>
+        <td class="mat-cell">
+            <mat-form-field appearance="standard">
+                <mat-select [(ngModel)]="hashlist.accessGroupId" name="accessGroupId" value="{{hashlist.accessGroupId}}">
+                    <mat-option *ngFor="let accessGroup of accessGroups" value="{{accessGroup.id}}">{{accessGroup.name}}</mat-option>
+                  </mat-select>
+              </mat-form-field>
+        </td>
+    </tr>
+    <tr class="mat-row">
+        <td class="mat-cell">Input field:</td>
+        <td class="mat-cell">
+            <mat-form-field appearance="standard">
+                <textarea matInput [(ngModel)]="hashlist.dataSource" name="data" value="{{hashlist.dataSource}}">{{hashlist.dataSource}}</textarea>
+            </mat-form-field>
+        </td>
+    </tr>
+</table>
+
+<button mat-icon-button color="primary" (click)="createHashlist()">
+    <mat-icon>save</mat-icon>
+</button>

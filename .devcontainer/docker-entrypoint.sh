@@ -1,5 +1,20 @@
 #!/bin/sh
 
+echo "Install dependencies"
+if [ ! -d /var/www/html/vendor ];
+then
+  composer install --working-dir=/var/www/html
+fi
+composer update --working-dir=/var/www/html
+
+if [ ! -d /var/www/html/ui/node_modules ];
+then
+  cd /var/www/html/ui/ && npm install
+fi
+
+cd /var/www/html/ui/ && ng build
+ng serve --host 0.0.0.0 &
+
 echo "Testing database."
 MYSQL="mysql -uhashtopolis -phashtopolis -hdb"
 $MYSQL -e "SELECT 1"

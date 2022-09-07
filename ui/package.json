@@ -1,0 +1,34 @@
+{
+  "name": "hashtopolis-frontend",
+  "version": "0.0.1",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~13.3.0",
+    "@angular/cdk": "^13.3.7",
+    "@angular/common": "~13.3.0",
+    "@angular/compiler": "~13.3.0",
+    "@angular/core": "~13.3.0",
+    "@angular/flex-layout": "^13.0.0-beta.38",
+    "@angular/forms": "~13.3.0",
+    "@angular/material": "^13.3.7",
+    "@angular/platform-browser": "~13.3.0",
+    "@angular/platform-browser-dynamic": "~13.3.0",
+    "@angular/router": "~13.3.0",
+    "rxjs": "~7.5.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~13.3.5",
+    "@angular/cli": "~13.3.5",
+    "@angular/compiler-cli": "~13.3.0",
+    "@types/node": "^12.11.1",
+    "typescript": "~4.6.2"
+  }
+}

@@ -35,6 +35,17 @@ RUN apt-get update \
 	# Install extensions (optional)
 	&& docker-php-ext-install pdo_mysql \
 
+    # Install composer
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    # Enable URL rewriting using .htaccess
+    && a2enmod rewrite \
+
+    # Install Node and Angular
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
+    && apt-get -y install nodejs \
+    && npm install -g @angular/cli \
+
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
