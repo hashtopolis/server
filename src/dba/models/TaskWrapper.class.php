@@ -5,6 +5,7 @@ namespace DBA;
 class TaskWrapper extends AbstractModel {
   private $taskWrapperId;
   private $priority;
+  private $maxAgents;
   private $taskType;
   private $hashlistId;
   private $accessGroupId;
@@ -12,9 +13,10 @@ class TaskWrapper extends AbstractModel {
   private $isArchived;
   private $cracked;
   
-  function __construct($taskWrapperId, $priority, $taskType, $hashlistId, $accessGroupId, $taskWrapperName, $isArchived, $cracked) {
+  function __construct($taskWrapperId, $priority, $maxAgents, $taskType, $hashlistId, $accessGroupId, $taskWrapperName, $isArchived, $cracked) {
     $this->taskWrapperId = $taskWrapperId;
     $this->priority = $priority;
+    $this->maxAgents = $maxAgents;
     $this->taskType = $taskType;
     $this->hashlistId = $hashlistId;
     $this->accessGroupId = $accessGroupId;
@@ -27,6 +29,7 @@ class TaskWrapper extends AbstractModel {
     $dict = array();
     $dict['taskWrapperId'] = $this->taskWrapperId;
     $dict['priority'] = $this->priority;
+    $dict['maxAgents'] = $this->maxAgents;
     $dict['taskType'] = $this->taskType;
     $dict['hashlistId'] = $this->hashlistId;
     $dict['accessGroupId'] = $this->accessGroupId;
@@ -67,6 +70,14 @@ class TaskWrapper extends AbstractModel {
   
   function setPriority($priority) {
     $this->priority = $priority;
+  }
+  
+  function getMaxAgents() {
+    return $this->maxAgents;
+  }
+  
+  function setMaxAgents($maxAgents) {
+    $this->maxAgents = $maxAgents;
   }
   
   function getTaskType() {
@@ -119,6 +130,7 @@ class TaskWrapper extends AbstractModel {
   
   const TASK_WRAPPER_ID = "taskWrapperId";
   const PRIORITY = "priority";
+  const MAX_AGENTS = "maxAgents";
   const TASK_TYPE = "taskType";
   const HASHLIST_ID = "hashlistId";
   const ACCESS_GROUP_ID = "accessGroupId";

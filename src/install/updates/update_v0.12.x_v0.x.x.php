@@ -187,3 +187,10 @@ if (!isset($PRESENT["v0.12.x_maxAgents_pretask_task"])) {
   }
   $EXECUTED["v0.12.x_maxAgents_pretask_task"] = true;
 }
+
+if (!isset($PRESENT["v0.12.x_maxAgents_taskwrapper"])) {
+  if (!Util::databaseColumnExists("TaskWrapper", "maxAgents")) {
+    Factory::getFileFactory()->getDB()->query("ALTER TABLE `TaskWrapper` ADD `maxAgents` INT(11) NOT NULL;");
+  }
+  $EXECUTED["v0.12.x_maxAgents_taskwrapper"] = true;
+}

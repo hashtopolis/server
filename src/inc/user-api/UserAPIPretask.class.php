@@ -246,7 +246,8 @@ class UserAPIPretask extends UserAPIBasic {
       $taskList[] = [
         UResponseTask::PRETASKS_ID => (int)$pretask->getId(),
         UResponseTask::PRETASKS_NAME => $pretask->getTaskName(),
-        UResponseTask::PRETASKS_PRIORITY => (int)$pretask->getPriority()
+        UResponseTask::PRETASKS_PRIORITY => (int)$pretask->getPriority(),
+        UResponseTask::PRETASKS_MAX_AGENTS => (int)$pretask->getMaxAgents()
       ];
     }
     $response[UResponseTask::PRETASKS] = $taskList;

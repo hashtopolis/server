@@ -46,8 +46,16 @@
       [[set.getVal('priority')]]
     {{ENDIF}}
   </td>
-  <td class='num'>
-    {{IF [[set.getVal('maxAgents')]] > 0}}
+  <td style='min-width: 130px' data-sort="[[set.getVal('maxAgents')]]">
+    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
+      <form class="form-inline" action="tasks.php" method="POST">
+        <input type='hidden' name='action' value='[[$DTaskAction::SET_SUPERTASK_MAX_AGENTS]]'>
+        <input type="hidden" name="supertaskId" value="[[set.getVal('taskWrapperId')]]">
+        <input type="hidden" name="csrf" value="[[csrf]]">
+        <input type="text" class='form-control' style='width: 60px;' name="maxAgents" size="4" value="[[set.getVal('maxAgents')]]" title="Max agents">&nbsp;&nbsp;
+        <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+      </form>
+    {{ELSE}}
       [[set.getVal('maxAgents')]]
     {{ENDIF}}
   </td>

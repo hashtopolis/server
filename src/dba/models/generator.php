@@ -242,6 +242,7 @@ $CONF['TaskDebugOutput'] = [
 $CONF['TaskWrapper'] = [
   'taskWrapperId',
   'priority',
+  'maxAgents',
   'taskType',
   'hashlistId',
   'accessGroupId',

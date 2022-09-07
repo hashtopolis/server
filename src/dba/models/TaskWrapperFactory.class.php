@@ -23,7 +23,7 @@ class TaskWrapperFactory extends AbstractModelFactory {
    * @return TaskWrapper
    */
   function getNullObject() {
-    $o = new TaskWrapper(-1, null, null, null, null, null, null, null);
+    $o = new TaskWrapper(-1, null, null, null, null, null, null, null, null);
     return $o;
   }
   
@@ -33,7 +33,7 @@ class TaskWrapperFactory extends AbstractModelFactory {
    * @return TaskWrapper
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new TaskWrapper($dict['taskWrapperId'], $dict['priority'], $dict['taskType'], $dict['hashlistId'], $dict['accessGroupId'], $dict['taskWrapperName'], $dict['isArchived'], $dict['cracked']);
+    $o = new TaskWrapper($dict['taskWrapperId'], $dict['priority'], $dict['maxAgents'], $dict['taskType'], $dict['hashlistId'], $dict['accessGroupId'], $dict['taskWrapperName'], $dict['isArchived'], $dict['cracked']);
     return $o;
   }
   

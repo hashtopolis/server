@@ -263,13 +263,17 @@ class SupertaskUtils {
     Factory::getAgentFactory()->getDB()->beginTransaction();
     
     $wrapperPriority = 0;
+    $wrapperMaxAgents = 0;
     foreach ($pretasks as $pretask) {
       if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
         $wrapperPriority = $pretask->getPriority();
       }
-    }
-    
-    $taskWrapper = new TaskWrapper(null, $wrapperPriority, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0);
+      if ($wrapperMaxAgents == 0 || $wrapperMaxAgents > $pretask->getMaxAgents()) {
+        $wrapperMaxAgents = $pretask->getMaxAgents();
+      }
+    }    
+
+    $taskWrapper = new TaskWrapper(null, $wrapperPriority, $wrapperMaxAgents, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     foreach ($pretasks as $pretask) {

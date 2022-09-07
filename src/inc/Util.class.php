@@ -489,6 +489,7 @@ class Util {
         $set->addValue('hashCount', $hashlist->getHashCount());
         $set->addValue('hashlistCracked', $hashlist->getCracked());
         $set->addValue('priority', $taskWrapper->getPriority());
+        $set->addValue('maxAgents', $taskWrapper->getMaxAgents());
         $set->addValue('cracked', $taskWrapper->getCracked());
         
         $taskList[] = $set;

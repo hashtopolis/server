@@ -52,6 +52,9 @@ class UserAPITask extends UserAPIBasic {
         case USectionTask::SET_TASK_MAX_AGENTS:
           $this->setTaskMaxAgents($QUERY);
           break;
+        case USectionTask::SET_SUPERTASK_MAX_AGENTS:
+          $this->setSuperTaskMaxAgents($QUERY);
+          break;
         case USectionTask::TASK_UNASSIGN_AGENT:
           $this->unassignAgent($QUERY);
           break;
@@ -213,7 +216,19 @@ class UserAPITask extends UserAPIBasic {
     TaskUtils::setTaskMaxAgents($QUERY[UQueryTask::TASK_ID], $QUERY[UQueryTask::TASK_MAX_AGENTS], $this->user);
     $this->sendSuccessResponse($QUERY);
   }
-  
+
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function setSuperTaskMaxAgents($QUERY) {
+    if (!isset($QUERY[UQueryTask::SUPERTASK_ID]) || !isset($QUERY[UQueryTask::SUPERTASK_MAX_AGENTS])) {
+      throw new HTException("Invalid query!");
+    }
+    TaskUtils::setSuperTaskMaxAgents($QUERY[UQueryTask::SUPERTASK_ID], $QUERY[UQueryTask::SUPERTASK_MAX_AGENTS], $this->user);
+    $this->sendSuccessResponse($QUERY);
+  }
+
   /**
    * @param array $QUERY
    * @throws HTException
@@ -565,7 +580,8 @@ class UserAPITask extends UserAPIBasic {
           UResponseTask::TASKS_NAME => $taskWrapper->getTaskWrapperName(),
           UResponseTask::TASKS_TYPE => 1,
           UResponseTask::TASKS_HASHLIST => (int)$taskWrapper->getHashlistId(),
-          UResponseTask::TASKS_PRIORITY => (int)$taskWrapper->getPriority()
+          UResponseTask::TASKS_PRIORITY => (int)$taskWrapper->getPriority(),
+          UResponseTask::TASKS_MAX_AGENTS => (int)$taskWrapper->getMaxAgents()
         ];
       }
     }
