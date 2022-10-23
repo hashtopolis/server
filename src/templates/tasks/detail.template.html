@@ -237,10 +237,10 @@
       <tr>
         <td>Use static chunking:</td>
         <td>
-          {{IF [[task.getStaticChunks()]] == 0}}
+          {{IF [[task.getStaticChunks()]] == [[$DTaskStaticChunking::NORMAL]]}}
             No
           {{ELSE}}
-            {{IF [[task.getStaticChunks()]] == 1}}
+            {{IF [[task.getStaticChunks()]] == [[$DTaskStaticChunking::CHUNK_SIZE]]}}
               Fixed chunk size  ([[task.getChunkSize()]])
             {{ELSE}}
               Fixed number of chunks ([[task.getChunkSize()]])
