@@ -202,5 +202,7 @@ require __DIR__ . "/../../inc/apiv2/token.routes.php";
 require __DIR__ . "/../../inc/apiv2/hashlists.routes.php";
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$errorHandler = $errorMiddleware->getDefaultErrorHandler();
+$errorHandler->forceContentType('application/json');
 
 $app->run();

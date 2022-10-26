@@ -56,8 +56,6 @@ RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-dat
     && chown -R www-data:www-data /var/www \
     && chmod g+w /var/www
 
-RUN composer update
-
 WORKDIR /var/www
 USER vscode
 

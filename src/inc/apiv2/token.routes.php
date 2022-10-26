@@ -20,7 +20,7 @@ $app->group("/api/v2/auth/token", function (RouteCollectorProxy $group) {
     });
 
     $group->post('', function (Request $request, Response $response, array $args): Response {
-        include(dirname(__FILE__) . '/../../conf.php');
+        include(dirname(__FILE__) . '/../conf.php');
 
         $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
 
@@ -44,7 +44,7 @@ $app->group("/api/v2/auth/token", function (RouteCollectorProxy $group) {
         $jti = bin2hex(random_bytes(16));
 
 
-        // FIXME: This is duplicated and should be handled in the 
+        // FIXME: This is duplicated and should be passed by HttpBasicMiddleware 
         $filter = new QueryFilter(User::USERNAME, $request->getAttribute('user'), "=");
         $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);   
 

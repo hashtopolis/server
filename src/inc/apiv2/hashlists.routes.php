@@ -26,20 +26,20 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
 
         $lists = [];
         foreach ($hashlists as $hashlist) {
-        $lists[] = [
-            UResponseHashlist::HASHLISTS_ID => (int)$hashlist->getId(),
-            UResponseHashlist::HASHLISTS_HASHTYPE_ID => (int)$hashlist->getHashTypeId(),
-            UResponseHashlist::HASHLISTS_NAME => $hashlist->getHashlistName(),
-            UResponseHashlist::HASHLISTS_FORMAT => (int)$hashlist->getFormat(),
-            UResponseHashlist::HASHLISTS_COUNT => (int)$hashlist->getHashCount()
-        ];
+            $lists[] = [
+                UResponseHashlist::HASHLISTS_ID => (int)$hashlist->getId(),
+                UResponseHashlist::HASHLISTS_HASHTYPE_ID => (int)$hashlist->getHashTypeId(),
+                UResponseHashlist::HASHLISTS_NAME => $hashlist->getHashlistName(),
+                UResponseHashlist::HASHLISTS_FORMAT => (int)$hashlist->getFormat(),
+                UResponseHashlist::HASHLISTS_COUNT => (int)$hashlist->getHashCount()
+            ];
+        }
 
         $body = $response->getBody();
         $body->write(json_encode($lists, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-
+        
         return $response->withStatus(201)
-            ->withHeader("Content-Type", "application/json");
-        }
+        ->withHeader("Content-Type", "application/json");
     });
 
     $group->post('', function (Request $request, Response $response, array $args): Response {
