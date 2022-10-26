@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [ ! -d /var/www/html/vendor ];
+then
+  composer install --working-dir=/var/www/html
+fi
+composer update --working-dir=/var/www/html
+
 echo "Testing database."
 MYSQL="mysql -uhashtopolis -phashtopolis -hdb"
 $MYSQL -e "SELECT 1"

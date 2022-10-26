@@ -1,29 +1,10 @@
 <?php
 
-/*
- * This file is part of the Slim API skeleton package
- *
- * Copyright (c) 2016-2017 Mika Tuupola
- *
- * Licensed under the MIT license:
- *   http://www.opensource.org/licenses/mit-license.php
- *
- * Project home:
- *   https://github.com/tuupola/slim-api-skeleton
- *
- */
-
-use Firebase\JWT\JWT;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Routing\RouteCollectorProxy;
-
-use DBA\QueryFilter;
-use DBA\Session;
-use DBA\User;
-use DBA\Factory;
 
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;

@@ -35,6 +35,12 @@ RUN apt-get update \
 	# Install extensions (optional)
 	&& docker-php-ext-install pdo_mysql \
 
+    # Install composer
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    # Enable URL rewriting using .htaccess
+    && a2enmod rewrite \
+
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
@@ -49,6 +55,9 @@ RUN rm -rf /etc/apache2/sites-enabled \
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
     && chown -R www-data:www-data /var/www \
     && chmod g+w /var/www
+
+RUN composer update
+
 WORKDIR /var/www
 USER vscode
 
