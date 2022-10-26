@@ -47,11 +47,7 @@ $app->group("/api/v2/auth/token", function (RouteCollectorProxy $group) {
         // FIXME: This is duplicated and should be passed by HttpBasicMiddleware 
         $filter = new QueryFilter(User::USERNAME, $request->getAttribute('user'), "=");
         $check = Factory::getUserFactory()->filter([Factory::FILTER => $filter]);   
-
-        // Optional checking, since this is already done
-        assert($check === null || sizeof($check) == 0);
         $user = $check[0];
-        assert($user->getIsValid() != 1);
 
         $payload = [
             "iat" => $now->getTimeStamp(),
