@@ -13,5 +13,11 @@ src/files/*
 *.phpproj.user
 *.lock
 
+# dynamically created by installer
+src/install/.htaccess
+
 # for docker stuff
 .env
+
+# for composer stuff
+vendor
