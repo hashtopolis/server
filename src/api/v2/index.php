@@ -111,7 +111,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
         },
         "before" => function ($request, $arguments) use ($container) {
             // TODO: Validate if user is still allowed to login
-            return $request->withAttribute("userId", $arguments["decoded"]["userId"]);
+            return $request->withAttribute("userId", $arguments["decoded"]["userId"])->withAttribute("scope", $arguments["decoded"]["scope"]);
         },
     ]);
 });
