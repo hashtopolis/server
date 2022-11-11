@@ -97,7 +97,7 @@ class File extends AbstractModel {
   function setAccessGroupId($accessGroupId) {
     $this->accessGroupId = $accessGroupId;
   }
-
+  
   function getLineCount() {
     return $this->lineCount;
   }
@@ -105,7 +105,6 @@ class File extends AbstractModel {
   function setLineCount($lineCount) {
     $this->lineCount = $lineCount;
   }
-  
   
   const FILE_ID = "fileId";
   const FILENAME = "filename";
