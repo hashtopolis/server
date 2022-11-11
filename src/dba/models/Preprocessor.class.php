@@ -34,6 +34,19 @@ class Preprocessor extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['preprocessorId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['name'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['url'] = [ 'read_only' => False, "type" => "str(512)"];
+    $dict['binaryName'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['keyspaceCommand'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['skipCommand'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['limitCommand'] = [ 'read_only' => False, "type" => "str(256)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "preprocessorId";
   }

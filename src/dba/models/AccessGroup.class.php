@@ -19,6 +19,14 @@ class AccessGroup extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['accessGroupId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['groupName'] = [ 'read_only' => False, "type" => "str(50)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "accessGroupId";
   }

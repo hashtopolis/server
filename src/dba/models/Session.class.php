@@ -34,6 +34,19 @@ class Session extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['sessionId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['userId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['sessionStartDate'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['lastActionDate'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['isOpen'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['sessionLifetime'] = [ 'read_only' => False, "type" => "int"];
+    $dict['sessionKey'] = [ 'read_only' => False, "type" => "str(256)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "sessionId";
   }

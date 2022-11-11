@@ -52,6 +52,25 @@ class Pretask extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['pretaskId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['taskName'] = [ 'read_only' => False, "type" => "str(100)"];
+    $dict['attackCmd'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['chunkTime'] = [ 'read_only' => False, "type" => "int"];
+    $dict['statusTimer'] = [ 'read_only' => False, "type" => "int"];
+    $dict['color'] = [ 'read_only' => False, "type" => "str(20)"];
+    $dict['isSmall'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['isCpuTask'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['useNewBench'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['priority'] = [ 'read_only' => False, "type" => "int"];
+    $dict['maxAgents'] = [ 'read_only' => False, "type" => "int"];
+    $dict['isMaskImport'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['crackerBinaryTypeId'] = [ 'read_only' => False, "type" => "int"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "pretaskId";
   }

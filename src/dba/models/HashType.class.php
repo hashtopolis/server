@@ -25,6 +25,16 @@ class HashType extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['hashTypeId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['description'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['isSalted'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['isSlowHash'] = [ 'read_only' => False, "type" => "bool"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "hashTypeId";
   }

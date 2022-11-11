@@ -22,6 +22,15 @@ class ApiGroup extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['apiGroupId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['permissions'] = [ 'read_only' => False, "type" => "str(65535)"];
+    $dict['name'] = [ 'read_only' => False, "type" => "str(100)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "apiGroupId";
   }

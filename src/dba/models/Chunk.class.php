@@ -49,6 +49,24 @@ class Chunk extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['chunkId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['taskId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['skip'] = [ 'read_only' => False, "type" => "uint64"];
+    $dict['length'] = [ 'read_only' => False, "type" => "uint64"];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['dispatchTime'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['solveTime'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['checkpoint'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['progress'] = [ 'read_only' => False, "type" => "int"];
+    $dict['state'] = [ 'read_only' => False, "type" => "int"];
+    $dict['cracked'] = [ 'read_only' => False, "type" => "int"];
+    $dict['speed'] = [ 'read_only' => False, "type" => "int64"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "chunkId";
   }

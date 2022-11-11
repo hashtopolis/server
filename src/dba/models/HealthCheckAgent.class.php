@@ -40,6 +40,21 @@ class HealthCheckAgent extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['healthCheckAgentId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['healthCheckId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['status'] = [ 'read_only' => False, "type" => "int"];
+    $dict['cracked'] = [ 'read_only' => False, "type" => "int"];
+    $dict['numGpus'] = [ 'read_only' => False, "type" => "int"];
+    $dict['start'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['end'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['errors'] = [ 'read_only' => False, "type" => "str(65535)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "healthCheckAgentId";
   }

@@ -37,6 +37,20 @@ class HealthCheck extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['healthCheckId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['time'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['status'] = [ 'read_only' => False, "type" => "int"];
+    $dict['checkType'] = [ 'read_only' => False, "type" => "int"];
+    $dict['hashtypeId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['crackerBinaryId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['expectedCracks'] = [ 'read_only' => False, "type" => "int"];
+    $dict['attackCmd'] = [ 'read_only' => False, "type" => "str(256)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "healthCheckId";
   }

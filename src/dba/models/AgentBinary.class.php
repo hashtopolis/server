@@ -34,6 +34,19 @@ class AgentBinary extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['agentBinaryId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['type'] = [ 'read_only' => False, "type" => "str(20)"];
+    $dict['version'] = [ 'read_only' => False, "type" => "str(20)"];
+    $dict['operatingSystems'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['filename'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['updateTrack'] = [ 'read_only' => False, "type" => "str(20)"];
+    $dict['updateAvailable'] = [ 'read_only' => False, "type" => "str(20)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "agentBinaryId";
   }

@@ -34,6 +34,19 @@ class ApiKey extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['apiKeyId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['startValid'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['endValid'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['accessKey'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['accessCount'] = [ 'read_only' => False, "type" => "int"];
+    $dict['userId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['apiGroupId'] = [ 'read_only' => False, "type" => "int"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "apiKeyId";
   }

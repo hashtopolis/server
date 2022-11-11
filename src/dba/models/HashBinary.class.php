@@ -40,6 +40,21 @@ class HashBinary extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['hashBinaryId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['hashlistId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['essid'] = [ 'read_only' => False, "type" => "str(100)"];
+    $dict['hash'] = [ 'read_only' => False, "type" => "str(4294967295)"];
+    $dict['plaintext'] = [ 'read_only' => False, "type" => "str(1024)"];
+    $dict['timeCracked'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['chunkId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['isCracked'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['crackPos'] = [ 'read_only' => False, "type" => "int64"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "hashBinaryId";
   }

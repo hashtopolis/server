@@ -61,6 +61,28 @@ class Agent extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['agentId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['agentName'] = [ 'read_only' => False, "type" => "str(100)"];
+    $dict['uid'] = [ 'read_only' => False, "type" => "str(100)"];
+    $dict['os'] = [ 'read_only' => False, "type" => "int"];
+    $dict['devices'] = [ 'read_only' => False, "type" => "str(65535)"];
+    $dict['cmdPars'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['ignoreErrors'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['isActive'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['isTrusted'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['token'] = [ 'read_only' => False, "type" => "str(30)"];
+    $dict['lastAct'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['lastTime'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['lastIp'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['userId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['cpuOnly'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['clientSignature'] = [ 'read_only' => False, "type" => "str(50)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "agentId";
   }

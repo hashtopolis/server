@@ -19,6 +19,14 @@ class Supertask extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['supertaskId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['supertaskName'] = [ 'read_only' => False, "type" => "str(50)"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "supertaskId";
   }

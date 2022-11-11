@@ -40,6 +40,21 @@ class Hash extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['hashId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['hashlistId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['hash'] = [ 'read_only' => False, "type" => "str(65535)"];
+    $dict['salt'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['plaintext'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['timeCracked'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['chunkId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['isCracked'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['crackPos'] = [ 'read_only' => False, "type" => "int64"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "hashId";
   }

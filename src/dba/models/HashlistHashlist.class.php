@@ -22,6 +22,15 @@ class HashlistHashlist extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['hashlistHashlistId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['parentHashlistId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['hashlistId'] = [ 'read_only' => True, "type" => "int"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "hashlistHashlistId";
   }

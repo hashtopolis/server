@@ -34,6 +34,19 @@ class NotificationSetting extends AbstractModel {
     return $dict;
   }
   
+  function getFeatures() {
+    $dict = array();
+    $dict['notificationSettingId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['action'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['objectId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['notification'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['userId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['receiver'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['isActive'] = [ 'read_only' => False, "type" => "bool"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "notificationSettingId";
   }
