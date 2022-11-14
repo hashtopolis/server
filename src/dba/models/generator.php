@@ -148,7 +148,7 @@ $CONF['Hashlist'] = [
   ['name' => 'format', 'read_only' => False, 'type' => 'int'],
   ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
   ['name' => 'hashCount', 'read_only' => True, 'type' => 'int'],
-  ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)'],
+  ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True],
   ['name' => 'cracked', 'read_only' => False, 'type' => 'int'],
   ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool'],
@@ -427,7 +427,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
     $params[] = "\$$col";
     $vars[] = "private \$$col;";
     $init[] = "\$this->$col = \$$col;";
-    $features[] = "\$dict['$col'] = [ 'read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', "type" => "' . $COLUMN['type'] . '"];';
+    $features[] = "\$dict['$col'] = [ 'read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', "type" => "' . $COLUMN['type'] . '", "null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
     
@@ -491,4 +491,3 @@ function makeConstant($name) {
   }
   return $output;
 }
-
