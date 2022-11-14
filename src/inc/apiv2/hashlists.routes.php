@@ -15,6 +15,29 @@ use Middlewares\Utils\HttpErrorException;
 
 require_once(dirname(__FILE__) . "/../load.php");
 
+
+function hashlist2Array(Hashlist $hashlist) {
+  // Convert values to JSON supported types
+  $features = $hashlist->getFeatures();
+  $kv = $hashlist->getKeyValueDict();
+
+  $item = [];
+  foreach ($features as $NAME => $FEATURE) {
+    if ($FEATURE['type'] == 'bool') {
+      $item[$NAME] = ($kv[$NAME] == 1) ? True : False;
+    } else {
+      $item[$NAME] = $kv[$NAME];
+    }
+  }
+
+  return $kv;
+};
+
+function hashlist2JSON(Hashlist $hashlist) {
+  $item = hashlist2Array($hashlist);
+  return json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+}
+
 $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) { 
     /* Allow preflight requests */
     $group->options('', function (Request $request, Response $response): Response {
@@ -26,21 +49,30 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         $userId = $request->getAttribute(('userId'));
         $user = UserUtils::getUser($userId);
 
-        $hashlists = HashlistUtils::getHashlists($user);
+        $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
+        $maxResults = intval($request->getQueryParams()['maxResults'] ?? 5);
 
+        // TODO: Implement expand support
+        $expand = preg_split("/[,\ ]+/", ($request->getQueryParams()['expand'] ?? ""));
+
+        // TODO: Optimize code, should only fetch subsection of database
+        $hashlists = HashlistUtils::getHashlists($user);
         $lists = [];
         foreach ($hashlists as $hashlist) {
-            $lists[] = [
-                UResponseHashlist::HASHLISTS_ID => (int)$hashlist->getId(),
-                UResponseHashlist::HASHLISTS_HASHTYPE_ID => (int)$hashlist->getHashTypeId(),
-                UResponseHashlist::HASHLISTS_NAME => $hashlist->getHashlistName(),
-                UResponseHashlist::HASHLISTS_FORMAT => (int)$hashlist->getFormat(),
-                UResponseHashlist::HASHLISTS_COUNT => (int)$hashlist->getHashCount()
-            ];
+            $lists[] = hashlist2Array($hashlist);
         }
 
+        $total = count($hashlists);
+        $ret = [
+            "startAt" => $startAt,
+            "maxResults" => $maxResults,
+            "total" => $total,
+            "isLast" => ($total <= ($startAt + $maxResults)),
+            "values" => array_slice($lists, $startAt, $maxResults)
+        ];
+
         $body = $response->getBody();
-        $body->write(json_encode($lists, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
         
         return $response->withStatus(201)
         ->withHeader("Content-Type", "application/json");
@@ -55,28 +87,56 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         }
 
         $QUERY = $request->getParsedBody();
+        $features = Hashlist::getFeatures();
+        // Ensure debugging response lists are in sorted order
+        ksort($features);
 
-        $toCheck = [
-            UQueryHashlist::HASHLIST_NAME,
-            UQueryHashlist::HASHLIST_IS_SALTED,
-            UQueryHashlist::HASHLIST_IS_SECRET,
-            UQueryHashlist::HASHLIST_HEX_SALTED,
-            UQueryHashlist::HASHLIST_SEPARATOR,
-            UQueryHashlist::HASHLIST_FORMAT,
-            UQueryHashlist::HASHLIST_HASHTYPE_ID,
-            UQueryHashlist::HASHLIST_ACCESS_GROUP_ID,
-            UQueryHashlist::HASHLIST_DATA,
-            UQueryHashlist::HASHLIST_USE_BRAIN,
-            UQueryHashlist::HASHLIST_BRAIN_FEATURES
-          ];
-          foreach ($toCheck as $input) {
-            if (!isset($QUERY[$input])) {
-              throw new HTException("Required parameter '" . $input . "' not specified");
-            }
+        // Find keys which are invalid
+        foreach($QUERY as $NAME => $VALUE)  {
+          if (!array_key_exists($NAME, $features)) {
+            throw new HTException("Parameter '" . $NAME . "' is not valid input key (valid keys are: " . join(", ", array_keys($features)) . ")");
+
           }
+        }
+
+        // Find out about mandatory keys which are not provided
+        $missingKeys = [];
+        foreach ($features as $NAME => $FEATURE) {
+          // Optional keys are not required entities
+          if ($FEATURE['null'] == True) {
+            continue;
+          }
+          if (!array_key_exists($NAME, $QUERY)) {
+            $missingKeys[] = $NAME;
+          }
+        };
+        if (count($missingKeys) > 0) {
+          throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
+        };
+
+
+        // Validate incoming data
+        foreach($QUERY as $KEY => $VALUE) {
+          // Ensure type is correct
+          if ($features[$KEY]['type'] == 'bool') {
+            if (is_bool($VALUE) == False) {
+              throw new HttpErrorException("Key '$KEY' is not of type boolean");            
+            }
+          } elseif (str_starts_with($features[$KEY]['type'], 'int')) {
+            // TODO: int32, int64 range validation
+            if (is_integer($VALUE) == False) {
+              throw new HttpErrorException("Key '$KEY' is not of type integer");
+            }
+          } elseif (str_starts_with($features[$KEY]['type'], 'str')) {
+            if (is_string($VALUE) == False) {
+              throw new HttpErrorException("Key '$KEY' is not of type string");
+            }
+            // TODO: Length validation
+          }
+        }
 
         $hashlist = HashlistUtils::createHashlist(
-            $QUERY[UQueryHashlist::HASHLIST_NAME],
+            $QUERY["hashlistName"],
             $QUERY[UQueryHashlist::HASHLIST_IS_SALTED],
             $QUERY[UQueryHashlist::HASHLIST_IS_SECRET],
             $QUERY[UQueryHashlist::HASHLIST_HEX_SALTED],
@@ -91,19 +151,11 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
             $user,
             $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
             $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
-          );  
+          );
 
-          
-        $item = [
-            UResponseHashlist::HASHLISTS_ID => (int)$hashlist->getId(),
-            UResponseHashlist::HASHLISTS_HASHTYPE_ID => (int)$hashlist->getHashTypeId(),
-            UResponseHashlist::HASHLISTS_NAME => $hashlist->getHashlistName(),
-            UResponseHashlist::HASHLISTS_FORMAT => (int)$hashlist->getFormat(),
-            UResponseHashlist::HASHLISTS_COUNT => (int)$hashlist->getHashCount()
-        ];
 
         $body = $response->getBody();
-        $body->write(json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+        $body->write(hashlist2JSON($hashlist));
 
         return $response->withStatus(201)
             ->withHeader("Content-Type", "application/json");
@@ -116,23 +168,6 @@ $app->group("/api/v2/ui/hashlists/{id}", function (RouteCollectorProxy $group) {
     $group->options('', function (Request $request, Response $response, array $args): Response {
         return $response;
     });
-
-    function hashlist2JSON(Hashlist $hashlist) {
-        // Convert values to JSON supported types
-        $features = $hashlist->getFeatures();
-        $kv = $hashlist->getKeyValueDict();
-
-        $item = [];
-        foreach ($features as $NAME => $FEATURE) {
-          if ($FEATURE['type'] == 'bool') {
-            $item[$NAME] = ($kv[$NAME] == 1) ? True : False;
-          } else {
-            $item[$NAME] = $kv[$NAME];
-          }
-        }
-
-        return json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
-    }
 
     $group->get('', function (Request $request, Response $response, array $args): Response {
         $userId = $request->getAttribute(('userId'));
