@@ -16,7 +16,7 @@ class __MODEL_NAME__ extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
     __MODEL_FEATURES__
 
