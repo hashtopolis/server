@@ -22,11 +22,11 @@ class TaskDebugOutput extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['taskDebugOutputId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['taskId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['output'] = [ 'read_only' => True, "type" => "str(256)"];
+    $dict['taskDebugOutputId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['taskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['output'] = [ 'read_only' => True, "type" => "str(256)", "null" => False];
 
     return $dict;
   }

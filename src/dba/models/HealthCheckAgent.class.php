@@ -40,17 +40,17 @@ class HealthCheckAgent extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['healthCheckAgentId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['healthCheckId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['status'] = [ 'read_only' => False, "type" => "int"];
-    $dict['cracked'] = [ 'read_only' => False, "type" => "int"];
-    $dict['numGpus'] = [ 'read_only' => False, "type" => "int"];
-    $dict['start'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['end'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['errors'] = [ 'read_only' => False, "type" => "str(65535)"];
+    $dict['healthCheckAgentId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['healthCheckId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['status'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['cracked'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['numGpus'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['start'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['end'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['errors'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
 
     return $dict;
   }

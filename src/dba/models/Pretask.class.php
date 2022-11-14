@@ -52,21 +52,21 @@ class Pretask extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['pretaskId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['taskName'] = [ 'read_only' => False, "type" => "str(100)"];
-    $dict['attackCmd'] = [ 'read_only' => False, "type" => "str(256)"];
-    $dict['chunkTime'] = [ 'read_only' => False, "type" => "int"];
-    $dict['statusTimer'] = [ 'read_only' => False, "type" => "int"];
-    $dict['color'] = [ 'read_only' => False, "type" => "str(20)"];
-    $dict['isSmall'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['isCpuTask'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['useNewBench'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['priority'] = [ 'read_only' => False, "type" => "int"];
-    $dict['maxAgents'] = [ 'read_only' => False, "type" => "int"];
-    $dict['isMaskImport'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['crackerBinaryTypeId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['pretaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['taskName'] = [ 'read_only' => False, "type" => "str(100)", "null" => False];
+    $dict['attackCmd'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
+    $dict['chunkTime'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['statusTimer'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['color'] = [ 'read_only' => False, "type" => "str(20)", "null" => False];
+    $dict['isSmall'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['isCpuTask'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['useNewBench'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['priority'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['maxAgents'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['isMaskImport'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['crackerBinaryTypeId'] = [ 'read_only' => False, "type" => "int", "null" => False];
 
     return $dict;
   }

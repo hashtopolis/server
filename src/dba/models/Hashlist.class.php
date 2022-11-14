@@ -55,22 +55,22 @@ class Hashlist extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['hashlistId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['hashlistName'] = [ 'read_only' => False, "type" => "str(100)"];
-    $dict['format'] = [ 'read_only' => False, "type" => "int"];
-    $dict['hashTypeId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['hashCount'] = [ 'read_only' => True, "type" => "int"];
-    $dict['saltSeparator'] = [ 'read_only' => True, "type" => "str(10)"];
-    $dict['cracked'] = [ 'read_only' => False, "type" => "int"];
-    $dict['isSecret'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['hexSalt'] = [ 'read_only' => True, "type" => "bool"];
-    $dict['isSalted'] = [ 'read_only' => True, "type" => "bool"];
-    $dict['accessGroupId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['notes'] = [ 'read_only' => False, "type" => "str(65535)"];
-    $dict['brainId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['brainFeatures'] = [ 'read_only' => True, "type" => "byte"];
+    $dict['hashlistId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['hashlistName'] = [ 'read_only' => False, "type" => "str(100)", "null" => False];
+    $dict['format'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['hashTypeId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['hashCount'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['saltSeparator'] = [ 'read_only' => True, "type" => "str(10)", "null" => True];
+    $dict['cracked'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['isSecret'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['hexSalt'] = [ 'read_only' => True, "type" => "bool", "null" => False];
+    $dict['isSalted'] = [ 'read_only' => True, "type" => "bool", "null" => False];
+    $dict['accessGroupId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['notes'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
+    $dict['brainId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['brainFeatures'] = [ 'read_only' => True, "type" => "byte", "null" => False];
 
     return $dict;
   }

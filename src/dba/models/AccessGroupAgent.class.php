@@ -22,11 +22,11 @@ class AccessGroupAgent extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['accessGroupAgentId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['accessGroupId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['agentId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['accessGroupAgentId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['accessGroupId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['agentId'] = [ 'read_only' => True, "type" => "int", "null" => False];
 
     return $dict;
   }

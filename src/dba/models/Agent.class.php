@@ -61,24 +61,24 @@ class Agent extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['agentId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['agentName'] = [ 'read_only' => False, "type" => "str(100)"];
-    $dict['uid'] = [ 'read_only' => False, "type" => "str(100)"];
-    $dict['os'] = [ 'read_only' => False, "type" => "int"];
-    $dict['devices'] = [ 'read_only' => False, "type" => "str(65535)"];
-    $dict['cmdPars'] = [ 'read_only' => False, "type" => "str(256)"];
-    $dict['ignoreErrors'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['isActive'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['isTrusted'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['token'] = [ 'read_only' => False, "type" => "str(30)"];
-    $dict['lastAct'] = [ 'read_only' => False, "type" => "str(50)"];
-    $dict['lastTime'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['lastIp'] = [ 'read_only' => False, "type" => "str(50)"];
-    $dict['userId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['cpuOnly'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['clientSignature'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['agentId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['agentName'] = [ 'read_only' => False, "type" => "str(100)", "null" => False];
+    $dict['uid'] = [ 'read_only' => False, "type" => "str(100)", "null" => False];
+    $dict['os'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['devices'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
+    $dict['cmdPars'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
+    $dict['ignoreErrors'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['isActive'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['isTrusted'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['token'] = [ 'read_only' => False, "type" => "str(30)", "null" => False];
+    $dict['lastAct'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
+    $dict['lastTime'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['lastIp'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
+    $dict['userId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['cpuOnly'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['clientSignature'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
 
     return $dict;
   }

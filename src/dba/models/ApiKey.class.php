@@ -34,15 +34,15 @@ class ApiKey extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['apiKeyId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['startValid'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['endValid'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['accessKey'] = [ 'read_only' => False, "type" => "str(256)"];
-    $dict['accessCount'] = [ 'read_only' => False, "type" => "int"];
-    $dict['userId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['apiGroupId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['apiKeyId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['startValid'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['endValid'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['accessKey'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
+    $dict['accessCount'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['userId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['apiGroupId'] = [ 'read_only' => False, "type" => "int", "null" => False];
 
     return $dict;
   }

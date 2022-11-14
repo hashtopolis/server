@@ -22,11 +22,11 @@ class FileTask extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['fileTaskId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['fileId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['taskId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['fileTaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['fileId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['taskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
 
     return $dict;
   }

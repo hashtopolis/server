@@ -28,13 +28,13 @@ class Zap extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['zapId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['hash'] = [ 'read_only' => False, "type" => "str(65535)"];
-    $dict['solveTime'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['hashlistId'] = [ 'read_only' => False, "type" => "int"];
+    $dict['zapId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['hash'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
+    $dict['solveTime'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['hashlistId'] = [ 'read_only' => False, "type" => "int", "null" => False];
 
     return $dict;
   }

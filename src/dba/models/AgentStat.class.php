@@ -28,13 +28,13 @@ class AgentStat extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['agentStatId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['statType'] = [ 'read_only' => False, "type" => "int"];
-    $dict['time'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['value'] = [ 'read_only' => False, "type" => "str(128)"];
+    $dict['agentStatId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['statType'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['time'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['value'] = [ 'read_only' => False, "type" => "str(128)", "null" => False];
 
     return $dict;
   }

@@ -22,11 +22,11 @@ class CrackerBinaryType extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['crackerBinaryTypeId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['typeName'] = [ 'read_only' => False, "type" => "str(30)"];
-    $dict['isChunkingAvailable'] = [ 'read_only' => False, "type" => "bool"];
+    $dict['crackerBinaryTypeId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['typeName'] = [ 'read_only' => False, "type" => "str(30)", "null" => False];
+    $dict['isChunkingAvailable'] = [ 'read_only' => False, "type" => "bool", "null" => False];
 
     return $dict;
   }

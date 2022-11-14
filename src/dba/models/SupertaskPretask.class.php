@@ -22,11 +22,11 @@ class SupertaskPretask extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['supertaskPretaskId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['supertaskId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['pretaskId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['supertaskPretaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['supertaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['pretaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
 
     return $dict;
   }

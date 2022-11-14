@@ -49,20 +49,20 @@ class Chunk extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['chunkId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['taskId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['skip'] = [ 'read_only' => False, "type" => "uint64"];
-    $dict['length'] = [ 'read_only' => False, "type" => "uint64"];
-    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['dispatchTime'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['solveTime'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['checkpoint'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['progress'] = [ 'read_only' => False, "type" => "int"];
-    $dict['state'] = [ 'read_only' => False, "type" => "int"];
-    $dict['cracked'] = [ 'read_only' => False, "type" => "int"];
-    $dict['speed'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['chunkId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['taskId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['skip'] = [ 'read_only' => False, "type" => "uint64", "null" => False];
+    $dict['length'] = [ 'read_only' => False, "type" => "uint64", "null" => False];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['dispatchTime'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['solveTime'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['checkpoint'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['progress'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['state'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['cracked'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['speed'] = [ 'read_only' => False, "type" => "int64", "null" => False];
 
     return $dict;
   }

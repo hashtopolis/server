@@ -22,11 +22,11 @@ class RightGroup extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['rightGroupId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['groupName'] = [ 'read_only' => False, "type" => "str(50)"];
-    $dict['permissions'] = [ 'read_only' => False, "type" => "str(65535)"];
+    $dict['rightGroupId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['groupName'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
+    $dict['permissions'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
 
     return $dict;
   }

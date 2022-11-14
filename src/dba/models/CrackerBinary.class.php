@@ -28,13 +28,13 @@ class CrackerBinary extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['crackerBinaryId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['crackerBinaryTypeId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['version'] = [ 'read_only' => False, "type" => "str(20)"];
-    $dict['downloadUrl'] = [ 'read_only' => False, "type" => "str(150)"];
-    $dict['binaryName'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['crackerBinaryId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['crackerBinaryTypeId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['version'] = [ 'read_only' => False, "type" => "str(20)", "null" => False];
+    $dict['downloadUrl'] = [ 'read_only' => False, "type" => "str(150)", "null" => False];
+    $dict['binaryName'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
 
     return $dict;
   }

@@ -22,11 +22,11 @@ class RegVoucher extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['regVoucherId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['voucher'] = [ 'read_only' => False, "type" => "str(100)"];
-    $dict['time'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['regVoucherId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['voucher'] = [ 'read_only' => False, "type" => "str(100)", "null" => False];
+    $dict['time'] = [ 'read_only' => False, "type" => "int64", "null" => False];
 
     return $dict;
   }

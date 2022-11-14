@@ -28,13 +28,13 @@ class Speed extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['speedId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['taskId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['speed'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['time'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['speedId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['taskId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['speed'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['time'] = [ 'read_only' => False, "type" => "int64", "null" => False];
 
     return $dict;
   }

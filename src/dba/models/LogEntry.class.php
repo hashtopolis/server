@@ -31,14 +31,14 @@ class LogEntry extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['logEntryId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['issuer'] = [ 'read_only' => False, "type" => "str(50)"];
-    $dict['issuerId'] = [ 'read_only' => False, "type" => "str(50)"];
-    $dict['level'] = [ 'read_only' => False, "type" => "str(50)"];
-    $dict['message'] = [ 'read_only' => False, "type" => "str(65535)"];
-    $dict['time'] = [ 'read_only' => False, "type" => "int64"];
+    $dict['logEntryId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['issuer'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
+    $dict['issuerId'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
+    $dict['level'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
+    $dict['message'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
+    $dict['time'] = [ 'read_only' => False, "type" => "int64", "null" => False];
 
     return $dict;
   }

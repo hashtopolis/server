@@ -19,10 +19,10 @@ class Supertask extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['supertaskId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['supertaskName'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['supertaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['supertaskName'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
 
     return $dict;
   }

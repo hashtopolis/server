@@ -85,32 +85,32 @@ class Task extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['taskId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['taskName'] = [ 'read_only' => False, "type" => "str(256)"];
-    $dict['attackCmd'] = [ 'read_only' => False, "type" => "str(256)"];
-    $dict['chunkTime'] = [ 'read_only' => False, "type" => "int"];
-    $dict['statusTimer'] = [ 'read_only' => False, "type" => "int"];
-    $dict['keyspace'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['keyspaceProgress'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['priority'] = [ 'read_only' => False, "type" => "int"];
-    $dict['maxAgents'] = [ 'read_only' => False, "type" => "int"];
-    $dict['color'] = [ 'read_only' => False, "type" => "str(50)"];
-    $dict['isSmall'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['isCpuTask'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['useNewBench'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['skipKeyspace'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['crackerBinaryId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['crackerBinaryTypeId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['taskWrapperId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['isArchived'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['notes'] = [ 'read_only' => False, "type" => "str(65535)"];
-    $dict['staticChunks'] = [ 'read_only' => False, "type" => "int"];
-    $dict['chunkSize'] = [ 'read_only' => False, "type" => "int64"];
-    $dict['forcePipe'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['usePreprocessor'] = [ 'read_only' => False, "type" => "bool"];
-    $dict['preprocessorCommand'] = [ 'read_only' => False, "type" => "str(256)"];
+    $dict['taskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['taskName'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
+    $dict['attackCmd'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
+    $dict['chunkTime'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['statusTimer'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['keyspace'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['keyspaceProgress'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['priority'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['maxAgents'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['color'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
+    $dict['isSmall'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['isCpuTask'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['useNewBench'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['skipKeyspace'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['crackerBinaryId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['crackerBinaryTypeId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['taskWrapperId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['isArchived'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['notes'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
+    $dict['staticChunks'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['chunkSize'] = [ 'read_only' => False, "type" => "int64", "null" => False];
+    $dict['forcePipe'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['usePreprocessor'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['preprocessorCommand'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
 
     return $dict;
   }

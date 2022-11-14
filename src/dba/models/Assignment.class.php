@@ -25,12 +25,12 @@ class Assignment extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['assignmentId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['taskId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['agentId'] = [ 'read_only' => False, "type" => "int"];
-    $dict['benchmark'] = [ 'read_only' => False, "type" => "str(50)"];
+    $dict['assignmentId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['taskId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['agentId'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['benchmark'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
 
     return $dict;
   }

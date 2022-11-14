@@ -22,11 +22,11 @@ class AccessGroupUser extends AbstractModel {
     return $dict;
   }
   
-  function getFeatures() {
+  static function getFeatures() {
     $dict = array();
-    $dict['accessGroupUserId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['accessGroupId'] = [ 'read_only' => True, "type" => "int"];
-    $dict['userId'] = [ 'read_only' => True, "type" => "int"];
+    $dict['accessGroupUserId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['accessGroupId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['userId'] = [ 'read_only' => True, "type" => "int", "null" => False];
 
     return $dict;
   }
