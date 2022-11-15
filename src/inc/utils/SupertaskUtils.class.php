@@ -250,6 +250,9 @@ class SupertaskUtils {
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
     }
+    else if ($hashlist->getIsArchived()) {
+      throw new HTException("Supertask cannot be applied to an archived hashlist!");
+    }
     $cracker = Factory::getCrackerBinaryFactory()->get($crackerId);
     if ($cracker == null) {
       throw new HTException("Invalid cracker ID!");
