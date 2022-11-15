@@ -74,6 +74,7 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
 
         // Check for valid expand parameters
         $expandable = $expandables;
+        $expands = [];
         if (array_key_exists('expand', $request->getQueryParams())) {
           $expands = preg_split("/[,\ ]+/", $request->getQueryParams()['expand']);
 
