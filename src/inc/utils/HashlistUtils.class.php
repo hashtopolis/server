@@ -247,7 +247,7 @@ class HashlistUtils {
     }
   }
   
-    /**
+  /**
    * @param int $hashlistId
    * @param int $isSecret
    * @param User $user
@@ -259,7 +259,15 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    // TODO: check if there is any active task, and if yes we maybe should not allow to archive
+    
+    // check if there is any task which is not archived yet
+    $qF1 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
+    $qF2 = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
+    $count = Factory::getTaskWrapperFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+    if ($count > 0) {
+      throw new HTException("Hashlist cannot be archived as there are still unarchived tasks belonging to it!");
+    }
+    
     Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isArchived));
   }
   
@@ -519,13 +527,13 @@ class HashlistUtils {
     foreach ($superHashlists as $superHashlist) {
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::HASH_COUNT, $hashlist->getHashCount());
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::CRACKED, $hashlist->getCracked());
-  
+      
       if ($superHashlist->getHashCount() <= 0) {
         // this superhashlist has no hashlist which belongs to it anymore -> delete it
         $toDelete[] = $superHashlist;
       }
     }
-
+    
     // when we delete all zaps, we have to make sure that from agentZap, there are no references to zaps of this hashlist
     $qF = new QueryFilter(Zap::HASHLIST_ID, $hashlist->getId(), "=");
     $zapIds = Util::arrayOfIds(Factory::getZapFactory()->filter([Factory::FILTER => $qF]));
@@ -533,12 +541,12 @@ class HashlistUtils {
     $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
     Factory::getAgentZapFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF1]);
     Factory::getZapFactory()->massDeletion([Factory::FILTER => $qF]);
-
+    
     Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
     
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
-
+    
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $hashlist->getId(), "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF]);
     foreach ($notifications as $notification) {
@@ -1127,7 +1135,7 @@ class HashlistUtils {
     $qF = new QueryFilter(Hashlist::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
     Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-
+    
     $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, $accessGroup->getId());
     Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
