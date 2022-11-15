@@ -16,10 +16,10 @@ use Middlewares\Utils\HttpErrorException;
 require_once(dirname(__FILE__) . "/../load.php");
 
 
-function hashlist2Array(Hashlist $hashlist) {
+function obj2Array(mixed $obj) {  
   // Convert values to JSON supported types
-  $features = $hashlist->getFeatures();
-  $kv = $hashlist->getKeyValueDict();
+  $features = $obj->getFeatures();
+  $kv = $obj->getKeyValueDict();
 
   $item = [];
   foreach ($features as $NAME => $FEATURE) {
@@ -29,12 +29,28 @@ function hashlist2Array(Hashlist $hashlist) {
       $item[$NAME] = $kv[$NAME];
     }
   }
+  return $item;
+}
 
-  return $kv;
-};
+
+function hashlist2Array(Hashlist $hashlist, array $expand) {
+  $item = obj2Array($hashlist);
+
+  if (in_array('accessGroup', $expand, true)) {
+    $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
+    $item['accessGroup'] = obj2Array($obj);
+  }
+  if (in_array('hashType', $expand, true)) {
+    $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
+    $item['hashType'] = obj2Array($obj);
+  }
+
+  return $item;
+}
+
 
 function hashlist2JSON(Hashlist $hashlist) {
-  $item = hashlist2Array($hashlist);
+  $item = hashlist2Array($hashlist, []);
   return json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 }
 
@@ -49,21 +65,43 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         $userId = $request->getAttribute(('userId'));
         $user = UserUtils::getUser($userId);
 
+        $expandables = ["accessGroup", "hashType"];
+
         $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
         $maxResults = intval($request->getQueryParams()['maxResults'] ?? 5);
 
-        // TODO: Implement expand support
-        $expand = preg_split("/[,\ ]+/", ($request->getQueryParams()['expand'] ?? ""));
+        $foo = $request->getQueryParams();
+
+        // Check for valid expand parameters
+        $expandable = $expandables;
+        if (array_key_exists('expand', $request->getQueryParams())) {
+          $expands = preg_split("/[,\ ]+/", $request->getQueryParams()['expand']);
+
+          foreach($expands as $expand) {
+            if (($key = array_search($expand, $expandable)) !== false){
+              unset($expandable[$key]);
+            }
+            else {
+              throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($expandables)) . ")");
+            }
+          }
+        }
+
+        // TODO: Implement filtering support
+        $filter = preg_split("/[,\ ]+/", ($request->getQueryParams()['filter'] ?? ""));
+
 
         // TODO: Optimize code, should only fetch subsection of database
         $hashlists = HashlistUtils::getHashlists($user);
         $lists = [];
         foreach ($hashlists as $hashlist) {
-            $lists[] = hashlist2Array($hashlist);
+            $lists[] = hashlist2Array($hashlist, $expands);
         }
 
+        // TODO: Implement actual expanding
         $total = count($hashlists);
         $ret = [
+            "_expandable" => join(",", $expandable),
             "startAt" => $startAt,
             "maxResults" => $maxResults,
             "total" => $total,
