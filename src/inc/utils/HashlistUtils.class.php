@@ -63,10 +63,11 @@ class HashlistUtils {
    * @param User $user
    * @return Hashlist[]
    */
-  public static function getHashlists($user) {
+  public static function getHashlists($user, $archived = false) {
     $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
-    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    $qF3 = new QueryFilter(Hashlist::IS_ARCHIVED, $archived ? 1 : 0, "=");
+    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
   }
   
   /**
@@ -244,6 +245,37 @@ class HashlistUtils {
         }
       }
     }
+  }
+  
+  /**
+   * @param int $hashlistId
+   * @param int $isSecret
+   * @param User $user
+   * @throws HTException
+   */
+  public static function setArchived($hashlistId, $isArchived, $user) {
+    // switch hashlist archived state
+    $hashlist = HashlistUtils::getHashlist($hashlistId);
+    if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
+      throw new HTException("No access to hashlist!");
+    }
+    
+    // check if there is any task which is not archived yet
+    $qF1 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
+    $qF2 = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
+    $count = Factory::getTaskWrapperFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+    if ($count > 0) {
+      throw new HTException("Hashlist cannot be archived as there are still unarchived tasks belonging to it!");
+    }
+    
+    // check if the hashlist is part of a superhashlist
+    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=");
+    $count = Factory::getHashlistHashlistFactory()->countFilter([Factory::FILTER => $qF]);
+    if ($count > 0) {
+      throw new HTException("Hashlist cannot be archived as it is part of an existing superhashlist!");
+    }
+    
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isArchived));
   }
   
   /**
@@ -502,13 +534,13 @@ class HashlistUtils {
     foreach ($superHashlists as $superHashlist) {
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::HASH_COUNT, $hashlist->getHashCount());
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::CRACKED, $hashlist->getCracked());
-  
+      
       if ($superHashlist->getHashCount() <= 0) {
         // this superhashlist has no hashlist which belongs to it anymore -> delete it
         $toDelete[] = $superHashlist;
       }
     }
-
+    
     // when we delete all zaps, we have to make sure that from agentZap, there are no references to zaps of this hashlist
     $qF = new QueryFilter(Zap::HASHLIST_ID, $hashlist->getId(), "=");
     $zapIds = Util::arrayOfIds(Factory::getZapFactory()->filter([Factory::FILTER => $qF]));
@@ -516,12 +548,12 @@ class HashlistUtils {
     $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
     Factory::getAgentZapFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF1]);
     Factory::getZapFactory()->massDeletion([Factory::FILTER => $qF]);
-
+    
     Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
     
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
-
+    
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $hashlist->getId(), "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF]);
     foreach ($notifications as $notification) {
@@ -740,7 +772,7 @@ class HashlistUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures);
+    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures, 0);
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
     
     $dataSource = "";
@@ -989,9 +1021,12 @@ class HashlistUtils {
       else if ($accessGroupId != $list->getAccessGroupId()) {
         throw new HTException("You cannot create superhashlists from hashlists which belong to different access groups");
       }
+      else if ($list->getIsArchived()) {
+        throw new HTException("You cannot create a superhashlist containing archived hashlists!");
+      }
     }
     
-    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0, 0);
+    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0, 0, 0);
     $superhashlist = Factory::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {
@@ -1110,7 +1145,7 @@ class HashlistUtils {
     $qF = new QueryFilter(Hashlist::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
     Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-
+    
     $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, $accessGroup->getId());
     Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);

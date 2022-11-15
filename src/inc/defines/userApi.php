@@ -81,6 +81,7 @@ class UQueryHashlist extends UQuery {
   const HASHLIST_DATA            = "data";
   const HASHLIST_USE_BRAIN       = "useBrain";
   const HASHLIST_BRAIN_FEATURES  = "brainFeatures";
+  const HASHLIST_IS_ARCHIVED     = "isArchived";
   
   const HASH = "hash";
 }
@@ -322,6 +323,7 @@ class UResponseHashlist extends UResponse {
   const HASHLIST_SALT_SEPARATOR = "saltSeparator";
   const HASHLIST_NOTES          = "hashlistNotes";
   const HASHLIST_BRAIN          = "useBrain";
+  const HASHLIST_IS_ARCHIVED    = "isArchived";
   
   const ZAP_LINES_PROCESSED = "linesProcessed";
   const ZAP_NEW_CRACKED     = "newCracked";
@@ -765,15 +767,16 @@ class USectionHashlist extends UApi {
   const CREATE_HASHLIST   = "createHashlist";
   const SET_HASHLIST_NAME = "setHashlistName";
   const SET_SECRET        = "setSecret";
+  const SET_ARCHIVED      = "setArchived";
   
   const IMPORT_CRACKED    = "importCracked";
   const EXPORT_CRACKED    = "exportCracked";
   const GENERATE_WORDLIST = "generateWordlist";
   const EXPORT_LEFT       = "exportLeft";
   
-  const DELETE_HASHLIST = "deleteHashlist";
-  const GET_HASH        = "getHash";
-  const GET_CRACKED     = "getCracked";
+  const DELETE_HASHLIST  = "deleteHashlist";
+  const GET_HASH         = "getHash";
+  const GET_CRACKED      = "getCracked";
   
   public function describe($constant) {
     switch ($constant) {
@@ -801,6 +804,8 @@ class USectionHashlist extends UApi {
         return "Query for specific hashes";
       case USectionHashlist::GET_CRACKED:
         return "Query cracked hashes of a hashlist";
+      case USectionHashlist::SET_ARCHIVED:
+        return "Query to archive/un-archie hashlist";
       default:
         return "__" . $constant . "__";
     }

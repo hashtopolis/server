@@ -10,6 +10,9 @@ class DHashlistAction {
   const SET_SECRET      = "setSecret";
   const SET_SECRET_PERM = DAccessControl::MANAGE_HASHLIST_ACCESS;
   
+  const SET_ARCHIVED      = "setArchived";
+  const SET_ARCHIVED_PERM = DAccessControl::MANAGE_HASHLIST_ACCESS;
+  
   const RENAME_HASHLIST      = "renameHashlist";
   const RENAME_HASHLIST_PERM = DAccessControl::MANAGE_HASHLIST_ACCESS;
   

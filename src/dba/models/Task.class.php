@@ -172,7 +172,7 @@ class Task extends AbstractModel {
   function setMaxAgents($maxAgents) {
     $this->maxAgents = $maxAgents;
   }
-
+  
   function getColor() {
     return $this->color;
   }

@@ -147,7 +147,7 @@ class Pretask extends AbstractModel {
   function setPriority($priority) {
     $this->priority = $priority;
   }
-
+  
   function getMaxAgents() {
     return $this->maxAgents;
   }

@@ -272,7 +272,8 @@ CREATE TABLE `Hashlist` (
   `accessGroupId` INT(11)      NOT NULL,
   `notes`         TEXT         NOT NULL,
   `brainId`       INT(11)      NOT NULL,
-  `brainFeatures` TINYINT(4)   NOT NULL
+  `brainFeatures` TINYINT(4)   NOT NULL,
+  `isArchived`    TINYINT(4)   NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `HashlistHashlist` (
