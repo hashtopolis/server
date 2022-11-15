@@ -1,6 +1,4 @@
 <?php
-
-
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -11,6 +9,9 @@ use Slim\Exception\HttpForbiddenException;
 
 use DBA\Hashlist;
 use DBA\Factory;
+use DBA\QueryFilter;
+use DBA\ContainFilter;
+
 use Middlewares\Utils\HttpErrorException;
 
 require_once(dirname(__FILE__) . "/../load.php");
@@ -65,12 +66,11 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         $userId = $request->getAttribute(('userId'));
         $user = UserUtils::getUser($userId);
 
+        $features = Hashlist::getFeatures();
         $expandables = ["accessGroup", "hashType"];
 
         $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
         $maxResults = intval($request->getQueryParams()['maxResults'] ?? 5);
-
-        $foo = $request->getQueryParams();
 
         // Check for valid expand parameters
         $expandable = $expandables;
@@ -88,12 +88,40 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
           }
         }
 
-        // TODO: Implement filtering support
-        $filter = preg_split("/[,\ ]+/", ($request->getQueryParams()['filter'] ?? ""));
+        // Mandatory ACL filtering 
+        $qFs = [];
+        $qFs[] = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
+
+        // Check for valid filter parameters
+        $filters = [];
+        if (array_key_exists('filter', $request->getQueryParams())) {
+          $filters = preg_split("/[,\ ]+/", $request->getQueryParams()['filter']);
+
+          foreach($filters as $filter) {
+            // TODO: Add sanity checking
+            if (preg_match('/^(?P<key>[a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
+              if (array_key_exists($matches['key'], $features)) {
+                // TODO: cast value
+                if ($features[$matches['key']]['type'] == 'bool') {
+                  $val = (bool) filter_var($matches['value'], FILTER_VALIDATE_BOOLEAN);
+                } else {
+                  $val = $matches['value'];
+                }
+                $qFs[] = new QueryFilter($matches['key'], $val, $matches['operator']);
+              } else {
+                throw new HTException("Filter parameter '" . $filter . "' is not valid");  
+              }
+            } else {
+              throw new HTException("Filter parameter '" . $filter . "' is not valid");
+            }
+          }
+        }
 
 
-        // TODO: Optimize code, should only fetch subsection of database
-        $hashlists = HashlistUtils::getHashlists($user);
+        // TODO: Optimize code, should only fetch subsection of database, when pagination is in play       
+        $hashlists = Factory::getHashlistFactory()->filter([Factory::FILTER => $qFs]);
+
+
         $lists = [];
         foreach ($hashlists as $hashlist) {
             $lists[] = hashlist2Array($hashlist, $expands);
