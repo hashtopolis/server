@@ -4,7 +4,9 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 
 COPY docker-entrypoint.sh /usr/local/bin/
 
-RUN set -ex && docker-php-ext-install pdo_mysql 
+RUN apt-get update && apt-get install -y libpng-dev
+
+RUN set -ex && docker-php-ext-install pdo_mysql gd
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 

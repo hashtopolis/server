@@ -33,6 +33,16 @@
 			$("#hashlistFormat option[value='1']").prop('selected', false);
 		}
   }
+
+  // Initialize select2
+  $(document).ready(function() {
+    $('#hashtype').select2({
+      width: '100%'
+    });
+  }) // Set focus to the select2 search field when opening the select2 element
+  .on('select2:open', () => {
+    setTimeout(() => document.querySelector('.select2-container--open .select2-search__field').focus(), 100);
+  });
 </script>
 <form class='form-inline' action="hashlists.php" method="POST" enctype="multipart/form-data">
 	<input type='hidden' name='action' value='[[$DHashlistAction::CREATE_HASHLIST]]'>

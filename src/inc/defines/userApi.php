@@ -233,6 +233,7 @@ class UResponseTask extends UResponse {
   const TASK_MAX_AGENTS           = "maxAgents";
   const TASK_CPU_ONLY             = "isCpuOnly";
   const TASK_SMALL                = "isSmall";
+  const TASK_ARCHIVED             = "isArchived";
   const TASK_SKIP                 = "skipKeyspace";
   const TASK_KEYSPACE             = "keyspace";
   const TASK_DISPATCHED           = "dispatched";
@@ -588,6 +589,8 @@ class USectionAgent extends UApi {
         return "Set how errors from an agent should be handled";
       case USectionAgent::SET_TRUSTED:
         return "Set if an agent is trusted or not";
+      case USectionAgent::DELETE_AGENT:
+        return "Delete agents";
       default:
         return "__" . $constant . "__";
     }
@@ -673,6 +676,10 @@ class USectionTask extends UApi {
         return "Archive supertasks";
       case USectionTask::GET_CRACKED:
         return "Retrieve all cracked hashes by a task";
+      case USectionTask::SET_TASK_MAX_AGENTS:
+        return "Set max agents for tasks";
+      case USectionTask::TASK_ASSIGN_AGENT:
+        return "Assign agents to a task";
       default:
         return "__" . $constant . "__";
     }
@@ -715,6 +722,8 @@ class USectionPretask extends UApi {
         return "Set if a preconfigured task is small or not";
       case USectionPretask::DELETE_PRETASK:
         return "Delete preconfigured tasks";
+      case USectionPretask::SET_PRETASK_MAX_AGENTS:
+        return "Set max agents for a preconfigured task";
       default:
         return "__" . $constant . "__";
     }

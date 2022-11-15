@@ -6,9 +6,11 @@
 - Cracked hashes for all hashlists can be shown together (caution: only use when having smaller hashlists).
 - Allow abort all chunks of a specific access group from the User API.
 - Tasks can be set to top priority (to be first in the list) by the User API.
-- Supertask runtime can be estimated on the supertask detail page by entering expected attack speeds for hashcat wordlist and bruteforce attacks
+- Supertask runtime can be estimated on the supertask detail page by entering expected attack speeds for hashcat wordlist and bruteforce attacks.
 - Number of agents per task can be limited (pull request #764).
 - Hashlists can be archived.
+- Added hashtype dropdown autocompletion for creating new hashlists (pull request #781).
+- Allow agents to register as CPU agents only (feature request #805).
 
 ## Bugfixes
 
@@ -29,7 +31,10 @@
 - Fixed sending two to headers when sending emails (issue #751).
 - Fixed access group not being changed on Hashlist detailed screen (issue #765).
 - Fixed missing check on permissions for sending notifications (issue #757).
+- Fixed unassignable agents are shown as assignable (issue #777).
 - Fixed not deleting all references (related to zaps) when deleting hashlist (issue #747).
+- Added check for max length of the attack command (issue #668).
+- Fixed missing flag isArchived on User API getTask requests (issue #794).
 
 ## Enhancements
 
