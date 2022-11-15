@@ -9,6 +9,7 @@
 - Supertask runtime can be estimated on the supertask detail page by entering expected attack speeds for hashcat wordlist and bruteforce attacks
 - Number of agents per task can be limited (pull request #764).
 - Added hashtype dropdown autocompletion for creating new hashlists (pull request #781)
+- Allow agents to register as CPU agents only (feature request #805).
 
 ## Bugfixes
 
