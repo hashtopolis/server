@@ -268,6 +268,13 @@ class HashlistUtils {
       throw new HTException("Hashlist cannot be archived as there are still unarchived tasks belonging to it!");
     }
     
+    // check if the hashlist is part of a superhashlist
+    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, "=", $hashlist->getId());
+    $count = Factory::getHashlistHashlistFactory()->countFilter([Factory::FILTER => $qF]);
+    if ($count > 0) {
+      throw new HTException("Hashlist cannot be archived as it is part of an existing superhashlist!");
+    }
+    
     Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isArchived));
   }
   
