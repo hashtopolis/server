@@ -1014,6 +1014,9 @@ class HashlistUtils {
       else if ($accessGroupId != $list->getAccessGroupId()) {
         throw new HTException("You cannot create superhashlists from hashlists which belong to different access groups");
       }
+      else if ($list->getIsArchived()) {
+        throw new HTException("You cannot create a superhashlist containing archived hashlists!");
+      }
     }
     
     $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0, 0, 0);
