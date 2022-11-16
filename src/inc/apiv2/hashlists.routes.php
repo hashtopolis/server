@@ -228,28 +228,31 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
 
         $hashlist = HashlistUtils::createHashlist(
           $QUERY[UQueryHashlist::HASHLIST_NAME],
-            $QUERY[UQueryHashlist::HASHLIST_IS_SALTED],
-            $QUERY[UQueryHashlist::HASHLIST_IS_SECRET],
-            $QUERY[UQueryHashlist::HASHLIST_HEX_SALTED],
-            $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
-            $QUERY[UQueryHashlist::HASHLIST_FORMAT],
-            $QUERY[UQueryHashlist::HASHLIST_HASHTYPE_ID],
+          $QUERY[UQueryHashlist::HASHLIST_IS_SALTED],
+          $QUERY[UQueryHashlist::HASHLIST_IS_SECRET],
+          $QUERY[UQueryHashlist::HASHLIST_HEX_SALTED],
+          $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
+          $QUERY[UQueryHashlist::HASHLIST_FORMAT],
+          $QUERY[UQueryHashlist::HASHLIST_HASHTYPE_ID],
           (array_key_exists("saltSeperator", $QUERY)) ? $QUERY["saltSeparator"] : $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
-            $QUERY[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
-            "paste",
-            ['hashfield' => base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA])],
-            [],
-            $user,
-            $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
-            $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
-          );
+          $QUERY[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
+          "paste",
+          ['hashfield' => base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA])],
+          [],
+          $user,
+          $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
+          $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
+        );
 
+        // Modifiy fields not set on hashlist creation
         if (array_key_exists("notes", $QUERY)) {
           HashlistUtils::editNotes($hashlist->getId(), $QUERY["notes"], $user);
         };
+        HashlistUtils::setArchived($hashlist->getId(), $QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED], $user);
 
+        // Request object again, since post-modified entries are not reflected into object.
         $body = $response->getBody();
-        $body->write(hashlist2JSON($hashlist));
+        $body->write(hashlist2JSON(HashlistUtils::getHashlist($hashlist->getId())));
 
         return $response->withStatus(201)
             ->withHeader("Content-Type", "application/json");
