@@ -160,8 +160,9 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
 
         // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
         $formFields = [
-          UQueryHashlist::HASHLIST_DATA => ['type' => 'str'],
           UQueryHashlist::HASHLIST_SEPARATOR => ['type' => 'str'],
+          "sourceType" => ['type' => 'str'],
+          "sourceData" => ['type' => 'str'],
         ];
 
         // Generate listing of validFeatures
@@ -226,6 +227,23 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
           }
         }
 
+        // Cast to  createHashlist compatible upload format
+        $dummyPost = [];
+        switch ($QUERY["sourceType"]) {
+          case "paste":
+            $dummyPost["hashfield"] = base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA]);
+            break;
+          case "import":
+            $dummyPost["importfile"] = $QUERY["sourceData"];
+            break;
+          case "url":
+            $dummyPost["url"] = $QUERY["sourceData"];
+            break;
+          default:
+            // TODO: Choice validation are model based checks
+            throw new HttpErrorException("sourceType value '" . $QUERY["sourceType"] . "' is not supported (choices paste, import, url");
+        }
+
         $hashlist = HashlistUtils::createHashlist(
           $QUERY[UQueryHashlist::HASHLIST_NAME],
           $QUERY[UQueryHashlist::HASHLIST_IS_SALTED],
@@ -236,8 +254,8 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
           $QUERY[UQueryHashlist::HASHLIST_HASHTYPE_ID],
           (array_key_exists("saltSeperator", $QUERY)) ? $QUERY["saltSeparator"] : $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
           $QUERY[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
-          "paste",
-          ['hashfield' => base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA])],
+          $QUERY["sourceType"],
+          $dummyPost,
           [],
           $user,
           $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
