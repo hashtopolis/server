@@ -27,10 +27,10 @@ class Config extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['configId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['configSectionId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['item'] = [ 'read_only' => False, "type" => "str(128)", "null" => False];
-    $dict['value'] = [ 'read_only' => False, "type" => "str(65535)", "null" => False];
+    $dict['configId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['configSectionId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['item'] = ['read_only' => False, "type" => "str(128)", "null" => False, "pk" => False];
+    $dict['value'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False];
 
     return $dict;
   }

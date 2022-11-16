@@ -36,13 +36,13 @@ class Session extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['sessionId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['userId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['sessionStartDate'] = [ 'read_only' => False, "type" => "int64", "null" => False];
-    $dict['lastActionDate'] = [ 'read_only' => False, "type" => "int64", "null" => False];
-    $dict['isOpen'] = [ 'read_only' => False, "type" => "bool", "null" => False];
-    $dict['sessionLifetime'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['sessionKey'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
+    $dict['sessionId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['userId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['sessionStartDate'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['lastActionDate'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['isOpen'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
+    $dict['sessionLifetime'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['sessionKey'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
 
     return $dict;
   }

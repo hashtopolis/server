@@ -24,9 +24,9 @@ class AgentZap extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentZapId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['agentId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['lastZapId'] = [ 'read_only' => False, "type" => "str(128)", "null" => False];
+    $dict['agentZapId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['lastZapId'] = ['read_only' => False, "type" => "str(128)", "null" => False, "pk" => False];
 
     return $dict;
   }

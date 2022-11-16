@@ -36,13 +36,13 @@ class Preprocessor extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['preprocessorId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['name'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
-    $dict['url'] = [ 'read_only' => False, "type" => "str(512)", "null" => False];
-    $dict['binaryName'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
-    $dict['keyspaceCommand'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
-    $dict['skipCommand'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
-    $dict['limitCommand'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
+    $dict['preprocessorId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['name'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['url'] = ['read_only' => False, "type" => "str(512)", "null" => False, "pk" => False];
+    $dict['binaryName'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['keyspaceCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['skipCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['limitCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
 
     return $dict;
   }

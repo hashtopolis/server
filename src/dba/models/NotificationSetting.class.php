@@ -36,13 +36,13 @@ class NotificationSetting extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['notificationSettingId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['action'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
-    $dict['objectId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['notification'] = [ 'read_only' => False, "type" => "str(50)", "null" => False];
-    $dict['userId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['receiver'] = [ 'read_only' => False, "type" => "str(256)", "null" => False];
-    $dict['isActive'] = [ 'read_only' => False, "type" => "bool", "null" => False];
+    $dict['notificationSettingId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['action'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
+    $dict['objectId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['notification'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
+    $dict['userId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['receiver'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['isActive'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
 
     return $dict;
   }

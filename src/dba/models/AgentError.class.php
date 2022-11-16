@@ -33,12 +33,12 @@ class AgentError extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentErrorId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['agentId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['taskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['chunkId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['time'] = [ 'read_only' => True, "type" => "int64", "null" => False];
-    $dict['error'] = [ 'read_only' => True, "type" => "str(65535)", "null" => False];
+    $dict['agentErrorId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
+    $dict['chunkId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "null" => False, "pk" => False];
+    $dict['error'] = ['read_only' => True, "type" => "str(65535)", "null" => False, "pk" => False];
 
     return $dict;
   }

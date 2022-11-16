@@ -27,10 +27,10 @@ class FileDownload extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['fileDownloadId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['time'] = [ 'read_only' => False, "type" => "int64", "null" => False];
-    $dict['fileId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['status'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['fileDownloadId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['fileId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['status'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
 
     return $dict;
   }

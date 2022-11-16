@@ -24,9 +24,9 @@ class FilePretask extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['filePretaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['fileId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['pretaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['filePretaskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
+    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
 
     return $dict;
   }

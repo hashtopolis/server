@@ -24,9 +24,9 @@ class AccessGroupUser extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['accessGroupUserId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['accessGroupId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['userId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['accessGroupUserId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
 
     return $dict;
   }

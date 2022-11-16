@@ -39,14 +39,14 @@ class TaskWrapper extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['taskWrapperId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['priority'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['taskType'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['hashlistId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['accessGroupId'] = [ 'read_only' => False, "type" => "int", "null" => False];
-    $dict['taskWrapperName'] = [ 'read_only' => False, "type" => "str(100)", "null" => False];
-    $dict['isArchived'] = [ 'read_only' => False, "type" => "bool", "null" => False];
-    $dict['cracked'] = [ 'read_only' => False, "type" => "int", "null" => False];
+    $dict['taskWrapperId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['priority'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['taskType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
+    $dict['taskWrapperName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
+    $dict['isArchived'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
+    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
 
     return $dict;
   }

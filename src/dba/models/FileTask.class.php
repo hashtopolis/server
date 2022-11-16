@@ -24,9 +24,9 @@ class FileTask extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['fileTaskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['fileId'] = [ 'read_only' => True, "type" => "int", "null" => False];
-    $dict['taskId'] = [ 'read_only' => True, "type" => "int", "null" => False];
+    $dict['fileTaskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
 
     return $dict;
   }
