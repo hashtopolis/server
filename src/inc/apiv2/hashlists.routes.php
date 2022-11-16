@@ -155,14 +155,19 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
 
         $QUERY = $request->getParsedBody();
         $features = Hashlist::getFeatures();
+
+        $validFeatures = array_keys(array_filter($features, function($v, $k) {
+            return $v['pk'] == False;
+          }, ARRAY_FILTER_USE_BOTH));
+
         // Ensure debugging response lists are in sorted order
-        ksort($features);
+        ksort($validFeatures);
+
 
         // Find keys which are invalid
         foreach($QUERY as $NAME => $VALUE)  {
-          if (!array_key_exists($NAME, $features)) {
-            throw new HTException("Parameter '" . $NAME . "' is not valid input key (valid keys are: " . join(", ", array_keys($features)) . ")");
-
+          if (!in_array($NAME, $validFeatures)) {
+            throw new HTException("Parameter '" . $NAME . "' is not valid input key (valid keys are: " . join(", ", $validFeatures) . ")");
           }
         }
 
@@ -171,6 +176,10 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         foreach ($features as $NAME => $FEATURE) {
           // Optional keys are not required entities
           if ($FEATURE['null'] == True) {
+            continue;
+          }
+          // Primary keys are not required on creation
+          if ($FEATURE['pk'] == True) {
             continue;
           }
           if (!array_key_exists($NAME, $QUERY)) {
