@@ -51,18 +51,18 @@ class Chunk extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['chunkId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['taskId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['skip'] = ['read_only' => False, "type" => "uint64", "null" => False, "pk" => False];
-    $dict['length'] = ['read_only' => False, "type" => "uint64", "null" => False, "pk" => False];
-    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['dispatchTime'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['solveTime'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['checkpoint'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['progress'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['state'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['speed'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['chunkId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "chunkId"];
+    $dict['taskId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "taskId"];
+    $dict['skip'] = ['read_only' => False, "type" => "uint64", "null" => False, "pk" => False, "alias" => "skip"];
+    $dict['length'] = ['read_only' => False, "type" => "uint64", "null" => False, "pk" => False, "alias" => "length"];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "agentId"];
+    $dict['dispatchTime'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "dispatchTime"];
+    $dict['solveTime'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "solveTime"];
+    $dict['checkpoint'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "checkpoint"];
+    $dict['progress'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "progress"];
+    $dict['state'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "state"];
+    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "cracked"];
+    $dict['speed'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "speed"];
 
     return $dict;
   }

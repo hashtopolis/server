@@ -63,22 +63,22 @@ class User extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['userId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['username'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
-    $dict['email'] = ['read_only' => False, "type" => "str(150)", "null" => False, "pk" => False];
-    $dict['passwordHash'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['passwordSalt'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['isValid'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['isComputedPassword'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['lastLoginDate'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['registeredSince'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['sessionLifetime'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['rightGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['yubikey'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['otp1'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['otp2'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['otp3'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['otp4'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "userId"];
+    $dict['username'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "username"];
+    $dict['email'] = ['read_only' => False, "type" => "str(150)", "null" => False, "pk" => False, "alias" => "email"];
+    $dict['passwordHash'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "passwordHash"];
+    $dict['passwordSalt'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "passwordSalt"];
+    $dict['isValid'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isValid"];
+    $dict['isComputedPassword'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isComputedPassword"];
+    $dict['lastLoginDate'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "lastLoginDate"];
+    $dict['registeredSince'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "registeredSince"];
+    $dict['sessionLifetime'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "sessionLifetime"];
+    $dict['rightGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "rightGroupId"];
+    $dict['yubikey'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "yubikey"];
+    $dict['otp1'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "otp1"];
+    $dict['otp2'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "otp2"];
+    $dict['otp3'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "otp3"];
+    $dict['otp4'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "otp4"];
 
     return $dict;
   }

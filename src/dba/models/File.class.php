@@ -36,13 +36,13 @@ class File extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['fileId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['filename'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
-    $dict['size'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['fileType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['lineCount'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "fileId"];
+    $dict['filename'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "filename"];
+    $dict['size'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "size"];
+    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isSecret"];
+    $dict['fileType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "fileType"];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "accessGroupId"];
+    $dict['lineCount'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "lineCount"];
 
     return $dict;
   }

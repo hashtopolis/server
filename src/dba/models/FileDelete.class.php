@@ -24,9 +24,9 @@ class FileDelete extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['fileDeleteId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['filename'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['fileDeleteId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "fileDeleteId"];
+    $dict['filename'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "filename"];
+    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "time"];
 
     return $dict;
   }

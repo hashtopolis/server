@@ -30,11 +30,11 @@ class CrackerBinary extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['crackerBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['crackerBinaryTypeId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['version'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False];
-    $dict['downloadUrl'] = ['read_only' => False, "type" => "str(150)", "null" => False, "pk" => False];
-    $dict['binaryName'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
+    $dict['crackerBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "crackerBinaryId"];
+    $dict['crackerBinaryTypeId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "crackerBinaryTypeId"];
+    $dict['version'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "version"];
+    $dict['downloadUrl'] = ['read_only' => False, "type" => "str(150)", "null" => False, "pk" => False, "alias" => "downloadUrl"];
+    $dict['binaryName'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "binaryName"];
 
     return $dict;
   }

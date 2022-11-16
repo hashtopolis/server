@@ -36,13 +36,13 @@ class AgentBinary extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['type'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False];
-    $dict['version'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False];
-    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
-    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
-    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False];
-    $dict['updateAvailable'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False];
+    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "agentBinaryId"];
+    $dict['type'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "type"];
+    $dict['version'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "version"];
+    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "operatingSystems"];
+    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "filename"];
+    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "updateTrack"];
+    $dict['updateAvailable'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "updateAvailable"];
 
     return $dict;
   }

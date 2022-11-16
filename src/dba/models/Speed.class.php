@@ -30,11 +30,11 @@ class Speed extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['speedId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['taskId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['speed'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['speedId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "speedId"];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "agentId"];
+    $dict['taskId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "taskId"];
+    $dict['speed'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "speed"];
+    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "time"];
 
     return $dict;
   }

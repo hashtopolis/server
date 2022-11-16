@@ -24,9 +24,9 @@ class TaskDebugOutput extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
-    $dict['output'] = ['read_only' => True, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "taskDebugOutputId"];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "taskId"];
+    $dict['output'] = ['read_only' => True, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "output"];
 
     return $dict;
   }

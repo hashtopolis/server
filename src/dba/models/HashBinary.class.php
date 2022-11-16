@@ -42,15 +42,15 @@ class HashBinary extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['hashBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['essid'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
-    $dict['hash'] = ['read_only' => False, "type" => "str(4294967295)", "null" => False, "pk" => False];
-    $dict['plaintext'] = ['read_only' => False, "type" => "str(1024)", "null" => False, "pk" => False];
-    $dict['timeCracked'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['chunkId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['isCracked'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['crackPos'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
+    $dict['hashBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "hashBinaryId"];
+    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "hashlistId"];
+    $dict['essid'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "essid"];
+    $dict['hash'] = ['read_only' => False, "type" => "str(4294967295)", "null" => False, "pk" => False, "alias" => "hash"];
+    $dict['plaintext'] = ['read_only' => False, "type" => "str(1024)", "null" => False, "pk" => False, "alias" => "plaintext"];
+    $dict['timeCracked'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "timeCracked"];
+    $dict['chunkId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "chunkId"];
+    $dict['isCracked'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isCracked"];
+    $dict['crackPos'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "crackPos"];
 
     return $dict;
   }

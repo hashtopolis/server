@@ -57,20 +57,20 @@ class Hashlist extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['hashlistName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
-    $dict['format'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
-    $dict['hashCount'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
-    $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "null" => True, "pk" => False];
-    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['hexSalt'] = ['read_only' => True, "type" => "bool", "null" => False, "pk" => False];
-    $dict['isSalted'] = ['read_only' => True, "type" => "bool", "null" => False, "pk" => False];
-    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False];
-    $dict['brainId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False];
-    $dict['brainFeatures'] = ['read_only' => True, "type" => "byte", "null" => False, "pk" => False];
+    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "hashlistId"];
+    $dict['hashlistName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "name"];
+    $dict['format'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "format"];
+    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "hashTypeId"];
+    $dict['hashCount'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "hashCount"];
+    $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "null" => True, "pk" => False, "alias" => "saltSeparator"];
+    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "cracked"];
+    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isSecret"];
+    $dict['hexSalt'] = ['read_only' => True, "type" => "bool", "null" => False, "pk" => False, "alias" => "isHexSalt"];
+    $dict['isSalted'] = ['read_only' => True, "type" => "bool", "null" => False, "pk" => False, "alias" => "isSalted"];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "accessGroupId"];
+    $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "alias" => "notes"];
+    $dict['brainId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "useBrain"];
+    $dict['brainFeatures'] = ['read_only' => True, "type" => "byte", "null" => False, "pk" => False, "alias" => "brainFeatures"];
 
     return $dict;
   }

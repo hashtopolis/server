@@ -42,15 +42,15 @@ class HealthCheckAgent extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['healthCheckAgentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['healthCheckId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['status'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['numGpus'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['start'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['end'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['errors'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False];
+    $dict['healthCheckAgentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "healthCheckAgentId"];
+    $dict['healthCheckId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "healthCheckId"];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "agentId"];
+    $dict['status'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "status"];
+    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "cracked"];
+    $dict['numGpus'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "numGpus"];
+    $dict['start'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "start"];
+    $dict['end'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "end"];
+    $dict['errors'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "alias" => "errors"];
 
     return $dict;
   }

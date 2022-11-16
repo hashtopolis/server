@@ -27,10 +27,10 @@ class HashType extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['description'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['isSalted'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['isSlowHash'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
+    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "hashTypeId"];
+    $dict['description'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "description"];
+    $dict['isSalted'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isSalted"];
+    $dict['isSlowHash'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isSlowHash"];
 
     return $dict;
   }

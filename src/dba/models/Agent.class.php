@@ -63,22 +63,22 @@ class Agent extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['agentName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
-    $dict['uid'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
-    $dict['os'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['devices'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False];
-    $dict['cmdPars'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
-    $dict['ignoreErrors'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['isActive'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['isTrusted'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['token'] = ['read_only' => False, "type" => "str(30)", "null" => False, "pk" => False];
-    $dict['lastAct'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
-    $dict['lastTime'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False];
-    $dict['lastIp'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
-    $dict['userId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False];
-    $dict['cpuOnly'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False];
-    $dict['clientSignature'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "agentId"];
+    $dict['agentName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "agentName"];
+    $dict['uid'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "uid"];
+    $dict['os'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "os"];
+    $dict['devices'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "alias" => "devices"];
+    $dict['cmdPars'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "cmdPars"];
+    $dict['ignoreErrors'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "ignoreErrors"];
+    $dict['isActive'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isActive"];
+    $dict['isTrusted'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isTrusted"];
+    $dict['token'] = ['read_only' => False, "type" => "str(30)", "null" => False, "pk" => False, "alias" => "token"];
+    $dict['lastAct'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "lastAct"];
+    $dict['lastTime'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "lastTime"];
+    $dict['lastIp'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "lastIp"];
+    $dict['userId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "userId"];
+    $dict['cpuOnly'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "cpuOnly"];
+    $dict['clientSignature'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "clientSignature"];
 
     return $dict;
   }

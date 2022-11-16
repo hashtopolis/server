@@ -21,8 +21,8 @@ class StoredValue extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['storedValueId'] = ['read_only' => True, "type" => "str(50)", "null" => False, "pk" => True];
-    $dict['val'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False];
+    $dict['storedValueId'] = ['read_only' => True, "type" => "str(50)", "null" => False, "pk" => True, "alias" => "storedValueId"];
+    $dict['val'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "val"];
 
     return $dict;
   }

@@ -21,8 +21,8 @@ class ConfigSection extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['configSectionId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True];
-    $dict['sectionName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False];
+    $dict['configSectionId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "configSectionId"];
+    $dict['sectionName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "sectionName"];
 
     return $dict;
   }
