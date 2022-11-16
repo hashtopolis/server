@@ -2,6 +2,7 @@
 
 $CONF = array();
 
+require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
 
 // entities
 // FIXME: Add correct read_only mapping to relevant fields
@@ -144,18 +145,18 @@ $CONF['HashBinary'] = [
 ];
 $CONF['Hashlist'] = [
   ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int'],
-  ['name' => 'hashlistName', 'read_only' => False, 'type' => 'str(100)'],
+  ['name' => 'hashlistName', 'read_only' => False, 'type' => 'str(100)', 'alias' => UQueryHashlist::HASHLIST_NAME],
   ['name' => 'format', 'read_only' => False, 'type' => 'int'],
   ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
   ['name' => 'hashCount', 'read_only' => True, 'type' => 'int'],
   ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True],
   ['name' => 'cracked', 'read_only' => False, 'type' => 'int'],
   ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool'],
+  ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_HEX_SALTED],
   ['name' => 'isSalted', 'read_only' => True, 'type' => 'bool'],
   ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
-  ['name' => 'brainId', 'read_only' => True, 'type' => 'int'],
+  ['name' => 'brainId', 'read_only' => True, 'type' => 'int', 'alias' => UQueryHashlist::HASHLIST_USE_BRAIN],
   ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'byte']
 ];
 // FIXME: Add correct read_only mapping to relevant fields
@@ -427,7 +428,12 @@ foreach ($CONF as $NAME => $COLUMNS) {
     $params[] = "\$$col";
     $vars[] = "private \$$col;";
     $init[] = "\$this->$col = \$$col;";
-    $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', "type" => "' . $COLUMN['type'] . '", "null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', "pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . '];';
+    $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' . 
+                                     '"type" => "' . $COLUMN['type'] . '", ' .
+                                     '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
+                                     '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
+                                     '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias']  : $COLUMN['name']) . '"' . 
+                                    '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
     
