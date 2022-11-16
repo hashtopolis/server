@@ -74,6 +74,7 @@ class Hashlist extends AbstractModel {
     $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "alias" => "notes"];
     $dict['brainId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "useBrain"];
     $dict['brainFeatures'] = ['read_only' => True, "type" => "byte", "null" => False, "pk" => False, "alias" => "brainFeatures"];
+    $dict['isArchived'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isArchived"];
 
     return $dict;
   }
