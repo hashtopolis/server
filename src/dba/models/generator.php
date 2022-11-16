@@ -157,7 +157,8 @@ $CONF['Hashlist'] = [
   ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
   ['name' => 'brainId', 'read_only' => True, 'type' => 'int', 'alias' => UQueryHashlist::HASHLIST_USE_BRAIN],
-  ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'byte']
+  ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'byte'],
+  ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool']
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['HashType'] = [
