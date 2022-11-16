@@ -25,9 +25,9 @@ function obj2Array(mixed $obj) {
   $item = [];
   foreach ($features as $NAME => $FEATURE) {
     if ($FEATURE['type'] == 'bool') {
-      $item[$NAME] = ($kv[$NAME] == 1) ? True : False;
+      $item[$FEATURE['alias']] = ($kv[$NAME] == 1) ? True : False;
     } else {
-      $item[$NAME] = $kv[$NAME];
+      $item[$FEATURE['alias']] = $kv[$NAME];
     }
   }
   return $item;
@@ -55,6 +55,7 @@ function hashlist2JSON(Hashlist $hashlist) {
   return json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
 }
 
+
 $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) { 
     /* Allow preflight requests */
     $group->options('', function (Request $request, Response $response): Response {
@@ -67,6 +68,7 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         $user = UserUtils::getUser($userId);
 
         $features = Hashlist::getFeatures();
+        // TODO: Add expandable to database model
         $expandables = ["accessGroup", "hashType"];
 
         $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
@@ -156,13 +158,18 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         $QUERY = $request->getParsedBody();
         $features = Hashlist::getFeatures();
 
-        $validFeatures = array_keys(array_filter($features, function($v, $k) {
-            return $v['pk'] == False;
-          }, ARRAY_FILTER_USE_BOTH));
+        // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
+        $formFields = [
+          UQueryHashlist::HASHLIST_DATA => ['type' => 'str'],
+          UQueryHashlist::HASHLIST_SEPARATOR => ['type' => 'str'],
+        ];
+
+        // Generate listing of validFeatures
+        $featureFields = array_map(function(array $n): string { return $n['alias'];}, $features);
+        $validFeatures = array_merge($featureFields, array_keys($formFields));
 
         // Ensure debugging response lists are in sorted order
         ksort($validFeatures);
-
 
         // Find keys which are invalid
         foreach($QUERY as $NAME => $VALUE)  {
@@ -182,28 +189,36 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
           if ($FEATURE['pk'] == True) {
             continue;
           }
+          if (!array_key_exists($FEATURE['alias'], $QUERY)) {
+            $missingKeys[] = $FEATURE['alias'];
+          }
+        }
+        // Consider all formFields mandatory input
+        foreach($formFields as $NAME => $FEATURE) {
           if (!array_key_exists($NAME, $QUERY)) {
             $missingKeys[] = $NAME;
           }
-        };
+        }
         if (count($missingKeys) > 0) {
           throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
-        };
+        }
 
+        // Build combined formField and Feature type mapping
+        $allFeatures = $features + $formFields;
 
         // Validate incoming data
         foreach($QUERY as $KEY => $VALUE) {
           // Ensure type is correct
-          if ($features[$KEY]['type'] == 'bool') {
+          if ($allFeatures[$KEY]['type'] == 'bool') {
             if (is_bool($VALUE) == False) {
               throw new HttpErrorException("Key '$KEY' is not of type boolean");            
             }
-          } elseif (str_starts_with($features[$KEY]['type'], 'int')) {
+          } elseif (str_starts_with($allFeatures[$KEY]['type'], 'int')) {
             // TODO: int32, int64 range validation
             if (is_integer($VALUE) == False) {
               throw new HttpErrorException("Key '$KEY' is not of type integer");
             }
-          } elseif (str_starts_with($features[$KEY]['type'], 'str')) {
+          } elseif (str_starts_with($allFeatures[$KEY]['type'], 'str')) {
             if (is_string($VALUE) == False) {
               throw new HttpErrorException("Key '$KEY' is not of type string");
             }
@@ -212,14 +227,14 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
         }
 
         $hashlist = HashlistUtils::createHashlist(
-            $QUERY["hashlistName"],
+          $QUERY[UQueryHashlist::HASHLIST_NAME],
             $QUERY[UQueryHashlist::HASHLIST_IS_SALTED],
             $QUERY[UQueryHashlist::HASHLIST_IS_SECRET],
             $QUERY[UQueryHashlist::HASHLIST_HEX_SALTED],
             $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
             $QUERY[UQueryHashlist::HASHLIST_FORMAT],
             $QUERY[UQueryHashlist::HASHLIST_HASHTYPE_ID],
-            $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
+          (array_key_exists("saltSeperator", $QUERY)) ? $QUERY["saltSeparator"] : $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
             $QUERY[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
             "paste",
             ['hashfield' => base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA])],
@@ -229,6 +244,9 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
             $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
           );
 
+        if (array_key_exists("notes", $QUERY)) {
+          HashlistUtils::editNotes($hashlist->getId(), $QUERY["notes"], $user);
+        };
 
         $body = $response->getBody();
         $body->write(hashlist2JSON($hashlist));
