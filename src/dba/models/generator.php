@@ -427,7 +427,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
     $params[] = "\$$col";
     $vars[] = "private \$$col;";
     $init[] = "\$this->$col = \$$col;";
-    $features[] = "\$dict['$col'] = [ 'read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', "type" => "' . $COLUMN['type'] . '", "null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . '];';
+    $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', "type" => "' . $COLUMN['type'] . '", "null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', "pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
     
