@@ -7,6 +7,7 @@ use Slim\Routing\RouteCollectorProxy;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
 
+use DBA\Hash;
 use DBA\Hashlist;
 use DBA\Factory;
 use DBA\QueryFilter;
@@ -45,6 +46,12 @@ function hashlist2Array(Hashlist $hashlist, array $expand) {
     $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
     $item['hashType'] = obj2Array($obj);
   }
+  if (in_array('hashes', $expand, true)) {
+    $qFs = [];
+    $qFs[] = new QueryFilter(Hash::HASHLIST_ID, $item['hashlistId'], "=");
+    $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qFs]);
+    $item['hashes'] = array_map("obj2Array", $hashes);
+  }
 
   return $item;
 }
@@ -69,7 +76,7 @@ $app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) {
 
         $features = Hashlist::getFeatures();
         // TODO: Add expandable to database model
-        $expandables = ["accessGroup", "hashType"];
+        $expandables = ["accessGroup", "hashType", "hashes"];
 
         $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
         $maxResults = intval($request->getQueryParams()['maxResults'] ?? 5);
