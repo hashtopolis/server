@@ -582,8 +582,8 @@ class TaskUtils {
     }
     Factory::getTaskFactory()->set($task, Task::IS_SMALL, $isSmall);
   }
-
-    /**
+  
+  /**
    * @param int $taskId
    * @param int $maxAgents
    * @param User $user
@@ -667,8 +667,8 @@ class TaskUtils {
       Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, $priority);
     }
   }
-
-    /**
+  
+  /**
    * @param int $taskId
    * @param int $maxAgents
    * @param User $user
@@ -723,6 +723,10 @@ class TaskUtils {
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
     }
+    else if ($hashlist->getIsArchived()) {
+      throw new HTException("You cannot create a task for an archived hashlist!");
+    }
+    
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     if (strlen($name) == 0) {
       $name = "Task_" . $hashlist->getId() . "_" . date("Ymd_Hi");
@@ -970,7 +974,7 @@ class TaskUtils {
       else if ($fullyCracked) {
         continue; // all hashes of this hashlist are cracked, so we continue
       }
-
+      
       $candidateTasks = [];
       
       // load assigned tasks for this TaskWrapper
@@ -984,7 +988,7 @@ class TaskUtils {
             continue;
           }
         }
-
+        
         // check if a task suits to this agent
         $files = TaskUtils::getFilesOfTask($task);
         $permitted = true;
@@ -1005,7 +1009,7 @@ class TaskUtils {
         if ($task == null) {
           continue; // if it is completed we go to the next
         }
-
+        
         // check if it's a cpu/gpu task
         if ($task->getIsCpuTask() != $agent->getCpuOnly()) {
           continue;
@@ -1017,7 +1021,7 @@ class TaskUtils {
         // accumulate all candidate tasks
         $candidateTasks[] = $task;
       }
-
+      
       // These tasks are available for this user regarding permissions, assignments.
       $allTasks = array_merge($allTasks, $candidateTasks);
     }
@@ -1326,7 +1330,7 @@ class TaskUtils {
       return "Access denied";
     }
   }
-
+  
   /**
    * Check if a task already has enough agents - apart from given agent - working on it,
    * with respect to the 'maxAgents' configuration
@@ -1340,6 +1344,6 @@ class TaskUtils {
     $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "<>");
     $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
     return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
-           ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
+      ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
   }
 }

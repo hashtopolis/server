@@ -128,11 +128,20 @@ else if (isset($_GET['id'])) {
   Template::loadInstance("hashlists/detail");
 }
 else {
+  $archived = 0;
+  UI::add('showArchived', false);
+  UI::add('pageTitle', "Hashlists");
+  if (isset($_GET['archived']) && $_GET['archived'] == 'true') {
+    $archived = 1;
+    UI::add('showArchived', true);
+    UI::add('pageTitle', "Archived Hashlists");
+  }
   //load all hashlists
   $jF = new JoinFilter(Factory::getHashTypeFactory(), HashType::HASH_TYPE_ID, Hashlist::HASH_TYPE_ID);
   $qF1 = new QueryFilter(Hashlist::FORMAT, "" . DHashlistFormat::SUPERHASHLIST, "<>", Factory::getHashlistFactory());
   $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser())));
-  $joined = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => [$qF1, $qF2]]);
+  $qF3 = new QueryFilter(Hashlist::IS_ARCHIVED, $archived, "=");
+  $joined = Factory::getHashlistFactory()->filter([Factory::JOIN => $jF, Factory::FILTER => [$qF1, $qF2, $qF3]]);
   /** @var $joinedHashlists Hashlist[] */
   $joinedHashlists = $joined[Factory::getHashlistFactory()->getModelName()];
   $hashlists = array();
@@ -141,7 +150,6 @@ else {
   }
   UI::add('hashlists', $hashlists);
   UI::add('numHashlists', sizeof($hashlists));
-  UI::add('pageTitle', "Hashlists");
 }
 
 echo Template::getInstance()->render(UI::getObjects());
