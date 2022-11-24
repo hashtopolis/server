@@ -25,7 +25,7 @@ class APIUpdateClientInformation extends APIBasic {
     }
     
     // save agent details
-    if (strlen($this->agent->getUid()) == 0) {
+    if (strlen($this->agent->getUid()) == 0 && $this->agent->getCpuOnly() == 0) {
       // we only update this variable on the first time, otherwise we would overwrite manual changes
       Factory::getAgentFactory()->set($this->agent, Agent::CPU_ONLY, $cpuOnly);
     }
