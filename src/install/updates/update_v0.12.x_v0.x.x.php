@@ -163,6 +163,7 @@ if (!isset($PRESENT["v0.12.x_hashTypes_5"])) {
     new HashType(10810, 'sha384($pass.$salt)', 1, 0),
     new HashType(10820, 'sha384($salt.$pass)', 1, 0),
     new HashType(10830, 'sha384(utf16le($pass).$salt)', 1, 0),
+    new HashType(10840, 'sha384($salt.utf16le($pass))', 1, 0),
     new HashType(10870, 'sha384(utf16le($pass))', 0, 0),
     new HashType(10901, 'RedHat 389-DS LDAP (PBKDF2-HMAC-SHA256)', 0, 1),
     new HashType(13781, 'VeraCrypt Streebog-512 + XTS 512 bit + boot-mode (legacy)', 0, 1),
