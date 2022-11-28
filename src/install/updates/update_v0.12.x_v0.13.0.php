@@ -257,6 +257,11 @@ if (!isset($PRESENT["v0.12.x_agentBinaries"])) {
   $EXECUTED["v0.12.x_agentBinaries"] = true;
 }
 
+if (!isset($PRESENT["v0.12.x_agentBinaries_1"])) {
+  Util::checkAgentVersion("python", "0.7.0", true);
+  $EXECUTED["v0.12.x_agentBinaries_1"] = true;
+}
+
 if (!isset($PRESENT["v0.12.x_agentBinariesUpdateTrack"])) {
   $agentBinaries = Factory::getAgentBinaryFactory()->filter([]);
   foreach ($agentBinaries as $agentBinary) {
