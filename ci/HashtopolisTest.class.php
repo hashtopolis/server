@@ -30,7 +30,8 @@ abstract class HashtopolisTest {
     "0.9.0" => "cd2951cd10552114c44c29962ac22efcbabf57c7",
     "0.10.0" => "cdc674f4f375115debd556feda4e7f6e4614a2c6",
     "0.11.0" => "9cdbffcffb46da613c14d2f46266c1c3672e61e7",
-    "0.12.0" => "b53f529f664c866e4d22f5cb348d22eb6f542901"
+    "0.12.0" => "b53f529f664c866e4d22f5cb348d22eb6f542901",
+    "0.13.0" => "c7036800be5b2e21542df0fa9bd4d19ebf7ecdf3"
   ];
   
   public function initAndUpgrade($fromVersion) {
