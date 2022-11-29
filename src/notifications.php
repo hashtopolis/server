@@ -1,6 +1,7 @@
 <?php
 
 use DBA\Agent;
+use DBA\ContainFilter;
 use DBA\Hashlist;
 use DBA\NotificationSetting;
 use DBA\OrderFilter;
