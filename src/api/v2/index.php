@@ -85,7 +85,7 @@ class HashtopolisAuthenticator implements AuthenticatorInterface {
 $container->set("HttpBasicAuthentication", function (\Psr\Container\ContainerInterface $container) {
     return new HttpBasicAuthentication([
         "path" => "/api/v2/auth/token",
-        "secure" => "false",
+        "secure" => false,
         "error" => function ($response, $arguments) {
             return errorResponse($response, $arguments["message"], 401);
         },
