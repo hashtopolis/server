@@ -36,13 +36,13 @@ class AgentBinary extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "agentBinaryId"];
-    $dict['type'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "type"];
-    $dict['version'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "version"];
-    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "operatingSystems"];
-    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "filename"];
-    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "updateTrack"];
-    $dict['updateAvailable'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "alias" => "updateAvailable"];
+    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "agentBinaryId"];
+    $dict['type'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "protected" => False, "alias" => "type"];
+    $dict['version'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "protected" => False, "alias" => "version"];
+    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "operatingSystems"];
+    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "filename"];
+    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "protected" => False, "alias" => "updateTrack"];
+    $dict['updateAvailable'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "protected" => False, "alias" => "updateAvailable"];
 
     return $dict;
   }

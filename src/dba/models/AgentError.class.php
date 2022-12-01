@@ -33,12 +33,12 @@ class AgentError extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentErrorId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "agentErrorId"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "agentId"];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "taskId"];
-    $dict['chunkId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "alias" => "chunkId"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "null" => False, "pk" => False, "alias" => "time"];
-    $dict['error'] = ['read_only' => True, "type" => "str(65535)", "null" => False, "pk" => False, "alias" => "error"];
+    $dict['agentErrorId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "agentErrorId"];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "agentId"];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "taskId"];
+    $dict['chunkId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "chunkId"];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "null" => False, "pk" => False, "protected" => False, "alias" => "time"];
+    $dict['error'] = ['read_only' => True, "type" => "str(65535)", "null" => False, "pk" => False, "protected" => False, "alias" => "error"];
 
     return $dict;
   }

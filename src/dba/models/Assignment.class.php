@@ -27,10 +27,10 @@ class Assignment extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['assignmentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "assignmentId"];
-    $dict['taskId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "taskId"];
-    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "agentId"];
-    $dict['benchmark'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "benchmark"];
+    $dict['assignmentId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "assignmentId"];
+    $dict['taskId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "taskId"];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "agentId"];
+    $dict['benchmark'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "benchmark"];
 
     return $dict;
   }

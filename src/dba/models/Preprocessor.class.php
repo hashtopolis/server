@@ -36,13 +36,13 @@ class Preprocessor extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['preprocessorId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "preprocessorId"];
-    $dict['name'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "name"];
-    $dict['url'] = ['read_only' => False, "type" => "str(512)", "null" => False, "pk" => False, "alias" => "url"];
-    $dict['binaryName'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "binaryName"];
-    $dict['keyspaceCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "keyspaceCommand"];
-    $dict['skipCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "skipCommand"];
-    $dict['limitCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "limitCommand"];
+    $dict['preprocessorId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "preprocessorId"];
+    $dict['name'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "name"];
+    $dict['url'] = ['read_only' => False, "type" => "str(512)", "null" => False, "pk" => False, "protected" => False, "alias" => "url"];
+    $dict['binaryName'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "binaryName"];
+    $dict['keyspaceCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "keyspaceCommand"];
+    $dict['skipCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "skipCommand"];
+    $dict['limitCommand'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "limitCommand"];
 
     return $dict;
   }

@@ -33,12 +33,12 @@ class LogEntry extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['logEntryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "logEntryId"];
-    $dict['issuer'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "issuer"];
-    $dict['issuerId'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "issuerId"];
-    $dict['level'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "alias" => "level"];
-    $dict['message'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "alias" => "message"];
-    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "time"];
+    $dict['logEntryId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "logEntryId"];
+    $dict['issuer'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "issuer"];
+    $dict['issuerId'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "issuerId"];
+    $dict['level'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "level"];
+    $dict['message'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "protected" => False, "alias" => "message"];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "null" => False, "pk" => False, "protected" => True, "alias" => "time"];
 
     return $dict;
   }

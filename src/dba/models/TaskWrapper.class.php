@@ -39,14 +39,14 @@ class TaskWrapper extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['taskWrapperId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "taskWrapperId"];
-    $dict['priority'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "priority"];
-    $dict['taskType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "taskType"];
-    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "hashlistId"];
-    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "accessGroupId"];
-    $dict['taskWrapperName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "taskWrapperName"];
-    $dict['isArchived'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "alias" => "isArchived"];
-    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "cracked"];
+    $dict['taskWrapperId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "taskWrapperId"];
+    $dict['priority'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "priority"];
+    $dict['taskType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "taskType"];
+    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "hashlistId"];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "accessGroupId"];
+    $dict['taskWrapperName'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "protected" => False, "alias" => "taskWrapperName"];
+    $dict['isArchived'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "protected" => False, "alias" => "isArchived"];
+    $dict['cracked'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "cracked"];
 
     return $dict;
   }

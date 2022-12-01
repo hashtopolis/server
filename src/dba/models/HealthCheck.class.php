@@ -39,14 +39,14 @@ class HealthCheck extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['healthCheckId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "healthCheckId"];
-    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "time"];
-    $dict['status'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "status"];
-    $dict['checkType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "checkType"];
-    $dict['hashtypeId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "hashtypeId"];
-    $dict['crackerBinaryId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "crackerBinaryId"];
-    $dict['expectedCracks'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "alias" => "expectedCracks"];
-    $dict['attackCmd'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "alias" => "attackCmd"];
+    $dict['healthCheckId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "healthCheckId"];
+    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "protected" => False, "alias" => "time"];
+    $dict['status'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "status"];
+    $dict['checkType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "checkType"];
+    $dict['hashtypeId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "hashtypeId"];
+    $dict['crackerBinaryId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "crackerBinaryId"];
+    $dict['expectedCracks'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "expectedCracks"];
+    $dict['attackCmd'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "attackCmd"];
 
     return $dict;
   }

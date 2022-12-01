@@ -24,9 +24,9 @@ class RegVoucher extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['regVoucherId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "alias" => "regVoucherId"];
-    $dict['voucher'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "alias" => "voucher"];
-    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "alias" => "time"];
+    $dict['regVoucherId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "regVoucherId"];
+    $dict['voucher'] = ['read_only' => False, "type" => "str(100)", "null" => False, "pk" => False, "protected" => False, "alias" => "voucher"];
+    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "protected" => False, "alias" => "time"];
 
     return $dict;
   }
