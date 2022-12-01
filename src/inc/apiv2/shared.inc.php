@@ -173,8 +173,8 @@ abstract class AbstractBaseAPI {
       if ($FEATURE['null'] == True) {
         continue;
       }
-      // Primary keys are not required on creation
-      if ($FEATURE['pk'] == True) {
+      // Protected fields are not required on creation
+      if ($FEATURE['protected'] == True) {
         continue;
       }
       if (!array_key_exists($FEATURE['alias'], $QUERY)) {
@@ -399,8 +399,7 @@ abstract class AbstractBaseAPI {
     /* Actually delete object */
      $this->deleteObject($object);
 
-
     return $response->withStatus(204)
     ->withHeader("Content-Type", "application/json");
   }
-}
+} 
