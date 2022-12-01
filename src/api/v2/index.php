@@ -201,6 +201,8 @@ $app->addRoutingMiddleware();
 require __DIR__ . "/../../inc/apiv2/token.routes.php";
 require __DIR__ . "/../../inc/apiv2/hashlists.routes.php";
 require __DIR__ . "/../../inc/apiv2/hashtypes.routes.php";
+require __DIR__ . "/../../inc/apiv2/dummy.routes.php";
+
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorHandler = $errorMiddleware->getDefaultErrorHandler();
