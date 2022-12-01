@@ -105,7 +105,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
         "ignore" => ["/api/v2/auth/token"],
         "secret" => $PEPPER[0],
         "attribute" => false,
-        "secure" => "false",
+        "secure" => false,
         "error" => function ($response, $arguments) {
             return errorResponse($response, $arguments["message"], 401);
         },
