@@ -66,7 +66,7 @@ abstract class AbstractBaseAPI {
       $qFs = [];
       $qFs[] = new QueryFilter(Hash::HASHLIST_ID, $item['hashlistId'], "=");
       $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qFs]);
-      $item['hashes'] = array_map("obj2Array", $hashes);
+      $item['hashes'] = array_map(array($this, 'obj2Array'), $hashes);
     }
 
     return $item;
