@@ -21,3 +21,6 @@ src/install/.htaccess
 
 # for composer stuff
 vendor
+
+# For python cache files
+__pycache__

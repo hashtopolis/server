@@ -67,6 +67,14 @@ class HashlistAPI extends AbstractBaseAPI {
           throw new HttpErrorException("sourceType value '" . $QUERY["sourceType"] . "' is not supported (choices paste, import, url");
       }
 
+      // TODO: validate input is valid base64 encoded
+      if ($QUERY["sourceType"] == "paste") {
+        if (strlen($QUERY["sourceData"]) == 0) {
+          // TODO: Should be 400 instead
+          throw new HttpErrorException("sourceType=paste, requires sourceData to be non-empty");
+        }
+      }
+      
       $hashlist = HashlistUtils::createHashlist(
         $QUERY[UQueryHashlist::HASHLIST_NAME],
         $QUERY[UQueryHashlist::HASHLIST_IS_SALTED],
