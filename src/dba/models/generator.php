@@ -113,11 +113,11 @@ $CONF['CrackerBinaryType'] = [
 $CONF['File'] = [
   ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'filename', 'read_only' => False, 'type' => 'str(100)'],
-  ['name' => 'size', 'read_only' => False, 'type' => 'int64'],
+  ['name' => 'size', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'fileType', 'read_only' => False, 'type' => 'int'],
   ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'lineCount', 'read_only' => False, 'type' => 'int64']
+  ['name' => 'lineCount', 'read_only' => True, 'type' => 'int64', 'protected' => True]
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['Hash'] = [
