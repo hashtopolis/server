@@ -202,6 +202,7 @@ require __DIR__ . "/../../inc/apiv2/token.routes.php";
 require __DIR__ . "/../../inc/apiv2/hashlists.routes.php";
 require __DIR__ . "/../../inc/apiv2/hashtypes.routes.php";
 require __DIR__ . "/../../inc/apiv2/logentry.routes.php";
+require __DIR__ . "/../../inc/apiv2/files.routes.php";
 
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
