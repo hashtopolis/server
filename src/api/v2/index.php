@@ -198,6 +198,7 @@ $app->add(new ContentLengthMiddleware());       // NOTE: Add any middleware whic
 $app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
 $app->addRoutingMiddleware();
 
+require __DIR__ . "/../../inc/apiv2/accessgroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/token.routes.php";
 require __DIR__ . "/../../inc/apiv2/hashlists.routes.php";
 require __DIR__ . "/../../inc/apiv2/hashtypes.routes.php";
