@@ -335,6 +335,14 @@ abstract class AbstractBaseAPI {
     
     $data = $request->getParsedBody();
     $features = $this->getFeatures();
+
+    $mappedFeatures = [];
+    foreach($features as $KEY => $VALUE) {
+      $mappedFeatures[$VALUE['alias']] = $VALUE;
+      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
+    }
+
+
     // Validate incoming data
     foreach($data as $KEY => $VALUE) {
       // Ensure key is a regular string
@@ -342,26 +350,26 @@ abstract class AbstractBaseAPI {
         throw new HttpErrorException("Key '$KEY' invalid");
       }
       // Ensure key exists in target array
-      if (array_key_exists($KEY, $features) == False) {
+      if (array_key_exists($KEY, $mappedFeatures) == False) {
         throw new HttpErrorException("Key '$KEY' does not exists!");
       }
 
       // Ensure key can be updated 
-      if ($features[$KEY]['read_only'] == True) {
+      if ($mappedFeatures[$KEY]['read_only'] == True) {
         throw new HttpErrorException("Key '$KEY' is immutable");
       }
 
       // Ensure type is correct
-      if ($features[$KEY]['type'] == 'bool') {
+      if ($mappedFeatures[$KEY]['type'] == 'bool') {
         if (is_bool($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type boolean");            
         }
-      } elseif (str_starts_with($features[$KEY]['type'], 'int')) {
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'int')) {
         // TODO: int32, int64 range validation
         if (is_integer($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type integer");
         }
-      } elseif (str_starts_with($features[$KEY]['type'], 'str')) {
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
         if (is_string($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type string");
         }
@@ -372,12 +380,12 @@ abstract class AbstractBaseAPI {
     // Apply changes 
     foreach($data as $KEY => $VALUE) {
       // Sanity values
-      if (str_starts_with($features[$KEY]['type'], 'str')) {
+      if (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
         $val = htmlentities($data[$KEY], ENT_QUOTES, "UTF-8");
       } else {
         $val = $VALUE;
       }
-      $this->getFactory()->set($object, $KEY, $val);
+      $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
     }
 
     // Return updated object

@@ -1,0 +1,3 @@
+api_endpoint: 'http://localhost:8080/api/v2'
+username: 'root'
+password: 'hashtopolis'
