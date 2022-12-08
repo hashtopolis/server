@@ -153,7 +153,15 @@ abstract class AbstractBaseAPI {
 
   protected function validatePost($QUERY, array $features, array $formFields) {
     // Generate listing of validFeatures
-    $featureFields = array_map(function(array $n): string { return $n['alias'];}, $features);
+    $featureFields = [];
+    foreach($features as $NAME => $FEATURE) {
+      /* Protected features cannot be specified */
+      if ($FEATURE['protected'] == true) {
+        continue;
+      }
+      /* Use API aliased naming */
+      array_push($featureFields, $FEATURE['alias']);
+    }
     $validFeatures = array_merge($featureFields, array_keys($formFields));
 
     // Ensure debugging response lists are in sorted order
