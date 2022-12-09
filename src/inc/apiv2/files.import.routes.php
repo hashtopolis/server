@@ -51,7 +51,7 @@ function updateStorage(string $id, array $update): void {
 }
 
 
-$app->group("/api/v2/ui/files/upload", function (RouteCollectorProxy $group) { 
+$app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) { 
   $group->options('', function (Request $request, Response $response, array $args): Response {
     return $response->withStatus(204)
       ->withHeader('Tus-Version', '1.0.0')
@@ -110,12 +110,12 @@ $app->group("/api/v2/ui/files/upload", function (RouteCollectorProxy $group) {
 
     // TODO: Hash of filename and/or check if similar named file already exists
     return $response->withStatus(201)
-      ->withHeader("Location", "/api/v2/ui/files/upload/$id")
+      ->withHeader("Location", "/api/v2/ui/files/import/$id")
       ->withHeader('Tus-Resumable', '1.0.0');
     });
 });
 
-$app->group("/api/v2/ui/files/upload/{id:[0-9a-f]{32}}", function (RouteCollectorProxy $group) { 
+$app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollectorProxy $group) { 
   /* Allow preflight requests */
   $group->options('', function (Request $request, Response $response, array $args): Response {
     return $response;

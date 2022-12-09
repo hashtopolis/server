@@ -39,7 +39,7 @@ class Files(unittest.TestCase):
         }
 
     def test_upload(self):
-        uri = self._cfg['api_endpoint'] + '/ui/files/upload'
+        uri = self._cfg['api_endpoint'] + '/ui/files/import'
         my_client = tusclient.client.TusClient(uri)
         my_client.set_headers(self._headers)
         
