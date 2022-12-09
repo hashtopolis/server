@@ -19,54 +19,100 @@ function getUploadPath(string $id): string {
   return $filename;
 };
 
+function getMetaPath(string $id): string {
+  $filename = dirname(__file__) . "/../../tmp/" . $id . '.meta';
+  return $filename;
+};
+
+function getImportPath(string $id): string {
+  $filename = dirname(__file__) . "/../../import/" . $id;
+  return $filename;
+};
+
+function getChecksumAlgorithm(): array {
+  return ['md5', 'sha1' ,'crc32'];
+}
+
+
+/* Database quick for temponary storage during upload */
+function getMetaStorage(string $id): array {
+  $metaPath = getMetaPath($id);
+  $ds = file_exists($metaPath) ? (array)json_decode(file_get_contents($metaPath), true) : array();
+
+  return $ds;
+}
+
+function updateStorage(string $id, array $update): void {
+  $ds = getMetaStorage($id);
+
+  $newDs = $update + $ds;
+  $metaPath = getMetaPath($id);
+  file_put_contents($metaPath, json_encode($newDs));
+}
+
+
 $app->group("/api/v2/ui/files/upload", function (RouteCollectorProxy $group) { 
   $group->options('', function (Request $request, Response $response, array $args): Response {
     return $response->withStatus(204)
       ->withHeader('Tus-Version', '1.0.0')
       ->withHeader('Tus-Resumable', '1.0.0')
-      ->withHeader('Tus-Extension', 'checksum')
-      ->withHeader('Tus-Checksum-Algorithm', 'md5,sha1,crc32')
-      // TODO: Maybe add Upload-Expires support. Return in PATCH with RFC 7231
-      ->withHeader('Tus-Extension', 'creation,creation-with-upload');
+      ->withHeader('Tus-Checksum-Algorithm', join(',', getChecksumAlgorithm()))
+      //TODO: Maybe add Upload-Expires support. Return in PATCH with RFC 7231
+      ->withHeader('Tus-Extension', 'checksum,creation,creation-defer-length,termination');
       //TODO: Option for Tus-Max-Size: 1073741824
   });
 
 
-
-
-//  if ($request->hasHeader('Accept')) {
-    // Do something
-//}
-//$headerValueArray = $request->getHeader('Accept');
-
-
   $group->post('', function (Request $request, Response $response, array $args): Response {
-    // Check for
-    // a) Upload-Length
-    // b) Upload-Defer-Length: 1
-
-    // TODO: Non-empty Content-Length should include first bit of files
-
-    /*
-    Content-Length: 0
-    Upload-Length: 100
-    Tus-Resumable: 1.0.0
-    Upload-Metadata: filename d29ybGRfZG9taW5hdGlvbl9wbGFuLnBkZg==,is_confidential
-    */
-    // TODO: validate Upload-Metadata
-
-    // TODO: Should we even check this and which error to return?
-    $contentLength = intval($request->getHeader('Content-Length')[0]);
-    $body = $request->getBody();
-    if ($body->getSize() != $contentLength) {
-      return $response->withStatus(400, 'Mismatch between Content-Length specified and sent');
+    $update = [];
+    if ($request->hasHeader('Upload-Metadata')) {
+      $update["upload_metadata_raw"] = $request->getHeader('Upload-Metadata')[0];
+      if (preg_match('/^[a-zA-Z0-9=, ]+$/', $update["upload_metadata_raw"], $match) === false) {
+        return $response->withStatus(400, 'Error Upload-Metadata contains non-ASCII characters');
+      }
+     
+      $update_metadata = [];
+      $list = explode(",", $update["upload_metadata_raw"]);
+      foreach ($list as $item) {
+        list($key, $b64val) = explode(" ", $item);
+        if (($val = base64_decode($b64val, true)) === false) {
+          return $response->withStatus(400, "Error Upload-Metadata '$key' invalid base64 encoding");
+        }
+        $update_metadata[$key] = $val;
+      }
     }
+    // TODO: Should filename be mandatory?
+    if (array_key_exists('filename', $update_metadata)) {
+      $filename = $update_metadata['filename'];
+      $id = md5($filename);
+      if ((file_exists(getImportPath($filename))) || 
+          (file_exists(getUploadPath($id)))) {
+            return $response->withStatus(400, "Error filename '$filename' already exists!");
+          }
+    } else {
+      $id = bin2hex(random_bytes(16));
+    }
+    $update["upload_metadata"] = $update_metadata;
+
+    if ($request->hasHeader('Upload-Defer-Length')) {
+      if ($request->getHeader('Upload-Defer-Length')[0] == "1") {
+        $update["upload_defer_length"] = true;
+      } else {
+        return $response->withStatus(400, 'Invalid Upload-Defer-Length value (choices: 1)');
+      }
+    }
+    if ($request->hasHeader('Upload-Length')) {
+      $update["upload_length"] = intval($request->getHeader('Upload-Length')[0]);
+      $update["upload_defer_length"] = false;
+    }
+
+    updateStorage($id, $update);
 
     // TODO: Hash of filename and/or check if similar named file already exists
     return $response->withStatus(201)
-      ->withHeader("Location", "/api/v2/ui/files/upload/24e533e02ec3bc40c387f1a0e460e216")
+      ->withHeader("Location", "/api/v2/ui/files/upload/$id")
       ->withHeader('Tus-Resumable', '1.0.0');
-  });
+    });
 });
 
 $app->group("/api/v2/ui/files/upload/{id:[0-9a-f]{32}}", function (RouteCollectorProxy $group) { 
@@ -80,18 +126,29 @@ $app->group("/api/v2/ui/files/upload/{id:[0-9a-f]{32}}", function (RouteCollecto
     // TODO return 404 or 410 if entry is not found
     $filename = getUploadPath($args['id']);
     $currentSize = filesize($filename);
+    $ds = getMetaStorage($args['id']);
 
-    return $response->withStatus(200)
+    $newResponse = $response->withStatus(200)
         ->withHeader("Cache-Control", "no-store")
-        // TODO Actual size of upload header
-        ->withHeader("Upload-Length", "100")
-        ->withHeader("Upload-Offset", strval($currentSize));
+        ->withHeader("Upload-Offset",   strval($currentSize));
+    
+    if (array_key_exists("upload_metadata_raw", $ds)) {
+      $newResponse2 = $newResponse->withHeader("Upload-Metadata", $ds["upload_metadata_raw"]);
+    } else {
+      $newResponse2 = $newResponse;
+    }
+
+    if ($ds["upload_defer_length"] === true) {
+      return $newResponse2->withHeader("Upload-Defer-Length", "1");
+    } else {
+      return $newResponse2->withHeader("Upload-Length", strval($ds["upload_length"]));
+    }
   });
 
 
 
 
-$group->patch('', function (Request $request, Response $response, array $args): Response {
+  $group->patch('', function (Request $request, Response $response, array $args): Response {
   // Check for Content-Type: application/offset+octet-stream or return 415
   if (($request->hasHeader('Content-Type') == false) || 
       ($request->getHeader('Content-Type')[0] != "application/offset+octet-stream")) {
@@ -103,13 +160,17 @@ $group->patch('', function (Request $request, Response $response, array $args): 
   $currentSize = filesize($filename);
 
   // Offset mismatch check and 409 Conflict
-    if (($request->hasHeader('Upload-Offset') == false) ||
-      (intval($request->getHeader('Upload-Offset')[0]) != $currentSize)) {
-    return $response->withStatus(409, 'Conflict');
+  if ($request->hasHeader('Upload-Offset') == false) {
+    return $response->withStatus(409, "Conflict (Upload-Offset header missing)");
+  } else {
+    $uploadOffset = intval($request->getHeader('Upload-Offset')[0]);
+    if ($uploadOffset != $currentSize) {
+      return $response->withStatus(409, "Conflict (currentSize=$currentSize uploadOffset=$uploadOffset)");
+    }
   }
 
   $body = $request->getBody();
-  
+
   // TODO: Should we even check this and which error to return?
   $contentLength = intval($request->getHeader('Content-Length')[0]);
   $chunk = $body->getContents();
@@ -117,12 +178,47 @@ $group->patch('', function (Request $request, Response $response, array $args): 
     return $response->withStatus(400, 'Mismatch between Content-Length specified and sent');
   }
 
+  $ds = getMetaStorage($args['id']);
+
   // TODO: Implement
   if ($request->hasHeader('Upload-Checksum')) {
-    $uploadChecksum = $request->getHeader('Upload-Checksum');
-    // 400 Bad Request
-    assert(False);
-    // 460 Checksum Mismatch
+    $uploadChecksum = $request->getHeader('Upload-Checksum')[0];
+    /* algo base64_checksum */
+    $regex = "/^(" . join("|", getChecksumAlgorithm()) . ")" . 
+      "[ ]+((?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=))?$/";
+    
+    if(preg_match($regex, $uploadChecksum, $matches) === false) {
+      return $response->withStatus(400, 'Syntax of Upload-Checksum header incorrect');
+    } else {
+      $algo = $matches[1];
+      $incomingHash = $matches[2];
+      switch($algo) {
+        case "md5":
+          $chunkHash = base64_encode(md5($chunk, true));
+          break;
+        case "sha1":
+          $chunkHash = base64_encode(sha1($chunk, true));
+          break;
+        case "crc32":
+          $chunkHash = base64_encode(crc32($chunk, true));
+          break;
+        default:
+          /* Since algoritms are checked in regex, this should never happen */
+          assert(False);
+      }
+
+      if ($chunkHash != $incomingHash) {
+        return $response->withStatus(460, 'Checksum Mismatch');
+      }
+    }
+  }
+
+  if ($ds["upload_defer_length"] === true) {
+    if ($request->hasHeader('Upload-Length')) {
+      $update["upload_length"] = intval($request->getHeader('Upload-Length')[0]);
+      $update["upload_defer_length"] = false;
+      updateStorage($args['id'], $update);
+    }
   }
 
   file_put_contents($filename, $chunk, FILE_APPEND);
@@ -130,12 +226,32 @@ $group->patch('', function (Request $request, Response $response, array $args): 
   clearstatcache();
   $newSize = filesize($filename);
 
-  // TODO: Process completed file
-  
-  return $response->withStatus(204)
+  if ($ds["upload_length"] == $newSize) {
+    /* Process completed file */
+    $statusMsg = "All chunks received";
+    if (array_key_exists("upload_completed", $ds) === false) {
+      if (array_key_exists("upload_metadata", $ds) &&
+          array_key_exists("filename", $ds["upload_metadata"])) {
+            $targetFile = $ds["upload_metadata"]["filename"];
+      } else {
+        $targetFile = $args['id'];
+      }
+
+      $importPath = getImportPath($targetFile);
+      if (!file_exists($importPath)) {
+        rename($filename, $importPath);
+        updateStorage($args['id'], ['upload_completed' => true]);
+      }
+    } 
+  } else {
+    $statusMsg = "Next chunk please";
+  }
+
+  return $response->withStatus(204, $statusMsg)
     ->withHeader("Tus-Resumable", "1.0.0")
+    ->withHeader("Upload-Length", strval($ds["upload_length"]))
     ->withHeader("Upload-Offset", strval($newSize));
-});
+  });
 
   $group->delete('', function (Request $request, Response $response, array $args): Response {
     // TODO delete file
