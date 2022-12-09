@@ -150,110 +150,110 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
 
 
   $group->patch('', function (Request $request, Response $response, array $args): Response {
-  // Check for Content-Type: application/offset+octet-stream or return 415
-  if (($request->hasHeader('Content-Type') == false) || 
-      ($request->getHeader('Content-Type')[0] != "application/offset+octet-stream")) {
-    return $response->withStatus(415, 'Unsupported Media Type');
-  }
-
-  /* Return 404 if entry is not found */
-  $filename = getUploadPath($args['id']);
-  if (file_exists($filename) === false) {
-    // TODO: Maybe 410 if actual file still exists and meta file also exists?
-    return $response->withStatus(404, "Upload ID does not exists"); 
-  }
-
-  /* Offset mismatch check and 409 Conflict */
-  $currentSize = filesize($filename);
-  if ($request->hasHeader('Upload-Offset') == false) {
-    return $response->withStatus(409, "Conflict (Upload-Offset header missing)");
-  } else {
-    $uploadOffset = intval($request->getHeader('Upload-Offset')[0]);
-    if ($uploadOffset != $currentSize) {
-      return $response->withStatus(409, "Conflict (currentSize=$currentSize uploadOffset=$uploadOffset)");
+    // Check for Content-Type: application/offset+octet-stream or return 415
+    if (($request->hasHeader('Content-Type') == false) || 
+        ($request->getHeader('Content-Type')[0] != "application/offset+octet-stream")) {
+      return $response->withStatus(415, 'Unsupported Media Type');
     }
-  }
 
-  $body = $request->getBody();
+    /* Return 404 if entry is not found */
+    $filename = getUploadPath($args['id']);
+    if (file_exists($filename) === false) {
+      // TODO: Maybe 410 if actual file still exists and meta file also exists?
+      return $response->withStatus(404, "Upload ID does not exists"); 
+    }
 
-  // TODO: Should we even check this and which error to return?
-  $contentLength = intval($request->getHeader('Content-Length')[0]);
-  $chunk = $body->getContents();
-  if (strlen($chunk) != $contentLength) {
-    return $response->withStatus(400, 'Mismatch between Content-Length specified and sent');
-  }
-
-  $ds = getMetaStorage($args['id']);
-
-  /* Validate checksum */
-  if ($request->hasHeader('Upload-Checksum')) {
-    $uploadChecksum = $request->getHeader('Upload-Checksum')[0];
-    /* algo base64_checksum */
-    $regex = "/^(" . join("|", getChecksumAlgorithm()) . ")" . 
-      "[ ]+((?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=))?$/";
-    
-    if(preg_match($regex, $uploadChecksum, $matches) === false) {
-      return $response->withStatus(400, 'Syntax of Upload-Checksum header incorrect');
+    /* Offset mismatch check and 409 Conflict */
+    $currentSize = filesize($filename);
+    if ($request->hasHeader('Upload-Offset') == false) {
+      return $response->withStatus(409, "Conflict (Upload-Offset header missing)");
     } else {
-      $algo = $matches[1];
-      $incomingHash = $matches[2];
-      switch($algo) {
-        case "md5":
-          $chunkHash = base64_encode(md5($chunk, true));
-          break;
-        case "sha1":
-          $chunkHash = base64_encode(sha1($chunk, true));
-          break;
-        case "crc32":
-          $chunkHash = base64_encode(crc32($chunk, true));
-          break;
-        default:
-          /* Since algoritms are checked in regex, this should never happen */
-          assert(False);
-      }
-
-      if ($chunkHash != $incomingHash) {
-        return $response->withStatus(460, 'Checksum Mismatch');
+      $uploadOffset = intval($request->getHeader('Upload-Offset')[0]);
+      if ($uploadOffset != $currentSize) {
+        return $response->withStatus(409, "Conflict (currentSize=$currentSize uploadOffset=$uploadOffset)");
       }
     }
-  }
 
-  if ($ds["upload_defer_length"] === true) {
-    if ($request->hasHeader('Upload-Length')) {
-      $update["upload_length"] = intval($request->getHeader('Upload-Length')[0]);
-      $update["upload_defer_length"] = false;
-      updateStorage($args['id'], $update);
+    $body = $request->getBody();
+
+    // TODO: Should we even check this and which error to return?
+    $contentLength = intval($request->getHeader('Content-Length')[0]);
+    $chunk = $body->getContents();
+    if (strlen($chunk) != $contentLength) {
+      return $response->withStatus(400, 'Mismatch between Content-Length specified and sent');
     }
-  }
 
-  file_put_contents($filename, $chunk, FILE_APPEND);
+    $ds = getMetaStorage($args['id']);
 
-  clearstatcache();
-  $newSize = filesize($filename);
+    /* Validate checksum */
+    if ($request->hasHeader('Upload-Checksum')) {
+      $uploadChecksum = $request->getHeader('Upload-Checksum')[0];
+      /* algo base64_checksum */
+      $regex = "/^(" . join("|", getChecksumAlgorithm()) . ")" . 
+        "[ ]+((?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=))?$/";
+      
+      if(preg_match($regex, $uploadChecksum, $matches) === false) {
+        return $response->withStatus(400, 'Syntax of Upload-Checksum header incorrect');
+      } else {
+        $algo = $matches[1];
+        $incomingHash = $matches[2];
+        switch($algo) {
+          case "md5":
+            $chunkHash = base64_encode(md5($chunk, true));
+            break;
+          case "sha1":
+            $chunkHash = base64_encode(sha1($chunk, true));
+            break;
+          case "crc32":
+            $chunkHash = base64_encode(crc32($chunk, true));
+            break;
+          default:
+            /* Since algoritms are checked in regex, this should never happen */
+            assert(False);
+        }
 
-  if ($ds["upload_length"] == $newSize) {
-    /* Process completed file */
-    $statusMsg = "All chunks received";
-    if (array_key_exists("upload_metadata", $ds) &&
-        array_key_exists("filename", $ds["upload_metadata"])) {
-          $targetFile = $ds["upload_metadata"]["filename"];
+        if ($chunkHash != $incomingHash) {
+          return $response->withStatus(460, 'Checksum Mismatch');
+        }
+      }
+    }
+
+    if ($ds["upload_defer_length"] === true) {
+      if ($request->hasHeader('Upload-Length')) {
+        $update["upload_length"] = intval($request->getHeader('Upload-Length')[0]);
+        $update["upload_defer_length"] = false;
+        updateStorage($args['id'], $update);
+      }
+    }
+
+    file_put_contents($filename, $chunk, FILE_APPEND);
+
+    clearstatcache();
+    $newSize = filesize($filename);
+
+    if ($ds["upload_length"] == $newSize) {
+      /* Process completed file */
+      $statusMsg = "All chunks received";
+      if (array_key_exists("upload_metadata", $ds) &&
+          array_key_exists("filename", $ds["upload_metadata"])) {
+            $targetFile = $ds["upload_metadata"]["filename"];
+      } else {
+        $targetFile = $args['id'];
+      }
+
+      $importPath = getImportPath($targetFile);
+      if (file_exists($importPath) === false) {
+        rename($filename, $importPath);
+        unlink(getMetaPath($args['id']));
+      }
     } else {
-      $targetFile = $args['id'];
+      $statusMsg = "Next chunk please";
     }
 
-    $importPath = getImportPath($targetFile);
-    if (file_exists($importPath) === false) {
-      rename($filename, $importPath);
-      unlink(getMetaPath($args['id']));
-    }
-  } else {
-    $statusMsg = "Next chunk please";
-  }
-
-  return $response->withStatus(204, $statusMsg)
-    ->withHeader("Tus-Resumable", "1.0.0")
-    ->withHeader("Upload-Length", strval($ds["upload_length"]))
-    ->withHeader("Upload-Offset", strval($newSize));
+    return $response->withStatus(204, $statusMsg)
+      ->withHeader("Tus-Resumable", "1.0.0")
+      ->withHeader("Upload-Length", strval($ds["upload_length"]))
+      ->withHeader("Upload-Offset", strval($newSize));
   });
 
   $group->delete('', function (Request $request, Response $response, array $args): Response {
