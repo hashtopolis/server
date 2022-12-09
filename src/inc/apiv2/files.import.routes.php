@@ -107,6 +107,7 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
     }
 
     updateStorage($id, $update);
+    file_put_contents(getUploadPath($id), '');
 
     // TODO: Hash of filename and/or check if similar named file already exists
     return $response->withStatus(201)
@@ -155,11 +156,15 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
     return $response->withStatus(415, 'Unsupported Media Type');
   }
 
-  // TODO return 404 or 410 if entry is not found
+  /* Return 404 if entry is not found */
   $filename = getUploadPath($args['id']);
-  $currentSize = filesize($filename);
+  if (file_exists($filename) === false) {
+    // TODO: Maybe 410 if actual file still exists and meta file also exists?
+    return $response->withStatus(404, "Upload ID does not exists"); 
+  }
 
-  // Offset mismatch check and 409 Conflict
+  /* Offset mismatch check and 409 Conflict */
+  $currentSize = filesize($filename);
   if ($request->hasHeader('Upload-Offset') == false) {
     return $response->withStatus(409, "Conflict (Upload-Offset header missing)");
   } else {
@@ -180,7 +185,7 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
 
   $ds = getMetaStorage($args['id']);
 
-  // TODO: Implement
+  /* Validate checksum */
   if ($request->hasHeader('Upload-Checksum')) {
     $uploadChecksum = $request->getHeader('Upload-Checksum')[0];
     /* algo base64_checksum */
@@ -229,20 +234,18 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
   if ($ds["upload_length"] == $newSize) {
     /* Process completed file */
     $statusMsg = "All chunks received";
-    if (array_key_exists("upload_completed", $ds) === false) {
-      if (array_key_exists("upload_metadata", $ds) &&
-          array_key_exists("filename", $ds["upload_metadata"])) {
-            $targetFile = $ds["upload_metadata"]["filename"];
-      } else {
-        $targetFile = $args['id'];
-      }
+    if (array_key_exists("upload_metadata", $ds) &&
+        array_key_exists("filename", $ds["upload_metadata"])) {
+          $targetFile = $ds["upload_metadata"]["filename"];
+    } else {
+      $targetFile = $args['id'];
+    }
 
-      $importPath = getImportPath($targetFile);
-      if (!file_exists($importPath)) {
-        rename($filename, $importPath);
-        updateStorage($args['id'], ['upload_completed' => true]);
-      }
-    } 
+    $importPath = getImportPath($targetFile);
+    if (file_exists($importPath) === false) {
+      rename($filename, $importPath);
+      unlink(getMetaPath($args['id']));
+    }
   } else {
     $statusMsg = "Next chunk please";
   }
