@@ -38,7 +38,7 @@ class Hashlists(unittest.TestCase):
         payload = {}
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.status_code, 201, msg=r.text)
 
 
     def test_get_one(self):
@@ -48,31 +48,44 @@ class Hashlists(unittest.TestCase):
         payload = {}
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.status_code, 201, msg=r.text)
+
+
+    def do_patch(self, payload, required_status_code, hashlist_id=1):
+        # TODO: Boring to only request the first one
+        uri = self._cfg['api_endpoint'] + f'/ui/hashlists/{hashlist_id}'
+        headers = self._headers
+
+        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
+        self.assertEqual(r.status_code, required_status_code, msg=r.text)
+
+        if required_status_code != 500:
+            for key in payload.keys():
+                self.assertEqual(r.json()[key], payload[key], msg=r.text)
 
 
     def test_patch(self):
-        # TODO: Boring to only request the first one
         stamp = datetime.datetime.now().isoformat()
-
-        uri = self._cfg['api_endpoint'] + '/ui/hashlists/1'
-        headers = self._headers
-
         payload = {
             'name': f'MyList-{stamp}',
         }
-        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201, msg=r.text)
-        for key in payload.keys():
-            self.assertEqual(r.json()[key], payload[key], msg=r.text)
+        self.do_patch(payload, 201)
 
 
-    def do_create(self, payload, retval):
+    def test_patch_null(self):
+        # Change to null 
+        payload = {
+                'name': None,
+        }
+        self.do_patch(payload, 500)
+
+
+    def do_create(self, payload, required_status_code):
         uri = self._cfg['api_endpoint'] + '/ui/hashlists'
         headers = self._headers
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, retval, msg=r.text)
+        self.assertEqual(r.status_code, required_status_code, msg=r.text)
 
 
     def test_create_wildcard(self):
