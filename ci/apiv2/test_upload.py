@@ -38,8 +38,10 @@ class Files(unittest.TestCase):
             'Authorization': 'Bearer ' + cls._token
         }
 
-    def test_upload(self):
+    
+    def do_upload(self, filename):
         uri = self._cfg['api_endpoint'] + '/ui/files/import'
+
         my_client = tusclient.client.TusClient(uri)
         my_client.set_headers(self._headers)
         
@@ -47,7 +49,7 @@ class Files(unittest.TestCase):
         #res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
         res = '\n'.join([f'Line-{i}' for i in range(N)])
         fs = BytesIO(res.encode('UTF-8'))
-        metadata = {"filename": "foo.csv",
+        metadata = {"filename": filename,
                     "filetype": "application/text"}
         uploader = my_client.uploader(
                 file_stream=fs,
@@ -62,6 +64,22 @@ class Files(unittest.TestCase):
         self.assertEqual(uploader.stop_at, uploader.offset)
 
 
+    def test_upload(self):
+        stamp = datetime.datetime.now().isoformat()
+        filename = f"test_upload_{stamp}.csv"
+        self.do_upload(filename)
+
+
+    def test_upload_existing_file(self):
+        stamp = datetime.datetime.now().isoformat()
+        filename = f"test_existing_file_upload_{stamp}.csv"
+        self.do_upload(filename)
+
+        # Try uploading again
+        with self.assertRaises(tusclient.exceptions.TusCommunicationError) as cm:
+            self.do_upload(filename)
+        self.assertEqual(cm.exception.status_code, 400)
+            
 
 if __name__ == '__main__':
     unittest.main()
