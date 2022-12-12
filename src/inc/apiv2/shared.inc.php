@@ -34,6 +34,31 @@ abstract class AbstractBaseAPI {
     return $this->user;
   }
 
+  /* Convert Database resturn value to JSON object value */
+  private static function db2json(string $type, mixed $val): mixed {
+    if ($type == 'bool') {
+      $obj = ($val == "1") ? True : False;
+    } else {
+      // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
+      $obj = $val;
+    }
+    return $obj;
+  }
+
+
+  /* Convert JSON object value to DB insert value, supported by DBA */
+  private static function json2db(string $type, mixed $obj): string {
+    if ($type == 'bool') {
+        $val = ($obj) ? "1" : "0";
+    } elseif (str_starts_with($type, 'str')) {
+        $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
+    } else {
+        $val = strval($obj);
+    }
+    return $val;
+  }
+
+
   protected function obj2Array(mixed $obj) {  
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
@@ -41,11 +66,8 @@ abstract class AbstractBaseAPI {
 
     $item = [];
     foreach ($features as $NAME => $FEATURE) {
-      if ($FEATURE['type'] == 'bool') {
-        $item[$FEATURE['alias']] = ($kv[$NAME] == 1) ? True : False;
-      } else {
-        $item[$FEATURE['alias']] = $kv[$NAME];
-      }
+      $test = $kv[$NAME];
+      $item[$FEATURE['alias']] = self::db2json($FEATURE['type'], $kv[$NAME]);
     }
     return $item;
   }
@@ -380,11 +402,7 @@ abstract class AbstractBaseAPI {
     // Apply changes 
     foreach($data as $KEY => $VALUE) {
       // Sanity values
-      if (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
-        $val = htmlentities($data[$KEY], ENT_QUOTES, "UTF-8");
-      } else {
-        $val = $VALUE;
-      }
+      $val = self::json2db($mappedFeatures[$KEY]['type'], $data[$KEY]);
       $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
     }
 
