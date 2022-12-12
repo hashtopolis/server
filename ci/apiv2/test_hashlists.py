@@ -32,53 +32,6 @@ class Hashlists(unittest.TestCase):
             'Content-Type': 'application/json'
         }
 
-    def test_get(self):
-        uri = self._cfg['api_endpoint'] + '/ui/hashlists'
-        headers = self._headers
-        payload = {}
-
-        r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201, msg=r.text)
-
-
-    def test_get_one(self):
-        # TODO: Boring to only request the first one
-        uri = self._cfg['api_endpoint'] + '/ui/hashlists/1'
-        headers = self._headers
-        payload = {}
-
-        r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201, msg=r.text)
-
-
-    def do_patch(self, payload, required_status_code, hashlist_id=1):
-        # TODO: Boring to only request the first one
-        uri = self._cfg['api_endpoint'] + f'/ui/hashlists/{hashlist_id}'
-        headers = self._headers
-
-        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, required_status_code, msg=r.text)
-
-        if required_status_code != 500:
-            for key in payload.keys():
-                self.assertEqual(r.json()[key], payload[key], msg=r.text)
-
-
-    def test_patch(self):
-        stamp = datetime.datetime.now().isoformat()
-        payload = {
-            'name': f'MyList-{stamp}',
-        }
-        self.do_patch(payload, 201)
-
-
-    def test_patch_null(self):
-        # Change to null 
-        payload = {
-                'name': None,
-        }
-        self.do_patch(payload, 500)
-
 
     def do_create(self, payload, required_status_code):
         uri = self._cfg['api_endpoint'] + '/ui/hashlists'
@@ -86,6 +39,19 @@ class Hashlists(unittest.TestCase):
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
         self.assertEqual(r.status_code, required_status_code, msg=r.text)
+
+        if required_status_code < 300:
+            retval = r.json()
+            self.assertGreater(retval['hashlistId'], 0)
+            return r.json()
+        else:
+            return None
+
+
+    def do_create_one(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        return self.do_create(payload, 201)
 
 
     def test_create_wildcard(self):
@@ -117,6 +83,57 @@ class Hashlists(unittest.TestCase):
         }
         ''')
         self.do_create(payload, 500)
+
+
+    def test_get(self):
+        uri = self._cfg['api_endpoint'] + '/ui/hashlists'
+        headers = self._headers
+        payload = {}
+
+        r = requests.get(uri, headers=headers, data=json.dumps(payload))
+        self.assertEqual(r.status_code, 201, msg=r.text)
+
+
+    def test_get_one(self):
+        hashlistId = self.do_create_one()['hashlistId']
+        uri = self._cfg['api_endpoint'] + f'/ui/hashlists/{hashlistId}'
+        headers = self._headers
+        payload = {}
+
+        r = requests.get(uri, headers=headers, data=json.dumps(payload))
+        self.assertEqual(r.status_code, 201, msg=r.text)
+
+
+    def do_patch(self, payload, required_status_code, hashlist_id=1):
+        hashlistId = self.do_create_one()['hashlistId']
+        uri = self._cfg['api_endpoint'] + f'/ui/hashlists/{hashlistId}'
+        headers = self._headers
+
+        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
+        self.assertEqual(r.status_code, required_status_code, msg=r.text)
+
+        if required_status_code != 500:
+            for key in payload.keys():
+                self.assertEqual(r.json()[key], payload[key], msg=r.text)
+
+
+    def test_patch(self):
+        stamp = datetime.datetime.now().isoformat()
+        payload = {
+            'name': f'MyList-{stamp}',
+        }
+        self.do_patch(payload, 201)
+
+
+    def test_patch_null(self):
+        # Change to null 
+        payload = {
+                'name': None,
+        }
+        self.do_patch(payload, 500)
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
