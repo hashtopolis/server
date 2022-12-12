@@ -319,19 +319,23 @@ abstract class AbstractBaseAPI {
         ->withHeader("Content-Type", "application/json");
   }
 
-
-  public function getOne(Request $request, Response $response, array $args): Response {
-    $this->preCommon($request);
-
-    $pk = $args['id'];
+  
+  protected function doFetch(Request $request, string $pk): mixed {
     $object = $this->getFactory()->get($pk);
     if ($object === null) {
-      throw new HttpNotFoundException($request, "Object not found!");
-  }
+        throw new HttpNotFoundException($request, "Object not found!");
+    }
 
     if (!$this->checkPermission($object)) {
       throw new HttpForbiddenException($request, "No access to object!");
     }
+    return $object;
+  }
+
+
+  public function getOne(Request $request, Response $response, array $args): Response {
+    $this->preCommon($request);
+    $object = $this->doFetch($request, $args['id']);
 
     $body = $response->getBody();
     $body->write($this->object2JSON($object));
@@ -341,19 +345,13 @@ abstract class AbstractBaseAPI {
   }
 
 
+
+
   public function patchOne(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
+    $object = $this->doFetch($request, $args['id']);
 
-    /* TODO Merge parts with getOne function */
-    $pk = $args['id'];
-    $object = $this->getFactory()->get($pk);
-    if ($object === null) {
-        throw new HttpNotFoundException($request, "Object not found!");
-    }
 
-    if (!$this->checkPermission($object)) {
-      throw new HttpForbiddenException($request, "No access to object!");
-    }
     
     $data = $request->getParsedBody();
     $features = $this->getFeatures();
@@ -407,7 +405,7 @@ abstract class AbstractBaseAPI {
     }
 
     // Return updated object
-    $newObject = $this->getFactory()->get($pk);
+    $newObject = $this->getFactory()->get($object->getId());
 
     $body = $response->getBody();
     $body->write($this->object2JSON($newObject));
@@ -419,16 +417,7 @@ abstract class AbstractBaseAPI {
 
   public function deleteOne(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
-
-    $pk = $args['id'];
-    $object = $this->getFactory()->get($pk);
-    if ($object === null) {
-        throw new HttpNotFoundException($request, "Object not found!");
-    }
-
-    if (!$this->checkPermission($object)) {
-      throw new HttpForbiddenException($request, "No access to object!");
-    }
+    $object = $this->doFetch($request, $args['id']);
 
     /* Actually delete object */
      $this->deleteObject($object);
