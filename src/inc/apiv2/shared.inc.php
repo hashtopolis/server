@@ -298,7 +298,7 @@ abstract class AbstractBaseAPI {
     ];
 
     $body = $response->getBody();
-    $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+    $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
     
     return $response->withStatus(201)
     ->withHeader("Content-Type", "application/json");

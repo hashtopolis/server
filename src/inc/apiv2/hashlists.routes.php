@@ -54,7 +54,7 @@ class HashlistAPI extends AbstractBaseAPI {
       $dummyPost = [];
       switch ($QUERY["sourceType"]) {
         case "paste":
-          $dummyPost["hashfield"] = base64_decode($QUERY[UQueryHashlist::HASHLIST_DATA]);
+          $dummyPost["hashfield"] = base64_decode($QUERY["sourceData"]);
           break;
         case "import":
           $dummyPost["importfile"] = $QUERY["sourceData"];
