@@ -84,6 +84,10 @@ abstract class AbstractBaseAPI {
       $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
       $item['hashType'] = $this->obj2Array($obj);
     }
+    if (in_array('task', $expand, true)) {
+      $obj = Factory::getTaskFactory()->get($item['taskId']);
+      $item['hashType'] = $this->obj2Array($obj);
+    }
     if (in_array('hashes', $expand, true)) {
       $qFs = [];
       $qFs[] = new QueryFilter(Hash::HASHLIST_ID, $item['hashlistId'], "=");
