@@ -57,12 +57,14 @@ class Hashlists(unittest.TestCase):
 
         uri = self._cfg['api_endpoint'] + '/ui/hashlists/1'
         headers = self._headers
-        payload = {'name': f'MyList-{stamp}'}
 
+        payload = {
+            'name': f'MyList-{stamp}',
+        }
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
+        self.assertEqual(r.status_code, 201, msg=r.text)
         for key in payload.keys():
             self.assertEqual(r.json()[key], payload[key], msg=r.text)
-        self.assertEqual(r.status_code, 201, msg=r.text)
 
 
     def do_create(self, payload, retval):
