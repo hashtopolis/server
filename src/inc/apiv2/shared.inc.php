@@ -84,6 +84,19 @@ abstract class AbstractBaseAPI {
       $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
       $item['hashType'] = $this->obj2Array($obj);
     }
+    if (in_array('hashlist', $expand, true)) {
+      $obj = Factory::getHashListFactory()->get($item['hashlistId']);
+      $item['hashlist'] = $this->obj2Array($obj);
+    }
+    if (in_array('chunk', $expand, true)) {
+      if ($item['chunkId'] === null) {
+        /* Chunk expansions are optional, hence the chunk object could be null */
+        $item['chunk'] = null;
+      } else {
+        $obj = Factory::getChunkFactory()->get($item['chunkId']);
+        $item['chunk'] = $this->obj2Array($obj);
+      }
+    }
     if (in_array('task', $expand, true)) {
       $obj = Factory::getTaskFactory()->get($item['taskId']);
       $item['hashType'] = $this->obj2Array($obj);
