@@ -1,16 +1,24 @@
 <?php
+
+use DBA\AccessGroup;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
 
+use DBA\Agent;
+use DBA\AccessGroupUser;
+use DBA\AccessGroupAgent;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\User;
 
+use DBA\ContainFilter;
 use DBA\Factory;
+use DBA\JoinFilter;
 use DBA\QueryFilter;
+use DBA\OrderFilter;
 
 use Middlewares\Utils\HttpErrorException;
 use Slim\Exception\HttpNotImplementedException;
@@ -74,6 +82,22 @@ abstract class AbstractBaseAPI {
   }
 
 
+  /* Quick to resolve objects via ManyToMany relation table */
+  private function joinQuery(mixed $joinFactory, mixed $objFactory, string $joinKey, string $sourceKey, string $sourceValue): array {
+    $jF = new JoinFilter($joinFactory, $joinKey, $sourceKey);
+    $qF = new QueryFilter($sourceKey, $sourceValue, "=", $joinFactory);
+    $joinedObjects = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $searchObjs = $joinedObjects[$objFactory->getModelName()];
+    
+    $ret = [];
+    foreach ($searchObjs as $itemObj) {
+      array_push($ret, $this->obj2Array($itemObj));
+    }
+
+    return $ret;
+  }
+
+
   protected function object2Array(mixed $hashlist, array $expand) {
     $item = $this->obj2Array($hashlist);
     $expanded = [];
@@ -117,6 +141,30 @@ abstract class AbstractBaseAPI {
         case 'task':
           $obj = Factory::getTaskFactory()->get($item['taskId']);
           $item['hashType'] = $this->obj2Array($obj);
+          break;
+        case 'userMembers':
+          $item['userMembers'] = $this->joinQuery(
+            Factory::getAccessGroupUserFactory(),
+            Factory::getUserFactory(),
+            User::USER_ID,
+            AccessGroupUser::USER_ID,
+            $item[AccessGroup::ACCESS_GROUP_ID]
+          );
+        
+          /* Make expansion checking happy */
+          $obj = True;
+          break;      
+        case 'agentMembers':
+          $item['agentMembers'] = $this->joinQuery(
+            Factory::getAccessGroupAgentFactory(),
+            Factory::getAgentFactory(),
+            Agent::AGENT_ID,
+            AccessGroupAgent::AGENT_ID,
+            $item[AccessGroup::ACCESS_GROUP_ID]
+          );
+        
+          /* Make expansion checking happy */
+          $obj = True;
           break;
         default:
           throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");

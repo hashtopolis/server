@@ -29,7 +29,7 @@ class AccessGroupAPI extends AbstractBaseAPI {
     }
 
     protected function getExpandables(): array {
-      return [];
+      return ["userMembers", "agentMembers"];
     }
 
     protected function getFilterACL(): array {
