@@ -88,6 +88,10 @@ abstract class AbstractBaseAPI {
       $obj = Factory::getHashListFactory()->get($item['hashlistId']);
       $item['hashlist'] = $this->obj2Array($obj);
     }
+    if (in_array('rightGroup', $expand, true)) {
+      $obj = Factory::getRightGroupFactory()->get($item['rightGroupId']);
+      $item['rightGroup'] = $this->obj2Array($obj);
+    }
     if (in_array('chunk', $expand, true)) {
       if ($item['chunkId'] === null) {
         /* Chunk expansions are optional, hence the chunk object could be null */
