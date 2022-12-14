@@ -100,84 +100,73 @@ abstract class AbstractBaseAPI {
 
   protected function object2Array(mixed $hashlist, array $expand) {
     $item = $this->obj2Array($hashlist);
-    $expanded = [];
 
     /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
-      $obj = False;
       switch($NAME) {
         case 'accessGroup':
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
-          $item['accessGroup'] = $this->obj2Array($obj);
+          $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'chunk':
           if ($item['chunkId'] === null) {
             /* Chunk expansions are optional, hence the chunk object could be null */
-            $obj = null;
-            $item['chunk'] = null;
+            $item[$NAME] = null;
           } else {
             $obj = Factory::getChunkFactory()->get($item['chunkId']);
-            $item['chunk'] = $this->obj2Array($obj);
+            $item[$NAME] = $this->obj2Array($obj);
           }
           break;
         case 'hashes':
           $qFs = [];
           $qFs[] = new QueryFilter(Hash::HASHLIST_ID, $item['hashlistId'], "=");
           $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qFs]);
-          $item['hashes'] = array_map(array($this, 'obj2Array'), $hashes);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $hashes);
           break;
         case 'hashlist':
           $obj = Factory::getHashListFactory()->get($item['hashlistId']);
-          $item['hashlist'] = $this->obj2Array($obj);
+          $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'hashType':
           $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
-          $item['hashType'] = $this->obj2Array($obj);
+          $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'rightGroup':
         $obj = Factory::getRightGroupFactory()->get($item['rightGroupId']);
-        $item['rightGroup'] = $this->obj2Array($obj);
+        $item[$NAME] = $this->obj2Array($obj);
         break;
         case 'task':
           $obj = Factory::getTaskFactory()->get($item['taskId']);
-          $item['hashType'] = $this->obj2Array($obj);
+          $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'userMembers':
-          $item['userMembers'] = $this->joinQuery(
+          $item[$NAME] = $this->joinQuery(
             Factory::getAccessGroupUserFactory(),
             Factory::getUserFactory(),
             User::USER_ID,
             AccessGroupUser::USER_ID,
             $item[AccessGroup::ACCESS_GROUP_ID]
           );
-        
-          /* Make expansion checking happy */
-          $obj = True;
-          break;      
+          break;    
         case 'agentMembers':
-          $item['agentMembers'] = $this->joinQuery(
+          $item[$NAME] = $this->joinQuery(
             Factory::getAccessGroupAgentFactory(),
             Factory::getAgentFactory(),
             Agent::AGENT_ID,
             AccessGroupAgent::AGENT_ID,
             $item[AccessGroup::ACCESS_GROUP_ID]
           );
-        
-          /* Make expansion checking happy */
-          $obj = True;
           break;
         default:
           throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");
         }
-      /* If object is found, mark expansion completed */
-      if ($obj !== False) {
-        array_push($expanded, $NAME);
-      }
     }
 
-    $expandLeft = array_diff($expand, $expanded);
+    $expandLeft = array_diff($expand, array_keys($item));
     if (sizeof($expandLeft) > 0) {
-      /* This should never happen, since valid parameter checking is done pre-flight in makeExpandables */
+      /* This should never happen, since valid parameter checking is done pre-flight 
+       * in makeExpandables and assignment should be done for every expansion 
+       */
       throw new BadFunctionCallException("Internal error: Expansion(s) '" .  join(',', $expandLeft) . "' not implemented!");
     }
 
