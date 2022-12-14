@@ -1,7 +1,18 @@
 <?php
 
-/* Implementation of TUS protocol 1.0.0
- *    https://tus.io/protocols/resumable-upload.html
+/*  File import API
+ *    Based on TUS protocol: https://tus.io/protocols/resumable-upload.html
+ * 
+ *  1) Client 'Announce' file at ./api/v2/ui/files/import'
+ *      - Ensure Upload-Metadata: filename= base64-encoded-filename is set
+ *  2) Server checks filename does not exists yet:
+ *     - Checked not part of ongoing transfer (<uuid>.part / <uuid>.metatadata in import directory)
+ *     - Checked not uploaded yet (import/<filename>)
+ *     - Checked not present yet (files/<filename>)
+ *     If all conditions are met, upload is created and user informed about UUID to push to.
+ *  3) Client pushes parts to ./api/v2/ui/files/<uuid>
+ *  4) Server check if upload is completed
+ *     - Marks file and stores as import/<filename>
  */ 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
