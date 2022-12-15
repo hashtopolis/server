@@ -104,6 +104,10 @@ abstract class AbstractBaseAPI {
     /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
       switch($NAME) {
+        case 'agents':
+          $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
         case 'accessGroup':
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
           $item[$NAME] = $this->obj2Array($obj);
@@ -116,6 +120,14 @@ abstract class AbstractBaseAPI {
             $obj = Factory::getChunkFactory()->get($item['chunkId']);
             $item[$NAME] = $this->obj2Array($obj);
           }
+          break;
+        case 'crackerBinary':
+          $obj = Factory::getCrackerBinaryFactory()->get($item['crackerBinaryId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'crackerBinaryType':
+          $obj = Factory::getCrackerBinaryTypeFactory()->get($item['crackerBinaryTypeId']);
+          $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'hashes':
           $qFs = [];

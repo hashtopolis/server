@@ -103,7 +103,7 @@ class Task extends AbstractModel {
     $dict['skipKeyspace'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "protected" => False, "alias" => "skipKeyspace"];
     $dict['crackerBinaryId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "crackerBinaryId"];
     $dict['crackerBinaryTypeId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "crackerBinaryTypeId"];
-    $dict['taskWrapperId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "taskWrapperId"];
+    $dict['taskWrapperId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => True, "alias" => "taskWrapperId"];
     $dict['isArchived'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "protected" => False, "alias" => "isArchived"];
     $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "protected" => False, "alias" => "notes"];
     $dict['staticChunks'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "staticChunks"];

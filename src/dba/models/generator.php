@@ -252,7 +252,7 @@ $CONF['Task'] = [
   ['name' => 'skipKeyspace', 'read_only' => False, 'type' => 'int64'],
   ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'taskWrapperId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
   ['name' => 'staticChunks', 'read_only' => False, 'type' => 'int'],
