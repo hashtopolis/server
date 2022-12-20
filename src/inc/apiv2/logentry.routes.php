@@ -68,7 +68,7 @@ class LogEntryAPI extends AbstractBaseAPI {
       /* Hackish way to retreive object since Id is not returned on creation */
       $oF = new OrderFilter(LogEntry::TIME, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-      assert(count($objects) > 1);
+      assert(count($objects) == 1);
 
       return $objects[0]->getId();
     }
