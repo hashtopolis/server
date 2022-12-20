@@ -17,10 +17,11 @@ use DBA\User;
 
 use DBA\ContainFilter;
 use DBA\Factory;
+use DBA\FilePretask;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
-
+use DBA\Pretask;
 use Middlewares\Utils\HttpErrorException;
 use Slim\Exception\HttpNotImplementedException;
 
@@ -158,6 +159,15 @@ abstract class AbstractBaseAPI {
           $obj = Factory::getTaskFactory()->get($item['taskId']);
           $item[$NAME] = $this->obj2Array($obj);
           break;
+        case 'pretaskFiles':
+          $item[$NAME] = $this->joinQuery(
+            Factory::getPretaskFactory(),
+            Factory::getFilePretaskFactory(),
+            Pretask::PRETASK_ID,
+            FilePretask::PRETASK_ID,
+            $item[Pretask::PRETASK_ID]
+          );
+          break;              
         case 'userMembers':
           $item[$NAME] = $this->joinQuery(
             Factory::getAccessGroupUserFactory(),
