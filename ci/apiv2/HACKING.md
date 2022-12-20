@@ -17,6 +17,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
 
 #### v2 beta
 
+# Items with '#' are (partially) implemented
+
 * /api/v2/
   * ./agent   : for now aligning to the PHP-api
   * ./auth    : local OAuth provider
@@ -25,8 +27,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
       * ./{id}                      [GET, PATCH, DELETE]
       * ./{id}/healthchecks         [GET, POST]
       * ./{id}/healthchecks/{id}    [GET, (PATCH?,) DELETE]
-    * ./chunks                      [GET]
-      * ./{id}                      [GET]
+#    * ./chunks                      [GET]
+#      * ./{id}                      [GET]
       * ./{id}/abort                [POST]
       * ./{id}/reset                [POST]
     * ./configs                     [GET, PATCH]
@@ -42,14 +44,14 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
       * ./notification-triggers     [GET]
     * ./files                       [GET, POST]
       * ./{id}                      [GET, PATCH, DELETE]
-    * ./hashes                      [GET (output-format set in GET)]
-      * ./{id}                      [GET (output-format set in GET)]
-    * ./hashlists                   [GET, POST]
-      * ./{id}                      [GET, PATCH, DELETE]
+#    * ./hashes                      [GET (output-format set in GET)]
+#      * ./{id}                      [GET (output-format set in GET)]
+#    * ./hashlists                   [GET, POST]
+#      * ./{id}                      [GET, PATCH, DELETE]
       * ./{id}/add-cracked          [POST]
       * ./{id}/export-cracked       [POST]
-    * ./hashtypes                   [GET, POST]
-      * ./{id}                      [GET, PATCH, DELETE]
+#    * ./hashtypes                   [GET, POST]
+#      * ./{id}                      [GET, PATCH, DELETE]
     * ./logs                        [GET]
       * ./{id}                      [GET]
     * ./notifications               [GET, POST]
@@ -70,8 +72,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
     * ./taskgroups                  [GET]
       * ./{tgid}                    [GET, PATCH, DELETE]
       * ./{tgid}/set-toppriority    [POST]
-    * ./tasks                       [GET, POST]
-      * ./{tid}                     [GET, PATCH, DELETE]
+#    * ./tasks                       [GET, POST]
+#      * ./{tid}                     [GET, PATCH, DELETE]
       * ./{tid}/unassign-agents     [POST]
       * ./{tid}/assign-agents       [POST]
       * ./{tid}/reset               [POST]
@@ -79,10 +81,10 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
     * ./tests                       [-]
       * ./connection                [GET]
       * ./access                    [GET]
-    * ./tokens                      [GET, POST]
-      * ./{tid}                     [GET, PATCH, DELETE]
-    * ./users/                      [GET, POST]
-      * ./{id}                      [GET, PATCH, DELETE]
+#    * ./tokens                      [GET, POST]
+#      * ./{tid}                     [GET, PATCH, DELETE]
+#    * ./users/                      [GET, POST]
+#      * ./{id}                      [GET, PATCH, DELETE]
     * ./vouchers                    [GET, POST]
       * ./{id}                      [GET, PATCH, DELETE]
 
