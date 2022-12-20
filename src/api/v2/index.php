@@ -199,6 +199,7 @@ $app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware s
 $app->addRoutingMiddleware();
 
 require __DIR__ . "/../../inc/apiv2/accessgroups.routes.php";
+require __DIR__ . "/../../inc/apiv2/agents.routes.php";
 require __DIR__ . "/../../inc/apiv2/chunks.routes.php";
 require __DIR__ . "/../../inc/apiv2/crackers.routes.php";
 require __DIR__ . "/../../inc/apiv2/crackertypes.routes.php";

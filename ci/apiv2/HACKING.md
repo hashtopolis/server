@@ -23,8 +23,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
   * ./agent   : for now aligning to the PHP-api
   * ./auth    : local OAuth provider
   * ./ui      : all queries for angular, cli etc.
-    * ./agents                      [GET, POST]
-      * ./{id}                      [GET, PATCH, DELETE]
+#    * ./agents                      [GET, POST]
+#      * ./{id}                      [GET, PATCH, DELETE]
       * ./{id}/healthchecks         [GET, POST]
       * ./{id}/healthchecks/{id}    [GET, (PATCH?,) DELETE]
 #    * ./chunks                      [GET]
