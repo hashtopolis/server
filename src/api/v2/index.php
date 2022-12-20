@@ -212,6 +212,7 @@ require __DIR__ . "/../../inc/apiv2/files.routes.php";
 require __DIR__ . "/../../inc/apiv2/files.import.routes.php";
 require __DIR__ . "/../../inc/apiv2/tasks.routes.php";
 require __DIR__ . "/../../inc/apiv2/users.routes.php";
+require __DIR__ . "/../../inc/apiv2/vouchers.routes.php";
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorHandler = $errorMiddleware->getDefaultErrorHandler();

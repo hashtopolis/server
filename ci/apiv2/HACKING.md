@@ -85,8 +85,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
 #      * ./{tid}                     [GET, PATCH, DELETE]
 #    * ./users/                      [GET, POST]
 #      * ./{id}                      [GET, PATCH, DELETE]
-    * ./vouchers                    [GET, POST]
-      * ./{id}                      [GET, PATCH, DELETE]
+#    * ./vouchers                    [GET, POST]
+#      * ./{id}                      [GET, PATCH, DELETE]
 
 
 #    * ./crackertypes                [GET, POST]

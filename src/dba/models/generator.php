@@ -206,7 +206,7 @@ $CONF['Pretask'] = [
 $CONF['RegVoucher'] = [
   ['name' => 'regVoucherId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'voucher', 'read_only' => False, 'type' => 'str(100)'],
-  ['name' => 'time', 'read_only' => False, 'type' => 'int64']
+  ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True]
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['RightGroup'] = [
@@ -241,25 +241,25 @@ $CONF['Task'] = [
   ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(256)'],
   ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
   ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'keyspace', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'keyspaceProgress', 'read_only' => False, 'type' => 'int64'],
+  ['name' => 'keyspace', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ['name' => 'keyspaceProgress', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
   ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
   ['name' => 'color', 'read_only' => False, 'type' => 'str(50)'],
   ['name' => 'isSmall', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'isCpuTask', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'useNewBench', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'skipKeyspace', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'useNewBench', 'read_only' => True, 'type' => 'bool'],
+  ['name' => 'skipKeyspace', 'read_only' => True, 'type' => 'int64'],
+  ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int'],
+  ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int'],
   ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
-  ['name' => 'staticChunks', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'chunkSize', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'forcePipe', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'usePreprocessor', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'preprocessorCommand', 'read_only' => False, 'type' => 'str(256)']
+  ['name' => 'staticChunks', 'read_only' => True, 'type' => 'int'],
+  ['name' => 'chunkSize', 'read_only' => True, 'type' => 'int64'],
+  ['name' => 'forcePipe', 'read_only' => True, 'type' => 'bool'],
+  ['name' => 'usePreprocessor', 'read_only' => True, 'type' => 'bool'],
+  ['name' => 'preprocessorCommand', 'read_only' => True, 'type' => 'str(256)']
 ];
 $CONF['TaskDebugOutput'] = [
   ['name' => 'taskDebugOutputId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -282,13 +282,13 @@ $CONF['User'] = [
   ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'username', 'read_only' => False, 'type' => 'str(100)'],
   ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
-  ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
-  ['name' => 'passwordSalt', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+  ['name' => 'passwordHash', 'read_only' => False, 'type' => 'str(256)'],
+  ['name' => 'passwordSalt', 'read_only' => False, 'type' => 'str(256)'],
   ['name' => 'isValid', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'isComputedPassword', 'read_only' => True, 'type' => 'bool', 'protected' => True],
-  ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-  ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-  ['name' => 'sessionLifetime', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'isComputedPassword', 'read_only' => False, 'type' => 'bool'],
+  ['name' => 'lastLoginDate', 'read_only' => False, 'type' => 'int64'],
+  ['name' => 'registeredSince', 'read_only' => False, 'type' => 'int64'],
+  ['name' => 'sessionLifetime', 'read_only' => False, 'type' => 'int'],
   ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'yubikey', 'read_only' => False, 'type' => 'str(256)'],
   ['name' => 'otp1', 'read_only' => False, 'type' => 'str(256)'],
