@@ -35,8 +35,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
       * ./recount-cracked           [POST]
       * ./rescan-files              [POST]
     * ./configsections              [GET]
-    * ./crackers                    [GET, POST]
-      * ./{id}                      [GET, PATCH, DELETE]
+#    * ./crackers                    [GET, POST]
+#      * ./{id}                      [GET, PATCH, DELETE]
       * ./{id}/versions             [GET, POST]
       * ./{id}/versions/{id}        [GET, DELETE, PATCH]
     * ./fields                      [-]
@@ -87,6 +87,10 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
 #      * ./{id}                      [GET, PATCH, DELETE]
     * ./vouchers                    [GET, POST]
       * ./{id}                      [GET, PATCH, DELETE]
+
+
+#    * ./crackertypes                [GET, POST]
+#      * ./{id}                      [GET, PATCH, DELETE]
 
 
 #### abbreviations used

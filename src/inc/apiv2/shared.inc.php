@@ -10,6 +10,7 @@ use Slim\Exception\HttpForbiddenException;
 use DBA\Agent;
 use DBA\AccessGroupUser;
 use DBA\AccessGroupAgent;
+use DBA\CrackerBinary;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\User;
@@ -128,6 +129,12 @@ abstract class AbstractBaseAPI {
         case 'crackerBinaryType':
           $obj = Factory::getCrackerBinaryTypeFactory()->get($item['crackerBinaryTypeId']);
           $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'crackerVersions':
+          $qFs = [];
+          $qFs[] = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $item['crackerBinaryTypeId'], "=");
+          $hashes = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $hashes);
           break;
         case 'hashes':
           $qFs = [];
