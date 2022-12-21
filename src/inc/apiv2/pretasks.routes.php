@@ -37,7 +37,7 @@ class PreTaskAPI extends AbstractBaseAPI {
     protected function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
       return [
-        "files" => ['type' => 'str']
+        "files" => ['type' => 'array', 'subtype' => 'int']
       ];
     }
 
