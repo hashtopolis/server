@@ -22,6 +22,8 @@ use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
 use DBA\Pretask;
+use DBA\Supertask;
+use DBA\SupertaskPretask;
 use Middlewares\Utils\HttpErrorException;
 use Slim\Exception\HttpNotImplementedException;
 
@@ -84,16 +86,15 @@ abstract class AbstractBaseAPI {
   }
 
 
-  /* Quick to resolve objects via ManyToMany relation table */
-  private function joinQuery(mixed $joinFactory, mixed $objFactory, string $joinKey, string $sourceKey, string $sourceValue): array {
-    $jF = new JoinFilter($joinFactory, $joinKey, $sourceKey);
-    $qF = new QueryFilter($sourceKey, $sourceValue, "=", $joinFactory);
-    $joinedObjects = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-    $searchObjs = $joinedObjects[$objFactory->getModelName()];
+  
+  /* Quirck to resolve objects via ManyToMany relation table */
+  private function joinQuery(mixed $objFactory, DBA\QueryFilter $qF, DBA\JoinFilter $jF): array {
+    $joined = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $objects = $joined[$objFactory->getModelName()];
     
     $ret = [];
-    foreach ($searchObjs as $itemObj) {
-      array_push($ret, $this->obj2Array($itemObj));
+    foreach ($objects as $object) {
+      array_push($ret, $this->obj2Array($object));
     }
 
     return $ret;
@@ -160,32 +161,29 @@ abstract class AbstractBaseAPI {
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'pretaskFiles':
-          $item[$NAME] = $this->joinQuery(
-            Factory::getPretaskFactory(),
-            Factory::getFilePretaskFactory(),
-            Pretask::PRETASK_ID,
-            FilePretask::PRETASK_ID,
-            $item[Pretask::PRETASK_ID]
-          );
-          break;              
+          /* M2M via FilePretask */
+          $qF = new QueryFilter(FilePretask::PRETASK_ID, $item[Pretask::PRETASK_ID], "=", Factory::getFilePretaskFactory());
+          $jF = new JoinFilter(Factory::getFilePretaskFactory(), Pretask::PRETASK_ID, FilePretask::PRETASK_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
+          break;     
+        case 'pretasks':
+          /* M2M via SupertaskPretask */
+          $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $item[Supertask::SUPERTASK_ID], "=", Factory::getSupertaskPretaskFactory());
+          $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
+          break;                           
         case 'userMembers':
-          $item[$NAME] = $this->joinQuery(
-            Factory::getAccessGroupUserFactory(),
-            Factory::getUserFactory(),
-            User::USER_ID,
-            AccessGroupUser::USER_ID,
-            $item[AccessGroup::ACCESS_GROUP_ID]
-          );
-          break;    
+          /* M2M via AccessGroupUser */
+          $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $item[AccessGroup::ACCESS_GROUP_ID], "=", Factory::getAccessGroupUserFactory());
+          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getUserFactory(), $qF, $jF);
+          break;     
         case 'agentMembers':
-          $item[$NAME] = $this->joinQuery(
-            Factory::getAccessGroupAgentFactory(),
-            Factory::getAgentFactory(),
-            Agent::AGENT_ID,
-            AccessGroupAgent::AGENT_ID,
-            $item[AccessGroup::ACCESS_GROUP_ID]
-          );
-          break;
+          /* M2M via AccessGroupAgent */
+          $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $item[AccessGroupAgent::ACCESS_GROUP_ID], "=", Factory::getAccessGroupAgentFactory());
+          $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
+          break;     
         default:
           throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");
         }
@@ -349,6 +347,15 @@ abstract class AbstractBaseAPI {
           throw new HttpErrorException("Key '$KEY' is not of type string");
         }
         // TODO: Length validation
+      } elseif (str_starts_with($allFeatures[$KEY]['type'], 'array')) {
+        if (is_array($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type array");
+        }
+        if ($allFeatures[$KEY]['subtype'] == 'int') {
+          if (in_array(false, array_map('is_integer', $VALUE)) == true) {
+            throw new HttpErrorException("Key '$KEY' array contains non-integer values");
+          }
+        }
       }
     }
   }
