@@ -124,6 +124,10 @@ abstract class AbstractBaseAPI {
             $item[$NAME] = $this->obj2Array($obj);
           }
           break;
+        case 'configSection':
+          $obj = Factory::getConfigSectionFactory()->get($item['configSectionId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
         case 'crackerBinary':
           $obj = Factory::getCrackerBinaryFactory()->get($item['crackerBinaryId']);
           $item[$NAME] = $this->obj2Array($obj);

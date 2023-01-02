@@ -31,7 +31,7 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
 #      * ./{id}                      [GET]
       * ./{id}/abort                [POST]
       * ./{id}/reset                [POST]
-    * ./configs                     [GET, PATCH]
+#    * ./configs                     [GET, PATCH]
       * ./recount-cracked           [POST]
       * ./rescan-files              [POST]
     * ./configsections              [GET]
