@@ -14,11 +14,11 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class HashlistAPI extends AbstractBaseAPI {
-    protected function getPermission(): string {
+    public function getPermission(): string {
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    protected function getFeatures(): array {
+    public function getFeatures(): array {
       return Hashlist::getFeatures();
     }
 
@@ -26,7 +26,7 @@ class HashlistAPI extends AbstractBaseAPI {
       return Factory::getHashlistFactory();
     }
 
-    protected function getExpandables(): array {
+    public function getExpandables(): array {
       return ["accessGroup", "hashType", "hashes"];
     }
 
@@ -34,7 +34,7 @@ class HashlistAPI extends AbstractBaseAPI {
       return [new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getUser())))];
     }
 
-    protected function getFormFields(): array {
+    public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [
         UQueryHashlist::HASHLIST_SEPARATOR => ['type' => 'str'],

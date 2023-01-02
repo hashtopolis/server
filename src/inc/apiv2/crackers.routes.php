@@ -11,12 +11,12 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class CrackerBinaryAPI extends AbstractBaseAPI {
-    protected function getPermission(): string {
+    public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    protected function getFeatures(): array {
+    public function getFeatures(): array {
       return CrackerBinary::getFeatures();
     }
 
@@ -24,7 +24,7 @@ class CrackerBinaryAPI extends AbstractBaseAPI {
       return Factory::getCrackerBinaryFactory();
     }
 
-    protected function getExpandables(): array {
+    public function getExpandables(): array {
       return ["crackerBinaryType"];
     }
 
@@ -32,7 +32,7 @@ class CrackerBinaryAPI extends AbstractBaseAPI {
       return [];
     }
 
-    protected function getFormFields(): array {
+    public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
     }

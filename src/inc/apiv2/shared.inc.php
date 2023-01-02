@@ -31,12 +31,12 @@ use Slim\Exception\HttpNotImplementedException;
 require_once(dirname(__FILE__) . "/../load.php");
 
 abstract class AbstractBaseAPI {
-  abstract protected function getPermission(): string;
-  abstract protected function getFeatures(): array;
+  abstract public function getPermission(): string;
+  abstract public function getFeatures(): array;
   abstract protected function getFactory(): object;
-  abstract protected function getExpandables(): array;
+  abstract public function getExpandables(): array;
   abstract protected function getFilterACL(): array;
-  abstract protected function getFormFields(): array;
+  abstract public function getFormFields(): array;
 
   abstract protected function createObject($QUERY): int;
   abstract protected function deleteObject(object $object): void;

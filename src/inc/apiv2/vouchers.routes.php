@@ -14,12 +14,12 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class VoucherAPI extends AbstractBaseAPI {
-    protected function getPermission(): string {
+    public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    protected function getFeatures(): array {
+    public function getFeatures(): array {
       return RegVoucher::getFeatures();
     }
 
@@ -27,7 +27,7 @@ class VoucherAPI extends AbstractBaseAPI {
       return Factory::getRegVoucherFactory();
     }
 
-    protected function getExpandables(): array {
+    public function getExpandables(): array {
       return [];
     }
 
@@ -35,7 +35,7 @@ class VoucherAPI extends AbstractBaseAPI {
       return [];
     }
 
-    protected function getFormFields(): array {
+    public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
     }
