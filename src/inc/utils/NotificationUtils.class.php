@@ -12,7 +12,12 @@ class NotificationUtils {
    * @param array $post
    * @throws HTException
    */
-  public static function createNotificaton($actionType, $notification, $receiver, $post) {
+
+  public static function createNotificaton($actionType, $notification, $receiver, $post, $user = null) {
+    if ($user == null) {
+      $user = Login::getInstance()->getUser();
+    };
+
     $receiver = trim($receiver);
     if (!isset(HashtopolisNotification::getInstances()[$notification])) {
       throw new HTException("This notification is not available!");
@@ -24,7 +29,7 @@ class NotificationUtils {
       throw new HTException("You need to fill in a receiver!");
     }
     else if (!AccessControl::getInstance()->hasPermission(DNotificationType::getRequiredPermission($actionType))) {
-      throw new HTException("You are not allowed to use this action type!");
+            throw new HTException("You are not allowed to use this action type!");
     }
     $objectId = null;
     switch (DNotificationType::getObjectType($actionType)) {
@@ -56,12 +61,12 @@ class NotificationUtils {
         if ($post['tasks'] == "ALL") {
           break;
         }
-        $task = TaskUtils::getTask($post['tasks'], Login::getInstance()->getUser());
+        $task = TaskUtils::getTask($post['tasks'], $user);
         $objectId = $task->getId();
         break;
     }
-    
-    $notificationSetting = new NotificationSetting(null, $actionType, $objectId, $notification, Login::getInstance()->getUser()->getId(), $receiver, 1);
+
+    $notificationSetting = new NotificationSetting(null, $actionType, $objectId, $notification, $user->getId(), $receiver, 1);
     Factory::getNotificationSettingFactory()->save($notificationSetting);
   }
   
