@@ -336,25 +336,25 @@ $CONF['FileDelete'] = [
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['HealthCheck'] = [
   ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'time', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'status', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'checkType', 'read_only' => False, 'type' => 'int'],
   ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'expectedCracks', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(256)']
+  ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(256)', 'protected' => True]
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['HealthCheckAgent'] = [
   ['name' => 'healthCheckAgentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'healthCheckId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'status', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'cracked', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'numGpus', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'start', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'end', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'errors', 'read_only' => False, 'type' => 'str(65535)']
+  ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'numGpus', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'start', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ['name' => 'end', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ['name' => 'errors', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True]
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['Speed'] = [

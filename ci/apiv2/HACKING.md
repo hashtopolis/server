@@ -25,8 +25,10 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
   * ./ui      : all queries for angular, cli etc.
 #    * ./agents                      [GET, POST]
 #      * ./{id}                      [GET, PATCH, DELETE]
-      * ./{id}/healthchecks         [GET, POST]
-      * ./{id}/healthchecks/{id}    [GET, (PATCH?,) DELETE]
+#      * ./{id}/healthchecks         [GET, POST]
+#      * ./{id}/healthchecks/{id}    [GET, (PATCH?,) DELETE]
+#      * ./{id}/healthcheckagents    [GET, POST]
+#      * ./{id}/healthcheckagents/{id} [GET, (PATCH?,) DELETE]
 #    * ./chunks                      [GET]
 #      * ./{id}                      [GET]
       * ./{id}/abort                [POST]

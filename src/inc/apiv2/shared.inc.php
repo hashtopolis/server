@@ -18,6 +18,7 @@ use DBA\User;
 use DBA\ContainFilter;
 use DBA\Factory;
 use DBA\FilePretask;
+use DBA\HealthCheck;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
@@ -107,6 +108,10 @@ abstract class AbstractBaseAPI {
     /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
       switch($NAME) {
+        case 'agent':
+          $obj = Factory::getAgentFactory()->get($item['agentId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
         case 'agents':
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
           $item[$NAME] = $this->obj2Array($obj);
@@ -155,6 +160,16 @@ abstract class AbstractBaseAPI {
         case 'hashType':
           $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
           $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'healthCheck':
+          $obj = Factory::getHealthCheckFactory()->get($item['healthCheckId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'healthCheckAgents':
+          $qFs = [];
+          $qFs[] = new QueryFilter(HealthCheck::HEALTH_CHECK_ID, $item['healthCheckId'], "=");
+          $objs = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
           break;
         case 'rightGroup':
         $obj = Factory::getRightGroupFactory()->get($item['rightGroupId']);

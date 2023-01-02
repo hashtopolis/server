@@ -40,13 +40,13 @@ class HealthCheck extends AbstractModel {
   static function getFeatures() {
     $dict = array();
     $dict['healthCheckId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "healthCheckId"];
-    $dict['time'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "protected" => False, "alias" => "time"];
-    $dict['status'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "status"];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "null" => False, "pk" => False, "protected" => True, "alias" => "time"];
+    $dict['status'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => True, "alias" => "status"];
     $dict['checkType'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "checkType"];
     $dict['hashtypeId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "hashtypeId"];
     $dict['crackerBinaryId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "crackerBinaryId"];
-    $dict['expectedCracks'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "expectedCracks"];
-    $dict['attackCmd'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "attackCmd"];
+    $dict['expectedCracks'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => True, "alias" => "expectedCracks"];
+    $dict['attackCmd'] = ['read_only' => True, "type" => "str(256)", "null" => False, "pk" => False, "protected" => True, "alias" => "attackCmd"];
 
     return $dict;
   }
