@@ -48,7 +48,6 @@ class NotificationSettingAPI extends AbstractBaseAPI {
     
 
     protected function createObject($QUERY): int {
-      Login::getInstance()
       $dummyPost = [];
       switch (DNotificationType::getObjectType($QUERY['action'])) {
         case DNotificationObjectType::USER:

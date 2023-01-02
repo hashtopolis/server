@@ -213,6 +213,7 @@ require __DIR__ . "/../../inc/apiv2/hashtypes.routes.php";
 require __DIR__ . "/../../inc/apiv2/healthchecks.routes.php";
 require __DIR__ . "/../../inc/apiv2/healthcheckagents.routes.php";
 require __DIR__ . "/../../inc/apiv2/logentries.routes.php";
+require __DIR__ . "/../../inc/apiv2/notifications.routes.php";
 require __DIR__ . "/../../inc/apiv2/pretasks.routes.php";
 require __DIR__ . "/../../inc/apiv2/preprocessors.routes.php";
 require __DIR__ . "/../../inc/apiv2/supertasks.routes.php";

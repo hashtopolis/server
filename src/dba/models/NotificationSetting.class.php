@@ -38,9 +38,9 @@ class NotificationSetting extends AbstractModel {
     $dict = array();
     $dict['notificationSettingId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "notificationSettingId"];
     $dict['action'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "action"];
-    $dict['objectId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "objectId"];
+    $dict['objectId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => True, "alias" => "objectId"];
     $dict['notification'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "notification"];
-    $dict['userId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "userId"];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => False, "protected" => True, "alias" => "userId"];
     $dict['receiver'] = ['read_only' => False, "type" => "str(256)", "null" => False, "pk" => False, "protected" => False, "alias" => "receiver"];
     $dict['isActive'] = ['read_only' => False, "type" => "bool", "null" => False, "pk" => False, "protected" => False, "alias" => "isActive"];
 

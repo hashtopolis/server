@@ -180,9 +180,9 @@ $CONF['LogEntry'] = [
 $CONF['NotificationSetting'] = [
   ['name' => 'notificationSettingId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'action', 'read_only' => False, 'type' => 'str(50)'],
-  ['name' => 'objectId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'objectId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'notification', 'read_only' => False, 'type' => 'str(50)'],
-  ['name' => 'userId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'receiver', 'read_only' => False, 'type' => 'str(256)'],
   ['name' => 'isActive', 'read_only' => False, 'type' => 'bool']
 ];

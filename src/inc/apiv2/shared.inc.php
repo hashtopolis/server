@@ -190,7 +190,11 @@ abstract class AbstractBaseAPI {
           $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $item[Supertask::SUPERTASK_ID], "=", Factory::getSupertaskPretaskFactory());
           $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
           $item[$NAME] = $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
-          break;                           
+          break;
+        case 'user':
+          $obj = Factory::getUserFactory()->get($item['userId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
         case 'userMembers':
           /* M2M via AccessGroupUser */
           $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $item[AccessGroup::ACCESS_GROUP_ID], "=", Factory::getAccessGroupUserFactory());

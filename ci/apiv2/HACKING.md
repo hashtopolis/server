@@ -58,9 +58,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
       * ./{id}                      [GET]
 #    * ./logentries                   [GET]
 #      * ./{id}                      [GET]
-
-    * ./notifications               [GET, POST]
-      * ./{id}                      [GET, PATCH, ?DELETE?]
+#    * ./notifications               [GET, POST]
+#      * ./{id}                      [GET, PATCH, ?DELETE?]
     * ./notification-settings       [GET, POST]
       * ./{id}                      [GET, PATCH, DELETE]
     * ./permissiongroups            [GET, POST]
