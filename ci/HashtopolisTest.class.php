@@ -13,7 +13,9 @@ abstract class HashtopolisTest {
   
   protected static $status    = 0;
   protected static $testCount = 0;
-  
+ 
+  protected static $failed = array();
+
   protected $user;
   protected $apiKey;
   
@@ -28,7 +30,8 @@ abstract class HashtopolisTest {
     "0.9.0" => "cd2951cd10552114c44c29962ac22efcbabf57c7",
     "0.10.0" => "cdc674f4f375115debd556feda4e7f6e4614a2c6",
     "0.11.0" => "9cdbffcffb46da613c14d2f46266c1c3672e61e7",
-    "0.12.0" => "b53f529f664c866e4d22f5cb348d22eb6f542901"
+    "0.12.0" => "b53f529f664c866e4d22f5cb348d22eb6f542901",
+    "0.13.0" => "c7036800be5b2e21542df0fa9bd4d19ebf7ecdf3"
   ];
   
   public function initAndUpgrade($fromVersion) {
@@ -39,7 +42,7 @@ abstract class HashtopolisTest {
     $this->init($fromVersion);
     
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running upgrades...");
-    include("/var/www/html/hashtopolis/src/install/updates/update.php");
+    include(dirname(__FILE__) ."/../src/install/updates/update.php");
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initialization with upgrade done!");
   }
   
@@ -67,7 +70,7 @@ abstract class HashtopolisTest {
     
     // load DB
     if ($version == "master") {
-      Factory::getAgentFactory()->getDB()->query(file_get_contents("/var/www/html/hashtopolis/src/install/hashtopolis.sql"));
+      Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__) ."/../src/install/hashtopolis.sql"));
     }
     else {
       Factory::getAgentFactory()->getDB()->query(file_get_contents(dirname(__FILE__) . "/files/db_" . $version . ".sql"));
@@ -77,7 +80,6 @@ abstract class HashtopolisTest {
     
     // insert user and api key
     $salt = Util::randomString(30);
-    $PEPPER = ["abcd", "bcde", "cdef", "aaaa"];
     $hash = Encryption::passwordHash(HashtopolisTest::USER_PASS, $salt);
     $this->user = new User(null, 'testuser', '', $hash, $salt, 1, 0, 0, 0, 3600, AccessUtils::getOrCreateDefaultAccessGroup()->getId(), 0, '', '', '', '');
     $this->user = Factory::getUserFactory()->save($this->user);
@@ -99,6 +101,8 @@ abstract class HashtopolisTest {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Test '$test' failed: $error");
     self::$testCount++;
     self::$status = -1;
+
+    self::$failed[] = $test; 
   }
   
   public function validState($response, $assert) {
@@ -118,7 +122,19 @@ abstract class HashtopolisTest {
   public static function getTestCount() {
     return self::$testCount;
   }
+
+  public static function getTestsPassedCount() {
+    return self::$testCount - count(self::$failed);
+  }
   
+  public static function getTestsFailedCount() {
+    return count(self::$failed);
+  }
+
+  public static function getFailedTests() {
+    return self::$failed;
+  }
+ 
   protected function testSuccess($test) {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Test '$test' passed!");
     self::$testCount++;
@@ -134,5 +150,55 @@ abstract class HashtopolisTest {
   
   public function getRunType() {
     return $this->runType;
+  }
+
+  protected function deleteTaskIfExists($name){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "listTasks",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+
+    foreach ($response["tasks"] as $task) {
+      if ($task["name"] == $name) {
+        $response = HashtopolisTestFramework::doRequest([
+          "section" => "task",
+          "request" => "deleteTask",
+          "taskId" => $task["taskId"],
+          "accessKey" => "mykey"
+          ], HashtopolisTestFramework::REQUEST_UAPI
+          );
+          if ($response === false) {
+            return false;
+          }
+        }
+    }
+    return true;
+  }
+
+  protected function deleteFileIfExists($name) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "file",
+      "request" => "listFiles",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+
+    foreach ($response["files"] as $file) {
+      if ($file["filename"] == $name) {
+        $response = HashtopolisTestFramework::doRequest([
+          "section" => "file",
+          "request" => "deleteFile",
+          "fileId" => $file["fileId"],
+          "accessKey" => "mykey"
+        ], HashtopolisTestFramework::REQUEST_UAPI
+        );
+        if ($response === false) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

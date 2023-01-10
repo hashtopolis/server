@@ -21,6 +21,9 @@ class UserAPIHashlist extends UserAPIBasic {
         case USectionHashlist::SET_SECRET:
           $this->setSecret($QUERY);
           break;
+        case USectionHashlist::SET_ARCHIVED:
+          $this->setArchived($QUERY);
+          break;
         case USectionHashlist::IMPORT_CRACKED:
           $this->importCracked($QUERY);
           break;
@@ -212,6 +215,18 @@ class UserAPIHashlist extends UserAPIBasic {
    * @param array $QUERY
    * @throws HTException
    */
+  private function setArchived($QUERY) {
+    if (!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED])) {
+      throw new HTException("Invalid query!");
+    }
+    HashlistUtils::setArchived($QUERY[UQueryHashlist::HASHLIST_ID], $QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->user);
+    $this->sendSuccessResponse($QUERY);
+  }
+  
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
   private function setHashlistName($QUERY) {
     if (!isset($QUERY[UQueryHashlist::HASHLIST_ID]) || !isset($QUERY[UQueryHashlist::HASHLIST_NAME])) {
       throw new HTException("Invalid query!");
@@ -296,7 +311,8 @@ class UserAPIHashlist extends UserAPIBasic {
       UResponseHashlist::HASHLIST_SECRET => ($hashlist->getIsSecret() == 1) ? true : false,
       UResponseHashlist::HASHLIST_SALT_SEPARATOR => $hashlist->getSaltSeparator(),
       UResponseHashlist::HASHLIST_NOTES => $hashlist->getNotes(),
-      UResponseHashlist::HASHLIST_BRAIN => ($hashlist->getBrainId()) ? true : false
+      UResponseHashlist::HASHLIST_BRAIN => ($hashlist->getBrainId()) ? true : false,
+      UResponseHashlist::HASHLIST_IS_ARCHIVED => ($hashlist->getIsArchived()) ? true : false
     ];
     $this->sendResponse($response);
   }
@@ -305,7 +321,11 @@ class UserAPIHashlist extends UserAPIBasic {
    * @param array $QUERY
    */
   private function listHashlists($QUERY) {
-    $hashlists = HashlistUtils::getHashlists($this->user);
+    $archived = false;
+    if (isset($QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED]) && $QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED] == true) {
+      $archived = true;
+    }
+    $hashlists = HashlistUtils::getHashlists($this->user, $archived);
     $lists = [];
     $response = [
       UResponseHashlist::SECTION => $QUERY[UQueryHashlist::SECTION],

@@ -1,100 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="">
-		<meta name="author" content="">
-		<link rel="icon" href="static/logo.png">
 
-		<title>[[$APP_NAME]] [[version]] [ [[host]] ]{{IF strlen([[pageTitle]]) > 0}} - [[pageTitle]]{{ENDIF}}</title>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="static/logo.png">
 
-		<link id="bootstrapCSS" href="static/bootstrap{{IF [[toggledarkmode]] > 0}}.dark{{ENDIF}}.min.css" rel="stylesheet">
+  <title>[[$APP_NAME]] [[version]] [ [[host]] ]{{IF strlen([[pageTitle]]) > 0}} - [[pageTitle]]{{ENDIF}}</title>
 
-		<link href="static/navbar.css" rel="stylesheet">
-		{{IF [[toggledarkmode]] > 0}}<link href="static/bootstrap.dark.custom.css" rel="stylesheet">{{ENDIF}}
-                <link rel="stylesheet" type="text/css" href="static/datatables.min.css">
-		<script type="text/javascript" src="jscolor/jscolor.js"></script>
-		<script src="static/jquery.min.js"></script>
-		<script src="static/js.cookie.min.js"></script>
-		<script src="static/popper.min.js"></script>
-		<script src="static/bootstrap.min.js"></script>
-		<script src="static/chartjs.bundle.min.js"></script>
-                <script type="text/javascript" src="static/datatables.min.js"></script>
+  <link id="bootstrapCSS" href="static/bootstrap{{IF [[toggledarkmode]] > 0}}.dark{{ENDIF}}.min.css" rel="stylesheet">
 
-			{{IF [[autorefresh]] > 0}}
-				<meta http-equiv="refresh" content="[[autorefresh]]{{IF [[strlen([[autorefreshUrl]])]] > 0}}; URL=[[autorefreshUrl]]{{ENDIF}}">
-			{{ENDIF}}
+  <link href="static/navbar.css" rel="stylesheet">
+  {{IF [[toggledarkmode]] > 0}}
+  <link href="static/bootstrap.dark.custom.css" rel="stylesheet">{{ENDIF}}
+  <link rel="stylesheet" type="text/css" href="static/datatables.min.css">
+  <link href="static/select2.min.css" rel="stylesheet" type="text/css">
+  <link href="static/select2-bootstrap-5{{IF [[toggledarkmode]] > 0}}.dark{{ENDIF}}.min.css" rel="stylesheet" type="text/css">
+  <style>
 
-			<script type='text/javascript'>
-			/*$( window ).on( "load", function() {
-				if (typeof Cookies.get('toggledarkmode') === "undefined")
-					$('#bootstrapCSS').attr('href','static/bootstrap.dark.min.css');
-				else 
-					$('#bootstrapCSS').attr('href','static/bootstrap.min.css');
-			});*/
+    /* X-Small devices (portrait phones, less than 576px) */
+    .select2-selection__rendered {
+      max-width: 49vw;
+    }
+    
+    /* Small devices (landscape phones, 576px and up) */
+    @media (min-width: 576px) {
+    .select2-selection__rendered {
+      max-width: 46vw;
+    }
+  }
 
-			function darkMode() {
-				if (typeof Cookies.get('toggledarkmode') === "undefined")
-					Cookies.set('toggledarkmode', '1', { expires: 365 });
-				else
-					Cookies.remove('toggledarkmode');
-				
-				window.location.reload();
-			}
+    /* Medium devices (tablets, 768px and up) */
+    @media (min-width: 768px) {
 
-			function sourceChange(valu) {
-				var pasteObject = document
-						.getElementById("pasteLine");
-				var uploadObject = document
-						.getElementById("uploadLine");
-				var importObject = document
-						.getElementById("importLine");
-				var downloadObject = document
-						.getElementById("downloadLine");
-				switch (valu) {
-				case 'paste':
-					pasteObject.style.display = '';
-					uploadObject.style.display = 'none';
-					importObject.style.display = 'none';
-					downloadObject.style.display = 'none';
-					break;
+    }
 
-				case 'upload':
-					pasteObject.style.display = 'none';
-					uploadObject.style.display = '';
-					importObject.style.display = 'none';
-					downloadObject.style.display = 'none';
-					break;
+    /* Large devices (desktops, 992px and up) */
+    @media (min-width: 992px) {
+      .select2-selection__rendered {
+        max-width: 54vw;
+      }
+    }
 
-				case 'import':
-					pasteObject.style.display = 'none';
-					uploadObject.style.display = 'none';
-					importObject.style.display = '';
-					downloadObject.style.display = 'none';
-					break;
+    /* X-Large devices (large desktops, 1200px and up) */
+    @media (min-width: 1200px) {
+      .select2-selection__rendered {
+        max-width: 68vw;
+      }
+    }
 
-				case 'url':
-					pasteObject.style.display = 'none';
-					uploadObject.style.display = 'none';
-					importObject.style.display = 'none';
-					downloadObject.style.display = '';
-					break;
-				}
-			}
+    /* XX-Large devices (larger desktops, 1400px and up) */
+    @media (min-width: 1400px) {
+      .select2-selection__rendered {
+        max-width: 64vw;
+      }
+    }
+    
+  </style>
+  <script type="text/javascript" src="jscolor/jscolor.js"></script>
+  <script src="static/jquery.min.js"></script>
+  <script src="static/js.cookie.min.js"></script>
+  <script src="static/popper.min.js"></script>
+  <script src="static/bootstrap.min.js"></script>
+  <script src="static/chartjs.bundle.min.js"></script>
+  <script type="text/javascript" src="static/datatables.min.js"></script>
+  <script type="text/javascript" src="static/select2.min.js"></script>
 
-			function checkAll(formname, checktoggle) {
-				var checkboxes = [];
-				checkboxes = document.getElementById(formname)
-						.getElementsByTagName('input');
-				for (var i = 0; i < checkboxes.length; i++) {
-					if (checkboxes[i].type === 'checkbox') {
-						checkboxes[i].checked = checktoggle;
-					}
-				}
-			}
-		</script>
-	</head>
-	<body>
-		<div class="container">
+  {{IF [[autorefresh]] > 0}}
+  <meta http-equiv="refresh"
+    content="[[autorefresh]]{{IF [[strlen([[autorefreshUrl]])]] > 0}}; URL=[[autorefreshUrl]]{{ENDIF}}">
+  {{ENDIF}}
+
+  <script type='text/javascript'>
+    /*$( window ).on( "load", function() {
+      if (typeof Cookies.get('toggledarkmode') === "undefined")
+        $('#bootstrapCSS').attr('href','static/bootstrap.dark.min.css');
+      else 
+        $('#bootstrapCSS').attr('href','static/bootstrap.min.css');
+    });*/
+
+    function darkMode() {
+      if (typeof Cookies.get('toggledarkmode') === "undefined")
+        Cookies.set('toggledarkmode', '1', { expires: 365 });
+      else
+        Cookies.remove('toggledarkmode');
+
+      window.location.reload();
+    }
+
+    function sourceChange(valu) {
+      var pasteObject = document
+        .getElementById("pasteLine");
+      var uploadObject = document
+        .getElementById("uploadLine");
+      var importObject = document
+        .getElementById("importLine");
+      var downloadObject = document
+        .getElementById("downloadLine");
+      switch (valu) {
+        case 'paste':
+          pasteObject.style.display = '';
+          uploadObject.style.display = 'none';
+          importObject.style.display = 'none';
+          downloadObject.style.display = 'none';
+          break;
+
+        case 'upload':
+          pasteObject.style.display = 'none';
+          uploadObject.style.display = '';
+          importObject.style.display = 'none';
+          downloadObject.style.display = 'none';
+          break;
+
+        case 'import':
+          pasteObject.style.display = 'none';
+          uploadObject.style.display = 'none';
+          importObject.style.display = '';
+          downloadObject.style.display = 'none';
+          break;
+
+        case 'url':
+          pasteObject.style.display = 'none';
+          uploadObject.style.display = 'none';
+          importObject.style.display = 'none';
+          downloadObject.style.display = '';
+          break;
+      }
+    }
+
+    function checkAll(formname, checktoggle) {
+      var checkboxes = [];
+      checkboxes = document.getElementById(formname)
+        .getElementsByTagName('input');
+      for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].type === 'checkbox') {
+          checkboxes[i].checked = checktoggle;
+        }
+      }
+    }
+
+    // Set the select2 default theme to be boostrap
+    $.fn.select2.defaults.set("theme", "bootstrap-5");
+  </script>
+</head>
+
+<body>
+  <div class="container">

@@ -70,15 +70,15 @@
 											    {{ENDIF}}
 										    </td>
 										    <td class="right">
-											    {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_PRETASK_ACCESS]])]]}}
-												    <form style ='float: right;' action="pretasks.php?super=true" method="POST" onSubmit="if (!confirm('Really delete preconfigured task [[task.getId()]]?')) return false;">
-													    <input type="hidden" name="action" value="[[$DPretaskAction::DELETE_PRETASK]]">
-													    <input type="hidden" name="pretaskId" value="[[task.getId()]]">
-													    <input type="hidden" name="csrf" value="[[csrf]]">
-                              <button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
-												    </form>
-											    {{ENDIF}}
-										    </td>
+													{{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
+														<form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really remove pretask [[task.getId()]] from this supertask [[supertask.getId()]]?')) return false;">
+															<input type="hidden" name="action" value="[[$DSupertaskAction::REMOVE_PRETASK_FROM_SUPERTASK]]">
+															<input type="hidden" name="supertaskId" value="[[supertask.getId()]]">
+															<input type="hidden" name="pretaskId" value="[[task.getId()]]">
+															<input type="hidden" name="csrf" value="[[csrf]]">
+															<input type="submit" class='btn btn-danger' value="Remove">
+														</form>
+													{{ENDIF}}
 									    </tr>
 								    {{ENDFOREACH}}
 							    </table>

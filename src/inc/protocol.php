@@ -236,6 +236,7 @@ class PQueryRegister extends PQuery {
   
   const VOUCHER    = "voucher";
   const AGENT_NAME = "name";
+  const CPU_ONLY   = "cpu-only";
 }
 
 ######################

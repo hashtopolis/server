@@ -86,6 +86,7 @@
 				  "benchmarkType": "speed",
 				  "statusTimer": 5,
 				  "priority": 0,
+				  "maxAgents": 4,
 				  "isCpuOnly": false,
 				  "isSmall": false,
 				  "skipKeyspace": 0,
@@ -228,6 +229,7 @@
 					    2
 					  ],
 					  "priority": 100,
+					  "maxAgents": 4,
 					  "preprocessorId": 0,
 					  "preprocessorCommand": "",
 					  "accessKey": "mykey"
@@ -253,6 +255,7 @@
 					  "crackerVersionId": 2,
 					  "files": [],
 					  "priority": 99,
+					  "maxAgents": 4,
 					  "preprocessorId": 0,
 					  "preprocessorCommand": "",
 					  "accessKey": "mykey"
@@ -367,6 +370,30 @@
 				{
 				  "section": "task",
 				  "request": "setSupertaskPriority",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
+		\subsection*{\textit{setTaskMaxAgents}}
+			Set the maximum number of assigned agents for a task. Takes effect when agents request a new chunk.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskMaxAgents",
+				  "taskId": 7580,
+				  "maxAgents": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setTaskMaxAgents",
 				  "response": "OK"
 				}
 				\end{verbatim}

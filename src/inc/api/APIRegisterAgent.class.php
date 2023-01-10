@@ -21,9 +21,14 @@ class APIRegisterAgent extends APIBasic {
     
     $name = htmlentities($QUERY[PQueryRegister::AGENT_NAME], ENT_QUOTES, "UTF-8");
     
+    $cpuOnly = 0;
+    if(isset($QUERY[PQueryRegister::CPU_ONLY]) && $QUERY[PQueryRegister::CPU_ONLY] == true){
+        $cpuOnly = 1;
+    }
+    
     //create access token & save agent details
     $token = Util::randomString(10);
-    $agent = new Agent(null, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, 0, "");
+    $agent = new Agent(null, $name, "", -1, "", "", 0, 1, 0, $token, PActions::REGISTER, time(), Util::getIP(), null, $cpuOnly, "");
     
     if (SConfig::getInstance()->getVal(DConfig::VOUCHER_DELETION) == 0) {
       Factory::getRegVoucherFactory()->delete($voucher);

@@ -9,14 +9,16 @@ class File extends AbstractModel {
   private $isSecret;
   private $fileType;
   private $accessGroupId;
+  private $lineCount;
   
-  function __construct($fileId, $filename, $size, $isSecret, $fileType, $accessGroupId) {
+  function __construct($fileId, $filename, $size, $isSecret, $fileType, $accessGroupId, $lineCount) {
     $this->fileId = $fileId;
     $this->filename = $filename;
     $this->size = $size;
     $this->isSecret = $isSecret;
     $this->fileType = $fileType;
     $this->accessGroupId = $accessGroupId;
+    $this->lineCount = $lineCount;
   }
   
   function getKeyValueDict() {
@@ -27,6 +29,7 @@ class File extends AbstractModel {
     $dict['isSecret'] = $this->isSecret;
     $dict['fileType'] = $this->fileType;
     $dict['accessGroupId'] = $this->accessGroupId;
+    $dict['lineCount'] = $this->lineCount;
     
     return $dict;
   }
@@ -95,10 +98,19 @@ class File extends AbstractModel {
     $this->accessGroupId = $accessGroupId;
   }
   
+  function getLineCount() {
+    return $this->lineCount;
+  }
+  
+  function setLineCount($lineCount) {
+    $this->lineCount = $lineCount;
+  }
+  
   const FILE_ID = "fileId";
   const FILENAME = "filename";
   const SIZE = "size";
   const IS_SECRET = "isSecret";
   const FILE_TYPE = "fileType";
   const ACCESS_GROUP_ID = "accessGroupId";
+  const LINE_COUNT = "lineCount";
 }

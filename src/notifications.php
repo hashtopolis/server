@@ -1,6 +1,7 @@
 <?php
 
 use DBA\Agent;
+use DBA\ContainFilter;
 use DBA\Hashlist;
 use DBA\NotificationSetting;
 use DBA\OrderFilter;
@@ -102,7 +103,9 @@ UI::add('actionSettings', "{" . implode(",", $actionSettings) . "}");
 $oF = new OrderFilter(Task::TASK_NAME, "ASC");
 UI::add('allTasks', Factory::getTaskFactory()->filter([Factory::ORDER => $oF]));
 $oF = new OrderFilter(Hashlist::HASHLIST_NAME, "ASC");
-UI::add('allHashlists', Factory::getHashlistFactory()->filter([Factory::ORDER => $oF]));
+$qF1 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser(Login::getInstance()->getUser())));
+$qF2 = new QueryFilter(Hashlist::IS_ARCHIVED, "0", "=");
+UI::add('allHashlists', Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::ORDER => $oF]));
 if (AccessControl::getInstance()->hasPermission(DAccessControl::USER_CONFIG_ACCESS)) {
   $oF = new OrderFilter(User::USERNAME, "ASC");
   UI::add('allUsers', Factory::getUserFactory()->filter([Factory::ORDER => $oF]));

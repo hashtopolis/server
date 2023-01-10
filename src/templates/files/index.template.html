@@ -35,6 +35,7 @@
                   <th>File</th>
                   <th><span class="fas fa-lock" aria-hidden="true"></span></th>
                   <th style="text-align: right">Size</th>
+                  <th style="text-align: right">Line count</th>
                   <th>Access Group</th>
                   <th>Action</th>
                 </tr>
@@ -65,6 +66,9 @@
                       <td class='num' data-sort="[[file.getSize()]]">
                           [[Util::nicenum([[file.getSize()]])]]B
                       </td>
+                      <td class='num'>
+                        [[file.getLineCount()]]
+                      </td>
                       <td>
                         [[accessGroups.getVal([[file.getAccessGroupId()]]).getGroupName()]]
                       </td>
@@ -78,6 +82,12 @@
                              </form>
                             <form class="float-right mx-1" action="files.php?view=[[view]]&edit=[[file.getId()]]" method="POST">
                               <button type="submit" class='btn btn-primary' data-toggle="tooltip" data-placement="top" title="Edit"><i class="fas fa-edit" aria-hidden="true"></i></button>
+                            </form>
+                            <form class="float-right mx-1" action="files.php?view=[[view]]" method="POST">
+                              <input type="hidden" name="action" value="[[$DFileAction::COUNT_FILE_LINES]]">
+                              <input type="hidden" name="csrf" value="[[csrf]]">
+                              <input type="hidden" name="file" value="[[file.getId()]]">
+                              <button type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' data-toggle="tooltip" data-placement="top" title="Recount the lines in this file">✓?</button>
                             </form>
                           {{ENDIF}}
                       </td>

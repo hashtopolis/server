@@ -1,4 +1,4 @@
-# v0.12.0 -> v0.x.x
+# v0.12.0 -> v0.13.0
 
 ## Features
 
@@ -6,6 +6,11 @@
 - Cracked hashes for all hashlists can be shown together (caution: only use when having smaller hashlists).
 - Allow abort all chunks of a specific access group from the User API.
 - Tasks can be set to top priority (to be first in the list) by the User API.
+- Supertask runtime can be estimated on the supertask detail page by entering expected attack speeds for hashcat wordlist and bruteforce attacks.
+- Number of agents per task can be limited (pull request #764).
+- Hashlists can be archived.
+- Added hashtype dropdown autocompletion for creating new hashlists (pull request #781).
+- Allow agents to register as CPU agents only (feature request #805).
 
 ## Bugfixes
 
@@ -21,6 +26,15 @@
 - Adjusted handling to be able to deal with changed mode 22000 output.
 - Fixed pagination of hashes on cracks page.
 - Time of Zaps inserted is now saved.
+- Fixed unable to unassign agent from the task detail screen.
+- Fixed speed graph incorrect when status timer is different from servers default.
+- Fixed sending two to headers when sending emails (issue #751).
+- Fixed access group not being changed on Hashlist detailed screen (issue #765).
+- Fixed missing check on permissions for sending notifications (issue #757).
+- Fixed unassignable agents are shown as assignable (issue #777).
+- Fixed not deleting all references (related to zaps) when deleting hashlist (issue #747).
+- Added check for max length of the attack command (issue #668).
+- Fixed missing flag isArchived on User API getTask requests (issue #794).
 
 ## Enhancements
 
@@ -33,7 +47,9 @@
 - The agent status page shows more detailed information on temperature and usage.
 - JQuery updated to v3.6.0.
 - Print database connection error in UI theme.
-- Agents overview page and agent detail page now show counter for repeating devices
+- Agent detail page now has a hide/show button for the config parameters.
+- Agents overview page and agent detail page now show counter for repeating devices.
+- Increase size of database column for storing agentstats.
 
 # v0.11.0 -> v0.12.0
 

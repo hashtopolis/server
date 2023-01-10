@@ -23,7 +23,7 @@ class FileFactory extends AbstractModelFactory {
    * @return File
    */
   function getNullObject() {
-    $o = new File(-1, null, null, null, null, null);
+    $o = new File(-1, null, null, null, null, null, null);
     return $o;
   }
   
@@ -33,7 +33,7 @@ class FileFactory extends AbstractModelFactory {
    * @return File
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId']);
+    $o = new File($dict['fileId'], $dict['filename'], $dict['size'], $dict['isSecret'], $dict['fileType'], $dict['accessGroupId'], $dict['lineCount']);
     return $o;
   }
   

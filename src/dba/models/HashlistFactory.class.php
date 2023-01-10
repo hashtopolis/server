@@ -23,7 +23,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @return Hashlist
    */
   function getNullObject() {
-    $o = new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new Hashlist(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     return $o;
   }
   
@@ -33,7 +33,7 @@ class HashlistFactory extends AbstractModelFactory {
    * @return Hashlist
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures']);
+    $o = new Hashlist($dict['hashlistId'], $dict['hashlistName'], $dict['format'], $dict['hashTypeId'], $dict['hashCount'], $dict['saltSeparator'], $dict['cracked'], $dict['isSecret'], $dict['hexSalt'], $dict['isSalted'], $dict['accessGroupId'], $dict['notes'], $dict['brainId'], $dict['brainFeatures'], $dict['isArchived']);
     return $o;
   }
   

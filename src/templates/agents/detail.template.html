@@ -6,38 +6,12 @@
   <div class="table-responsive">
     <table class="table table-bordered">
       <tr>
-        <td>Property</td>
-        <td>Value</td>
-      </tr>
-      <tr>
-        <td>ID</td>
+        <td>Agent ID:</td>
         <td>[[agent.getId()]]</td>
       </tr>
+
       <tr>
-        <td>Owner</td>
-        <td>
-          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}
-            <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
-              <input type='hidden' name='action' value='[[$DAgentAction::SET_OWNER]]'>
-              <input type='hidden' name='agentId' value='[[agent.getId()]]'>
-              <input type="hidden" name="csrf" value="[[csrf]]">
-              <div class="form-group">
-                <select class='form-control' name='owner' title="owner">
-                  <option value="">---</option>
-                  {{FOREACH user;[[users]]}}
-                    <option value='[[user.getId()]]' {{IF [[user.getId()]] == [[agent.getUserId()]]}} selected{{ENDIF}}>[[htmlentities([[user.getUsername()]], ENT_QUOTES, "UTF-8")]]</option>
-                  {{ENDFOREACH}}
-                </select>
-              </div>&nbsp;&nbsp;
-              <button type="submit" class="btn {{IF [[toggledarkmode]] > 0}}btn-dark {{ELSE}}btn-light{{ENDIF}}" data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
-            </form>
-          {{ELSE}}
-            [[htmlentities([[Util::getUsernameById([[agent.getUserId()]])]], ENT_QUOTES, "UTF-8")]]
-          {{ENDIF}}
-        </td>
-      </tr>
-      <tr>
-        <td>Activity:</td>
+        <td>Active:</td>
         <td>
           {{IF [[agent.getUserId()]] == [[login.getUserId()]] || [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}
             <form id="active[[agent.getId()]]" action="agents.php?id=[[agent.getId()]]" method="post">
@@ -48,6 +22,48 @@
             </form>
           {{ELSE}}
             <input type="checkbox" {{IF [[agent.getIsActive()]] == 1}} checked{{ENDIF}} disabled title="Is Active">
+          {{ENDIF}}
+        </td>
+      </tr>
+
+      <tr>
+        <td>Last activity:</td>
+        <td>
+          Action: [[agent.getLastAct()]]<br>
+          Time: [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
+          IP:
+          {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
+          <code>[[agent.getLastIp()]]</code>
+          {{ELSE}}
+          <code>Hidden</code>
+          {{ENDIF}}
+        </td>
+      </tr>
+    </table>
+
+    <a class="btn btn-primary accordion-toggle my-2" role="button" onclick="expansionCheck('#showAgentDetails[[agent.getId()]]')" href="#showAgentDetails[[agent.getId()]]" data-toggle="collapse">Show/Hide details</a>
+
+    <table class="table table-bordered accordion-body collapse" id="showAgentDetails[[agent.getId()]]" aria-expanded="true">
+      <tr>
+        <td>Owner</td>
+        <td>
+          {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_AGENT_ACCESS]])]]}}
+          <form class='form-inline' action="agents.php?id=[[agent.getId()]]" method="post">
+            <input type='hidden' name='action' value='[[$DAgentAction::SET_OWNER]]'>
+            <input type='hidden' name='agentId' value='[[agent.getId()]]'>
+            <input type="hidden" name="csrf" value="[[csrf]]">
+            <div class="form-group">
+              <select class='form-control' name='owner' title="owner">
+                <option value="">---</option>
+                {{FOREACH user;[[users]]}}
+                <option value='[[user.getId()]]' {{IF [[user.getId()]] == [[agent.getUserId()]]}} selected{{ENDIF}}>[[htmlentities([[user.getUsername()]], ENT_QUOTES, "UTF-8")]]</option>
+                {{ENDFOREACH}}
+              </select>
+            </div>&nbsp;&nbsp;
+            <button type="submit" class="btn {{IF [[toggledarkmode]] > 0}}btn-dark {{ELSE}}btn-light{{ENDIF}}" data-toggle="tooltip" data-placement="top" title="Set"><i class="fas fa-save" aria-hidden="true"></i></button>
+          </form>
+          {{ELSE}}
+          [[htmlentities([[Util::getUsernameById([[agent.getUserId()]])]], ENT_QUOTES, "UTF-8")]]
           {{ENDIF}}
         </td>
       </tr>
@@ -200,19 +216,6 @@
       </tr>
       {{ENDIF}}
       <tr>
-        <td>Last activity:</td>
-        <td>
-          Action: [[agent.getLastAct()]]<br>
-          Time: [[date([[config.getVal(DConfig::TIME_FORMAT)]], [[agent.getLastTime()]])]]<br>
-          IP:
-          {{IF [[config.getVal([[$DConfig::HIDE_IP_INFO]])]] == 0}}
-            <code>[[agent.getLastIp()]]</code>
-          {{ELSE}}
-            <code>Hidden</code>
-          {{ENDIF}}
-        </td>
-      </tr>
-      <tr>
         <td>Time spent cracking:</td>
         <td>[[Util::sectotime([[timeSpent]])]]</td>
       </tr>
@@ -343,4 +346,11 @@
     </table>
   </div>
 </div>
+
+<script type="text/javascript">
+  $( document ).ready(function() {
+    checkOnLoading("#showAgentDetails[[agent.getId()]]");
+  });
+</script>
+
 {%TEMPLATE->struct/foot%}

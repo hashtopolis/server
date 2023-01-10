@@ -102,7 +102,8 @@ $CONF['File'] = [
   'size',
   'isSecret',
   'fileType',
-  'accessGroupId'
+  'accessGroupId',
+  'lineCount'
 ];
 $CONF['Hash'] = [
   'hashId',
@@ -140,7 +141,8 @@ $CONF['Hashlist'] = [
   'accessGroupId',
   'notes',
   'brainId',
-  'brainFeatures'
+  'brainFeatures',
+  'isArchived'
 ];
 $CONF['HashType'] = [
   'hashTypeId',
@@ -176,6 +178,7 @@ $CONF['Pretask'] = [
   'isCpuTask',
   'useNewBench',
   'priority',
+  'maxAgents',
   'isMaskImport',
   'crackerBinaryTypeId'
 ];
@@ -215,6 +218,7 @@ $CONF['Task'] = [
   'keyspace',
   'keyspaceProgress',
   'priority',
+  'maxAgents',
   'color',
   'isSmall',
   'isCpuTask',

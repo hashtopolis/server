@@ -36,8 +36,8 @@
           <th>Dispatched/Searched</th>
           <th>Cracked</th>
           <th>Agents</th>
-          <th>Files</th>
           <th>Task Priority</th>
+          <th>Max agents</th>
           <th style="min-width: 170px;">Action</th>
         </tr>
       </thead>
@@ -55,7 +55,7 @@
       $(document).ready(function () {
         $('#tasks').DataTable({
           pageLength: 50,
-          "order": [ [7, 'desc'], [0, 'asc'] ],
+          "order": [ [6, 'desc'], [0, 'asc'] ],
           "columnDefs": [
             { "orderable": false, "targets": [3, 8] },
             { "orderable": true, "targets": [0, 1, 2, 4, 5, 6, 7] }

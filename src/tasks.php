@@ -1,5 +1,6 @@
 <?php
 
+use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\Assignment;
 use DBA\Chunk;
@@ -183,7 +184,9 @@ if (isset($_GET['id'])) {
   UI::add('agentsSpeed', $agentsSpeed);
   
   $assignAgents = array();
-  $allAgents = Factory::getAgentFactory()->filter([]);
+  $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $hashlist->getAccessGroupId(), "=");
+  $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroupAgent::AGENT_ID, Agent::AGENT_ID);
+  $allAgents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF])[Factory::getAgentFactory()->getModelName()];
   foreach ($allAgents as $agent) {
     if (!in_array($agent->getId(), $assignedAgents)) {
       $assignAgents[] = $agent;
@@ -296,7 +299,7 @@ if (isset($_GET['id'])) {
   UI::add('pageTitle', "Task details for " . $task->getTaskName());
   
   // load graph data
-  $data = Util::getSpeedDataSet($task->getId());
+  $data = Util::getSpeedDataSet($task->getId(), 50, 0, $task->getStatusTimer());
   if (sizeof($data) > 0) {
     $xlabels = [];
     $rawData = [];

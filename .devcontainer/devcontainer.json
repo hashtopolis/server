@@ -1,0 +1,28 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"name": "Hashtopolis Devcontainer",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "hashtopolis",
+	"runServices": ["db"],
+			
+	"appPort": [8080],
+
+	"workspaceMount": "src=${localWorkspaceFolder},dst=/var/www/html,type=bind,consistency=cached",
+	"workspaceFolder": "/var/www/html",
+
+	"extensions": [
+		"xdebug.php-debug",
+		"bmewburn.vscode-intelephense-client",
+		"editorconfig.editorconfig",
+	],
+	"remoteUser": "vscode",
+	"settings": {
+		"terminal.integrated.profiles.linux":{
+			"bash": {
+			  "path": "bash",
+			  "icon": "terminal-bash"
+			}
+		  },
+		"terminal.integrated.defaultProfile.linux": "bash",
+	},
+}
