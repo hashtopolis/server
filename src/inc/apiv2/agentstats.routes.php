@@ -4,28 +4,28 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Routing\RouteCollectorProxy;
 
-use DBA\Agent;
+use DBA\AgentStat;
 use DBA\Factory;
 
 require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
-class AgentAPI extends AbstractBaseAPI {
+class AgentStatsAPI extends AbstractBaseAPI {
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
     public function getFeatures(): array {
-      return Agent::getFeatures();
+      return AgentStat::getFeatures();
     }
 
     protected function getFactory(): object {
-      return Factory::getAgentFactory();
+      return Factory::getAgentStatFactory();
     }
 
     public function getExpandables(): array {
-      return ['agentstats'];
+      return [];
     }
 
     protected function getFilterACL(): array {
@@ -49,29 +49,27 @@ class AgentAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      Factory::getAgentFactory()->delete($object);
+      Factory::getAgentStatFactory()->delete($object);
     }
 }
 
 
-$app->group("/api/v2/ui/agents", function (RouteCollectorProxy $group) { 
+$app->group("/api/v2/ui/agentstats", function (RouteCollectorProxy $group) { 
     /* Allow CORS preflight requests */
     $group->options('', function (Request $request, Response $response): Response {
         return $response;
     });
 
-    $group->get('', \AgentAPI::class . ':get');
-    //$group->post('', \AgentAPI::class . ':post');
+    $group->get('', \AgentStatsAPI::class . ':get');
 });
 
 
-$app->group("/api/v2/ui/agents/{id}", function (RouteCollectorProxy $group) {
+$app->group("/api/v2/ui/agentstats/{id}", function (RouteCollectorProxy $group) {
     /* Allow preflight requests */
     $group->options('', function (Request $request, Response $response, array $args): Response {
         return $response;
     });
 
-    $group->get('', \AgentAPI::class . ':getOne');
-    $group->patch('', \AgentAPI::class . ':patchOne');
-    $group->delete('', \AgentAPI::class . ':deleteOne');
+    $group->get('', \AgentStatsAPI::class . ':getOne');
+    $group->delete('', \AgentStatsAPI::class . ':deleteOne');
 });

@@ -1,5 +1,7 @@
 <?php
 
+use phpDocumentor\Reflection\PseudoTypes\True_;
+
 $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
@@ -50,10 +52,10 @@ $CONF['AgentError'] = [
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['AgentStat'] = [
   ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'statType', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'time', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'value', 'read_only' => False, 'type' => 'str(128)']
+  ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int'],
+  ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int'],
+  ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64'],
+  ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'str(128)']
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['AgentZap'] = [

@@ -8,6 +8,7 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
 
 use DBA\Agent;
+use DBA\AgentStat;
 use DBA\AccessGroupUser;
 use DBA\AccessGroupAgent;
 use DBA\CrackerBinary;
@@ -115,6 +116,12 @@ abstract class AbstractBaseAPI {
         case 'agents':
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
           $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'agentstats':
+          $qFs = [];
+          $qFs[] = new QueryFilter(AgentStat::AGENT_ID, $item['agentId'], "=");
+          $agentstats = Factory::getAgentStatFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $agentstats);
           break;
         case 'accessGroup':
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);

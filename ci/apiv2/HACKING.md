@@ -29,6 +29,7 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
 #      * ./{id}/healthchecks/{id}    [GET, (PATCH?,) DELETE]
 #      * ./{id}/healthcheckagents    [GET, POST]
 #      * ./{id}/healthcheckagents/{id} [GET, (PATCH?,) DELETE]
+#    * ./agentstats                      [GET, DELETE]
 #    * ./chunks                      [GET]
 #      * ./{id}                      [GET]
       * ./{id}/abort                [POST]
@@ -96,6 +97,8 @@ curl --header "Content-Type: application/json" -X GET --header "Authorization: B
 #    * ./crackertypes                [GET, POST]
 #      * ./{id}                      [GET, PATCH, DELETE]
 
+
+# Type devs mapping static values (StatType), om generator (bvb DAgentStatsType) casten naar field types.
 
 #### abbreviations used
 
