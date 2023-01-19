@@ -202,6 +202,7 @@ require __DIR__ . "/../../inc/apiv2/schema.routes.php";
 require __DIR__ . "/../../inc/apiv2/accessgroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/agents.routes.php";
 require __DIR__ . "/../../inc/apiv2/agentstats.routes.php";
+require __DIR__ . "/../../inc/apiv2/agentbinaries.routes.php";
 require __DIR__ . "/../../inc/apiv2/chunks.routes.php";
 require __DIR__ . "/../../inc/apiv2/configs.routes.php";
 require __DIR__ . "/../../inc/apiv2/configsections.routes.php";

@@ -39,7 +39,7 @@ $CONF['AgentBinary'] = [
   ['name' => 'operatingSystems', 'read_only' => False, 'type' => 'str(50)'],
   ['name' => 'filename', 'read_only' => False, 'type' => 'str(50)'],
   ['name' => 'updateTrack', 'read_only' => False, 'type' => 'str(20)'],
-  ['name' => 'updateAvailable', 'read_only' => False, 'type' => 'str(20)']
+  ['name' => 'updateAvailable', 'read_only' => True, 'type' => 'str(20)', 'protected' => True]
 ];
 $CONF['AgentError'] = [
   ['name' => 'agentErrorId', 'read_only' => True, 'type' => 'int', 'protected' => True],
