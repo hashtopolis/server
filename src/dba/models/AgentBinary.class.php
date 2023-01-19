@@ -42,7 +42,7 @@ class AgentBinary extends AbstractModel {
     $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "operatingSystems"];
     $dict['filename'] = ['read_only' => False, "type" => "str(50)", "null" => False, "pk" => False, "protected" => False, "alias" => "filename"];
     $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "protected" => False, "alias" => "updateTrack"];
-    $dict['updateAvailable'] = ['read_only' => False, "type" => "str(20)", "null" => False, "pk" => False, "protected" => False, "alias" => "updateAvailable"];
+    $dict['updateAvailable'] = ['read_only' => True, "type" => "str(20)", "null" => False, "pk" => False, "protected" => True, "alias" => "updateAvailable"];
 
     return $dict;
   }
