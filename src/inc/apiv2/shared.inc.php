@@ -354,12 +354,19 @@ abstract class AbstractBaseAPI {
     ksort($validFeatures);
 
     // Find keys which are invalid
+    $invalidKeys = [];
     foreach($QUERY as $NAME => $VALUE)  {
       if (!in_array($NAME, $validFeatures)) {
-        throw new HTException("Parameter '" . $NAME . "' is not valid input key (valid keys are: " . join(", ", $validFeatures) . ")");
+        array_push($invalidKeys, $NAME);
       }
     }
-
+    if (sizeof($invalidKeys) == 1) {
+      throw new HTException("Parameter '" . $invalidKeys[0] . "' is not valid input key (valid keys are: " . join(", ", $validFeatures) . ")");
+    } elseif (sizeof($invalidKeys) > 1) {
+      ksort($invalidKeys);
+      throw new HTException("Parameters '" . join(", ", $invalidKeys) . "' are not valid input keys (valid keys are: " . join(", ", $validFeatures) . ")");
+    }
+    
     // Find out about mandatory keys which are not provided
     $missingKeys = [];
     foreach ($features as $NAME => $FEATURE) {
