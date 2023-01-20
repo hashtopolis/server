@@ -11,30 +11,15 @@ import unittest
 import datetime
 from pathlib import Path
 
-import confidence
+import utils
 
 
-class Hashtypes(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Request access TOKEN, used throughout the test
-        cls._cfg = confidence.load_name('hashtopolis-test')
-        cls._uri = cls._cfg['hashtopolis_uri'] + '/api/v2/ui/hashtypes'
-
-        uri = cls._cfg['api_endpoint'] + '/auth/token'
-        auth = (cls._cfg['username'], cls._cfg['password'])
-        r = requests.post(uri, auth=auth)
-
-        cls._token = r.json()['token']
-        cls._token_expires = r.json()['expires']
-
-        cls._headers = {
-            'Authorization': 'Bearer ' + cls._token,
-            'Content-Type': 'application/json'
-        }
-
+class Hashtypes(utils.TestBase):
+    def getBaseURI(self):
+        return '/ui/hashtypes'
+    
     def do_get(self):
-        uri = self._uri
+        uri = self.getURI()
         headers = self._headers
         payload = {}
 
@@ -47,7 +32,7 @@ class Hashtypes(unittest.TestCase):
         # TODO: Boring to only request the first one
         obj = self.do_get()['values'][0]
 
-        uri = self._cfg['hashtopolis_uri'] + obj['_self']
+        uri = self.getURI(obj)
         headers = self._headers
         payload = {}
 
@@ -60,8 +45,7 @@ class Hashtypes(unittest.TestCase):
         stamp = datetime.datetime.now().isoformat()
 
         obj = self.do_get()['values'][0]
-
-        uri = self._cfg['hashtopolis_uri'] + obj['_self']
+        uri = uri = self.getURI(obj)
         headers = self._headers
         
         payload = {
@@ -77,7 +61,7 @@ class Hashtypes(unittest.TestCase):
         
 
     def do_create(self, payload, retval):
-        uri = self._cfg['api_endpoint'] + '/ui/hashtypes'
+        uri = uri = self.getURI()
         headers = self._headers
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))

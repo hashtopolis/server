@@ -11,29 +11,15 @@ import unittest
 import datetime
 from pathlib import Path
 
-import confidence
+import utils
 
 
-class Crackers(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Request access TOKEN, used throughout the test
-        cls._cfg = confidence.load_name('hashtopolis-test')
-
-        uri = cls._cfg['api_endpoint'] + '/auth/token'
-        auth = (cls._cfg['username'], cls._cfg['password'])
-        r = requests.post(uri, auth=auth)
-
-        cls._token = r.json()['token']
-        cls._token_expires = r.json()['expires']
-
-        cls._headers = {
-            'Authorization': 'Bearer ' + cls._token,
-            'Content-Type': 'application/json'
-        }
+class Crackers(utils.TestBase):
+    def getBaseURI(self):
+        return "/ui/crackers"
 
     def test_get(self):
-        uri = self._cfg['api_endpoint'] + '/ui/crackers'
+        uri = self.getURI()
         headers = self._headers
         payload = {}
 
@@ -43,7 +29,7 @@ class Crackers(unittest.TestCase):
 
     def test_get_one(self):
         # TODO: Boring to only request the first one
-        uri = self._cfg['api_endpoint'] + '/ui/crackers/1'
+        uri = self.getURI(1)
         headers = self._headers
         payload = {}
 
@@ -53,11 +39,10 @@ class Crackers(unittest.TestCase):
 
     def test_patch(self):
         # TODO: Boring to only request the first one
-        stamp = datetime.datetime.now().isoformat()
-
-        uri = self._cfg['api_endpoint'] + '/ui/crackers/1'
+        uri = self.getURI(1)
         headers = self._headers
         
+        stamp = datetime.datetime.now().isoformat()
         payload = {
             'binaryName': f'Hashcat - {stamp}'
         }
@@ -68,7 +53,7 @@ class Crackers(unittest.TestCase):
         
 
     def do_create(self, payload, retval):
-        uri = self._cfg['api_endpoint'] + '/ui/crackers'
+        uri = self.getURI()
         headers = self._headers
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))

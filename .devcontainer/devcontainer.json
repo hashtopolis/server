@@ -14,6 +14,7 @@
 		"xdebug.php-debug",
 		"bmewburn.vscode-intelephense-client",
 		"editorconfig.editorconfig",
+    "ms-python.python",
 	],
 	"remoteUser": "vscode",
 	"settings": {

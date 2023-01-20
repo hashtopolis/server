@@ -41,6 +41,11 @@ RUN apt-get update \
     # Enable URL rewriting using .htaccess
     && a2enmod rewrite \
 
+    # Install python (unittests)
+    && apt-get install -y python3 python3-pip \
+    # TODO: Should source from ./ci/apiv2/requirements.txt
+    && pip3 install requests pytest confidence tuspy \
+
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
@@ -57,7 +62,7 @@ RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-dat
     && chmod g+w /var/www
 
 WORKDIR /var/www
-USER vscode
+user vscode
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog

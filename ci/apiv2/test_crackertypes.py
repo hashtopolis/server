@@ -11,30 +11,15 @@ import unittest
 import datetime
 from pathlib import Path
 
-import confidence
+import utils
 
 
-class Crackers(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Request access TOKEN, used throughout the test
-        cls._cfg = confidence.load_name('hashtopolis-test')
-        cls._uri = cls._cfg['hashtopolis_uri'] + '/api/v2/ui/crackertypes'
-
-        uri = cls._cfg['api_endpoint'] + '/auth/token'
-        auth = (cls._cfg['username'], cls._cfg['password'])
-        r = requests.post(uri, auth=auth)
-
-        cls._token = r.json()['token']
-        cls._token_expires = r.json()['expires']
-
-        cls._headers = {
-            'Authorization': 'Bearer ' + cls._token,
-            'Content-Type': 'application/json'
-        }
-
+class CrackerTypes(utils.TestBase):
+    def getBaseURI(self):
+        return "/ui/crackertypes"
+        
     def do_get(self):
-        uri = self._uri
+        uri = self.getURI()
         headers = self._headers
         payload = {}
 
@@ -53,7 +38,7 @@ class Crackers(unittest.TestCase):
 
 
     def do_delete(self, obj_uri, retval):
-        uri = self._cfg['hashtopolis_uri'] + obj_uri
+        uri = self.getURI(obj_uri)
         headers = self._headers
         payload = {}
 
@@ -62,7 +47,7 @@ class Crackers(unittest.TestCase):
 
 
     def test_get(self):
-        uri = self._uri
+        uri = self.getURI()
         headers = self._headers
         payload = {}
 
@@ -71,7 +56,7 @@ class Crackers(unittest.TestCase):
 
 
     def test_get_first_one(self):
-        uri = self._cfg['hashtopolis_uri'] + self.do_get()['values'][0]['_self']
+        uri = self.getURI(self.do_get()['values'][0])
         headers = self._headers
         payload = {}
 
@@ -83,7 +68,7 @@ class Crackers(unittest.TestCase):
         payload = { "typeName": "generic", "isChunkingAvailable": True}
         obj = self.do_create(payload, 201)
 
-        uri = self._cfg['hashtopolis_uri'] + obj['_self']
+        uri = self.getURI(obj)
         headers = self._headers
         
         payload = {
@@ -94,7 +79,7 @@ class Crackers(unittest.TestCase):
         for key in payload.keys():
             self.assertEqual(r.json()[key], payload[key], msg=r.text)
 
-        self.do_delete(obj['_self'], 204)
+        self.do_delete(obj, 204)
         
 
     def test_add_version_delete_object(self):
@@ -117,14 +102,14 @@ class Crackers(unittest.TestCase):
         self.assertEqual(r.status_code, 201, msg=r.text)
 
         # Delete cracker type
-        self.do_delete(obj['_self'], 204)
+        self.do_delete(obj, 204)
 
 
     def test_create_wildcard(self):
         for p in sorted(Path(__file__).parent.glob('create_crackertypes_*.json')):
             payload = json.loads(p.read_text('UTF-8'))
             obj = self.do_create(payload, 201)
-            self.do_delete(obj['_self'], 204)
+            self.do_delete(obj, 204)
 
 
 if __name__ == '__main__':

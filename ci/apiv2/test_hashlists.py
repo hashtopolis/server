@@ -11,30 +11,15 @@ import unittest
 import datetime
 from pathlib import Path
 
-import confidence
+import utils
 
 
-class Hashlists(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Request access TOKEN, used throughout the test
-        cls._cfg = confidence.load_name('hashtopolis-test')
-
-        uri = cls._cfg['api_endpoint'] + '/auth/token'
-        auth = (cls._cfg['username'], cls._cfg['password'])
-        r = requests.post(uri, auth=auth)
-
-        cls._token = r.json()['token']
-        cls._token_expires = r.json()['expires']
-
-        cls._headers = {
-            'Authorization': 'Bearer ' + cls._token,
-            'Content-Type': 'application/json'
-        }
-
+class Hashlists(utils.TestBase):
+    def getBaseURI(self):
+        return '/ui/hashlists'
 
     def do_create(self, payload, required_status_code):
-        uri = self._cfg['api_endpoint'] + '/ui/hashlists'
+        uri = self.getURI()
         headers = self._headers
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
@@ -86,7 +71,7 @@ class Hashlists(unittest.TestCase):
 
 
     def test_get(self):
-        uri = self._cfg['api_endpoint'] + '/ui/hashlists'
+        uri = self.getURI()
         headers = self._headers
         payload = {}
 
@@ -95,8 +80,8 @@ class Hashlists(unittest.TestCase):
 
 
     def test_get_one(self):
-        hashlistId = self.do_create_one()['hashlistId']
-        uri = self._cfg['api_endpoint'] + f'/ui/hashlists/{hashlistId}'
+        obj = self.do_create_one()
+        uri = self.getURI(obj)
         headers = self._headers
         payload = {}
 
@@ -105,8 +90,8 @@ class Hashlists(unittest.TestCase):
 
 
     def do_patch(self, payload, required_status_code, hashlist_id=1):
-        hashlistId = self.do_create_one()['hashlistId']
-        uri = self._cfg['api_endpoint'] + f'/ui/hashlists/{hashlistId}'
+        obj = self.do_create_one()
+        uri = self.getURI(obj)
         headers = self._headers
 
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))

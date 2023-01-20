@@ -4,43 +4,32 @@
 # PoC testing/development framework for APIv2 upload TUS
 #
 # Nice helper: $sudo justniffer -i lo -r
-
-import json
-import requests
 import unittest
 import datetime
 import logging
 from io import BytesIO
-from pathlib import Path
-import string
-import random
 
-import confidence
+
 import tusclient.client
+
+import utils
 
 #logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-class Files(unittest.TestCase):
+class Files(utils.TestBase):
+    def getBaseURI(self):
+        return '/ui/files/import'
+        
     @classmethod
     def setUpClass(cls):
-        # Request access TOKEN, used throughout the test
-        cls._cfg = confidence.load_name('hashtopolis-test')
+        super().setUpClass()
+        # Remove preset 'Content-Type' header, since this will bork the file uploader
+        del cls._headers['Content-Type']
 
-        uri = cls._cfg['api_endpoint'] + '/auth/token'
-        auth = (cls._cfg['username'], cls._cfg['password'])
-        r = requests.post(uri, auth=auth)
 
-        cls._token = r.json()['token']
-        cls._token_expires = r.json()['expires']
-
-        cls._headers = {
-            'Authorization': 'Bearer ' + cls._token
-        }
-
-    
     def do_upload(self, filename):
-        uri = self._cfg['api_endpoint'] + '/ui/files/import'
+        uri = self.getURI()
 
         my_client = tusclient.client.TusClient(uri)
         my_client.set_headers(self._headers)
