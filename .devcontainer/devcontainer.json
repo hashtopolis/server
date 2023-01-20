@@ -14,7 +14,6 @@
 		"xdebug.php-debug",
 		"bmewburn.vscode-intelephense-client",
 		"editorconfig.editorconfig",
-		"zobo.php-intellisense",
 	],
 	"remoteUser": "vscode",
 	"settings": {
