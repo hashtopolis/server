@@ -13,14 +13,22 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class HashAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/hashes";
+    }
+
+    public static function getAvailableMethods(): array {
+      return ['GET'];
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Hash::getFeatures();
-    }
+    public static function getDBAclass(): string {
+      return Hash::class;
+    }   
 
     protected function getFactory(): object {
       return Factory::getHashFactory();
@@ -57,23 +65,3 @@ class HashAPI extends AbstractBaseAPI {
       assert(False, "Chunks cannot be deleted via API");
     }
 }
-
-
-$app->group("/api/v2/ui/hashes", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \HashAPI::class . ':get');
-});
-
-
-$app->group("/api/v2/ui/hashes/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \HashAPI::class . ':getOne');
-});

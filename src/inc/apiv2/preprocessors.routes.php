@@ -13,13 +13,17 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class PreprocessorAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/preprocessors";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Preprocessor::getFeatures();
+    public static function getDBAclass(): string {
+      return Preprocessor::class;
     }
 
     protected function getFactory(): object {
@@ -74,25 +78,4 @@ class PreprocessorAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/preprocessors", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \PreprocessorAPI::class . ':get');
-    $group->post('', \PreprocessorAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/preprocessors/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \PreprocessorAPI::class . ':getOne');
-    $group->patch('', \PreprocessorAPI::class . ':patchOne');
-    $group->delete('', \PreprocessorAPI::class . ':deleteOne');
-});
+PreprocessorAPI::register($app);

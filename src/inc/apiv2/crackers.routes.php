@@ -6,14 +6,24 @@ use Slim\Routing\RouteCollectorProxy;
 
 use DBA\CrackerBinary;
 use DBA\Factory;
+use DBA\QueryFilter;
+use DBA\OrderFilter;
 
 require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class CrackerBinaryAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/crackers";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
+    }
+
+    public static function getDBAclass(): string {
+      return CrackerBinary::class;
     }
 
     public function getFeatures(): array {
@@ -51,33 +61,26 @@ class CrackerBinaryAPI extends AbstractBaseAPI {
         $QUERY[CrackerBinary::CRACKER_BINARY_TYPE_ID]
       );
 
-      return $object->getId();
+      /* On succesfully insert, return ID */
+      $qFs = [
+        new QueryFilter(CrackerBinary::VERSION, $QUERY[CrackerBinary::VERSION], '='),
+        new QueryFilter(CrackerBinary::BINARY_NAME, $QUERY[CrackerBinary::BINARY_NAME], '='),
+        new QueryFilter(CrackerBinary::DOWNLOAD_URL, $QUERY[CrackerBinary::DOWNLOAD_URL], '='),
+        new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $QUERY[CrackerBinary::CRACKER_BINARY_TYPE_ID], '='),
+
+      ];
+
+      /* Hackish way to retreive object since Id is not returned on creation */
+      $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
+      $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
+      /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
+      assert(count($objects) > 0);
+      
+      return $objects[0]->getId();
     }
 
     protected function deleteObject(object $object): void {
       Factory::getCrackerBinaryFactory()->delete($object);
     }
 }
-
-
-$app->group("/api/v2/ui/crackers", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \CrackerBinaryAPI::class . ':get');
-    $group->post('', \CrackerBinaryAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/crackers/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \CrackerBinaryAPI::class . ':getOne');
-    $group->patch('', \CrackerBinaryAPI::class . ':patchOne');
-    $group->delete('', \CrackerBinaryAPI::class . ':deleteOne');
-});
+CrackerBinaryAPI::register($app);

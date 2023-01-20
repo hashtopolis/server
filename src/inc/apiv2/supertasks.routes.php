@@ -13,13 +13,17 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class SupertaskAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/supertasks";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Supertask::getFeatures();
+    public static function getDBAclass(): string {
+      return Supertask::class;
     }
 
     protected function getFactory(): object {
@@ -72,25 +76,4 @@ class SupertaskAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/supertasks", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \SupertaskAPI::class . ':get');
-    $group->post('', \SupertaskAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/supertasks/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \SupertaskAPI::class . ':getOne');
-    $group->patch('', \SupertaskAPI::class . ':patchOne');
-    $group->delete('', \SupertaskAPI::class . ':deleteOne');
-});
+SupertaskAPI::register($app);

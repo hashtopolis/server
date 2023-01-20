@@ -14,15 +14,19 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class FileAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/files";
+    }
+  
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return File::getFeatures();
-    }
-
+    public static function getDBAclass(): string {
+      return Files::class;
+    }   
+    
     protected function getFactory(): object {
       return Factory::getFileFactory();
     }
@@ -161,25 +165,4 @@ class FileAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/files", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \FileAPI::class . ':get');
-    $group->post('', \FileAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/files/{id:[0-9]+}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \FileAPI::class . ':getOne');
-    $group->patch('', \FileAPI::class . ':patchOne');
-    $group->delete('', \FileAPI::class . ':deleteOne');
-});
+FileAPI::register($app);

@@ -15,13 +15,17 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class UserAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/users";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return User::getFeatures();
+    public static function getDBAclass(): string {
+      return User::class;
     }
 
     protected function getFactory(): object {
@@ -77,26 +81,4 @@ class UserAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/users", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \UserAPI::class . ':get');
-    $group->post('', \UserAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/users/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \UserAPI::class . ':getOne');
-    /* FIXME: Duplicate groupNames are allowed when using patches, how-ever on creation this is checked */
-    $group->patch('', \UserAPI::class . ':patchOne');
-    $group->delete('', \UserAPI::class . ':deleteOne');
-});
+UserAPI::register($app);

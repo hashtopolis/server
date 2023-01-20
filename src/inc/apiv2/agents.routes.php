@@ -11,13 +11,21 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class AgentAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/agents";
+    }
+
+    public static function getAvailableMethods(): array {
+      return ['GET', 'PATCH', 'DELETE'];
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Agent::getFeatures();
+    public static function getDBAclass(): string {
+      return Agent::class;
     }
 
     protected function getFactory(): object {
@@ -42,7 +50,6 @@ class AgentAPI extends AbstractBaseAPI {
       return true;
     }
     
-
     protected function createObject($QUERY): int {
       assert(False, "Chunks cannot be created via API");
       return -1;
@@ -53,25 +60,4 @@ class AgentAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/agents", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \AgentAPI::class . ':get');
-    //$group->post('', \AgentAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/agents/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \AgentAPI::class . ':getOne');
-    $group->patch('', \AgentAPI::class . ':patchOne');
-    $group->delete('', \AgentAPI::class . ':deleteOne');
-});
+AgentAPI::register($app);

@@ -13,14 +13,22 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class ChunkAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/chunks";
+    }
+
+    public static function getAvailableMethods(): array {
+      return ['GET'];
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Chunk::getFeatures();
-    }
+    public static function getDBAclass(): string {
+      return Chunk::class;
+    }   
 
     protected function getFactory(): object {
       return Factory::getChunkFactory();
@@ -84,44 +92,34 @@ class ChunkAPI extends AbstractBaseAPI {
       return $response->withStatus(204)
       ->withHeader("Content-Type", "application/json");
     }
+
+    /* Override since we have custom functions to add */
+    static public function register($app): void {
+      parent::register($app);
+
+      $me = get_called_class();
+      $baseUri = $me::getBaseUri();
+      $baseUriOne = $baseUri . '/{id}';
+
+      $app->group($baseUriOne . "/abort", function (RouteCollectorProxy $group) {
+        /* Allow preflight requests */
+        $group->options('', function (Request $request, Response $response, array $args): Response {
+            return $response;
+        });
+      
+        $group->post('', self::class . ':abortOne');
+      });
+      
+      
+      $app->group($baseUriOne . "/reset", function (RouteCollectorProxy $group) {
+        /* Allow preflight requests */
+        $group->options('', function (Request $request, Response $response, array $args): Response {
+            return $response;
+        });
+      
+        $group->post('', self::class . ':resetOne');
+      });
+    }
 }
 
-
-$app->group("/api/v2/ui/chunks", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \ChunkAPI::class . ':get');
-});
-
-
-$app->group("/api/v2/ui/chunks/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \ChunkAPI::class . ':getOne');
-});
-
-
-$app->group("/api/v2/ui/chunks/{id}/abort", function (RouteCollectorProxy $group) {
-  /* Allow preflight requests */
-  $group->options('', function (Request $request, Response $response, array $args): Response {
-      return $response;
-  });
-
-  $group->post('', \ChunkAPI::class . ':abortOne');
-});
-
-
-$app->group("/api/v2/ui/chunks/{id}/reset", function (RouteCollectorProxy $group) {
-  /* Allow preflight requests */
-  $group->options('', function (Request $request, Response $response, array $args): Response {
-      return $response;
-  });
-
-  $group->post('', \ChunkAPI::class . ':resetOne');
-});
+ChunkAPI::register($app);

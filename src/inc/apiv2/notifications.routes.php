@@ -15,13 +15,17 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class NotificationSettingAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/notifications";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return NotificationSetting::getFeatures();
+    public static function getDBAclass(): string {
+      return NotificationSetting::class;
     }
 
     protected function getFactory(): object {
@@ -94,25 +98,4 @@ class NotificationSettingAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/notifications", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \NotificationSettingAPI::class . ':get');
-    $group->post('', \NotificationSettingAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/notifications/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \NotificationSettingAPI::class . ':getOne');
-    $group->patch('', \NotificationSettingAPI::class . ':patchOne');
-    $group->delete('', \NotificationSettingAPI::class . ':deleteOne');
-});
+NotificationSettingAPI::register($app);

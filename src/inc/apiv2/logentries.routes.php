@@ -15,13 +15,17 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class LogEntryAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/logentries";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return LogEntry::getFeatures();
+    public static function getDBAclass(): string {
+      return LogEntry::class;
     }
 
     protected function getFactory(): object {
@@ -78,25 +82,4 @@ class LogEntryAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/logentries", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \LogEntryAPI::class . ':get');
-    $group->post('', \LogEntryAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/logentries/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \LogEntryAPI::class . ':getOne');
-    $group->patch('', \LogEntryAPI::class . ':patchOne');
-    $group->delete('', \LogEntryAPI::class . ':deleteOne');
-});
+LogEntryAPI::register($app);

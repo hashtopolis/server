@@ -15,13 +15,16 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class HealthCheckAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/healthchecks";
+    }
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return HealthCheck::getFeatures();
+    public static function getDBAclass(): string {
+      return HealthCheck::class;
     }
 
     protected function getFactory(): object {
@@ -62,25 +65,4 @@ class HealthCheckAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/healthchecks", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \HealthCheckAPI::class . ':get');
-    $group->post('', \HealthCheckAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/healthchecks/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \HealthCheckAPI::class . ':getOne');
-    $group->patch('', \HealthCheckAPI::class . ':patchOne');
-    $group->delete('', \HealthCheckAPI::class . ':deleteOne');
-});
+HealthCheckAPI::register($app);

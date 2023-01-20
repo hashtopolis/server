@@ -96,6 +96,20 @@ $container->set("HttpBasicAuthentication", function (\Psr\Container\ContainerInt
     ]);
 });
 
+/* Quick to create auto-generated lookup table between DBA Objects and APIv2 classes */
+class ClassMapper {
+  private $store = array();  
+  public function add($key, $value) : void {
+    $this->store[$key] = $value;
+  }
+  public function get($key): string {
+    return $this->store[$key];
+  }
+}
+
+$container->set("classMapper", function() {
+  return new ClassMapper();
+});
 
 /* API token validation */
 $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface $container) {

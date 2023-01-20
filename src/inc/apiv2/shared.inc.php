@@ -6,11 +6,13 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Routing\RouteContext;
 
 use DBA\Agent;
 use DBA\AgentStat;
 use DBA\AccessGroupUser;
 use DBA\AccessGroupAgent;
+use DBA\AgentBinary;
 use DBA\CrackerBinary;
 use DBA\Hash;
 use DBA\Hashlist;
@@ -28,16 +30,18 @@ use DBA\Supertask;
 use DBA\SupertaskPretask;
 use Middlewares\Utils\HttpErrorException;
 use Slim\Exception\HttpNotImplementedException;
+use Psr\Container\ContainerInterface;
 
 require_once(dirname(__FILE__) . "/../load.php");
 
 abstract class AbstractBaseAPI {
   abstract public function getPermission(): string;
-  abstract public function getFeatures(): array;
+  abstract static public function getDBAClass(): string;
   abstract protected function getFactory(): object;
   abstract public function getExpandables(): array;
   abstract protected function getFilterACL(): array;
   abstract public function getFormFields(): array;
+  abstract public static function getBaseUri(): string;
 
   abstract protected function createObject($QUERY): int;
   abstract protected function deleteObject(object $object): void;
@@ -45,10 +49,26 @@ abstract class AbstractBaseAPI {
 
 
   private $user;
+  private $routeParser;
+
+  protected $container;
+
+  /* constructor receives container instance */
+  public function __construct(ContainerInterface $container) {
+      $this->container = $container;
+  }
+
+  
+  public function getFeatures(): array {
+    return call_user_func($this->getDBAclass() .'::getFeatures');
+  }
+
+  
   final protected function getUser() {
     return $this->user;
   }
 
+  
   /* Convert Database resturn value to JSON object value */
   private static function db2json(string $type, mixed $val): mixed {
     if ($type == 'bool') {
@@ -80,6 +100,11 @@ abstract class AbstractBaseAPI {
     $kv = $obj->getKeyValueDict();
 
     $item = [];
+
+    $apiClass = $this->container->get('classMapper')->get(get_class($obj));
+    $item['_id'] = $obj->getId();
+    $item['_self'] = $this->routeParser->urlFor($apiClass . ':getOne', ['id' => $item['_id']]);
+
     foreach ($features as $NAME => $FEATURE) {
       $test = $kv[$NAME];
       $item[$FEATURE['alias']] = self::db2json($FEATURE['type'], $kv[$NAME]);
@@ -105,7 +130,7 @@ abstract class AbstractBaseAPI {
 
   protected function object2Array(mixed $hashlist, array $expand) {
     $item = $this->obj2Array($hashlist);
-
+    
     /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
       switch($NAME) {
@@ -145,7 +170,7 @@ abstract class AbstractBaseAPI {
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'crackerBinaryType':
-          $obj = Factory::getCrackerBinaryTypeFactory()->get($item['crackerBinaryTypeId']);
+          $obj = Factory::getCrackerBinaryFactory()->get($item['crackerBinaryTypeId']);
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'crackerVersions':
@@ -226,6 +251,9 @@ abstract class AbstractBaseAPI {
        */
       throw new BadFunctionCallException("Internal error: Expansion(s) '" .  join(',', $expandLeft) . "' not implemented!");
     }
+
+    /* Ensure sorted, for easy debugging of fields */
+    ksort($item);
 
     return $item;
   }
@@ -396,6 +424,9 @@ abstract class AbstractBaseAPI {
   protected function preCommon(Request $request): void {
     $userId = $request->getAttribute(('userId'));
     $this->user = UserUtils::getUser($userId);
+
+    $routeContext = RouteContext::fromRequest($request);
+    $this->routeParser = $routeContext->getRouteParser();
 
     if(!AccessControl::getInstance($this->getUser())->hasPermission($this->getPermission())) {
         throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription($this->getPermission()) . "' permission");
@@ -569,5 +600,47 @@ abstract class AbstractBaseAPI {
 
     return $response->withStatus(204)
     ->withHeader("Content-Type", "application/json");
+  }
+
+
+  /* Override-able activated methods */
+  static public function getAvailableMethods(): array {
+    return ["GET", "POST", "PATCH", "DELETE"];
+  }
+  
+
+  static public function register($app): void {
+    $me = get_called_class();
+    $baseUri = $me::getBaseUri();
+    $baseUriOne = $baseUri . '/{id:[0-9]+}';
+
+    $classMapper = $app->getContainer()->get('classMapper');
+    $classMapper->add($me::getDBAclass(), $me);
+
+    /* Allow CORS preflight requests */
+    $app->options($baseUri, function (Request $request, Response $response): Response { return $response; });
+    $app->options($baseUriOne, function (Request $request, Response $response): Response { return $response; });
+
+    $available_methods = self::getAvailableMethods();
+
+    if (in_array("GET", $available_methods)) {     
+      $app->get($baseUri, $me . ':get')->setname($me . ':get');
+    }
+
+    if (in_array("POST", $available_methods)) {
+      $app->post($baseUri, $me . ':post')->setname($me . ':post');
+    }
+
+    if (in_array("GET", $available_methods)) {
+      $app->get($baseUriOne, $me . ':getOne')->setName($me . ':getOne');
+    }
+
+    if (in_array("PATCH", $available_methods)) {
+      $app->patch($baseUriOne, $me . ':patchOne')->setName($me . ':patchOne');
+    }
+
+    if (in_array("DELETE", $available_methods)) {
+      $app->delete($baseUriOne, $me . ':deleteOne')->setName($me . ':deleteOne');
+    }
   }
 } 

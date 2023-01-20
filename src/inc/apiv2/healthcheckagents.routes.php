@@ -5,7 +5,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Routing\RouteCollectorProxy;
 
 use DBA\Factory;
-use DBA\Config;
+use DBA\HealthCheckAgent;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
 
@@ -15,15 +15,22 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class HealthCheckAgentAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/healthcheckagents";
+    }
+
+    public static function getAvailableMethods(): array {
+      return ['GET'];
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Config::getFeatures();
+    public static function getDBAclass(): string {
+      return HealthCheckAgent::class;
     }
-
     protected function getFactory(): object {
       return Factory::getHealthCheckAgentFactory();
     }
@@ -46,7 +53,6 @@ class HealthCheckAgentAPI extends AbstractBaseAPI {
       return true;
     }
     
-
     protected function createObject($QUERY): int {
        /* Dummy code to implement abstract functions */
        assert(False, "HealthCheckAgents cannot be created via API");
@@ -59,22 +65,4 @@ class HealthCheckAgentAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/healthcheckagents", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \HealthCheckAgentAPI::class . ':get');
-});
-
-
-$app->group("/api/v2/ui/healthcheckagents/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \HealthCheckAgentAPI::class . ':getOne');
-});
+HealthCheckAgentAPI::register($app);

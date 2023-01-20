@@ -14,13 +14,16 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class HashlistAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/hashlists";
+    }
     public function getPermission(): string {
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Hashlist::getFeatures();
-    }
+    public static function getDBAclass(): string {
+      return Hashlist::class;
+    }   
 
     protected function getFactory(): object {
       return Factory::getHashlistFactory();
@@ -107,25 +110,4 @@ class HashlistAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/hashlists", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \HashlistAPI::class . ':get');
-    $group->post('', \HashlistAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/hashlists/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \HashlistAPI::class . ':getOne');
-    $group->patch('', \HashlistAPI::class . ':patchOne');
-    $group->delete('', \HashlistAPI::class . ':deleteOne');
-});
+HashlistAPI::register($app);

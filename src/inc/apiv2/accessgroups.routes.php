@@ -15,13 +15,17 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class AccessGroupAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/accessgroups";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return AccessGroup::getFeatures();
+    public static function getDBAclass(): string {
+      return AccessGroup::class;
     }
 
     protected function getFactory(): object {
@@ -46,7 +50,6 @@ class AccessGroupAPI extends AbstractBaseAPI {
       return true;
     }
     
-
     protected function createObject($QUERY): int {
       /* Parameter is used as primary key in database */
 
@@ -59,26 +62,4 @@ class AccessGroupAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/accessgroups", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \AccessGroupAPI::class . ':get');
-    $group->post('', \AccessGroupAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/accessgroups/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \AccessGroupAPI::class . ':getOne');
-    /* FIXME: Duplicate groupNames are allowed when using patches, how-ever on creation this is checked */
-    $group->patch('', \AccessGroupAPI::class . ':patchOne');
-    $group->delete('', \AccessGroupAPI::class . ':deleteOne');
-});
+AccessGroupAPI::register($app);

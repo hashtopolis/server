@@ -15,15 +15,19 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class TaskAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/tasks";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_PRETASK_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return Task::getFeatures();
+    public static function getDBAclass(): string {
+      return Task::class;
     }
-
+    
     protected function getFactory(): object {
       return Factory::getTaskFactory();
     }
@@ -81,26 +85,4 @@ class TaskAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/tasks", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \TaskAPI::class . ':get');
-    $group->post('', \TaskAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/tasks/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \TaskAPI::class . ':getOne');
-    /* FIXME: Duplicate groupNames are allowed when using patches, how-ever on creation this is checked */
-    $group->patch('', \TaskAPI::class . ':patchOne');
-    $group->delete('', \TaskAPI::class . ':deleteOne');
-});
+TaskAPI::register($app);

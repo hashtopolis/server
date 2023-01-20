@@ -11,13 +11,17 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class HashTypeAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/hashtypes";
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return HashType::getFeatures();
+    public static function getDBAclass(): string {
+      return HashType::class;
     }
 
     protected function getFactory(): object {
@@ -64,25 +68,4 @@ class HashTypeAPI extends AbstractBaseAPI {
     }
 }
 
-
-$app->group("/api/v2/ui/hashtypes", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \HashTypeAPI::class . ':get');
-    $group->post('', \HashTypeAPI::class . ':post');
-});
-
-
-$app->group("/api/v2/ui/hashtypes/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \HashTypeAPI::class . ':getOne');
-    $group->patch('', \HashTypeAPI::class . ':patchOne');
-    $group->delete('', \HashTypeAPI::class . ':deleteOne');
-});
+HashTypeAPI::register($app);

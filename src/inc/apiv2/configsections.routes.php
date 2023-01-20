@@ -15,14 +15,22 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
 class ConfigSectionAPI extends AbstractBaseAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/configsections";
+    }
+
+    public static function getAvailableMethods(): array {
+      return ['GET'];
+    }
+
     public function getPermission(): string {
       // TODO: Find proper permission
       return DAccessControl::CREATE_HASHLIST_ACCESS;
     }
 
-    public function getFeatures(): array {
-      return ConfigSection::getFeatures();
-    }
+    public static function getDBAclass(): string {
+      return ConfigSection::class;
+    }   
 
     protected function getFactory(): object {
       return Factory::getConfigSectionFactory();
@@ -58,23 +66,3 @@ class ConfigSectionAPI extends AbstractBaseAPI {
       assert(False, "Configs cannot be deleted via API");
     }
 }
-
-
-$app->group("/api/v2/ui/configsections", function (RouteCollectorProxy $group) { 
-    /* Allow CORS preflight requests */
-    $group->options('', function (Request $request, Response $response): Response {
-        return $response;
-    });
-
-    $group->get('', \ConfigSectionAPI::class . ':get');
-});
-
-
-$app->group("/api/v2/ui/configsections/{id}", function (RouteCollectorProxy $group) {
-    /* Allow preflight requests */
-    $group->options('', function (Request $request, Response $response, array $args): Response {
-        return $response;
-    });
-
-    $group->get('', \ConfigSectionAPI::class . ':getOne');
-});
