@@ -21,7 +21,8 @@
 		"terminal.integrated.profiles.linux":{
 			"bash": {
 			  "path": "bash",
-			  "icon": "terminal-bash"
+			  "icon": "terminal-bash",
+        	   "args": [ "--init-file", "${workspaceFolder}/init.sh" ],
 			}
 		  },
 		"terminal.integrated.defaultProfile.linux": "bash",
