@@ -72,7 +72,7 @@ class SupertaskAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      $this->getFactory()->delete($object);
+      SupertaskUtils::deleteSupertask($object->getId());
     }
 }
 

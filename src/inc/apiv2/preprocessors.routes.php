@@ -74,7 +74,7 @@ class PreprocessorAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      $this->getFactory()->delete($object);
+      PreprocessorUtils::delete($object->getId());
     }
 }
 

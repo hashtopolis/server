@@ -51,7 +51,7 @@ class AgentStatsAPI extends AbstractBaseAPI {
     }
     
     protected function createObject($QUERY): int {
-      assert(False, "Chunks cannot be created via API");
+      assert(False, "AgentStats cannot be created via API");
       return -1;
     }
 

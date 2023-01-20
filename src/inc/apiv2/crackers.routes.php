@@ -80,7 +80,7 @@ class CrackerBinaryAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      Factory::getCrackerBinaryFactory()->delete($object);
+      CrackerUtils::deleteBinary($object->getId());
     }
 }
 CrackerBinaryAPI::register($app);

@@ -56,7 +56,7 @@ class AgentAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      Factory::getAgentFactory()->delete($object);
+      AgentUtils::delete($object->getId(), $this->getUser());
     }
 }
 

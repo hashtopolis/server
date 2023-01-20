@@ -79,7 +79,7 @@ class AgentBinaryAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      $this->getFactory()->delete($object);
+      AgentBinaryUtils::deleteBinary($object->getId());
     }
 }
 

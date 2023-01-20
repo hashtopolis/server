@@ -67,7 +67,7 @@ class CrackerBinaryTypeAPI extends AbstractBaseAPI {
 
 
     protected function deleteObject(object $object): void {
-      Factory::getCrackerBinaryTypeFactory()->delete($object);
+      CrackerUtils::deleteBinaryType($object->getId());
     }
 }
 

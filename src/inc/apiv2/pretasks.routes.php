@@ -82,7 +82,7 @@ class PreTaskAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      $this->getFactory()->delete($object);
+      PretaskUtils::deletePretask($object->getId());
     }
 }
 

@@ -67,7 +67,7 @@ class VoucherAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      Factory::getRegVoucherFactory()->delete($object);
+      AgentUtils::deleteVoucher($object->getId());
     }
 }
 
