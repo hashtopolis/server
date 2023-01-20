@@ -340,7 +340,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (1411,  'SSHA-256(Base64), LDAP {SSHA256}', 0, 0),
   (1420,  'sha256($salt.$pass)', 1, 0),
   (1421,  'hMailServer', 0, 0),
-  (1430,  'sha256(unicode($pass).$salt)', 1, 0),
+  (1430,  'sha256(utf16le($pass).$salt)', 1, 0),
   (1440,  'sha256($salt.unicode($pass))', 1, 0),
   (1441,  'EPiServer 6.x >= v4', 0, 0),
   (1450,  'HMAC-SHA256 (key = $pass)', 1, 0),
