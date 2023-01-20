@@ -73,7 +73,7 @@ class AgentBinaryAPI extends AbstractBaseAPI {
       $oF = new OrderFilter(AgentBinary::AGENT_BINARY_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       /* No unique properties set on columns, thus multiple entries could exists, pick the latest (DESC ordering used) */
-      assert(count($objects) > 1);
+      assert(count($objects) >= 1);
       
       return $objects[0]->getId();
     }
