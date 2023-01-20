@@ -14,11 +14,12 @@ from pathlib import Path
 import confidence
 
 
-class Hashlists(unittest.TestCase):
+class Hashtypes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Request access TOKEN, used throughout the test
         cls._cfg = confidence.load_name('hashtopolis-test')
+        cls._uri = cls._cfg['hashtopolis_uri'] + '/api/v2/ui/hashtypes'
 
         uri = cls._cfg['api_endpoint'] + '/auth/token'
         auth = (cls._cfg['username'], cls._cfg['password'])
@@ -32,30 +33,35 @@ class Hashlists(unittest.TestCase):
             'Content-Type': 'application/json'
         }
 
-    def test_get(self):
-        uri = self._cfg['api_endpoint'] + '/ui/hashtypes'
+    def do_get(self):
+        uri = self._uri
         headers = self._headers
         payload = {}
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.status_code, 201, msg=uri)
 
+        return r.json()
 
     def test_get_one(self):
         # TODO: Boring to only request the first one
-        uri = self._cfg['api_endpoint'] + '/ui/hashtypes/0'
+        obj = self.do_get()['values'][0]
+
+        uri = self._cfg['hashtopolis_uri'] + obj['_self']
         headers = self._headers
         payload = {}
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201)
+        self.assertEqual(r.status_code, 201, msg=uri)
 
 
     def test_patch(self):
         # TODO: Boring to only request the first one
         stamp = datetime.datetime.now().isoformat()
 
-        uri = self._cfg['api_endpoint'] + '/ui/hashtypes/0'
+        obj = self.do_get()['values'][0]
+
+        uri = self._cfg['hashtopolis_uri'] + obj['_self']
         headers = self._headers
         
         payload = {
