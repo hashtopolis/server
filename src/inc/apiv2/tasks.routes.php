@@ -42,7 +42,10 @@ class TaskAPI extends AbstractBaseAPI {
 
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
+    return  [
+      "hashlistId" => ['type' => 'int'],
+      "files" => ['type' => 'array', 'subtype' => 'int'],
+    ];
     }
 
     protected function checkPermission(object $object): bool
@@ -81,7 +84,7 @@ class TaskAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      TaskUtils::deleteTask($object->getId());
+      TaskUtils::deleteTask($object);
     }
 }
 
