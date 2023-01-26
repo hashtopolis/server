@@ -4,7 +4,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Routing\RouteCollectorProxy;
 
-use DBA\PreTask;
+use DBA\Pretask;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
