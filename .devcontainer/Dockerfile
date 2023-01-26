@@ -5,6 +5,7 @@ ARG DEV_CONTAINER_USER_CMD_POST
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
+ENV NODE_OPTIONS='--use-openssl-ca'
 
 # Check for and run optional user-supplied command to enable (advanced) customizations of the dev container
 RUN if [ -n "${DEV_CONTAINER_USER_CMD_PRE}" ]; then echo "${DEV_CONTAINER_USER_CMD_PRE}" | sh ; fi

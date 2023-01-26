@@ -15,6 +15,9 @@
 		"bmewburn.vscode-intelephense-client",
 		"editorconfig.editorconfig",
 	],
+	"remoteEnv": {
+		"NODE_OPTIONS": "--use-openssl-ca",
+	},
 	"remoteUser": "vscode",
 	"settings": {
 		"terminal.integrated.profiles.linux":{
