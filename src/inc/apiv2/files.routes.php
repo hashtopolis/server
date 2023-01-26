@@ -24,7 +24,7 @@ class FileAPI extends AbstractBaseAPI {
     }
 
     public static function getDBAclass(): string {
-      return Files::class;
+      return File::class;
     }   
     
     protected function getFactory(): object {
