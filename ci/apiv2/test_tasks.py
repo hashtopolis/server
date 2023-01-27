@@ -306,7 +306,8 @@ class TasksTest(unittest.TestCase):
         obj.save()
 
         obj = Task.objects.get_first()
-        self.assertEqual(obj.taskName, f'Dummy Task - {stamp}', 'hoooi')
+        
+        self.assertEqual(obj.taskName, f'Dummy Task - {stamp}')
 
 
 if __name__ == '__main__':
