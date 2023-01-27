@@ -288,12 +288,25 @@ class TasksTest(unittest.TestCase):
 
 
     def test_patch(self):
-        # TODO: Should create object instead of patching existing one
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        for p in sorted(Path(__file__).parent.glob('create_task_001.json')):
+            payload = json.loads(p.read_text('UTF-8'))
+            payload['hashlistId'] = int(hashlist._id)
+            task = Task(**payload)
+            task.save()
+
         stamp = datetime.datetime.now().isoformat()
 
         obj = Task.objects.get_first()
-        obj.name = f'Dummy Task - {stamp}'
+        obj.taskName = f'Dummy Task - {stamp}'
         obj.save()
+
+        obj = Task.objects.get_first()
+        self.assertEqual(obj.taskName, f'Dummy Task - {stamp}', 'hoooi')
 
 
 if __name__ == '__main__':
