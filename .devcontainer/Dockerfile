@@ -1,12 +1,14 @@
 FROM php:8-apache  
 
-ARG DEV_CONTAINER_USER_CMD
+ARG DEV_CONTAINER_USER_CMD_PRE
+ARG DEV_CONTAINER_USER_CMD_POST
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
+ENV NODE_OPTIONS='--use-openssl-ca'
 
 # Check for and run optional user-supplied command to enable (advanced) customizations of the dev container
-RUN if [ -n "${DEV_CONTAINER_USER_CMD}" ]; then echo "${DEV_CONTAINER_USER_CMD}" | sh ; fi
+RUN if [ -n "${DEV_CONTAINER_USER_CMD_PRE}" ]; then echo "${DEV_CONTAINER_USER_CMD_PRE}" | sh ; fi
 
 # Configure apt and install packages
 RUN apt-get update \
@@ -61,6 +63,10 @@ RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-dat
     && chown -R www-data:www-data /var/www \
     && chmod g+w /var/www
 
+# Check for and run optional user-supplied command to enable (advanced) customizations of the dev container
+RUN if [ -n "${DEV_CONTAINER_USER_CMD_POST}" ]; then echo "${DEV_CONTAINER_USER_CMD_POST}" | sh ; fi
+
+# Switching to vscode user and working dir
 WORKDIR /var/www
 user vscode
 

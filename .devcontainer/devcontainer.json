@@ -16,6 +16,9 @@
 		"editorconfig.editorconfig",
     "ms-python.python",
 	],
+	"remoteEnv": {
+		"NODE_OPTIONS": "--use-openssl-ca",
+	},
 	"remoteUser": "vscode",
 	"settings": {
 		"terminal.integrated.profiles.linux":{
