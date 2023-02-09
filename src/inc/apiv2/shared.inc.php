@@ -204,9 +204,9 @@ abstract class AbstractBaseAPI {
           $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
           break;
         case 'rightGroup':
-        $obj = Factory::getRightGroupFactory()->get($item['rightGroupId']);
-        $item[$NAME] = $this->obj2Array($obj);
-        break;
+          $obj = Factory::getRightGroupFactory()->get($item['rightGroupId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
         case 'task':
           $obj = Factory::getTaskFactory()->get($item['taskId']);
           $item[$NAME] = $this->obj2Array($obj);
@@ -262,6 +262,54 @@ abstract class AbstractBaseAPI {
   protected function object2JSON(object $hashlist) : string {
     $item = $this->object2Array($hashlist, []);
     return json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+  }
+
+  protected function validateData(array $data, array $mappedFeatures) {
+    // Validate incoming data
+    foreach($data as $KEY => $VALUE) {
+      // Bool
+      if ($mappedFeatures[$KEY]['type'] == 'bool') {
+        if (is_bool($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type boolean");            
+        }
+      // Int
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'int')) {
+        // TODO: int32, int64 range validation
+        if (is_integer($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type integer");
+        }
+      // Str
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
+        if (is_string($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type string");
+        }
+        // TODO: Length validation
+      // Array
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'array')) {
+        if (is_array($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type array");
+        }
+        // Array[Int]
+        if ($mappedFeatures[$KEY]['subtype'] == 'int') {
+          if (in_array(false, array_map('is_integer', $VALUE)) == true) {
+            throw new HttpErrorException("Key '$KEY' array contains non-integer values");
+          }
+        }
+      // Dict
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'dict')) {
+        if (is_array($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type dict");
+        }
+        // Dict[Bool]
+        if ($mappedFeatures[$KEY]['subtype'] == 'bool') {
+          if (in_array(false, array_map('is_bool', $VALUE)) == true) {
+            throw new HttpErrorException("Key '$KEY' dict contains non-boolean values");
+          }
+        }
+      } else {
+        throw new HttpErrorException("Typemapping error for key '$KEY' ");
+      }
+    }
   }
 
 
@@ -396,33 +444,7 @@ abstract class AbstractBaseAPI {
     $allFeatures = $features + $formFields;
 
     // Validate incoming data
-    foreach($QUERY as $KEY => $VALUE) {
-      // Ensure type is correct
-      if ($allFeatures[$KEY]['type'] == 'bool') {
-        if (is_bool($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type boolean");            
-        }
-      } elseif (str_starts_with($allFeatures[$KEY]['type'], 'int')) {
-        // TODO: int32, int64 range validation
-        if (is_integer($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type integer");
-        }
-      } elseif (str_starts_with($allFeatures[$KEY]['type'], 'str')) {
-        if (is_string($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type string");
-        }
-        // TODO: Length validation
-      } elseif (str_starts_with($allFeatures[$KEY]['type'], 'array')) {
-        if (is_array($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type array");
-        }
-        if ($allFeatures[$KEY]['subtype'] == 'int') {
-          if (in_array(false, array_map('is_integer', $VALUE)) == true) {
-            throw new HttpErrorException("Key '$KEY' array contains non-integer values");
-          }
-        }
-      }
-    }
+    $this->validateData($QUERY, $allFeatures);
   }
 
   /*
@@ -528,6 +550,18 @@ abstract class AbstractBaseAPI {
   }
 
 
+  public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+    // Apply changes 
+    foreach($data as $KEY => $VALUE) {
+      if (in_array($KEY, $processed)) {
+        continue;
+      }
+
+      // Sanity values
+      $val = self::json2db($mappedFeatures[$KEY]['type'], $data[$KEY]);
+      $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
+    }
+  }
 
 
   public function patchOne(Request $request, Response $response, array $args): Response {
@@ -561,31 +595,13 @@ abstract class AbstractBaseAPI {
       if ($mappedFeatures[$KEY]['read_only'] == True) {
         throw new HttpErrorException("Key '$KEY' is immutable");
       }
-
-      // Ensure type is correct
-      if ($mappedFeatures[$KEY]['type'] == 'bool') {
-        if (is_bool($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type boolean");            
-        }
-      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'int')) {
-        // TODO: int32, int64 range validation
-        if (is_integer($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type integer");
-        }
-      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
-        if (is_string($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type string");
-        }
-        // TODO: Length validation
-      }
     }
 
-    // Apply changes 
-    foreach($data as $KEY => $VALUE) {
-      // Sanity values
-      $val = self::json2db($mappedFeatures[$KEY]['type'], $data[$KEY]);
-      $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
-    }
+    // Validate input data if it matches the correct type or subtype
+    $this->validateData($data, $mappedFeatures);
+
+    // This does the real things, patch the values that were sent in the data.
+    $this->updateObject($object, $data, $mappedFeatures);
 
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());

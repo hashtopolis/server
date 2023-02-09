@@ -30,11 +30,11 @@ class Zap extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['zapId'] = ['read_only' => True, "type" => "int", "null" => False, "pk" => True, "protected" => True, "alias" => "zapId"];
-    $dict['hash'] = ['read_only' => False, "type" => "str(65535)", "null" => False, "pk" => False, "protected" => False, "alias" => "hash"];
-    $dict['solveTime'] = ['read_only' => False, "type" => "int64", "null" => False, "pk" => False, "protected" => False, "alias" => "solveTime"];
-    $dict['agentId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "agentId"];
-    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "null" => False, "pk" => False, "protected" => False, "alias" => "hashlistId"];
+    $dict['zapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "alias" => "zapId"];
+    $dict['hash'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "hash"];
+    $dict['solveTime'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "solveTime"];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "agentId"];
+    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "hashlistId"];
 
     return $dict;
   }

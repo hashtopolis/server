@@ -108,6 +108,24 @@ class HashlistAPI extends AbstractBaseAPI {
     protected function deleteObject(object $object): void {
       HashlistUtils::delete($object->getId(), $this->getUser());
     }
+
+    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {
+
+      $key = Hashlist::IS_ARCHIVED;
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        HashlistUtils::setArchived($object->getId(), $data[$key], $this->getUser());
+      }
+
+      $key = Hashlist::NOTES;
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        HashlistUtils::editNotes($object->getId(), $data[$key], $this->getUser());
+      }
+
+
+      parent::updateObject($object, $data, $mappedFeatures, $processed = []);
+    }
 }
 
 HashlistAPI::register($app);

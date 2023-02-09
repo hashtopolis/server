@@ -214,7 +214,7 @@ $CONF['RegVoucher'] = [
 $CONF['RightGroup'] = [
   ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)'],
-  ['name' => 'permissions', 'read_only' => False, 'type' => 'str(65535)']
+  ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool']
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['Session'] = [
@@ -433,6 +433,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
     $init[] = "\$this->$col = \$$col;";
     $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' . 
                                      '"type" => "' . $COLUMN['type'] . '", ' .
+                                     '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
                                      '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
                                      '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
                                      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
