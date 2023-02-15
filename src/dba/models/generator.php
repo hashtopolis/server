@@ -151,15 +151,15 @@ $CONF['Hashlist'] = [
   ['name' => 'format', 'read_only' => False, 'type' => 'int'],
   ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
   ['name' => 'hashCount', 'read_only' => True, 'type' => 'int'],
-  ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True],
+  ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True, 'alias' => UQueryHashlist::HASHLIST_SEPARATOR],
   ['name' => 'cracked', 'read_only' => False, 'type' => 'int'],
   ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_HEX_SALTED],
   ['name' => 'isSalted', 'read_only' => True, 'type' => 'bool'],
   ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'notes', 'read_only' => False, 'type' => 'str(65535)'],
-  ['name' => 'brainId', 'read_only' => True, 'type' => 'int', 'alias' => UQueryHashlist::HASHLIST_USE_BRAIN],
-  ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'byte'],
+  ['name' => 'brainId', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_USE_BRAIN],
+  ['name' => 'brainFeatures', 'read_only' => True, 'type' => 'int'],
   ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool']
 ];
 // FIXME: Add correct read_only mapping to relevant fields

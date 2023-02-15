@@ -40,7 +40,6 @@ class HashlistAPI extends AbstractBaseAPI {
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [
-        UQueryHashlist::HASHLIST_SEPARATOR => ['type' => 'str'],
         "sourceType" => ['type' => 'str'],
         "sourceData" => ['type' => 'str'],
       ];

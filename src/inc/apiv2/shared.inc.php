@@ -443,8 +443,16 @@ abstract class AbstractBaseAPI {
     // Build combined formField and Feature type mapping
     $allFeatures = $features + $formFields;
 
+    // Map to alias
+    $mappedFeatures = [];
+    foreach($allFeatures as $KEY => $VALUE) {
+      $mappedFeatures[$VALUE['alias']] = $VALUE;
+      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
+    }
+    $mappedFeatures = array_merge($mappedFeatures, $formFields);
+
     // Validate incoming data
-    $this->validateData($QUERY, $allFeatures);
+    $this->validateData($QUERY, $mappedFeatures);
   }
 
   /*

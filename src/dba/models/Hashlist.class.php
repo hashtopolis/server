@@ -65,15 +65,15 @@ class Hashlist extends AbstractModel {
     $dict['format'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "format"];
     $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "hashTypeId"];
     $dict['hashCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "hashCount"];
-    $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "null" => True, "pk" => False, "protected" => False, "alias" => "saltSeparator"];
+    $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "null" => True, "pk" => False, "protected" => False, "alias" => "separator"];
     $dict['cracked'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "cracked"];
     $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isSecret"];
     $dict['hexSalt'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isHexSalt"];
     $dict['isSalted'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isSalted"];
     $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "accessGroupId"];
     $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "notes"];
-    $dict['brainId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "useBrain"];
-    $dict['brainFeatures'] = ['read_only' => True, "type" => "byte", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "brainFeatures"];
+    $dict['brainId'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "useBrain"];
+    $dict['brainFeatures'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "brainFeatures"];
     $dict['isArchived'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isArchived"];
 
     return $dict;
