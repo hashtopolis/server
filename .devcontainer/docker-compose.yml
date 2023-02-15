@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 services:
   hashtopolis:
     container_name: hashtopolis
@@ -16,6 +16,8 @@ services:
       # This is where VS Code should expect to find your project's source code
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
+    networks:
+      - hashtopolis_dev
   db:
     container_name: db
     image: mysql:5.7
@@ -39,10 +41,12 @@ services:
       # used for the gosu binary
       - CAP_SETGID
       - CAP_SETUID
+    networks:
+      - hashtopolis_dev
 volumes:
   db:
 
 networks:
-  default:
+  hashtopolis_dev:
     # This network will also be used by the python-agent
     name: hashtopolis_dev
