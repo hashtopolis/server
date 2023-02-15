@@ -79,7 +79,7 @@ class Hashlists(utils.TestBase):
         self.assertEqual(r.status_code, 201, msg=r.text)
 
 
-    def test_get_one(self):
+    def test_create_one(self):
         obj = self.do_create_one()
         uri = self.getURI(obj)
         headers = self._headers
