@@ -1,0 +1,17 @@
+{
+  "name": "Hashlist-md5sum-002",
+  "hashTypeId": 1,
+  "format": 0,
+  "separator": ";",
+  "isSalted": false,
+  "isHexSalt": false,
+  "accessGroupId": 1,
+  "useBrain": false,
+  "brainFeatures": 3,
+  "notes": "gj",
+  "sourceType": "paste",
+  "sourceData": "",
+  "hashCount": 0,
+  "isArchived": false,
+  "isSecret": false
+}
