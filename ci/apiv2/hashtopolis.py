@@ -305,3 +305,7 @@ class Hashlist(Model, uri="/ui/hashlists"):
 class Cracker(Model, uri="/ui/crackers"):
     def __repr__(self):
         return self._self
+
+class CrackerType(Model, uri="/ui/crackertypes"):
+    def __repr__(self):
+        return self._self
