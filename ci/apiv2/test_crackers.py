@@ -4,67 +4,64 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
-
 import json
-import requests
 import unittest
 import datetime
 from pathlib import Path
 
-import utils
+from hashtopolis import Cracker 
+from hashtopolis import Task
 
+class Crackers(unittest.TestCase):
+    def test_create_cracker(self):
+        p = Path(__file__).parent.joinpath('create_cracker_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        cracker = Cracker(**payload)
+        cracker.save()
 
-class Crackers(utils.TestBase):
-    def getBaseURI(self):
-        return "/ui/crackers"
+        obj = Cracker.objects.get(crackerBinaryId=cracker.id)
+        assert obj.binaryName == payload.get('binaryName')
 
-    def test_get(self):
-        uri = self.getURI()
-        headers = self._headers
-        payload = {}
+        cracker.delete()
+    
+    def test_patch_cracker(self):
+        p = Path(__file__).parent.joinpath('create_cracker_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        cracker = Cracker(**payload)
+        cracker.save()
 
-        r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201)
-
-
-    def test_get_one(self):
-        # TODO: Boring to only request the first one
-        uri = self.getURI(1)
-        headers = self._headers
-        payload = {}
-
-        r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201)
-
-
-    def test_patch(self):
-        # TODO: Boring to only request the first one
-        uri = self.getURI(1)
-        headers = self._headers
-        
         stamp = datetime.datetime.now().isoformat()
-        payload = {
-            'binaryName': f'Hashcat - {stamp}'
-        }
-        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201, msg=r.text)
-        for key in payload.keys():
-            self.assertEqual(r.json()[key], payload[key], msg=r.text)
-        
+        obj_name = f'Dummy Cracker - {stamp}'
+        cracker.binaryName = obj_name
+        cracker.save()
 
-    def do_create(self, payload, retval):
-        uri = self.getURI()
-        headers = self._headers
+        obj = cracker.objects.get(crackerBinaryId=cracker.id)
+        assert obj.binaryName == obj_name
 
-        r = requests.post(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, retval, msg=r.text)
+        cracker.delete()
+    
+    def test_delete_cracker(self):
+        p = Path(__file__).parent.joinpath('create_cracker_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        cracker = Cracker(**payload)
+        cracker.save()
 
+        id = cracker.id
 
-    def test_create_wildcard(self):
-        for p in sorted(Path(__file__).parent.glob('create_crackers_*.json')):
-            payload = json.loads(p.read_text('UTF-8'))
-            self.do_create(payload, 201)
+        cracker.delete()
 
+        objs = Cracker.objects.filter(crackerBinaryId=id)
+
+        assert objs == []
+    
+    def test_exception(self):
+        p = Path(__file__).parent.joinpath('create_cracker_002.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        cracker = Cracker(**payload)
+        cracker.save()
+
+        with self.assertRaises(AttributeError):
+            cracker.id
 
 if __name__ == '__main__':
     unittest.main()

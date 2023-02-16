@@ -301,3 +301,7 @@ class Task(Model, uri="/ui/tasks"):
 class Hashlist(Model, uri="/ui/hashlists"):
     def __repr__(self):
         return self._self
+
+class Cracker(Model, uri="/ui/crackers"):
+    def __repr__(self):
+        return self._self
