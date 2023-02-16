@@ -336,28 +336,34 @@ abstract class AbstractBaseAPI {
 
   protected function makeFilter(Request $request, array $features): array {
     // Check for valid filter parameters
-    $filters = [];
-    $qFs = [];
-    if (array_key_exists('filter', $request->getQueryParams())) {
-      $filters = preg_split("/[,\ ]+/", $request->getQueryParams()['filter']);
 
-      foreach($filters as $filter) {
-        // TODO: Add sanity checking
-        if (preg_match('/^(?P<key>[a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
-          if (array_key_exists($matches['key'], $features)) {
-            // TODO: cast value
-            if ($features[$matches['key']]['type'] == 'bool') {
-              $val = (bool) filter_var($matches['value'], FILTER_VALIDATE_BOOLEAN);
-            } else {
-              $val = $matches['value'];
+    $qFs = [];
+    
+    $data = $request->getParsedBody();
+    $bodyFilter = (array_key_exists('filter', $data)) ? $data['filter'] : [];
+ 
+    $queryFilter = (array_key_exists('filter', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['filter']) : [];
+    $mergedFilters = array_merge($bodyFilter, $queryFilter);
+
+    foreach($mergedFilters as $filter) {
+      // TODO: Add sanity checking
+      if (preg_match('/^(?P<key>[a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
+        if (array_key_exists($matches['key'], $features)) {
+          // TODO: cast value
+          if ($features[$matches['key']]['type'] == 'bool') {
+            $val = filter_var($matches['value'], FILTER_NULL_ON_FAILURE);
+            if ($val == null) {
+              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");  
             }
-            $qFs[] = new QueryFilter($matches['key'], $val, $matches['operator']);
           } else {
-            throw new HTException("Filter parameter '" . $filter . "' is not valid");  
+            $val = $matches['value'];
           }
+          $qFs[] = new QueryFilter($matches['key'], $val, $matches['operator']);
         } else {
-          throw new HTException("Filter parameter '" . $filter . "' is not valid");
+          throw new HTException("Filter parameter '" . $filter . "' is not valid");  
         }
+      } else {
+        throw new HTException("Filter parameter '" . $filter . "' is not valid");
       }
     }
 
