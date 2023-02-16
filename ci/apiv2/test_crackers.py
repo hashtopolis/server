@@ -54,7 +54,7 @@ class Crackers(unittest.TestCase):
 
         assert objs == []
     
-    def test_exception(self):
+    def test_exception_cracker(self):
         p = Path(__file__).parent.joinpath('create_cracker_002.json')
         payload = json.loads(p.read_text('UTF-8'))
         cracker = Cracker(**payload)

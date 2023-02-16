@@ -55,7 +55,7 @@ class HashlistTest(unittest.TestCase):
 
         assert objs == []
 
-    def test_exception(self):
+    def test_exception_hashlist(self):
         p = Path(__file__).parent.joinpath('create_hashlist_002.json')
         payload = json.loads(p.read_text('UTF-8'))
         hashlist = Hashlist(**payload)
