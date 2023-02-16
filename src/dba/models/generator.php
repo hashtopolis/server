@@ -152,7 +152,7 @@ $CONF['Hashlist'] = [
   ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
   ['name' => 'hashCount', 'read_only' => True, 'type' => 'int'],
   ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True, 'alias' => UQueryHashlist::HASHLIST_SEPARATOR],
-  ['name' => 'cracked', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'cracked', 'read_only' => true, 'type' => 'int', 'protected' => True],
   ['name' => 'isSecret', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'hexSalt', 'read_only' => True, 'type' => 'bool', 'alias' => UQueryHashlist::HASHLIST_HEX_SALTED],
   ['name' => 'isSalted', 'read_only' => True, 'type' => 'bool'],

@@ -66,7 +66,7 @@ class Hashlist extends AbstractModel {
     $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "hashTypeId"];
     $dict['hashCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "hashCount"];
     $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "null" => True, "pk" => False, "protected" => False, "alias" => "separator"];
-    $dict['cracked'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "cracked"];
+    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "alias" => "cracked"];
     $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isSecret"];
     $dict['hexSalt'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isHexSalt"];
     $dict['isSalted'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isSalted"];
