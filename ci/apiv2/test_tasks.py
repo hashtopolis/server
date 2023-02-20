@@ -52,6 +52,26 @@ class TasksTest(unittest.TestCase):
         
         self.assertEqual(obj.taskName, f'Dummy Task - {stamp}')
 
+    def test_runtime(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        p = Path(__file__).parent.joinpath('create_task_002.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        payload['hashlistId'] = int(hashlist._id)
+        task = Task(**payload)
+        task.save()
+
+        id = task.id
+
+        obj = Task.objects.get(taskId=task.id)
+        self.assertEqual(obj.useNewBench, 0)
+
+        obj.delete()
+        hashlist.delete()
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -62,7 +62,7 @@ class Pretask extends AbstractModel {
     $dict['color'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "color"];
     $dict['isSmall'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isSmall"];
     $dict['isCpuTask'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isCpuTask"];
-    $dict['useNewBench'] = ['read_only' => True, "type" => "str(7)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "benchType"];
+    $dict['useNewBench'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "useNewBench"];
     $dict['priority'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "priority"];
     $dict['maxAgents'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "maxAgents"];
     $dict['isMaskImport'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isMaskImport"];
