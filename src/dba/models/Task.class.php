@@ -99,7 +99,7 @@ class Task extends AbstractModel {
     $dict['color'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "color"];
     $dict['isSmall'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isSmall"];
     $dict['isCpuTask'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "isCpuTask"];
-    $dict['useNewBench'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "useNewBench"];
+    $dict['useNewBench'] = ['read_only' => True, "type" => "str(7)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "benchType"];
     $dict['skipKeyspace'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "skipKeyspace"];
     $dict['crackerBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "crackerBinaryId"];
     $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "crackerBinaryTypeId"];
