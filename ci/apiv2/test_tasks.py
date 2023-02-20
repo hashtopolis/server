@@ -71,6 +71,26 @@ class TasksTest(unittest.TestCase):
 
         obj.delete()
         hashlist.delete()
+    
+    def test_speed(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        p = Path(__file__).parent.joinpath('create_task_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        payload['hashlistId'] = int(hashlist._id)
+        task = Task(**payload)
+        task.save()
+
+        id = task.id
+
+        obj = Task.objects.get(taskId=task.id)
+        self.assertEqual(obj.useNewBench, 1)
+
+        obj.delete()
+        hashlist.delete()
 
 
 if __name__ == '__main__':

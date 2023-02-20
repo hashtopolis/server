@@ -63,7 +63,7 @@ class TaskAPI extends AbstractBaseAPI {
         $QUERY[Task::ATTACK_CMD],
         $QUERY[Task::CHUNK_TIME],
         $QUERY[Task::STATUS_TIMER],
-        $QUERY['benchType'] ? 'speed': 'runtime',
+        $QUERY[Task::USE_NEW_BENCH] ? 'speed': 'runtime',
         $QUERY[Task::COLOR],
         $QUERY[Task::IS_CPU_TASK],
         $QUERY[Task::IS_SMALL],
