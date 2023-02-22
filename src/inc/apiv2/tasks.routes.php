@@ -67,7 +67,7 @@ class TaskAPI extends AbstractBaseAPI {
         $QUERY[Task::COLOR],
         $QUERY[Task::IS_CPU_TASK],
         $QUERY[Task::IS_SMALL],
-        $QUERY[Task::USE_PREPROCESSOR],
+        $QUERY['preprocessorId'],
         $QUERY[Task::PREPROCESSOR_COMMAND],
         $QUERY[Task::SKIP_KEYSPACE],
         $QUERY[Task::PRIORITY],

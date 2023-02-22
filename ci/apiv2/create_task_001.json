@@ -19,5 +19,5 @@
             "statusTimer": 5,
             "taskName": "Example - Rijmen and Daemen",
             "useNewBench": true,
-            "usePreprocessor": true
+            "preprocessorId": 1
 }

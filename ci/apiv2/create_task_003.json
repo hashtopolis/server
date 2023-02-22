@@ -17,7 +17,7 @@
             "skipKeyspace": 500,
             "staticChunks": 2,
             "statusTimer": 5,
-            "taskName": "Example - runtime",
+            "taskName": "Example - prepressor",
             "useNewBench": false,
             "preprocessorId": 1
 }

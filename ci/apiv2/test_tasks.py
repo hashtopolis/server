@@ -92,6 +92,27 @@ class TasksTest(unittest.TestCase):
         obj.delete()
         hashlist.delete()
 
+    def test_preprocessor(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        p = Path(__file__).parent.joinpath('create_task_003.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        payload['hashlistId'] = int(hashlist._id)
+        task = Task(**payload)
+        task.save()
+
+        id = task.id
+
+        obj = Task.objects.get(taskId=id)
+        self.assertEqual(obj.preprocessorCommand, "this-is-prepressor")
+        self.assertEqual(obj.preprocessorId, 1)
+
+        obj.delete()
+        hashlist.delete()
+
 
 if __name__ == '__main__':
     unittest.main()

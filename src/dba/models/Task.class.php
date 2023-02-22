@@ -109,7 +109,7 @@ class Task extends AbstractModel {
     $dict['staticChunks'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "staticChunks"];
     $dict['chunkSize'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "chunkSize"];
     $dict['forcePipe'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "forcePipe"];
-    $dict['usePreprocessor'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "usePreprocessor"];
+    $dict['usePreprocessor'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "preprocessorId"];
     $dict['preprocessorCommand'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "preprocessorCommand"];
 
     return $dict;
