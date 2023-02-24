@@ -318,19 +318,28 @@ abstract class AbstractBaseAPI {
     // Check for valid expand parameters
     $expandable = $expandables;
     $expands = [];
-    if (array_key_exists('expand', $request->getQueryParams())) {
-      $expands = preg_split("/[,\ ]+/", $request->getQueryParams()['expand']);
 
-      foreach($expands as $expand) {
-        if (($key = array_search($expand, $expandable)) !== false) {
-          unset($expandable[$key]);
-        }
-        else {
-          throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($expandables)) . ")");
-        }
+    $data = $request->getParsedBody();
+    $bodyExpand_raw = (array_key_exists('expand', $data)) ? $data['expand'] : [];
+    $queryExpand = (array_key_exists('expand', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['expand']) : [];
+    
+    if (is_string($bodyExpand_raw)) {
+      $bodyExpand = [$bodyExpand_raw];
+    } else {
+      $bodyExpand = $bodyExpand_raw;
+    }
+    $mergedExpands = array_merge($bodyExpand, $queryExpand);
+    
+    foreach($mergedExpands as $expand) {
+      if (($key = array_search($expand, $expandable)) !== false) {
+        unset($expandable[$key]);
+      }
+      else {
+        throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($expandables)) . ")");
       }
     }
-    return [$expandable, $expands];
+  
+    return [$expandable, $mergedExpands];
   }
 
 

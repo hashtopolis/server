@@ -9,6 +9,7 @@ import requests
 import unittest
 import datetime
 from pathlib import Path
+from io import BytesIO
 
 import requests
 import unittest
@@ -18,6 +19,7 @@ import abc
 
 import http
 import confidence
+import tusclient.client
 
 #logging.basicConfig(level=logging.DEBUG)
 
@@ -81,7 +83,7 @@ class HashtopolisConnector(object):
         }
 
 
-    def filter(self, filter):
+    def filter(self, expand, filter):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
         headers = self._headers
@@ -104,7 +106,10 @@ class HashtopolisConnector(object):
                 l = f'{k}={v}'
             filter_list.append(l)                  
 
-        payload = {'filter': filter_list}
+        payload = {
+            'filter': filter_list,
+            'expand': expand
+        }
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         if r.status_code != 201:
@@ -181,12 +186,12 @@ class ManagerBase(type):
         return cls.conn[cls._model_uri]
 
     @classmethod
-    def all(cls):
+    def all(cls, expand=None):
         """
         Retrieve all backend objects
         TODO: Make iterator supporting loading of objects via pages
         """
-        return cls.filter()
+        return cls.filter(expand)
 
 
     @classmethod
@@ -211,15 +216,15 @@ class ManagerBase(type):
         return cls.all()[0]
 
     @classmethod
-    def get(cls, **kwargs):
-        objs = cls.filter(**kwargs)
+    def get(cls, expand=None, **kwargs):
+        objs = cls.filter(expand, **kwargs)
         assert(len(objs) == 1)
         return objs[0]
 
     @classmethod
-    def filter(cls, **kwargs):              
+    def filter(cls, expand=None, **kwargs):              
         # Get all objects
-        api_objs = cls.get_conn().filter(kwargs)
+        api_objs = cls.get_conn().filter(expand, kwargs)
 
         # Convert into class
         objs = []
@@ -249,6 +254,27 @@ class Model(metaclass=ModelBase):
     def __init__(self, *args, **kwargs):      
         self.set_initial(kwargs)
         super().__init__()
+    
+    def _dict2obj(self, dict):
+        # Function to convert a dict to an object.
+        uri = dict.get('_self')
+
+        # Loop through all the registers classes
+        for modelname, model in cls_registry.items():
+            model_uri = model.objects._model_uri
+            # Check if part of the uri is in the model uri
+            if model_uri in uri:
+                
+                obj = model()
+
+                # Set all the attributes of the object.
+                for k2,v2 in dict.items():
+                    setattr(obj, k2, v2)
+                if not k2.startswith('_'):
+                    obj.__fields.append(k2)
+                return obj
+        # If we are here, it means that no uri matched, thus we don't know the object.
+        raise(TypeError('Object not valid model'))
 
     def set_initial(self, kv):
         self.__fields = []
@@ -261,10 +287,29 @@ class Model(metaclass=ModelBase):
 
         # Create attribute values
         for k,v in kv.items():
-            setattr(self, k, v)
-            if not k.startswith('_'):
-                self.__fields.append(k)
-
+            
+            # In case expand is true, there can be a attribute which also is an object.
+            # Example: Users in AccessGroups. This part will convert the returned data.
+            # Into proper objects.
+            if type(v) is list and len(v) > 0:
+                # Many-to-Many relation
+                obj_list = []
+                # Loop through all the values in the list and convert them to objects.
+                for dict_v in v:
+                    if type(dict_v) is dict and dict_v.get('_self'):
+                        # Double check that it really is an object
+                        obj = self._dict2obj(dict_v)
+                        obj_list.append(obj)
+                # Set the attribute of the current object to a set object (like Django)
+                setattr(self, f"{k}_set", obj_list)
+            
+            # This does the same as above, only one-to-one relations
+            elif type(v) is dict:
+                setattr(self, f"{k}_set", self._dict2obj(v))
+            else:
+                setattr(self, k, v)
+                if not k.startswith('_'):
+                    self.__fields.append(k)
 
     def diff(self):
         d1 = self.__initial
@@ -297,8 +342,16 @@ class Task(Model, uri="/ui/tasks"):
     def __repr__(self):
         return self._self
 
+class User(Model, uri="/ui/users"):
+    def __repr__(self):
+        return self._self
+
 
 class Hashlist(Model, uri="/ui/hashlists"):
+    def __repr__(self):
+        return self._self
+
+class AccessGroup(Model, uri="/ui/accessgroups"):
     def __repr__(self):
         return self._self
 
@@ -309,3 +362,42 @@ class Cracker(Model, uri="/ui/crackers"):
 class CrackerType(Model, uri="/ui/crackertypes"):
     def __repr__(self):
         return self._self
+
+class Files(Model, uri="/ui/files"):
+    def __repr__(self):
+        return self._self
+
+
+# class FileImport(HashtopolisConnector):
+#     def __init__(self):
+#         super().__init__("/ui/files/import", Config())
+
+#     def __repr__(self):
+#         return self._self
+    
+#     def do_upload(self, filename, file_stream):
+#         self.authenticate()
+
+#         uri = self._api_endpoint + self._model_uri
+
+#         my_client = tusclient.client.TusClient(uri)
+#         del self._headers['Content-Type']
+#         my_client.set_headers(self._headers)
+        
+#         N = 1000
+#         #res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
+#         # res = '\n'.join([f'Line-{i}' for i in range(N)])
+#         # fs = BytesIO(res.encode('UTF-8'))
+#         metadata = {"filename": filename,
+#                     "filetype": "application/text"}
+#         uploader = my_client.uploader(
+#                 file_stream=file_stream,
+#                 chunk_size=1000000000,
+#                 upload_checksum=True,
+#                 metadata=metadata
+#                 )
+#         # logger.debug(uploader.get_headers())
+#         # logger.debug(uploader.encode_metadata())
+#         uploader.upload()
+#         # logger.debug(vars(uploader))
+#         # self.assertEqual(uploader.stop_at, uploader.offset)
