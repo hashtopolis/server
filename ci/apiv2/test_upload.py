@@ -1,74 +1,36 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# PoC testing/development framework for APIv2 upload TUS
+# PoC testing/development framework for APIv2
+# Written in python to work on creation of hashtopolis APIv2 python binding.
 #
-# Nice helper: $sudo justniffer -i lo -r
+import json
 import unittest
 import datetime
-import logging
+from pathlib import Path
 from io import BytesIO
 
+from hashtopolis import Hashlist 
+from hashtopolis import FileImport
+from hashtopolis import File
 
-import tusclient.client
-
-import utils
-
-#logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
-
-class Files(utils.TestBase):
-    def getBaseURI(self):
-        return '/ui/files/import'
-        
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        # Remove preset 'Content-Type' header, since this will bork the file uploader
-        del cls._headers['Content-Type']
-
-
-    def do_upload(self, filename):
-        uri = self.getURI()
-
-        my_client = tusclient.client.TusClient(uri)
-        my_client.set_headers(self._headers)
-        
-        N = 1000
-        #res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
-        res = '\n'.join([f'Line-{i}' for i in range(N)])
-        fs = BytesIO(res.encode('UTF-8'))
-        metadata = {"filename": filename,
-                    "filetype": "application/text"}
-        uploader = my_client.uploader(
-                file_stream=fs,
-                chunk_size=4000,
-                upload_checksum=True,
-                metadata=metadata
-                )
-        logger.debug(uploader.get_headers())
-        logger.debug(uploader.encode_metadata())
-        uploader.upload()
-        logger.debug(vars(uploader))
-        self.assertEqual(uploader.stop_at, uploader.offset)
-
-
-    def test_upload(self):
+class TasksTest(unittest.TestCase):
+    def test_do_upload(self):
         stamp = datetime.datetime.now().isoformat()
-        filename = f"test_upload_{stamp}.csv"
-        self.do_upload(filename)
+        filename = f'test-{stamp}.txt'
+        file_import = FileImport()
+        text = '12345678\n123456\nprincess\n'.encode('utf-8')
+        fs = BytesIO(text)
+        file_import.do_upload(filename, fs)
 
+        p = Path(__file__).parent.joinpath('create_file_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        payload['sourceData'] = filename
+        payload['filename'] = filename
+        file_obj = File(**payload)
+        file_obj.save()
 
-    def test_upload_existing_file(self):
-        stamp = datetime.datetime.now().isoformat()
-        filename = f"test_existing_file_upload_{stamp}.csv"
-        self.do_upload(filename)
-
-        # Try uploading again
-        with self.assertRaises(tusclient.exceptions.TusCommunicationError) as cm:
-            self.do_upload(filename)
-        self.assertEqual(cm.exception.status_code, 400)
-            
-
-if __name__ == '__main__':
-    unittest.main()
+        file_obj2 = File()
+                
+        assert len(file_obj2.objects.filter(filename=filename)) == 1
+        file_obj.delete()

@@ -100,7 +100,9 @@ class FileAPI extends AbstractBaseAPI {
           if (!file_exists($this->getImportPath() . $QUERY["sourceData"])) {
             throw new HttpErrorException("File '" . $QUERY["sourceData"] . "' not found in import folder");
           }
-          if (file_exists($this->getImportPath() . $QUERY[File::FILENAME])) {
+          /* We are renaming sourceData file to filename file, check if filename is not there already 
+             this can be skipped if they are the same */
+          if (file_exists($this->getImportPath() . $QUERY[File::FILENAME]) && $QUERY[File::FILENAME] != $QUERY["sourceData"]) {
             throw new HttpErrorException("File required temponary file '" . $QUERY[File::FILENAME] . "' exists import folder, cannot continue");
           }
           /* Since we are renaming the file _before_ import the name is temponary changed */

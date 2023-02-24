@@ -363,41 +363,34 @@ class CrackerType(Model, uri="/ui/crackertypes"):
     def __repr__(self):
         return self._self
 
-class Files(Model, uri="/ui/files"):
+class File(Model, uri="/ui/files"):
     def __repr__(self):
         return self._self
 
 
-# class FileImport(HashtopolisConnector):
-#     def __init__(self):
-#         super().__init__("/ui/files/import", Config())
+class FileImport(HashtopolisConnector):
+    def __init__(self):
+        super().__init__("/ui/files/import", Config())
 
-#     def __repr__(self):
-#         return self._self
+    def __repr__(self):
+        return self._self
     
-#     def do_upload(self, filename, file_stream):
-#         self.authenticate()
+    def do_upload(self, filename, file_stream):
+        self.authenticate()
 
-#         uri = self._api_endpoint + self._model_uri
+        uri = self._api_endpoint + self._model_uri
 
-#         my_client = tusclient.client.TusClient(uri)
-#         del self._headers['Content-Type']
-#         my_client.set_headers(self._headers)
-        
-#         N = 1000
-#         #res = ''.join(random.choices(string.ascii_uppercase + string.digits, k=N))
-#         # res = '\n'.join([f'Line-{i}' for i in range(N)])
-#         # fs = BytesIO(res.encode('UTF-8'))
-#         metadata = {"filename": filename,
-#                     "filetype": "application/text"}
-#         uploader = my_client.uploader(
-#                 file_stream=file_stream,
-#                 chunk_size=1000000000,
-#                 upload_checksum=True,
-#                 metadata=metadata
-#                 )
-#         # logger.debug(uploader.get_headers())
-#         # logger.debug(uploader.encode_metadata())
-#         uploader.upload()
-#         # logger.debug(vars(uploader))
-#         # self.assertEqual(uploader.stop_at, uploader.offset)
+        my_client = tusclient.client.TusClient(uri)
+        del self._headers['Content-Type']
+        my_client.set_headers(self._headers)
+
+        metadata = {"filename": filename,
+                    "filetype": "application/text"}
+        uploader = my_client.uploader(
+                file_stream=file_stream,
+                chunk_size=1000000000,
+                upload_checksum=True,
+                metadata=metadata
+                )
+        uploader.upload()
+

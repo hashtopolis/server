@@ -325,6 +325,8 @@ abstract class AbstractBaseAPI {
     
     if (is_string($bodyExpand_raw)) {
       $bodyExpand = [$bodyExpand_raw];
+    } elseif (is_null($bodyExpand_raw)) {
+      $bodyExpand = [];
     } else {
       $bodyExpand = $bodyExpand_raw;
     }
