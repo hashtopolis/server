@@ -292,6 +292,7 @@ class Model(metaclass=ModelBase):
             # Example: Users in AccessGroups. This part will convert the returned data.
             # Into proper objects.
             if type(v) is list and len(v) > 0:
+                
                 # Many-to-Many relation
                 obj_list = []
                 # Loop through all the values in the list and convert them to objects.
@@ -301,15 +302,17 @@ class Model(metaclass=ModelBase):
                         obj = self._dict2obj(dict_v)
                         obj_list.append(obj)
                 # Set the attribute of the current object to a set object (like Django)
-                setattr(self, f"{k}_set", obj_list)
-            
+                # Also check if it really were objects
+                if len(obj_list) > 0:
+                    setattr(self, f"{k}_set", obj_list)
+                    continue
             # This does the same as above, only one-to-one relations
-            elif type(v) is dict:
+            if type(v) is dict:
                 setattr(self, f"{k}_set", self._dict2obj(v))
-            else:
-                setattr(self, k, v)
-                if not k.startswith('_'):
-                    self.__fields.append(k)
+                continue
+            setattr(self, k, v)
+            if not k.startswith('_'):
+                self.__fields.append(k)
 
     def diff(self):
         d1 = self.__initial
@@ -339,6 +342,10 @@ class Model(metaclass=ModelBase):
 
 
 class Task(Model, uri="/ui/tasks"):
+    def __repr__(self):
+        return self._self
+
+class Pretask(Model, uri="/ui/pretasks"):
     def __repr__(self):
         return self._self
 

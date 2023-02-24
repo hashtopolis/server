@@ -26,6 +26,7 @@ use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
 use DBA\Pretask;
+use DBA\File;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
 use Middlewares\Utils\HttpErrorException;
@@ -214,8 +215,8 @@ abstract class AbstractBaseAPI {
         case 'pretaskFiles':
           /* M2M via FilePretask */
           $qF = new QueryFilter(FilePretask::PRETASK_ID, $item[Pretask::PRETASK_ID], "=", Factory::getFilePretaskFactory());
-          $jF = new JoinFilter(Factory::getFilePretaskFactory(), Pretask::PRETASK_ID, FilePretask::PRETASK_ID);
-          $item[$NAME] = $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
+          $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
           break;     
         case 'pretasks':
           /* M2M via SupertaskPretask */
