@@ -38,7 +38,7 @@ if HTTP_DEBUG:
 cls_registry = {}
 
 
-class Config(object):
+class HashtopolisConfig(object):
     def __init__(self):
         # Request access TOKEN, used throughout the test
         load_order = confidence.DEFAULT_LOAD_ORDER + (str(Path(__file__).parent.joinpath('{name}.{extension}')),)
@@ -179,7 +179,7 @@ class ManagerBase(type):
     @classmethod
     def get_conn(cls):
         if cls.config is None:
-            cls.config = Config()
+            cls.config = HashtopolisConfig()
 
         if cls._model_uri not in cls.conn:
             cls.conn[cls._model_uri] = HashtopolisConnector(cls._model_uri, cls.config)
@@ -369,6 +369,10 @@ class Cracker(Model, uri="/ui/crackers"):
 class CrackerType(Model, uri="/ui/crackertypes"):
     def __repr__(self):
         return self._self
+    
+class Config(Model, uri="/ui/configs"):
+    def __repr__(self):
+        return self._self
 
 class File(Model, uri="/ui/files"):
     def __repr__(self):
@@ -377,7 +381,7 @@ class File(Model, uri="/ui/files"):
 
 class FileImport(HashtopolisConnector):
     def __init__(self):
-        super().__init__("/ui/files/import", Config())
+        super().__init__("/ui/files/import", HashtopolisConfig())
 
     def __repr__(self):
         return self._self
