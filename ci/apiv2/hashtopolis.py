@@ -341,6 +341,10 @@ class Model(metaclass=ModelBase):
         return self._id
 
 
+class Agent(Model, uri="/ui/agents"):
+    def __repr__(self):
+        return self._self
+
 class Task(Model, uri="/ui/tasks"):
     def __repr__(self):
         return self._self
