@@ -87,10 +87,10 @@ abstract class HashtopolisTest {
     Factory::getAccessGroupUserFactory()->save($accessGroup);
     $this->apiKey = new ApiKey(null, 0, time() + 3600, 'mykey', 0, $this->user->getId(), 1);
     $this->apiKey = Factory::getApiKeyFactory()->save($this->apiKey);
-    $versionStore = new StoredValue("version", ($version == 'master') ? explode("+", $VERSION)[0] : $version);
-    Factory::getStoredValueFactory()->save($versionStore);
-    $buildStore = new StoredValue("build", ($version == 'master') ? Util::getGitCommit(true) : $this->RELEASES[$version]);
-    Factory::getStoredValueFactory()->save($buildStore);
+    // $versionStore = new StoredValue("version", ($version == 'master') ? explode("+", $VERSION)[0] : $version);
+    // Factory::getStoredValueFactory()->save($versionStore);
+    // $buildStore = new StoredValue("build", ($version == 'master') ? Util::getGitCommit(true) : $this->RELEASES[$version]);
+    // Factory::getStoredValueFactory()->save($buildStore);
   }
   
   abstract function run();
