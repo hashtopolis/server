@@ -321,13 +321,16 @@ abstract class AbstractBaseAPI {
     $expands = [];
 
     $data = $request->getParsedBody();
-    $bodyExpand_raw = (array_key_exists('expand', $data)) ? $data['expand'] : [];
+    if (!is_null($data)) {
+      $bodyExpand_raw = (array_key_exists('expand', $data)) ? $data['expand'] : [];
+    } else {
+      $bodyExpand_raw = [];
+    }
+
     $queryExpand = (array_key_exists('expand', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['expand']) : [];
     
     if (is_string($bodyExpand_raw)) {
       $bodyExpand = [$bodyExpand_raw];
-    } elseif (is_null($bodyExpand_raw)) {
-      $bodyExpand = [];
     } else {
       $bodyExpand = $bodyExpand_raw;
     }
@@ -352,8 +355,12 @@ abstract class AbstractBaseAPI {
     $qFs = [];
     
     $data = $request->getParsedBody();
-    $bodyFilter = (array_key_exists('filter', $data)) ? $data['filter'] : [];
- 
+    if (!is_null(($data))) {
+      $bodyFilter = (array_key_exists('filter', $data)) ? $data['filter'] : [];
+    } else {
+      $bodyFilter = [];
+    }
+
     $queryFilter = (array_key_exists('filter', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['filter']) : [];
     $mergedFilters = array_merge($bodyFilter, $queryFilter);
 
