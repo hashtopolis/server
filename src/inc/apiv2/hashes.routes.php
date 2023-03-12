@@ -65,3 +65,5 @@ class HashAPI extends AbstractBaseAPI {
       assert(False, "Chunks cannot be deleted via API");
     }
 }
+
+HashAPI::register($app);

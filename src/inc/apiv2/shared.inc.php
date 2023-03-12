@@ -373,7 +373,7 @@ abstract class AbstractBaseAPI {
           // TODO: cast value
           if ($features[$matches['key']]['type'] == 'bool') {
             $val = filter_var($matches['value'], FILTER_NULL_ON_FAILURE);
-            if ($val == null) {
+            if (is_null($val)) {
               throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");  
             }
           } else {

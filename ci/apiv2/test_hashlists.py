@@ -67,6 +67,18 @@ class HashlistTest(unittest.TestCase):
         objs = Hashlist.objects.filter(hashtlistName=payload.get('name'))
         assert objs == []
 
+    def test_filter_archived(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        id = hashlist.id
+
+        obj = Hashlist.objects.get(hashlistId=id, isArchived=False, expand=['hashType', 'accessGroup', 'hashes'])
+
+        assert obj.id == id
+
     #TODO: Expand support
     # def test_expand(self):
     #     p = Path(__file__).parent.joinpath('create_hashlist_001.json')

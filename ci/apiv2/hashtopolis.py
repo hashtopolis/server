@@ -362,6 +362,14 @@ class Hashlist(Model, uri="/ui/hashlists"):
     def __repr__(self):
         return self._self
 
+class HashType(Model, uri="/ui/hashtypes"):
+    def __repr__(self):
+        return self._self
+
+class Hash(Model, uri="/ui/hashes"):
+    def __repr__(self):
+        return self._self
+
 class AccessGroup(Model, uri="/ui/accessgroups"):
     def __repr__(self):
         return self._self
