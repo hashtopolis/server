@@ -34,7 +34,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --chown=www-data:www-data ./src/ /var/www/html/
-COPY composer.json composer.lock /var/www/
+COPY composer.json /var/www/
 
 WORKDIR /var/www
 
