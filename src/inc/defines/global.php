@@ -12,6 +12,7 @@ class DDirectories {
   const FILES  = "directory_files";
   const IMPORT = "directory_import";
   const LOG    = "directory_log";
+  const CONFIG = "directory_config";
 }
 
 // log entry types

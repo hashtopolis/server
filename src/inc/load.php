@@ -23,8 +23,14 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
     $DIRECTORIES = [
       "files" => dirname(__FILE__) . "/../files/",
       "import" => dirname(__FILE__) . "/../import/",
-      "log" => dirname(__FILE__) . "/../log/"
+      "log" => dirname(__FILE__) . "/../log/",
+      "config" => dirname(__FILE__) . "/../config/"
     ];
+  }
+  
+  // if a pepper is set from an older version, we have to save it to the new file location
+  if (isset($PEPPER) && !file_exists($DIRECTORIES['config'] . "/pepper.json")) {
+    file_put_contents($DIRECTORIES['config'] . "/pepper.json", json_encode($PEPPER));
   }
 }
 else {
@@ -38,7 +44,8 @@ else {
   $DIRECTORIES = [
     "files" => "/usr/local/share/hashtopolis/files",
     "import" => "/usr/local/share/hashtopolis/import",
-    "log" => "/usr/local/share/hashtopolis/log"
+    "log" => "/usr/local/share/hashtopolis/log",
+    "config" => "/usr/local/share/hashtopolis/config/"
   ];
   
   // update from env if set
@@ -124,7 +131,7 @@ catch (PDOException $e) {
       Util::randomString(32),
       Util::randomString(32)
     ];
-    file_put_contents($DIRECTORIES['log'] . "/pepper.json", json_encode($PEPPER));
+    file_put_contents($DIRECTORIES['config'] . "/pepper.json", json_encode($PEPPER));
   }
   
   // save version and build
@@ -169,9 +176,10 @@ catch (PDOException $e) {
 Util::checkDataDirectory(DDirectories::FILES, $DIRECTORIES['files']);
 Util::checkDataDirectory(DDirectories::IMPORT, $DIRECTORIES['import']);
 Util::checkDataDirectory(DDirectories::LOG, $DIRECTORIES['log']);
+Util::checkDataDirectory(DDirectories::CONFIG, $DIRECTORIES['config']);
 
 // load data
-$PEPPER = json_decode(file_get_contents(Factory::getStoredValueFactory()->get(DDirectories::LOG)->getVal() . "/pepper.json"));
+$PEPPER = json_decode(file_get_contents(Factory::getStoredValueFactory()->get(DDirectories::CONFIG)->getVal() . "/pepper.json"));
 
 $LANG = new Lang();
 UI::add('version', $VERSION);
