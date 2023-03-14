@@ -10,4 +10,10 @@ for path in ${paths[@]}; do
   fi
 done
 
+if [ ! -d /var/www/vendor ];
+then
+  composer install --working-dir=/var/www/
+fi
+composer update --working-dir=/var/www/
+
 docker-php-entrypoint apache2-foreground
