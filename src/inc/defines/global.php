@@ -8,6 +8,12 @@ class DZaps {
   const LAST_ZAP_CLEANING = "lastZapCleaning";
 }
 
+class DDirectories {
+  const FILES  = "directory_files";
+  const IMPORT = "directory_import";
+  const LOG    = "directory_log";
+}
+
 // log entry types
 class DLogEntry {
   const WARN  = "warning";

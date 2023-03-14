@@ -11,32 +11,38 @@ RUN apt-get update \
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
-
+\
 	# Configuring PHP
     && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
     && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
     && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
-
+\
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql \
-
+\
     # Install composer
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
     # Enable URL rewriting using .htaccess
     && a2enmod rewrite \
-
+\
     # Clean up
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --chown=www-data:www-data ./src/ /var/www/html/
-COPY composer.json composer.lock /var/www/
+COPY composer.json /var/www/
+RUN composer install --working-dir=/var/www/
 
 WORKDIR /var/www
+
+# data folder for log, import, files
+RUN mkdir -p /usr/local/share/hashtopolis
+RUN mkdir /usr/local/share/hashtopolis/log /usr/local/share/hashtopolis/import /usr/local/share/hashtopolis/files
+RUN chown -R www-data:www-data /usr/local/share/hashtopolis
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog

@@ -1,7 +1,11 @@
 <?php
 
+use DBA\AccessGroupUser;
 use DBA\Factory;
+use DBA\QueryFilter;
+use DBA\RightGroup;
 use DBA\StoredValue;
+use DBA\User;
 
 // set to 1 for debugging
 ini_set("display_errors", "0");
@@ -10,8 +14,44 @@ session_start();
 
 require_once(dirname(__FILE__) . "/info.php");
 
-$INSTALL = false;
-@include(dirname(__FILE__) . "/conf.php");
+if (file_exists(dirname(__FILE__) . "/conf.php")) {
+  // this is either an existing setup, or a new setup without docker
+  include(dirname(__FILE__) . "/conf.php");
+  
+  // check if directories is set, otherwise set the defaults for it
+  if (!isset($DIRECTORIES)) {
+    $DIRECTORIES = [
+      "files" => dirname(__FILE__) . "/../files/",
+      "import" => dirname(__FILE__) . "/../import/",
+      "log" => dirname(__FILE__) . "/../log/"
+    ];
+  }
+}
+else {
+  // read env variables (when running with docker-compose)
+  $CONN['user'] = getenv('HASHTOPOLIS_DB_USER');
+  $CONN['pass'] = getenv('HASHTOPOLIS_DB_PASS');
+  $CONN['server'] = getenv('HASHTOPOLIS_DB_HOST');
+  $CONN['db'] = getenv('HASHTOPOLIS_DB_DATABASE');
+  $CONN['port'] = 3306;
+  
+  $DIRECTORIES = [
+    "files" => "/usr/local/share/hashtopolis/files",
+    "import" => "/usr/local/share/hashtopolis/import",
+    "log" => "/usr/local/share/hashtopolis/log"
+  ];
+  
+  // update from env if set
+  if (getenv('HASHTOPOLIS_FILES_PATH') !== false) {
+    $DIRECTORIES["files"] = getenv('HASHTOPOLIS_FILES_PATH');
+  }
+  if (getenv('HASHTOPOLIS_IMPORT_PATH') !== false) {
+    $DIRECTORIES["import"] = getenv('HASHTOPOLIS_IMPORT_PATH');
+  }
+  if (getenv('HASHTOPOLIS_LOG_PATH') !== false) {
+    $DIRECTORIES["log"] = getenv('HASHTOPOLIS_LOG_PATH');
+  }
+}
 
 // include all .class.php files in inc dir
 $dir = scandir(dirname(__FILE__));
@@ -45,6 +85,88 @@ include(dirname(__FILE__) . "/mask.php");
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");
 
+// create directories if not exists
+foreach ($DIRECTORIES as $name => $path) {
+  if (!file_exists($path)) {
+    mkdir($path);
+  }
+}
+
+// check if the system is set up and installed
+if (Factory::getUserFactory()->getDB(true) === null) {
+  //connection not valid
+  die("Database connection failed!");
+}
+try {
+  Factory::getUserFactory()->filter([], true);
+}
+catch (PDOException $e) {
+  $query = file_get_contents(dirname(__FILE__) . "/../install/hashtopolis.sql");
+  Factory::getAgentFactory()->getDB()->query($query);
+  
+  // determine the base url
+  $baseUrl = explode("/", $_SERVER['REQUEST_URI']);
+  unset($baseUrl[sizeof($baseUrl) - 1]);
+  try {
+    $urlConfig = ConfigUtils::get(DConfig::BASE_URL);
+  }
+  catch (HTException $e) {
+    die("Failure in config: " . $e->getMessage());
+  }
+  $urlConfig->setValue(implode("/", $baseUrl));
+  Factory::getConfigFactory()->update($urlConfig);
+  
+  // if peppers are not set, generate them and save them
+  if (!isset($PEPPER)) {
+    $PEPPER = [
+      Util::randomString(32),
+      Util::randomString(32),
+      Util::randomString(32),
+      Util::randomString(32)
+    ];
+    file_put_contents($DIRECTORIES['log'] . "/pepper.json", json_encode($PEPPER));
+  }
+  
+  // create default user
+  $username = "admin";
+  if (getenv('HASHTOPOLIS_ADMIN_USER') !== false) {
+    $username = getenv('HASHTOPOLIS_ADMIN_USER');
+  }
+  $password = "hashtopolis";
+  if (getenv('HASHTOPOLIS_ADMIN_PASSWORD') !== false) {
+    $password = getenv('HASHTOPOLIS_ADMIN_PASSWORD');
+  }
+  $email = "admin@localhost";
+  
+  Factory::getAgentFactory()->getDB()->beginTransaction();
+  
+  $qF = new QueryFilter(RightGroup::GROUP_NAME, "Administrator", "=");
+  $group = Factory::getRightGroupFactory()->filter([Factory::FILTER => $qF]);
+  $group = $group[0];
+  $newSalt = Util::randomString(20);
+  $CIPHER = $PEPPER[1] . $password . $newSalt;
+  $options = array('cost' => 12);
+  $newHash = password_hash($CIPHER, PASSWORD_BCRYPT, $options);
+  
+  $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+  Factory::getUserFactory()->save($user);
+  
+  // create default group
+  $group = AccessUtils::getOrCreateDefaultAccessGroup();
+  $groupUser = new AccessGroupUser(null, $group->getId(), $user->getId());
+  Factory::getAccessGroupUserFactory()->save($groupUser);
+  
+  Factory::getAgentFactory()->getDB()->commit();
+}
+
+// check if directories are saved in config
+Util::checkDataDirectory(DDirectories::FILES, $DIRECTORIES['files']);
+Util::checkDataDirectory(DDirectories::IMPORT, $DIRECTORIES['import']);
+Util::checkDataDirectory(DDirectories::LOG, $DIRECTORIES['log']);
+
+// load data
+$PEPPER = json_decode(file_get_contents(Factory::getStoredValueFactory()->get(DDirectories::LOG)->getVal() . "/pepper.json"));
+
 $LANG = new Lang();
 UI::add('version', $VERSION);
 UI::add('host', $HOST);
@@ -60,27 +182,25 @@ else {
 }
 
 $updateExecuted = false;
-if ($INSTALL) {
-  // check if update is needed 
-  // (note if the version was retrieved with git, but the git folder was removed, smaller updates are not recognized because the build value is missing)
-  $storedVersion = Factory::getStoredValueFactory()->get("version");
-  if ($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
+// check if update is needed
+// (note if the version was retrieved with git, but the git folder was removed, smaller updates are not recognized because the build value is missing)
+$storedVersion = Factory::getStoredValueFactory()->get("version");
+if ($storedVersion == null || $storedVersion->getVal() != explode("+", $VERSION)[0] && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
+  include(dirname(__FILE__) . "/../install/updates/update.php");
+  $updateExecuted = $upgradePossible;
+}
+else { // in case it is not a version upgrade, but the person retrieved a new version via git or copying
+  $storedBuild = Factory::getStoredValueFactory()->get("build");
+  if ($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
     include(dirname(__FILE__) . "/../install/updates/update.php");
     $updateExecuted = $upgradePossible;
   }
-  else { // in case it is not a version upgrade, but the person retrieved a new version via git or copying
-    $storedBuild = Factory::getStoredValueFactory()->get("build");
-    if ($storedBuild == null || ($BUILD != 'repository' && $storedBuild->getVal() != $BUILD) || ($BUILD == 'repository' && strlen(Util::getGitCommit(true)) > 0 && $storedBuild->getVal() != Util::getGitCommit(true)) && file_exists(dirname(__FILE__) . "/../install/updates/update.php")) {
-      include(dirname(__FILE__) . "/../install/updates/update.php");
-      $updateExecuted = $upgradePossible;
-    }
-  }
-  
-  if (strlen(Util::getGitCommit()) == 0) {
-    $storedBuild = Factory::getStoredValueFactory()->get("build");
-    if ($storedBuild != null) {
-      UI::add('build', $storedBuild->getVal());
-    }
+}
+
+if (strlen(Util::getGitCommit()) == 0) {
+  $storedBuild = Factory::getStoredValueFactory()->get("build");
+  if ($storedBuild != null) {
+    UI::add('build', $storedBuild->getVal());
   }
 }
 
@@ -92,26 +212,24 @@ if ($updateExecuted) {
 }
 
 UI::add('pageTitle', "");
-if ($INSTALL) {
-  UI::add('login', Login::getInstance());
-  if (Login::getInstance()->isLoggedin()) {
-    UI::add('user', Login::getInstance()->getUser());
-    AccessControl::getInstance(Login::getInstance()->getUser());
-  }
-  
-  UI::add('config', SConfig::getInstance());
-  
-  define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
-  
-  //set autorefresh to false for all pages
-  UI::add('autorefresh', -1);
+UI::add('login', Login::getInstance());
+if (Login::getInstance()->isLoggedin()) {
+  UI::add('user', Login::getInstance()->getUser());
+  AccessControl::getInstance(Login::getInstance()->getUser());
 }
+
+UI::add('config', SConfig::getInstance());
+
+define("APP_NAME", (SConfig::getInstance()->getVal(DConfig::S_NAME) == 1) ? "Hashtopussy" : "Hashtopolis");
+
+//set autorefresh to false for all pages
+UI::add('autorefresh', -1);
+
 UI::add('accessControl', AccessControl::getInstance());
 
-if ($INSTALL) {
-  // CSRF setup
-  CSRF::init();
-}
+// CSRF setup
+CSRF::init();
+
 
 
 

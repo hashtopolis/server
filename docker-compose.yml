@@ -1,13 +1,16 @@
-version: '3.8'
+version: '3.7'
 services:
   hashtopolis:
     container_name: hashtopolis
     build: .
     restart: always
     volumes:
-      - ./src/import/:/var/www/html/import/:Z
-      - ./src/files/:/var/www/html/files/:Z
-      - ./src/inc/:/var/www/html/inc/:Z
+      - hashtopolis:/usr/local/share/hashtopolis:Z
+    environment:
+      HASHTOPOLIS_DB_USER: $MYSQL_USER
+      HASHTOPOLIS_DB_PASS: $MYSQL_PASS
+      HASHTOPOLIS_DB_HOST: db
+      HASHTOPOLIS_DB_DATABASE: $MYSQL_DB
     depends_on:
       - db
     ports:
@@ -34,4 +37,5 @@ services:
       - CAP_SETGID
       - CAP_SETUID
 volumes:
-  db:   
+  db:
+  hashtopolis:

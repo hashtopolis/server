@@ -26,17 +26,17 @@ use DBA\Factory;
 require_once(dirname(__FILE__) . "/../load.php");
 
 function getUploadPath(string $id): string {
-  $filename = dirname(__file__) . "/../../tmp/" . $id . '.part';
+  $filename = "/tmp/" . $id . '.part';
   return $filename;
 };
 
 function getMetaPath(string $id): string {
-  $filename = dirname(__file__) . "/../../tmp/" . $id . '.meta';
+  $filename = "/tmp/" . $id . '.meta';
   return $filename;
 };
 
 function getImportPath(string $id): string {
-  $filename = dirname(__file__) . "/../../import/" . $id;
+  $filename = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $id;
   return $filename;
 };
 
