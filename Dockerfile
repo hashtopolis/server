@@ -1,4 +1,10 @@
-FROM php:8-apache  
+FROM alpine/git as preprocess
+
+COPY .git /.git
+
+RUN cd / && git rev-parse --short HEAD > /HEAD
+
+FROM php:8-apache
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
@@ -33,9 +39,14 @@ RUN apt-get update \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
+RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
+
 COPY --chown=www-data:www-data ./src/ /var/www/html/
 COPY composer.json /var/www/
 RUN composer install --working-dir=/var/www/
+
+RUN mkdir /var/www/.git/
+COPY --from=preprocess /HEAD /var/www/.git/
 
 WORKDIR /var/www
 

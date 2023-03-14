@@ -1,8 +1,9 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
 if (!isset($TEST)) {
-  /** @noinspection PhpIncludeInspection */
-  require_once(dirname(__FILE__) . "/../../inc/conf.php");
+  if (file_exists(dirname(__FILE__) . "/../../inc/conf.php")) {
+    require_once(dirname(__FILE__) . "/../../inc/conf.php");
+  }
   require_once(dirname(__FILE__) . "/../../inc/info.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");

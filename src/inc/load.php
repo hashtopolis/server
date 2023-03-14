@@ -127,6 +127,12 @@ catch (PDOException $e) {
     file_put_contents($DIRECTORIES['log'] . "/pepper.json", json_encode($PEPPER));
   }
   
+  // save version and build
+  $version = new StoredValue("version", explode("+", $VERSION)[0]);
+  Factory::getStoredValueFactory()->save($version);
+  $build = new StoredValue("build", $BUILD);
+  Factory::getStoredValueFactory()->save($build);
+  
   // create default user
   $username = "admin";
   if (getenv('HASHTOPOLIS_ADMIN_USER') !== false) {
