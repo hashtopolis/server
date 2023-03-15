@@ -486,6 +486,12 @@ class SupertaskUtils {
     $qF2 = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretaskId, "=");
     $supertaskPretask = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     Factory::getSupertaskPretaskFactory()->delete($supertaskPretask);
+    
+    // check if the preconfigured task was from an import. in this case also delete it
+    $pretask = PretaskUtils::getPretask($pretaskId);
+    if ($pretask->getIsMaskImport() == 1) {
+      PretaskUtils::deletePretask($pretaskId);
+    }
   }
   
   /**

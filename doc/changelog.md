@@ -1,3 +1,9 @@
+# v0.13.0 -> v0.x.x
+
+## Bugfixes
+
+- When a preconfigured task is removed from a supertask and its originating from an import, it should be deleted (issue #865).
+
 # v0.12.0 -> v0.13.0
 
 ## Features
