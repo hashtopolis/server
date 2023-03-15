@@ -1,5 +1,7 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
+use DBA\Factory;
+
 if (!isset($TEST)) {
   /** @noinspection PhpIncludeInspection */
   require_once(dirname(__FILE__) . "/../../inc/conf.php");
@@ -10,4 +12,8 @@ if (!isset($TEST)) {
 require_once(dirname(__FILE__) . "/../../inc/defines/config.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/log.php");
 
+if (!isset($PRESENT["v0.13.x_hash_length"])) {
+  Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` MODIFY `hash` MEDIUMTEXT NOT NULL;");
+  $EXECUTED["v0.13.x_hash_length"] = true;
+}
 

@@ -237,7 +237,7 @@ CREATE TABLE `FileDelete` (
 CREATE TABLE `Hash` (
   `hashId`      INT(11)      NOT NULL,
   `hashlistId`  INT(11)      NOT NULL,
-  `hash`        TEXT         NOT NULL,
+  `hash`        MEDIUMTEXT   NOT NULL,
   `salt`        VARCHAR(256) DEFAULT NULL,
   `plaintext`   VARCHAR(256) DEFAULT NULL,
   `timeCracked` BIGINT       DEFAULT NULL,

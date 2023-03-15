@@ -1,3 +1,9 @@
+# v0.13.0 -> v0.x.x
+
+## Enhancements
+
+- Hash.hash is now of type MEDIUMTEXT to avoid issues with longer hashes (e.g. LUKS, issue #851).
+
 # v0.12.0 -> v0.13.0
 
 ## Features
