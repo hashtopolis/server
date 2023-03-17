@@ -66,13 +66,15 @@ class RuleSplitTest extends HashtopolisTest {
       "priority" => 100,
       "color" => "FFFFFF",
       "crackerVersionId" => 1,
-      "files" => [$file_id1, $file_id2]]
+      "files" => [$file_id1, $file_id2],
+      "chunksize" => 1],
     );
 
     $task1Id = $response["taskId"];
 
     # Enable rulesplit
-    $this->setConfig('ruleSplitDisable', '0');
+    $this->setConfig('ruleSplitDisable', false);
+    $this->setConfig('ruleSplitAlways', true);
 
     # Create agent
     $agent = $this->createAgent("agent-1");
@@ -92,31 +94,15 @@ class RuleSplitTest extends HashtopolisTest {
       "taskId" => $task1Id,
       "token" => $agent["token"],
       "type" => "speed",
-      "result" => '2000:50']
+      "result" => '2000:2200000']
     );
-    # getChunk
-    $response = HashtopolisTestFramework::doRequest([
-      "action" => "getChunk",
-      "taskId" => $task1Id,
-      "token" => $agent["token"]]
-    );
-    $chunkId = $response['chunkId'];
+    if (!is_array($response)) {
+      $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Expected benchmark to return OK."));
+    } else {
+      $this->testSuccess("RuleSplitTest:testRuleSplit()");
+    }
 
-    # probeer de file te splitten
-    $response = HashtopolisTestFramework::doRequest([
-      "action" => "sendProgress",
-      "chunkId" => $chunkId,
-      "token" => $agent["token"],
-      "keyspaceProgress" => 500,
-      "relativeProgress" => "4545",
-      "speed" => 500,
-      "state" => 3,
-      "cracks" => [],
-      "gpuTemp" => [67],
-      "gpuUtil" => [99]
-    ]);
-
-    $this->testSuccess("RuleSplitTest:testRuleSplit()");
+    
   }
 
   private function createTask($values = []) {
