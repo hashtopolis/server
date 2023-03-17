@@ -1,5 +1,6 @@
 {
     "version": "0.2.0",
+
     "configurations": [
 
         {
@@ -28,8 +29,7 @@
           "type": "php",
           "request": "launch",
           "program": "${workspaceFolder}/ci/run.php",
-          "args": ["-v", "master"],
-          // "args": ["-v", "master", "-t", "specifictest"],
+          "args": ["-v", "master", "-t${input:testToRun}"],
           "port": 0,
           "runtimeArgs": [
               "-dxdebug.start_with_request=yes"
@@ -58,5 +58,12 @@
                 "action": "openExternally"
             }
         }
-    ]
+    ],
+    "inputs": [
+      {
+        "id": "testToRun",
+        "type": "promptString",
+        "description": "Name of test to run, example: MaxAgentsTest. If empty, all tests."
+      }
+    ],
 }
