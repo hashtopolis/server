@@ -24,6 +24,22 @@
             }
         },
         {
+          "name": "Launch test framework",
+          "type": "php",
+          "request": "launch",
+          "program": "${workspaceFolder}/ci/run.php",
+          "args": ["-v", "master"],
+          // "args": ["-v", "master", "-t", "specifictest"],
+          "port": 0,
+          "runtimeArgs": [
+              "-dxdebug.start_with_request=yes"
+          ],
+          "env": {
+              "XDEBUG_MODE": "debug,develop",
+              "XDEBUG_CONFIG": "client_port=${port}"
+          }
+        },
+        {
             "name": "Launch Built-in web server",
             "type": "php",
             "request": "launch",
