@@ -14,6 +14,7 @@ require_once(dirname(__FILE__) . "/../../inc/defines/log.php");
 
 if (!isset($PRESENT["v0.13.x_hash_length"])) {
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Hash` MODIFY `hash` MEDIUMTEXT NOT NULL;");
+  Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Zap` MODIFY `hash` MEDIUMTEXT NOT NULL;");
   $EXECUTED["v0.13.x_hash_length"] = true;
 }
 

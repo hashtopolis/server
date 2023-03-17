@@ -912,11 +912,11 @@ CREATE TABLE `User` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
-  `zapId`      INT(11) NOT NULL,
-  `hash`       TEXT    NOT NULL,
-  `solveTime`  BIGINT  NOT NULL,
-  `agentId`    INT(11) NULL,
-  `hashlistId` INT(11) NOT NULL
+  `zapId`      INT(11)    NOT NULL,
+  `hash`       MEDIUMTEXT NOT NULL,
+  `solveTime`  BIGINT     NOT NULL,
+  `agentId`    INT(11)    NULL,
+  `hashlistId` INT(11)    NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `ApiKey` (
