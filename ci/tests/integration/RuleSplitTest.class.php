@@ -99,10 +99,9 @@ class RuleSplitTest extends HashtopolisTest {
     if (!is_array($response)) {
       $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Expected benchmark to return OK."));
     } else {
+      #TODO implement test for checking results
       $this->testSuccess("RuleSplitTest:testRuleSplit()");
     }
-
-    
   }
 
   private function createTask($values = []) {
