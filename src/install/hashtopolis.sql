@@ -237,7 +237,7 @@ CREATE TABLE `FileDelete` (
 CREATE TABLE `Hash` (
   `hashId`      INT(11)      NOT NULL,
   `hashlistId`  INT(11)      NOT NULL,
-  `hash`        TEXT         NOT NULL,
+  `hash`        MEDIUMTEXT   NOT NULL,
   `salt`        VARCHAR(256) DEFAULT NULL,
   `plaintext`   VARCHAR(256) DEFAULT NULL,
   `timeCracked` BIGINT       DEFAULT NULL,
@@ -912,11 +912,11 @@ CREATE TABLE `User` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
-  `zapId`      INT(11) NOT NULL,
-  `hash`       TEXT    NOT NULL,
-  `solveTime`  BIGINT  NOT NULL,
-  `agentId`    INT(11) NULL,
-  `hashlistId` INT(11) NOT NULL
+  `zapId`      INT(11)    NOT NULL,
+  `hash`       MEDIUMTEXT NOT NULL,
+  `solveTime`  BIGINT     NOT NULL,
+  `agentId`    INT(11)    NULL,
+  `hashlistId` INT(11)    NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `ApiKey` (
