@@ -2,7 +2,7 @@
 
 ## Bugfixes
 
-- When a preconfigured task is removed from a supertask and its originating from an import, it should be deleted (issue #865).
+- When deleting a supertask that was created from an import, pretasks that were removed from this supertask should also be deleted (issue #865).
 
 # v0.12.0 -> v0.13.0
 
