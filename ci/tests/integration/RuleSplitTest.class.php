@@ -26,7 +26,7 @@ class RuleSplitTest extends HashtopolisTest {
     $status = true;
     // delete the created tasks
     $status &= $this->deleteTaskIfExists("task-1");
-
+    $status &= $this->deleteTaskIfExists("task-1 (From Rule Split)");
     $status &= $this->deleteHashlistIfExists("Test Rule Split");
 
     // remove the added files
@@ -108,11 +108,10 @@ class RuleSplitTest extends HashtopolisTest {
       $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Expected benchmark to return OK."));
     } else {
       #TODO implement test for checking results
-      $filename_split = 'best64.rule' . '_p1-0';
-      if (!$this->getFile($filename_split) === false) {
+      if (!$this->getTask('task-1 (From Rule Split)') === false) {
         $this->testSuccess("RuleSplitTest:testRuleSplit()");
       } else {
-        $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Couldn't find the created splitted rules"));
+        $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Couldn't find the created supertask"));
       }
     }
   }
@@ -167,6 +166,23 @@ class RuleSplitTest extends HashtopolisTest {
       $query[$key] = $value;
     };
     return HashtopolisTestFramework::doRequest($query, HashtopolisTestFramework::REQUEST_UAPI);
+  }
+
+  private function getTask($name) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "listTasks",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+    if ($response['response'] == 'OK') {
+      foreach ($response['tasks'] as $task) {
+        if ($task['name'] == $name) {
+          return $task;
+        }
+      }
+    }
+    return false;
   }
 
   private function getFile($name) {

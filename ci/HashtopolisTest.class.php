@@ -162,17 +162,27 @@ abstract class HashtopolisTest {
 
     foreach ($response["tasks"] as $task) {
       if ($task["name"] == $name) {
-        $response = HashtopolisTestFramework::doRequest([
-          "section" => "task",
-          "request" => "deleteTask",
-          "taskId" => $task["taskId"],
-          "accessKey" => "mykey"
-          ], HashtopolisTestFramework::REQUEST_UAPI
+        if ($task['type'] == 1) {
+          $response = HashtopolisTestFramework::doRequest([
+            "section" => "task",
+            "request" => "deleteSupertask",
+            "supertaskId" => $task['supertaskId'],
+            "accessKey" => "mykey"
+            ], HashtopolisTestFramework::REQUEST_UAPI
           );
-          if ($response === false) {
-            return false;
-          }
+        } else {
+          $response = HashtopolisTestFramework::doRequest([
+            "section" => "task",
+            "request" => "deleteTask",
+            "taskId" => $task["taskId"],
+            "accessKey" => "mykey"
+            ], HashtopolisTestFramework::REQUEST_UAPI
+          );
         }
+        if ($response === false) {
+          return false;
+        }
+      }
     }
     return true;
   }
