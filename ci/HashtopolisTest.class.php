@@ -177,6 +177,31 @@ abstract class HashtopolisTest {
     return true;
   }
 
+  protected function deleteHashlistIfExists($name){
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "hashlist",
+      "request" => "listHashlists",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI
+    );
+
+    foreach ($response["hashlists"] as $hashlist) {
+      if ($hashlist["name"] == $name) {
+        $response = HashtopolisTestFramework::doRequest([
+          "section" => "hashlist",
+          "request" => "deleteHashlist",
+          "hashlistId" => $hashlist["hashlistId"],
+          "accessKey" => "mykey"
+          ], HashtopolisTestFramework::REQUEST_UAPI
+          );
+          if ($response === false) {
+            return false;
+          }
+        }
+    }
+    return true;
+  }
+
   protected function deleteFileIfExists($name) {
     $response = HashtopolisTestFramework::doRequest([
       "section" => "file",

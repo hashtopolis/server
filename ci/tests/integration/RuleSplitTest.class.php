@@ -26,11 +26,15 @@ class RuleSplitTest extends HashtopolisTest {
     $status = true;
     // delete the created tasks
     $status &= $this->deleteTaskIfExists("task-1");
-    $status &= $this->deleteTaskIfExists("task-2");
+
+    $status &= $this->deleteHashlistIfExists("Test Rule Split");
 
     // remove the added files
     $status &= $this->deleteFileIfExists("example.dict");
     $status &= $this->deleteFileIfExists("best64.rule");
+
+    $status &= $this->setConfig('ruleSplitDisable', true);
+    $status &= $this->setConfig('ruleSplitAlways', false);
 
     if (!$status) {
       HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Some cleanup failed, deleting task or deleting files not succesful!");
@@ -72,13 +76,17 @@ class RuleSplitTest extends HashtopolisTest {
 
     $task1Id = $response["taskId"];
 
+    if ($task1Id === null) {
+      $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Failed to create task."));
+      return;
+    }
+
     # Enable rulesplit
     $this->setConfig('ruleSplitDisable', false);
     $this->setConfig('ruleSplitAlways', true);
 
     # Create agent
     $agent = $this->createAgent("agent-1");
-
     HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent["token"]]);
 
     # keyspace
@@ -100,7 +108,12 @@ class RuleSplitTest extends HashtopolisTest {
       $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Expected benchmark to return OK."));
     } else {
       #TODO implement test for checking results
-      $this->testSuccess("RuleSplitTest:testRuleSplit()");
+      $filename_split = 'best64.rule' . '_p1-0';
+      if (!$this->getFile($filename_split) === false) {
+        $this->testSuccess("RuleSplitTest:testRuleSplit()");
+      } else {
+        $this->testFailed("RuleSplitTest:testRuleSplit()", sprintf("Couldn't find the created splitted rules"));
+      }
     }
   }
 
@@ -235,12 +248,13 @@ class RuleSplitTest extends HashtopolisTest {
       "accessKey" => "mykey"
     ], HashtopolisTestFramework::REQUEST_UAPI
     );
-    return $response;
+    if ($response === false) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
-  private function sendProgress($token, $chunkId, $keyspaceProgress, $relateiveProgress, $speed) {
-
-  }
   
   public function getTestName() {
     return "Rule Split Test";
