@@ -237,7 +237,7 @@ CREATE TABLE `FileDelete` (
 CREATE TABLE `Hash` (
   `hashId`      INT(11)      NOT NULL,
   `hashlistId`  INT(11)      NOT NULL,
-  `hash`        TEXT         NOT NULL,
+  `hash`        MEDIUMTEXT   NOT NULL,
   `salt`        VARCHAR(256) DEFAULT NULL,
   `plaintext`   VARCHAR(256) DEFAULT NULL,
   `timeCracked` BIGINT       DEFAULT NULL,
@@ -299,8 +299,8 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (22,    'Juniper Netscreen/SSG (ScreenOS)', 1, 0),
   (23,    'Skype', 1, 0),
   (24,    'SolarWinds Serv-U', 0, 0),
-  (30,    'md5(unicode($pass).$salt)', 1, 0),
-  (40,    'md5($salt.unicode($pass))', 1, 0),
+  (30,    'md5(utf16le($pass).$salt)', 1, 0),
+  (40,    'md5($salt.utf16le($pass))', 1, 0),
   (50,    'HMAC-MD5 (key = $pass)', 1, 0),
   (60,    'HMAC-MD5 (key = $salt)', 1, 0),
   (70,    'md5(utf16le($pass))', 0, 0),
@@ -314,11 +314,11 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (122,   'OS X v10.4, v10.5, v10.6', 0, 0),
   (124,   'Django (SHA-1)', 0, 0),
   (125,   'ArubaOS', 0, 0),
-  (130,   'sha1(unicode($pass).$salt)', 1, 0),
+  (130,   'sha1(utf16le($pass).$salt)', 1, 0),
   (131,   'MSSQL(2000)', 0, 0),
   (132,   'MSSQL(2005)', 0, 0),
   (133,   'PeopleSoft', 0, 0),
-  (140,   'sha1($salt.unicode($pass))', 1, 0),
+  (140,   'sha1($salt.utf16le($pass))', 1, 0),
   (141,   'EPiServer 6.x < v4', 0, 0),
   (150,   'HMAC-SHA1 (key = $pass)', 1, 0),
   (160,   'HMAC-SHA1 (key = $salt)', 1, 0),
@@ -340,8 +340,8 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (1411,  'SSHA-256(Base64), LDAP {SSHA256}', 0, 0),
   (1420,  'sha256($salt.$pass)', 1, 0),
   (1421,  'hMailServer', 0, 0),
-  (1430,  'sha256(unicode($pass).$salt)', 1, 0),
-  (1440,  'sha256($salt.unicode($pass))', 1, 0),
+  (1430,  'sha256(utf16le($pass).$salt)', 1, 0),
+  (1440,  'sha256($salt.utf16le($pass))', 1, 0),
   (1441,  'EPiServer 6.x >= v4', 0, 0),
   (1450,  'HMAC-SHA256 (key = $pass)', 1, 0),
   (1460,  'HMAC-SHA256 (key = $salt)', 1, 0),
@@ -353,9 +353,9 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (1711,  'SSHA-512(Base64), LDAP {SSHA512}', 0, 0),
   (1720,  'sha512($salt.$pass)', 1, 0),
   (1722,  'OS X v10.7', 0, 0),
-  (1730,  'sha512(unicode($pass).$salt)', 1, 0),
+  (1730,  'sha512(utf16le($pass).$salt)', 1, 0),
   (1731,  'MSSQL(2012), MSSQL(2014)', 0, 0),
-  (1740,  'sha512($salt.unicode($pass))', 1, 0),
+  (1740,  'sha512($salt.utf16le($pass))', 1, 0),
   (1750,  'HMAC-SHA512 (key = $pass)', 1, 0),
   (1760,  'HMAC-SHA512 (key = $salt)', 1, 0),
   (1770,  'sha512(utf16le($pass))', 0, 0),
@@ -912,11 +912,11 @@ CREATE TABLE `User` (
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
-  `zapId`      INT(11) NOT NULL,
-  `hash`       TEXT    NOT NULL,
-  `solveTime`  BIGINT  NOT NULL,
-  `agentId`    INT(11) NULL,
-  `hashlistId` INT(11) NOT NULL
+  `zapId`      INT(11)    NOT NULL,
+  `hash`       MEDIUMTEXT NOT NULL,
+  `solveTime`  BIGINT     NOT NULL,
+  `agentId`    INT(11)    NULL,
+  `hashlistId` INT(11)    NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `ApiKey` (
