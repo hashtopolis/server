@@ -3,6 +3,7 @@
 ## Bugfixes
 
 - When deleting a supertask that was created from an import, pretasks that were removed from this supertask should also be deleted (issue #865).
+- Deleting the last Hashlist resulted in an fatal error issue #888.
 
 ## Enhancements
 
