@@ -31,6 +31,10 @@ class HashlistTest extends HashtopolisTest {
     $this->testArchiveHashlist(1);
     $this->testDeleteHashlist(1);
     $this->testListHashlists(['Hashlist 1']);
+    // the following tests are used to verify that deleting the last hash doesn't result in an error
+    $this->testDeleteHashlist(2);
+    $this->testHashlistCreate(0);
+    $this->testDeleteHashlist(4);
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, $this->getTestName() . " completed");
   }
   
