@@ -1,5 +1,6 @@
 {
     "version": "0.2.0",
+
     "configurations": [
 
         {
@@ -24,6 +25,21 @@
             }
         },
         {
+          "name": "Launch test framework",
+          "type": "php",
+          "request": "launch",
+          "program": "${workspaceFolder}/ci/run.php",
+          "args": ["-v", "master", "-t${input:testToRun}"],
+          "port": 0,
+          "runtimeArgs": [
+              "-dxdebug.start_with_request=yes"
+          ],
+          "env": {
+              "XDEBUG_MODE": "debug,develop",
+              "XDEBUG_CONFIG": "client_port=${port}"
+          }
+        },
+        {
             "name": "Launch Built-in web server",
             "type": "php",
             "request": "launch",
@@ -42,5 +58,12 @@
                 "action": "openExternally"
             }
         }
-    ]
+    ],
+    "inputs": [
+      {
+        "id": "testToRun",
+        "type": "promptString",
+        "description": "Name of test to run, example: MaxAgentsTest. If empty, all tests."
+      }
+    ],
 }
