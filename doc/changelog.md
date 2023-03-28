@@ -5,6 +5,7 @@
 - When deleting a supertask that was created from an import, pretasks that were removed from this supertask should also be deleted (issue #865).
 - Setting config values to false using the user API now works as intended.
 - When using the rulesplit function an internal server error was thrown. (#836)
+- Deleting the last Hashlist resulted in an fatal error issue #888.
 
 ## Enhancements
 
