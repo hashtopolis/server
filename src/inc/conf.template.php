@@ -10,7 +10,8 @@ $CONN['port'] = '__DBPORT__';
 $DIRECTORIES = [
   "files" => "/var/www/hashtopolis/files/",
   "import" => "/var/www/hashtopolis/import/",
-  "log" => "/var/www/hashtopolis/log/"
+  "log" => "/var/www/hashtopolis/log/",
+  "config" => "/var/www/hashtopolis/config/",
 ];
 
 //END CONFIG
