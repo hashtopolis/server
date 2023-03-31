@@ -307,7 +307,7 @@ class Model(metaclass=ModelBase):
                     setattr(self, f"{k}_set", obj_list)
                     continue
             # This does the same as above, only one-to-one relations
-            if type(v) is dict:
+            if type(v) is dict and v.get('_self'):
                 setattr(self, f"{k}_set", self._dict2obj(v))
                 continue
             setattr(self, k, v)
@@ -390,6 +390,9 @@ class File(Model, uri="/ui/files"):
     def __repr__(self):
         return self._self
 
+class GlobalPermissionGroup(Model, uri="/ui/globalpermissiongroups"):
+    def __repr__(self):
+        return self._self
 
 class FileImport(HashtopolisConnector):
     def __init__(self):

@@ -28,6 +28,24 @@ class TasksTest(unittest.TestCase):
 
         obj.delete()
         hashlist.delete()
+    
+    def test_expand_hashlists(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        for p in sorted(Path(__file__).parent.glob('create_task_001.json')):
+            payload = json.loads(p.read_text('UTF-8'))
+            payload['hashlistId'] = int(hashlist._id)
+            obj = Task(**payload)
+            obj.save()
+
+        obj_test = Task().objects.filter(taskId=obj.id,expand='hashlist')[0]
+        assert obj_test.hashlist_set.name == hashlist.name
+    
+        obj.delete()
+        hashlist.delete()
 
 
     def test_patch(self):

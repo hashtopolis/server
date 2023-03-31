@@ -17,6 +17,8 @@ use DBA\CrackerBinary;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\User;
+use DBA\TaskWrapper;
+use DBA\Task;
 
 use DBA\ContainFilter;
 use DBA\Factory;
@@ -27,6 +29,7 @@ use DBA\QueryFilter;
 use DBA\OrderFilter;
 use DBA\Pretask;
 use DBA\File;
+use DBA\HashlistFactory;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
 use Middlewares\Utils\HttpErrorException;
@@ -129,8 +132,8 @@ abstract class AbstractBaseAPI {
   }
 
 
-  protected function object2Array(mixed $hashlist, array $expand) {
-    $item = $this->obj2Array($hashlist);
+  protected function object2Array(mixed $object, array $expand) {
+    $item = $this->obj2Array($object);
     
     /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
@@ -187,7 +190,18 @@ abstract class AbstractBaseAPI {
           $item[$NAME] = array_map(array($this, 'obj2Array'), $hashes);
           break;
         case 'hashlist':
-          $obj = Factory::getHashListFactory()->get($item['hashlistId']);
+          if (get_class($object) == Task::class) {
+            // Tasks are bit of a specialcase, as in the task the hashlist is not directly available.
+            // To get this information we need to join the task with the Hashlist and the TaskWrapper to get the Hashlist.
+            $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $item['taskWrapperId'], "=", Factory::getTaskWrapperFactory());
+            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID);
+            $joined = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+            // Now cast the database data to an object.
+            $obj = reset($joined[Factory::getHashlistFactory()->getModelName()]);
+          } else {
+            // Used in expanding hashes.
+            $obj = Factory::getHashListFactory()->get($item['hashlistId']);
+          }
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'hashType':
