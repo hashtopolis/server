@@ -1,3 +1,7 @@
+# v0.13.1 -> v0.x.x
+## Bugfixes
+- Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
+
 # v0.13.0 -> v0.13.1
 
 ## Bugfixes
