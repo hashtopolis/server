@@ -214,7 +214,7 @@ $app->addRoutingMiddleware();
 
 require __DIR__ . "/../../inc/apiv2/schema.routes.php";
 require __DIR__ . "/../../inc/apiv2/accessgroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/accesspermissiongroups.routes.php";
+require __DIR__ . "/../../inc/apiv2/globalpermissiongroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/agents.routes.php";
 require __DIR__ . "/../../inc/apiv2/agentstats.routes.php";
 require __DIR__ . "/../../inc/apiv2/agentbinaries.routes.php";

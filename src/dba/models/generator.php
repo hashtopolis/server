@@ -212,8 +212,8 @@ $CONF['RegVoucher'] = [
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['RightGroup'] = [
-  ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)'],
+  ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
+  ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)', 'alias' => 'name'],
   ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool']
 ];
 // FIXME: Add correct read_only mapping to relevant fields
