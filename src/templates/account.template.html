@@ -39,6 +39,7 @@
 				  </form>
 			  </td>	
 		  </tr>
+		  {{IF [[user.getIsLDAP()]] == 0}}
 		  <tr>
 			  <th>Password</th>
 			  <td>
@@ -52,6 +53,7 @@
 				  </form>
 			  </td>
 		  </tr>
+		  {{ENDIF}}
 	  </table>
   </div>
 </div>

@@ -19,6 +19,12 @@ class UserAPIUser extends UserAPIBasic {
         case USectionUser::ENABLE_USER:
           $this->enableUser($QUERY);
           break;
+        case USectionUser::DISABLE_LDAP:
+          $this->disableLDAP($QUERY);
+          break;
+        case USectionUser::ENABLE_LDAP:
+          $this->enableLDAP($QUERY);
+          break;
         case USectionUser::SET_USER_PASSWORD:
           $this->setUserPassword($QUERY);
           break;
@@ -82,6 +88,30 @@ class UserAPIUser extends UserAPIBasic {
     $this->sendSuccessResponse($QUERY);
   }
   
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function enableLDAP($QUERY) {
+    if (!isset($QUERY[UQueryUser::USER_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    UserUtils::enableLDAP($QUERY[UQueryUser::USER_ID]);
+    $this->sendSuccessResponse($QUERY);
+  }
+  
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
+  private function disableLDAP($QUERY) {
+    if (!isset($QUERY[UQueryUser::USER_ID])) {
+      throw new HTException("Invalid query!");
+    }
+    UserUtils::disableLDAP($QUERY[UQueryUser::USER_ID], $this->user);
+    $this->sendSuccessResponse($QUERY);
+  }
+
   /**
    * @param array $QUERY
    * @throws HTException

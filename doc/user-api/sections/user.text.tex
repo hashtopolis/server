@@ -135,6 +135,52 @@
 }
 		\end{verbatim}
 	}
+\subsection*{\textit{disableLDAP}}
+	Disables LDAP authentication for an account.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "disableLDAP",
+  "userId": 3,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "disableLDAP",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
+\subsection*{\textit{enableLDAP}}
+	Enables LDAP authentication for an account.
+	{
+		\color{blue}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "enableLDAP",
+  "userId": 3,
+  "accessKey": "mykey"
+}
+		\end{verbatim}
+	}
+	{
+		\color{OliveGreen}
+		\begin{verbatim}
+{
+  "section": "user",
+  "request": "enableLDAP",
+  "response": "OK"
+}
+		\end{verbatim}
+	}
 \subsection*{\textit{setUserPassword}}
 	Set a new password for the user. This will not affect open sessions, only new logins.
 	{

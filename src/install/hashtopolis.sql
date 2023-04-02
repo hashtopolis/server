@@ -170,7 +170,11 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (74, 4, 'agentUtilThreshold1', '90'),
   (75, 4, 'agentUtilThreshold2', '75'),
   (76, 3, 'uApiSendTaskIsComplete', '0'),
-  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed'),
+  (78, 8, 'ldap_server', ''),
+  (79, 8, 'ldap_basedn', ''),
+  (80, 8, 'ldap_uid', '');
+
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -184,7 +188,8 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (4, 'UI'),
   (5, 'Server'),
   (6, 'Multicast'),
-  (7, 'Notifications');
+  (7, 'Notifications'),
+  (8, 'LDAP');
 
 CREATE TABLE `CrackerBinary` (
   `crackerBinaryId`     INT(11)      NOT NULL,
@@ -880,7 +885,7 @@ CREATE TABLE `TaskDebugOutput` (
   `taskId`            INT(11)      NOT NULL,
   `output`            VARCHAR(256) NOT NULL
 ) ENGINE=InnoDB;
- 
+
 CREATE TABLE `TaskWrapper` (
   `taskWrapperId`   INT(11)      NOT NULL,
   `priority`        INT(11)      NOT NULL,
@@ -899,6 +904,7 @@ CREATE TABLE `User` (
   `passwordHash`       VARCHAR(256) NOT NULL,
   `passwordSalt`       VARCHAR(256) NOT NULL,
   `isValid`            TINYINT(4)   NOT NULL,
+  `isLDAP`             TINYINT(4)   NOT NULL DEFAULT 0,
   `isComputedPassword` TINYINT(4)   NOT NULL,
   `lastLoginDate`      BIGINT       NOT NULL,
   `registeredSince`    BIGINT       NOT NULL,
@@ -1089,10 +1095,10 @@ ALTER TABLE `HashlistHashlist`
 ALTER TABLE `HashType`
   ADD PRIMARY KEY (`hashTypeId`);
 
-ALTER TABLE `HealthCheck` 
+ALTER TABLE `HealthCheck`
   ADD PRIMARY KEY (`healthCheckId`);
 
-ALTER TABLE `HealthCheckAgent` 
+ALTER TABLE `HealthCheckAgent`
   ADD PRIMARY KEY (`healthCheckAgentId`);
 
 ALTER TABLE `LogEntry`
@@ -1237,10 +1243,10 @@ ALTER TABLE `Hashlist`
 ALTER TABLE `HashlistHashlist`
   MODIFY `hashlistHashlistId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `HealthCheck` 
+ALTER TABLE `HealthCheck`
   MODIFY `healthCheckId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `HealthCheckAgent` 
+ALTER TABLE `HealthCheckAgent`
   MODIFY `healthCheckAgentId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `LogEntry`

@@ -23,6 +23,16 @@ class UsersHandler implements Handler {
           UserUtils::disableUser($_POST['user'], Login::getInstance()->getUser());
           UI::addMessage(UI::SUCCESS, "User was disabled successfully!");
           break;
+        case DUserAction::ENABLE_LDAP:
+          AccessControl::getInstance()->checkPermission(DUserAction::ENABLE_LDAP_PERM);
+          UserUtils::enableLDAP($_POST['user']);
+          UI::addMessage(UI::SUCCESS, "LDAP enabled successfully!");
+          break;
+        case DUserAction::DISABLE_LDAP:
+          AccessControl::getInstance()->checkPermission(DUserAction::DISABLE_LDAP_PERM);
+          UserUtils::disableLDAP($_POST['user'], Login::getInstance()->getUser());
+          UI::addMessage(UI::SUCCESS, "LDAP was disabled successfully!");
+          break;
         case DUserAction::SET_RIGHTS:
           AccessControl::getInstance()->checkPermission(DUserAction::SET_RIGHTS_PERM);
           UserUtils::setRights($_POST['user'], $_POST['group'], Login::getInstance()->getUser());

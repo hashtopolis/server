@@ -926,6 +926,8 @@ class USectionUser extends UApi {
   const CREATE_USER          = "createUser";
   const DISABLE_USER         = "disableUser";
   const ENABLE_USER          = "enableUser";
+  const DISABLE_LDAP         = "disableLDAP";
+  const ENABLE_LDAP          = "enableLDAP";
   const SET_USER_PASSWORD    = "setUserPassword";
   const SET_USER_RIGHT_GROUP = "setUserRightGroup";
   
@@ -941,6 +943,10 @@ class USectionUser extends UApi {
         return "Disable a user account";
       case USectionUser::ENABLE_USER:
         return "Enable a user account";
+      case USectionUser::DISABLE_LDAP:
+        return "Disable LDAP auth";
+      case USectionUser::ENABLE_LDAP:
+        return "Enable LDAP auth";
       case USectionUser::SET_USER_PASSWORD:
         return "Set a user's password";
       case USectionUser::SET_USER_RIGHT_GROUP:

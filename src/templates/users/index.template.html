@@ -12,6 +12,7 @@
 			  <th>Last login</th>
 			  <th>Email</th>
 			  <th>Validity</th>
+			  <th>Auth Type</th>
 			  <th>Session lifetime</th>
 			  <th>Right group</th>
 			  <th>Action</th>
@@ -28,6 +29,13 @@
 						  Valid
 					  {{ELSE}}
 						  Invalid/Not activated
+					  {{ENDIF}}
+				  </td>
+				  <td>
+					  {{IF [[entry.getVal('user').getIsLDAP()]] == 1}}
+						  LDAP
+					  {{ELSE}}
+						  Local
 					  {{ENDIF}}
 				  </td>
 				  <td>[[entry.getVal('user').getSessionLifetime()]]</td>

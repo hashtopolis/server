@@ -11,13 +11,13 @@ class DConfigType {
 class DConfigAction {
   const UPDATE_CONFIG      = "updateConfig";
   const UPDATE_CONFIG_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-  
+
   const REBUILD_CACHE      = "rebuildCache";
   const REBUILD_CACHE_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-  
+
   const RESCAN_FILES      = "rescanFiles";
   const RESCAN_FILES_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
-  
+
   const CLEAR_ALL      = "clearAll";
   const CLEAR_ALL_PERM = DAccessControl::SERVER_CONFIG_ACCESS;
 }
@@ -54,12 +54,17 @@ class DConfig {
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
   const HC_ERROR_IGNORE        = "hcErrorIgnore";
-  
+
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
   const YUBIKEY_KEY = "yubikey_key";
   const YUBIKEY_URL = "yubikey_url";
-  
+
+  // Section: LDAP
+  const LDAP_SERVER = "ldap_server";
+  const LDAP_BASEDN = "ldap_basedn";
+  const LDAP_UID = "ldap_uid";
+
   // Section: Finetuning
   const HASHES_PAGE_SIZE           = "pagingSize";
   const NUMBER_LOGENTRIES          = "numLogEntries";
@@ -68,7 +73,7 @@ class DConfig {
   const HASH_MAX_LENGTH            = "hashMaxLength";
   const MAX_HASHLIST_SIZE          = "maxHashlistSize";
   const UAPI_SEND_TASK_IS_COMPLETE = "uApiSendTaskIsComplete";
-  
+
   // Section: UI
   const TIME_FORMAT            = "timefmt";
   const DONATE_OFF             = "donateOff";
@@ -83,7 +88,7 @@ class DConfig {
   const AGENT_TEMP_THRESHOLD_2 = "agentTempThreshold2";
   const AGENT_UTIL_THRESHOLD_1 = "agentUtilThreshold1";
   const AGENT_UTIL_THRESHOLD_2 = "agentUtilThreshold2";
-  
+
   // Section: Server
   const BASE_URL          = "baseUrl";
   const BASE_HOST         = "baseHost";
@@ -94,20 +99,20 @@ class DConfig {
   const S_NAME            = "jeSuisHashtopussy";
   const SERVER_LOG_LEVEL  = "serverLogLevel";
   const ALLOW_DEREGISTER  = "allowDeregister";
-  
+
   // Section: Multicast
   const MULTICAST_ENABLE    = "multicastEnable";
   const MULTICAST_DEVICE    = "multicastDevice";
   const MULTICAST_TR_ENABLE = "multicastTransferRateEnable";
   const MULTICAST_TR        = "multicastTranserRate";
-  
+
   // Section: Notifications
   const NOTIFICATIONS_PROXY_ENABLE = "notificationsProxyEnable";
   const TELEGRAM_BOT_TOKEN         = "telegramBotToken";
   const NOTIFICATIONS_PROXY_SERVER = "notificationsProxyServer";
   const NOTIFICATIONS_PROXY_PORT   = "notificationsProxyPort";
   const NOTIFICATIONS_PROXY_TYPE   = "notificationsProxyType";
-  
+
   static function getConstants() {
     try {
       $oClass = new ReflectionClass(__CLASS__);
@@ -117,7 +122,7 @@ class DConfig {
     }
     return $oClass->getConstants();
   }
-  
+
   /**
    * Gives the selection for the configuration values which are selections.
    * @param string $config
@@ -146,7 +151,7 @@ class DConfig {
     }
     return new DataSet(["Not found!"]);
   }
-  
+
   /**
    * Gives the format which a config input should have. Default is string if it's not a known config.
    * @param $config string
@@ -275,7 +280,7 @@ class DConfig {
     }
     return DConfigType::STRING_INPUT;
   }
-  
+
   /**
    * @param $config string
    * @return string
@@ -316,6 +321,12 @@ class DConfig {
         return "Yubikey Secret Key.";
       case DConfig::YUBIKEY_URL:
         return "Yubikey API URL.";
+      case DConfig::LDAP_SERVER:
+        return "LDAP Server. ldap://example.com:389, ldaps://example.com:636";
+      case DConfig::LDAP_BASEDN:
+        return "LDAP BaseDN. cn=users,cn=accounts,dc=example,dc=com";
+      case DConfig::LDAP_UID:
+        return "LDAP UID. User identifier. Commonly uid or cn.";
       case DConfig::BASE_HOST:
         return "Base hostname/port/protocol to use. Only fill this in to override the auto-determined value.";
       case DConfig::DONATE_OFF:
