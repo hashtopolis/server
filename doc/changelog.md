@@ -1,3 +1,20 @@
+# v0.13.1 -> v0.x.x
+## Bugfixes
+- Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
+
+# v0.13.0 -> v0.13.1
+
+## Bugfixes
+
+- When deleting a supertask that was created from an import, pretasks that were removed from this supertask should also be deleted (issue #865).
+- Setting config values to false using the user API now works as intended.
+- When using the rulesplit function an internal server error was thrown. (#836)
+- Deleting the last Hashlist resulted in an fatal error issue #888.
+
+## Enhancements
+
+- Hash.hash is now of type MEDIUMTEXT to avoid issues with longer hashes (e.g. LUKS, issue #851).
+
 # v0.12.0 -> v0.13.0
 
 ## Features
