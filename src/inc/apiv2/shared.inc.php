@@ -68,6 +68,9 @@ abstract class AbstractBaseAPI {
   }
 
   public function getMappedFeatures(): array {
+    // This function takes all the dba features and converts them to a list.
+    // It uses the data from the generator and replaces the keys with the aliasses.
+    // structure: hashlist: name: [dbname => hashlistId]
     $features = $this->getFeatures();
     $mappedFeatures = [];
     foreach($features as $KEY => $VALUE) {
@@ -464,12 +467,7 @@ abstract class AbstractBaseAPI {
   public function get(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
 
-    $features = $this->getFeatures();
-    $mappedFeatures = [];
-    foreach($features as $KEY => $VALUE) {
-      $mappedFeatures[$VALUE['alias']] = $VALUE;
-      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
-    }
+    $mappedFeatures = $this->getMappedFeatures();
     $factory = $this->getFactory();
     $expandables = $this->getExpandables();
 
@@ -570,16 +568,9 @@ abstract class AbstractBaseAPI {
       throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
     }
 
-    // Build combined formField and Feature type mapping
-    $allFeatures = $features + $formFields;
-
-    // Map to alias
-    $mappedFeatures = [];
-    foreach($allFeatures as $KEY => $VALUE) {
-      $mappedFeatures[$VALUE['alias']] = $VALUE;
-      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
-    }
-    $mappedFeatures = array_merge($mappedFeatures, $formFields);
+    // Map to alias and extend with fields which are only present at the webui
+    // aka formFields.
+    $mappedFeatures = array_merge($this->getMappedFeatures(), $formFields);
 
     // Validate incoming data
     $this->validateData($QUERY, $mappedFeatures);
@@ -642,14 +633,7 @@ abstract class AbstractBaseAPI {
 
     
     $data = $request->getParsedBody();
-    $features = $this->getFeatures();
-
-    $mappedFeatures = [];
-    foreach($features as $KEY => $VALUE) {
-      $mappedFeatures[$VALUE['alias']] = $VALUE;
-      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
-    }
-
+    $mappedFeatures = $this->getMappedFeatures();
 
     // Validate incoming data
     foreach($data as $KEY => $VALUE) {
