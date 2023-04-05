@@ -59,7 +59,15 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         assert objs == []
 
     def test_exception_globalpermissiongroup(self):
-        pass
+        stamp = int(time.time())
+        globalpermissiongroup = GlobalPermissionGroup(
+            name=f'test-{stamp}',
+            permissions='test',
+        )
+        globalpermissiongroup.save()
+        with self.assertRaises(AttributeError):
+            globalpermissiongroup.id
+
 
 if __name__ == '__main__':
     unittest.main()
