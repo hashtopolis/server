@@ -67,6 +67,16 @@ abstract class AbstractBaseAPI {
     return call_user_func($this->getDBAclass() .'::getFeatures');
   }
 
+  public function getMappedFeatures(): array {
+    $features = $this->getFeatures();
+    $mappedFeatures = [];
+    foreach($features as $KEY => $VALUE) {
+      $mappedFeatures[$VALUE['alias']] = $VALUE;
+      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
+    }
+    return $mappedFeatures;
+  }
+
   
   final protected function getUser() {
     return $this->user;
@@ -77,6 +87,15 @@ abstract class AbstractBaseAPI {
   private static function db2json(string $type, mixed $val): mixed {
     if ($type == 'bool') {
       $obj = ($val == "1") ? True : False;
+    } elseif ($type == 'dict') {
+      $obj = json_decode($val, true, 512, JSON_OBJECT_AS_ARRAY);
+      // During encoding of the data, the data is saved as an empty array
+      // An empty array is something different in json and in python.
+      // The following code casts the empty array to an empty 'object'
+      // which will be intepreted by python and json correctly as dict or object.
+      if (empty($obj)) {
+        $obj = (object)[];
+      }
     } else {
       // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
       $obj = $val;
