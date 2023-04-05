@@ -13,6 +13,9 @@ class Configs(unittest.TestCase):
     def test_patch_config(self):
         config = Config()
         obj = config.objects.get(item='hashcatBrainEnable')
+        obj.value = "0"
+        obj.save()
+
         assert obj.value == "0"
         obj.value = "1"
         obj.save()
