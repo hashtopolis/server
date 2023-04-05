@@ -25,7 +25,24 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         globalpermissiongroup.delete()
     
     def test_patch_globalpermissiongroup(self):
-        pass
+        stamp = int(time.time())
+        permissions = {'viewHashlistAccess':True}
+        globalpermissiongroup = GlobalPermissionGroup(
+            name=f'test-{stamp}',
+            permissions = permissions
+        )
+        globalpermissiongroup.save()
+        assert globalpermissiongroup.permissions == permissions
+
+        globalpermissiongroup.permissions = {}
+        globalpermissiongroup.permissions['viewHashlistAccess'] = False
+        globalpermissiongroup.save()
+
+        obj = GlobalPermissionGroup.objects.get(id=globalpermissiongroup.id)
+
+        assert obj.permissions['viewHashlistAccess'] == globalpermissiongroup.permissions['viewHashlistAccess']
+
+        globalpermissiongroup.delete()
 
     def test_delete_globalpermissiongroup(self):
         pass
