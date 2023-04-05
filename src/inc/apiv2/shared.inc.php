@@ -296,8 +296,8 @@ abstract class AbstractBaseAPI {
   }
 
 
-  protected function object2JSON(object $hashlist) : string {
-    $item = $this->object2Array($hashlist, []);
+  protected function object2JSON(object $object) : string {
+    $item = $this->object2Array($object, []);
     return json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
   }
 
