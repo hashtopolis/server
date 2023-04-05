@@ -18,7 +18,7 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 class AccessPermissionGroupsAPI extends AbstractBaseAPI {
     public static function getBaseUri(): string {
-      return "/api/v2/ui/accesspermissiongroups";
+      return "/api/v2/ui/globalpermissiongroups";
     }
 
     public function getPermission(): string {
@@ -57,7 +57,8 @@ class AccessPermissionGroupsAPI extends AbstractBaseAPI {
     }
     
     protected function createObject($QUERY): int {
-      $group = AccessControlUtils::createGroup($QUERY[RightGroup::GROUP_NAME]);
+      $features = $this->getFeatures();
+      $group = AccessControlUtils::createGroup($QUERY[$features[RightGroup::GROUP_NAME]['alias']]);
       
       return $group->getId();
     }
