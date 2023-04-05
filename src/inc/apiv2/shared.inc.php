@@ -393,7 +393,9 @@ abstract class AbstractBaseAPI {
           } else {
             $val = $matches['value'];
           }
-          $qFs[] = new QueryFilter($matches['key'], $val, $matches['operator']);
+          // We need to remap any aliased key to the key as it appears in the database.
+          $remappedKey = $features[$matches['key']]['dbname'];
+          $qFs[] = new QueryFilter($remappedKey, $val, $matches['operator']);
         } else {
           throw new HTException("Filter parameter '" . $filter . "' is not valid");  
         }
@@ -425,8 +427,76 @@ abstract class AbstractBaseAPI {
     return $hashlist;
   }
 
+  /*
+  *  Common features for all requests, like setting user and checking basic permissions
+  */
+  protected function preCommon(Request $request): void {
+    $userId = $request->getAttribute(('userId'));
+    $this->user = UserUtils::getUser($userId);
 
-  protected function validatePost($QUERY, array $features, array $formFields) {
+    $routeContext = RouteContext::fromRequest($request);
+    $this->routeParser = $routeContext->getRouteParser();
+
+    if(!AccessControl::getInstance($this->getUser())->hasPermission($this->getPermission())) {
+        throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription($this->getPermission()) . "' permission");
+    }
+  }
+
+  public function get(Request $request, Response $response, array $args): Response {
+    $this->preCommon($request);
+
+    $features = $this->getFeatures();
+    $mappedFeatures = [];
+    foreach($features as $KEY => $VALUE) {
+      $mappedFeatures[$VALUE['alias']] = $VALUE;
+      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
+    }
+    $factory = $this->getFactory();
+    $expandables = $this->getExpandables();
+
+    $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
+    $maxResults = intval($request->getQueryParams()['maxResults'] ?? 5);
+
+    list($expandable, $expands) = $this->makeExpandables($request, $expandables);
+
+    $qFs_Filter = $this->makeFilter($request, $mappedFeatures);
+    $qFs_ACL = $this->getFilterACL();
+    $qFs = array_merge($qFs_ACL, $qFs_Filter);
+
+    // TODO: Optimize code, should only fetch subsection of database, when pagination is in play
+    $objects = $factory->filter((count($qFs) > 0) ? [Factory::FILTER => $qFs] : []);
+
+    $lists = [];
+    foreach ($objects as $object) {
+        $lists[] = $this->object2Array($object, $expands);
+    }
+
+    // TODO: Implement actual expanding
+    $total = count($objects);
+    $ret = [
+        "_expandable" => join(",", $expandable),
+        "startAt" => $startAt,
+        "maxResults" => $maxResults,
+        "total" => $total,
+        "isLast" => ($total <= ($startAt + $maxResults)),
+        "values" => array_slice($lists, $startAt, $maxResults)
+    ];
+
+    $body = $response->getBody();
+    $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+
+    return $response->withStatus(201)
+    ->withHeader("Content-Type", "application/json");
+  }
+
+
+  public function post(Request $request, Response $response, array $args): Response {
+    $this->preCommon($request);
+
+    $QUERY = $request->getParsedBody();
+    $features = $this->getFeatures();
+    $formFields = $this->getFormfields();
+
     // Generate listing of validFeatures
     $featureFields = [];
     foreach($features as $NAME => $FEATURE) {
@@ -494,74 +564,6 @@ abstract class AbstractBaseAPI {
 
     // Validate incoming data
     $this->validateData($QUERY, $mappedFeatures);
-  }
-
-  /*
-  *  Common features for all requests, like setting user and checking basic permissions
-  */
-  protected function preCommon(Request $request): void {
-    $userId = $request->getAttribute(('userId'));
-    $this->user = UserUtils::getUser($userId);
-
-    $routeContext = RouteContext::fromRequest($request);
-    $this->routeParser = $routeContext->getRouteParser();
-
-    if(!AccessControl::getInstance($this->getUser())->hasPermission($this->getPermission())) {
-        throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription($this->getPermission()) . "' permission");
-    }
-  }
-
-          
-  public function get(Request $request, Response $response, array $args): Response {
-    $this->preCommon($request);
-
-    $features = $this->getFeatures();
-    $factory = $this->getFactory();
-    $expandables = $this->getExpandables();
-    
-    $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
-    $maxResults = intval($request->getQueryParams()['maxResults'] ?? 5);
-
-    list($expandable, $expands) = $this->makeExpandables($request, $expandables);
-
-    $qFs_Filter = $this->makeFilter($request, $features);
-    $qFs_ACL = $this->getFilterACL();
-    $qFs = array_merge($qFs_ACL, $qFs_Filter);
-
-    // TODO: Optimize code, should only fetch subsection of database, when pagination is in play       
-    $objects = $factory->filter((count($qFs) > 0) ? [Factory::FILTER => $qFs] : []);
-
-    $lists = [];
-    foreach ($objects as $object) {
-        $lists[] = $this->object2Array($object, $expands);
-    }
-
-    // TODO: Implement actual expanding
-    $total = count($objects);
-    $ret = [
-        "_expandable" => join(",", $expandable),
-        "startAt" => $startAt,
-        "maxResults" => $maxResults,
-        "total" => $total,
-        "isLast" => ($total <= ($startAt + $maxResults)),
-        "values" => array_slice($lists, $startAt, $maxResults)
-    ];
-
-    $body = $response->getBody();
-    $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
-    
-    return $response->withStatus(201)
-    ->withHeader("Content-Type", "application/json");
-  }
-
-
-  public function post(Request $request, Response $response, array $args): Response {
-    $this->preCommon($request);
-
-    $QUERY = $request->getParsedBody();
-    $features = $this->getFeatures();
-    $formFields = $this->getFormfields();
-    $this->validatePost($QUERY, $features, $formFields);
 
     $pk = $this->createObject($QUERY);
 
@@ -608,6 +610,7 @@ abstract class AbstractBaseAPI {
 
       // Sanity values
       $val = self::json2db($mappedFeatures[$KEY]['type'], $data[$KEY]);
+      // Use the original attribute name to update the object.
       $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
     }
   }
