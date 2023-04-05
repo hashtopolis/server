@@ -45,7 +45,18 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         globalpermissiongroup.delete()
 
     def test_delete_globalpermissiongroup(self):
-        pass
+        stamp = int(time.time())
+        globalpermissiongroup = GlobalPermissionGroup(
+            name=f'test-{stamp}',
+        )
+        globalpermissiongroup.save()
+
+        id = globalpermissiongroup.id
+
+        globalpermissiongroup.delete()
+
+        objs = globalpermissiongroup.objects.filter(id=id)
+        assert objs == []
 
     def test_exception_globalpermissiongroup(self):
         pass
