@@ -310,7 +310,13 @@ class Model(metaclass=ModelBase):
             if type(v) is dict and v.get('_self'):
                 setattr(self, f"{k}_set", self._dict2obj(v))
                 continue
-            setattr(self, k, v)
+
+            # Skip over ID, as it is also something from the model itself.
+            # This should be removed if there is a concensus on the full model.
+            # Example: not rightgroupName but name, and not rightgroupId but id 
+            if k != 'id':
+                setattr(self, k, v)
+
             if not k.startswith('_'):
                 self.__fields.append(k)
 
