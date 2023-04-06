@@ -6,6 +6,16 @@ $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
 
+// Type: describes what kind of type the attribute is
+// Subtype: in case type is dict, the first level of the dict will also be checked.
+// Read_only: determines that the attribute can only be set during creation
+// Protected: cannot be set at any point but can be returned. For example 'id'
+// Private: cannot be set at any point, and can also not be returned. For example: passwordhash
+// Pk: primary key
+// Null: means that an attribute is optional.
+// Alias: used for setting new names for attributes. This is for the transition between APIv1 and APIv2.
+//        Alias determines the name for the attribute as it should be called by APIv2
+
 // entities
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['AccessGroup'] = [
@@ -281,22 +291,24 @@ $CONF['TaskWrapper'] = [
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['User'] = [
-  ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'username', 'read_only' => False, 'type' => 'str(100)'],
-  ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
-  ['name' => 'passwordHash', 'read_only' => False, 'type' => 'str(256)'],
-  ['name' => 'passwordSalt', 'read_only' => False, 'type' => 'str(256)'],
-  ['name' => 'isValid', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'isComputedPassword', 'read_only' => False, 'type' => 'bool'],
-  ['name' => 'lastLoginDate', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'registeredSince', 'read_only' => False, 'type' => 'int64'],
-  ['name' => 'sessionLifetime', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'yubikey', 'read_only' => False, 'type' => 'str(256)'],
-  ['name' => 'otp1', 'read_only' => False, 'type' => 'str(256)'],
-  ['name' => 'otp2', 'read_only' => False, 'type' => 'str(256)'],
-  ['name' => 'otp3', 'read_only' => False, 'type' => 'str(256)'],
-  ['name' => 'otp4', 'read_only' => False, 'type' => 'str(256)']
+  ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
+  ['name' => 'username', 'protected' => True, 'read_only' => False, 'type' => 'str(100)'],
+  ['name' => 'email', 'protected' => False, 'read_only' => False, 'type' => 'str(150)'],
+  // What is the differene between these and below?
+  ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
+  ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
+  ['name' => 'isValid', 'read_only' => False, 'type' => 'bool', 'null' => true],
+  // What is this?
+  ['name' => 'isComputedPassword', 'read_only' => True, 'type' => 'bool', 'protected' => True,],
+  ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ['name' => 'registeredSince', 'read_only' => True, 'protected' => True, 'type' => 'int64', 'protected' => True],
+  ['name' => 'sessionLifetime', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'rightGroupId', 'read_only' => False, 'protected' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'yubikey', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'protected' => True],
+  ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+  ['name' => 'otp2', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+  ['name' => 'otp3', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+  ['name' => 'otp4', 'read_only' => True, 'type' => 'str(256)', 'protected' => True]
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['Zap'] = [
@@ -437,6 +449,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
                                      '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
                                      '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
                                      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .
+                                     '"private" => ' . (array_key_exists("private", $COLUMN) ? ($COLUMN['private'] ? 'True' : 'False') : 'False') . ', ' .
                                      '"alias" => "' . (array_key_exists("alias", $COLUMN) ? $COLUMN['alias']  : $COLUMN['name']) . '"' . 
                                     '];';
     $keyVal[] = "\$dict['$col'] = \$this->$col;";
