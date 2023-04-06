@@ -30,11 +30,11 @@ class AgentStat extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentStatId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "alias" => "agentStatId"];
-    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "alias" => "agentId"];
-    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "alias" => "statType"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "alias" => "time"];
-    $dict['value'] = ['read_only' => True, "type" => "str(128)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "alias" => "value"];
+    $dict['agentStatId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentStatId"];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
+    $dict['statType'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "statType"];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
+    $dict['value'] = ['read_only' => True, "type" => "str(128)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "value"];
 
     return $dict;
   }

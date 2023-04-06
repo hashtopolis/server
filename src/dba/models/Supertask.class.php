@@ -21,8 +21,8 @@ class Supertask extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "alias" => "supertaskId"];
-    $dict['supertaskName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "supertaskName"];
+    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "supertaskId"];
+    $dict['supertaskName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "supertaskName"];
 
     return $dict;
   }
