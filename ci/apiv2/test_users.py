@@ -118,7 +118,26 @@ class UserTest(unittest.TestCase):
         assert len(objs) == 0
 
     def test_expand_user(self):
-        pass
+        stamp = int(time.time())
+        username = f'test-{stamp}'
+        groupname = f'gpg-{stamp}'
+
+        globalpermissiongroup = GlobalPermissionGroup(
+            name = groupname
+        )
+        globalpermissiongroup.save()
+
+        user = User(
+            name = username,
+            email = 'test@example.com',
+            globalPermissionGroupId = globalpermissiongroup.id
+        )
+        user.save()
+
+        obj = User.objects.get(id=user.id, expand='globalPermissionGroup')
+
+        assert obj.globalPermissionGroup_set.name == globalpermissiongroup.name
+
 
 if __name__ == '__main__':
     unittest.main()
