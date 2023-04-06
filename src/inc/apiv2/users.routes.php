@@ -33,7 +33,7 @@ class UserAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ["rightGroup"];
+      return ["globalPermissionGroup"];
     }
 
     protected function getFilterACL(): array {

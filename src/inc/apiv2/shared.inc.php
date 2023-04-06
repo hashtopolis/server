@@ -246,8 +246,8 @@ abstract class AbstractBaseAPI {
           $objs = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qFs]);
           $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
           break;
-        case 'rightGroup':
-          $obj = Factory::getRightGroupFactory()->get($item['rightGroupId']);
+        case 'globalPermissionGroup':
+          $obj = Factory::getRightGroupFactory()->get($item['globalPermissionGroupId']);
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'task':
