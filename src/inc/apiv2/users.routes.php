@@ -53,18 +53,19 @@ class UserAPI extends AbstractBaseAPI {
 
     protected function createObject($QUERY): int {
       /* Parameter is used as primary key in database */
+      $features = $this->getFeatures();
       $object = UserUtils::createUser(
-          $QUERY[User::USERNAME],
+          $QUERY[$features[USER::USERNAME]['alias']],
           $QUERY[User::EMAIL],
-          $QUERY[User::RIGHT_GROUP_ID],
+          $QUERY[$features[User::RIGHT_GROUP_ID]['alias']],
           $this->getUser()
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(User::USERNAME, $QUERY[User::USERNAME], '='),
+        new QueryFilter(User::USERNAME, $QUERY[$features[USER::USERNAME]['alias']], '='),
         new QueryFilter(User::EMAIL, $QUERY[User::EMAIL], '='),
-        new QueryFilter(User::RIGHT_GROUP_ID, $QUERY[User::RIGHT_GROUP_ID], '=')
+        new QueryFilter(User::RIGHT_GROUP_ID, $QUERY[$features[User::RIGHT_GROUP_ID]['alias']], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */
@@ -79,6 +80,21 @@ class UserAPI extends AbstractBaseAPI {
     protected function deleteObject(object $object): void {
       UserUtils::deleteUser($object->getId(), $this->getUser());
     }
+
+    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {    
+      // TODO
+      // $key = Hashlist::NOTES;
+      // if (array_key_exists($key, $data)) {
+      //   array_push($processed, $key);
+      //   HashlistUtils::editNotes($object->getId(), $data[$key], $this->getUser());
+      // }
+      // VALID
+      // PASSWORD
+      // rightGroup
+      // do parent call for others.
+      parent::updateObject($object, $data, $mappedFeatures, $processed);
+    }
+
 }
 
 UserAPI::register($app);
