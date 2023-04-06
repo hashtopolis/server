@@ -82,16 +82,24 @@ class UserAPI extends AbstractBaseAPI {
     }
 
     public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {    
-      // TODO
-      // $key = Hashlist::NOTES;
-      // if (array_key_exists($key, $data)) {
-      //   array_push($processed, $key);
-      //   HashlistUtils::editNotes($object->getId(), $data[$key], $this->getUser());
-      // }
-      // VALID
-      // PASSWORD
-      // rightGroup
-      // do parent call for others.
+      $features = $this->getFeatures();
+      $key = $features[USER::RIGHT_GROUP_ID]['alias'];
+
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        UserUtils::setRights($object->getId(), $data[$key], $this->getUser());
+      }
+
+      $key = $features[USER::IS_VALID]['alias'];
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        if ($data[$key] == True) {
+          UserUtils::enableUser($object->getId());
+        } else {
+          UserUtils::disableUser($object->getId(), $this->getUser());
+        }
+      }
+
       parent::updateObject($object, $data, $mappedFeatures, $processed);
     }
 
