@@ -292,7 +292,7 @@ $CONF['TaskWrapper'] = [
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['User'] = [
   ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
-  ['name' => 'username', 'protected' => True, 'read_only' => False, 'type' => 'str(100)'],
+  ['name' => 'username', 'protected' => False, 'read_only' => False, 'type' => 'str(100)'],
   ['name' => 'email', 'protected' => False, 'read_only' => False, 'type' => 'str(150)'],
   // What is the differene between these and below?
   ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],

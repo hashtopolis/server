@@ -64,7 +64,7 @@ class User extends AbstractModel {
   static function getFeatures() {
     $dict = array();
     $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "id"];
-    $dict['username'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "username"];
+    $dict['username'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "username"];
     $dict['email'] = ['read_only' => False, "type" => "str(150)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "email"];
     $dict['passwordHash'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => True, "alias" => "passwordHash"];
     $dict['passwordSalt'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => True, "alias" => "passwordSalt"];
