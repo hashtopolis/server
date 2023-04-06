@@ -133,7 +133,13 @@ abstract class AbstractBaseAPI {
 
     foreach ($features as $NAME => $FEATURE) {
       $test = $kv[$NAME];
-      $item[$FEATURE['alias']] = self::db2json($FEATURE['type'], $kv[$NAME]);
+      // If a attribute is set to private, it should be hidden and not returned.
+      // Example of this is the password hash.
+      if ($FEATURE['private'] === true) {
+        continue;
+      } else {
+        $item[$FEATURE['alias']] = self::db2json($FEATURE['type'], $kv[$NAME]);
+      }
     }
     return $item;
   }
@@ -517,8 +523,10 @@ abstract class AbstractBaseAPI {
     // Generate listing of validFeatures
     $featureFields = [];
     foreach($features as $NAME => $FEATURE) {
-      /* Protected features cannot be specified */
-      if ($FEATURE['protected'] == true) {
+      /* Protected and private features cannot be specified */
+      if ($FEATURE['protected'] == True) {
+        continue;
+      } elseif ($FEATURE['private'] == True) {
         continue;
       }
       /* Use API aliased naming */
@@ -649,6 +657,12 @@ abstract class AbstractBaseAPI {
       // Ensure key can be updated 
       if ($mappedFeatures[$KEY]['read_only'] == True) {
         throw new HttpErrorException("Key '$KEY' is immutable");
+      }
+      if ($mappedFeatures[$KEY]['protected'] == True) {
+        throw new HttpErrorException("Key '$KEY' is protected");
+      }
+      if ($mappedFeatures[$KEY]['private'] == True) {
+        throw new HttpErrorException("Key '$KEY' is private");
       }
     }
 
