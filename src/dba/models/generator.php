@@ -291,7 +291,7 @@ $CONF['TaskWrapper'] = [
 ];
 $CONF['User'] = [
   ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
-  ['name' => 'username', 'read_only' => False, 'type' => 'str(100)'],
+  ['name' => 'username', 'read_only' => False, 'type' => 'str(100)', 'alias' => 'name'],
   ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
   ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
   ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
@@ -300,7 +300,7 @@ $CONF['User'] = [
   ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ['name' => 'sessionLifetime', 'read_only' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int', 'alias' => 'globalPermissionGroupId'],
   ['name' => 'yubikey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ['name' => 'otp2', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
