@@ -289,22 +289,19 @@ $CONF['TaskWrapper'] = [
   ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'cracked', 'read_only' => False, 'type' => 'int']
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['User'] = [
   ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
-  ['name' => 'username', 'protected' => False, 'read_only' => False, 'type' => 'str(100)'],
-  ['name' => 'email', 'protected' => False, 'read_only' => False, 'type' => 'str(150)'],
-  // What is the differene between these and below?
+  ['name' => 'username', 'read_only' => False, 'type' => 'str(100)'],
+  ['name' => 'email', 'read_only' => False, 'type' => 'str(150)'],
   ['name' => 'passwordHash', 'read_only' => True, 'type' => 'str(256)', 'protected' => True, 'private' => True],
   ['name' => 'passwordSalt', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'private' => True],
   ['name' => 'isValid', 'read_only' => False, 'type' => 'bool', 'null' => true],
-  // What is this?
   ['name' => 'isComputedPassword', 'read_only' => True, 'type' => 'bool', 'protected' => True,],
   ['name' => 'lastLoginDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-  ['name' => 'registeredSince', 'read_only' => True, 'protected' => True, 'type' => 'int64', 'protected' => True],
-  ['name' => 'sessionLifetime', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'rightGroupId', 'read_only' => False, 'protected' => True, 'type' => 'int', 'protected' => True],
-  ['name' => 'yubikey', 'read_only' => True, 'protected' => True, 'type' => 'str(256)', 'protected' => True],
+  ['name' => 'registeredSince', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ['name' => 'sessionLifetime', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'rightGroupId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'yubikey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ['name' => 'otp1', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ['name' => 'otp2', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ['name' => 'otp3', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
