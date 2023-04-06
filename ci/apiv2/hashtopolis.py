@@ -269,7 +269,9 @@ class Model(metaclass=ModelBase):
 
                 # Set all the attributes of the object.
                 for k2,v2 in dict.items():
-                    setattr(obj, k2, v2)
+                    # See set_initial why the if statement is here
+                    if k2 != 'id':
+                        setattr(obj, k2, v2)
                 if not k2.startswith('_'):
                     obj.__fields.append(k2)
                 return obj
