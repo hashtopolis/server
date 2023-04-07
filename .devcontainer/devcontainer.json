@@ -16,7 +16,9 @@
 				"xdebug.php-debug",
 				"bmewburn.vscode-intelephense-client",
 				"editorconfig.editorconfig",
-				"ms-python.python"
+				"ms-python.python",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mysql"
 			],
 			"settings": {
 				"terminal.integrated.profiles.linux":{
@@ -26,7 +28,22 @@
 					   "args": [ "--init-file", "${workspaceFolder}/init.sh" ]
 					}
 				  },
-				"terminal.integrated.defaultProfile.linux": "bash"
+				"terminal.integrated.defaultProfile.linux": "bash",
+        "sqltools.connections": [
+					{
+						"mysqlOptions": {
+							"authProtocol": "default"
+						},
+						"previewLimit": 50,
+						"server": "db",
+						"port": 3306,
+						"driver": "MySQL",
+						"username": "root",
+						"password": "hashtopolis",
+						"name": "DevcontainerDB",
+						"database": "hashtopolis"
+					}
+				]
 			}	
 		}
 	},
