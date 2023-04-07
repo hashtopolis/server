@@ -239,6 +239,8 @@ require __DIR__ . "/../../inc/apiv2/tasks.routes.php";
 require __DIR__ . "/../../inc/apiv2/token.routes.php";
 require __DIR__ . "/../../inc/apiv2/users.routes.php";
 require __DIR__ . "/../../inc/apiv2/vouchers.routes.php";
+require __DIR__ . "/../../inc/apiv2/taskwrappers.routes.php";
+
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorHandler = $errorMiddleware->getDefaultErrorHandler();
