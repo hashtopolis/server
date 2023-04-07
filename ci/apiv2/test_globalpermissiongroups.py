@@ -9,7 +9,8 @@ import unittest
 import time
 from pathlib import Path
 
-from hashtopolis import GlobalPermissionGroup 
+from hashtopolis import GlobalPermissionGroup
+from hashtopolis import User
 
 class GlobalPermissionGroupsTest(unittest.TestCase):
     def test_create_globalpermissiongroup(self):
@@ -68,6 +69,23 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
             globalpermissiongroup.id
 
+    def test_expand_globalpermissiongroup(self):
+        stamp = int(time.time())
+        globalpermissiongroup = GlobalPermissionGroup(
+            name=f'test-{stamp}',
+        )
+        globalpermissiongroup.save()
+
+        user = User(
+            name=f'user-{stamp}',
+            email='test@example.com',
+            globalPermissionGroupId=globalpermissiongroup.id,
+        )
+        user.save()
+
+        obj = GlobalPermissionGroup.objects.get(id=globalpermissiongroup.id, expand='user')
+        assert len(obj.user_set) > 0
+        assert obj.user_set[0].name == user.name
 
 if __name__ == '__main__':
     unittest.main()

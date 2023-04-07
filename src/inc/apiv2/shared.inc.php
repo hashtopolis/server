@@ -30,8 +30,10 @@ use DBA\OrderFilter;
 use DBA\Pretask;
 use DBA\File;
 use DBA\HashlistFactory;
+use DBA\RightGroup;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
+use DBA\NotificationSetting;
 use Middlewares\Utils\HttpErrorException;
 use Slim\Exception\HttpNotImplementedException;
 use Psr\Container\ContainerInterface;
@@ -162,6 +164,7 @@ abstract class AbstractBaseAPI {
 
   protected function object2Array(mixed $object, array $expand) {
     $item = $this->obj2Array($object);
+    $features = $this->getFeatures();
     
     /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
@@ -267,8 +270,15 @@ abstract class AbstractBaseAPI {
           $item[$NAME] = $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
           break;
         case 'user':
-          $obj = Factory::getUserFactory()->get($item['userId']);
-          $item[$NAME] = $this->obj2Array($obj);
+          if (get_class($object) == RightGroup::class) {
+            $mapped_id = $features[RightGroup::RIGHT_GROUP_ID]['alias'];
+            $qF = new QueryFilter(User::RIGHT_GROUP_ID, $item[$mapped_id], "=");
+            $objs = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
+            $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
+          } elseif (get_class($object) == NotificationSetting::class) {
+            $obj = Factory::getUserFactory()->get($item['userId']);
+            $item[$NAME] = $this->obj2Array($obj);
+          }
           break;
         case 'userMembers':
           /* M2M via AccessGroupUser */
