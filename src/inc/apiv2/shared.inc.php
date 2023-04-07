@@ -312,9 +312,15 @@ abstract class AbstractBaseAPI {
   }
 
 
+  /* Uniform conversion of php array to JSON output */
+  protected function ret2json(array $result): string {
+    return json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+  }
+
+
   protected function object2JSON(object $object) : string {
     $item = $this->object2Array($object, []);
-    return json_encode($item, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    return $this->ret2json($item);
   }
 
   protected function validateData(array $data, array $mappedFeatures) {
@@ -516,7 +522,7 @@ abstract class AbstractBaseAPI {
     ];
 
     $body = $response->getBody();
-    $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+    $body->write($this->ret2json($ret));
 
     return $response->withStatus(201)
     ->withHeader("Content-Type", "application/json");
@@ -630,10 +636,10 @@ abstract class AbstractBaseAPI {
     ksort($ret);
 
     $body = $response->getBody();
-    $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+    $body->write($this->ret2json($ret));
 
     return $response->withStatus(201)
-        ->withHeader("Content-Type", "application/json");
+    ->withHeader("Content-Type", "application/json");
   }
 
 
