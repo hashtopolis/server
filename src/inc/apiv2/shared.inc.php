@@ -619,10 +619,18 @@ abstract class AbstractBaseAPI {
 
   public function getOne(Request $request, Response $response, array $args): Response {
     $this->preCommon($request);
+
+    $expandables = $this->getExpandables();
+    list($expandable, $expands) = $this->makeExpandables($request, $expandables);
+
     $object = $this->doFetch($request, $args['id']);
 
+    $ret = $this->object2Array($object, $expands);
+    $ret["_expandable"] = join(",", $expandable);
+    ksort($ret);
+
     $body = $response->getBody();
-    $body->write($this->object2JSON($object));
+    $body->write(json_encode($ret, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 
     return $response->withStatus(201)
         ->withHeader("Content-Type", "application/json");
