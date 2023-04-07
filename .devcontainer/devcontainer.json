@@ -16,6 +16,7 @@
 				"xdebug.php-debug",
 				"bmewburn.vscode-intelephense-client",
 				"editorconfig.editorconfig",
+		        "github.vscode-pull-request-github",
 				"ms-python.python",
         "mtxr.sqltools",
         "mtxr.sqltools-driver-mysql"
