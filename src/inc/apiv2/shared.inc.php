@@ -35,12 +35,15 @@ use DBA\Supertask;
 use DBA\SupertaskPretask;
 use DBA\NotificationSetting;
 use Middlewares\Utils\HttpErrorException;
-use Slim\Exception\HttpNotImplementedException;
 use Psr\Container\ContainerInterface;
 
 require_once(dirname(__FILE__) . "/../load.php");
 
-abstract class AbstractBaseAPI {
+/**   
+ * This class acts as the BaseAPI implementation of API model endpoints
+ */
+abstract class AbstractBaseAPI
+{
   abstract public function getPermission(): string;
   abstract static public function getDBAClass(): string;
   abstract protected function getFactory(): object;
@@ -53,43 +56,64 @@ abstract class AbstractBaseAPI {
   abstract protected function deleteObject(object $object): void;
   abstract protected function checkPermission(object $object): bool;
 
-
+  /** @var DBA\User|null $user is currently logged in user */
   private $user;
+
+  /** @var \Slim\Interfaces\RouteParserInterface|null $routeParser contains routing information
+   * which are for example used dynamic creation of _self references
+   */
   private $routeParser;
 
+  /** @var ContainerInterface|null $container dynamically generated model mappings 
+   * which are for example used for retrival of objects based on string identity
+   */
   protected $container;
 
-  /* constructor receives container instance */
-  public function __construct(ContainerInterface $container) {
-      $this->container = $container;
+  /**
+   * Constructor receives container instance
+   */
+  public function __construct(ContainerInterface $container)
+  {
+    $this->container = $container;
   }
 
-  
-  public function getFeatures(): array {
-    return call_user_func($this->getDBAclass() .'::getFeatures');
+  /**
+   * Constructor receives container instance
+   */
+  public function getFeatures(): array
+  {
+    return call_user_func($this->getDBAclass() . '::getFeatures');
   }
 
-  public function getMappedFeatures(): array {
-    // This function takes all the dba features and converts them to a list.
-    // It uses the data from the generator and replaces the keys with the aliasses.
-    // structure: hashlist: name: [dbname => hashlistId]
+  /**
+   * Take all the dba features and converts them to a list.
+   * It uses the data from the generator and replaces the keys with the aliasses.
+   * structure: hashlist: name: [dbname => hashlistId]
+   */
+  public function getMappedFeatures(): array
+  {
     $features = $this->getFeatures();
     $mappedFeatures = [];
-    foreach($features as $KEY => $VALUE) {
+    foreach ($features as $KEY => $VALUE) {
       $mappedFeatures[$VALUE['alias']] = $VALUE;
       $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
     }
     return $mappedFeatures;
   }
 
-  
-  final protected function getUser() {
+  /** 
+   * Retrieve currently logged-in user
+   */
+  final protected function getUser()
+  {
     return $this->user;
   }
 
-  
-  /* Convert Database resturn value to JSON object value */
-  private static function db2json(string $type, mixed $val): mixed {
+  /** 
+   * Convert Database resturn value to JSON object value 
+   */
+  private static function db2json(string $type, mixed $val): mixed
+  {
     if ($type == 'bool') {
       $obj = ($val == "1") ? True : False;
     } elseif ($type == 'dict') {
@@ -108,21 +132,26 @@ abstract class AbstractBaseAPI {
     return $obj;
   }
 
-
-  /* Convert JSON object value to DB insert value, supported by DBA */
-  private static function json2db(string $type, mixed $obj): string {
+  /** 
+   * Convert JSON object value to DB insert value, supported by DBA
+   */
+  private static function json2db(string $type, mixed $obj): string
+  {
     if ($type == 'bool') {
-        $val = ($obj) ? "1" : "0";
+      $val = ($obj) ? "1" : "0";
     } elseif (str_starts_with($type, 'str')) {
-        $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
+      $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
     } else {
-        $val = strval($obj);
+      $val = strval($obj);
     }
     return $val;
   }
 
-
-  protected function obj2Array(mixed $obj) {  
+  /** 
+   * Convert JSON object value to DB insert value, supported by DBA
+   */
+  protected function obj2Array(mixed $obj)
+  {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
     $kv = $obj->getKeyValueDict();
@@ -146,13 +175,14 @@ abstract class AbstractBaseAPI {
     return $item;
   }
 
-
-  
-  /* Quirck to resolve objects via ManyToMany relation table */
-  private function joinQuery(mixed $objFactory, DBA\QueryFilter $qF, DBA\JoinFilter $jF): array {
+  /**
+   * Quirck to resolve objects via ManyToMany relation table 
+   */
+  private function joinQuery(mixed $objFactory, DBA\QueryFilter $qF, DBA\JoinFilter $jF): array
+  {
     $joined = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $objects = $joined[$objFactory->getModelName()];
-    
+
     $ret = [];
     foreach ($objects as $object) {
       array_push($ret, $this->obj2Array($object));
@@ -161,14 +191,17 @@ abstract class AbstractBaseAPI {
     return $ret;
   }
 
-
-  protected function object2Array(mixed $object, array $expand) {
+  /** 
+   * Expands object items
+   */
+  protected function object2Array(mixed $object, array $expand)
+  {
     $item = $this->obj2Array($object);
     $features = $this->getFeatures();
-    
+
     /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
-      switch($NAME) {
+      switch ($NAME) {
         case 'agent':
           $obj = Factory::getAgentFactory()->get($item['agentId']);
           $item[$NAME] = $this->obj2Array($obj);
@@ -262,7 +295,7 @@ abstract class AbstractBaseAPI {
           $qF = new QueryFilter(FilePretask::PRETASK_ID, $item[Pretask::PRETASK_ID], "=", Factory::getFilePretaskFactory());
           $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
           $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
-          break;     
+          break;
         case 'pretasks':
           /* M2M via SupertaskPretask */
           $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $item[Supertask::SUPERTASK_ID], "=", Factory::getSupertaskPretaskFactory());
@@ -285,16 +318,16 @@ abstract class AbstractBaseAPI {
           $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $item[AccessGroup::ACCESS_GROUP_ID], "=", Factory::getAccessGroupUserFactory());
           $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
           $item[$NAME] = $this->joinQuery(Factory::getUserFactory(), $qF, $jF);
-          break;     
+          break;
         case 'agentMembers':
           /* M2M via AccessGroupAgent */
           $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $item[AccessGroupAgent::ACCESS_GROUP_ID], "=", Factory::getAccessGroupAgentFactory());
           $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
           $item[$NAME] = $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
-          break;     
+          break;
         default:
           throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");
-        }
+      }
     }
 
     $expandLeft = array_diff($expand, array_keys($item));
@@ -312,38 +345,47 @@ abstract class AbstractBaseAPI {
   }
 
 
-  /* Uniform conversion of php array to JSON output */
-  protected function ret2json(array $result): string {
+  /**
+   * Uniform conversion of php array to JSON output 
+   */
+  protected function ret2json(array $result): string
+  {
     return json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
   }
 
-
-  protected function object2JSON(object $object) : string {
+  /**
+   * Helper conversion of single object to JSON string
+   */
+  protected function object2JSON(object $object): string
+  {
     $item = $this->object2Array($object, []);
     return $this->ret2json($item);
   }
 
-  protected function validateData(array $data, array $mappedFeatures) {
-    // Validate incoming data
-    foreach($data as $KEY => $VALUE) {
+  /**
+   * Validate incoming data
+   */
+  protected function validateData(array $data, array $mappedFeatures)
+  {
+    foreach ($data as $KEY => $VALUE) {
       // Bool
       if ($mappedFeatures[$KEY]['type'] == 'bool') {
         if (is_bool($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type boolean");            
+          throw new HttpErrorException("Key '$KEY' is not of type boolean");
         }
-      // Int
+        // Int
       } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'int')) {
         // TODO: int32, int64 range validation
         if (is_integer($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type integer");
         }
-      // Str
+        // Str
       } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
         if (is_string($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type string");
         }
         // TODO: Length validation
-      // Array
+        // Array
       } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'array')) {
         if (is_array($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type array");
@@ -354,7 +396,7 @@ abstract class AbstractBaseAPI {
             throw new HttpErrorException("Key '$KEY' array contains non-integer values");
           }
         }
-      // Dict
+        // Dict
       } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'dict')) {
         if (is_array($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type dict");
@@ -371,10 +413,11 @@ abstract class AbstractBaseAPI {
     }
   }
 
-
-
-  protected function makeExpandables(Request $request, array $expandables): array {
-    // Check for valid expand parameters
+  /**
+   * Check for valid expand parameters
+   */
+  protected function makeExpandables(Request $request, array $expandables): array
+  {
     $expandable = $expandables;
     $expands = [];
 
@@ -386,7 +429,7 @@ abstract class AbstractBaseAPI {
     }
 
     $queryExpand = (array_key_exists('expand', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['expand']) : [];
-    
+
     if (is_string($bodyExpand_raw)) {
       $bodyExpand = [$bodyExpand_raw];
     } elseif (is_null($bodyExpand_raw)) {
@@ -395,25 +438,25 @@ abstract class AbstractBaseAPI {
       $bodyExpand = $bodyExpand_raw;
     }
     $mergedExpands = array_merge($bodyExpand, $queryExpand);
-    
-    foreach($mergedExpands as $expand) {
+
+    foreach ($mergedExpands as $expand) {
       if (($key = array_search($expand, $expandable)) !== false) {
         unset($expandable[$key]);
-      }
-      else {
+      } else {
         throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($expandables)) . ")");
       }
     }
-  
+
     return [$expandable, $mergedExpands];
   }
 
-
-  protected function makeFilter(Request $request, array $features): array {
-    // Check for valid filter parameters
-
+  /**
+   * Check for valid filter parameters and build QueryFilter
+   */
+  protected function makeFilter(Request $request, array $features): array
+  {
     $qFs = [];
-    
+
     $data = $request->getParsedBody();
     if (!is_null(($data))) {
       $bodyFilter = (array_key_exists('filter', $data)) ? $data['filter'] : [];
@@ -424,7 +467,7 @@ abstract class AbstractBaseAPI {
     $queryFilter = (array_key_exists('filter', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['filter']) : [];
     $mergedFilters = array_merge($bodyFilter, $queryFilter);
 
-    foreach($mergedFilters as $filter) {
+    foreach ($mergedFilters as $filter) {
       // TODO: Add sanity checking
       if (preg_match('/^(?P<key>[a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
         if (array_key_exists($matches['key'], $features)) {
@@ -432,7 +475,7 @@ abstract class AbstractBaseAPI {
           if ($features[$matches['key']]['type'] == 'bool') {
             $val = filter_var($matches['value'], FILTER_NULL_ON_FAILURE);
             if (is_null($val)) {
-              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");  
+              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
             }
           } else {
             $val = $matches['value'];
@@ -441,7 +484,7 @@ abstract class AbstractBaseAPI {
           $remappedKey = $features[$matches['key']]['dbname'];
           $qFs[] = new QueryFilter($remappedKey, $val, $matches['operator']);
         } else {
-          throw new HTException("Filter parameter '" . $filter . "' is not valid");  
+          throw new HTException("Filter parameter '" . $filter . "' is not valid");
         }
       } else {
         throw new HTException("Filter parameter '" . $filter . "' is not valid");
@@ -451,18 +494,20 @@ abstract class AbstractBaseAPI {
     return $qFs;
   }
 
-
-
-  protected function validateHashlistAccess(Request $request, User $user, String $hashlistId): Hashlist {
+  /**
+   * Validate if user is allowed to access hashlist
+   */
+  protected function validateHashlistAccess(Request $request, User $user, String $hashlistId): Hashlist
+  {
     // TODO: Fix permissions
-    if(!AccessControl::getInstance($user)->hasPermission(DAccessControl::MANAGE_HASHLIST_ACCESS)) {
+    if (!AccessControl::getInstance($user)->hasPermission(DAccessControl::MANAGE_HASHLIST_ACCESS)) {
       throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription(DAccessControl::MANAGE_HASHLIST_ACCESS) . "' permission");
     }
 
     try {
-        $hashlist = HashlistUtils::getHashlist($hashlistId);
+      $hashlist = HashlistUtils::getHashlist($hashlistId);
     } catch (HTException $ex) {
-        throw new HttpNotFoundException($request, $ex->getMessage());
+      throw new HttpNotFoundException($request, $ex->getMessage());
     }
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HttpForbiddenException($request, "No access to hashlist!");
@@ -474,19 +519,24 @@ abstract class AbstractBaseAPI {
   /*
   *  Common features for all requests, like setting user and checking basic permissions
   */
-  protected function preCommon(Request $request): void {
+  protected function preCommon(Request $request): void
+  {
     $userId = $request->getAttribute(('userId'));
     $this->user = UserUtils::getUser($userId);
 
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
 
-    if(!AccessControl::getInstance($this->getUser())->hasPermission($this->getPermission())) {
-        throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription($this->getPermission()) . "' permission");
+    if (!AccessControl::getInstance($this->getUser())->hasPermission($this->getPermission())) {
+      throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription($this->getPermission()) . "' permission");
     }
   }
 
-  public function get(Request $request, Response $response, array $args): Response {
+  /**
+   * API entry point for requesting multiple objects
+   */
+  public function get(Request $request, Response $response, array $args): Response
+  {
     $this->preCommon($request);
 
     $mappedFeatures = $this->getMappedFeatures();
@@ -507,29 +557,32 @@ abstract class AbstractBaseAPI {
 
     $lists = [];
     foreach ($objects as $object) {
-        $lists[] = $this->object2Array($object, $expands);
+      $lists[] = $this->object2Array($object, $expands);
     }
 
     // TODO: Implement actual expanding
     $total = count($objects);
     $ret = [
-        "_expandable" => join(",", $expandable),
-        "startAt" => $startAt,
-        "maxResults" => $maxResults,
-        "total" => $total,
-        "isLast" => ($total <= ($startAt + $maxResults)),
-        "values" => array_slice($lists, $startAt, $maxResults)
+      "_expandable" => join(",", $expandable),
+      "startAt" => $startAt,
+      "maxResults" => $maxResults,
+      "total" => $total,
+      "isLast" => ($total <= ($startAt + $maxResults)),
+      "values" => array_slice($lists, $startAt, $maxResults)
     ];
 
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
 
     return $response->withStatus(201)
-    ->withHeader("Content-Type", "application/json");
+      ->withHeader("Content-Type", "application/json");
   }
 
-
-  public function post(Request $request, Response $response, array $args): Response {
+  /**
+   * API entry point creation of new object
+   */
+  public function post(Request $request, Response $response, array $args): Response
+  {
     $this->preCommon($request);
 
     $QUERY = $request->getParsedBody();
@@ -538,7 +591,7 @@ abstract class AbstractBaseAPI {
 
     // Generate listing of validFeatures
     $featureFields = [];
-    foreach($features as $NAME => $FEATURE) {
+    foreach ($features as $NAME => $FEATURE) {
       /* Protected and private features cannot be specified */
       if ($FEATURE['protected'] == True) {
         continue;
@@ -555,7 +608,7 @@ abstract class AbstractBaseAPI {
 
     // Find keys which are invalid
     $invalidKeys = [];
-    foreach($QUERY as $NAME => $VALUE)  {
+    foreach ($QUERY as $NAME => $VALUE) {
       if (!in_array($NAME, $validFeatures)) {
         array_push($invalidKeys, $NAME);
       }
@@ -566,7 +619,7 @@ abstract class AbstractBaseAPI {
       ksort($invalidKeys);
       throw new HTException("Parameters '" . join(", ", $invalidKeys) . "' are not valid input keys (valid keys are: " . join(", ", $validFeatures) . ")");
     }
-    
+
     // Find out about mandatory keys which are not provided
     $missingKeys = [];
     foreach ($features as $NAME => $FEATURE) {
@@ -583,7 +636,7 @@ abstract class AbstractBaseAPI {
       }
     }
     // Consider all formFields mandatory input
-    foreach($formFields as $NAME => $FEATURE) {
+    foreach ($formFields as $NAME => $FEATURE) {
       if (!array_key_exists($NAME, $QUERY)) {
         $missingKeys[] = $NAME;
       }
@@ -606,14 +659,17 @@ abstract class AbstractBaseAPI {
     $body->write($this->object2JSON($this->getFactory()->get($pk)));
 
     return $response->withStatus(201)
-        ->withHeader("Content-Type", "application/json");
+      ->withHeader("Content-Type", "application/json");
   }
 
-  
-  protected function doFetch(Request $request, string $pk): mixed {
+  /**
+   * Request single object from database & validate permissons
+   */
+  protected function doFetch(Request $request, string $pk): mixed
+  {
     $object = $this->getFactory()->get($pk);
     if ($object === null) {
-        throw new HttpNotFoundException($request, "Object not found!");
+      throw new HttpNotFoundException($request, "Object not found!");
     }
 
     if (!$this->checkPermission($object)) {
@@ -622,8 +678,11 @@ abstract class AbstractBaseAPI {
     return $object;
   }
 
-
-  public function getOne(Request $request, Response $response, array $args): Response {
+  /**
+   * API entry point for requests of single object
+   */
+  public function getOne(Request $request, Response $response, array $args): Response
+  {
     $this->preCommon($request);
 
     $expandables = $this->getExpandables();
@@ -639,13 +698,16 @@ abstract class AbstractBaseAPI {
     $body->write($this->ret2json($ret));
 
     return $response->withStatus(201)
-    ->withHeader("Content-Type", "application/json");
+      ->withHeader("Content-Type", "application/json");
   }
 
-
-  public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+  /**
+   * Update object with provided values
+   */
+  public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void
+  {
     // Apply changes 
-    foreach($data as $KEY => $VALUE) {
+    foreach ($data as $KEY => $VALUE) {
       if (in_array($KEY, $processed)) {
         continue;
       }
@@ -657,18 +719,19 @@ abstract class AbstractBaseAPI {
     }
   }
 
-
-  public function patchOne(Request $request, Response $response, array $args): Response {
+  /**
+   * API entry point for modification of single object
+   */
+  public function patchOne(Request $request, Response $response, array $args): Response
+  {
     $this->preCommon($request);
     $object = $this->doFetch($request, $args['id']);
 
-
-    
     $data = $request->getParsedBody();
     $mappedFeatures = $this->getMappedFeatures();
 
     // Validate incoming data
-    foreach($data as $KEY => $VALUE) {
+    foreach ($data as $KEY => $VALUE) {
       // Ensure key is a regular string
       if (is_string($KEY) == False) {
         throw new HttpErrorException("Key '$KEY' invalid");
@@ -703,29 +766,38 @@ abstract class AbstractBaseAPI {
     $body->write($this->object2JSON($newObject));
 
     return $response->withStatus(201)
-        ->withHeader("Content-Type", "application/json");
+      ->withHeader("Content-Type", "application/json");
   }
 
-
-  public function deleteOne(Request $request, Response $response, array $args): Response {
+  /**
+   * API entry point for deletion of single object
+   */
+  public function deleteOne(Request $request, Response $response, array $args): Response
+  {
     $this->preCommon($request);
     $object = $this->doFetch($request, $args['id']);
 
     /* Actually delete object */
-     $this->deleteObject($object);
+    $this->deleteObject($object);
 
     return $response->withStatus(204)
-    ->withHeader("Content-Type", "application/json");
+      ->withHeader("Content-Type", "application/json");
   }
 
 
-  /* Override-able activated methods */
-  static public function getAvailableMethods(): array {
+  /**
+   * Override-able activated methods 
+   */
+  static public function getAvailableMethods(): array
+  {
     return ["GET", "POST", "PATCH", "DELETE"];
   }
-  
 
-  static public function register($app): void {
+  /**
+   * Override-able registering of options
+   */
+  static public function register($app): void
+  {
     $me = get_called_class();
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
@@ -734,12 +806,16 @@ abstract class AbstractBaseAPI {
     $classMapper->add($me::getDBAclass(), $me);
 
     /* Allow CORS preflight requests */
-    $app->options($baseUri, function (Request $request, Response $response): Response { return $response; });
-    $app->options($baseUriOne, function (Request $request, Response $response): Response { return $response; });
+    $app->options($baseUri, function (Request $request, Response $response): Response {
+      return $response;
+    });
+    $app->options($baseUriOne, function (Request $request, Response $response): Response {
+      return $response;
+    });
 
     $available_methods = self::getAvailableMethods();
 
-    if (in_array("GET", $available_methods)) {     
+    if (in_array("GET", $available_methods)) {
       $app->get($baseUri, $me . ':get')->setname($me . ':get');
     }
 
@@ -759,4 +835,4 @@ abstract class AbstractBaseAPI {
       $app->delete($baseUriOne, $me . ':deleteOne')->setName($me . ':deleteOne');
     }
   }
-} 
+}
