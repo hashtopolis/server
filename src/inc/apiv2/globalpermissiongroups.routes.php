@@ -16,7 +16,7 @@ use DBA\OrderFilter;
 require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
-class AccessPermissionGroupsAPI extends AbstractBaseAPI {
+class GlobalPermissionGroupsAPI extends AbstractBaseAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/globalpermissiongroups";
     }
@@ -90,4 +90,4 @@ class AccessPermissionGroupsAPI extends AbstractBaseAPI {
     }
 }
 
-AccessPermissionGroupsAPI::register($app);
+GlobalPermissionGroupsAPI::register($app);
