@@ -574,7 +574,7 @@ abstract class AbstractBaseAPI
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
 
-    return $response->withStatus(201)
+    return $response->withStatus(200)
       ->withHeader("Content-Type", "application/json");
   }
 
@@ -697,7 +697,7 @@ abstract class AbstractBaseAPI
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
 
-    return $response->withStatus(201)
+    return $response->withStatus(200)
       ->withHeader("Content-Type", "application/json");
   }
 
