@@ -24,7 +24,7 @@ class Hashtypes(utils.TestBase):
         payload = {}
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201, msg=uri)
+        self.assertEqual(r.status_code, 200, msg=uri)
 
         return r.json()
 
@@ -37,7 +37,7 @@ class Hashtypes(utils.TestBase):
         payload = {}
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.assertEqual(r.status_code, 201, msg=uri)
+        self.assertEqual(r.status_code, 200, msg=uri)
 
 
     def test_patch(self):
