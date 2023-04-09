@@ -116,7 +116,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
     include(dirname(__FILE__) . '/../../inc/conf.php');
     return new JwtAuthentication([
         "path" => "/",
-        "ignore" => ["/api/v2/auth/token"],
+        "ignore" => ["/api/v2/auth/token", "/api/v2/ui/openapi.json"],
         "secret" => $PEPPER[0],
         "attribute" => false,
         "secure" => false,

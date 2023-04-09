@@ -579,6 +579,34 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Get input field names valid for creation of object
+   */
+  final public function getCreateValidFeatures(): array
+  {
+    $features = $this->getMappedFeatures();
+    $formFields = $this->getFormfields();
+
+    // Generate listing of validFeatures
+    $featureFields = [];
+    foreach ($features as $NAME => $FEATURE) {
+      /* Protected and private features cannot be specified */
+      if ($FEATURE['protected'] == True) {
+        continue;
+      } elseif ($FEATURE['private'] == True) {
+        continue;
+      }
+      /* Use API aliased naming */
+      array_push($featureFields, $FEATURE);
+    }
+    $validFeatures = array_merge($featureFields, $formFields);
+
+    // Ensure debugging response lists are in sorted order
+    ksort($validFeatures);
+
+    return $validFeatures;
+  }
+
+  /**
    * API entry point creation of new object
    */
   public function post(Request $request, Response $response, array $args): Response
@@ -586,6 +614,7 @@ abstract class AbstractBaseAPI
     $this->preCommon($request);
 
     $QUERY = $request->getParsedBody();
+    /* TODO: Rework with $this->getMappedFeatures() and remove all alias references below */
     $features = $this->getFeatures();
     $formFields = $this->getFormfields();
 
@@ -718,6 +747,36 @@ abstract class AbstractBaseAPI
       $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
     }
   }
+
+  /**
+   * Get input field names valid for patching of object
+   */
+  final public function getPatchValidFeatures(): array
+  {
+    $mappedFeatures = $this->getMappedFeatures();
+    $validFeatures = [];
+
+    // Generate listing of validFeatures
+    foreach ($mappedFeatures as $name => $feature) {
+      // Ensure key can be updated 
+      if ($feature['read_only'] == True) {
+        continue;
+      }
+      if ($feature['protected'] == True) {
+        continue;
+      }
+      if ($feature['private'] == True) {
+        continue;
+      }
+    
+      $validFeatures[$name] = $feature;
+    };
+
+    // Ensure debugging response lists are in sorted order
+    ksort($validFeatures);
+
+    return $validFeatures;
+    }
 
   /**
    * API entry point for modification of single object
