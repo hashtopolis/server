@@ -428,3 +428,6 @@ class FileImport(HashtopolisConnector):
                 )
         uploader.upload()
 
+class Voucher(Model, uri="/ui/vouchers"):
+    def __repr__(self):
+        return self._self
