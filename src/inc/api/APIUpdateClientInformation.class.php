@@ -29,13 +29,16 @@ class APIUpdateClientInformation extends APIBasic {
       // we only update this variable on the first time, otherwise we would overwrite manual changes
       Factory::getAgentFactory()->set($this->agent, Agent::CPU_ONLY, $cpuOnly);
     }
+
     Factory::getAgentFactory()->mset($this->agent, [
-        Agent::DEVICES => htmlentities(implode("\n", $devices), ENT_QUOTES, "UTF-8"),
+        //change to hardware group
+        // Agent::DEVICES => htmlentities(implode("\n", $devices), ENT_QUOTES, "UTF-8"),
         Agent::UID => $uid,
         Agent::OS => $os
       ]
     );
-    
+    HardwareGroupUtils::updateHardwareOfAgent(htmlentities(implode("\n", $devices), ENT_QUOTES, "UTF-8"), $this->agent);
+
     $this->updateAgent(PActions::UPDATE_CLIENT_INFORMATION);
     DServerLog::log(DServerLog::DEBUG, "Agent sent updated client information", [$this->agent]);
     

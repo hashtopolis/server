@@ -4,7 +4,6 @@ use DBA\Agent;
 use DBA\Assignment;
 use DBA\QueryFilter;
 use DBA\Factory;
-use DBA\File;
 
 class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
@@ -75,9 +74,16 @@ class APISendBenchmark extends APIBasic {
         Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
         $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
     }
-    
+
     $assignment->setBenchmark($benchmark);
     Factory::getAssignmentFactory()->update($assignment);
+
+    //save benchmark in cache
+    // BenchmarkUtils::saveBenchmarkInCache($task->getAttackCmd() ,$this->agent->getId(), $benchmark); //todo
+    $hardwareGroup = Factory::getHardwareGroupFactory()->get($this->agent->getHardwareGroupId());
+
+    BenchmarkUtils::saveBenchmarkInCache($task->getAttackCmd(), $hardwareGroup, $benchmark); //todo
+
     DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
     $this->sendResponse(array(
         PResponseSendBenchmark::ACTION => PActions::SEND_BENCHMARK,
