@@ -60,6 +60,13 @@ $CONF['Assignment'] = [
   'agentId',
   'benchmark',
 ];
+$CONF['Benchmark'] = [
+  'benchmarkId',
+  'benchmarkValue',
+  'attackParameters',
+  'hardwareGroupId',
+  'ttl',
+];
 $CONF['Chunk'] = [
   'chunkId',
   'taskId',
@@ -115,6 +122,11 @@ $CONF['Hash'] = [
   'chunkId',
   'isCracked',
   'crackPos'
+];
+$CONF['HardwareGroup'] = [
+  'hardwareGroupId',
+  'devices',
+  'benchmarkId',
 ];
 $CONF['HashBinary'] = [
   'hashBinaryId',

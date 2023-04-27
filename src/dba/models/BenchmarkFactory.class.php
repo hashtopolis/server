@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class AgentFactory extends AbstractModelFactory {
+class BenchmarkFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Agent";
+    return "Benchmark";
   }
   
   function getModelTable() {
-    return "Agent";
+    return "Benchmark";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class AgentFactory extends AbstractModelFactory {
   }
   
   /**
-   * @return Agent
+   * @return Benchmark
    */
   function getNullObject() {
-    $o = new Agent(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new Benchmark(-1, null, null, null, null);
     return $o;
   }
   
   /**
    * @param string $pk
    * @param array $dict
-   * @return Agent
+   * @return Benchmark
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Agent($dict['agentId'], $dict['agentName'], $dict['uid'], $dict['os'], $dict['hardwareGroupId'], $dict['cmdPars'], $dict['ignoreErrors'], $dict['isActive'], $dict['isTrusted'], $dict['token'], $dict['lastAct'], $dict['lastTime'], $dict['lastIp'], $dict['userId'], $dict['cpuOnly'], $dict['clientSignature']);
+    $o = new Benchmark($dict['benchmarkId'], $dict['benchmarkValue'], $dict['attackParameters'], $dict['hardwareGroupId'], $dict['ttl']);
     return $o;
   }
   
   /**
    * @param array $options
    * @param bool $single
-   * @return Agent|Agent[]
+   * @return Benchmark|Benchmark[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class AgentFactory extends AbstractModelFactory {
       if ($join) {
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Agent::class);
+      return Util::cast(parent::filter($options, $single), Benchmark::class);
     }
     $objects = parent::filter($options, $single);
     if ($join) {
@@ -59,24 +59,24 @@ class AgentFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach ($objects as $object) {
-      $models[] = Util::cast($object, Agent::class);
+      $models[] = Util::cast($object, Benchmark::class);
     }
     return $models;
   }
   
   /**
    * @param string $pk
-   * @return Agent
+   * @return Benchmark
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Agent::class);
+    return Util::cast(parent::get($pk), Benchmark::class);
   }
   
   /**
-   * @param Agent $model
-   * @return Agent
+   * @param Benchmark $model
+   * @return Benchmark
    */
   function save($model) {
-    return Util::cast(parent::save($model), Agent::class);
+    return Util::cast(parent::save($model), Benchmark::class);
   }
 }

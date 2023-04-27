@@ -18,6 +18,8 @@ class Factory {
   private static $fileFactory = null;
   private static $hashFactory = null;
   private static $hashBinaryFactory = null;
+  private static $benchmarkFactory = null;
+  private static $hardwareGroupFactory = null;
   private static $hashlistFactory = null;
   private static $hashTypeFactory = null;
   private static $logEntryFactory = null;
@@ -137,6 +139,27 @@ class Factory {
       return self::$configFactory;
     }
   }
+
+  public static function getBenchmarkFactory() {
+    if (self::$benchmarkFactory == null) {
+      $f = new BenchmarkFactory();
+      self::$benchmarkFactory = $f;
+      return $f;
+    } else {
+      return self::$benchmarkFactory;
+    }
+  }
+  
+  public static function getHardwareGroupFactory() {
+    if (self::$hardwareGroupFactory == null) {
+      $f = new HardwareGroupFactory();
+      self::$hardwareGroupFactory = $f;
+      return $f;
+    } else {
+      return self::$hardwareGroupFactory;
+    }
+  }
+  
   
   public static function getConfigSectionFactory() {
     if (self::$configSectionFactory == null) {

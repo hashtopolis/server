@@ -7,7 +7,7 @@ class Agent extends AbstractModel {
   private $agentName;
   private $uid;
   private $os;
-  private $devices;
+  private $hardwareGroupId;
   private $cmdPars;
   private $ignoreErrors;
   private $isActive;
@@ -20,12 +20,12 @@ class Agent extends AbstractModel {
   private $cpuOnly;
   private $clientSignature;
   
-  function __construct($agentId, $agentName, $uid, $os, $devices, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly, $clientSignature) {
+  function __construct($agentId, $agentName, $uid, $os, $hardwareGroupId, $cmdPars, $ignoreErrors, $isActive, $isTrusted, $token, $lastAct, $lastTime, $lastIp, $userId, $cpuOnly, $clientSignature) {
     $this->agentId = $agentId;
     $this->agentName = $agentName;
     $this->uid = $uid;
     $this->os = $os;
-    $this->devices = $devices;
+    $this->hardwareGroupId = $hardwareGroupId;
     $this->cmdPars = $cmdPars;
     $this->ignoreErrors = $ignoreErrors;
     $this->isActive = $isActive;
@@ -45,7 +45,7 @@ class Agent extends AbstractModel {
     $dict['agentName'] = $this->agentName;
     $dict['uid'] = $this->uid;
     $dict['os'] = $this->os;
-    $dict['devices'] = $this->devices;
+    $dict['hardwareGroupId'] = $this->hardwareGroupId;
     $dict['cmdPars'] = $this->cmdPars;
     $dict['ignoreErrors'] = $this->ignoreErrors;
     $dict['isActive'] = $this->isActive;
@@ -109,12 +109,12 @@ class Agent extends AbstractModel {
     $this->os = $os;
   }
   
-  function getDevices() {
-    return $this->devices;
+  function getHardwareGroupId() {
+    return $this->hardwareGroupId;
   }
   
-  function setDevices($devices) {
-    $this->devices = $devices;
+  function setHardwareGroupId($hardwareGroupId) {
+    $this->hardwareGroupId = $hardwareGroupId;
   }
   
   function getCmdPars() {
@@ -209,7 +209,7 @@ class Agent extends AbstractModel {
   const AGENT_NAME = "agentName";
   const UID = "uid";
   const OS = "os";
-  const DEVICES = "devices";
+  const HARDWARE_GROUP_ID = "hardwareGroupId";
   const CMD_PARS = "cmdPars";
   const IGNORE_ERRORS = "ignoreErrors";
   const IS_ACTIVE = "isActive";
