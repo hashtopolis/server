@@ -26,6 +26,8 @@ class DAccessControl {
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
   const MANAGE_ACCESS_GROUP_ACCESS  = "manageAccessGroupAccess";
+  const VIEW_BENCHMARK_ACCESS  = "ViewBenchmarkAccess";
+  const DELETE_BENCHMARK_ACCESS  = "DeleteBenchmarkAccess";
   
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";
@@ -102,6 +104,11 @@ class DAccessControl {
         return "Can manage preconfigured supertasks.";
       case DAccessControl::MANAGE_ACCESS_GROUP_ACCESS:
         return "Can manage access groups.";
+      case DAccessControl::VIEW_BENCHMARK_ACCESS:
+        return "Can view the cached benchmarks";
+      case DAccessControl::DELETE_BENCHMARK_ACCESS:
+        return "Can delete the cached benchmarks";
+
     }
     return "__" . $access . "__";
   }
