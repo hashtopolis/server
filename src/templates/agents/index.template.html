@@ -50,7 +50,7 @@
               {{ENDIF}}
             </td>
             <td>
-              [[str_replace("\n","<br>",[[agent.getDevices()]])]]
+              [[str_replace("\n","<br>",[[agent.getHardwareGroupId()]])]]
             </td>
             <td>
               {{IF [[agent.getCpuOnly()]] == 0}}
