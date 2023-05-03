@@ -29,6 +29,8 @@ class BenchmarkUtils {
   }
 
   static function cleanupAttackParameters2($attackCmd) {
+    $attackCmd = trim($attackCmd);
+
     if (strlen($attackCmd) == 0) {
       throw new HTException("Attack command cannot be empty!");
     } else if (strlen($attackCmd) > 256) {
@@ -107,55 +109,6 @@ class BenchmarkUtils {
     return $cleanAttackCmd;
   }
 
-
-  static function cleanupAttackParameters($attackCmd) {
-
-    //TODO
-    if (strlen($attackCmd) == 0) {
-        throw new HTException("Attack command cannot be empty!");
-      }
-      // else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
-      //   throw new HTException("Attack command must contain the hashlist alias!");
-      // }
-      // else if (Util::containsBlacklistedChars($attackCmd)) {
-      //   throw new HTException("The attack command must contain no blacklisted characters!");}
-      else if (strlen($attackCmd) > 256) {
-        throw new HTException("Attack command is too long (max 256 characters)!");
-      }
-
-      $parameterParseMap = array();
-      $parameterParseMap["-m"] = "--hash-type";
-      $parameterParseMap["-a"] = "--attack-mode";
-      $parameterParseMap["-S"] = "--slow-candidates";
-      $parameterParseMap["-i"] = "--increment";
-
-      $parts_cmd = explode(" ", $attackCmd);
-
-      $arguments = array();
-
-      $i = 0;
-      $size = sizeof($parts_cmd);
-
-      for ($i = 0;$i < count($parts_cmd);$i++) {
-        $arg = $parts_cmd[$i];
-        if (array_key_exists($arg, $parameterParseMap)) {
-          $arg = $parameterParseMap[$arg];
-        }
-
-        if($i <= ($size - 2)) {  //if the next character doesnt start with '-' it means that its the value of the parameter
-          if (str_starts_with($parts_cmd[$i+1], "-")) {
-              $arguments[$arg] = $parts_cmd[$i+1];
-              $i++;
-              continue;
-        }
-
-        array_push($arguments, $arg);
-      }
-
-      return $attackCmd;
-      }
-}
-
     public static function getBenchmarkByValue($attackParameters, $hardwareGroupId) {
         $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
 
@@ -163,7 +116,7 @@ class BenchmarkUtils {
           return null;
         }
 
-        $cleanAttackParameter = self::cleanupAttackParameters($attackParameters);
+        $cleanAttackParameter = self::cleanupAttackParameters2($attackParameters);
 
         $qF = new QueryFilter("attackParameters", $cleanAttackParameter, "=");
         $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
@@ -192,7 +145,7 @@ class BenchmarkUtils {
     $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
     $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
     
-    $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2],Factory::getHardwareGroupFactory()], true);
+    $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
 
     if (isset($foundBenchmark)) { //if benchmark already in cache, update the value
         $foundBenchmark->setTtl(time() + ttl);
