@@ -79,14 +79,15 @@ class HashlistTest(unittest.TestCase):
 
         assert obj.id == id
 
-    #TODO: Expand support
-    # def test_expand(self):
-    #     p = Path(__file__).parent.joinpath('create_hashlist_001.json')
-    #     payload = json.loads(p.read_text('UTF-8'))
-    #     hashlist = Hashlist(**payload)
-    #     hashlist.save()
+    def test_expand_hashlist(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
 
-    #     objs = Hashlist.objects
+        obj = Hashlist.objects.get(hashlistId=hashlist.id, expand='hashes')
+
+        assert len(obj.hashes_set) == 1
 
 if __name__ == '__main__':
     unittest.main()
