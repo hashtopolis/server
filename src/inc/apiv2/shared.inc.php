@@ -135,10 +135,12 @@ abstract class AbstractBaseAPI
   /** 
    * Convert JSON object value to DB insert value, supported by DBA
    */
-  private static function json2db(string $type, mixed $obj): string
+  private static function json2db(string $type, mixed $obj): mixed
   {
     if ($type == 'bool') {
       $val = ($obj) ? "1" : "0";
+    } elseif ($type == 'int' && is_null($obj)){
+      $val = $obj;
     } elseif (str_starts_with($type, 'str')) {
       $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
     } else {
@@ -368,7 +370,19 @@ abstract class AbstractBaseAPI
   protected function validateData(array $data, array $mappedFeatures)
   {
     foreach ($data as $KEY => $VALUE) {
-      // Bool
+      // Validate if field can be left empty or not
+      if ($mappedFeatures[$KEY]['null'] == False) {
+        if (is_null($VALUE) == True) {
+          throw new HttpErrorException("Key '$KEY' is cannot be null.");
+        }
+      } else {
+        if (is_null($VALUE) == True) {
+          // Key can be null and is null, so skip type checking.
+          continue;
+        }
+      }
+
+      // Perform type mapping
       if ($mappedFeatures[$KEY]['type'] == 'bool') {
         if (is_bool($VALUE) == False) {
           throw new HttpErrorException("Key '$KEY' is not of type boolean");
