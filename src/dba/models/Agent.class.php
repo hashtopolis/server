@@ -76,7 +76,7 @@ class Agent extends AbstractModel {
     $dict['lastAct'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastAct"];
     $dict['lastTime'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastTime"];
     $dict['lastIp'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastIp"];
-    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
+    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
     $dict['cpuOnly'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "cpuOnly"];
     $dict['clientSignature'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "clientSignature"];
 
