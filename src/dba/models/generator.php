@@ -257,7 +257,7 @@ $CONF['Task'] = [
   ['name' => 'keyspaceProgress', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
   ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
-  ['name' => 'color', 'read_only' => False, 'type' => 'str(50)'],
+  ['name' => 'color', 'read_only' => False, 'type' => 'str(50)', 'null' => True],
   ['name' => 'isSmall', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'isCpuTask', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'useNewBench', 'read_only' => True, 'type' => 'bool'],
