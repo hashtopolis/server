@@ -37,7 +37,7 @@ $CONF['Agent'] = [
   ['name' => 'lastAct', 'read_only' => False, 'type' => 'str(50)'],
   ['name' => 'lastTime', 'read_only' => False, 'type' => 'int64'],
   ['name' => 'lastIp', 'read_only' => False, 'type' => 'str(50)'],
-  ['name' => 'userId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'userId', 'read_only' => False, 'type' => 'int', 'null' => True],
   ['name' => 'cpuOnly', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'clientSignature', 'read_only' => False, 'type' => 'str(50)']
 ];
