@@ -15,7 +15,7 @@ from hashtopolis import GlobalPermissionGroup
 
 class UserTest(unittest.TestCase):
     def test_create_user(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         user = User(
             name = username,
@@ -30,7 +30,7 @@ class UserTest(unittest.TestCase):
         user.delete()
     
     def test_patch_user(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         groupname = f'gpg-{stamp}'
 
@@ -57,7 +57,7 @@ class UserTest(unittest.TestCase):
         globalpermissiongroup.delete()
     
     def test_disable_enable_user(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
 
         user = User(
@@ -101,7 +101,7 @@ class UserTest(unittest.TestCase):
 
 
     def test_delete_user(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
 
         user = User(
@@ -118,7 +118,7 @@ class UserTest(unittest.TestCase):
         assert len(objs) == 0
 
     def test_expand_user(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         groupname = f'gpg-{stamp}'
 

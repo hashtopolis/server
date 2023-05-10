@@ -14,7 +14,7 @@ from hashtopolis import User
 
 class GlobalPermissionGroupsTest(unittest.TestCase):
     def test_create_globalpermissiongroup(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
             permissions={'viewHashlistAccess':True}
@@ -26,7 +26,7 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         globalpermissiongroup.delete()
     
     def test_patch_globalpermissiongroup(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         permissions = {'viewHashlistAccess':True}
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
@@ -46,7 +46,7 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         globalpermissiongroup.delete()
 
     def test_delete_globalpermissiongroup(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
         )
@@ -60,7 +60,7 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         assert objs == []
 
     def test_exception_globalpermissiongroup(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
             permissions='test',
@@ -70,7 +70,7 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
             globalpermissiongroup.id
 
     def test_expand_globalpermissiongroup(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
         )

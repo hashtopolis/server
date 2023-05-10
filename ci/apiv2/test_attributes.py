@@ -9,7 +9,7 @@ from hashtopolis import User
 class AttributeTypes(unittest.TestCase):   
     def test_patch_read_only(self):
         # Test to verify that we cannot patch a read_only field
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         user = User(
             name = username,
@@ -34,7 +34,7 @@ class AttributeTypes(unittest.TestCase):
         user.delete()
 
     def test_create_protected(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
 
         user = User(
@@ -49,7 +49,7 @@ class AttributeTypes(unittest.TestCase):
         assert 'is not valid input key' in user.exception[0].get('message')
     
     def test_get_private(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         user = User(
             name = username,

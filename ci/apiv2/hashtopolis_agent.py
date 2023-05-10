@@ -115,7 +115,7 @@ class TestAgent(object):
 
     def authenticate(self):
         if self.token == None:
-            stamp = int(time.time())
+            stamp = int(time.time() * 1000)
             self.register(self.voucher, f'test-agent-{stamp}')
         return self.token
 

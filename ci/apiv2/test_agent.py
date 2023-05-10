@@ -14,7 +14,7 @@ from hashtopolis import Agent, Voucher
 class Agents(unittest.TestCase):    
 
     def test_new_agent(self):
-        stamp = int(time.time())
+        stamp = int(time.time() * 1000)
         voucher = Voucher(voucher=f'dummy-test-{stamp}')
         obj = voucher.save()
         agent = TestAgent()
