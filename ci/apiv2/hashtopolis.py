@@ -269,7 +269,9 @@ class Model(metaclass=ModelBase):
 
                 # Set all the attributes of the object.
                 for k2,v2 in dict.items():
-                    setattr(obj, k2, v2)
+                    # See set_initial why the if statement is here
+                    if k2 != 'id':
+                        setattr(obj, k2, v2)
                 if not k2.startswith('_'):
                     obj.__fields.append(k2)
                 return obj
@@ -307,10 +309,16 @@ class Model(metaclass=ModelBase):
                     setattr(self, f"{k}_set", obj_list)
                     continue
             # This does the same as above, only one-to-one relations
-            if type(v) is dict:
+            if type(v) is dict and v.get('_self'):
                 setattr(self, f"{k}_set", self._dict2obj(v))
                 continue
-            setattr(self, k, v)
+
+            # Skip over ID, as it is also something from the model itself.
+            # This should be removed if there is a concensus on the full model.
+            # Example: not rightgroupName but name, and not rightgroupId but id 
+            if k != 'id':
+                setattr(self, k, v)
+
             if not k.startswith('_'):
                 self.__fields.append(k)
 
@@ -390,6 +398,9 @@ class File(Model, uri="/ui/files"):
     def __repr__(self):
         return self._self
 
+class GlobalPermissionGroup(Model, uri="/ui/globalpermissiongroups"):
+    def __repr__(self):
+        return self._self
 
 class FileImport(HashtopolisConnector):
     def __init__(self):
@@ -417,3 +428,6 @@ class FileImport(HashtopolisConnector):
                 )
         uploader.upload()
 
+class Voucher(Model, uri="/ui/vouchers"):
+    def __repr__(self):
+        return self._self

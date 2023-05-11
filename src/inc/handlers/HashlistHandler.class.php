@@ -80,7 +80,7 @@ class HashlistHandler implements Handler {
             $_POST['name'],
             (isset($_POST["salted"]) && intval($_POST["salted"]) == 1) ? true : false,
             (isset($_POST["secret"]) && intval($_POST["secret"]) == 1) ? true : false,
-            (isset($_POST["hexsalted"]) && (isset($_POST["secret"]) && intval($_POST["secret"]) == 1) && intval($_POST["hexsalted"]) == 1) ? true : false,
+            (isset($_POST["hexsalted"]) && intval($_POST["hexsalted"]) == 1) ? true : false,
             $_POST['separator'],
             $_POST['format'],
             $_POST['hashtype'],

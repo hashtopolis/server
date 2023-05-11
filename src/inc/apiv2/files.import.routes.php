@@ -69,7 +69,8 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
       ->withHeader('Tus-Resumable', '1.0.0')
       ->withHeader('Tus-Checksum-Algorithm', join(',', getChecksumAlgorithm()))
       //TODO: Maybe add Upload-Expires support. Return in PATCH with RFC 7231
-      ->withHeader('Tus-Extension', 'checksum,creation,creation-defer-length,termination');
+      ->withHeader('Tus-Extension', 'checksum,creation,creation-defer-length,termination')
+      ->withHeader('Access-Control-Expose-Headers', 'Tus-Version, Tus-Resumable, Tus-Checksum-Algorithm, Tus-Extension');
       //TODO: Option for Tus-Max-Size: 1073741824
   });
 
@@ -123,7 +124,8 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
     // TODO: Hash of filename and/or check if similar named file already exists
     return $response->withStatus(201)
       ->withHeader("Location", "/api/v2/ui/files/import/$id")
-      ->withHeader('Tus-Resumable', '1.0.0');
+      ->withHeader('Tus-Resumable', '1.0.0')
+      ->withHeader('Access-Control-Expose-Headers', 'Location, Tus-Resumable');
     });
 });
 
@@ -141,19 +143,33 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
     $ds = getMetaStorage($args['id']);
 
     $newResponse = $response->withStatus(200)
-        ->withHeader("Cache-Control", "no-store")
-        ->withHeader("Upload-Offset",   strval($currentSize));
+      ->withHeader("Cache-Control", "no-store")
+      ->withHeader("Upload-Offset",   strval($currentSize))
+      ->withHeader("Access-Control-Expose-Headers", "Cache-Control, Upload-Offset")
+    ;
     
     if (array_key_exists("upload_metadata_raw", $ds)) {
-      $newResponse2 = $newResponse->withHeader("Upload-Metadata", $ds["upload_metadata_raw"]);
+      $cors_headers = $newResponse->getHeaderLine("Access-Control-Expose-Headers");
+      $newResponse2 = $newResponse
+        ->withHeader("Upload-Metadata", $ds["upload_metadata_raw"])
+        ->withHeader("Access-Control-Expose-Headers", $cors_headers . ", Upload-Metadata")
+      ;
     } else {
       $newResponse2 = $newResponse;
     }
 
     if ($ds["upload_defer_length"] === true) {
-      return $newResponse2->withHeader("Upload-Defer-Length", "1");
+      $cors_headers = $newResponse->getHeaderLine("Access-Control-Expose-Headers");
+      return $newResponse2
+        ->withHeader("Upload-Defer-Length", "1")
+        ->withHeader("Access-Control-Expose-Headers", $cors_headers . ", Upload-Defer-Length")
+      ;
     } else {
-      return $newResponse2->withHeader("Upload-Length", strval($ds["upload_length"]));
+      $cors_headers = $newResponse->getHeaderLine("Access-Control-Expose-Headers");
+      return $newResponse2
+        ->withHeader("Upload-Length", strval($ds["upload_length"]))
+        ->withHeader("Access-Control-Expose-Headers", $cors_headers . ", Upload-Length")
+      ;
     }
   });
 
@@ -264,7 +280,8 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
     return $response->withStatus(204, $statusMsg)
       ->withHeader("Tus-Resumable", "1.0.0")
       ->withHeader("Upload-Length", strval($ds["upload_length"]))
-      ->withHeader("Upload-Offset", strval($newSize));
+      ->withHeader("Upload-Offset", strval($newSize))
+      ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable, Upload-Length, Upload-Offset");
   });
 
   $group->delete('', function (Request $request, Response $response, array $args): Response {
@@ -272,6 +289,7 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
 
     // TODO return 404 or 410 if entry is not found
     return $response->withStatus(204)
-      ->withHeader("Tus-Resumable", "1.0.0");
+      ->withHeader("Tus-Resumable", "1.0.0")
+      ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable");
   });
 });

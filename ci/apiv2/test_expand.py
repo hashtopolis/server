@@ -47,4 +47,4 @@ class Expand(unittest.TestCase):
         objects = obj.objects.all(expand='userMembers')
 
         # Check the default account
-        assert objects[0].userMembers_set[0].username == 'root'
+        assert objects[0].userMembers_set[0].name == 'root'

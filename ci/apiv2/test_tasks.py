@@ -11,6 +11,10 @@ from pathlib import Path
 
 from hashtopolis import Hashlist 
 from hashtopolis import Task
+from hashtopolis import HashtopolisConnector, HashtopolisConfig
+
+import requests
+
 
 class TasksTest(unittest.TestCase):
     def test_create_task(self):
@@ -26,6 +30,24 @@ class TasksTest(unittest.TestCase):
             obj.save()
 
 
+        obj.delete()
+        hashlist.delete()
+    
+    def test_expand_hashlists(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        for p in sorted(Path(__file__).parent.glob('create_task_001.json')):
+            payload = json.loads(p.read_text('UTF-8'))
+            payload['hashlistId'] = int(hashlist._id)
+            obj = Task(**payload)
+            obj.save()
+
+        obj_test = Task().objects.filter(taskId=obj.id,expand='hashlist')[0]
+        assert obj_test.hashlist_set.name == hashlist.name
+    
         obj.delete()
         hashlist.delete()
 
@@ -51,6 +73,36 @@ class TasksTest(unittest.TestCase):
         obj = Task.objects.get_first()
         
         self.assertEqual(obj.taskName, f'Dummy Task - {stamp}')
+    
+    def test_patch_color_null(self):
+        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+        payload = json.loads(p.read_text('UTF-8'))
+        hashlist = Hashlist(**payload)
+        hashlist.save()
+
+        for p in sorted(Path(__file__).parent.glob('create_task_001.json')):
+            payload = json.loads(p.read_text('UTF-8'))
+            payload['hashlistId'] = int(hashlist._id)
+            task = Task(**payload)
+            task.save()
+        
+        config = HashtopolisConfig()
+        conn = HashtopolisConnector(f'/ui/tasks/{task.id}', config)
+        conn.authenticate()
+        uri = conn._api_endpoint + conn._model_uri
+        headers = conn._headers
+        payload = {"color": None}
+        r = requests.patch(uri, headers=headers, data=json.dumps(payload))
+
+        assert r.status_code == 201
+
+        obj = Task.objects.get(taskId=task.id)
+
+        assert obj.color == ''
+
+        hashlist.delete()
+        task.delete()
+
 
     def test_runtime(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')

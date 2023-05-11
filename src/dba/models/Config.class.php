@@ -27,10 +27,10 @@ class Config extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['configId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "alias" => "configId"];
-    $dict['configSectionId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "configSectionId"];
-    $dict['item'] = ['read_only' => False, "type" => "str(128)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "item"];
-    $dict['value'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "alias" => "value"];
+    $dict['configId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "configId"];
+    $dict['configSectionId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "configSectionId"];
+    $dict['item'] = ['read_only' => False, "type" => "str(128)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "item"];
+    $dict['value'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "value"];
 
     return $dict;
   }

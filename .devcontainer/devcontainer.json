@@ -3,31 +3,57 @@
 	"name": "Hashtopolis Devcontainer",
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "hashtopolis",
-	"runServices": ["db"],
-			
-	"appPort": [8080],
-
+	"runServices": [
+		"db"
+	],
+	"appPort": [
+		8080
+	],
 	"workspaceMount": "src=${localWorkspaceFolder},dst=/var/www/html,type=bind,consistency=cached",
 	"workspaceFolder": "/var/www/html",
-
-	"extensions": [
-		"xdebug.php-debug",
-		"bmewburn.vscode-intelephense-client",
-		"editorconfig.editorconfig",
-    "ms-python.python",
-	],
-	"remoteEnv": {
-		"NODE_OPTIONS": "--use-openssl-ca",
-	},
-	"remoteUser": "vscode",
-	"settings": {
-		"terminal.integrated.profiles.linux":{
-			"bash": {
-			  "path": "bash",
-			  "icon": "terminal-bash",
-        	   "args": [ "--init-file", "${workspaceFolder}/init.sh" ],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"xdebug.php-debug",
+				"bmewburn.vscode-intelephense-client",
+				"editorconfig.editorconfig",
+				"github.vscode-pull-request-github",
+				"ms-python.python",
+				"mtxr.sqltools",
+				"mtxr.sqltools-driver-mysql"
+			],
+			"settings": {
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash",
+						"icon": "terminal-bash",
+						"args": [
+							"--init-file",
+							"${workspaceFolder}/init.sh"
+						]
+					}
+				},
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"sqltools.connections": [
+					{
+						"mysqlOptions": {
+							"authProtocol": "default"
+						},
+						"previewLimit": 50,
+						"server": "db",
+						"port": 3306,
+						"driver": "MySQL",
+						"username": "root",
+						"password": "hashtopolis",
+						"name": "DevcontainerDB",
+						"database": "hashtopolis"
+					}
+				]
 			}
-		  },
-		"terminal.integrated.defaultProfile.linux": "bash",
+		}
 	},
+	"remoteEnv": {
+		"NODE_OPTIONS": "--use-openssl-ca"
+	},
+	"remoteUser": "vscode"
 }

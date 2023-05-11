@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 date_default_timezone_set("UTC");
 error_reporting(E_ALL);
-ini_set("display_errors", 1);
+ini_set("display_errors", '1');
 
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ContentLengthMiddleware;
@@ -116,7 +116,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
     include(dirname(__FILE__) . '/../../inc/conf.php');
     return new JwtAuthentication([
         "path" => "/",
-        "ignore" => ["/api/v2/auth/token"],
+        "ignore" => ["/api/v2/auth/token", "/api/v2/ui/openapi.json"],
         "secret" => $PEPPER[0],
         "attribute" => false,
         "secure" => false,
@@ -214,7 +214,7 @@ $app->addRoutingMiddleware();
 
 require __DIR__ . "/../../inc/apiv2/schema.routes.php";
 require __DIR__ . "/../../inc/apiv2/accessgroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/accesspermissiongroups.routes.php";
+require __DIR__ . "/../../inc/apiv2/globalpermissiongroups.routes.php";
 require __DIR__ . "/../../inc/apiv2/agents.routes.php";
 require __DIR__ . "/../../inc/apiv2/agentstats.routes.php";
 require __DIR__ . "/../../inc/apiv2/agentbinaries.routes.php";
@@ -239,6 +239,8 @@ require __DIR__ . "/../../inc/apiv2/tasks.routes.php";
 require __DIR__ . "/../../inc/apiv2/token.routes.php";
 require __DIR__ . "/../../inc/apiv2/users.routes.php";
 require __DIR__ . "/../../inc/apiv2/vouchers.routes.php";
+require __DIR__ . "/../../inc/apiv2/taskwrappers.routes.php";
+
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorHandler = $errorMiddleware->getDefaultErrorHandler();

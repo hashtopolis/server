@@ -588,7 +588,10 @@ class HashlistUtils {
           }
         }
         else {
+          // in case there is only one hashlist to delete, truncate the Hash table.
           Factory::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
+          // Make sure that a transaction is active, this is what the rest of the function expects.
+          Factory::getAgentFactory()->getDB()->beginTransaction();
         }
         break;
       case 1:

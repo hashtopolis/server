@@ -863,8 +863,10 @@ class TaskUtils {
       for ($j = $i; $j < $i + $linesPerFile && $j < sizeof($content); $j++) {
         $copy[] = $content[$j];
       }
-      file_put_contents(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy) . "\n");
-      $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename() . "_p$taskId-$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId(), 0);
+      $filename = $splitFile->getFilename() . "_p$taskId-$count";
+      $path = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename() . "_p$taskId-$count";
+      file_put_contents($path, implode("\n", $copy) . "\n");
+      $f = new File(null, $filename, Util::filesize($path), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId(), Util::fileLineCount($path));
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
     }

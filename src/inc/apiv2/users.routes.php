@@ -33,7 +33,7 @@ class UserAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ["rightGroup"];
+      return ["globalPermissionGroup"];
     }
 
     protected function getFilterACL(): array {
@@ -53,18 +53,19 @@ class UserAPI extends AbstractBaseAPI {
 
     protected function createObject($QUERY): int {
       /* Parameter is used as primary key in database */
+      $features = $this->getFeatures();
       $object = UserUtils::createUser(
-          $QUERY[User::USERNAME],
+          $QUERY[$features[USER::USERNAME]['alias']],
           $QUERY[User::EMAIL],
-          $QUERY[User::RIGHT_GROUP_ID],
+          $QUERY[$features[User::RIGHT_GROUP_ID]['alias']],
           $this->getUser()
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(User::USERNAME, $QUERY[User::USERNAME], '='),
+        new QueryFilter(User::USERNAME, $QUERY[$features[USER::USERNAME]['alias']], '='),
         new QueryFilter(User::EMAIL, $QUERY[User::EMAIL], '='),
-        new QueryFilter(User::RIGHT_GROUP_ID, $QUERY[User::RIGHT_GROUP_ID], '=')
+        new QueryFilter(User::RIGHT_GROUP_ID, $QUERY[$features[User::RIGHT_GROUP_ID]['alias']], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */
@@ -79,6 +80,29 @@ class UserAPI extends AbstractBaseAPI {
     protected function deleteObject(object $object): void {
       UserUtils::deleteUser($object->getId(), $this->getUser());
     }
+
+    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {    
+      $features = $this->getFeatures();
+      $key = $features[USER::RIGHT_GROUP_ID]['alias'];
+
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        UserUtils::setRights($object->getId(), $data[$key], $this->getUser());
+      }
+
+      $key = $features[USER::IS_VALID]['alias'];
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        if ($data[$key] == True) {
+          UserUtils::enableUser($object->getId());
+        } else {
+          UserUtils::disableUser($object->getId(), $this->getUser());
+        }
+      }
+
+      parent::updateObject($object, $data, $mappedFeatures, $processed);
+    }
+
 }
 
 UserAPI::register($app);
