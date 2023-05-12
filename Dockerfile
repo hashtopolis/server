@@ -6,7 +6,7 @@ RUN cd / && git rev-parse --short HEAD > /HEAD
 
 # BASE image
 # ----BEGIN----
-FROM php:8-apache as hashtopolis-base
+FROM php:8-apache as hashtopolis-server-base
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
@@ -57,7 +57,7 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 
 # PRODUCTION Image
 # ----BEGIN----
-FROM hashtopolis-base as hashtopolis-prod
+FROM hashtopolis-server-base as hashtopolis-server-prod
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
     && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
@@ -73,7 +73,7 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 
 # DEVELOPMENT Image
 # ----BEGIN----
-FROM hashtopolis-base as hashtopolis-dev
+FROM hashtopolis-server-base as hashtopolis-server-dev
 
 # Setting up development requirements, install xdebug
 RUN yes | pecl install xdebug \
