@@ -6,7 +6,6 @@ for path in ${paths[@]}; do
     echo "${path} was chown'ed properly"
   else
     echo "There was an error while chown'ing ${path}"
-    exit 1
   fi
 done
 

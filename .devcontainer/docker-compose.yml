@@ -1,13 +1,18 @@
-version: "3.5"
+version: "3.7"
 services:
-  hashtopolis:
-    container_name: hashtopolis
+  hashtopolis-server:
+    container_name: hashtopolis-server
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      target: hashtopolis-server-dev
       args:
         - DEV_CONTAINER_USER_CMD_PRE
         - DEV_CONTAINER_USER_CMD_POST
+    environment:
+      HASHTOPOLIS_DB_USER: hashtopolis
+      HASHTOPOLIS_DB_PASS: hashtopolis
+      HASHTOPOLIS_DB_HOST: db
+      HASHTOPOLIS_DB_DATABASE: hashtopolis
     depends_on:
       - db
     ports:
@@ -31,16 +36,6 @@ services:
       MYSQL_DATABASE: hashtopolis
       MYSQL_USER: hashtopolis
       MYSQL_PASSWORD: hashtopolis
-    cap_drop:
-      - ALL
-    cap_add:
-      # used to change files since non-priv user
-      - CHOWN
-      # used because container uses find command
-      - CAP_DAC_READ_SEARCH
-      # used for the gosu binary
-      - CAP_SETGID
-      - CAP_SETUID
     networks:
       - hashtopolis_dev
 volumes:

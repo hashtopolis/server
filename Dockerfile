@@ -109,7 +109,8 @@ RUN rm -rf /etc/apache2/sites-enabled \
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
     && chown -R www-data:www-data /var/www \
-    && chmod g+w /var/www
+    && chmod -R g+w /var/www \
+    && chmod -R g+w /usr/local/share/hashtopolis
 
 USER vscode
 # ----END----
