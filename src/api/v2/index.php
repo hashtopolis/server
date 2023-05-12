@@ -34,6 +34,8 @@ use DBA\Factory;
 
 require __DIR__ . "/../../../vendor/autoload.php";
 
+require_once(dirname(__FILE__) . "/../../inc/load.php");
+
  
 /* Construct container for middleware */
 $container = new \DI\Container();

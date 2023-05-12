@@ -43,4 +43,7 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   if (getenv('HASHTOPOLIS_LOG_PATH') !== false) {
     $DIRECTORIES["log"] = getenv('HASHTOPOLIS_LOG_PATH');
   }
+
+  // load data
+  $PEPPER = json_decode(file_get_contents($DIRECTORIES['config'] . "/pepper.json"));
 }

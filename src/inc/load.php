@@ -134,9 +134,6 @@ Util::checkDataDirectory(DDirectories::IMPORT, $DIRECTORIES['import']);
 Util::checkDataDirectory(DDirectories::LOG, $DIRECTORIES['log']);
 Util::checkDataDirectory(DDirectories::CONFIG, $DIRECTORIES['config']);
 
-// load data
-$PEPPER = json_decode(file_get_contents(Factory::getStoredValueFactory()->get(DDirectories::CONFIG)->getVal() . "/pepper.json"));
-
 $LANG = new Lang();
 UI::add('version', $VERSION);
 UI::add('host', $HOST);
@@ -199,7 +196,3 @@ UI::add('accessControl', AccessControl::getInstance());
 
 // CSRF setup
 CSRF::init();
-
-
-
-
