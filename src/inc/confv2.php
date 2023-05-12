@@ -18,8 +18,7 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   if (isset($PEPPER) && !file_exists($DIRECTORIES['config'] . "/pepper.json")) {
     file_put_contents($DIRECTORIES['config'] . "/pepper.json", json_encode($PEPPER));
   }
-}
-else {
+} else {
   // read env variables (when running with docker-compose)
   $CONN['user'] = getenv('HASHTOPOLIS_DB_USER');
   $CONN['pass'] = getenv('HASHTOPOLIS_DB_PASS');
