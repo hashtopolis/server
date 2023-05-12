@@ -3,6 +3,7 @@ services:
   hashtopolis:
     container_name: hashtopolis
     build: .
+    target: hashtopolis-prod
     restart: always
     volumes:
       - hashtopolis:/usr/local/share/hashtopolis:Z

@@ -1,7 +1,15 @@
-FROM php:8-apache  
+FROM alpine/git as preprocess
+
+# Get the current commit id
+COPY .git /.git
+RUN cd / && git rev-parse --short HEAD > /HEAD
+
+# 
+FROM php:8-apache
 
 ARG DEV_CONTAINER_USER_CMD_PRE
 ARG DEV_CONTAINER_USER_CMD_POST
+ARG DEV_CONTAINER
 
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
