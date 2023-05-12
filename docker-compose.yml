@@ -11,8 +11,10 @@ services:
     environment:
       HASHTOPOLIS_DB_USER: $MYSQL_USER
       HASHTOPOLIS_DB_PASS: $MYSQL_PASS
-      HASHTOPOLIS_DB_HOST: db
-      HASHTOPOLIS_DB_DATABASE: $MYSQL_DB
+      HASHTOPOLIS_DB_HOST: $HASHTOPOLIS_DB_HOST
+      HASHTOPOLIS_DB_DATABASE: $MYSQL_DATABASE
+      HASHTOPOLIS_ADMIN_USER: $HASHTOPOLIS_ADMIN_USER
+      HASHTOPOLIS_ADMIN_PASSWORD: $HASHTOPOLIS_ADMIN_PASSWORD
     depends_on:
       - db
     ports:
@@ -25,9 +27,9 @@ services:
       - db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASS
-      MYSQL_DATABASE: $MYSQL_DB
+      MYSQL_DATABASE: $MYSQL_DATABASE
       MYSQL_USER: $MYSQL_USER
-      MYSQL_PASSWORD: $MYSQL_PASS
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
   hashtopolis-web-ui:
     container_name: hashtopolis-web-ui
     image: hashtopolis-web-ui:latest
