@@ -87,7 +87,7 @@ catch (PDOException $e) {
       Util::randomString(32),
       Util::randomString(32)
     ];
-    file_put_contents($DIRECTORIES['config'] . "/pepper.json", json_encode($PEPPER));
+    file_put_contents($DIRECTORIES['config'] . "/config.json", json_encode(array('PEPPER' =>$PEPPER)));
   }
   
   // save version and build

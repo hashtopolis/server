@@ -15,8 +15,8 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   }
   
   // if a pepper is set from an older version, we have to save it to the new file location
-  if (isset($PEPPER) && !file_exists($DIRECTORIES['config'] . "/pepper.json")) {
-    file_put_contents($DIRECTORIES['config'] . "/pepper.json", json_encode($PEPPER));
+  if (isset($PEPPER) && !file_exists($DIRECTORIES['config'] . "/config.json")) {
+    file_put_contents($DIRECTORIES['config'] . "/config.json", json_encode(array('PEPPER' => $PEPPER)));
   }
 } else {
   // read env variables (when running with docker-compose)
@@ -45,5 +45,6 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   }
 
   // load data
-  $PEPPER = json_decode(file_get_contents($DIRECTORIES['config'] . "/pepper.json"));
+  $CONFIG = json_decode(file_get_contents($DIRECTORIES['config'] . "/config.json"), true);
+  $PEPPER = $CONFIG['PEPPER'];
 }
