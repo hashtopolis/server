@@ -1,6 +1,6 @@
 FROM alpine/git as preprocess
 
-COPY .git /.git
+COPY .gi[t] /.git
 
 RUN cd / && git rev-parse --short HEAD > /HEAD
 
@@ -41,7 +41,7 @@ COPY composer.json /var/www/
 RUN composer install --working-dir=/var/www/
 
 RUN mkdir /var/www/.git/
-COPY --from=preprocess /HEAD /var/www/.git/
+COPY --from=preprocess /HEA[D] /var/www/.git/
 
 # data folder for log, import, files
 #TODO: use environment variable here?
