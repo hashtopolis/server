@@ -30,7 +30,7 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
     "files" => "/usr/local/share/hashtopolis/files",
     "import" => "/usr/local/share/hashtopolis/import",
     "log" => "/usr/local/share/hashtopolis/log",
-    "config" => "/usr/local/share/hashtopolis/config/"
+    "config" => "/usr/local/share/hashtopolis/config"
   ];
   
   // update from env if set
@@ -45,6 +45,11 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   }
 
   // load data
-  $CONFIG = json_decode(file_get_contents($DIRECTORIES['config'] . "/config.json"), true);
-  $PEPPER = $CONFIG['PEPPER'];
+  // test if config file exists
+  if (file_exists($DIRECTORIES['config'] . "/config.json")) {
+    $CONFIG = json_decode(file_get_contents($DIRECTORIES['config'] . "/config.json"), true);
+    $PEPPER = $CONFIG['PEPPER'];
+  } else {
+    $CONFIG = [];
+  }
 }
