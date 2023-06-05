@@ -2,7 +2,7 @@ FROM alpine/git as preprocess
 
 COPY .gi[t] /.git
 
-RUN cd / && git rev-parse --short HEAD > /HEAD
+RUN cd / && git rev-parse --short HEAD > /HEAD; exit 0
 
 # BASE image
 # ----BEGIN----
