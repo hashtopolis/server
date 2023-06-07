@@ -5,6 +5,9 @@ services:
     build:
       context: .
       target: hashtopolis-server-prod
+      args:
+        - CONTAINER_USER_CMD_PRE
+        - CONTAINER_USER_CMD_POST
     restart: always
     volumes:
       - hashtopolis:/usr/local/share/hashtopolis:Z

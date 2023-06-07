@@ -8,6 +8,10 @@ RUN cd / && git rev-parse --short HEAD > /HEAD; exit 0
 # ----BEGIN----
 FROM php:8-apache as hashtopolis-server-base
 
+# Enable possible build args for injecting user commands
+ARG CONTAINER_USER_CMD_PRE
+ARG CONTAINER_USER_CMD_POST
+
 # Avoid warnings by switching to noninteractive
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_OPTIONS='--use-openssl-ca'

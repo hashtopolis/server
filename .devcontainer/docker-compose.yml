@@ -6,8 +6,8 @@ services:
       context: ..
       target: hashtopolis-server-dev
       args:
-        - DEV_CONTAINER_USER_CMD_PRE
-        - DEV_CONTAINER_USER_CMD_POST
+        - CONTAINER_USER_CMD_PRE
+        - CONTAINER_USER_CMD_POST
     environment:
       HASHTOPOLIS_DB_USER: hashtopolis
       HASHTOPOLIS_DB_PASS: hashtopolis
