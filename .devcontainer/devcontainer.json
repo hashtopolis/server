@@ -6,10 +6,6 @@
 	"runServices": [
 		"db"
 	],
-	"appPort": [
-		8080
-	],
-	"workspaceMount": "src=${localWorkspaceFolder},dst=/var/www/html,type=bind,consistency=cached",
 	"workspaceFolder": "/var/www/html",
 	"customizations": {
 		"vscode": {
