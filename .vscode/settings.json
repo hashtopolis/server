@@ -10,5 +10,8 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestArgs": [
         "ci"
+    ],
+    "intelephense.environment.includePaths": [
+        "vendor"
     ]
 }
