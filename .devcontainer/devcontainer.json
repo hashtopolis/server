@@ -2,9 +2,9 @@
 {
 	"name": "Hashtopolis Devcontainer",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "hashtopolis-server",
+	"service": "hashtopolis-server-dev",
 	"runServices": [
-		"db"
+		"hashtopolis-db-dev"
 	],
 	"workspaceFolder": "/var/www/html",
 	"customizations": {
@@ -36,7 +36,7 @@
 							"authProtocol": "default"
 						},
 						"previewLimit": 50,
-						"server": "db",
+						"server": "hashtopolis-db-dev",
 						"port": 3306,
 						"driver": "MySQL",
 						"username": "root",
