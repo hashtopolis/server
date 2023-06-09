@@ -20,7 +20,7 @@ $app->group("/api/v2/auth/token", function (RouteCollectorProxy $group) {
     });
 
     $group->post('', function (Request $request, Response $response, array $args): Response {
-        include(dirname(__FILE__) . '/../conf.php');
+        include(dirname(__FILE__) . '/../confv2.php');
 
         $requested_scopes = $request->getParsedBody() ?: ["todo.all"];
 

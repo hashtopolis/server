@@ -54,12 +54,12 @@ class FileAPI extends AbstractBaseAPI {
 
     static protected function getImportPath(): string
     {
-      return dirname(__file__) . '/../../import/';
+      return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . '/';
     }
     
     static protected function getFilesPath(): string
     {
-      return dirname(__file__) . '/../../files/';
+      return Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . '/';
     }
 
     /* Includes: 

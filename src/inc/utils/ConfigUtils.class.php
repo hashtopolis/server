@@ -184,7 +184,7 @@ class ConfigUtils {
     $messages = [];
     $files = Factory::getFileFactory()->filter([]);
     foreach ($files as $file) {
-      $absolutePath = dirname(__FILE__) . "/../../files/" . $file->getFilename();
+      $absolutePath = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename();
       if (!file_exists($absolutePath)) {
         $messages[] = "File " . $file->getFilename() . " does not exist!";
         $allOk = false;

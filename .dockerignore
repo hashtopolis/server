@@ -18,3 +18,4 @@ data/conf.php
 src/import/*
 .gitignore
 .dockerignore
+src/inc/conf.php

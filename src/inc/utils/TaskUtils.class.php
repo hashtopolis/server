@@ -850,12 +850,12 @@ class TaskUtils {
     // calculate how much we need to split
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
     // replace countLines with fileLineCount? Could be a better option: not OS-dependent
-    $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
+    $numLines = Util::countLines(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename());
     $linesPerFile = floor($numLines / $numSplits) + 1;
     
     // create the temporary rule files
     $newFiles = [];
-    $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename())));
+    $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename())));
     $count = 0;
     $taskId = $task->getId();
     for ($i = 0; $i < $numLines; $i += $linesPerFile, $count++) {
@@ -864,7 +864,7 @@ class TaskUtils {
         $copy[] = $content[$j];
       }
       $filename = $splitFile->getFilename() . "_p$taskId-$count";
-      $path = dirname(__FILE__) . "/../../files/" . $filename;
+      $path = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename() . "_p$taskId-$count";
       file_put_contents($path, implode("\n", $copy) . "\n");
       $f = new File(null, $filename, Util::filesize($path), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId(), Util::fileLineCount($path));
       $f = Factory::getFileFactory()->save($f);
@@ -1066,7 +1066,7 @@ class TaskUtils {
     foreach ($files as $file) {
       /** @var $file File */
       if ($file->getFileType() == DFileType::TEMPORARY) {
-        unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
+        unlink(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename());
         $toDelete[] = $file;
       }
     }

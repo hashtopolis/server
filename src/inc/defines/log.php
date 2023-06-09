@@ -1,5 +1,7 @@
 <?php
 
+use DBA\Factory;
+
 class DServerLog {
   const TRACE   = 0;
   const DEBUG   = 10;
@@ -12,7 +14,7 @@ class DServerLog {
     if ($level >= SConfig::getInstance()->getVal(DConfig::SERVER_LOG_LEVEL)) {
       // log it
       LockUtils::get(Lock::LOG);
-      $filename = dirname(__FILE__) . "/../../log/" . date("Y-m-d") . ".log";
+      $filename = Factory::getStoredValueFactory()->get(DDirectories::LOG)->getVal() . "/" . date("Y-m-d") . ".log";
       if (sizeof($data) > 0) {
         $message .= " ###";
         foreach ($data as $d) {

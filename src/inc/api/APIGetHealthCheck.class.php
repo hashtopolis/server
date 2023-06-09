@@ -19,7 +19,7 @@ class APIGetHealthCheck extends APIBasic {
     
     DServerLog::log(DServerLog::INFO, "Received health check task", [$this->agent, $healthCheck]);
     
-    $hashes = file_get_contents(dirname(__FILE__) . "/../../tmp/health-check-" . $healthCheck->getId() . ".txt");
+    $hashes = file_get_contents("/tmp/health-check-" . $healthCheck->getId() . ".txt");
     $hashes = explode("\n", $hashes);
     
     $this->sendResponse([

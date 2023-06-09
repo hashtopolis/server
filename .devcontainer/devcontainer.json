@@ -2,7 +2,7 @@
 {
 	"name": "Hashtopolis Devcontainer",
 	"dockerComposeFile": "docker-compose.yml",
-	"service": "hashtopolis",
+	"service": "hashtopolis-server",
 	"runServices": [
 		"db"
 	],

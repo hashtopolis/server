@@ -34,6 +34,8 @@ use DBA\Factory;
 
 require __DIR__ . "/../../../vendor/autoload.php";
 
+require_once(dirname(__FILE__) . "/../../inc/load.php");
+
  
 /* Construct container for middleware */
 $container = new \DI\Container();
@@ -113,7 +115,7 @@ $container->set("classMapper", function() {
 
 /* API token validation */
 $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface $container) {
-    include(dirname(__FILE__) . '/../../inc/conf.php');
+    include(dirname(__FILE__) . '/../../inc/confv2.php');
     return new JwtAuthentication([
         "path" => "/",
         "ignore" => ["/api/v2/auth/token", "/api/v2/ui/openapi.json"],

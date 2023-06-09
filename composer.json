@@ -26,7 +26,8 @@
         "slim/psr7": "^1.5",
         "slim/slim": "^4.10",
         "tuupola/slim-basic-auth": "^3.3",
-        "tuupola/slim-jwt-auth": "^3.6"
+        "tuupola/slim-jwt-auth": "^3.6",
+        "ext-pdo" : "*"
     },
     "require-dev": {
         "jangregor/phpstan-prophecy": "^1.0.0",
