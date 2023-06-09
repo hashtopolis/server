@@ -174,7 +174,7 @@ class HealthUtils {
     $healthCheck = Factory::getHealthCheckFactory()->save($healthCheck);
     
     // save hashes
-    $filename = dirname(__FILE__) . "/../../tmp/health-check-" . $healthCheck->getId() . ".txt";
+    $filename = "/tmp/health-check-" . $healthCheck->getId() . ".txt";
     file_put_contents($filename, implode("\n", $hashes));
     
     // check if file actually exists

@@ -4,8 +4,7 @@ use DBA\Factory;
 use DBA\HashType;
 
 if (!isset($TEST)) {
-  /** @noinspection PhpIncludeInspection */
-  require_once(dirname(__FILE__) . "/../../inc/conf.php");
+  require_once(dirname(__FILE__) . "/../../inc/confv2.php");
   require_once(dirname(__FILE__) . "/../../inc/info.php");
   require_once(dirname(__FILE__) . "/../../dba/init.php");
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
@@ -168,7 +167,7 @@ if (!isset($PRESENT["v0.12.x_hashTypes_5"])) {
     new HashType(10901, 'RedHat 389-DS LDAP (PBKDF2-HMAC-SHA256)', 0, 1),
     new HashType(13781, 'VeraCrypt Streebog-512 + XTS 512 bit + boot-mode (legacy)', 0, 1),
     new HashType(13782, 'VeraCrypt Streebog-512 + XTS 1024 bit + boot-mode (legacy)', 0, 1),
-    new HashType(13783, 'VeraCrypt Streebog-512 + XTS 1536 bit + boot-mode (legacy)', 0,1),
+    new HashType(13783, 'VeraCrypt Streebog-512 + XTS 1536 bit + boot-mode (legacy)', 0, 1),
     new HashType(14500, 'Linux Kernel Crypto API (2.4)', 0, 0),
     new HashType(15310, 'DPAPI masterkey file v1 (context 3)', 0, 1),
     new HashType(15910, 'DPAPI masterkey file v2 (context 3)', 0, 1),

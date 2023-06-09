@@ -22,6 +22,15 @@ class AgentZap extends AbstractModel {
     return $dict;
   }
   
+  static function getFeatures() {
+    $dict = array();
+    $dict['agentZapId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentZapId"];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentId"];
+    $dict['lastZapId'] = ['read_only' => False, "type" => "str(128)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastZapId"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "agentZapId";
   }

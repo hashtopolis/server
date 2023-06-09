@@ -111,20 +111,20 @@ class AgentBinaryUtils {
     $extension = Util::extractFileExtension($agentBinary->getFilename());
     
     // download file to tmp directory
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension, "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
     
     // download checksum
-    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
+    Util::downloadFromUrl(HTP_AGENT_ARCHIVE . $agentBinary->getType() . "/$track/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256", "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
     
     // check checksum
-    $sum = hash_file("sha256", dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
-    $check = file_get_contents(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
+    $sum = hash_file("sha256", "/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension);
+    $check = file_get_contents("/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension . ".sha256");
     if ($sum != $check) {
       throw new HTException("Checksum check for updated agent failed!");
     }
     
     // move file to right place
-    rename(dirname(__FILE__) . "/../../tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
+    rename("/tmp/" . $agentBinary->getUpdateAvailable() . "." . $extension, dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
     $sum = hash_file("sha256", dirname(__FILE__) . "/../../bin/" . $agentBinary->getFilename());
     if ($sum != $check) {
       throw new HTException("Failed to move new agent to right location!");

@@ -2,11 +2,6 @@
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
-if (!$INSTALL) {
-  header("Location: install/");
-  die("Forward to <a href='install'>Install</a>");
-}
-
 AccessControl::getInstance()->checkPermission(DViewControl::INDEX_VIEW_PERM);
 
 Template::loadInstance("static/index");

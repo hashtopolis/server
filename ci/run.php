@@ -4,7 +4,7 @@
  * This is the entry point to run the full environment
  */
 
-require_once(dirname(__FILE__) . "/../src/inc/conf.php");
+require_once(dirname(__FILE__) . "/../src/inc/confv2.php");
 require_once(dirname(__FILE__) . "/../src/dba/init.php");
 require_once(dirname(__FILE__) . "/../src/inc/defines/config.php");
 require_once(dirname(__FILE__) . "/../src/inc/info.php");

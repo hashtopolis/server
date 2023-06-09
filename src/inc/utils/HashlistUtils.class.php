@@ -174,7 +174,7 @@ class HashlistUtils {
     }
     
     $wordlistName = "Wordlist_" . $hashlist->getId() . "_" . date("d.m.Y_H.i.s") . ".txt";
-    $wordlistFilename = dirname(__FILE__) . "/../../files/" . $wordlistName;
+    $wordlistFilename = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $wordlistName;
     $wordlistFile = fopen($wordlistFilename, "wb");
     if ($wordlistFile === false) {
       throw new HTException("Failed to write wordlist file!");
@@ -329,7 +329,7 @@ class HashlistUtils {
     }
     
     //put input into a temp file
-    $tmpfile = dirname(__FILE__) . "/../../tmp/zaplist_" . $hashlist->getId();
+    $tmpfile = "/tmp/zaplist_" . $hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $sourcedata)) {
       throw new HTException("Failed to process file!");
     }
@@ -665,7 +665,7 @@ class HashlistUtils {
     }
     
     $tmpname = "Pre-cracked_" . $hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
-    $tmpfile = dirname(__FILE__) . "/../../files/$tmpname";
+    $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/$tmpname";
     $factory = Factory::getHashFactory();
     $format = Factory::getHashlistFactory()->get($hashlists[0]->getId());
     $orderObject = Hash::HASH_ID;
@@ -793,7 +793,7 @@ class HashlistUtils {
         $dataSource = $post["url"];
         break;
     }
-    $tmpfile = dirname(__FILE__) . "/../../tmp/hashlist_" . $hashlist->getId();
+    $tmpfile = "/tmp/hashlist_" . $hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $dataSource) && file_exists($tmpfile)) {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Failed to process file!");
@@ -1064,7 +1064,7 @@ class HashlistUtils {
     }
     
     $tmpname = "Leftlist_" . $hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
-    $tmpfile = dirname(__FILE__) . "/../../files/$tmpname";
+    $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/$tmpname";
     
     $file = fopen($tmpfile, "wb");
     if (!$file) {
