@@ -1,6 +1,11 @@
 <?php
 declare(strict_types=1);
 
+$enabled = getenv('HASHTOPOLIS_APIV2_ENABLE');
+if (!$enabled || $enabled == 'false') {
+  die("APIv2 is not enabled, it can be enabled via environment variable!");
+}
+
 date_default_timezone_set("UTC");
 error_reporting(E_ALL);
 ini_set("display_errors", '1');

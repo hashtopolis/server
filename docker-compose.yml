@@ -1,13 +1,8 @@
 version: '3.7'
 services:
-  hashtopolis-server:
-    container_name: hashtopolis-server
-    build:
-      context: .
-      target: hashtopolis-server-prod
-      args:
-        - CONTAINER_USER_CMD_PRE
-        - CONTAINER_USER_CMD_POST
+  hashtopolis-backend:
+    container_name: hashtopolis-backend
+    image: hashtopolis/backend:latest
     restart: always
     volumes:
       - hashtopolis:/usr/local/share/hashtopolis:Z
@@ -18,6 +13,7 @@ services:
       HASHTOPOLIS_DB_DATABASE: $MYSQL_DATABASE
       HASHTOPOLIS_ADMIN_USER: $HASHTOPOLIS_ADMIN_USER
       HASHTOPOLIS_ADMIN_PASSWORD: $HASHTOPOLIS_ADMIN_PASSWORD
+      HASHTOPOLIS_APIV2_ENABLE: $HASHTOPOLIS_APIV2_ENABLE
     depends_on:
       - db
     ports:
@@ -33,12 +29,12 @@ services:
       MYSQL_DATABASE: $MYSQL_DATABASE
       MYSQL_USER: $MYSQL_USER
       MYSQL_PASSWORD: $MYSQL_PASSWORD
-  hashtopolis-web-ui:
-    container_name: hashtopolis-web-ui
-    image: hashtopolis-web-ui:latest
+  hashtopolis-frontend:
+    container_name: hashtopolis-frontend
+    image: hashtopolis/frontend:latest
     restart: always
     depends_on: 
-      - hashtopolis-server
+      - hashtopolis-backend
     ports:
       - 4200:4200
 volumes:

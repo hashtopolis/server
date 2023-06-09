@@ -1,4 +1,14 @@
-# v0.13.1 -> v0.x.x
+# v0.13.1 -> v0.14.0
+
+## Tech Preview New API
+Release 0.14.0 comes with a tech preview of APIv2. This is the starting point of the seperating of the frontend and the backend and gives 
+insight into what the future brings for Hashtopolis. We invite you to test it with the new web-ui and provide us with feedback. Be aware, 
+it is a preview, it contains bugs and it will change; also it does not contain any permission checking. To use it, please see 
+https://github.com/hashtopolis/server/wiki/Installation.
+
+## Default installation method changed to Dockerimage
+With the release 0.14.0 the default installation method changed to Docker. Docker images are now available at https://hub.docker.com/hashtopolis
+
 ## Bugfixes
 - Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
 
