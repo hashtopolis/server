@@ -7,7 +7,7 @@ it is a preview, it contains bugs and it will change; also it does not contain a
 https://github.com/hashtopolis/server/wiki/Installation.
 
 ## Default installation method changed to Dockerimage
-With the release 0.14.0 the default installation method changed to Docker. Docker images are now available at https://hub.docker.com/hashtopolis
+With the release 0.14.0 the default installation method changed to Docker. Docker images are now available at https://hub.docker.com/u/hashtopolis
 
 ## Bugfixes
 - Setting 'Salt is in hex' during Hashlist creation will not set the --hex-salt flag (#892)
