@@ -99,16 +99,17 @@ RUN yes | pecl install xdebug \
 	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini \
-    \
-    # Install python (unittests)
-    && apt-get update \
-    && apt-get install -y python3 python3-pip \
-    #TODO: Should source from ./ci/apiv2/requirements.txt
-    && pip3 install requests pytest confidence tuspy \
-    \
-    # Clean up
-    && apt-get autoremove -y \
+	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini
+
+# Install python (unittests)
+RUN apt-get update \
+    && apt-get install -y python3 python3-pip python3-requests python3-pytest
+
+#TODO: Should source from ./ci/apiv2/requirements.txt
+RUN pip3 install confidence tuspy --break-system-packages
+
+# Clean up
+RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
