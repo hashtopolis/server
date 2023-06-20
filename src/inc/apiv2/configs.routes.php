@@ -23,11 +23,6 @@ class ConfigAPI extends AbstractBaseAPI {
       return ['GET', 'PATCH'];
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return Config::class;
     }   

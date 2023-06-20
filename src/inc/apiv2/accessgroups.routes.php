@@ -19,11 +19,6 @@ class AccessGroupAPI extends AbstractBaseAPI {
       return "/api/v2/ui/accessgroups";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return AccessGroup::class;
     }

@@ -17,11 +17,6 @@ class CrackerBinaryAPI extends AbstractBaseAPI {
       return "/api/v2/ui/crackers";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return CrackerBinary::class;
     }
