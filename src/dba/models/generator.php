@@ -429,6 +429,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
   $functions = array();
   $params = array();
   $variables = array();
+  $crud_defines = array();
   foreach ($COLUMNS as $COLUMN) {
     $col = $COLUMN['name'];
     if (sizeof($vars) > 0) {
@@ -453,6 +454,12 @@ foreach ($CONF as $NAME => $COLUMNS) {
     $variables[] = "const " . makeConstant($col) . " = \"$col\";";
     
   }
+  $crud_prefix = lcfirst($NAME);
+  $crud_defines[] = "const PERM_CREATE = \"perm" . $NAME . "Create\";";
+  $crud_defines[] = "const PERM_READ = \"perm" . $NAME . "Read\";";
+  $crud_defines[] = "const PERM_UPDATE = \"perm" . $NAME . "Update\";";
+  $crud_defines[] = "const PERM_DELETE = \"perm" . $NAME . "Delete\";";
+
   $class = str_replace("__MODEL_PARAMS__", implode(", ", $params), $class);
   $class = str_replace("__MODEL_VARS__", implode("\n  ", $vars), $class);
   $class = str_replace("__MODEL_PARAMS_INIT__", implode("\n    ", $init), $class);
@@ -460,6 +467,7 @@ foreach ($CONF as $NAME => $COLUMNS) {
   $class = str_replace("__MODEL_FEATURES__", implode("\n    ", $features), $class);
   $class = str_replace("__MODEL_GETTER_SETTER__", implode("\n  \n  ", $functions), $class);
   $class = str_replace("__MODEL_VARIABLE_NAMES__", implode("\n  ", $variables), $class);
+  $class = str_replace("__MODEL_PERMISSION_DEFINES__", implode("\n  ", $crud_defines), $class);
   
   if (true || !file_exists(dirname(__FILE__) . "/" . $NAME . ".class.php")) {
     file_put_contents(dirname(__FILE__) . "/" . $NAME . ".class.php", $class);
