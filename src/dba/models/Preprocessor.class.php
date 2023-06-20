@@ -126,4 +126,9 @@ class Preprocessor extends AbstractModel {
   const KEYSPACE_COMMAND = "keyspaceCommand";
   const SKIP_COMMAND = "skipCommand";
   const LIMIT_COMMAND = "limitCommand";
+
+  const PERM_CREATE = "permPreprocessorCreate";
+  const PERM_READ = "permPreprocessorRead";
+  const PERM_UPDATE = "permPreprocessorUpdate";
+  const PERM_DELETE = "permPreprocessorDelete";
 }

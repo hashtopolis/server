@@ -87,4 +87,9 @@ class Config extends AbstractModel {
   const CONFIG_SECTION_ID = "configSectionId";
   const ITEM = "item";
   const VALUE = "value";
+
+  const PERM_CREATE = "permConfigCreate";
+  const PERM_READ = "permConfigRead";
+  const PERM_UPDATE = "permConfigUpdate";
+  const PERM_DELETE = "permConfigDelete";
 }

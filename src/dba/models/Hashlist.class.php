@@ -230,4 +230,9 @@ class Hashlist extends AbstractModel {
   const BRAIN_ID = "brainId";
   const BRAIN_FEATURES = "brainFeatures";
   const IS_ARCHIVED = "isArchived";
+
+  const PERM_CREATE = "permHashlistCreate";
+  const PERM_READ = "permHashlistRead";
+  const PERM_UPDATE = "permHashlistUpdate";
+  const PERM_DELETE = "permHashlistDelete";
 }

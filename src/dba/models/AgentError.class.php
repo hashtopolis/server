@@ -113,4 +113,9 @@ class AgentError extends AbstractModel {
   const CHUNK_ID = "chunkId";
   const TIME = "time";
   const ERROR = "error";
+
+  const PERM_CREATE = "permAgentErrorCreate";
+  const PERM_READ = "permAgentErrorRead";
+  const PERM_UPDATE = "permAgentErrorUpdate";
+  const PERM_DELETE = "permAgentErrorDelete";
 }

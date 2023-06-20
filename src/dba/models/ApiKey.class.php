@@ -126,4 +126,9 @@ class ApiKey extends AbstractModel {
   const ACCESS_COUNT = "accessCount";
   const USER_ID = "userId";
   const API_GROUP_ID = "apiGroupId";
+
+  const PERM_CREATE = "permApiKeyCreate";
+  const PERM_READ = "permApiKeyRead";
+  const PERM_UPDATE = "permApiKeyUpdate";
+  const PERM_DELETE = "permApiKeyDelete";
 }

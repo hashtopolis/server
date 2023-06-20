@@ -74,4 +74,9 @@ class FilePretask extends AbstractModel {
   const FILE_PRETASK_ID = "filePretaskId";
   const FILE_ID = "fileId";
   const PRETASK_ID = "pretaskId";
+
+  const PERM_CREATE = "permFilePretaskCreate";
+  const PERM_READ = "permFilePretaskRead";
+  const PERM_UPDATE = "permFilePretaskUpdate";
+  const PERM_DELETE = "permFilePretaskDelete";
 }

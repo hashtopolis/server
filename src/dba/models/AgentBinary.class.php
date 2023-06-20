@@ -126,4 +126,9 @@ class AgentBinary extends AbstractModel {
   const FILENAME = "filename";
   const UPDATE_TRACK = "updateTrack";
   const UPDATE_AVAILABLE = "updateAvailable";
+
+  const PERM_CREATE = "permAgentBinaryCreate";
+  const PERM_READ = "permAgentBinaryRead";
+  const PERM_UPDATE = "permAgentBinaryUpdate";
+  const PERM_DELETE = "permAgentBinaryDelete";
 }

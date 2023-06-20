@@ -74,4 +74,9 @@ class RightGroup extends AbstractModel {
   const RIGHT_GROUP_ID = "rightGroupId";
   const GROUP_NAME = "groupName";
   const PERMISSIONS = "permissions";
+
+  const PERM_CREATE = "permRightGroupCreate";
+  const PERM_READ = "permRightGroupRead";
+  const PERM_UPDATE = "permRightGroupUpdate";
+  const PERM_DELETE = "permRightGroupDelete";
 }

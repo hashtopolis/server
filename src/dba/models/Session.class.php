@@ -126,4 +126,9 @@ class Session extends AbstractModel {
   const IS_OPEN = "isOpen";
   const SESSION_LIFETIME = "sessionLifetime";
   const SESSION_KEY = "sessionKey";
+
+  const PERM_CREATE = "permSessionCreate";
+  const PERM_READ = "permSessionRead";
+  const PERM_UPDATE = "permSessionUpdate";
+  const PERM_DELETE = "permSessionDelete";
 }

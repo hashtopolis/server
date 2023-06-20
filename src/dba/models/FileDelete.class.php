@@ -74,4 +74,9 @@ class FileDelete extends AbstractModel {
   const FILE_DELETE_ID = "fileDeleteId";
   const FILENAME = "filename";
   const TIME = "time";
+
+  const PERM_CREATE = "permFileDeleteCreate";
+  const PERM_READ = "permFileDeleteRead";
+  const PERM_UPDATE = "permFileDeleteUpdate";
+  const PERM_DELETE = "permFileDeleteDelete";
 }

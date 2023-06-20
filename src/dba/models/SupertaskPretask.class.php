@@ -74,4 +74,9 @@ class SupertaskPretask extends AbstractModel {
   const SUPERTASK_PRETASK_ID = "supertaskPretaskId";
   const SUPERTASK_ID = "supertaskId";
   const PRETASK_ID = "pretaskId";
+
+  const PERM_CREATE = "permSupertaskPretaskCreate";
+  const PERM_READ = "permSupertaskPretaskRead";
+  const PERM_UPDATE = "permSupertaskPretaskUpdate";
+  const PERM_DELETE = "permSupertaskPretaskDelete";
 }
