@@ -19,11 +19,6 @@ class AgentStatsAPI extends AbstractBaseAPI {
       return ['GET', 'DELETE'];
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return AgentStat::class;
     }

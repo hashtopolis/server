@@ -18,11 +18,6 @@ class VoucherAPI extends AbstractBaseAPI {
       return "/api/v2/ui/vouchers";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
    public static function getDBAclass(): string {
       return RegVoucher::class;
     }

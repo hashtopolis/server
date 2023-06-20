@@ -46,7 +46,6 @@ require_once(dirname(__FILE__) . "/../load.php");
  */
 abstract class AbstractBaseAPI
 {
-  abstract public function getPermission(): string;
   abstract static public function getDBAClass(): string;
   abstract protected function getFactory(): object;
   abstract public function getExpandables(): array;
