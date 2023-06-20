@@ -87,4 +87,9 @@ class Assignment extends AbstractModel {
   const TASK_ID = "taskId";
   const AGENT_ID = "agentId";
   const BENCHMARK = "benchmark";
+
+  const PERM_CREATE = "permAssignmentCreate";
+  const PERM_READ = "permAssignmentRead";
+  const PERM_UPDATE = "permAssignmentUpdate";
+  const PERM_DELETE = "permAssignmentDelete";
 }

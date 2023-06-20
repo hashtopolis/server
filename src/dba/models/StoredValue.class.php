@@ -61,4 +61,9 @@ class StoredValue extends AbstractModel {
   
   const STORED_VALUE_ID = "storedValueId";
   const VAL = "val";
+
+  const PERM_CREATE = "permStoredValueCreate";
+  const PERM_READ = "permStoredValueRead";
+  const PERM_UPDATE = "permStoredValueUpdate";
+  const PERM_DELETE = "permStoredValueDelete";
 }

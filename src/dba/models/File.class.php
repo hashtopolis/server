@@ -126,4 +126,9 @@ class File extends AbstractModel {
   const FILE_TYPE = "fileType";
   const ACCESS_GROUP_ID = "accessGroupId";
   const LINE_COUNT = "lineCount";
+
+  const PERM_CREATE = "permFileCreate";
+  const PERM_READ = "permFileRead";
+  const PERM_UPDATE = "permFileUpdate";
+  const PERM_DELETE = "permFileDelete";
 }

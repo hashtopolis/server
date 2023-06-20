@@ -113,4 +113,9 @@ class LogEntry extends AbstractModel {
   const LEVEL = "level";
   const MESSAGE = "message";
   const TIME = "time";
+
+  const PERM_CREATE = "permLogEntryCreate";
+  const PERM_READ = "permLogEntryRead";
+  const PERM_UPDATE = "permLogEntryUpdate";
+  const PERM_DELETE = "permLogEntryDelete";
 }

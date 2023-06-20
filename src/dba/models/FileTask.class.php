@@ -74,4 +74,9 @@ class FileTask extends AbstractModel {
   const FILE_TASK_ID = "fileTaskId";
   const FILE_ID = "fileId";
   const TASK_ID = "taskId";
+
+  const PERM_CREATE = "permFileTaskCreate";
+  const PERM_READ = "permFileTaskRead";
+  const PERM_UPDATE = "permFileTaskUpdate";
+  const PERM_DELETE = "permFileTaskDelete";
 }

@@ -87,4 +87,9 @@ class HashType extends AbstractModel {
   const DESCRIPTION = "description";
   const IS_SALTED = "isSalted";
   const IS_SLOW_HASH = "isSlowHash";
+
+  const PERM_CREATE = "permHashTypeCreate";
+  const PERM_READ = "permHashTypeRead";
+  const PERM_UPDATE = "permHashTypeUpdate";
+  const PERM_DELETE = "permHashTypeDelete";
 }

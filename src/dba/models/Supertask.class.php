@@ -61,4 +61,9 @@ class Supertask extends AbstractModel {
   
   const SUPERTASK_ID = "supertaskId";
   const SUPERTASK_NAME = "supertaskName";
+
+  const PERM_CREATE = "permSupertaskCreate";
+  const PERM_READ = "permSupertaskRead";
+  const PERM_UPDATE = "permSupertaskUpdate";
+  const PERM_DELETE = "permSupertaskDelete";
 }

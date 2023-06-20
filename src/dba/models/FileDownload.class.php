@@ -87,4 +87,9 @@ class FileDownload extends AbstractModel {
   const TIME = "time";
   const FILE_ID = "fileId";
   const STATUS = "status";
+
+  const PERM_CREATE = "permFileDownloadCreate";
+  const PERM_READ = "permFileDownloadRead";
+  const PERM_UPDATE = "permFileDownloadUpdate";
+  const PERM_DELETE = "permFileDownloadDelete";
 }

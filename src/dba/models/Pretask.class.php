@@ -204,4 +204,9 @@ class Pretask extends AbstractModel {
   const MAX_AGENTS = "maxAgents";
   const IS_MASK_IMPORT = "isMaskImport";
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
+
+  const PERM_CREATE = "permPretaskCreate";
+  const PERM_READ = "permPretaskRead";
+  const PERM_UPDATE = "permPretaskUpdate";
+  const PERM_DELETE = "permPretaskDelete";
 }

@@ -74,4 +74,9 @@ class HashlistHashlist extends AbstractModel {
   const HASHLIST_HASHLIST_ID = "hashlistHashlistId";
   const PARENT_HASHLIST_ID = "parentHashlistId";
   const HASHLIST_ID = "hashlistId";
+
+  const PERM_CREATE = "permHashlistHashlistCreate";
+  const PERM_READ = "permHashlistHashlistRead";
+  const PERM_UPDATE = "permHashlistHashlistUpdate";
+  const PERM_DELETE = "permHashlistHashlistDelete";
 }

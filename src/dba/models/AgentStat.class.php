@@ -100,4 +100,9 @@ class AgentStat extends AbstractModel {
   const STAT_TYPE = "statType";
   const TIME = "time";
   const VALUE = "value";
+
+  const PERM_CREATE = "permAgentStatCreate";
+  const PERM_READ = "permAgentStatRead";
+  const PERM_UPDATE = "permAgentStatUpdate";
+  const PERM_DELETE = "permAgentStatDelete";
 }

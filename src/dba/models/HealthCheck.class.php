@@ -139,4 +139,9 @@ class HealthCheck extends AbstractModel {
   const CRACKER_BINARY_ID = "crackerBinaryId";
   const EXPECTED_CRACKS = "expectedCracks";
   const ATTACK_CMD = "attackCmd";
+
+  const PERM_CREATE = "permHealthCheckCreate";
+  const PERM_READ = "permHealthCheckRead";
+  const PERM_UPDATE = "permHealthCheckUpdate";
+  const PERM_DELETE = "permHealthCheckDelete";
 }

@@ -74,4 +74,9 @@ class TaskDebugOutput extends AbstractModel {
   const TASK_DEBUG_OUTPUT_ID = "taskDebugOutputId";
   const TASK_ID = "taskId";
   const OUTPUT = "output";
+
+  const PERM_CREATE = "permTaskDebugOutputCreate";
+  const PERM_READ = "permTaskDebugOutputRead";
+  const PERM_UPDATE = "permTaskDebugOutputUpdate";
+  const PERM_DELETE = "permTaskDebugOutputDelete";
 }

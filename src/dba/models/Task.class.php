@@ -347,4 +347,9 @@ class Task extends AbstractModel {
   const FORCE_PIPE = "forcePipe";
   const USE_PREPROCESSOR = "usePreprocessor";
   const PREPROCESSOR_COMMAND = "preprocessorCommand";
+
+  const PERM_CREATE = "permTaskCreate";
+  const PERM_READ = "permTaskRead";
+  const PERM_UPDATE = "permTaskUpdate";
+  const PERM_DELETE = "permTaskDelete";
 }

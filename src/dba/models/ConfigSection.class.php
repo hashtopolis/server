@@ -61,4 +61,9 @@ class ConfigSection extends AbstractModel {
   
   const CONFIG_SECTION_ID = "configSectionId";
   const SECTION_NAME = "sectionName";
+
+  const PERM_CREATE = "permConfigSectionCreate";
+  const PERM_READ = "permConfigSectionRead";
+  const PERM_UPDATE = "permConfigSectionUpdate";
+  const PERM_DELETE = "permConfigSectionDelete";
 }
