@@ -80,11 +80,6 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-dev
 
-# Auto initialise the vendor directory within the working directory
-# to allow interactive editors to generate documentation and syntax validation
-COPY composer.json /var/www/html/
-RUN composer install --working-dir=/var/www/html/
-
 # Setting up development requirements, install xdebug
 RUN yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
