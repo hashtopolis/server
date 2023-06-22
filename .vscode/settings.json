@@ -12,6 +12,6 @@
         "ci"
     ],
     "intelephense.environment.includePaths": [
-        "vendor"
+        "../vendor"
     ]
 }
