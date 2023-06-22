@@ -39,6 +39,13 @@ RUN apt-get update \
     # Enable URL rewriting using .htaccess
     && a2enmod rewrite
 
+# Copy source code into container
+COPY --chown=www-data:www-data ./src/ /var/www/html/
+
+# Installing php dependencies
+COPY composer.json /var/www/
+RUN composer install --working-dir=/var/www/
+
 RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
 
 RUN mkdir /var/www/.git/
@@ -59,9 +66,6 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 # PRODUCTION Image
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-prod
-COPY --chown=www-data:www-data ./src/ /var/www/html/
-COPY composer.json /var/www/
-RUN composer install --working-dir=/var/www/
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
