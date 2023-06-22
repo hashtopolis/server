@@ -29,9 +29,10 @@ RUN apt-get update \
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
+    && apt-get -y install libpng-dev \
 \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install pdo_mysql gd \
 \
     # Install composer
     && curl -sS https://getcomposer.org/installer | php \
@@ -40,9 +41,6 @@ RUN apt-get update \
     && a2enmod rewrite
 
 RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
-COPY --chown=www-data:www-data ./src/ /var/www/html/
-COPY composer.json /var/www/
-RUN composer install --working-dir=/var/www/
 
 RUN mkdir /var/www/.git/
 COPY --from=preprocess /HEA[D] /var/www/.git/
@@ -62,6 +60,11 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 # PRODUCTION Image
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-prod
+
+COPY --chown=www-data:www-data ./src/ /var/www/html/
+COPY composer.json /var/www/
+RUN composer install --working-dir=/var/www/
+
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
     && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
@@ -79,6 +82,11 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-dev
 
+# The dev container expects the source code to be hosted at src/
+# Thus the vendor code will be hosted one dir higher.
+COPY composer.json /var/www/html/
+RUN composer install --working-dir=/var/www/html/
+
 # Setting up development requirements, install xdebug
 RUN yes | pecl install xdebug \
     && echo "zend_extension=$(find /usr/local/lib/php/extensions/ -name xdebug.so)" > /usr/local/etc/php/conf.d/xdebug.ini \
@@ -93,16 +101,17 @@ RUN yes | pecl install xdebug \
 	&& echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
 	&& echo "log_errors = On" >> /usr/local/etc/php/conf.d/custom.ini \
-	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini \
-    \
-    # Install python (unittests)
-    && apt-get update \
-    && apt-get install -y python3 python3-pip \
-    #TODO: Should source from ./ci/apiv2/requirements.txt
-    && pip3 install requests pytest confidence tuspy \
-    \
-    # Clean up
-    && apt-get autoremove -y \
+	&& echo "error_log = /dev/stderr" >> /usr/local/etc/php/conf.d/custom.ini
+
+# Install python (unittests)
+RUN apt-get update \
+    && apt-get install -y python3 python3-pip python3-requests python3-pytest
+
+#TODO: Should source from ./ci/apiv2/requirements.txt
+RUN pip3 install confidence tuspy --break-system-packages
+
+# Clean up
+RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
@@ -115,6 +124,10 @@ RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-dat
     && chown -R www-data:www-data /var/www \
     && chmod -R g+w /var/www \
     && chmod -R g+w /usr/local/share/hashtopolis
+
+# This is a seperate step so that changes to the code do not cause the container to be rebuild
+# And it will be ran last
+COPY --chown=www-data:www-data . /var/www/html/
 
 USER vscode
 # ----END----
