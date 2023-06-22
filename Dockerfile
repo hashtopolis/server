@@ -29,9 +29,10 @@ RUN apt-get update \
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
+    && apt-get -y install libpng-dev \
 \
     # Install extensions (optional)
-    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install pdo_mysql gd \
 \
     # Install composer
     && curl -sS https://getcomposer.org/installer | php \
@@ -81,7 +82,9 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-dev
 
-COPY --chown=www-data:www-data . /var/www/html/
+# The dev container expects the source code to be hosted at src/
+# Thus the vendor code will be hosted one dir higher.
+COPY composer.json /var/www/html/
 RUN composer install --working-dir=/var/www/html/
 
 # Setting up development requirements, install xdebug
@@ -121,6 +124,10 @@ RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-dat
     && chown -R www-data:www-data /var/www \
     && chmod -R g+w /var/www \
     && chmod -R g+w /usr/local/share/hashtopolis
+
+# This is a seperate step so that changes to the code do not cause the container to be rebuild
+# And it will be ran last
+COPY --chown=www-data:www-data . /var/www/html/
 
 USER vscode
 # ----END----
