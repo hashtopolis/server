@@ -12,6 +12,10 @@ Fetch object:
 curl --header "Content-Type: application/json" -X GET --header "Authorization: Bearer $TOKEN" 'http://localhost:8080/api/v2/ui/hashlists/1?expand=hashes' -d '{}'
 ```
 
+Access database:
+```
+mysql -u $HASHTOPOLIS_DB_USER -p $HASHTOPOLIS_DB_PASS -h $HASHTOPOLIS_DB_HOST -D $HASHTOPOLIS_DB_DATABASE
+```
 
 ### paper flipchart scribbles
 
