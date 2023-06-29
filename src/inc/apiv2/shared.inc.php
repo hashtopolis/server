@@ -17,6 +17,7 @@ use DBA\CrackerBinary;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\User;
+use DBA\Speed;
 use DBA\TaskWrapper;
 use DBA\Task;
 
@@ -291,6 +292,12 @@ abstract class AbstractBaseAPI
         case 'task':
           $obj = Factory::getTaskFactory()->get($item['taskId']);
           $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'speeds':
+          $qFs = [];
+          $qFs[] = new QueryFilter(Speed::TASK_ID, $item['taskId'], "=");
+          $objs = Factory::getSpeedFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
           break;
         case 'pretaskFiles':
           /* M2M via FilePretask */

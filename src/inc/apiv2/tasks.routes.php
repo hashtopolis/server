@@ -33,7 +33,7 @@ class TaskAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ["crackerBinary", "crackerBinaryType", "hashlist"];
+      return ["crackerBinary", "crackerBinaryType", "hashlist", "speeds"];
     }
 
     protected function getFilterACL(): array {
