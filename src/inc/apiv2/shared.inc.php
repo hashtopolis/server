@@ -465,6 +465,20 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Find primary key for DBA object
+   */
+  private function getPrimaryKey(): string
+  {
+    $features = $this->getFeatures();
+    # Word-around required since getPrimaryKey is not static in dba/models/*.php
+    foreach($features as $key => $value) {
+      if ($value['pk'] == True) {
+        return $key;
+      }
+    }
+  }
+
+  /**
    * Check for valid filter parameters and build QueryFilter
    */
   protected function makeFilter(Request $request, array $features): array
@@ -483,10 +497,13 @@ abstract class AbstractBaseAPI
 
     foreach ($mergedFilters as $filter) {
       // TODO: Add sanity checking
-      if (preg_match('/^(?P<key>[a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
-        if (array_key_exists($matches['key'], $features)) {
+      if (preg_match('/^(?P<key>[_a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
+        // Special filtering of _id to use for uniform access to model primary key
+        $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+
+        if (array_key_exists($cast_key, $features)) {
           // TODO: cast value
-          if ($features[$matches['key']]['type'] == 'bool') {
+          if ($features[$cast_key]['type'] == 'bool') {
             $val = filter_var($matches['value'], FILTER_NULL_ON_FAILURE);
             if (is_null($val)) {
               throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
@@ -495,7 +512,7 @@ abstract class AbstractBaseAPI
             $val = $matches['value'];
           }
           // We need to remap any aliased key to the key as it appears in the database.
-          $remappedKey = $features[$matches['key']]['dbname'];
+          $remappedKey = $features[$cast_key]['dbname'];
           $qFs[] = new QueryFilter($remappedKey, $val, $matches['operator']);
         } else {
           throw new HTException("Filter parameter '" . $filter . "' is not valid");
