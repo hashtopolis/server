@@ -546,6 +546,23 @@ abstract class AbstractBaseAPI
     }
   }
 
+  /* 
+   * Return requested parameter, prioritize query parameter over inline payload parameter 
+   */
+  private function getParam(Request $request, string $param, int $default): int
+  {
+    $queryParams = $request->getQueryParams();
+    $bodyParams = $request->getParsedBody();
+
+    if (array_key_exists($param, $queryParams)) {
+      return intval($queryParams[$param]);
+    } elseif (array_key_exists($param, $bodyParams)) {
+      return intval($bodyParams[$param]);
+    } else {
+      return $default;
+    }
+  }
+
   /**
    * API entry point for requesting multiple objects
    */
@@ -557,8 +574,8 @@ abstract class AbstractBaseAPI
     $factory = $this->getFactory();
     $expandables = $this->getExpandables();
 
-    $startAt = intval($request->getQueryParams()['startsAt'] ?? 0);
-    $maxResults = intval($request->getQueryParams()['maxResults'] ?? 5);
+    $startAt = $this->getParam($request, 'startsAt', 0);
+    $maxResults = $this->getParam($request, 'maxResults', 5);
 
     list($expandable, $expands) = $this->makeExpandables($request, $expandables);
 
