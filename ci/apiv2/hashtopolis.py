@@ -115,13 +115,29 @@ class HashtopolisConnector(object):
 
         payload = {
             'filter': filter_list,
-            'expand': expand
+            'expand': expand,
+            'maxResults': 999,
         }
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        if r.status_code != 201:
-            logger.exception("Filter failed: %s", r.text)
+        self.validate_status_code(r, 200, "Filtering failed")
         return r.json().get('values')
+
+
+    def get_one(self, pk, expand):
+        self.authenticate()
+        uri = self._api_endpoint + self._model_uri + f'/{pk}'
+        headers = self._headers
+
+        payload = {
+            'expand': expand,
+        }
+
+        r = requests.get(uri, headers=headers, data=json.dumps(payload))
+        self.validate_status_code(r, 200, "Filtering failed")
+        return r.json()
+
+
 
     def patch_one(self, obj):
         if not obj.has_changed():
@@ -169,10 +185,8 @@ class HashtopolisConnector(object):
         headers = self._headers
         payload = {}
 
-
         r = requests.delete(uri, headers=headers, data=json.dumps(payload))
-        if r.status_code != 204:
-            logger.exception("Deletion of object failed: %s", r.text)
+        self.validate_status_code(r, 204, "Deletion of object failed")
 
         # TODO: Cleanup object to allow re-creation
 
@@ -222,9 +236,14 @@ class ManagerBase(type):
 
     @classmethod
     def get(cls, expand=None, **kwargs):
-        objs = cls.filter(expand, **kwargs)
-        assert(len(objs) == 1)
-        return objs[0]
+        if 'pk' in kwargs:
+            api_obj = cls.get_conn().get_one(kwargs['pk'], expand)
+            new_obj = cls._model(**api_obj)
+            return new_obj
+        else:
+            objs = cls.filter(expand, **kwargs)
+            assert(len(objs) == 1)
+            return objs[0]
 
     @classmethod
     def filter(cls, expand=None, **kwargs):              
@@ -341,13 +360,14 @@ class Model(metaclass=ModelBase):
             self.objects.patch(self)
         else:
             self.objects.create(self)
+        return self
 
     def delete(self):
         if hasattr(self, '_self'):
             self.objects.delete(self)
 
     def serialize(self):
-        return [x for x in vars(self) if not x.startswith('_')]
+        return dict([(x, getattr(self, x)) for x in self.__fields] + [('_self', self._self), ('_id', self._id)])
 
     @property
     def id(self):
@@ -434,5 +454,9 @@ class FileImport(HashtopolisConnector):
         uploader.upload()
 
 class Voucher(Model, uri="/ui/vouchers"):
+    def __repr__(self):
+        return self._self
+
+class Speed(Model, uri="/ui/speeds"):
     def __repr__(self):
         return self._self
