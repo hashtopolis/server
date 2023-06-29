@@ -4,23 +4,19 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
+import enum
 import json
-import requests
-import time
-from pathlib import Path
-
-import requests
 import logging
+import requests
 from pathlib import Path
+import time
 
 import http
 import confidence
 
-logging.basicConfig(level=logging.DEBUG)
-
 logger = logging.getLogger(__name__)
 
-HTTP_DEBUG = True
+HTTP_DEBUG = False 
 
 # Monkey patching to allow http debugging
 if HTTP_DEBUG:
@@ -30,6 +26,19 @@ if HTTP_DEBUG:
         http_logger.debug(" ".join(args))
     http.client.print = print_to_log
 
+class ProcessState(enum.IntEnum):
+    """ See src/inc/defines/hashcat.php for mapping"""
+    INIT = 0
+    AUTOTUNE = 1
+    RUNNING = 2
+    PAUSED = 3
+    EXHAUSTED = 4
+    CRACKED = 5
+    ABORTED = 6
+    QUIT = 7
+    BYPASS = 8
+    ABORTED_CHECKPOINT = 9
+    STATUS_ABORTED_RUNTIME = 10
 
 class HashtopolisConfig(object):
     def __init__(self):
@@ -42,7 +51,7 @@ class HashtopolisConfig(object):
         self.password = self._cfg['password']
 
 
-class TestAgent(object):
+class DummyAgent(object):
     # Mock Agent behaviour for usage in unit testing
     # State: Early Alpha
     def __init__(self, token=None, voucher=None):
@@ -79,6 +88,7 @@ class TestAgent(object):
         return retval['response'] == 'SUCCESS'
 
     def register(self, voucher, name, cpu_only=False):
+        self.name = name
         # Register agent 
         payload = {
             "action": "register",
@@ -88,6 +98,7 @@ class TestAgent(object):
         }
         retval = self._do_request(payload)
         self.token = retval['token']
+        logger.debug("Token: %s", self.token)
 
     def update_information(self):
         token = self.authenticate()
@@ -129,7 +140,6 @@ class TestAgent(object):
         }
         retval = self._do_request(payload)
         self.task = retval
-        print(self.task)
         return self.task['taskId']
 
     def get_hashlist(self):
@@ -142,9 +152,7 @@ class TestAgent(object):
             "hashlistId": self.task['hashlistId']
             }
         retval = self._do_request(payload)
-        print(retval)
         r = requests.get(self._hashtopolis_uri + '/' + retval['url'])
-        print(r.status_code, r.text)
         self.hashes = r.text.split()
 
 
@@ -159,7 +167,7 @@ class TestAgent(object):
         }   
         retval = self._do_request(payload)
         self.chunk = retval
-        print(self.chunk)
+        logger.debug(self.chunk)
 
         # The server will send then a chunk to work on.
         # {
@@ -214,7 +222,7 @@ class TestAgent(object):
         self.chunk = retval
 
 
-    def send_benchmark(self, type="run", result=674):
+    def send_benchmark(self, benchmark_type="run", result=674):
         # type=speed || result = 674:674.74
         assert(self.task and self.task['taskId'])
         token = self.authenticate()
@@ -222,14 +230,14 @@ class TestAgent(object):
             "action": "sendBenchmark",
             "token": token,
             "taskId": self.task['taskId'],
-            "type": type,
+            "type": benchmark_type,
             "result": result,
         }
         retval = self._do_request(payload)
-        self.chunk = retval        
+        self.benchmark = retval
 
 
-    def send_process(self):
+    def send_process(self, progress=50, state=ProcessState.RUNNING, speed=5700):
         assert(self.task and self.task['taskId'])
         assert(self.chunk and self.chunk['chunkId'])
 
@@ -239,10 +247,10 @@ class TestAgent(object):
             "action": "sendProgress",
             "token": token,
             "chunkId": self.chunk['chunkId'],
-            "keyspaceProgress": 568000,
-            "relativeProgress": "4545",
-            "speed": 570000,
-            "state": 3,
+            "keyspaceProgress": self.chunk['skip'] + int(self.chunk['length'] / 100 * progress),
+            "relativeProgress": int(progress * 100),
+            "speed": speed,
+            "state": state,
             "cracks": [
                 [
                     "7fde65673fd28736423f23423786f",
@@ -264,3 +272,5 @@ class TestAgent(object):
                 99
             ]
         }
+        retval = self._do_request(payload)
+        self.process = retval

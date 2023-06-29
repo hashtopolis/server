@@ -15,20 +15,22 @@ from hashtopolis import HashtopolisConnector, HashtopolisConfig
 
 import requests
 
+from test_hashlists import do_create_hashlist
 
-class TasksTest(unittest.TestCase):
+
+def do_create_task(hashlist):
+    p = Path(__file__).parent.joinpath('create_task_001.json')
+    payload = json.loads(p.read_text('UTF-8'))
+    payload['hashlistId'] = int(hashlist._id)
+    obj = Task(**payload)
+    obj.save()
+    return obj
+
+
+class TaskTest(unittest.TestCase):
     def test_create_task(self):
-        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        hashlist = Hashlist(**payload)
-        hashlist.save()
-
-        for p in sorted(Path(__file__).parent.glob('create_task_001.json')):
-            payload = json.loads(p.read_text('UTF-8'))
-            payload['hashlistId'] = int(hashlist._id)
-            obj = Task(**payload)
-            obj.save()
-
+        hashlist = do_create_hashlist()
+        obj = do_create_task(hashlist)
 
         obj.delete()
         hashlist.delete()

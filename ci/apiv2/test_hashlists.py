@@ -9,21 +9,25 @@ import unittest
 import datetime
 from pathlib import Path
 
+import hashtopolis
 from hashtopolis import Hashlist 
 from hashtopolis import Task
+
+def do_create_hashlist():
+    p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+    payload = json.loads(p.read_text('UTF-8'))
+    hashlist = Hashlist(**payload)
+    obj = hashlist.save()
+
+    obj = Hashlist.objects.get(hashlistId=hashlist.id)
+
+    assert obj.name == payload.get('name')
+    return obj
 
 
 class HashlistTest(unittest.TestCase):
     def test_create_hashlist(self):
-        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        hashlist = Hashlist(**payload)
-        obj = hashlist.save()
-
-        obj = Hashlist.objects.get(hashlistId=hashlist.id)
-
-        assert obj.name == payload.get('name')
-
+        hashlist = do_create_hashlist()
         hashlist.delete()
     
     def test_patch_hashlist(self):
@@ -65,7 +69,7 @@ class HashlistTest(unittest.TestCase):
         with self.assertRaises(AttributeError):
             hashlist.id
 
-        objs = Hashlist.objects.filter(hashtlistName=payload.get('name'))
+        objs = Hashlist.objects.filter(name=payload.get('name'))
         assert objs == []
 
     def test_filter_archived(self):
@@ -79,6 +83,7 @@ class HashlistTest(unittest.TestCase):
         obj = Hashlist.objects.get(hashlistId=id, isArchived=False, expand=['hashType', 'accessGroup', 'hashes'])
 
         assert obj.id == id
+        hashlist.delete()
 
     def test_expand_hashlist(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
@@ -89,6 +94,7 @@ class HashlistTest(unittest.TestCase):
         obj = Hashlist.objects.get(hashlistId=hashlist.id, expand='hashes')
 
         assert len(obj.hashes_set) == 1
+        hashlist.delete()
 
 if __name__ == '__main__':
     unittest.main()
