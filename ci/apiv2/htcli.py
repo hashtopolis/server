@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
 ALL_MODELS_PLURAL = [x[0] + 's' for x in inspect.getmembers(hashtopolis, inspect.isclass)
-              if issubclass(x[1], hashtopolis.Model) and
-              type(x[1]) != hashtopolis.Model]
+                     if issubclass(x[1], hashtopolis.Model) and
+                     type(x[1]) != hashtopolis.Model]
 
 
 @click.group()

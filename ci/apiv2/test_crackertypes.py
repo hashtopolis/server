@@ -11,6 +11,7 @@ from pathlib import Path
 
 from hashtopolis import CrackerType
 
+
 class CrackerTypes(unittest.TestCase):
     def test_create_crackertype(self):
         p = Path(__file__).parent.joinpath('create_crackertype_001.json')
@@ -22,7 +23,7 @@ class CrackerTypes(unittest.TestCase):
         assert obj.typeName == payload.get('typeName')
 
         crackertype.delete()
-    
+
     def test_patch_crackertype(self):
         p = Path(__file__).parent.joinpath('create_crackertype_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -52,7 +53,7 @@ class CrackerTypes(unittest.TestCase):
         objs = CrackerType.objects.filter(crackerBinaryTypeId=id)
 
         assert objs == []
-    
+
     def test_exception_crackertype(self):
         p = Path(__file__).parent.joinpath('create_crackertype_002.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -61,6 +62,7 @@ class CrackerTypes(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             crackertype.id
+
 
 if __name__ == '__main__':
     unittest.main()

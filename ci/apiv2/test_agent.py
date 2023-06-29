@@ -25,7 +25,7 @@ def do_create_agent():
     dummy_agent.login()
 
     # Validate automatically deleted when an test-agent claims the voucher
-    assert(Voucher.objects.filter(_id=voucher.id) == [])
+    assert Voucher.objects.filter(_id=voucher.id) == []
 
     agent = Agent.objects.get(agentName=dummy_agent.name)
     return (dummy_agent, agent)

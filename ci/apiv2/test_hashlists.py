@@ -10,8 +10,8 @@ import datetime
 from pathlib import Path
 
 import hashtopolis
-from hashtopolis import Hashlist 
-from hashtopolis import Task
+from hashtopolis import Hashlist
+
 
 def do_create_hashlist():
     p = Path(__file__).parent.joinpath('create_hashlist_001.json')
@@ -29,7 +29,7 @@ class HashlistTest(unittest.TestCase):
     def test_create_hashlist(self):
         hashlist = do_create_hashlist()
         hashlist.delete()
-    
+
     def test_patch_hashlist(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -95,6 +95,7 @@ class HashlistTest(unittest.TestCase):
 
         assert len(obj.hashes_set) == 1
         hashlist.delete()
+
 
 if __name__ == '__main__':
     unittest.main()

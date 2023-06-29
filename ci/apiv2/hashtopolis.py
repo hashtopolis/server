@@ -6,22 +6,13 @@
 #
 import json
 import requests
-import unittest
-import datetime
 from pathlib import Path
-from io import BytesIO
 
-import requests
-import unittest
 import logging
-from pathlib import Path
-import abc
 
 import http
 import confidence
 import tusclient.client
-
-#logging.basicConfig(level=logging.DEBUG)
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +22,7 @@ HTTP_DEBUG = False
 if HTTP_DEBUG:
     http_logger = logging.getLogger('http.client')
     http.client.HTTPConnection.debuglevel = 0
-    def print_to_log(*args):
+    def print_to_log(*args):  # noqa:E301
         http_logger.debug(" ".join(args))
     http.client.print = print_to_log
 
@@ -41,17 +32,17 @@ cls_registry = {}
 class HashtopolisError(Exception):
     pass
 
+
 class HashtopolisConfig(object):
     def __init__(self):
         # Request access TOKEN, used throughout the test
-        load_order = (str(Path(__file__).parent.joinpath('{name}-default.{extension}')),) + confidence.DEFAULT_LOAD_ORDER
+        load_order = (str(Path(__file__).parent.joinpath('{name}-default.{extension}')),) \
+                     + confidence.DEFAULT_LOAD_ORDER
         self._cfg = confidence.load_name('hashtopolis-test', load_order=load_order)
         self._hashtopolis_uri = self._cfg['hashtopolis_uri']
         self._api_endpoint = self._hashtopolis_uri + '/api/v2'
         self.username = self._cfg['username']
         self.password = self._cfg['password']
-
-    
 
 
 class HashtopolisConnector(object):
@@ -65,8 +56,8 @@ class HashtopolisConnector(object):
         self._hashtopolis_uri = config._hashtopolis_uri
         self.config = config
 
-    def authenticate(self):    
-        if not self._api_endpoint in HashtopolisConnector.token:
+    def authenticate(self):
+        if self._api_endpoint not in HashtopolisConnector.token:
             # Request access TOKEN, used throughout the test
 
             logger.info("Start authentication")
@@ -85,10 +76,10 @@ class HashtopolisConnector(object):
             'Content-Type': 'application/json'
         }
 
-
     def validate_status_code(self, r, expected_status_code, error_msg):
         if r.status_code != expected_status_code:
-            raise HashtopolisError("%s (status_code: %s != %s): %s", error_msg, r.status_code, expected_status_code, r.text)
+            raise HashtopolisError("%s (status_code: %s != %s): %s", error_msg, r.status_code,
+                                   expected_status_code, r.text)
 
     def filter(self, expand, filter):
         self.authenticate()
@@ -100,18 +91,18 @@ class HashtopolisConnector(object):
             '__gt': '>',
             '__gte': '>=',
             '__lt': '<',
-            '__lte': '<=', 
+            '__lte': '<=',
         }
-        for k,v in filter.items():
-            l = None
-            for k2,v2 in cast.items():
+        for k, v in filter.items():
+            filter_item = None
+            for k2, v2 in cast.items():
                 if k.endswith(k2):
-                    l = f'{k[:-len(k2)]}{v2}{v}'
+                    filter_item = f'{k[:-len(k2)]}{v2}{v}'
                     break
             # Default to equal assignment
-            if l == None:
-                l = f'{k}={v}'
-            filter_list.append(l)                  
+            if filter_item is None:
+                filter_item = f'{k}={v}'
+            filter_list.append(filter_item)
 
         payload = {
             'filter': filter_list,
@@ -122,7 +113,6 @@ class HashtopolisConnector(object):
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, 200, "Filtering failed")
         return r.json().get('values')
-
 
     def get_one(self, pk, expand):
         self.authenticate()
@@ -137,8 +127,6 @@ class HashtopolisConnector(object):
         self.validate_status_code(r, 200, "Filtering failed")
         return r.json()
 
-
-
     def patch_one(self, obj):
         if not obj.has_changed():
             logger.debug("Object '%s' has not changed, no PATCH required", obj)
@@ -149,7 +137,7 @@ class HashtopolisConnector(object):
         headers = self._headers
         payload = {}
 
-        for k,v in obj.diff().items():
+        for k, v in obj.diff().items():
             logger.debug("Going to patch object '%s' property '%s' from '%s' to '%s'", obj, k, v[0], v[1])
             payload[k] = v[1]
 
@@ -161,12 +149,12 @@ class HashtopolisConnector(object):
 
     def create(self, obj):
         # Check if object to be created is new
-        assert(not hasattr(obj, '_self'))
+        assert not hasattr(obj, '_self')
 
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
         headers = self._headers
-        payload = dict([(k,v[1]) for (k,v) in obj.diff().items()])
+        payload = dict([(k, v[1]) for (k, v) in obj.diff().items()])
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, 201, "Creation of object failed")
@@ -174,11 +162,10 @@ class HashtopolisConnector(object):
         # TODO: Validate if return objects matches digital twin
         obj.set_initial(r.json().copy())
 
-
     def delete(self, obj):
         """ Delete object from database """
         # TODO: Check if object to be deleted actually exists
-        assert(hasattr(obj, '_self'))
+        assert hasattr(obj, '_self')
 
         self.authenticate()
         uri = self._hashtopolis_uri + obj._self
@@ -195,6 +182,7 @@ class ManagerBase(type):
     conn = {}
     # Cache configuration values
     config = None
+
     @classmethod
     def get_conn(cls):
         if cls.config is None:
@@ -211,7 +199,6 @@ class ManagerBase(type):
         TODO: Make iterator supporting loading of objects via pages
         """
         return cls.filter(expand)
-
 
     @classmethod
     def patch(cls, obj):
@@ -242,11 +229,11 @@ class ManagerBase(type):
             return new_obj
         else:
             objs = cls.filter(expand, **kwargs)
-            assert(len(objs) == 1)
+            assert len(objs) == 1
             return objs[0]
 
     @classmethod
-    def filter(cls, expand=None, **kwargs):              
+    def filter(cls, expand=None, **kwargs):
         # Get all objects
         api_objs = cls.get_conn().filter(expand, kwargs)
 
@@ -258,6 +245,7 @@ class ManagerBase(type):
                 objs.append(new_obj)
         return objs
 
+
 # Build Django ORM style 'ModelName.objects' interface
 class ModelBase(type):
     def __new__(cls, clsname, bases, attrs, uri=None, **kwargs):
@@ -266,7 +254,7 @@ class ModelBase(type):
             return super().__new__(cls, clsname, bases, attrs)
 
         new_class = super().__new__(cls, clsname, bases, attrs)
-        
+
         setattr(new_class, 'objects', type('Manager', (ManagerBase,), {'_model_uri': uri}))
         setattr(new_class.objects, '_model', new_class)
         cls_registry[clsname] = new_class
@@ -275,10 +263,10 @@ class ModelBase(type):
 
 
 class Model(metaclass=ModelBase):
-    def __init__(self, *args, **kwargs):      
+    def __init__(self, *args, **kwargs):
         self.set_initial(kwargs)
         super().__init__()
-    
+
     def _dict2obj(self, dict):
         # Function to convert a dict to an object.
         uri = dict.get('_self')
@@ -288,11 +276,11 @@ class Model(metaclass=ModelBase):
             model_uri = model.objects._model_uri
             # Check if part of the uri is in the model uri
             if model_uri in uri:
-                
+
                 obj = model()
 
                 # Set all the attributes of the object.
-                for k2,v2 in dict.items():
+                for k2, v2 in dict.items():
                     # See set_initial why the if statement is here
                     if k2 != 'id':
                         setattr(obj, k2, v2)
@@ -300,7 +288,7 @@ class Model(metaclass=ModelBase):
                     obj.__fields.append(k2)
                 return obj
         # If we are here, it means that no uri matched, thus we don't know the object.
-        raise(TypeError('Object not valid model'))
+        raise TypeError('Object not valid model')
 
     def set_initial(self, kv):
         self.__fields = []
@@ -312,13 +300,11 @@ class Model(metaclass=ModelBase):
             self.__initial = {}
 
         # Create attribute values
-        for k,v in kv.items():
-            
+        for k, v in kv.items():
             # In case expand is true, there can be a attribute which also is an object.
             # Example: Users in AccessGroups. This part will convert the returned data.
             # Into proper objects.
             if type(v) is list and len(v) > 0:
-                
                 # Many-to-Many relation
                 obj_list = []
                 # Loop through all the values in the list and convert them to objects.
@@ -339,7 +325,7 @@ class Model(metaclass=ModelBase):
 
             # Skip over ID, as it is also something from the model itself.
             # This should be removed if there is a concensus on the full model.
-            # Example: not rightgroupName but name, and not rightgroupId but id 
+            # Example: not rightgroupName but name, and not rightgroupId but id
             if k != 'id':
                 setattr(self, k, v)
 
@@ -378,13 +364,16 @@ class Agent(Model, uri="/ui/agents"):
     def __repr__(self):
         return self._self
 
+
 class Task(Model, uri="/ui/tasks"):
     def __repr__(self):
         return self._self
 
+
 class Pretask(Model, uri="/ui/pretasks"):
     def __repr__(self):
         return self._self
+
 
 class User(Model, uri="/ui/users"):
     def __repr__(self):
@@ -395,37 +384,46 @@ class Hashlist(Model, uri="/ui/hashlists"):
     def __repr__(self):
         return self._self
 
+
 class HashType(Model, uri="/ui/hashtypes"):
     def __repr__(self):
         return self._self
+
 
 class Hash(Model, uri="/ui/hashes"):
     def __repr__(self):
         return self._self
 
+
 class AccessGroup(Model, uri="/ui/accessgroups"):
     def __repr__(self):
         return self._self
+
 
 class Cracker(Model, uri="/ui/crackers"):
     def __repr__(self):
         return self._self
 
+
 class CrackerType(Model, uri="/ui/crackertypes"):
     def __repr__(self):
         return self._self
-    
+
+
 class Config(Model, uri="/ui/configs"):
     def __repr__(self):
         return self._self
+
 
 class File(Model, uri="/ui/files"):
     def __repr__(self):
         return self._self
 
+
 class GlobalPermissionGroup(Model, uri="/ui/globalpermissiongroups"):
     def __repr__(self):
         return self._self
+
 
 class FileImport(HashtopolisConnector):
     def __init__(self):
@@ -433,7 +431,7 @@ class FileImport(HashtopolisConnector):
 
     def __repr__(self):
         return self._self
-    
+
     def do_upload(self, filename, file_stream):
         self.authenticate()
 
@@ -453,9 +451,11 @@ class FileImport(HashtopolisConnector):
                 )
         uploader.upload()
 
+
 class Voucher(Model, uri="/ui/vouchers"):
     def __repr__(self):
         return self._self
+
 
 class Speed(Model, uri="/ui/speeds"):
     def __repr__(self):

@@ -9,8 +9,8 @@ import unittest
 import datetime
 from pathlib import Path
 
-from hashtopolis import Cracker 
-from hashtopolis import Task
+from hashtopolis import Cracker
+
 
 class Crackers(unittest.TestCase):
     def test_create_cracker(self):
@@ -23,7 +23,7 @@ class Crackers(unittest.TestCase):
         assert obj.binaryName == payload.get('binaryName')
 
         cracker.delete()
-    
+
     def test_patch_cracker(self):
         p = Path(__file__).parent.joinpath('create_cracker_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -39,7 +39,7 @@ class Crackers(unittest.TestCase):
         assert obj.binaryName == obj_name
 
         cracker.delete()
-    
+
     def test_delete_cracker(self):
         p = Path(__file__).parent.joinpath('create_cracker_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -53,7 +53,7 @@ class Crackers(unittest.TestCase):
         objs = Cracker.objects.filter(crackerBinaryId=id)
 
         assert objs == []
-    
+
     def test_exception_cracker(self):
         p = Path(__file__).parent.joinpath('create_cracker_002.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -62,6 +62,7 @@ class Crackers(unittest.TestCase):
 
         with self.assertRaises(AttributeError):
             cracker.id
+
 
 if __name__ == '__main__':
     unittest.main()

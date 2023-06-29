@@ -6,15 +6,16 @@ import time
 
 from hashtopolis import User
 
-class AttributeTypes(unittest.TestCase):   
+
+class AttributeTypes(unittest.TestCase):
     def test_patch_read_only(self):
         # Test to verify that we cannot patch a read_only field
         stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         user = User(
-            name = username,
-            email = 'test@example.com',
-            globalPermissionGroupId = 1,
+            name=username,
+            email='test@example.com',
+            globalPermissionGroupId=1,
         )
         user.save()
 
@@ -38,26 +39,25 @@ class AttributeTypes(unittest.TestCase):
         username = f'test-{stamp}'
 
         user = User(
-            name = username,
-            email = 'test@example.com',
-            globalPermissionGroupId = 1,
-            passwordHash = 'test',
+            name=username,
+            email='test@example.com',
+            globalPermissionGroupId=1,
+            passwordHash='test',
         )
         user.save()
 
         assert user.message == 'Slim Application Error'
         assert 'is not valid input key' in user.exception[0].get('message')
-    
+
     def test_get_private(self):
         stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         user = User(
-            name = username,
-            email = 'test@example.com',
-            globalPermissionGroupId = 1,
+            name=username,
+            email='test@example.com',
+            globalPermissionGroupId=1,
         )
         user.save()
-        id = user.id
 
         with self.assertRaises(AttributeError):
             user.passwordHash

@@ -10,9 +10,9 @@ import datetime
 from pathlib import Path
 from io import BytesIO
 
-from hashtopolis import Hashlist 
 from hashtopolis import FileImport
 from hashtopolis import File
+
 
 class TasksTest(unittest.TestCase):
     def test_do_upload(self):
@@ -31,6 +31,6 @@ class TasksTest(unittest.TestCase):
         file_obj.save()
 
         file_obj2 = File()
-                
+
         assert len(file_obj2.objects.filter(filename=filename)) == 1
         file_obj.delete()
