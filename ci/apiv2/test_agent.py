@@ -10,7 +10,7 @@ import time
 from hashtopolis_agent import DummyAgent
 from hashtopolis import Agent, Voucher
 
-from basetest import BaseTest
+from utils import BaseTest
 
 from test_hashlists import do_create_hashlist
 from test_tasks import do_create_task
