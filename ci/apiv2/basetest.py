@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+
 class BaseTest(unittest.TestCase):
     @classmethod
     def setUp(cls):
@@ -15,4 +16,3 @@ class BaseTest(unittest.TestCase):
 
     def delete_after_test(self, obj):
         self.obj_heap.append(obj)
-
