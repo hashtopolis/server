@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-from basetest import BaseTest
+from utils import BaseTest
 from hashtopolis import Speed
 
 from test_hashlists import do_create_hashlist
