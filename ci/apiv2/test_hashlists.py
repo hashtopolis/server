@@ -59,7 +59,8 @@ class HashlistTest(unittest.TestCase):
         p = Path(__file__).parent.joinpath('create_hashlist_002.json')
         payload = json.loads(p.read_text('UTF-8'))
         hashlist = Hashlist(**payload)
-        hashlist.save()
+        with self.assertRaises(hashtopolis.HashtopolisError):
+            hashlist.save()
 
         with self.assertRaises(AttributeError):
             hashlist.id

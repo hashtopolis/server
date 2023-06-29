@@ -38,6 +38,9 @@ if HTTP_DEBUG:
 cls_registry = {}
 
 
+class HashtopolisError(Exception):
+    pass
+
 class HashtopolisConfig(object):
     def __init__(self):
         # Request access TOKEN, used throughout the test
@@ -82,6 +85,10 @@ class HashtopolisConnector(object):
             'Content-Type': 'application/json'
         }
 
+
+    def validate_status_code(self, r, expected_status_code, error_msg):
+        if r.status_code != expected_status_code:
+            raise HashtopolisError("%s (status_code: %s != %s): %s", error_msg, r.status_code, expected_status_code, r.text)
 
     def filter(self, expand, filter):
         self.authenticate()
@@ -131,8 +138,7 @@ class HashtopolisConnector(object):
             payload[k] = v[1]
 
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
-        if r.status_code != 201:
-            logger.exception("Patching failed: %s", r.text)
+        self.validate_status_code(r, 201, "Patching failed")
 
         # TODO: Validate if return objects matches digital twin
         obj.set_initial(r.json().copy())
@@ -147,8 +153,7 @@ class HashtopolisConnector(object):
         payload = dict([(k,v[1]) for (k,v) in obj.diff().items()])
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
-        if r.status_code != 201:
-            logger.exception("Creation of object failed: %s", r.text)
+        self.validate_status_code(r, 201, "Creation of object failed")
 
         # TODO: Validate if return objects matches digital twin
         obj.set_initial(r.json().copy())
