@@ -78,7 +78,7 @@ abstract class AbstractBaseAPI
   }
 
   /**
-   * Constructor receives container instance
+   * Constructor receives features
    */
   public function getFeatures(): array
   {
