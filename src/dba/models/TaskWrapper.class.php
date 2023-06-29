@@ -139,4 +139,9 @@ class TaskWrapper extends AbstractModel {
   const TASK_WRAPPER_NAME = "taskWrapperName";
   const IS_ARCHIVED = "isArchived";
   const CRACKED = "cracked";
+
+  const PERM_CREATE = "permTaskWrapperCreate";
+  const PERM_READ = "permTaskWrapperRead";
+  const PERM_UPDATE = "permTaskWrapperUpdate";
+  const PERM_DELETE = "permTaskWrapperDelete";
 }

@@ -13,9 +13,11 @@ use DBA\AgentStat;
 use DBA\AccessGroupUser;
 use DBA\AccessGroupAgent;
 use DBA\AgentBinary;
+use DBA\Config;
 use DBA\CrackerBinary;
 use DBA\Hash;
 use DBA\Hashlist;
+use DBA\HashlistHashlist;
 use DBA\User;
 use DBA\Speed;
 use DBA\TaskWrapper;
@@ -45,7 +47,6 @@ require_once(dirname(__FILE__) . "/../load.php");
  */
 abstract class AbstractBaseAPI
 {
-  abstract public function getPermission(): string;
   abstract static public function getDBAClass(): string;
   abstract protected function getFactory(): object;
   abstract public function getExpandables(): array;
@@ -69,6 +70,11 @@ abstract class AbstractBaseAPI
    * which are for example used for retrival of objects based on string identity
    */
   protected $container;
+
+  /** @var mixed|null $permissionErrors contained detailed results of last 
+   * validatePermissions function call
+  */
+  private $permissionErrors;
 
   /**
    * Constructor receives container instance
@@ -108,6 +114,65 @@ abstract class AbstractBaseAPI
   final protected function getUser()
   {
     return $this->user;
+  }
+
+  /**
+   * Temponary mapping until src/inc/defines/accessControl.php permissions are no longer used
+   */
+  protected static $acl_mapping = array(
+    DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ),
+    DAccessControl::MANAGE_HASHLIST_ACCESS => array(Hashlist::PERM_READ, Hashlist::PERM_UPDATE, Hashlist::PERM_DELETE),
+    DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE, Hashlist::PERM_READ),
+    DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
+    DAccessControl::VIEW_HASHES_ACCESS => array(Hash::PERM_READ),
+    DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ),
+    DAccessControl::MANAGE_AGENT_ACCESS => array(Agent::PERM_READ, Agent::PERM_UPDATE, Agent::PERM_DELETE),
+    DAccessControl::CREATE_AGENT_ACCESS => array(Agent::PERM_CREATE, Agent::PERM_READ),
+    DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ),
+    DAccessControl::RUN_TASK_ACCESS[0] => array("TODO_RUN_TASK_ACCESS"),
+    DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, Task::PERM_READ),
+    DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE),
+    DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ),
+    DAccessControl::CREATE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_CREATE),
+    DAccessControl::MANAGE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_UPDATE, Pretask::PERM_DELETE),
+    DAccessControl::VIEW_SUPERTASK_ACCESS[0] => array(Supertask::PERM_READ),
+    DAccessControl::CREATE_SUPERTASK_ACCESS => array(Supertask::PERM_CREATE, Supertask::PERM_READ),
+    DAccessControl::MANAGE_SUPERTASK_ACCESS => array(Supertask::PERM_READ, Supertask::PERM_UPDATE, Supertask::PERM_DELETE),
+    DAccessControl::VIEW_FILE_ACCESS[0] => array(File::PERM_READ),
+    DAccessControl::MANAGE_FILE_ACCESS => array(File::PERM_READ, File::PERM_UPDATE, File::PERM_DELETE),
+    DAccessControl::ADD_FILE_ACCESS => array(File::PERM_CREATE, File::PERM_READ),
+    DAccessControl::CRACKER_BINARY_ACCESS => array(CrackerBinary::PERM_CREATE, CrackerBinary::PERM_READ, CrackerBinary::PERM_UPDATE, CrackerBinary::PERM_DELETE),
+    DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE),
+    DAccessControl::USER_CONFIG_ACCESS => array(User::PERM_CREATE, User::PERM_READ, User::PERM_UPDATE, User::PERM_DELETE),
+    DAccessControl::MANAGE_ACCESS_GROUP_ACCESS => array(AccessGroup::PERM_CREATE, AccessGroup::PERM_READ, AccessGroup::PERM_UPDATE, AccessGroup::PERM_DELETE),
+    DAccessControl::PUBLIC_ACCESS => array("TODO_PUBLIC_ACCESS"),
+    DAccessControl::LOGIN_ACCESS => array("TODO_LOGIN_ACCESS"),
+  );
+
+  /** 
+   * Retrieve default permissions based on method requested
+   */
+   public function getRequiredPermissions(string $method): array
+   {
+      # Get required permission based on API method type
+      switch($method) {
+      case "GET":
+        $required_perm = $this->getDBAclass()::PERM_READ;
+        break;
+      case "POST":
+        $required_perm = $this->getDBAclass()::PERM_CREATE;
+        break;
+      case "PATCH":
+        $required_perm = $this->getDBAclass()::PERM_UPDATE;
+        break;
+      case "DELETE":
+        $required_perm = $this->getDBAclass()::PERM_DELETE;
+        break;
+      default:
+        throw new HTException("Method '" . $method . "' is not allowed " . 
+                              "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");  
+    }
+    return array($required_perm);
   }
 
   /** 
@@ -554,9 +619,50 @@ abstract class AbstractBaseAPI
     return $hashlist;
   }
 
-  /*
-  *  Common features for all requests, like setting user and checking basic permissions
-  */
+  /** 
+   * Validate permissions
+   */
+  protected function validatePermissions(array $required_perms): bool {
+    // Retrieve permissions from RightGroup part of the User
+    $group = Factory::getRightGroupFactory()->get($this->user->getId());
+  
+    if ($group->getPermissions() == 'ALL') {
+      // Special (legacy) case for administative access, enable all available permissions
+      $all_perms = array_keys(self::$acl_mapping);
+      $rightgroup_perms = array_combine($all_perms, array_fill(0,count($all_perms), true));
+    } else {
+      $rightgroup_perms = json_decode($group->getPermissions(), true);
+    }
+
+    // Validate if no undefined permissions are set in $acl_mapping
+    assert(count(array_diff(array_keys($rightgroup_perms), array_keys(self::$acl_mapping))) == 0);
+
+    // Create listing of available permissions for user
+    $user_available_perms = array();
+    foreach($rightgroup_perms as $rightgroup_perm => $permission_set) {
+      if ($permission_set) {
+        $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
+      }
+    };
+
+    // Sort to display values in a unified format for user and debugging
+    sort($required_perms);
+    sort($user_available_perms);
+
+    // Find if all permissions are matched
+    $missing_permissions = array_diff($required_perms, $user_available_perms);
+    if (count($missing_permissions) > 0) {
+      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" .join($required_perms). "', user_permissions='" . join(",", $user_available_perms) . "']");
+      return FALSE;
+    } else {
+      $this->permissionErrors = array();
+      return TRUE;
+    }
+  }
+
+  /**
+   *  Common features for all requests, like setting user and checking basic permissions
+   */
   protected function preCommon(Request $request): void
   {
     $userId = $request->getAttribute(('userId'));
@@ -564,9 +670,11 @@ abstract class AbstractBaseAPI
 
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
+    
+    $required_perms = $this->getRequiredPermissions($request->getMethod());
 
-    if (!AccessControl::getInstance($this->getUser())->hasPermission($this->getPermission())) {
-      throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription($this->getPermission()) . "' permission");
+    if ($this->validatePermissions($required_perms) === FALSE) {
+      throw new HttpForbiddenException($request, join('||', $this->permissionErrors));
     }
   }
 

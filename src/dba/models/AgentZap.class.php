@@ -74,4 +74,9 @@ class AgentZap extends AbstractModel {
   const AGENT_ZAP_ID = "agentZapId";
   const AGENT_ID = "agentId";
   const LAST_ZAP_ID = "lastZapId";
+
+  const PERM_CREATE = "permAgentZapCreate";
+  const PERM_READ = "permAgentZapRead";
+  const PERM_UPDATE = "permAgentZapUpdate";
+  const PERM_DELETE = "permAgentZapDelete";
 }

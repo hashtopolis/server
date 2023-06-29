@@ -17,9 +17,6 @@ class HashlistAPI extends AbstractBaseAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/hashlists";
     }
-    public function getPermission(): string {
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
 
     public static function getDBAclass(): string {
       return Hashlist::class;

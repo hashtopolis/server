@@ -243,4 +243,9 @@ class Agent extends AbstractModel {
   const USER_ID = "userId";
   const CPU_ONLY = "cpuOnly";
   const CLIENT_SIGNATURE = "clientSignature";
+
+  const PERM_CREATE = "permAgentCreate";
+  const PERM_READ = "permAgentRead";
+  const PERM_UPDATE = "permAgentUpdate";
+  const PERM_DELETE = "permAgentDelete";
 }

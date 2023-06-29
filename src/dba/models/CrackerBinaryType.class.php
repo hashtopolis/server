@@ -74,4 +74,9 @@ class CrackerBinaryType extends AbstractModel {
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const TYPE_NAME = "typeName";
   const IS_CHUNKING_AVAILABLE = "isChunkingAvailable";
+
+  const PERM_CREATE = "permCrackerBinaryTypeCreate";
+  const PERM_READ = "permCrackerBinaryTypeRead";
+  const PERM_UPDATE = "permCrackerBinaryTypeUpdate";
+  const PERM_DELETE = "permCrackerBinaryTypeDelete";
 }

@@ -152,4 +152,9 @@ class HashBinary extends AbstractModel {
   const CHUNK_ID = "chunkId";
   const IS_CRACKED = "isCracked";
   const CRACK_POS = "crackPos";
+
+  const PERM_CREATE = "permHashBinaryCreate";
+  const PERM_READ = "permHashBinaryRead";
+  const PERM_UPDATE = "permHashBinaryUpdate";
+  const PERM_DELETE = "permHashBinaryDelete";
 }

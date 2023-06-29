@@ -191,4 +191,9 @@ class Chunk extends AbstractModel {
   const STATE = "state";
   const CRACKED = "cracked";
   const SPEED = "speed";
+
+  const PERM_CREATE = "permChunkCreate";
+  const PERM_READ = "permChunkRead";
+  const PERM_UPDATE = "permChunkUpdate";
+  const PERM_DELETE = "permChunkDelete";
 }

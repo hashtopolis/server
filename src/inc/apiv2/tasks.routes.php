@@ -19,11 +19,6 @@ class TaskAPI extends AbstractBaseAPI {
       return "/api/v2/ui/tasks";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_PRETASK_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return Task::class;
     }

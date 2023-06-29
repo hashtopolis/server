@@ -74,4 +74,9 @@ class AccessGroupAgent extends AbstractModel {
   const ACCESS_GROUP_AGENT_ID = "accessGroupAgentId";
   const ACCESS_GROUP_ID = "accessGroupId";
   const AGENT_ID = "agentId";
+
+  const PERM_CREATE = "permAccessGroupAgentCreate";
+  const PERM_READ = "permAccessGroupAgentRead";
+  const PERM_UPDATE = "permAccessGroupAgentUpdate";
+  const PERM_DELETE = "permAccessGroupAgentDelete";
 }

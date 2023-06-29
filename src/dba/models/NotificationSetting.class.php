@@ -126,4 +126,9 @@ class NotificationSetting extends AbstractModel {
   const USER_ID = "userId";
   const RECEIVER = "receiver";
   const IS_ACTIVE = "isActive";
+
+  const PERM_CREATE = "permNotificationSettingCreate";
+  const PERM_READ = "permNotificationSettingRead";
+  const PERM_UPDATE = "permNotificationSettingUpdate";
+  const PERM_DELETE = "permNotificationSettingDelete";
 }

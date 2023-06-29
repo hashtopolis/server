@@ -100,4 +100,9 @@ class Zap extends AbstractModel {
   const SOLVE_TIME = "solveTime";
   const AGENT_ID = "agentId";
   const HASHLIST_ID = "hashlistId";
+
+  const PERM_CREATE = "permZapCreate";
+  const PERM_READ = "permZapRead";
+  const PERM_UPDATE = "permZapUpdate";
+  const PERM_DELETE = "permZapDelete";
 }

@@ -74,4 +74,9 @@ class ApiGroup extends AbstractModel {
   const API_GROUP_ID = "apiGroupId";
   const PERMISSIONS = "permissions";
   const NAME = "name";
+
+  const PERM_CREATE = "permApiGroupCreate";
+  const PERM_READ = "permApiGroupRead";
+  const PERM_UPDATE = "permApiGroupUpdate";
+  const PERM_DELETE = "permApiGroupDelete";
 }
