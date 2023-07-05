@@ -1,6 +1,5 @@
 <?php
 
-use DBA\AccessGroup;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -8,35 +7,40 @@ use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
 use Slim\Routing\RouteContext;
 
-use DBA\Agent;
-use DBA\AgentStat;
-use DBA\AccessGroupUser;
+use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
+use DBA\AccessGroupUser;
+use DBA\Agent;
 use DBA\AgentBinary;
+use DBA\AgentStat;
+use DBA\Chunk;
 use DBA\Config;
 use DBA\CrackerBinary;
+use DBA\CrackerBinaryType;
+use DBA\File;
+use DBA\FilePretask;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
-use DBA\User;
-use DBA\Speed;
-use DBA\TaskWrapper;
-use DBA\Task;
-
-use DBA\ContainFilter;
-use DBA\Factory;
-use DBA\FilePretask;
 use DBA\HealthCheck;
-use DBA\JoinFilter;
-use DBA\QueryFilter;
-use DBA\OrderFilter;
+use DBA\NotificationSetting;
 use DBA\Pretask;
-use DBA\File;
-use DBA\HashlistFactory;
 use DBA\RightGroup;
+use DBA\Speed;
 use DBA\Supertask;
 use DBA\SupertaskPretask;
-use DBA\NotificationSetting;
+use DBA\Task;
+use DBA\TaskWrapper;
+use DBA\User;
+
+use DBA\Factory;
+use DBA\HashType;
+use DBA\HealthCheckAgent;
+use DBA\JoinFilter;
+use DBA\LogEntry;
+use DBA\Preprocessor;
+use DBA\QueryFilter;
+use DBA\RegVoucher;
 use Middlewares\Utils\HttpErrorException;
 use Psr\Container\ContainerInterface;
 
@@ -123,30 +127,64 @@ abstract class AbstractBaseAPI
     DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ),
     DAccessControl::MANAGE_HASHLIST_ACCESS => array(Hashlist::PERM_READ, Hashlist::PERM_UPDATE, Hashlist::PERM_DELETE),
     DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE, Hashlist::PERM_READ),
+
     DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
+
     DAccessControl::VIEW_HASHES_ACCESS => array(Hash::PERM_READ),
     DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ),
-    DAccessControl::MANAGE_AGENT_ACCESS => array(Agent::PERM_READ, Agent::PERM_UPDATE, Agent::PERM_DELETE),
-    DAccessControl::CREATE_AGENT_ACCESS => array(Agent::PERM_CREATE, Agent::PERM_READ),
-    DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ),
+
+    DAccessControl::MANAGE_AGENT_ACCESS => array(Agent::PERM_READ, Agent::PERM_UPDATE, Agent::PERM_DELETE,
+                                                // src/inc/defines/agents.php
+                                                AgentStat::PERM_CREATE, AgentStat::PERM_READ, AgentStat::PERM_UPDATE, AgentStat::PERM_DELETE),
+
+    DAccessControl::CREATE_AGENT_ACCESS => array(Agent::PERM_CREATE, Agent::PERM_READ,
+                                                // src/inc/defines/agents.php
+                                                RegVoucher::PERM_CREATE, RegVoucher::PERM_READ, RegVoucher::PERM_UPDATE, RegVoucher::PERM_DELETE),
+
+    DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ, Speed::PERM_READ, Chunk::PERM_READ),
     DAccessControl::RUN_TASK_ACCESS[0] => array("TODO_RUN_TASK_ACCESS"),
-    DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, Task::PERM_READ),
-    DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE),
+    DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, Task::PERM_READ, Chunk::PERM_READ),
+    DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE,
+                                                Chunk::PERM_READ, Chunk::PERM_UPDATE, Chunk::PERM_DELETE,
+                                                // src/inc/defines/tasks.php
+                                                TaskWrapper::PERM_READ, TaskWrapper::PERM_UPDATE),
+
     DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ),
     DAccessControl::CREATE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_CREATE),
     DAccessControl::MANAGE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_UPDATE, Pretask::PERM_DELETE),
+
     DAccessControl::VIEW_SUPERTASK_ACCESS[0] => array(Supertask::PERM_READ),
     DAccessControl::CREATE_SUPERTASK_ACCESS => array(Supertask::PERM_CREATE, Supertask::PERM_READ),
     DAccessControl::MANAGE_SUPERTASK_ACCESS => array(Supertask::PERM_READ, Supertask::PERM_UPDATE, Supertask::PERM_DELETE),
+
     DAccessControl::VIEW_FILE_ACCESS[0] => array(File::PERM_READ),
     DAccessControl::MANAGE_FILE_ACCESS => array(File::PERM_READ, File::PERM_UPDATE, File::PERM_DELETE),
     DAccessControl::ADD_FILE_ACCESS => array(File::PERM_CREATE, File::PERM_READ),
-    DAccessControl::CRACKER_BINARY_ACCESS => array(CrackerBinary::PERM_CREATE, CrackerBinary::PERM_READ, CrackerBinary::PERM_UPDATE, CrackerBinary::PERM_DELETE),
-    DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE),
-    DAccessControl::USER_CONFIG_ACCESS => array(User::PERM_CREATE, User::PERM_READ, User::PERM_UPDATE, User::PERM_DELETE),
+
+     // src/inc/defines/cracker.php
+    DAccessControl::CRACKER_BINARY_ACCESS => array(CrackerBinary::PERM_CREATE, CrackerBinary::PERM_READ, CrackerBinary::PERM_UPDATE, CrackerBinary::PERM_DELETE,
+                                                   CrackerBinaryType::PERM_CREATE, CrackerBinaryType::PERM_READ, CrackerBinaryType::PERM_UPDATE, CrackerBinaryType::PERM_DELETE,
+                                                   // src/inc/defines/agents.php
+                                                   AgentBinary::PERM_CREATE, AgentBinary::PERM_READ, AgentBinary::PERM_UPDATE, AgentBinary::PERM_DELETE),
+
+    DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE, 
+                                                  // src/inc/defines/preprocessor.php
+                                                  Preprocessor::PERM_CREATE, Preprocessor::PERM_READ, Preprocessor::PERM_UPDATE, Preprocessor::PERM_DELETE,
+                                                  // src/inc/defines/health.php
+                                                  HealthCheck::PERM_CREATE, HealthCheck::PERM_READ, HealthCheck::PERM_UPDATE, HealthCheck::PERM_DELETE,
+                                                  HealthCheckAgent::PERM_CREATE, HealthCheckAgent::PERM_READ, HealthCheckAgent::PERM_UPDATE, HealthCheckAgent::PERM_DELETE,
+                                                  // src/inc/defines/hashlists.php
+                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE),
+
+    DAccessControl::USER_CONFIG_ACCESS => array(User::PERM_CREATE, User::PERM_READ, User::PERM_UPDATE, User::PERM_DELETE, RightGroup::PERM_CREATE, RightGroup::PERM_READ, RightGroup::PERM_UPDATE, RightGroup::PERM_DELETE),
+
     DAccessControl::MANAGE_ACCESS_GROUP_ACCESS => array(AccessGroup::PERM_CREATE, AccessGroup::PERM_READ, AccessGroup::PERM_UPDATE, AccessGroup::PERM_DELETE),
-    DAccessControl::PUBLIC_ACCESS => array("TODO_PUBLIC_ACCESS"),
-    DAccessControl::LOGIN_ACCESS => array("TODO_LOGIN_ACCESS"),
+
+    // src/inc/defines/accessControl.php
+    DAccessControl::PUBLIC_ACCESS => array(LogEntry::PERM_READ),
+
+    // src/inc/defines/notifications.php
+    DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE),
   );
 
   /** 
@@ -652,7 +690,7 @@ abstract class AbstractBaseAPI
     // Find if all permissions are matched
     $missing_permissions = array_diff($required_perms, $user_available_perms);
     if (count($missing_permissions) > 0) {
-      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" .join($required_perms). "', user_permissions='" . join(",", $user_available_perms) . "']");
+      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" .join(", ", $required_perms). "', user_permissions='" . join(", ", $user_available_perms) . "']");
       return FALSE;
     } else {
       $this->permissionErrors = array();
