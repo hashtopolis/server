@@ -22,6 +22,7 @@ services:
       # This is where VS Code should expect to find your project's source code
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
+      - hashtopolis-server-dev:/usr/local/share/hashtopolis:Z
     networks:
       - hashtopolis_dev
   hashtopolis-db-dev:
@@ -41,6 +42,7 @@ services:
       - hashtopolis_dev
 volumes:
   hashtopolis-db-dev:
+  hashtopolis-server-dev:
 
 networks:
   hashtopolis_dev:
