@@ -56,6 +56,8 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
 
   $group->get('', function (Request $request, Response $response) use ($app): Response {
 
+    # Will hold collection of all scopes discoverd
+    $all_scopes = [];
 
     $paths = [];
     $components["ListResponse"] = [
@@ -246,6 +248,11 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
       /**
        * Create path objects
        */
+
+      # Determine the scopes required for the call
+      $required_scopes = getRequiredPermissions($class->getDBAClass(), $method);
+      array_push($all_scopes, ...$required_scopes);
+
       $paths[$path][$method] = [
         "tags" => [
           $name . 's'
@@ -276,7 +283,7 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
         "security" => [
           [
             "bearerAuth" => [
-              "todo.all"
+              $required_scopes
             ]
           ]
         ]
@@ -602,9 +609,13 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
         ],
         "additionalProperties" => false
       ];
+
+  
     /**
      * Build final result
      */
+    $unique_all_scopes = array_unique($all_scopes);
+    asort($unique_all_scopes);
     $result = [
       "openapi" => "3.0.1",
       "info" => [
@@ -616,11 +627,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
           "url" => "/"
         ],
       ],
-      "security" => [
-        [
-          "bearerAuth" => [],
-        ],
-      ],
       "paths" => $paths,
       "components" => [
         "schemas" => $components,
@@ -629,7 +635,8 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
             "type" => "http",
             "description" => "JWT Authorization header using the Bearer scheme.",
             "scheme" => "bearer",
-            "bearerFormat" => "JWT"
+            "bearerFormat" => "JWT",
+            "scopes" => array_values($unique_all_scopes),
           ],
           "basicAuth" => [
             "type" => "http",

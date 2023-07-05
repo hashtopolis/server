@@ -1,5 +1,4 @@
 <?php
-
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -8,6 +7,8 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Routing\RouteContext;
 
 use DBA\AccessGroup;
+use DBA\Agent;
+use DBA\AgentStat;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
 use DBA\Agent;
@@ -45,6 +46,32 @@ use Middlewares\Utils\HttpErrorException;
 use Psr\Container\ContainerInterface;
 
 require_once(dirname(__FILE__) . "/../load.php");
+
+
+/** 
+ * Retrieve  permissions based on class and method requested
+ */
+function getRequiredPermissions(string $model, string $method): array
+{
+    # Get required permission based on API method type
+    switch(strtoupper($method)) {
+    case "GET":
+      $required_perm = $model::PERM_READ;
+      break;
+    case "POST":
+      $required_perm = $model::PERM_CREATE;
+      break;
+    case "PATCH":
+      $required_perm = $model::PERM_UPDATE;
+      break;
+    case "DELETE":
+      $required_perm = $model::PERM_DELETE;
+      break;
+    default:
+      throw new HTException("Method '" . $method . "' is not allowed ");
+  }
+  return array($required_perm);
+}
 
 /**   
  * This class acts as the BaseAPI implementation of API model endpoints
@@ -185,32 +212,6 @@ abstract class AbstractBaseAPI
     // src/inc/defines/notifications.php
     DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE),
   );
-
-  /** 
-   * Retrieve default permissions based on method requested
-   */
-   public function getRequiredPermissions(string $method): array
-   {
-      # Get required permission based on API method type
-      switch($method) {
-      case "GET":
-        $required_perm = $this->getDBAclass()::PERM_READ;
-        break;
-      case "POST":
-        $required_perm = $this->getDBAclass()::PERM_CREATE;
-        break;
-      case "PATCH":
-        $required_perm = $this->getDBAclass()::PERM_UPDATE;
-        break;
-      case "DELETE":
-        $required_perm = $this->getDBAclass()::PERM_DELETE;
-        break;
-      default:
-        throw new HTException("Method '" . $method . "' is not allowed " . 
-                              "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");  
-    }
-    return array($required_perm);
-  }
 
   /** 
    * Convert Database resturn value to JSON object value 
@@ -708,7 +709,14 @@ abstract class AbstractBaseAPI
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
     
-    $required_perms = $this->getRequiredPermissions($request->getMethod());
+    try {
+      $required_perms = getRequiredPermissions($this->getDBAclass(), $request->getMethod());  
+    } catch (HTException $e) {
+      # Annotate error message, with suitable candidates
+      throw new HTException($e->getMessage() . 
+                            "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");  
+    }
+
 
     if ($this->validatePermissions($required_perms) === FALSE) {
       throw new HttpForbiddenException($request, join('||', $this->permissionErrors));
