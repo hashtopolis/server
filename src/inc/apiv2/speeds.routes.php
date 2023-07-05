@@ -48,12 +48,6 @@ class SpeedAPI extends AbstractBaseAPI {
       return [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       assert(False, "Speeds cannot be created via API");
       return -1;

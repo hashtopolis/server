@@ -42,24 +42,16 @@ class ChunkAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       /* Dummy code to implement abstract functions */
       assert(False, "Chunks cannot be created via API");
       return -1;
     }
 
-
     protected function deleteObject(object $object): void {
       /* Dummy code to implement abstract functions */
       assert(False, "Chunks cannot be deleted via API");
     }
-
 
     /* Chunk API endpoint specific call to abort chunk */
     public function abortOne(Request $request, Response $response, array $args): Response {

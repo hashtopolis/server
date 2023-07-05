@@ -40,12 +40,6 @@ class HealthCheckAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       $obj = HealthUtils::createHealthCheck(
         $QUERY['hashtypeId'],

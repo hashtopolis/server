@@ -60,7 +60,6 @@ abstract class AbstractBaseAPI
 
   abstract protected function createObject($QUERY): int;
   abstract protected function deleteObject(object $object): void;
-  abstract protected function checkPermission(object $object): bool;
 
   /** @var DBA\User|null $user is currently logged in user */
   private $user;

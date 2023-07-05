@@ -42,12 +42,6 @@ class CrackerBinaryAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       $object = CrackerUtils::createBinary(
         $QUERY[CrackerBinary::VERSION],

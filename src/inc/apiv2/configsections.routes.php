@@ -44,12 +44,6 @@ class ConfigSectionAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
        /* Dummy code to implement abstract functions */
        assert(False, "Configs cannot be created via API");

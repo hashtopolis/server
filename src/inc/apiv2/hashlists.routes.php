@@ -42,12 +42,6 @@ class HashlistAPI extends AbstractBaseAPI {
       ];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return AccessUtils::userCanAccessHashlists($object, $this->getUser());
-    }
-    
-
     protected function createObject($QUERY): int {
       // Cast to createHashlist compatible upload format
       $dummyPost = [];

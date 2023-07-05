@@ -39,12 +39,6 @@ class VoucherAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       AgentUtils::createVoucher($QUERY[RegVoucher::VOUCHER]);
 

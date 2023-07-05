@@ -42,11 +42,6 @@ class FileAPI extends AbstractBaseAPI {
       ];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-
     static protected function getImportPath(): string
     {
       return Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . '/';

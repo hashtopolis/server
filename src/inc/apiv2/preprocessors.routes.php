@@ -38,12 +38,6 @@ class PreprocessorAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       PreprocessorUtils::addPreprocessor(
         $QUERY[Preprocessor::NAME],

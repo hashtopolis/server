@@ -40,12 +40,6 @@ class SupertaskAPI extends AbstractBaseAPI {
       ];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       SupertaskUtils::createSupertask(
         $QUERY[Supertask::SUPERTASK_NAME],

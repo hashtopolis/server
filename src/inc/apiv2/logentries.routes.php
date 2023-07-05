@@ -40,12 +40,6 @@ class LogEntryAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       /* Parameter is used as primary key in database */
 

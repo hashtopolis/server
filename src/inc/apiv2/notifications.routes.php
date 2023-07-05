@@ -40,12 +40,6 @@ class NotificationSettingAPI extends AbstractBaseAPI {
     return  ['actionFilter' => ['type' => 'str(256)']];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       $dummyPost = [];
       switch (DNotificationType::getObjectType($QUERY['action'])) {

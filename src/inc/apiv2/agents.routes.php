@@ -39,12 +39,7 @@ class AgentAPI extends AbstractBaseAPI {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
+   
     protected function createObject($QUERY): int {
       assert(False, "Chunks cannot be created via API");
       return -1;

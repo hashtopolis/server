@@ -36,12 +36,6 @@ class HashTypeAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       /* Parameter is used as primary key in database */
       $hashtypeId = $QUERY[HashType::HASH_TYPE_ID];

@@ -40,12 +40,6 @@ class PreTaskAPI extends AbstractBaseAPI {
       ];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
-
     protected function createObject($QUERY): int {
       PretaskUtils::createPretask(
         $QUERY[PreTask::TASK_NAME],

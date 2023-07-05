@@ -42,12 +42,7 @@ class AgentBinaryAPI extends AbstractBaseAPI {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
+  
     protected function createObject($QUERY): int {
       AgentBinaryUtils::newBinary(
         $QUERY[AgentBinary::TYPE],
