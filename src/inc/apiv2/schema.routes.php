@@ -55,8 +55,7 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
   });
 
   $group->get('', function (Request $request, Response $response) use ($app): Response {
-
-    # Will hold collection of all scopes discoverd
+    /* Hold collection of all scopes discovered */
     $all_scopes = [];
 
     $paths = [];
@@ -133,8 +132,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
       ]
     ];
 
-
-
     /* Iterate over routes */
     $routes = $app->getRouteCollector()->getRoutes();
     foreach ($routes as $route) {
@@ -152,7 +149,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
         continue;
       }
 
-
       /* Retrieve parameters */
       $apiClassName = explode(':', $reflectionCallable)[0];
       $class = new $apiClassName($app->getContainer());
@@ -163,7 +159,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id:')) !== false);
       $name = substr($class->getDBAClass(), 4);
-
 
       /**
        * Create component objects
@@ -249,7 +244,7 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
        * Create path objects
        */
 
-      # Determine the scopes required for the call
+      /* Determine the scopes required for the call */
       $required_scopes = getRequiredPermissions($class->getDBAClass(), $method);
       array_push($all_scopes, ...$required_scopes);
 
@@ -578,39 +573,38 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
         "type" => "string",
         "example" => "role.all"
       ]
-      ];
+    ];
 
-      $components["ObjectRequest"] = [
-        "type" => "object",
-        "properties" => [
-          "expand" => [
-            "type" => "string",
-          ],
-          "expires" => [
-            "type" => "integer"
-          ]
+    $components["ObjectRequest"] = [
+      "type" => "object",
+      "properties" => [
+        "expand" => [
+          "type" => "string",
         ],
-        "additionalProperties" => false
-      ];
+        "expires" => [
+          "type" => "integer"
+        ]
+      ],
+      "additionalProperties" => false
+    ];
 
-      $components["ObjectListRequest"] = [
-        "type" => "object",
-        "properties" => [
-          "expand" => [
-            "type" => "string",
-          ],
-          "filter" => [
-            "type" => "array",
-            "items" => [
-              "type" => "string",
-              "example" => "",
-            ]
-          ]
+    $components["ObjectListRequest"] = [
+      "type" => "object",
+      "properties" => [
+        "expand" => [
+          "type" => "string",
         ],
-        "additionalProperties" => false
-      ];
+        "filter" => [
+          "type" => "array",
+          "items" => [
+            "type" => "string",
+            "example" => "",
+          ]
+        ]
+      ],
+      "additionalProperties" => false
+    ];
 
-  
     /**
      * Build final result
      */
