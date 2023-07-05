@@ -30,7 +30,7 @@ CREATE TABLE `Agent` (
   `agentName`       VARCHAR(100) NOT NULL,
   `uid`             VARCHAR(100) NOT NULL,
   `os`              INT(11)      NOT NULL,
-  `devices`         TEXT         NOT NULL,
+  `hardwareGroupId` INT(11)      NOT NULL,
   `cmdPars`         VARCHAR(256) NOT NULL,
   `ignoreErrors`    TINYINT(4)   NOT NULL,
   `isActive`        TINYINT(4)   NOT NULL,
@@ -914,7 +914,7 @@ CREATE TABLE `User` (
 CREATE TABLE `Benchmark` (
   `benchmarkId` INT(11) NOT NULL,
   `benchmarkValue` VARCHAR(256) NOT NULL,
-  `hardwareGroupId`   int(11) NOT NULL,
+  `hardwareGroupId`   INT(11) NOT NULL,
   `attackParameters`   VARCHAR(256) NOT NULL,
   `ttl`  int(11) NOT NULL 
 )  ENGINE = InnoDB;
@@ -1011,6 +1011,7 @@ ALTER TABLE `AccessGroupUser`
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`);
+  ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 ALTER TABLE `AgentBinary`
   ADD PRIMARY KEY (`agentBinaryId`);
@@ -1172,6 +1173,7 @@ ALTER TABLE `Preprocessor`
 ALTER TABLE `Benchmark`
    ADD PRIMARY KEY (`benchmarkId`),
    ADD KEY `agentId` (`agentId`);
+   ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 ALTER TABLE `HardwareGroup`
     ADD PRIMARY KEY (`hardwareGroupId`);
@@ -1326,6 +1328,8 @@ ALTER TABLE `AccessGroupUser`
 
 ALTER TABLE `Agent`
   ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+      ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
+
 
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `AgentError_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
@@ -1426,7 +1430,7 @@ ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
 
 ALTER TABLE `Benchmark`
-      ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`HardwareGroupId`) REFERENCES `Agent` (`hardwareGroupId`);
+      ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
 
 ALTER TABLE `Zap`
   ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`)    REFERENCES `Agent` (`agentId`),
