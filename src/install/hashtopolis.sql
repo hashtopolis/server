@@ -911,6 +911,19 @@ CREATE TABLE `User` (
   `otp4`               VARCHAR(256) DEFAULT NULL
 ) ENGINE = InnoDB;
 
+CREATE TABLE `Benchmark` (
+  `benchmarkId` INT(11) NOT NULL,
+  `benchmarkValue` VARCHAR(256) NOT NULL,
+  `hardwareGroupId`   int(11) NOT NULL,
+  `attackParameters`   VARCHAR(256) NOT NULL,
+  `ttl`  int(11) NOT NULL 
+)  ENGINE = InnoDB;
+
+CREATE TABLE `HardwareGroup` (
+    `hardwareGroupId` INT(11) NOT NULL,
+    `devices` VARCHAR(256) NOT NULL,
+) ENGINE = InnoDB;
+
 CREATE TABLE `Zap` (
   `zapId`      INT(11)    NOT NULL,
   `hash`       MEDIUMTEXT NOT NULL,
@@ -1156,6 +1169,13 @@ ALTER TABLE `Zap`
 ALTER TABLE `Preprocessor`
   ADD PRIMARY KEY (`preprocessorId`);
 
+ALTER TABLE `Benchmark`
+   ADD PRIMARY KEY (`benchmarkId`),
+   ADD KEY `agentId` (`agentId`);
+
+ALTER TABLE `HardwareGroup`
+    ADD PRIMARY KEY (`hardwareGroupId`);
+
 -- Add AUTO_INCREMENT for tables
 ALTER TABLE `AccessGroup`
   MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
@@ -1289,6 +1309,12 @@ ALTER TABLE `Zap`
 ALTER TABLE `Preprocessor`
   MODIFY `preprocessorId` INT(11) NOT NULL AUTO_INCREMENT;
 
+ALTER TABLE `Benchmark`
+  MODIFY `benchmarkId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `HardwareGroup`
+  MODIFY `hardwareGroupId` INT(11) NOT NULL AUTO_INCREMENT;
+
 -- Add Constraints
 ALTER TABLE `AccessGroupAgent`
   ADD CONSTRAINT `AccessGroupAgent_ibfk_1` FOREIGN KEY (`accessGroupId`) REFERENCES `AccessGroup` (`accessGroupId`),
@@ -1398,6 +1424,9 @@ ALTER TABLE `TaskWrapper`
 
 ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
+
+ALTER TABLE `Benchmark`
+      ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`HardwareGroupId`) REFERENCES `Agent` (`hardwareGroupId`);
 
 ALTER TABLE `Zap`
   ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`)    REFERENCES `Agent` (`agentId`),
