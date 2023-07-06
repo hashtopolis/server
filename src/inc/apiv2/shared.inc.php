@@ -7,8 +7,6 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Routing\RouteContext;
 
 use DBA\AccessGroup;
-use DBA\Agent;
-use DBA\AgentStat;
 use DBA\AccessGroupAgent;
 use DBA\AccessGroupUser;
 use DBA\Agent;
@@ -23,9 +21,12 @@ use DBA\FilePretask;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
+use DBA\HashType;
 use DBA\HealthCheck;
+use DBA\HealthCheckAgent;
 use DBA\NotificationSetting;
 use DBA\Pretask;
+use DBA\RegVoucher;
 use DBA\RightGroup;
 use DBA\Speed;
 use DBA\Supertask;
@@ -35,13 +36,11 @@ use DBA\TaskWrapper;
 use DBA\User;
 
 use DBA\Factory;
-use DBA\HashType;
-use DBA\HealthCheckAgent;
 use DBA\JoinFilter;
 use DBA\LogEntry;
 use DBA\Preprocessor;
 use DBA\QueryFilter;
-use DBA\RegVoucher;
+
 use Middlewares\Utils\HttpErrorException;
 use Psr\Container\ContainerInterface;
 
