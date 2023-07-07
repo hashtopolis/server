@@ -1008,6 +1008,9 @@ ALTER TABLE `AccessGroupUser`
   ADD KEY `accessGroupId` (`accessGroupId`),
   ADD KEY `userId` (`userId`);
 
+ALTER TABLE `HardwareGroup`
+  ADD PRIMARY KEY (`hardwareGroupId`);
+
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`),
@@ -1172,7 +1175,6 @@ ALTER TABLE `Preprocessor`
 
 ALTER TABLE `Benchmark`
    ADD PRIMARY KEY (`benchmarkId`),
-   ADD KEY `agentId` (`agentId`),
    ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 ALTER TABLE `HardwareGroup`
