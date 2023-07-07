@@ -1010,7 +1010,7 @@ ALTER TABLE `AccessGroupUser`
 
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
-  ADD KEY `userId` (`userId`);
+  ADD KEY `userId` (`userId`),
   ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 ALTER TABLE `AgentBinary`
