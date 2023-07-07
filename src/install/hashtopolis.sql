@@ -916,7 +916,9 @@ CREATE TABLE `Benchmark` (
   `benchmarkValue` VARCHAR(256) NOT NULL,
   `hardwareGroupId`   INT(11) NOT NULL,
   `attackParameters`   VARCHAR(512) NOT NULL,
-  `ttl`  int(11) NOT NULL 
+  `ttl`  int(11) NOT NULL,
+  `hashMode`  int(11) NOT NULL,
+  `benchmarkType`  varchar(10) NOT NULL,
 )  ENGINE = InnoDB;
 
 CREATE TABLE `HardwareGroup` (
