@@ -921,7 +921,7 @@ CREATE TABLE `Benchmark` (
 
 CREATE TABLE `HardwareGroup` (
     `hardwareGroupId` INT(11) NOT NULL,
-    `devices` VARCHAR(256) NOT NULL,
+    `devices` VARCHAR(256) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
