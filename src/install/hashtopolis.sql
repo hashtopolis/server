@@ -915,13 +915,13 @@ CREATE TABLE `Benchmark` (
   `benchmarkId` INT(11) NOT NULL,
   `benchmarkValue` VARCHAR(256) NOT NULL,
   `hardwareGroupId`   INT(11) NOT NULL,
-  `attackParameters`   VARCHAR(256) NOT NULL,
+  `attackParameters`   VARCHAR(512) NOT NULL,
   `ttl`  int(11) NOT NULL 
 )  ENGINE = InnoDB;
 
 CREATE TABLE `HardwareGroup` (
     `hardwareGroupId` INT(11) NOT NULL,
-    `devices` VARCHAR(256) NOT NULL
+    `devices` VARCHAR(65000) NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
@@ -1172,7 +1172,7 @@ ALTER TABLE `Preprocessor`
 
 ALTER TABLE `Benchmark`
    ADD PRIMARY KEY (`benchmarkId`),
-   ADD KEY `agentId` (`agentId`);
+   ADD KEY `agentId` (`agentId`),
    ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 ALTER TABLE `HardwareGroup`
