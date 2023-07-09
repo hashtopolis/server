@@ -1328,8 +1328,8 @@ ALTER TABLE `AccessGroupUser`
   ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`)        REFERENCES `User` (`userId`);
 
 ALTER TABLE `Agent`
-  ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
-      ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
+  ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`),
+  ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
 
 
 ALTER TABLE `AgentError`
