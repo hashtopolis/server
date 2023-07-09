@@ -1179,9 +1179,6 @@ ALTER TABLE `Benchmark`
    ADD PRIMARY KEY (`benchmarkId`),
    ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
-ALTER TABLE `HardwareGroup`
-    ADD PRIMARY KEY (`hardwareGroupId`);
-
 -- Add AUTO_INCREMENT for tables
 ALTER TABLE `AccessGroup`
   MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
