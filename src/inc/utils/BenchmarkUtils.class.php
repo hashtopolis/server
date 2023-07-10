@@ -5,13 +5,13 @@ use DBA\QueryFilter;
 use DBA\OrderFilter;
 use DBA\Benchmark;
 
-define("ttl", 216000);
-define("size", 50);
+// define("ttl", 216000);
+// define("size", 50);
 
-enum BenchmarkType {
-  case SpeedBenchmark;
-  case RuntimeBenchmark;      
-}
+// enum BenchmarkType {
+//   case SpeedBenchmark;
+//   case RuntimeBenchmark;      
+// }
 
 class BenchmarkUtils {
 
@@ -28,7 +28,7 @@ class BenchmarkUtils {
     Factory::getBenchmarkFactory()->delete($benchmark);
   }
 
-  static function cleanupAttackParameters2($attackCmd) {
+  static function cleanupAttackParameters($attackCmd) {
     $attackCmd = trim($attackCmd);
 
     if (strlen($attackCmd) == 0) {
@@ -86,10 +86,10 @@ class BenchmarkUtils {
       $arguments[$arg] = null;
     }
 
-    if (!array_key_exists("--hash-type", $arguments)) { //if --hash-type not in arguments that means hashtype 0 is in use
-      $arguments["--hash-type"] = "0";
-    }
-    if (!array_key_exists("--attack-mode", $arguments)) { //if --hash-type not in arguments that means hashtype 0 is in use
+    // if (!array_key_exists("--hash-type", $arguments)) { //if --hash-type not in arguments that means hashtype 0 is in use
+    //   $arguments["--hash-type"] = "0";
+    // }
+    if (!array_key_exists("--attack-mode", $arguments)) { //if --hash-type not in arguments that means attackMode 0 is in use
       $arguments["--attack-mode"] = "0";
     }
 
@@ -109,19 +109,24 @@ class BenchmarkUtils {
     return $cleanAttackCmd;
   }
 
-    public static function getBenchmarkByValue($attackParameters, $hardwareGroupId) {
+    public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark) {
         $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
 
         if (!isset($hardwareGroup)) {
           return null;
         }
 
-        $cleanAttackParameter = self::cleanupAttackParameters2($attackParameters);
+        $cleanAttackParameter = self::cleanupAttackParameters($attackParameters);
 
         $qF = new QueryFilter("attackParameters", $cleanAttackParameter, "=");
         $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
+        $qF3 = new QueryFilter("hashMode", $hashmode, "=");
 
-        $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
+        $benchmarkType = $useNewBenchmark == 1 ? "speed" : "runtime";
+
+        $qF4 = new QueryFilter("benchmarkType", $benchmarkType, "=");
+
+        $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2, $qF3, $qF4]], true);
 
         if(isset($res)){
           if ($res->getTtl() < time()) { // if ttl has been exceeded, remove value and return null
@@ -139,25 +144,24 @@ class BenchmarkUtils {
         return true;
     }
 
-    public static function saveBenchmarkInCache($attackParameters, $hardwareGroup, $benchmarkValue) {
-      $cleanAttackParameters = self::cleanupAttackParameters2($attackParameters);
+    public static function saveBenchmarkInCache($attackParameters, $hardwareGroup, $benchmarkValue, $hashmode, $benchmarkType) {
+      $cleanAttackParameters = self::cleanupAttackParameters($attackParameters);
 
-    $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
-    $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
-    
-    $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
+      $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
+      $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
+      
+      $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
 
-    if (isset($foundBenchmark)) { //if benchmark already in cache, update the value
-        $foundBenchmark->setTtl(time() + ttl);
-        $foundBenchmark->setBenchmarkValue($benchmarkValue);
-        $benchmark = Factory::getBenchmarkFactory()->update($foundBenchmark);
-    } else {
-        $newBenchmark = new Benchmark(null, $benchmarkValue, $cleanAttackParameters, $hardwareGroup->getID(), time() + ttl);
-        $benchmark = Factory::getBenchmarkFactory()->save($newBenchmark);
-    }
+      if (isset($foundBenchmark)) { //if benchmark already in cache, update the value
+          $foundBenchmark->setTtl(time() + ttl);
+          $foundBenchmark->setBenchmarkValue($benchmarkValue);
+          $benchmark = Factory::getBenchmarkFactory()->update($foundBenchmark);
+      } else {
+          $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroup->getID(), time() + ttl);
+          $benchmark = Factory::getBenchmarkFactory()->save($newBenchmark);
+      }
 
-    return $benchmark;
-    
+      return $benchmark;
     }
 
 //removes all values where the time to live has been exceeded
