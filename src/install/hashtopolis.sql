@@ -30,7 +30,7 @@ CREATE TABLE `Agent` (
   `agentName`       VARCHAR(100) NOT NULL,
   `uid`             VARCHAR(100) NOT NULL,
   `os`              INT(11)      NOT NULL,
-  `hardwareGroupId` INT(11)      NOT NULL,
+  `hardwareGroupId` INT(11)      DEFAULT NULL,
   `cmdPars`         VARCHAR(256) NOT NULL,
   `ignoreErrors`    TINYINT(4)   NOT NULL,
   `isActive`        TINYINT(4)   NOT NULL,

@@ -16,7 +16,7 @@ Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Agent`
   DROP COLUMN devices;
 ");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Agent`
-  ADD COLUMN hardwareGroupId INT(11);
+  ADD COLUMN hardwareGroupId INT(11) DEFAULT NULL; 
 ");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Agent` ADD CONSTRAINT FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);");
 
