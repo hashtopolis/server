@@ -4,15 +4,19 @@ namespace DBA;
 
 class Benchmark extends AbstractModel {
   private $benchmarkId;
+  private $benchmarkType;
   private $benchmarkValue;
   private $attackParameters;
+  private $hashMode;
   private $hardwareGroupId;
   private $ttl;
   
-  function __construct($benchmarkId, $benchmarkValue, $attackParameters, $hardwareGroupId, $ttl) {
+  function __construct($benchmarkId, $benchmarkType, $benchmarkValue, $attackParameters, $hashMode, $hardwareGroupId, $ttl) {
     $this->benchmarkId = $benchmarkId;
+    $this->benchmarkType = $benchmarkType;
     $this->benchmarkValue = $benchmarkValue;
     $this->attackParameters = $attackParameters;
+    $this->hashMode = $hashMode;
     $this->hardwareGroupId = $hardwareGroupId;
     $this->ttl = $ttl;
   }
@@ -20,8 +24,10 @@ class Benchmark extends AbstractModel {
   function getKeyValueDict() {
     $dict = array();
     $dict['benchmarkId'] = $this->benchmarkId;
+    $dict['benchmarkType'] = $this->benchmarkType;
     $dict['benchmarkValue'] = $this->benchmarkValue;
     $dict['attackParameters'] = $this->attackParameters;
+    $dict['hashMode'] = $this->hashMode;
     $dict['hardwareGroupId'] = $this->hardwareGroupId;
     $dict['ttl'] = $this->ttl;
     
@@ -40,8 +46,8 @@ class Benchmark extends AbstractModel {
     return $this->benchmarkId;
   }
   
-  function setId($benchmarkId) {
-    $this->benchmarkId = $benchmarkId;
+  function setId($id) {
+    $this->benchmarkId = $id;
   }
   
   /**
@@ -50,6 +56,14 @@ class Benchmark extends AbstractModel {
    */
   public function expose() {
     return get_object_vars($this);
+  }
+  
+  function getBenchmarkType() {
+    return $this->benchmarkType;
+  }
+  
+  function setBenchmarkType($benchmarkType) {
+    $this->benchmarkType = $benchmarkType;
   }
   
   function getBenchmarkValue() {
@@ -68,6 +82,14 @@ class Benchmark extends AbstractModel {
     $this->attackParameters = $attackParameters;
   }
   
+  function getHashMode() {
+    return $this->hashMode;
+  }
+  
+  function setHashMode($hashMode) {
+    $this->hashMode = $hashMode;
+  }
+  
   function getHardwareGroupId() {
     return $this->hardwareGroupId;
   }
@@ -84,9 +106,11 @@ class Benchmark extends AbstractModel {
     $this->ttl = $ttl;
   }
   
-  const benchmarkId = "benchmarkId";
+  const BENCHMARK_ID = "benchmarkId";
+  const BENCHMARK_TYPE = "benchmarkType";
   const BENCHMARK_VALUE = "benchmarkValue";
   const ATTACK_PARAMETERS = "attackParameters";
-  const HARDWARE_GROUP_benchmarkId = "hardwareGroupId";
+  const HASH_MODE = "hashMode";
+  const HARDWARE_GROUP_ID = "hardwareGroupId";
   const TTL = "ttl";
 }

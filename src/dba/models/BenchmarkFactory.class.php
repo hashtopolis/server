@@ -23,7 +23,7 @@ class BenchmarkFactory extends AbstractModelFactory {
    * @return Benchmark
    */
   function getNullObject() {
-    $o = new Benchmark(-1, null, null, null, null);
+    $o = new Benchmark(-1, null, null, null, null, null, null);
     return $o;
   }
   
@@ -33,7 +33,7 @@ class BenchmarkFactory extends AbstractModelFactory {
    * @return Benchmark
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Benchmark($dict['benchmarkId'], $dict['benchmarkValue'], $dict['attackParameters'], $dict['hardwareGroupId'], $dict['ttl']);
+    $o = new Benchmark($dict['benchmarkId'], $dict['benchmarkType'], $dict['benchmarkValue'], $dict['attackParameters'], $dict['hashMode'], $dict['hardwareGroupId'], $dict['ttl']);
     return $o;
   }
   

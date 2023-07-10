@@ -56,8 +56,11 @@ class APIGetChunk extends APIBasic {
     }
     else if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) { // benchmark only required on non-small tasks and on non-special chunk tasks
       //toegevoegde code voor cache
+      $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+      $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
 
-      $benchmark = BenchmarkUtils::getBenchmarkByValue($task->getAttackCmd(), $this->agent->getHardwareGroupId());
+
+      $benchmark = BenchmarkUtils::getBenchmarkByValue($task->getAttackCmd(), $this->agent->getHardwareGroupId(), $hashlist->getHashTypeId(), $task->getUseNewBench());
       if ($benchmark === NULL) {
       DServerLog::log(DServerLog::INFO, "Need to run a benchmark!", [$this->agent, $task]);
       $this->sendResponse(array(
