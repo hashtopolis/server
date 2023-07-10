@@ -1015,8 +1015,8 @@ ALTER TABLE `HardwareGroup`
 
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
-  ADD KEY `userId` (`userId`),
-  ADD KEY `hardwareGroupId` (`hardwareGroupId`);
+  ADD KEY `userId` (`userId`);
+  -- ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 ALTER TABLE `AgentBinary`
   ADD PRIMARY KEY (`agentBinaryId`);
@@ -1328,9 +1328,8 @@ ALTER TABLE `AccessGroupUser`
   ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`)        REFERENCES `User` (`userId`);
 
 ALTER TABLE `Agent`
-  ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`),
-  ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
-
+  ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+  -- ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
 
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `AgentError_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
