@@ -37,15 +37,15 @@ if (!Util::databaseTableExists("Benchmark")) {
 
   Factory::getAgentFactory()->getDB()->query("
     ALTER TABLE `Benchmark`
-    ADD PRIMARY KEY (`benchmarkId`),
-    ADD KEY `hardwareGroupId` (`hardwareGroupId`);");
+    ADD PRIMARY KEY (`benchmarkId`);");
+    // ADD KEY `hardwareGroupId` (`hardwareGroupId`);");
 
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Benchmark`
   ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);"); 
 }
 
-Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Agent` ADD CONSTRAINT `Agent_ibfk_2` 
-      FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);");
+// Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Agent` ADD CONSTRAINT `Agent_ibfk_2` 
+//       FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);");
 Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Benchmark` ADD CONSTRAINT `Benchmark_ibfk_1` 
       FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);");
 
