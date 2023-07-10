@@ -5,7 +5,7 @@ use DBA\QueryFilter;
 use DBA\OrderFilter;
 use DBA\Benchmark;
 
-// define("ttl", 216000);
+define("ttl", 216000);
 // define("size", 50);
 
 // enum BenchmarkType {
