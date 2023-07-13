@@ -1,3 +1,9 @@
+# v0.14.0 -> x.x.x
+
+## Bugfixes
+- Clicking pretask in Supertask create screen now directs correctly to the pretask and not a task with the same id (#945)
+
+
 # v0.13.1 -> v0.14.0
 
 ## Tech Preview New API
