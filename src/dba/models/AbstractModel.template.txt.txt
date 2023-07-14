@@ -1,0 +1,46 @@
+<?php
+
+namespace DBA;
+
+class __MODEL_NAME__ extends AbstractModel {
+  __MODEL_VARS__
+  
+  function __construct(__MODEL_PARAMS__) {
+    __MODEL_PARAMS_INIT__
+  }
+  
+  function getKeyValueDict() {
+    $dict = array();
+    __MODEL_KEY_VAL__
+    
+    return $dict;
+  }
+  
+  function getPrimaryKey() {
+    return "__MODEL_PK__";
+  }
+  
+  function getPrimaryKeyValue() {
+    return $this->__MODEL_PK__;
+  }
+  
+  function getId() {
+    return $this->__MODEL_PK__;
+  }
+  
+  function setId($id) {
+    $this->__MODEL_PK__ = $id;
+  }
+  
+  /**
+   * Used to serialize the data contained in the model
+   * @return array
+   */
+  public function expose() {
+    return get_object_vars($this);
+  }
+  
+  __MODEL_GETTER_SETTER__
+  
+  __MODEL_VARIABLE_NAMES__
+}

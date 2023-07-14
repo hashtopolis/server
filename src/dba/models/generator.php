@@ -65,7 +65,10 @@ $CONF['Benchmark'] = [
   'benchmarkValue',
   'attackParameters',
   'hardwareGroupId',
+  'crackerBinaryId',
   'ttl',
+  'hashmode',
+  'benchmarkType',
 ];
 $CONF['Chunk'] = [
   'chunkId',

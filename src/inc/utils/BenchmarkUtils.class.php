@@ -109,24 +109,26 @@ class BenchmarkUtils {
     return $cleanAttackCmd;
   }
 
-    public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark) {
+    public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark, $crackerBinaryId) {
         $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
+        $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
 
-        if (!isset($hardwareGroup)) {
+        if (!isset($hardwareGroup) || !isset($crackerBinary)) {
           return null;
         }
-
+        
         $cleanAttackParameter = self::cleanupAttackParameters($attackParameters);
 
         $qF = new QueryFilter("attackParameters", $cleanAttackParameter, "=");
         $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
         $qF3 = new QueryFilter("hashMode", $hashmode, "=");
-
+        
         $benchmarkType = $useNewBenchmark == 1 ? "speed" : "runtime";
-
+        
         $qF4 = new QueryFilter("benchmarkType", $benchmarkType, "=");
+        $qF5 = new QueryFilter("crackerBinaryId", $crackerBinary->getId(), "=");
 
-        $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2, $qF3, $qF4]], true);
+        $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2, $qF3, $qF4, $qF5]], true);
 
         if(isset($res)){
           if ($res->getTtl() < time()) { // if ttl has been exceeded, remove value and return null
@@ -144,7 +146,7 @@ class BenchmarkUtils {
         return true;
     }
 
-    public static function saveBenchmarkInCache($attackParameters, $hardwareGroup, $benchmarkValue, $hashmode, $benchmarkType) {
+    public static function saveBenchmarkInCache($attackParameters, $hardwareGroup, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId) {
       $cleanAttackParameters = self::cleanupAttackParameters($attackParameters);
 
       $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
@@ -157,7 +159,7 @@ class BenchmarkUtils {
           $foundBenchmark->setBenchmarkValue($benchmarkValue);
           $benchmark = Factory::getBenchmarkFactory()->update($foundBenchmark);
       } else {
-          $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroup->getID(), time() + ttl);
+          $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroup->getID(), time() + ttl, $crackerBinaryId);
           $benchmark = Factory::getBenchmarkFactory()->save($newBenchmark);
       }
 

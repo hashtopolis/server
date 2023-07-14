@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class BenchmarkFactory extends AbstractModelFactory {
+class __MODEL_NAME__Factory extends AbstractModelFactory {
   function getModelName() {
-    return "Benchmark";
+    return "__MODEL_NAME__";
   }
   
   function getModelTable() {
-    return "Benchmark";
+    return "__MODEL_NAME__";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class BenchmarkFactory extends AbstractModelFactory {
   }
   
   /**
-   * @return Benchmark
+   * @return __MODEL_NAME__
    */
   function getNullObject() {
-    $o = new Benchmark(-1, null, null, null, null, null, null, null);
+    $o = new __MODEL_NAME__(__MODEL_DICT__);
     return $o;
   }
   
   /**
    * @param string $pk
    * @param array $dict
-   * @return Benchmark
+   * @return __MODEL_NAME__
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Benchmark($dict['benchmarkId'], $dict['benchmarkType'], $dict['benchmarkValue'], $dict['attackParameters'], $dict['hashMode'], $dict['hardwareGroupId'], $dict['ttl'], $dict['crackerBinaryId']);
+    $o = new __MODEL_NAME__(__MODEL__DICT2__);
     return $o;
   }
   
   /**
    * @param array $options
    * @param bool $single
-   * @return Benchmark|Benchmark[]
+   * @return __MODEL_NAME__|__MODEL_NAME__[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class BenchmarkFactory extends AbstractModelFactory {
       if ($join) {
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Benchmark::class);
+      return Util::cast(parent::filter($options, $single), __MODEL_NAME__::class);
     }
     $objects = parent::filter($options, $single);
     if ($join) {
@@ -59,24 +59,24 @@ class BenchmarkFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach ($objects as $object) {
-      $models[] = Util::cast($object, Benchmark::class);
+      $models[] = Util::cast($object, __MODEL_NAME__::class);
     }
     return $models;
   }
   
   /**
    * @param string $pk
-   * @return Benchmark
+   * @return __MODEL_NAME__
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Benchmark::class);
+    return Util::cast(parent::get($pk), __MODEL_NAME__::class);
   }
   
   /**
-   * @param Benchmark $model
-   * @return Benchmark
+   * @param __MODEL_NAME__ $model
+   * @return __MODEL_NAME__
    */
   function save($model) {
-    return Util::cast(parent::save($model), Benchmark::class);
+    return Util::cast(parent::save($model), __MODEL_NAME__::class);
   }
 }

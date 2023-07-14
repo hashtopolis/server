@@ -60,7 +60,7 @@ class APIGetChunk extends APIBasic {
       $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
 
 
-      $benchmark = BenchmarkUtils::getBenchmarkByValue($task->getAttackCmd(), $this->agent->getHardwareGroupId(), $hashlist->getHashTypeId(), $task->getUseNewBench());
+      $benchmark = BenchmarkUtils::getBenchmarkByValue($task->getAttackCmd(), $this->agent->getHardwareGroupId(), $hashlist->getHashTypeId(), $task->getUseNewBench(), $task->getCrackerBinaryId());
       if ($benchmark === NULL) {
       DServerLog::log(DServerLog::INFO, "Need to run a benchmark!", [$this->agent, $task]);
       $this->sendResponse(array(

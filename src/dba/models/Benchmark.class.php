@@ -10,8 +10,9 @@ class Benchmark extends AbstractModel {
   private $hashMode;
   private $hardwareGroupId;
   private $ttl;
+  private $crackerBinaryId;
   
-  function __construct($benchmarkId, $benchmarkType, $benchmarkValue, $attackParameters, $hashMode, $hardwareGroupId, $ttl) {
+  function __construct($benchmarkId, $benchmarkType, $benchmarkValue, $attackParameters, $hashMode, $hardwareGroupId, $ttl, $crackerBinaryId) {
     $this->benchmarkId = $benchmarkId;
     $this->benchmarkType = $benchmarkType;
     $this->benchmarkValue = $benchmarkValue;
@@ -19,6 +20,7 @@ class Benchmark extends AbstractModel {
     $this->hashMode = $hashMode;
     $this->hardwareGroupId = $hardwareGroupId;
     $this->ttl = $ttl;
+    $this->crackerBinaryId = $crackerBinaryId;
   }
   
   function getKeyValueDict() {
@@ -30,6 +32,7 @@ class Benchmark extends AbstractModel {
     $dict['hashMode'] = $this->hashMode;
     $dict['hardwareGroupId'] = $this->hardwareGroupId;
     $dict['ttl'] = $this->ttl;
+    $dict['crackerBinaryId'] = $this->crackerBinaryId;
     
     return $dict;
   }
@@ -106,6 +109,14 @@ class Benchmark extends AbstractModel {
     $this->ttl = $ttl;
   }
   
+  function getCrackerBinaryId() {
+    return $this->crackerBinaryId;
+  }
+  
+  function setCrackerBinaryId($crackerBinaryId) {
+    $this->crackerBinaryId = $crackerBinaryId;
+  }
+  
   const BENCHMARK_ID = "benchmarkId";
   const BENCHMARK_TYPE = "benchmarkType";
   const BENCHMARK_VALUE = "benchmarkValue";
@@ -113,4 +124,5 @@ class Benchmark extends AbstractModel {
   const HASH_MODE = "hashMode";
   const HARDWARE_GROUP_ID = "hardwareGroupId";
   const TTL = "ttl";
+  const CRACKER_BINARY_ID = "crackerBinaryId";
 }

@@ -915,6 +915,7 @@ CREATE TABLE `Benchmark` (
   `benchmarkId` INT(11) NOT NULL,
   `benchmarkValue` VARCHAR(256) NOT NULL,
   `hardwareGroupId`   INT(11) NOT NULL,
+  `crackerBinaryId`  INT(11) NOT NULL,
   `attackParameters`   VARCHAR(512) NOT NULL,
   `ttl`  int(11) NOT NULL,
   `hashMode`  int(11) NOT NULL,
@@ -1177,6 +1178,7 @@ ALTER TABLE `Preprocessor`
 
 ALTER TABLE `Benchmark`
    ADD PRIMARY KEY (`benchmarkId`),
+   ADD KEY `crackerBinaryId` (`crackerBinaryId`),
    ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 -- Add AUTO_INCREMENT for tables
@@ -1430,7 +1432,8 @@ ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
 
 ALTER TABLE `Benchmark`
-      ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
+      ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`),
+      ADD CONSTRAINT `Benchmark_ibfk_2` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
 
 ALTER TABLE `Zap`
   ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`)    REFERENCES `Agent` (`agentId`),

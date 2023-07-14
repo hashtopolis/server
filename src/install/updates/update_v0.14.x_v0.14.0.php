@@ -26,6 +26,7 @@ if (!Util::databaseTableExists("Benchmark")) {
       `benchmarkId`         INT(11)      NOT NULL,
       `benchmarkValue`      VARCHAR(256) NOT NULL,
       `hardwareGroupId`      INT(11) NOT NULL,
+      `crackerBinaryId`      INT(11) NOT NULL,
       `attackParameters`     VARCHAR(512) NOT NULL,
       `ttl`                  INT(11) NULL,
       `hashMode`             INT(11) NULL,
