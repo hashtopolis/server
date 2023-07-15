@@ -13,22 +13,26 @@ define("ttl", 216000);
 //   case RuntimeBenchmark;      
 // }
 
-class BenchmarkUtils {
+class BenchmarkUtils
+{
 
-  public static function getBenchmark($benchmarkId) {
-      $benchmark = Factory::getBenchmarkFactory()->get($benchmarkId);
-      if ($benchmark == null) {
+  public static function getBenchmark($benchmarkId)
+  {
+    $benchmark = Factory::getBenchmarkFactory()->get($benchmarkId);
+    if ($benchmark == null) {
       throw new HTException("Invalid benchmark ID!");
-      }
-      return $benchmark;
+    }
+    return $benchmark;
   }
 
-  public static function delete($benchmarkId) {
+  public static function delete($benchmarkId)
+  {
     $benchmark = BenchmarkUtils::getBenchmark($benchmarkId);
     Factory::getBenchmarkFactory()->delete($benchmark);
   }
 
-  static function cleanupAttackParameters($attackCmd) {
+  static function cleanupAttackParameters($attackCmd)
+  {
     $attackCmd = trim($attackCmd);
 
     if (strlen($attackCmd) == 0) {
@@ -50,13 +54,12 @@ class BenchmarkUtils {
     $arguments = array();
 
     $hashlist = SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS);
-    // $hashlist = "#HL#";
     $attackValue = ""; //this is the dictionary or attack mask
 
     $i = 0;
     $size = sizeof($parts_cmd);
 
-    for ($i = 0;$i < count($parts_cmd);$i++) {
+    for ($i = 0; $i < count($parts_cmd); $i++) {
       $arg = $parts_cmd[$i];
       if ($arg == $hashlist) { //the hashlist is always #HL# so it doesnt have to be parsed
         continue;
@@ -66,21 +69,31 @@ class BenchmarkUtils {
         $attackValue = $arg;
         continue;
       }
-      
-      if (array_key_exists($arg, $parameterParseMap)) {
+
+      $number = null;
+      if (!str_contains($arg, "=")) { //if the argument is in format "-a3" the number needs to be split to properly parse
+        $number = preg_replace('/[^0-9]/', '', $arg);
+        $arg = preg_replace('/[^a-zA-Z\-]/', '', $arg);
+      }
+
+      if (array_key_exists($arg, $parameterParseMap)) { //parse to long format
         $arg = $parameterParseMap[$arg];
       }
 
+      if (!empty($number)) { //when an argument is in format -a3 use the number as value and continue to next itteration
+        $arguments[$arg] = $number;
+        continue;
+      }
       //parse longparameter in style:  --remove-timer=30
       if (str_contains($arg, '=')) {
         $longParameterSplit = explode('=', $arg);
         $arguments[$longParameterSplit[0]] = $longParameterSplit[1];
         continue;
-      } else if($i <= ($size - 2)) {  //if the next character doesnt start with '-' it means that its the value of the parameter
-        if (!str_starts_with($parts_cmd[$i+1], "-")) {
-            $arguments[$arg] = $parts_cmd[$i+1];
-            $i++;
-            continue;
+      } else if ($i <= ($size - 2)) {  //if the next character doesnt start with '-' it means that its the value of the parameter
+        if (!str_starts_with($parts_cmd[$i + 1], "-")) {
+          $arguments[$arg] = $parts_cmd[$i + 1];
+          $i++;
+          continue;
         }
       }
       $arguments[$arg] = null;
@@ -109,82 +122,85 @@ class BenchmarkUtils {
     return $cleanAttackCmd;
   }
 
-    public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark, $crackerBinaryId) {
-        $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
-        $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
+  public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark, $crackerBinaryId)
+  {
+    $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
+    $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
 
-        if (!isset($hardwareGroup) || !isset($crackerBinary)) {
-          return null;
-        }
-        
-        $cleanAttackParameter = self::cleanupAttackParameters($attackParameters);
-
-        $qF = new QueryFilter("attackParameters", $cleanAttackParameter, "=");
-        $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
-        $qF3 = new QueryFilter("hashMode", $hashmode, "=");
-        
-        $benchmarkType = $useNewBenchmark == 1 ? "speed" : "runtime";
-        
-        $qF4 = new QueryFilter("benchmarkType", $benchmarkType, "=");
-        $qF5 = new QueryFilter("crackerBinaryId", $crackerBinary->getId(), "=");
-
-        $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2, $qF3, $qF4, $qF5]], true);
-
-        if(isset($res)){
-          if ($res->getTtl() < time()) { // if ttl has been exceeded, remove value and return null
-              
-              Factory::getBenchmarkFactory()->delete($res);
-              return null;
-          }
-        }
-        
-        return $res;
+    if (!isset($hardwareGroup) || !isset($crackerBinary)) {
+      return null;
     }
 
-    public static function deleteBenchmark($benchmark) {
-        Factory::getBenchmarkFactory()->delete($benchmark);
-        return true;
-    }
+    $cleanAttackParameter = self::cleanupAttackParameters($attackParameters);
 
-    public static function saveBenchmarkInCache($attackParameters, $hardwareGroup, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId) {
-      $cleanAttackParameters = self::cleanupAttackParameters($attackParameters);
+    $qF = new QueryFilter("attackParameters", $cleanAttackParameter, "=");
+    $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
+    $qF3 = new QueryFilter("hashMode", $hashmode, "=");
 
-      $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
-      $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
-      
-      $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
+    $benchmarkType = $useNewBenchmark == 1 ? "speed" : "runtime";
 
-      if (isset($foundBenchmark)) { //if benchmark already in cache, update the value
-          $foundBenchmark->setTtl(time() + ttl);
-          $foundBenchmark->setBenchmarkValue($benchmarkValue);
-          $benchmark = Factory::getBenchmarkFactory()->update($foundBenchmark);
-      } else {
-          $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroup->getID(), time() + ttl, $crackerBinaryId);
-          $benchmark = Factory::getBenchmarkFactory()->save($newBenchmark);
+    $qF4 = new QueryFilter("benchmarkType", $benchmarkType, "=");
+    $qF5 = new QueryFilter("crackerBinaryId", $crackerBinary->getId(), "=");
+
+    $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2, $qF3, $qF4, $qF5]], true);
+
+    if (isset($res)) {
+      if ($res->getTtl() < time()) { // if ttl has been exceeded, remove value and return null
+
+        Factory::getBenchmarkFactory()->delete($res);
+        return null;
       }
-
-      return $benchmark;
     }
 
-//removes all values where the time to live has been exceeded
-public static function refreshCache() {
+    return $res;
+  }
+
+  public static function deleteBenchmark($benchmark)
+  {
+    Factory::getBenchmarkFactory()->delete($benchmark);
+    return true;
+  }
+
+  public static function saveBenchmarkInCache($attackParameters, $hardwareGroup, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId)
+  {
+    $cleanAttackParameters = self::cleanupAttackParameters($attackParameters);
+
+    $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
+    $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
+
+    $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
+
+    if (isset($foundBenchmark)) { //if benchmark already in cache, update the value
+      $foundBenchmark->setTtl(time() + ttl);
+      $foundBenchmark->setBenchmarkValue($benchmarkValue);
+      $benchmark = Factory::getBenchmarkFactory()->update($foundBenchmark);
+    } else {
+      $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroup->getID(), time() + ttl, $crackerBinaryId);
+      $benchmark = Factory::getBenchmarkFactory()->save($newBenchmark);
+    }
+
+    return $benchmark;
+  }
+
+  //removes all values where the time to live has been exceeded
+  public static function refreshCache()
+  {
     $qF = new QueryFilter("ttl", time(), "<");
     Factory::getFileTaskFactory()->massDeletion([Factory::FILTER => $qF]);
+  }
 
-}
-
-//removes all values in cache
-public static function deleteCache() {
+  //removes all values in cache
+  public static function deleteCache()
+  {
     Factory::getBenchmarkFactory()->massDeletion([]);
-}
+  }
 
-public static function getCacheOfAgent($agentID) {
+  public static function getCacheOfAgent($agentID)
+  {
     $qF = new QueryFilter("agentID", $agentID, "=");
     $oF = new OrderFilter(ttl, "DESC");
 
     $benchmarks = Factory::getBenchmarkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
     return $benchmarks;
+  }
 }
-}
-
-?>
