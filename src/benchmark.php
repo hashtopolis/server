@@ -37,7 +37,13 @@ if (isset($_GET['id'])) {
 
 foreach ($benchmarks as $benchmark) {
   $devices = HardwareGroupUtils::getDevicesFromBenchmark($benchmark);
-  $benchmark->setHardwareGroupId($devices);
+
+  $tmp_devices_tuple = array_count_values(explode("\n", $devices));
+  $devices_tuple = array();
+  foreach ($tmp_devices_tuple as $key => $value) {
+    $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
+  }
+  $benchmark->setHardwareGroupId(implode("\n", $devices_tuple));
 }
 
 
