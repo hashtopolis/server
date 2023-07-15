@@ -15,9 +15,10 @@
     <table class="table table-bordered table-sm" id="benchmarks">
       <thead>
         <tr>
-          <th>Benchmark id</th>
-          <th>Benchmark Cmd</th>
-          <th>Benchmark Hashmode</th>
+          <th>id</th>
+          <th>Cmd</th>
+          <th>Hashmode</th>
+          <th>Cracker Binary</th>
           <th>CPU/GPU</th>
           <th>Benchmark value</th>
           <th>ttl</th>
@@ -30,6 +31,7 @@
             <td><a href="benchmark.php?id=[[benchmark.getId()]]">[[benchmark.getId()]]</a></td>
             <td><a >[[benchmark.getAttackParameters()]]</a></td>
             <td><a >[[benchmark.getHashMode()]]</a></td>
+            <td><a >[[benchmark.getCrackerBinaryId()]]</a></td>
             <td><a >[[str_replace("\n","<br>",[[benchmark.getHardwareGroupId()]])]]</a></td>
             <td><a >[[benchmark.getBenchmarkValue()]]</a></td>
             <td data-sort="[[benchmark.getTtl()]]">[[date([[config.getVal(DConfig::TIME_FORMAT)]], [[benchmark.getTtl()]])]]</td>

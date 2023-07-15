@@ -1,6 +1,8 @@
 <?php
 use DBA\QueryFilter;
 use DBA\Factory;
+use DBA\OrderFilter;
+use DBA\CrackerBinary;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -35,21 +37,32 @@ if (isset($_GET['id'])) {
   $benchmarks = Factory::getBenchmarkFactory()->filter([]);
 }
 
-foreach ($benchmarks as $benchmark) {
-  $devices = HardwareGroupUtils::getDevicesFromBenchmark($benchmark);
+$oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
+$versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
+usort($versions, ["Util", "versionComparisonBinary"]);
+ 
+ foreach ($benchmarks as $benchmark) {
+   //format the devices pretty
+   $devices = HardwareGroupUtils::getDevicesFromBenchmark($benchmark);
 
-  $tmp_devices_tuple = array_count_values(explode("\n", $devices));
-  $devices_tuple = array();
-  foreach ($tmp_devices_tuple as $key => $value) {
-    $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
-  }
-  $benchmark->setHardwareGroupId(implode("\n", $devices_tuple));
+   $tmp_devices_tuple = array_count_values(explode("\n", $devices));
+   $devices_tuple = array();
+   foreach ($tmp_devices_tuple as $key => $value) {
+     $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
+    }
+    $benchmark->setHardwareGroupId(implode("\n", $devices_tuple));
+
+    //get the correct cracker binary for the benchmarks
+    foreach ($versions as $version) {
+      if ($benchmark->getCrackerBinaryId() == $version->getId()) {
+
+        $benchmark->setCrackerBinaryId($version->getBinaryName() . " " . $version->getVersion());
+        break;
+      }
+    }
 }
-
 
 UI::add('benchmarks', $benchmarks);
 UI::add('numBenchmarks', sizeof($benchmarks));
 
 echo Template::getInstance()->render(UI::getObjects());
-
-?>
