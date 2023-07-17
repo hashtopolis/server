@@ -13,13 +13,14 @@ public static function updateHardwareOfAgent($devices, $agent) {
 
   if(isset($res)) {
       Factory::getAgentFactory()->set($agent, Agent::HARDWARE_GROUP_ID, $res->getId());  
-  } else {
-      //nieuwe hardware group maken en id bij agent zetten
+    } else {
+      //make new hardwareGroup and add the id to the agent
       $newHardwareGroup = new HardwareGroup(null, $devices);
       $savedHardwareGroup = Factory::getHardwareGroupFactory()->save($newHardwareGroup);
-
+      
       Factory::getAgentFactory()->set($agent, Agent::HARDWARE_GROUP_ID, $savedHardwareGroup->getId());
     }
+  return $agent;
 }
 
 public static function getDevicesFromBenchmark($benchmark) {
