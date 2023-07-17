@@ -21,11 +21,6 @@ class HashAPI extends AbstractBaseAPI {
       return ['GET'];
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return Hash::class;
     }   
@@ -46,12 +41,6 @@ class HashAPI extends AbstractBaseAPI {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
 
     protected function createObject($QUERY): int {
       /* Dummy code to implement abstract functions */

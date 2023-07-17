@@ -19,11 +19,6 @@ class TaskAPI extends AbstractBaseAPI {
       return "/api/v2/ui/tasks";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_PRETASK_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return Task::class;
     }
@@ -33,7 +28,7 @@ class TaskAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ["crackerBinary", "crackerBinaryType", "hashlist"];
+      return ["crackerBinary", "crackerBinaryType", "hashlist", "speeds"];
     }
 
     protected function getFilterACL(): array {
@@ -47,12 +42,6 @@ class TaskAPI extends AbstractBaseAPI {
       "files" => ['type' => 'array', 'subtype' => 'int'],
     ];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
 
     protected function createObject($QUERY): int {
       /* Parameter is used as primary key in database */

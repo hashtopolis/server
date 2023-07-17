@@ -15,6 +15,7 @@
         "editorconfig.editorconfig",
         "github.vscode-pull-request-github",
         "ms-python.python",
+        "ms-python.flake8",
         "mtxr.sqltools",
         "mtxr.sqltools-driver-mysql"
       ],

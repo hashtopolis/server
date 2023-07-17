@@ -17,9 +17,6 @@ class HashlistAPI extends AbstractBaseAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/hashlists";
     }
-    public function getPermission(): string {
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
 
     public static function getDBAclass(): string {
       return Hashlist::class;
@@ -44,12 +41,6 @@ class HashlistAPI extends AbstractBaseAPI {
         "sourceData" => ['type' => 'str'],
       ];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return AccessUtils::userCanAccessHashlists($object, $this->getUser());
-    }
-    
 
     protected function createObject($QUERY): int {
       // Cast to createHashlist compatible upload format

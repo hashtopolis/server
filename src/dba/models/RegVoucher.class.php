@@ -74,4 +74,9 @@ class RegVoucher extends AbstractModel {
   const REG_VOUCHER_ID = "regVoucherId";
   const VOUCHER = "voucher";
   const TIME = "time";
+
+  const PERM_CREATE = "permRegVoucherCreate";
+  const PERM_READ = "permRegVoucherRead";
+  const PERM_UPDATE = "permRegVoucherUpdate";
+  const PERM_DELETE = "permRegVoucherDelete";
 }

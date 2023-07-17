@@ -17,7 +17,7 @@ import utils
 class Hashtypes(utils.TestBase):
     def getBaseURI(self):
         return '/ui/hashtypes'
-    
+
     def do_get(self):
         uri = self.getURI()
         headers = self._headers
@@ -39,7 +39,6 @@ class Hashtypes(utils.TestBase):
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.assertEqual(r.status_code, 200, msg=uri)
 
-
     def test_patch(self):
         # TODO: Boring to only request the first one
         stamp = datetime.datetime.now().isoformat()
@@ -47,18 +46,17 @@ class Hashtypes(utils.TestBase):
         obj = self.do_get()['values'][0]
         uri = uri = self.getURI(obj)
         headers = self._headers
-        
+
         payload = {
             'description': f'MD5 - {stamp}',
             'isSalted': False,
             'isSlowHash': False
-      }
+        }
 
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
         self.assertEqual(r.status_code, 201, msg=r.text)
         for key in payload.keys():
             self.assertEqual(r.json()[key], payload[key], msg=r.text)
-        
 
     def do_create(self, payload, retval):
         uri = uri = self.getURI()
@@ -67,12 +65,10 @@ class Hashtypes(utils.TestBase):
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
         self.assertEqual(r.status_code, retval, msg=r.text)
 
-
     def test_create_wildcard(self):
         for p in sorted(Path(__file__).parent.glob('create_hashtype_*.json')):
             payload = json.loads(p.read_text('UTF-8'))
             self.do_create(payload, 201)
-
 
     def test_create_binary_without_body(self):
         """ Should fail, since invalid parameters are invalid """
@@ -97,6 +93,7 @@ class Hashtypes(utils.TestBase):
         }
         ''')
         self.do_create(payload, 500)
+
 
 if __name__ == '__main__':
     unittest.main()

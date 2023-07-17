@@ -100,4 +100,9 @@ class Speed extends AbstractModel {
   const TASK_ID = "taskId";
   const SPEED = "speed";
   const TIME = "time";
+
+  const PERM_CREATE = "permSpeedCreate";
+  const PERM_READ = "permSpeedRead";
+  const PERM_UPDATE = "permSpeedUpdate";
+  const PERM_DELETE = "permSpeedDelete";
 }

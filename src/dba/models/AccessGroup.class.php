@@ -61,4 +61,9 @@ class AccessGroup extends AbstractModel {
   
   const ACCESS_GROUP_ID = "accessGroupId";
   const GROUP_NAME = "groupName";
+
+  const PERM_CREATE = "permAccessGroupCreate";
+  const PERM_READ = "permAccessGroupRead";
+  const PERM_UPDATE = "permAccessGroupUpdate";
+  const PERM_DELETE = "permAccessGroupDelete";
 }

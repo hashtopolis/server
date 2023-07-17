@@ -23,11 +23,6 @@ class ConfigAPI extends AbstractBaseAPI {
       return ['GET', 'PATCH'];
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return Config::class;
     }   
@@ -49,11 +44,6 @@ class ConfigAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
     protected function createObject($QUERY): int {
        /* Dummy code to implement abstract functions */
        assert(False, "Configs cannot be created via API");

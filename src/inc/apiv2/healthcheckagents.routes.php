@@ -23,11 +23,6 @@ class HealthCheckAgentAPI extends AbstractBaseAPI {
       return ['GET'];
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return HealthCheckAgent::class;
     }
@@ -46,11 +41,6 @@ class HealthCheckAgentAPI extends AbstractBaseAPI {
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
-    }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
     }
     
     protected function createObject($QUERY): int {

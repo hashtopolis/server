@@ -152,4 +152,9 @@ class HealthCheckAgent extends AbstractModel {
   const START = "start";
   const END = "end";
   const ERRORS = "errors";
+
+  const PERM_CREATE = "permHealthCheckAgentCreate";
+  const PERM_READ = "permHealthCheckAgentRead";
+  const PERM_UPDATE = "permHealthCheckAgentUpdate";
+  const PERM_DELETE = "permHealthCheckAgentDelete";
 }

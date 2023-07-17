@@ -10,9 +10,9 @@ import datetime
 from pathlib import Path
 from io import BytesIO
 
-from hashtopolis import Hashlist 
 from hashtopolis import FileImport
 from hashtopolis import File
+
 
 class TasksTest(unittest.TestCase):
     def test_create_file(self):
@@ -31,7 +31,7 @@ class TasksTest(unittest.TestCase):
         file_obj.save()
 
         file_obj2 = File()
-                
+
         assert len(file_obj2.objects.filter(filename=filename)) == 1
         file_obj.delete()
 
@@ -56,9 +56,7 @@ class TasksTest(unittest.TestCase):
         id = file_obj.id
         obj = File.objects.get(fileId=id)
 
-        assert obj.isSecret == True
-
-        
+        assert obj.isSecret is True
 
     def test_delete_file(self):
         stamp = datetime.datetime.now().isoformat()
@@ -98,11 +96,8 @@ class TasksTest(unittest.TestCase):
         file_obj = File(**payload)
         file_obj.save()
 
-
-        to_check = file_obj.id
-        
         # One-to-one casting
-        objects = File.objects.filter(fileId=to_check,expand='accessGroup')
+        objects = File.objects.filter(fileId=file_obj.id, expand='accessGroup')
         assert objects[0].accessGroup_set.groupName == 'Default Group'
 
         file_obj.delete()

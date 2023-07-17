@@ -152,4 +152,9 @@ class Hash extends AbstractModel {
   const CHUNK_ID = "chunkId";
   const IS_CRACKED = "isCracked";
   const CRACK_POS = "crackPos";
+
+  const PERM_CREATE = "permHashCreate";
+  const PERM_READ = "permHashRead";
+  const PERM_UPDATE = "permHashUpdate";
+  const PERM_DELETE = "permHashDelete";
 }

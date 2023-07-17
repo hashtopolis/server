@@ -243,4 +243,9 @@ class User extends AbstractModel {
   const OTP2 = "otp2";
   const OTP3 = "otp3";
   const OTP4 = "otp4";
+
+  const PERM_CREATE = "permUserCreate";
+  const PERM_READ = "permUserRead";
+  const PERM_UPDATE = "permUserUpdate";
+  const PERM_DELETE = "permUserDelete";
 }

@@ -9,30 +9,32 @@ import unittest
 import datetime
 from pathlib import Path
 
-from hashtopolis import Hashlist 
+from hashtopolis import Hashlist
 from hashtopolis import Task
 from hashtopolis import HashtopolisConnector, HashtopolisConfig
 
 import requests
 
+from test_hashlists import do_create_hashlist
 
-class TasksTest(unittest.TestCase):
+
+def do_create_task(hashlist):
+    p = Path(__file__).parent.joinpath('create_task_001.json')
+    payload = json.loads(p.read_text('UTF-8'))
+    payload['hashlistId'] = int(hashlist._id)
+    obj = Task(**payload)
+    obj.save()
+    return obj
+
+
+class TaskTest(unittest.TestCase):
     def test_create_task(self):
-        p = Path(__file__).parent.joinpath('create_hashlist_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        hashlist = Hashlist(**payload)
-        hashlist.save()
-
-        for p in sorted(Path(__file__).parent.glob('create_task_001.json')):
-            payload = json.loads(p.read_text('UTF-8'))
-            payload['hashlistId'] = int(hashlist._id)
-            obj = Task(**payload)
-            obj.save()
-
+        hashlist = do_create_hashlist()
+        obj = do_create_task(hashlist)
 
         obj.delete()
         hashlist.delete()
-    
+
     def test_expand_hashlists(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -45,12 +47,11 @@ class TasksTest(unittest.TestCase):
             obj = Task(**payload)
             obj.save()
 
-        obj_test = Task().objects.filter(taskId=obj.id,expand='hashlist')[0]
+        obj_test = Task().objects.filter(taskId=obj.id, expand='hashlist')[0]
         assert obj_test.hashlist_set.name == hashlist.name
-    
+
         obj.delete()
         hashlist.delete()
-
 
     def test_patch(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
@@ -71,9 +72,9 @@ class TasksTest(unittest.TestCase):
         obj.save()
 
         obj = Task.objects.get_first()
-        
+
         self.assertEqual(obj.taskName, f'Dummy Task - {stamp}')
-    
+
     def test_patch_color_null(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -85,7 +86,7 @@ class TasksTest(unittest.TestCase):
             payload['hashlistId'] = int(hashlist._id)
             task = Task(**payload)
             task.save()
-        
+
         config = HashtopolisConfig()
         conn = HashtopolisConnector(f'/ui/tasks/{task.id}', config)
         conn.authenticate()
@@ -103,7 +104,6 @@ class TasksTest(unittest.TestCase):
         hashlist.delete()
         task.delete()
 
-
     def test_runtime(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -116,14 +116,12 @@ class TasksTest(unittest.TestCase):
         task = Task(**payload)
         task.save()
 
-        id = task.id
-
         obj = Task.objects.get(taskId=task.id)
         self.assertEqual(obj.useNewBench, 0)
 
         obj.delete()
         hashlist.delete()
-    
+
     def test_speed(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -135,8 +133,6 @@ class TasksTest(unittest.TestCase):
         payload['hashlistId'] = int(hashlist._id)
         task = Task(**payload)
         task.save()
-
-        id = task.id
 
         obj = Task.objects.get(taskId=task.id)
         self.assertEqual(obj.useNewBench, 1)

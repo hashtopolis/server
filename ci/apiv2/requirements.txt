@@ -1,2 +1,4 @@
+click
+click_log
 confidence
 tuspy

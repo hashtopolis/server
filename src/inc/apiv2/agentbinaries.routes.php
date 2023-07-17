@@ -18,11 +18,6 @@ class AgentBinaryAPI extends AbstractBaseAPI {
       return "/api/v2/ui/agentbinaries";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return AgentBinary::class;
     }    
@@ -47,12 +42,7 @@ class AgentBinaryAPI extends AbstractBaseAPI {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
+  
     protected function createObject($QUERY): int {
       AgentBinaryUtils::newBinary(
         $QUERY[AgentBinary::TYPE],

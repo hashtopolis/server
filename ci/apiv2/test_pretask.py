@@ -10,7 +10,7 @@ import datetime
 from pathlib import Path
 from io import BytesIO
 
-from hashtopolis import Pretask 
+from hashtopolis import Pretask
 from hashtopolis import File
 from hashtopolis import FileImport
 
@@ -27,7 +27,7 @@ class PretaskTest(unittest.TestCase):
         assert obj.taskName == payload.get('taskName')
 
         pretask.delete()
-    
+
     def test_patch_pretask(self):
         p = Path(__file__).parent.joinpath('create_pretask_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -73,7 +73,6 @@ class PretaskTest(unittest.TestCase):
         file_obj = File(**payload)
         file_obj.save()
 
-
         # Create pretask
         p = Path(__file__).parent.joinpath('create_pretask_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -83,11 +82,12 @@ class PretaskTest(unittest.TestCase):
 
         to_check = pretask.id
 
-        objects = Pretask.objects.filter(pretaskId=to_check,expand='pretaskFiles')
+        objects = Pretask.objects.filter(pretaskId=to_check, expand='pretaskFiles')
         assert objects[0].pretaskFiles_set[0].filename == filename
 
         file_obj.delete()
         pretask.delete()
+
 
 if __name__ == '__main__':
     unittest.main()

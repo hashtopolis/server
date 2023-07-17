@@ -12,12 +12,13 @@ import abc
 
 import confidence
 
+
 class TestBase(unittest.TestCase, abc.ABC):
     @abc.abstractmethod
     def getBaseURI(self):
         pass
 
-    def getURI(self, obj_id = None):
+    def getURI(self, obj_id=None):
         if obj_id is None:
             # Base object
             return self._uri
@@ -38,7 +39,6 @@ class TestBase(unittest.TestCase, abc.ABC):
         cls._cfg = confidence.load_name('hashtopolis-test', load_order=load_order)
         cls._api_endpoint = cls._cfg['hashtopolis_uri'] + '/api/v2'
         cls._uri = cls._api_endpoint + cls.getBaseURI(cls)
-        
 
         auth_uri = cls._api_endpoint + '/auth/token'
         auth = (cls._cfg['username'], cls._cfg['password'])
@@ -51,3 +51,18 @@ class TestBase(unittest.TestCase, abc.ABC):
             'Authorization': 'Bearer ' + cls._token,
             'Content-Type': 'application/json'
         }
+
+
+class BaseTest(unittest.TestCase):
+    @classmethod
+    def setUp(cls):
+        cls.obj_heap = []
+
+    @classmethod
+    def tearDown(cls):
+        while len(cls.obj_heap) > 0:
+            obj = cls.obj_heap.pop()
+            obj.delete()
+
+    def delete_after_test(self, obj):
+        self.obj_heap.append(obj)

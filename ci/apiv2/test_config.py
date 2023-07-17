@@ -6,7 +6,7 @@
 #
 import unittest
 
-from hashtopolis import Config 
+from hashtopolis import Config
 
 
 class Configs(unittest.TestCase):
@@ -24,7 +24,7 @@ class Configs(unittest.TestCase):
         assert obj2.value == "1"
 
         obj2.value = "0"
-        obj.save() 
+        obj.save()
 
 
 if __name__ == '__main__':

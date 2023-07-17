@@ -4,33 +4,32 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
-import json
 import unittest
 import time
-from pathlib import Path
 
 from hashtopolis import GlobalPermissionGroup
 from hashtopolis import User
+
 
 class GlobalPermissionGroupsTest(unittest.TestCase):
     def test_create_globalpermissiongroup(self):
         stamp = int(time.time() * 1000)
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
-            permissions={'viewHashlistAccess':True}
+            permissions={'viewHashlistAccess': True}
         )
         obj = globalpermissiongroup.save()
 
         obj = GlobalPermissionGroup.objects.get(id=globalpermissiongroup.id)
         assert obj.name == globalpermissiongroup.name
         globalpermissiongroup.delete()
-    
+
     def test_patch_globalpermissiongroup(self):
         stamp = int(time.time() * 1000)
-        permissions = {'viewHashlistAccess':True}
+        permissions = {'viewHashlistAccess': True}
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
-            permissions = permissions
+            permissions=permissions
         )
         globalpermissiongroup.save()
         assert globalpermissiongroup.permissions == permissions
@@ -86,6 +85,7 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         obj = GlobalPermissionGroup.objects.get(id=globalpermissiongroup.id, expand='user')
         assert len(obj.user_set) > 0
         assert obj.user_set[0].name == user.name
+
 
 if __name__ == '__main__':
     unittest.main()

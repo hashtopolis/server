@@ -17,11 +17,6 @@ class SupertaskAPI extends AbstractBaseAPI {
       return "/api/v2/ui/supertasks";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return Supertask::class;
     }
@@ -44,12 +39,6 @@ class SupertaskAPI extends AbstractBaseAPI {
         "pretasks" => ['type' => 'array', 'subtype' => 'int']
       ];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
 
     protected function createObject($QUERY): int {
       SupertaskUtils::createSupertask(

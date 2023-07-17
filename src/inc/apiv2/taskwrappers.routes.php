@@ -21,11 +21,6 @@ class TaskWrappersAPI extends AbstractBaseAPI {
       return "/api/v2/ui/taskwrappers";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return TaskWrapper::class;
     }    
@@ -52,11 +47,6 @@ class TaskWrappersAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
     protected function createObject($QUERY): int {
       assert(False, "TaskWrappers cannot be created via API");
       return -1;

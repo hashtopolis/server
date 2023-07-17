@@ -55,7 +55,8 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
   });
 
   $group->get('', function (Request $request, Response $response) use ($app): Response {
-
+    /* Hold collection of all scopes discovered */
+    $all_scopes = [];
 
     $paths = [];
     $components["ListResponse"] = [
@@ -131,8 +132,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
       ]
     ];
 
-
-
     /* Iterate over routes */
     $routes = $app->getRouteCollector()->getRoutes();
     foreach ($routes as $route) {
@@ -150,7 +149,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
         continue;
       }
 
-
       /* Retrieve parameters */
       $apiClassName = explode(':', $reflectionCallable)[0];
       $class = new $apiClassName($app->getContainer());
@@ -161,7 +159,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
       /* Quick to find out if single parameter object is used */
       $singleObject = ((strstr($path, '/{id:')) !== false);
       $name = substr($class->getDBAClass(), 4);
-
 
       /**
        * Create component objects
@@ -246,6 +243,11 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
       /**
        * Create path objects
        */
+
+      /* Determine the scopes required for the call */
+      $required_scopes = getRequiredPermissions($class->getDBAClass(), $method);
+      array_push($all_scopes, ...$required_scopes);
+
       $paths[$path][$method] = [
         "tags" => [
           $name . 's'
@@ -276,7 +278,7 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
         "security" => [
           [
             "bearerAuth" => [
-              "todo.all"
+              $required_scopes
             ]
           ]
         ]
@@ -571,40 +573,43 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
         "type" => "string",
         "example" => "role.all"
       ]
-      ];
+    ];
 
-      $components["ObjectRequest"] = [
-        "type" => "object",
-        "properties" => [
-          "expand" => [
-            "type" => "string",
-          ],
-          "expires" => [
-            "type" => "integer"
-          ]
+    $components["ObjectRequest"] = [
+      "type" => "object",
+      "properties" => [
+        "expand" => [
+          "type" => "string",
         ],
-        "additionalProperties" => false
-      ];
+        "expires" => [
+          "type" => "integer"
+        ]
+      ],
+      "additionalProperties" => false
+    ];
 
-      $components["ObjectListRequest"] = [
-        "type" => "object",
-        "properties" => [
-          "expand" => [
-            "type" => "string",
-          ],
-          "filter" => [
-            "type" => "array",
-            "items" => [
-              "type" => "string",
-              "example" => "",
-            ]
-          ]
+    $components["ObjectListRequest"] = [
+      "type" => "object",
+      "properties" => [
+        "expand" => [
+          "type" => "string",
         ],
-        "additionalProperties" => false
-      ];
+        "filter" => [
+          "type" => "array",
+          "items" => [
+            "type" => "string",
+            "example" => "",
+          ]
+        ]
+      ],
+      "additionalProperties" => false
+    ];
+
     /**
      * Build final result
      */
+    $unique_all_scopes = array_unique($all_scopes);
+    asort($unique_all_scopes);
     $result = [
       "openapi" => "3.0.1",
       "info" => [
@@ -616,11 +621,6 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
           "url" => "/"
         ],
       ],
-      "security" => [
-        [
-          "bearerAuth" => [],
-        ],
-      ],
       "paths" => $paths,
       "components" => [
         "schemas" => $components,
@@ -629,7 +629,8 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
             "type" => "http",
             "description" => "JWT Authorization header using the Bearer scheme.",
             "scheme" => "bearer",
-            "bearerFormat" => "JWT"
+            "bearerFormat" => "JWT",
+            "scopes" => array_values($unique_all_scopes),
           ],
           "basicAuth" => [
             "type" => "http",

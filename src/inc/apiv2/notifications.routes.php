@@ -19,11 +19,6 @@ class NotificationSettingAPI extends AbstractBaseAPI {
       return "/api/v2/ui/notifications";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return NotificationSetting::class;
     }
@@ -44,12 +39,6 @@ class NotificationSettingAPI extends AbstractBaseAPI {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  ['actionFilter' => ['type' => 'str(256)']];
     }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
-    }
-    
 
     protected function createObject($QUERY): int {
       $dummyPost = [];

@@ -100,4 +100,9 @@ class CrackerBinary extends AbstractModel {
   const VERSION = "version";
   const DOWNLOAD_URL = "downloadUrl";
   const BINARY_NAME = "binaryName";
+
+  const PERM_CREATE = "permCrackerBinaryCreate";
+  const PERM_READ = "permCrackerBinaryRead";
+  const PERM_UPDATE = "permCrackerBinaryUpdate";
+  const PERM_DELETE = "permCrackerBinaryDelete";
 }

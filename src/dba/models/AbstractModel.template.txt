@@ -50,4 +50,6 @@ class __MODEL_NAME__ extends AbstractModel {
   __MODEL_GETTER_SETTER__
   
   __MODEL_VARIABLE_NAMES__
+
+  __MODEL_PERMISSION_DEFINES__
 }

@@ -18,11 +18,6 @@ class CrackerBinaryTypeAPI extends AbstractBaseAPI {
       return "/api/v2/ui/crackertypes";
     }
 
-    public function getPermission(): string {
-      // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
-    }
-
     public static function getDBAclass(): string {
       return CrackerBinaryType::class;
     }
@@ -42,11 +37,6 @@ class CrackerBinaryTypeAPI extends AbstractBaseAPI {
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
-    }
-
-    protected function checkPermission(object $object): bool
-    {
-      return true;
     }
     
     protected function createObject($QUERY): int {
