@@ -11,6 +11,11 @@ require_once(dirname(__FILE__) . "/../src/inc/info.php");
 require_once(dirname(__FILE__) . "/../src/inc/Util.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/Encryption.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/utils/AccessUtils.class.php");
+require_once(dirname(__FILE__) . "/../src/inc/utils/BenchmarkUtils.class.php");
+require_once(dirname(__FILE__) . "/../src/inc/utils/HardwareGroupUtils.class.php");
+require_once(dirname(__FILE__) . "/../src/inc/SConfig.class.php");
+require_once(dirname(__FILE__) . "/../src/inc/Dataset.class.php");
+
 require_once(dirname(__FILE__) . "/HashtopolisTest.class.php");
 require_once(dirname(__FILE__) . "/HashtopolisTestFramework.class.php");
 
