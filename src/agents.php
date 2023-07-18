@@ -70,7 +70,7 @@ if (isset($_GET['id'])) {
     foreach ($tmp_devices_tuple as $key => $value) {
       $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
     }
-    $hardwareGroup->setDevices(implode("\n", $devices_tuple));
+    $agent->setHardwareGroupId(implode("\n", $devices_tuple));
 
     UI::add('agent', $agent);
     UI::add('users', Factory::getUserFactory()->filter([]));
