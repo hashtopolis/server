@@ -161,12 +161,18 @@ class BenchmarkUtils
     return true;
   }
 
-  public static function saveBenchmarkInCache($attackParameters, $hardwareGroup, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId)
+  public static function saveBenchmarkInCache($attackParameters, $hardwareGroupId, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId)
   {
+    $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
+
+    if (!isset($hardwareGroup)) {
+      return null;
+    }
+
     $cleanAttackParameters = self::cleanupAttackParameters($attackParameters);
 
     $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
-    $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
+    $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroupId, "=");
 
     $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
 
@@ -175,7 +181,7 @@ class BenchmarkUtils
       $foundBenchmark->setBenchmarkValue($benchmarkValue);
       $benchmark = Factory::getBenchmarkFactory()->update($foundBenchmark);
     } else {
-      $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroup->getID(), time() + ttl, $crackerBinaryId);
+      $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroupId, time() + ttl, $crackerBinaryId);
       $benchmark = Factory::getBenchmarkFactory()->save($newBenchmark);
     }
 

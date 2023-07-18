@@ -30,7 +30,7 @@ CREATE TABLE `Agent` (
   `agentName`       VARCHAR(100) NOT NULL,
   `uid`             VARCHAR(100) NOT NULL,
   `os`              INT(11)      NOT NULL,
-  `devices`         TEXT         NOT NULL,
+  `hardwareGroupId` INT(11)      DEFAULT NULL,
   `cmdPars`         VARCHAR(256) NOT NULL,
   `ignoreErrors`    TINYINT(4)   NOT NULL,
   `isActive`        TINYINT(4)   NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE `AgentBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `AgentBinary` (`agentBinaryId`, `type`, `version`, `operatingSystems`, `filename`, `updateTrack`, `updateAvailable`) VALUES
-  (1, 'python', '0.5.0', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
+  (1, 'python', '0.7.1', 'Windows, Linux, OS X', 'hashtopolis.zip', 'stable', '');
 
 CREATE TABLE `AgentError` (
   `agentErrorId` INT(11) NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE `AgentStat` (
   `agentId`     INT(11)     NOT NULL,
   `statType`    INT(11)     NOT NULL,
   `time`        BIGINT      NOT NULL,
-  `value`       VARCHAR(64) NOT NULL
+  `value`       VARCHAR(128) NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `AgentZap` (
@@ -90,12 +90,12 @@ CREATE TABLE `Assignment` (
 CREATE TABLE `Chunk` (
   `chunkId`      INT(11)    NOT NULL,
   `taskId`       INT(11)    NOT NULL,
-  `skip`         BIGINT(20) NOT NULL,
-  `length`       BIGINT(20) NOT NULL,
+  `skip`         BIGINT(20) UNSIGNED NOT NULL,
+  `length`       BIGINT(20) UNSIGNED NOT NULL,
   `agentId`      INT(11)    NULL,
   `dispatchTime` BIGINT     NOT NULL,
   `solveTime`    BIGINT     NOT NULL,
-  `checkpoint`   BIGINT(20) NOT NULL,
+  `checkpoint`   BIGINT(20) UNSIGNED NOT NULL,
   `progress`     INT(11)    NULL,
   `state`        INT(11)    NOT NULL,
   `cracked`      INT(11)    NOT NULL,
@@ -124,8 +124,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (16, 3, 'batchSize', '50000'),
   (18, 2, 'yubikey_id', ''),
   (19, 2, 'yubikey_key', ''),
-  (20, 2, 'yubikey_url', 'http://api.yubico.com/wsapi/2.0/verify'),
-  (21, 4, 'donateOff', '0'),
+  (20, 2, 'yubikey_url', 'https://api.yubico.com/wsapi/2.0/verify'),
   (22, 3, 'pagingSize', '5000'),
   (23, 3, 'plainTextMaxLength', '200'),
   (24, 3, 'hashMaxLength', '1024'),
@@ -143,7 +142,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (36, 4, 'showTaskPerformance', '0'),
   (37, 1, 'ruleSplitSmallTasks', '0'),
   (38, 1, 'ruleSplitAlways', '0'),
-  (39, 1, 'ruleSplitDisable', '0'),
+  (39, 1, 'ruleSplitDisable', '1'),
   (41, 4, 'agentStatLimit', '100'),
   (42, 1, 'agentDataLifetime', '3600'),
   (43, 4, 'agentStatTension', '0'),
@@ -196,7 +195,7 @@ CREATE TABLE `CrackerBinary` (
 ) ENGINE = InnoDB;
 
 INSERT INTO `CrackerBinary` (`crackerBinaryId`, `crackerBinaryTypeId`, `version`, `downloadUrl`, `binaryName`) VALUES
-  (1, 1, '5.1.0', 'https://hashcat.net/files/hashcat-5.1.0.7z', 'hashcat');
+  (1, 1, '6.2.6', 'https://hashcat.net/files/hashcat-6.2.6.7z', 'hashcat');
 
 CREATE TABLE `CrackerBinaryType` (
   `crackerBinaryTypeId` INT(11)     NOT NULL,
@@ -208,12 +207,13 @@ INSERT INTO `CrackerBinaryType` (`crackerBinaryTypeId`, `typeName`, `isChunkingA
   (1, 'hashcat', 1);
 
 CREATE TABLE `File` (
-  `fileId`   INT(11)      NOT NULL,
-  `filename` VARCHAR(100) NOT NULL,
-  `size`     BIGINT(20)   NOT NULL,
-  `isSecret` TINYINT(4)   NOT NULL,
-  `fileType` INT(11)      NOT NULL,
-  `accessGroupId` INT(11) NOT NULL
+  `fileId`        INT(11)      NOT NULL,
+  `filename`      VARCHAR(100) NOT NULL,
+  `size`          BIGINT(20)   NOT NULL,
+  `isSecret`      TINYINT(4)   NOT NULL,
+  `fileType`      INT(11)      NOT NULL,
+  `accessGroupId` INT(11)      NOT NULL,
+  `lineCount`     BIGINT(20)   DEFAULT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `FilePretask` (
@@ -237,7 +237,7 @@ CREATE TABLE `FileDelete` (
 CREATE TABLE `Hash` (
   `hashId`      INT(11)      NOT NULL,
   `hashlistId`  INT(11)      NOT NULL,
-  `hash`        TEXT         NOT NULL,
+  `hash`        MEDIUMTEXT   NOT NULL,
   `salt`        VARCHAR(256) DEFAULT NULL,
   `plaintext`   VARCHAR(256) DEFAULT NULL,
   `timeCracked` BIGINT       DEFAULT NULL,
@@ -250,7 +250,7 @@ CREATE TABLE `HashBinary` (
   `hashBinaryId` INT(11)       NOT NULL,
   `hashlistId`   INT(11)       NOT NULL,
   `essid`        VARCHAR(100)  NOT NULL,
-  `hash`         MEDIUMTEXT    NOT NULL,
+  `hash`         LONGTEXT    NOT NULL,
   `plaintext`    VARCHAR(1024) DEFAULT NULL,
   `timeCracked`  BIGINT        DEFAULT NULL,
   `chunkId`      INT(11)       DEFAULT NULL,
@@ -272,7 +272,8 @@ CREATE TABLE `Hashlist` (
   `accessGroupId` INT(11)      NOT NULL,
   `notes`         TEXT         NOT NULL,
   `brainId`       INT(11)      NOT NULL,
-  `brainFeatures` TINYINT(4)   NOT NULL
+  `brainFeatures` TINYINT(4)   NOT NULL,
+  `isArchived`    TINYINT(4)   NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `HashlistHashlist` (
@@ -297,10 +298,12 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (21,    'osCommerce, xt:Commerce', 1, 0),
   (22,    'Juniper Netscreen/SSG (ScreenOS)', 1, 0),
   (23,    'Skype', 1, 0),
-  (30,    'md5(unicode($pass).$salt)', 1, 0),
-  (40,    'md5($salt.unicode($pass))', 1, 0),
+  (24,    'SolarWinds Serv-U', 0, 0),
+  (30,    'md5(utf16le($pass).$salt)', 1, 0),
+  (40,    'md5($salt.utf16le($pass))', 1, 0),
   (50,    'HMAC-MD5 (key = $pass)', 1, 0),
   (60,    'HMAC-MD5 (key = $salt)', 1, 0),
+  (70,    'md5(utf16le($pass))', 0, 0),
   (100,   'SHA1', 0, 0),
   (101,   'nsldap, SHA-1(Base64), Netscape LDAP SHA', 0, 0),
   (110,   'sha1($pass.$salt)', 1, 0),
@@ -309,23 +312,25 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (120,   'sha1($salt.$pass)', 1, 0),
   (121,   'SMF >= v1.1', 1, 0),
   (122,   'OS X v10.4, v10.5, v10.6', 0, 0),
-  (123,   'EPi', 0, 0),
   (124,   'Django (SHA-1)', 0, 0),
   (125,   'ArubaOS', 0, 0),
-  (130,   'sha1(unicode($pass).$salt)', 1, 0),
+  (130,   'sha1(utf16le($pass).$salt)', 1, 0),
   (131,   'MSSQL(2000)', 0, 0),
   (132,   'MSSQL(2005)', 0, 0),
   (133,   'PeopleSoft', 0, 0),
-  (140,   'sha1($salt.unicode($pass))', 1, 0),
+  (140,   'sha1($salt.utf16le($pass))', 1, 0),
   (141,   'EPiServer 6.x < v4', 0, 0),
   (150,   'HMAC-SHA1 (key = $pass)', 1, 0),
   (160,   'HMAC-SHA1 (key = $salt)', 1, 0),
+  (170,   'sha1(utf16le($pass))', 0, 0),
   (200,   'MySQL323', 0, 0),
   (300,   'MySQL4.1/MySQL5+', 0, 0),
   (400,   'phpass, MD5(Wordpress), MD5(Joomla), MD5(phpBB3)', 0, 0),
   (500,   'md5crypt, MD5(Unix), FreeBSD MD5, Cisco-IOS MD5 2', 0, 0),
   (501,   'Juniper IVE', 0, 0),
   (600,   'BLAKE2b-512', 0, 0),
+  (610,   'BLAKE2b-512($pass.$salt)', 1, 0),
+  (620,   'BLAKE2b-512($salt.$pass)', 1, 0),
   (900,   'MD4', 0, 0),
   (1000,  'NTLM', 0, 0),
   (1100,  'Domain Cached Credentials (DCC), MS Cache', 1, 0),
@@ -335,11 +340,12 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (1411,  'SSHA-256(Base64), LDAP {SSHA256}', 0, 0),
   (1420,  'sha256($salt.$pass)', 1, 0),
   (1421,  'hMailServer', 0, 0),
-  (1430,  'sha256(unicode($pass).$salt)', 1, 0),
-  (1440,  'sha256($salt.unicode($pass))', 1, 0),
+  (1430,  'sha256(utf16le($pass).$salt)', 1, 0),
+  (1440,  'sha256($salt.utf16le($pass))', 1, 0),
   (1441,  'EPiServer 6.x >= v4', 0, 0),
   (1450,  'HMAC-SHA256 (key = $pass)', 1, 0),
   (1460,  'HMAC-SHA256 (key = $salt)', 1, 0),
+  (1470,  'sha256(utf16le($pass))', 0, 0),
   (1500,  'descrypt, DES(Unix), Traditional DES', 0, 0),
   (1600,  'md5apr1, MD5(APR), Apache MD5', 0, 0),
   (1700,  'SHA512', 0, 0),
@@ -347,16 +353,19 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (1711,  'SSHA-512(Base64), LDAP {SSHA512}', 0, 0),
   (1720,  'sha512($salt.$pass)', 1, 0),
   (1722,  'OS X v10.7', 0, 0),
-  (1730,  'sha512(unicode($pass).$salt)', 1, 0),
+  (1730,  'sha512(utf16le($pass).$salt)', 1, 0),
   (1731,  'MSSQL(2012), MSSQL(2014)', 0, 0),
-  (1740,  'sha512($salt.unicode($pass))', 1, 0),
+  (1740,  'sha512($salt.utf16le($pass))', 1, 0),
   (1750,  'HMAC-SHA512 (key = $pass)', 1, 0),
   (1760,  'HMAC-SHA512 (key = $salt)', 1, 0),
+  (1770,  'sha512(utf16le($pass))', 0, 0),
   (1800,  'sha512crypt, SHA512(Unix)', 0, 0),
+  (2000,  'STDOUT', 0, 0),
   (2100,  'Domain Cached Credentials 2 (DCC2), MS Cache', 0, 1),
   (2400,  'Cisco-PIX MD5', 0, 0),
   (2410,  'Cisco-ASA MD5', 1, 0),
   (2500,  'WPA/WPA2', 0, 1),
+  (2501,  'WPA-EAPOL-PMK', 0, 1),
   (2600,  'md5(md5($pass))', 0, 0),
   (2611,  'vBulletin < v3.8.5', 1, 0),
   (2612,  'PHPS', 0, 0),
@@ -365,6 +374,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (3000,  'LM', 0, 0),
   (3100,  'Oracle H: Type (Oracle 7+), DES(Oracle)', 1, 0),
   (3200,  'bcrypt, Blowfish(OpenBSD)', 0, 0),
+  (3500,  'md5(md5(md5($pass)))', 0, 0),
   (3710,  'md5($salt.md5($pass))', 1, 0),
   (3711,  'Mediawiki B type', 0, 0),
   (3800,  'md5($salt.$pass.$salt)', 1, 0),
@@ -373,11 +383,15 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (4110,  'md5($salt.md5($pass.$salt))', 1, 0),
   (4300,  'md5(strtoupper(md5($pass)))', 0, 0),
   (4400,  'md5(sha1($pass))', 0, 0),
+  (4410,  'md5(sha1($pass).$salt)', 1, 0),
   (4500,  'sha1(sha1($pass))', 0, 0),
+  (4510,  'sha1(sha1($pass).$salt)', 1, 0),
   (4520,  'sha1($salt.sha1($pass))', 1, 0),
   (4521,  'Redmine Project Management Web App', 0, 0),
   (4522,  'PunBB', 0, 0),
   (4700,  'sha1(md5($pass))', 0, 0),
+  (4710,  'sha1(md5($pass).$salt)', 1, 0),
+  (4711,  'Huawei sha1(md5($pass).$salt)', 1, 0),
   (4800,  'MD5(Chap), iSCSI CHAP authentication', 1, 0),
   (4900,  'sha1($salt.$pass.$salt)', 1, 0),
   (5000,  'SHA-3(Keccak)', 0, 0),
@@ -415,9 +429,12 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (7200,  'GRUB 2', 0, 1),
   (7300,  'IPMI2 RAKP HMAC-SHA1', 1, 0),
   (7400,  'sha256crypt, SHA256(Unix)', 0, 0),
+  (7401,  'MySQL $A$ (sha256crypt)', 0, 0),
   (7500,  'Kerberos 5 AS-REQ Pre-Auth', 0, 0),
   (7700,  'SAP CODVN B (BCODE)', 0, 0),
+  (7701,  'SAP CODVN B (BCODE) from RFC_READ_TABLE', 0, 0),
   (7800,  'SAP CODVN F/G (PASSCODE)', 0, 0),
+  (7801,  'SAP CODVN F/G (PASSCODE) from RFC_READ_TABLE', 0, 0),
   (7900,  'Drupal7', 0, 0),
   (8000,  'Sybase ASE', 0, 0),
   (8100,  'Citrix Netscaler', 0, 0),
@@ -454,7 +471,13 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (10600, 'PDF 1.7 Level 3 (Acrobat 9)', 0, 0),
   (10700, 'PDF 1.7 Level 8 (Acrobat 10 - 11)', 0, 0),
   (10800, 'SHA384', 0, 0),
+  (10810, 'sha384($pass.$salt)', 1, 0),
+  (10820, 'sha384($salt.$pass)', 1, 0),
+  (10830, 'sha384(utf16le($pass).$salt)', 1, 0),
+  (10840, 'sha384($salt.utf16le($pass))', 1, 0),
+  (10870, 'sha384(utf16le($pass))', 0, 0),
   (10900, 'PBKDF2-HMAC-SHA256', 0, 1),
+  (10901, 'RedHat 389-DS LDAP (PBKDF2-HMAC-SHA256)', 0, 1),
   (11000, 'PrestaShop', 1, 0),
   (11100, 'PostgreSQL Challenge-Response Authentication (MD5)', 0, 0),
   (11200, 'MySQL Challenge-Response Authentication (SHA1)', 0, 0),
@@ -463,7 +486,11 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (11500, 'CRC32', 1, 0),
   (11600, '7-Zip', 0, 0),
   (11700, 'GOST R 34.11-2012 (Streebog) 256-bit', 0, 0),
+  (11750, 'HMAC-Streebog-256 (key = $pass), big-endian', 0, 0),
+  (11760, 'HMAC-Streebog-256 (key = $salt), big-endian', 0, 0),
   (11800, 'GOST R 34.11-2012 (Streebog) 512-bit', 0, 0),
+  (11850, 'HMAC-Streebog-512 (key = $pass), big-endian', 0, 0),
+  (11860, 'HMAC-Streebog-512 (key = $salt), big-endian', 0, 0),
   (11900, 'PBKDF2-HMAC-MD5', 0, 1),
   (12000, 'PBKDF2-HMAC-SHA1', 0, 1),
   (12001, 'Atlassian (PBKDF2-HMAC-SHA1)', 0, 1),
@@ -492,14 +519,27 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (13731, 'VeraCrypt PBKDF2-HMAC-Whirlpool + AES, Serpent, Twofish', 0, 1),
   (13732, 'VeraCrypt PBKDF2-HMAC-Whirlpool + AES-Twofish, Serpent-AES, Twofish-Serpent', 0, 1),
   (13733, 'VeraCrypt PBKDF2-HMAC-Whirlpool + Serpent-Twofish-AES', 0, 1),
+  (13741, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + boot-mode + AES', 0, 1),
+  (13742, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + boot-mode + AES-Twofish', 0, 1),
+  (13743, 'VeraCrypt PBKDF2-HMAC-RIPEMD160 + boot-mode + AES-Twofish-Serpent', 0, 1),
   (13751, 'VeraCrypt PBKDF2-HMAC-SHA256 + AES, Serpent, Twofish', 0, 1),
   (13752, 'VeraCrypt PBKDF2-HMAC-SHA256 + AES-Twofish, Serpent-AES, Twofish-Serpent', 0, 1),
   (13753, 'VeraCrypt PBKDF2-HMAC-SHA256 + Serpent-Twofish-AES', 0, 1),
+  (13761, 'VeraCrypt PBKDF2-HMAC-SHA256 + boot-mode (PIM + AES | Twofish)', 0, 1),
+  (13762, 'VeraCrypt PBKDF2-HMAC-SHA256 + boot-mode + Serpent-AES', 0, 1),
+  (13763, 'VeraCrypt PBKDF2-HMAC-SHA256 + boot-mode + Serpent-Twofish-AES', 0, 1),
+  (13771, 'VeraCrypt Streebog-512 + XTS 512 bit', 0, 1),
+  (13772, 'VeraCrypt Streebog-512 + XTS 1024 bit', 0, 1),
+  (13773, 'VeraCrypt Streebog-512 + XTS 1536 bit', 0, 1),
+  (13781, 'VeraCrypt Streebog-512 + XTS 512 bit + boot-mode (legacy)', 0, 1),
+  (13782, 'VeraCrypt Streebog-512 + XTS 1024 bit + boot-mode (legacy)', 0, 1),
+  (13783, 'VeraCrypt Streebog-512 + XTS 1536 bit + boot-mode (legacy)', 0, 1),
   (13800, 'Windows 8+ phone PIN/Password', 1, 0),
   (13900, 'OpenCart', 1, 0),
   (14000, 'DES (PT = $salt, key = $pass)', 1, 0),
   (14100, '3DES (PT = $salt, key = $pass)', 1, 0),
   (14400, 'sha1(CX)', 1, 0),
+  (14500, 'Linux Kernel Crypto API (2.4)', 0, 0),
   (14600, 'LUKS 10', 0, 1),
   (14700, 'iTunes Backup < 10.0 11', 0, 1),
   (14800, 'iTunes Backup >= 10.0 11', 0, 1),
@@ -508,11 +548,13 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (15100, 'Juniper/NetBSD sha1crypt', 0, 1),
   (15200, 'Blockchain, My Wallet, V2', 0, 0),
   (15300, 'DPAPI masterkey file v1 and v2', 0, 1),
+  (15310, 'DPAPI masterkey file v1 (context 3)', 0, 1),
   (15400, 'ChaCha20', 0, 0),
   (15500, 'JKS Java Key Store Private Keys (SHA1)', 0, 0),
   (15600, 'Ethereum Wallet, PBKDF2-HMAC-SHA256', 0, 1),
   (15700, 'Ethereum Wallet, SCRYPT', 0, 0),
   (15900, 'DPAPI master key file version 2 + Active Directory domain context', 0, 1),
+  (15910, 'DPAPI masterkey file v2 (context 3)', 0, 1),
   (16000, 'Tripcode', 0, 0),
   (16100, 'TACACS+', 0, 0),
   (16200, 'Apple Secure Notes', 0, 1),
@@ -524,6 +566,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (16800, 'WPA-PMKID-PBKDF2', 0, 1),
   (16801, 'WPA-PMKID-PMK', 0, 1),
   (16900, 'Ansible Vault', 0, 1),
+  (17010, 'GPG (AES-128/AES-256 (SHA-1($pass)))', 0, 1),
   (17200, 'PKZIP (Compressed)', 0, 0),
   (17210, 'PKZIP (Uncompressed)', 0, 0),
   (17220, 'PKZIP (Compressed Multi-File)', 0, 0),
@@ -566,6 +609,7 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (20600, 'Oracle Transportation Management (SHA256)', 0, 0),
   (20710, 'sha256(sha256($pass).$salt)', 1, 0),
   (20711, 'AuthMe sha256', 0, 0),
+  (20720, 'sha256($salt.sha256($pass))', 1, 0),
   (20800, 'sha256(md5($pass))', 0, 0),
   (20900, 'md5(sha1($pass).md5($pass).sha1($pass))', 0, 0),
   (21000, 'BitShares v0.x - sha512(sha512_bin(pass))', 0, 0),
@@ -573,7 +617,9 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (21200, 'md5(sha1($salt).md5($pass))', 1, 0),
   (21300, 'md5($salt.sha1($salt.$pass))', 1, 0),
   (21400, 'sha256(sha256_bin(pass))', 0, 0),
+  (21420, 'sha256($salt.sha256_bin($pass))', 1, 0),
   (21500, 'SolarWinds Orion', 0, 0),
+  (21501, 'SolarWinds Orion v2', 0, 0),
   (21600, 'Web2py pbkdf2-sha512', 0, 0),
   (21700, 'Electrum Wallet (Salt-Type 4)', 0, 0),
   (21800, 'Electrum Wallet (Salt-Type 5)', 0, 0),
@@ -582,7 +628,140 @@ INSERT INTO `HashType` (`hashTypeId`, `description`, `isSalted`, `isSlowHash`) V
   (22100, 'BitLocker', 0, 0),
   (22200, 'Citrix NetScaler (SHA512)', 0, 0),
   (22300, 'sha256($salt.$pass.$salt)', 1, 0),
+  (22301, 'Telegram client app passcode (SHA256)', 0, 0),
   (22400, 'AES Crypt (SHA256)', 0, 0),
+  (22500, 'MultiBit Classic .key (MD5)', 0, 0),
+  (22600, 'Telegram Desktop App Passcode (PBKDF2-HMAC-SHA1)', 0, 0),
+  (22700, 'MultiBit HD (scrypt)', 0, 1),
+  (22911, 'RSA/DSA/EC/OPENSSH Private Keys ($0$)', 0, 0),
+  (22921, 'RSA/DSA/EC/OPENSSH Private Keys ($6$)', 0, 0),
+  (22931, 'RSA/DSA/EC/OPENSSH Private Keys ($1, $3$)', 0, 0),
+  (22941, 'RSA/DSA/EC/OPENSSH Private Keys ($4$)', 0, 0),
+  (22951, 'RSA/DSA/EC/OPENSSH Private Keys ($5$)', 0, 0),
+  (23001, 'SecureZIP AES-128', 0, 0),
+  (23002, 'SecureZIP AES-192', 0, 0),
+  (23003, 'SecureZIP AES-256', 0, 0),
+  (23100, 'Apple Keychain', 0, 1),
+  (23200, 'XMPP SCRAM PBKDF2-SHA1', 0, 0),
+  (23300, 'Apple iWork', 0, 0),
+  (23400, 'Bitwarden', 0, 0),
+  (23500, 'AxCrypt 2 AES-128', 0, 0),
+  (23600, 'AxCrypt 2 AES-256', 0, 0),
+  (23700, 'RAR3-p (Uncompressed)', 0, 0),
+  (23800, 'RAR3-p (Compressed)', 0, 0),
+  (23900, 'BestCrypt v3 Volume Encryption', 0, 0),
+  (24100, 'MongoDB ServerKey SCRAM-SHA-1', 0, 0),
+  (24200, 'MongoDB ServerKey SCRAM-SHA-256', 0, 0),
+  (24300, 'sha1($salt.sha1($pass.$salt))', 1, 0),
+  (24410, 'PKCS#8 Private Keys (PBKDF2-HMAC-SHA1 + 3DES/AES)', 0, 0),
+  (24420, 'PKCS#8 Private Keys (PBKDF2-HMAC-SHA256 + 3DES/AES)', 0, 0),
+  (24500, 'Telegram Desktop >= v2.1.14 (PBKDF2-HMAC-SHA512)', 0, 0),
+  (24600, 'SQLCipher', 0, 0),
+  (24700, 'Stuffit5', 0, 0),
+  (24800, 'Umbraco HMAC-SHA1', 0, 0),
+  (24900, 'Dahua Authentication MD5', 0, 0),
+  (25000, 'SNMPv3 HMAC-MD5-96/HMAC-SHA1-96', 0, 1),
+  (25100, 'SNMPv3 HMAC-MD5-96', 0, 1),
+  (25200, 'SNMPv3 HMAC-SHA1-96', 0, 1),
+  (25300, 'MS Office 2016 - SheetProtection', 0, 0),
+  (25400, 'PDF 1.4 - 1.6 (Acrobat 5 - 8) - edit password', 0, 0),
+  (25500, 'Stargazer Stellar Wallet XLM', 0, 0),
+  (25600, 'bcrypt(md5($pass)) / bcryptmd5', 0, 1),
+  (25700, 'MurmurHash', 1, 0),
+  (25800, 'bcrypt(sha1($pass)) / bcryptsha1', 0, 1),
+  (25900, 'KNX IP Secure - Device Authentication Code', 0, 0),
+  (26000, 'Mozilla key3.db', 0, 0),
+  (26100, 'Mozilla key4.db', 0, 0),
+  (26200, 'OpenEdge Progress Encode', 0, 0),
+  (26300, 'FortiGate256 (FortiOS256)', 0, 0),
+  (26401, 'AES-128-ECB NOKDF (PT = $salt, key = $pass)', 0, 0),
+  (26402, 'AES-192-ECB NOKDF (PT = $salt, key = $pass)', 0, 0),
+  (26403, 'AES-256-ECB NOKDF (PT = $salt, key = $pass)', 0, 0),
+  (26500, 'iPhone passcode (UID key + System Keybag)', 0, 0),
+  (26600, 'MetaMask Wallet', 0, 1),
+  (26700, 'SNMPv3 HMAC-SHA224-128', 0, 0),
+  (26800, 'SNMPv3 HMAC-SHA256-192', 0, 0),
+  (26900, 'SNMPv3 HMAC-SHA384-256', 0, 0),
+  (27000, 'NetNTLMv1 / NetNTLMv1+ESS (NT)', 0, 0),
+  (27100, 'NetNTLMv2 (NT)', 0, 0),
+  (27200, 'Ruby on Rails Restful Auth (one round, no sitekey)', 1, 0),
+  (27300, 'SNMPv3 HMAC-SHA512-384', 0, 0),
+  (27400, 'VMware VMX (PBKDF2-HMAC-SHA1 + AES-256-CBC)', 0, 0),
+  (27500, 'VirtualBox (PBKDF2-HMAC-SHA256 & AES-128-XTS)', 0, 1),
+  (27600, 'VirtualBox (PBKDF2-HMAC-SHA256 & AES-256-XTS)', 0, 1),
+  (27700, 'MultiBit Classic .wallet (scrypt)', 0, 0),
+  (27800, 'MurmurHash3', 1, 0),
+  (27900, 'CRC32C', 1, 0),
+  (28000, 'CRC64Jones', 1, 0),
+  (28100, 'Windows Hello PIN/Password', 0, 1),
+  (28200, 'Exodus Desktop Wallet (scrypt)', 0, 0),
+  (28300, 'Teamspeak 3 (channel hash)', 0, 0),
+  (28400, 'bcrypt(sha512($pass)) / bcryptsha512', 0, 0),
+  (28501, 'Bitcoin WIF private key (P2PKH), compressed', 0, 0),
+  (28502, 'Bitcoin WIF private key (P2PKH), uncompressed', 0, 0),
+  (28503, 'Bitcoin WIF private key (P2WPKH, Bech32), compressed', 0, 0),
+  (28504, 'Bitcoin WIF private key (P2WPKH, Bech32), uncompressed', 0, 0),
+  (28505, 'Bitcoin WIF private key (P2SH(P2WPKH)), compressed', 0, 0),
+  (28506, 'Bitcoin WIF private key (P2SH(P2WPKH)), uncompressed', 0, 0),
+  (28600, 'PostgreSQL SCRAM-SHA-256', 0, 1),
+  (28700, 'Amazon AWS4-HMAC-SHA256', 0, 0),
+  (28800, 'Kerberos 5, etype 17, DB', 0, 1),
+  (28900, 'Kerberos 5, etype 18, DB', 0, 1),
+  (29000, 'sha1($salt.sha1(utf16le($username).'':''.utf16le($pass)))', 0, 0),
+  (29100, 'Flask Session Cookie ($salt.$salt.$pass)', 0, 0),
+  (29200, 'Radmin3', 0, 0),
+  (29311, 'TrueCrypt RIPEMD160 + XTS 512 bit', 0, 0),
+  (29312, 'TrueCrypt RIPEMD160 + XTS 1024 bit', 0, 0),
+  (29313, 'TrueCrypt RIPEMD160 + XTS 1536 bit', 0, 0),
+  (29321, 'TrueCrypt SHA512 + XTS 512 bit', 0, 0),
+  (29322, 'TrueCrypt SHA512 + XTS 1024 bit', 0, 0),
+  (29323, 'TrueCrypt SHA512 + XTS 1536 bit', 0, 0),
+  (29331, 'TrueCrypt Whirlpool + XTS 512 bit', 0, 0),
+  (29332, 'TrueCrypt Whirlpool + XTS 1024 bit', 0, 0),
+  (29333, 'TrueCrypt Whirlpool + XTS 1536 bit', 0, 0),
+  (29341, 'TrueCrypt RIPEMD160 + XTS 512 bit + boot-mode', 0, 0),
+  (29342, 'TrueCrypt RIPEMD160 + XTS 1024 bit + boot-mode', 0, 0),
+  (29343, 'TrueCrypt RIPEMD160 + XTS 1536 bit + boot-mode', 0, 0),
+  (29411, 'VeraCrypt RIPEMD160 + XTS 512 bit', 0, 0),
+  (29412, 'VeraCrypt RIPEMD160 + XTS 1024 bit', 0, 0),
+  (29413, 'VeraCrypt RIPEMD160 + XTS 1536 bit', 0, 0),
+  (29421, 'VeraCrypt SHA512 + XTS 512 bit', 0, 0),
+  (29422, 'VeraCrypt SHA512 + XTS 1024 bit', 0, 0),
+  (29423, 'VeraCrypt SHA512 + XTS 1536 bit', 0, 0),
+  (29431, 'VeraCrypt Whirlpool + XTS 512 bit', 0, 0),
+  (29432, 'VeraCrypt Whirlpool + XTS 1024 bit', 0, 0),
+  (29433, 'VeraCrypt Whirlpool + XTS 1536 bit', 0, 0),
+  (29441, 'VeraCrypt RIPEMD160 + XTS 512 bit + boot-mode', 0, 0),
+  (29442, 'VeraCrypt RIPEMD160 + XTS 1024 bit + boot-mode', 0, 0),
+  (29443, 'VeraCrypt RIPEMD160 + XTS 1536 bit + boot-mode', 0, 0),
+  (29451, 'VeraCrypt SHA256 + XTS 512 bit', 0, 0),
+  (29452, 'VeraCrypt SHA256 + XTS 1024 bit', 0, 0),
+  (29453, 'VeraCrypt SHA256 + XTS 1536 bit', 0, 0),
+  (29461, 'VeraCrypt SHA256 + XTS 512 bit + boot-mode', 0, 0),
+  (29462, 'VeraCrypt SHA256 + XTS 1024 bit + boot-mode', 0, 0),
+  (29463, 'VeraCrypt SHA256 + XTS 1536 bit + boot-mode', 0, 0),
+  (29471, 'VeraCrypt Streebog-512 + XTS 512 bit', 0, 0),
+  (29472, 'VeraCrypt Streebog-512 + XTS 1024 bit', 0, 0),
+  (29473, 'VeraCrypt Streebog-512 + XTS 1536 bit', 0, 0),
+  (29481, 'VeraCrypt Streebog-512 + XTS 512 bit + boot-mode', 0, 0),
+  (29482, 'VeraCrypt Streebog-512 + XTS 1024 bit + boot-mode', 0, 0),
+  (29483, 'VeraCrypt Streebog-512 + XTS 1536 bit + boot-mode', 0, 0),
+  (29511, 'LUKS v1 SHA-1 + AES', 0, 1),
+  (29512, 'LUKS v1 SHA-1 + Serpent', 0, 1),
+  (29513, 'LUKS v1 SHA-1 + Twofish', 0, 1),
+  (29521, 'LUKS v1 SHA-256 + AES', 0, 1),
+  (29522, 'LUKS v1 SHA-256 + Serpent', 0, 1),
+  (29523, 'LUKS v1 SHA-256 + Twofish', 0, 1),
+  (29531, 'LUKS v1 SHA-512 + AES', 0, 1),
+  (29532, 'LUKS v1 SHA-512 + Serpent', 0, 1),
+  (29533, 'LUKS v1 SHA-512 + Twofish', 0, 1),
+  (29541, 'LUKS v1 RIPEMD-160 + AES', 0, 1),
+  (29542, 'LUKS v1 RIPEMD-160 + Serpent', 0, 1),
+  (29543, 'LUKS v1 RIPEMD-160 + Twofish', 0, 1),
+  (29600, 'Terra Station Wallet (AES256-CBC(PBKDF2($pass)))', 0, 1),
+  (29700, 'KeePass 1 (AES/Twofish) and KeePass 2 (AES) - keyfile only mode', 0, 1),
+  (30000, 'Python Werkzeug MD5 (HMAC-MD5 (key = $salt))', 0, 0),
+  (30120, 'Python Werkzeug SHA256 (HMAC-SHA256 (key = $salt))', 0, 0),
   (99999, 'Plaintext', 0, 0);
 
 CREATE TABLE `LogEntry` (
@@ -615,6 +794,7 @@ CREATE TABLE `Pretask` (
   `isCpuTask`           TINYINT(4)   NOT NULL,
   `useNewBench`         TINYINT(4)   NOT NULL,
   `priority`            INT(11)      NOT NULL,
+  `maxAgents`           INT(11)      NOT NULL,
   `isMaskImport`        TINYINT(4)   NOT NULL,
   `crackerBinaryTypeId` INT(11)      NOT NULL
 ) ENGINE = InnoDB;
@@ -677,6 +857,7 @@ CREATE TABLE `Task` (
   `keyspace`            BIGINT(20)   NOT NULL,
   `keyspaceProgress`    BIGINT(20)   NOT NULL,
   `priority`            INT(11)      NOT NULL,
+  `maxAgents`           INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
   `isSmall`             TINYINT(4)   NOT NULL,
   `isCpuTask`           TINYINT(4)   NOT NULL,
@@ -733,22 +914,25 @@ CREATE TABLE `User` (
 CREATE TABLE `Benchmark` (
   `benchmarkId` INT(11) NOT NULL,
   `benchmarkValue` VARCHAR(256) NOT NULL,
-  `hardwareGroupId`   int(11) NOT NULL,
-  `attackParameters`   VARCHAR(256) NOT NULL,
-  `ttl`  int(11) NOT NULL 
+  `hardwareGroupId`   INT(11) NOT NULL,
+  `crackerBinaryId`  INT(11) NOT NULL,
+  `attackParameters`   VARCHAR(512) NOT NULL,
+  `ttl`  int(11) NOT NULL,
+  `hashMode`  int(11) NOT NULL,
+  `benchmarkType`  varchar(10) NOT NULL
 )  ENGINE = InnoDB;
 
 CREATE TABLE `HardwareGroup` (
     `hardwareGroupId` INT(11) NOT NULL,
-    `devices` VARCHAR(256) NOT NULL,
+    `devices` VARCHAR(65000) NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `Zap` (
-  `zapId`      INT(11) NOT NULL,
-  `hash`       TEXT    NOT NULL,
-  `solveTime`  BIGINT  NOT NULL,
-  `agentId`    INT(11) NULL,
-  `hashlistId` INT(11) NOT NULL
+  `zapId`      INT(11)    NOT NULL,
+  `hash`       MEDIUMTEXT NOT NULL,
+  `solveTime`  BIGINT     NOT NULL,
+  `agentId`    INT(11)    NULL,
+  `hashlistId` INT(11)    NOT NULL
 ) ENGINE = InnoDB;
 
 CREATE TABLE `ApiKey` (
@@ -827,16 +1011,13 @@ ALTER TABLE `AccessGroupUser`
   ADD KEY `accessGroupId` (`accessGroupId`),
   ADD KEY `userId` (`userId`);
 
+ALTER TABLE `HardwareGroup`
+  ADD PRIMARY KEY (`hardwareGroupId`);
+
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`);
-
-ALTER TABLE `Benchmark`
-   ADD PRIMARY KEY (`benchmarkId`),
-   ADD KEY `agentId` (`agentId`);
-
-ALTER TABLE `HardwareGroup`
-    ADD PRIMARY KEY (`hardwareGroupId`);
+  -- ADD KEY `hardwareGroupId` (`hardwareGroupId`);
 
 ALTER TABLE `AgentBinary`
   ADD PRIMARY KEY (`agentBinaryId`);
@@ -995,6 +1176,11 @@ ALTER TABLE `Zap`
 ALTER TABLE `Preprocessor`
   ADD PRIMARY KEY (`preprocessorId`);
 
+ALTER TABLE `Benchmark`
+   ADD PRIMARY KEY (`benchmarkId`),
+   ADD KEY `crackerBinaryId` (`crackerBinaryId`),
+   ADD KEY `hardwareGroupId` (`hardwareGroupId`);
+
 -- Add AUTO_INCREMENT for tables
 ALTER TABLE `AccessGroup`
   MODIFY `accessGroupId` INT(11) NOT NULL AUTO_INCREMENT;
@@ -1122,17 +1308,17 @@ ALTER TABLE `TaskWrapper`
 ALTER TABLE `User`
   MODIFY `userId` INT(11) NOT NULL AUTO_INCREMENT;
 
-ALTER TABLE `Benchmark`
-  MODIFY `benchmarkId` INT(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `HardwareGroup`
-  MODIFY `hardwareGroupId` INT(11) NOT NULL AUTO_INCREMENT;
-
 ALTER TABLE `Zap`
   MODIFY `zapId` INT(11) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `Preprocessor`
   MODIFY `preprocessorId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `Benchmark`
+  MODIFY `benchmarkId` INT(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `HardwareGroup`
+  MODIFY `hardwareGroupId` INT(11) NOT NULL AUTO_INCREMENT;
 
 -- Add Constraints
 ALTER TABLE `AccessGroupAgent`
@@ -1145,6 +1331,7 @@ ALTER TABLE `AccessGroupUser`
 
 ALTER TABLE `Agent`
   ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+  -- ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
 
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `AgentError_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),
@@ -1245,7 +1432,8 @@ ALTER TABLE `User`
   ADD CONSTRAINT `User_ibfk_1` FOREIGN KEY (`rightGroupId`) REFERENCES `RightGroup` (`rightGroupId`);
 
 ALTER TABLE `Benchmark`
-      ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`HardwareGroupId`) REFERENCES `Agent` (`hardwareGroupId`);
+      ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`),
+      ADD CONSTRAINT `Benchmark_ibfk_2` FOREIGN KEY (`crackerBinaryId`) REFERENCES `CrackerBinary` (`crackerBinaryId`);
 
 ALTER TABLE `Zap`
   ADD CONSTRAINT `Zap_ibfk_1` FOREIGN KEY (`agentId`)    REFERENCES `Agent` (`agentId`),
