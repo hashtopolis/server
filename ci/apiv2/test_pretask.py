@@ -85,8 +85,8 @@ class PretaskTest(unittest.TestCase):
         objects = Pretask.objects.filter(pretaskId=to_check, expand='pretaskFiles')
         assert objects[0].pretaskFiles_set[0].filename == filename
 
-        file_obj.delete()
         pretask.delete()
+        file_obj.delete()
 
 
 if __name__ == '__main__':
