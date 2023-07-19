@@ -908,9 +908,6 @@ abstract class AbstractBaseAPI
       throw new HttpNotFoundException($request, "Object not found!");
     }
 
-    if (!$this->checkPermission($object)) {
-      throw new HttpForbiddenException($request, "No access to object!");
-    }
     return $object;
   }
 
