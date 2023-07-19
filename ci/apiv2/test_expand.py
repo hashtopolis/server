@@ -32,8 +32,8 @@ class Expand(unittest.TestCase):
         objects = obj.objects.filter(taskId=to_check, expand='crackerBinary')
         assert objects[0].crackerBinary_set.binaryName == 'hashcat'
 
-        hashlist_v2.delete()
         task_v2.delete()
+        hashlist_v2.delete()
 
     def test_accessgroups_usermembers_m2m(self):
         # Many-to-many casting
