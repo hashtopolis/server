@@ -730,10 +730,14 @@ abstract class AbstractBaseAPI
     $queryParams = $request->getQueryParams();
     $bodyParams = $request->getParsedBody();
 
-    if (array_key_exists($param, $queryParams)) {
+    // Check query parameters and make sure it is an array
+    if (is_array($queryParams) && array_key_exists($param, $queryParams)) {
       return intval($queryParams[$param]);
-    } elseif (array_key_exists($param, $bodyParams)) {
+    }
+    // Check body parameters and make sure it is an array
+    elseif (is_array($bodyParams) && array_key_exists($param, $bodyParams)) {
       return intval($bodyParams[$param]);
+    // Return default value if parameter not found
     } else {
       return $default;
     }
