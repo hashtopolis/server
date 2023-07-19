@@ -5,6 +5,7 @@ import json
 import time
 
 from hashtopolis import User
+from hashtopolis import HashtopolisError
 
 
 class AttributeTypes(unittest.TestCase):
@@ -44,10 +45,10 @@ class AttributeTypes(unittest.TestCase):
             globalPermissionGroupId=1,
             passwordHash='test',
         )
-        user.save()
-
-        assert user.message == 'Slim Application Error'
-        assert 'is not valid input key' in user.exception[0].get('message')
+        with self.assertRaises(HashtopolisError) as e:
+            user.save()
+        assert e.exception.args[1] == 'Creation of object failed'
+        assert 'is not valid input key' in e.exception.args[4]
 
     def test_get_private(self):
         stamp = int(time.time() * 1000)

@@ -10,6 +10,7 @@ import datetime
 from pathlib import Path
 
 from hashtopolis import Cracker
+from hashtopolis import HashtopolisError
 
 
 class Crackers(unittest.TestCase):
@@ -58,10 +59,11 @@ class Crackers(unittest.TestCase):
         p = Path(__file__).parent.joinpath('create_cracker_002.json')
         payload = json.loads(p.read_text('UTF-8'))
         cracker = Cracker(**payload)
-        cracker.save()
 
-        with self.assertRaises(AttributeError):
-            cracker.id
+        with self.assertRaises(HashtopolisError) as e:
+            cracker.save()
+        assert e.exception.args[1] == 'Creation of object failed'
+        assert 'Required parameter' in e.exception.args[4]
 
 
 if __name__ == '__main__':

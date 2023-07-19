@@ -9,6 +9,7 @@ import time
 
 from hashtopolis import GlobalPermissionGroup
 from hashtopolis import User
+from hashtopolis import HashtopolisError
 
 
 class GlobalPermissionGroupsTest(unittest.TestCase):
@@ -64,9 +65,11 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
             name=f'test-{stamp}',
             permissions='test',
         )
-        globalpermissiongroup.save()
-        with self.assertRaises(AttributeError):
-            globalpermissiongroup.id
+
+        with self.assertRaises(HashtopolisError) as e:
+            globalpermissiongroup.save()
+        assert e.exception.args[1] == 'Creation of object failed'
+        assert 'is not of type dict' in e.exception.args[4]
 
     def test_expand_globalpermissiongroup(self):
         stamp = int(time.time() * 1000)

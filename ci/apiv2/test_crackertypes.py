@@ -10,6 +10,7 @@ import datetime
 from pathlib import Path
 
 from hashtopolis import CrackerType
+from hashtopolis import HashtopolisError
 
 
 class CrackerTypes(unittest.TestCase):
@@ -58,10 +59,11 @@ class CrackerTypes(unittest.TestCase):
         p = Path(__file__).parent.joinpath('create_crackertype_002.json')
         payload = json.loads(p.read_text('UTF-8'))
         crackertype = CrackerType(**payload)
-        crackertype.save()
 
-        with self.assertRaises(AttributeError):
-            crackertype.id
+        with self.assertRaises(HashtopolisError) as e:
+            crackertype.save()
+        assert e.exception.args[1] == 'Creation of object failed'
+        assert 'is not of type string' in e.exception.args[4]
 
 
 if __name__ == '__main__':
