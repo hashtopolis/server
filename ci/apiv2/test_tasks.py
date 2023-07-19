@@ -102,7 +102,6 @@ class TaskTest(unittest.TestCase):
         assert obj.color == ''
 
         hashlist.delete()
-        task.delete()
 
     def test_runtime(self):
         p = Path(__file__).parent.joinpath('create_hashlist_001.json')
