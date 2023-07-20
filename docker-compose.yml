@@ -32,6 +32,8 @@ services:
   hashtopolis-frontend:
     container_name: hashtopolis-frontend
     image: hashtopolis/frontend:latest
+    environment:
+      HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
     restart: always
     depends_on: 
       - hashtopolis-backend
