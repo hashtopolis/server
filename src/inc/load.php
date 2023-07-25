@@ -87,7 +87,11 @@ catch (PDOException $e) {
       Util::randomString(32),
       Util::randomString(32)
     ];
-    file_put_contents($DIRECTORIES['config'] . "/config.json", json_encode(array('PEPPER' =>$PEPPER)));
+
+    $json_config_filepath = $DIRECTORIES['config'] . "/config.json";
+    if (file_put_contents($json_config_filepath, json_encode(array('PEPPER' =>$PEPPER))) === false) {
+      die("Cannot write configuration file '$json_config_filepath'!");
+    }
   }
   
   // save version and build
