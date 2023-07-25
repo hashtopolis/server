@@ -48,10 +48,14 @@ include(dirname(__FILE__) . "/mask.php");
 // include DBA
 require_once(dirname(__FILE__) . "/../dba/init.php");
 
-// create directories if not exists
+// create directories if not exists and ensure they are writeable
 foreach ($DIRECTORIES as $name => $path) {
   if (!file_exists($path)) {
-    mkdir($path);
+    if (mkdir($path) === false) {
+      die("Unable to create directory '$path'!");
+    }
+  } elseif (!is_writable($path)) {
+    die("Directory '$path' is not writable!");
   }
 }
 
