@@ -2,7 +2,6 @@
     "version": "0.2.0",
 
     "configurations": [
-
         {
             "name": "Listen for Xdebug",
             "type": "php",
@@ -47,7 +46,9 @@
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes",
                 "-S",
-                "localhost:0"
+                "localhost:0",
+                "-t",
+                "src"
             ],
             "program": "",
             "cwd": "${workspaceRoot}",
@@ -57,6 +58,13 @@
                 "uriFormat": "http://localhost:%s",
                 "action": "openExternally"
             }
+        },
+        {
+            "name": "Python: File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "justMyCode": true
         }
     ],
     "inputs": [

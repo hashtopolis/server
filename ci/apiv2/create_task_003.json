@@ -1,0 +1,23 @@
+{
+            "attackCmd": "#HL#  -a 0 ad a1",
+            "chunkSize": 1000,
+            "chunkTime": 600,
+            "color": "7C6EFF",
+            "crackerBinaryId": 1,
+            "crackerBinaryTypeId": 1,
+            "forcePipe": true,
+            "files": [],
+            "isArchived": false,
+            "isCpuTask": false,
+            "isSmall": false,
+            "maxAgents": 112,
+            "notes": "example-note",
+            "preprocessorCommand": "this-is-prepressor",
+            "priority": 10,
+            "skipKeyspace": 500,
+            "staticChunks": 2,
+            "statusTimer": 5,
+            "taskName": "Example - prepressor",
+            "useNewBench": false,
+            "preprocessorId": 1
+}

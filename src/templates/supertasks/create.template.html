@@ -23,7 +23,7 @@
 					  <td>
 						  <input type="checkbox" name="task[]" value="[[task.getId()]]" title="Pretask">
 						  {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
-							  <a href="tasks.php?id=[[task.getId()]]" title="[[task.getAttackCmd()]]">[[task.getTaskName()]]</a>
+							  <a href="pretasks.php?id=[[task.getId()]]" title="[[task.getAttackCmd()]]">[[task.getTaskName()]]</a>
 						  {{ELSE}}
 							  [[task.getTaskName()]]
 						  {{ENDIF}}

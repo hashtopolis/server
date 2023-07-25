@@ -98,7 +98,7 @@ class FileUtils {
     $fileDelete = new FileDelete(null, $file->getFilename(), time());
     Factory::getFileDeleteFactory()->save($fileDelete);
     Factory::getFileFactory()->delete($file);
-    unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
+    unlink(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename());
   }
   
   /**
@@ -111,9 +111,6 @@ class FileUtils {
    */
   public static function add($source, $file, $post, $view) {
     $fileCount = 0;
-    if (!file_exists(dirname(__FILE__) . "/../../files")) {
-      mkdir(dirname(__FILE__) . "/../../files");
-    }
     
     $accessGroup = Factory::getAccessGroupFactory()->get($post['accessGroupId']);
     if ($accessGroup == null) {
@@ -126,7 +123,7 @@ class FileUtils {
         if ($realname == "") {
           throw new HTException("Empty filename!");
         }
-        $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
+        $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $realname;
         $resp = Util::uploadFile($tmpfile, 'paste', $post['data']);
         if ($resp[0]) {
           $resp = Util::insertFile($tmpfile, $realname, $view, $accessGroup->getId());
@@ -159,7 +156,7 @@ class FileUtils {
           if ($realname[0] == '.') {
             $realname[0] = "_";
           }
-          $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
+          $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $toMove);
           if ($resp[0]) {
             $resp = Util::insertFile($tmpfile, $realname, $view, $accessGroup->getId());
@@ -190,7 +187,7 @@ class FileUtils {
           if ($realname[0] == '.') {
             $realname[0] = "_";
           }
-          $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
+          $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $realname;
           $resp = Util::uploadFile($tmpfile, $source, $import);
           if ($resp[0]) {
             $resp = Util::insertFile($tmpfile, $realname, $view, $accessGroup->getId());
@@ -215,7 +212,7 @@ class FileUtils {
         else if ($realname[0] == '.') {
           $realname[0] = "_";
         }
-        $tmpfile = dirname(__FILE__) . "/../../files/" . $realname;
+        $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $realname;
         if (stripos($post["url"], "https://") !== 0 && stripos($post["url"], "http://") !== 0 && stripos($post["url"], "ftp://") !== 0) {
           throw new HTException("Only downloads from http://, https:// and ftp:// are allowed!");
         }
@@ -305,7 +302,7 @@ class FileUtils {
       Factory::getPretaskFactory()->set($pretask, Pretask::ATTACK_CMD, str_replace($file->getFilename(), $newName, $pretask->getAttackCmd()));
     }
     
-    $success = rename(dirname(__FILE__) . "/../../files/" . $file->getFilename(), dirname(__FILE__) . "/../../files/" . $newName);
+    $success = rename(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename(), Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $newName);
     if (!$success) {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Failed to rename file!");
@@ -346,7 +343,7 @@ class FileUtils {
   public static function fileCountLines($fileId) {
     $file = Factory::getFileFactory()->get($fileId);
     $fileName = $file->getFilename();
-    $filePath = dirname(__FILE__) . "/../../files/" . $fileName;
+    $filePath = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $fileName;
     if (!file_exists($filePath)) {
       throw new HTException("File not found!");
     }

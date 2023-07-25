@@ -13,5 +13,15 @@ src/files/*
 *.phpproj.user
 *.lock
 
+# dynamically created by installer
+src/install/.htaccess
+
 # for docker stuff
 .env
+
+# for composer stuff
+vendor
+
+# For python cache files
+__pycache__
+.pytest_cache

@@ -1,0 +1,17 @@
+{
+    "python.testing.unittestArgs": [
+        "-v",
+        "-s",
+        "./ci",
+        "-p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+        "ci"
+    ],
+    "intelephense.environment.includePaths": [
+        "../vendor"
+    ]
+}

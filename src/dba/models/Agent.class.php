@@ -61,6 +61,28 @@ class Agent extends AbstractModel {
     return $dict;
   }
   
+  static function getFeatures() {
+    $dict = array();
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentId"];
+    $dict['agentName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentName"];
+    $dict['uid'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "uid"];
+    $dict['os'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "os"];
+    $dict['devices'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "devices"];
+    $dict['cmdPars'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "cmdPars"];
+    $dict['ignoreErrors'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "ignoreErrors"];
+    $dict['isActive'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isActive"];
+    $dict['isTrusted'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isTrusted"];
+    $dict['token'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "token"];
+    $dict['lastAct'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastAct"];
+    $dict['lastTime'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastTime"];
+    $dict['lastIp'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastIp"];
+    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
+    $dict['cpuOnly'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "cpuOnly"];
+    $dict['clientSignature'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "clientSignature"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "agentId";
   }
