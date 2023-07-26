@@ -1,10 +1,18 @@
 {%TEMPLATE->struct/head%}
 {%TEMPLATE->struct/menu%}
-<h2>Hashlists ([[numHashlists]])</h2>
+<h2>{{IF [[showArchived]]}}Archived {{ENDIF}}Hashlists ([[numHashlists]])</h2>
 {%TEMPLATE->struct/messages%}
 {{IF [[zap]] && [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
 	{%TEMPLATE->hashlists/zap%}
 {{ENDIF}}
+<div style='overflow: auto;'>
+  {{IF [[showArchived]]}}
+    <a style="float: left; margin-right: 5px;" href="hashlists.php" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}">Show current</a>
+  {{ELSE}}
+    <a style="float: left; margin-right: 5px;" href="hashlists.php?archived=true" class="btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}">Show archived</a>
+  {{ENDIF}}
+  <br><br>
+</div>
 <div class="card">
   <div class="table-responsive">
     <table class="table table-bordered table-sm" id="hashlists">
@@ -70,13 +78,22 @@
 				    </td>
 				    <td>
 					    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]]}}
-						    <form class="float-right" action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[entry.getVal('hashlist').getId()]]?')) return false;">
+						    <form class="float-right mx-1" action="hashlists.php" method="POST" onSubmit="if (!confirm('Really delete hashlist [[entry.getVal('hashlist').getId()]]?')) return false;">
 							    <input type="hidden" name="action" value="[[$DHashlistAction::DELETE_HASHLIST]]">
 							    <input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
 							    <input type="hidden" name="csrf" value="[[csrf]]">
                   <button type="submit" class='btn btn-danger' data-toggle="tooltip" data-placement="top" title="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
 						    </form>
 					    {{ENDIF}}
+                                            {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_HASHLIST_ACCESS]])]] && [[entry.getVal('hashlist').getIsArchived()]] == 0}}
+                                                    <form class="float-right mx-1" action="hashlists.php" method="POST" onSubmit="if (!confirm('Really archive hashlist [[entry.getVal('hashlist').getId()]]?')) return false;">
+                                                            <input type="hidden" name="action" value="[[$DHashlistAction::SET_ARCHIVED]]">
+                                                            <input type="hidden" name="archived" value="1">
+                                                            <input type="hidden" name="hashlist" value="[[entry.getVal('hashlist').getId()]]">
+                                                            <input type="hidden" name="csrf" value="[[csrf]]">
+                  <button type="submit" class='btn btn-warning' data-toggle="tooltip" data-placement="top" title="Archive"><i class="fas fa-archive" aria-hidden="true"></i></button>
+                                                    </form>
+                                            {{ENDIF}}
 				    </td>
 			    </tr>
 		    {{ENDFOREACH}}

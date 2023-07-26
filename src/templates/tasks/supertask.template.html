@@ -33,17 +33,6 @@
       [[set.getVal('numAssignments')]]
     {{ENDIF}}
   </td>
-  <td style='min-width: 95px' data-sort="[[set.getVal('filesSize')]]">
-    {{IF [[set.getVal('numFiles')]] > 0}}
-      [[set.getVal('numFiles')]]
-    {{ENDIF}}
-    {{IF [[set.getVal('fileSecret')]]}}
-      <span class="fas fa-lock" aria-hidden="true"></span>
-    {{ENDIF}}
-    {{IF [[set.getVal('numFiles')]] > 0}}
-      <br>([[Util::nicenum([[set.getVal('filesSize')]])]]B)
-    {{ENDIF}}
-  </td>
   <td style='min-width: 130px' data-sort="[[set.getVal('priority')]]">
     {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_TASK_ACCESS]])]]}}
       <form class="form-inline" action="tasks.php" method="POST">
@@ -55,6 +44,11 @@
       </form>
     {{ELSE}}
       [[set.getVal('priority')]]
+    {{ENDIF}}
+  </td>
+  <td class='num'>
+    {{IF [[set.getVal('maxAgents')]] > 0}}
+      [[set.getVal('maxAgents')]]
     {{ENDIF}}
   </td>
   <td style='min-width: 120px'>
@@ -100,8 +94,8 @@
                       <th>Dispatched / Searched</th>
                       <th>Cracked</th>
                       <th>Agents</th>
-                      <th>Files</th>
                       <th>Priority</th>
+                      <th>Max agents</th>
                       <th>Action</th>
                     </tr>
                   </thead>

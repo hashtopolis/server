@@ -42,6 +42,7 @@ foreach ($tasks as $task) {
   $subSet->addValue('chunkTime', $task->getChunkTime());
   $subSet->addValue('taskProgress', $task->getKeyspaceProgress());
   $subSet->addValue('priority', $task->getPriority());
+  $subSet->addValue('maxAgents', $task->getMaxAgents());
   $taskInfo = Util::getTaskInfo($task);
   $fileInfo = Util::getFileInfo($task, $accessGroups);
   $chunkInfo = Util::getChunkInfo($task);

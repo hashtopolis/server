@@ -104,7 +104,7 @@ class DNotificationType {
       case DNotificationType::LOG_FATAL:
         return DAccessControl::SERVER_CONFIG_ACCESS;
       case DNotificationType::NEW_AGENT:
-        return DAccessControl::VIEW_AGENT_ACCESS;
+        return DAccessControl::MANAGE_AGENT_ACCESS;
       case DNotificationType::DELETE_TASK:
         return DAccessControl::VIEW_TASK_ACCESS;
       case DNotificationType::DELETE_HASHLIST:

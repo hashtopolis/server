@@ -1,0 +1,25 @@
+name: Hashtopolis
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Start application containers
+        working-directory: .devcontainer
+        run: docker compose up -d
+      - name: Wait until entrypoint is finished and Hashtopolis is started
+        run: bash .github/scripts/await-hashtopolis-startup.sh
+      - name: Give Apache permissions on necessary directories # for the tests, only src/files and src/inc/utils/locks seem necessary
+        run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
+      - name: Run test suite
+        run: docker exec hashtopolis-server-dev php /var/www/html/ci/run.php -vmaster

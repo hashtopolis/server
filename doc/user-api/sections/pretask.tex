@@ -24,6 +24,30 @@
 				}
 				\end{verbatim}
 			}
+		\subsection*{\textit{setPretaskMaxAgents}}
+			Set the maximum number of assigned agents for a pretask.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskMaxAgents",
+				  "pretaskId": 1,
+				  "maxAgents": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "pretask",
+				  "request": "setPretaskMaxAgents",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
 		\subsection*{\textit{setPretaskName}}
 			Rename a preconfigured task.
 			{
@@ -168,7 +192,7 @@
 				\end{verbatim}
 			}
 		\subsection*{\textit{createPretask}}
-			Create a new preconfigured task
+			Create a new preconfigured task.
 			{
 				\color{blue}
 				\begin{verbatim}
@@ -184,6 +208,7 @@
 				  "isCpuOnly": false,
 				  "isSmall": true,
 				  "priority": 9000,
+				  "maxAgents": 4,
 				  "files": [
 				    1
 				  ],
@@ -264,6 +289,7 @@
 				  "benchmarkType": "runtime",
 				  "statusTimer": 5,
 				  "priority": 0,
+				  "maxAgents": 4,
 				  "isCpuOnly": false,
 				  "isSmall": false,
 				  "files": []

@@ -98,17 +98,31 @@ class APIGetChunk extends APIBasic {
         DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
+      if (TaskUtils::isSaturatedByOtherAgents($task, $this->agent)) {
+        Factory::getAgentFactory()->getDB()->commit();
+        LockUtils::release(Lock::CHUNKING);
+        DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
+        $this->sendErrorResponse(PActions::GET_CHUNK, "Task already saturated by other agents, no other task available!");
+      }
     }
-    
-    // if the best task is not the one we are working on, we should switch
-    DServerLog::log(DServerLog::TRACE, "Determine important task", [$this->agent, $task, $bestTask]);
-    $bestTask = TaskUtils::getImportantTask($bestTask, $task);
-    if ($bestTask->getId() != $task->getId()) {
+
+    if (TaskUtils::isSaturatedByOtherAgents($task, $this->agent)) {
       Factory::getAgentFactory()->getDB()->commit();
-      DServerLog::log(DServerLog::INFO, "Task with higher priority available!", [$this->agent]);
       LockUtils::release(Lock::CHUNKING);
       DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
-      $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
+      $this->sendErrorResponse(PActions::GET_CHUNK, "Task already saturated by other agents, other tasks available!");
+    }
+    else {
+      DServerLog::log(DServerLog::TRACE, "Determine important task", [$this->agent, $task, $bestTask]);
+      $bestTask = TaskUtils::getImportantTask($bestTask, $task);
+
+      if ($bestTask->getId() != $task->getId()) {
+        Factory::getAgentFactory()->getDB()->commit();
+        DServerLog::log(DServerLog::INFO, "Task with higher priority available!", [$this->agent]);
+        LockUtils::release(Lock::CHUNKING);
+        DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
+        $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
+      }
     }
     
     // find a chunk to assign

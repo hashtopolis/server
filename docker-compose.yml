@@ -1,25 +1,23 @@
-version: '3.8'
+version: '3.7'
 services:
-  hashtopolis:
-    container_name: hashtopolis
-    build: .
+  hashtopolis-backend:
+    container_name: hashtopolis-backend
+    image: hashtopolis/backend:latest
     restart: always
     volumes:
-      - ./src/import/:/var/www/html/import/:Z
-      - ./src/files/:/var/www/html/files/:Z
-      - ./src/inc/:/var/www/html/inc/:Z
+      - hashtopolis:/usr/local/share/hashtopolis:Z
+    environment:
+      HASHTOPOLIS_DB_USER: $MYSQL_USER
+      HASHTOPOLIS_DB_PASS: $MYSQL_PASSWORD
+      HASHTOPOLIS_DB_HOST: $HASHTOPOLIS_DB_HOST
+      HASHTOPOLIS_DB_DATABASE: $MYSQL_DATABASE
+      HASHTOPOLIS_ADMIN_USER: $HASHTOPOLIS_ADMIN_USER
+      HASHTOPOLIS_ADMIN_PASSWORD: $HASHTOPOLIS_ADMIN_PASSWORD
+      HASHTOPOLIS_APIV2_ENABLE: $HASHTOPOLIS_APIV2_ENABLE
     depends_on:
       - db
     ports:
       - 8080:80
-    cap_drop:
-      - ALL
-    cap_add:
-      # used to change files since non-priv user
-      - CHOWN
-      # used by apache to drop privs
-      - CAP_SETGID
-      - CAP_SETUID
   db:
     container_name: db
     image: mysql:5.7
@@ -28,18 +26,17 @@ services:
       - db:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASS
-      MYSQL_DATABASE: $MYSQL_DB
+      MYSQL_DATABASE: $MYSQL_DATABASE
       MYSQL_USER: $MYSQL_USER
-      MYSQL_PASSWORD: $MYSQL_PASS
-    cap_drop:
-      - ALL
-    cap_add:
-      # used to change files since non-priv user
-      - CHOWN
-      # used because container uses find command
-      - CAP_DAC_READ_SEARCH
-      # used for the gosu binary
-      - CAP_SETGID
-      - CAP_SETUID
+      MYSQL_PASSWORD: $MYSQL_PASSWORD
+  hashtopolis-frontend:
+    container_name: hashtopolis-frontend
+    image: hashtopolis/frontend:latest
+    restart: always
+    depends_on: 
+      - hashtopolis-backend
+    ports:
+      - 4200:4200
 volumes:
-  db:   
+  db:
+  hashtopolis:

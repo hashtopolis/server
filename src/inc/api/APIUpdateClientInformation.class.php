@@ -19,13 +19,13 @@ class APIUpdateClientInformation extends APIBasic {
     $cpuOnly = 1;
     foreach ($devices as $device) {
       $device = strtolower($device);
-      if ((strpos($device, "amd") !== false) || (strpos($device, "ati ") !== false) || (strpos($device, "radeon") !== false) || strpos($device, "nvidia") !== false || strpos($device, "gtx") !== false || strpos($device, "ti") !== false) {
+      if ((strpos($device, "amd") !== false) || (strpos($device, "ati ") !== false) || (strpos($device, "radeon") !== false) || strpos($device, "nvidia") !== false || strpos($device, "gtx") !== false || strpos($device, "ti") !== false|| strpos($device, "microsoft") != false) {
         $cpuOnly = 0;
       }
     }
     
     // save agent details
-    if (strlen($this->agent->getUid()) == 0) {
+    if (strlen($this->agent->getUid()) == 0 && $this->agent->getCpuOnly() == 0) {
       // we only update this variable on the first time, otherwise we would overwrite manual changes
       Factory::getAgentFactory()->set($this->agent, Agent::CPU_ONLY, $cpuOnly);
     }

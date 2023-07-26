@@ -19,6 +19,14 @@ class ConfigSection extends AbstractModel {
     return $dict;
   }
   
+  static function getFeatures() {
+    $dict = array();
+    $dict['configSectionId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "configSectionId"];
+    $dict['sectionName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "sectionName"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "configSectionId";
   }

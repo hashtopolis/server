@@ -315,7 +315,7 @@ class Util {
    * @return array of all files in the top-level directory /../import
    */
   public static function scanImportDirectory() {
-    $directory = dirname(__FILE__) . "/../import";
+    $directory = Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/";
     if (file_exists($directory) && is_dir($directory)) {
       $importDirectory = opendir($directory);
       $importFiles = array();
@@ -359,8 +359,12 @@ class Util {
     // check if there is an old deletion request for the same filename
     $qF = new QueryFilter(FileDelete::FILENAME, $name, "=");
     Factory::getFileDeleteFactory()->massDeletion([Factory::FILTER => $qF]);
-    
-    $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId);
+    if ($fileType == DFileType::RULE) {
+      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::rulefileLineCount($path));
+    }
+    else {
+      $file = new File(null, $name, Util::filesize($path), 1, $fileType, $accessGroupId, Util::fileLineCount($path));
+    }
     $file = Factory::getFileFactory()->save($file);
     if ($file == null) {
       return false;
@@ -519,6 +523,7 @@ class Util {
         $set->addValue('isSecret', $hashlist->getIsSecret());
         $set->addValue('usePreprocessor', $task->getUsePreprocessor());
         $set->addValue('priority', $task->getPriority());
+        $set->addValue('maxAgents', $task->getMaxAgents());
         $set->addValue('keyspace', $task->getKeyspace());
         $set->addValue('isActive', $taskInfo[2]);
         $set->addValue('sumProgress', $taskInfo[0]);
@@ -646,6 +651,47 @@ class Util {
     }
     
     return $pos;
+  }
+  
+  /**
+   * This counts the number of lines in a given file
+   * @param $file string Filepath you want to get the size from
+   * @return int -1 if the file doesn't exist, else filesize
+   */
+  public static function fileLineCount($file) {
+    if (!file_exists($file)) {
+      return -1;
+    }
+    // find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
+    ini_set('max_execution_time', '7200');
+    $file = new \SplFileObject($file, 'r');
+    $file->seek(PHP_INT_MAX);
+    
+    return $file->key();
+  }
+  
+  /**
+   * This counts the number of lines in a rule file, excluding lines starting with # and empty lines
+   * @param $file string Filepath you want to get the size from
+   * @return int -1 if the file doesn't exist, else filesize
+   */
+  public static function rulefileLineCount($file) {
+    if (!file_exists($file)) {
+      return -1;
+    }
+    // find out what a prettier solution for this would be, as opposed to setting the max execution time to an arbitrary two hours
+    ini_set('max_execution_time', '7200');
+    $lineCount = 0;
+    $handle = fopen($file, "r");
+    while (!feof($handle)) {
+      $line = fgets($handle);
+      if (!(Util::startsWith($line, '#') or trim($line) == "")) {
+        $lineCount = $lineCount + 1;
+      }
+    }
+    
+    fclose($handle);
+    return $lineCount;
   }
   
   /**
@@ -1014,8 +1060,8 @@ class Util {
           break;
         
         case "import":
-          if (file_exists(dirname(__FILE__) . "/../import/" . $sourcedata)) {
-            rename(dirname(__FILE__) . "/../import/" . $sourcedata, $target);
+          if (file_exists(Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $sourcedata)) {
+            rename(Factory::getStoredValueFactory()->get(DDirectories::IMPORT)->getVal() . "/" . $sourcedata, $target);
             if (file_exists($target)) {
               $success = true;
             }
@@ -1211,7 +1257,6 @@ class Util {
     
     $headers = "MIME-Version: 1.0\r\n";
     $headers .= "From: " . SConfig::getInstance()->getVal(Dconfig::EMAIL_SENDER_NAME) . " <" . SConfig::getInstance()->getVal(DConfig::EMAIL_SENDER) . ">\r\n";
-    $headers .= "To: " . $address . "\r\n";
     $headers .= "Content-Type: multipart/alternative;boundary=" . $boundary . "\r\n";
     
     $plainMessage = "\r\n\r\n--" . $boundary . "\r\n";
@@ -1349,6 +1394,8 @@ class Util {
     return $arr;
   }
   
+  // new function added: fileLineCount(). This function is independent of OS.
+  // check whether we can remove one of these functions
   public static function countLines($tmpfile) {
     if (stripos(PHP_OS, "WIN") === 0) {
       // windows line count
@@ -1396,6 +1443,21 @@ class Util {
   public static function databaseIndexExists($table, $column) {
     $result = Factory::getAgentFactory()->getDB()->query("SHOW INDEX FROM `$table` WHERE Column_name='$column'");
     return $result->rowCount() > 0;
+  }
+  
+  public static function checkDataDirectory($key, $dir) {
+    $entry = Factory::getStoredValueFactory()->get($key);
+    if ($entry == null) {
+      $entry = new StoredValue($key, $dir);
+      Factory::getStoredValueFactory()->save($entry);
+    }
+    else {
+      // update if needed
+      if ($entry->getVal() != $dir) {
+        $entry->setVal($dir);
+        Factory::getStoredValueFactory()->update($entry);
+      }
+    }
   }
 }
 

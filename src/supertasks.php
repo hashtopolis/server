@@ -4,8 +4,11 @@ use DBA\JoinFilter;
 use DBA\Pretask;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+use DBA\ContainFilter;
 use DBA\SupertaskPretask;
 use DBA\Factory;
+use DBA\File;
+use DBA\FilePretask;
 
 require_once(dirname(__FILE__) . "/inc/load.php");
 
@@ -70,6 +73,53 @@ else if (isset($_GET['id'])) {
   UI::add('tasks', $tasks[Factory::getPretaskFactory()->getModelName()]);
   UI::add('supertask', $supertask);
   UI::add('pageTitle', "Supertask details for " . $supertask->getSupertaskName());
+  
+  $pretasks = $tasks[Factory::getPretaskFactory()->getModelName()];
+  $pretaskIds = Util::arrayOfIds($pretasks);
+  
+  $qF1 = new ContainFilter(Pretask::PRETASK_ID, $pretaskIds,null, true);
+  $allOtherPretasks = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF1]);
+  UI::add('allOtherPretasks', $allOtherPretasks);
+  
+  $allPretasks = Factory::getPretaskFactory()->filter([]);
+  $allPretasksIds = Util::arrayOfIds($allPretasks);
+  $pretaskAuxiliaryKeyspace = new DataSet();
+  //  retrieve per pretask: an array containing line counts of the files associated with that pretask
+  foreach ($allPretasksIds as $pretaskId) {
+    $qF1 = new QueryFilter(FilePretask::PRETASK_ID, $pretaskId,"=", Factory::getFilePretaskFactory());
+    $jF1 = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+    $files = Factory::getFileFactory()->filter([Factory::FILTER => $qF1, Factory::JOIN => $jF1]);
+    $files = $files[Factory::getFileFactory()->getModelName()];
+    
+    $lineCountProduct = 1;
+    foreach ($files as $file) {
+      $lineCount = $file->getLineCount();
+      if ($lineCount !== null) {
+        $lineCountProduct = $lineCountProduct * $lineCount;
+      }
+    }
+    $pretaskAuxiliaryKeyspace->addValue($pretaskId, $lineCountProduct);
+  }
+  // auxiliary keyspace is the keyspace formed by the product of the line counts of the files linked to a pretask
+  UI::add('pretaskAuxiliaryKeyspace', $pretaskAuxiliaryKeyspace);
+  
+  $benchmarka0 = 0;
+  $benchmarka3 = 0;
+  if (isset($_POST['benchmarka0'])) {
+    $benchmarka0 = $_POST['benchmarka0'];
+  }
+  if (isset($_POST['benchmarka3'])) {
+    $benchmarka3 = $_POST['benchmarka3'];
+  }
+  
+  if (isset($_GET['benchmarka0'])) {
+    $benchmarka0 = $_GET['benchmarka0'];
+  }
+  if (isset($_GET['benchmarka3'])) {
+    $benchmarka3 = $_GET['benchmarka3'];
+  }
+  UI::add('benchmarka0', $benchmarka0);
+  UI::add('benchmarka3', $benchmarka3);
 }
 else {
   $supertasks = Factory::getSupertaskFactory()->filter([]);
@@ -81,6 +131,7 @@ else {
     $joinedTasks = Factory::getPretaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF, Factory::ORDER => $oF]);
     $tasks = $joinedTasks[Factory::getPretaskFactory()->getModelName()];
     $supertaskTasks->addValue($supertask->getId(), $tasks);
+    
   }
   UI::add('tasks', $supertaskTasks);
   UI::add('supertasks', $supertasks);

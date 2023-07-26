@@ -58,6 +58,9 @@ class APIGetTask extends APIBasic {
           DServerLog::log(DServerLog::TRACE, "No best task available and current assigned task is fullfilled", [$this->agent]);
           $this->noTask();
         }
+        if (TaskUtils::isSaturatedByOtherAgents($currentTask, $this->agent)) {
+          $this->noTask();
+        }
         // assignment is still good -> send this task
         DServerLog::log(DServerLog::TRACE, "Current task is running, continue with this", [$this->agent, $currentTask]);
         $this->sendTask($currentTask, $assignment);
@@ -80,6 +83,9 @@ class APIGetTask extends APIBasic {
           $this->sendTask($task, $assignment);
         }
         else {
+          if (TaskUtils::isSaturatedByOtherAgents($currentTask, $this->agent)) {
+            $this->sendTask($task, $assignment);
+          }
           DServerLog::log(DServerLog::TRACE, "Current task is fine, send the more important one", [$this->agent, $currentTask, $task]);
           $this->sendTask(TaskUtils::getImportantTask($task, $currentTask), $assignment);
         }

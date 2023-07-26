@@ -23,7 +23,7 @@ class PretaskFactory extends AbstractModelFactory {
    * @return Pretask
    */
   function getNullObject() {
-    $o = new Pretask(-1, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new Pretask(-1, null, null, null, null, null, null, null, null, null, null, null, null);
     return $o;
   }
   
@@ -33,7 +33,7 @@ class PretaskFactory extends AbstractModelFactory {
    * @return Pretask
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Pretask($dict['pretaskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['priority'], $dict['isMaskImport'], $dict['crackerBinaryTypeId']);
+    $o = new Pretask($dict['pretaskId'], $dict['taskName'], $dict['attackCmd'], $dict['chunkTime'], $dict['statusTimer'], $dict['color'], $dict['isSmall'], $dict['isCpuTask'], $dict['useNewBench'], $dict['priority'], $dict['maxAgents'], $dict['isMaskImport'], $dict['crackerBinaryTypeId']);
     return $o;
   }
   

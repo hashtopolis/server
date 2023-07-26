@@ -41,6 +41,7 @@ class TaskUtils {
       0,
       0,
       $copy->getPriority(),
+      $copy->getMaxAgents(),
       $copy->getColor(),
       $copy->getIsSmall(),
       $copy->getIsCpuTask(),
@@ -69,6 +70,7 @@ class TaskUtils {
       "",
       SConfig::getInstance()->getVal(DConfig::CHUNK_DURATION),
       SConfig::getInstance()->getVal(DConfig::STATUS_TIMER),
+      0,
       0,
       0,
       0,
@@ -583,6 +585,18 @@ class TaskUtils {
   
   /**
    * @param int $taskId
+   * @param int $maxAgents
+   * @param User $user
+   * @throws HTException
+   */
+  public static function setTaskMaxAgents($taskId, $maxAgents, $user) {
+    $task = TaskUtils::getTask($taskId, $user);
+    $maxAgents = intval($maxAgents);
+    Factory::getTaskFactory()->set($task, Task::MAX_AGENTS, $maxAgents);
+  }
+  
+  /**
+   * @param int $taskId
    * @param string $color
    * @param User $user
    * @throws HTException
@@ -655,6 +669,32 @@ class TaskUtils {
   }
   
   /**
+   * @param int $taskId
+   * @param int $maxAgents
+   * @param User $user
+   * @throws HTException
+   */
+  public static function updateMaxAgents($taskId, $maxAgents, $user) {
+    $task = TaskUtils::getTask($taskId, $user);
+    if ($task == null) {
+      throw new HTException("No such task!");
+    }
+    $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+    if (!AccessUtils::userCanAccessTask($taskWrapper, $user)) {
+      throw new HTException("No access to this task!");
+    }
+    if (!is_numeric($maxAgents)) {
+      throw new HTException("Invalid number of agents!");
+    }
+    $maxAgents = intval($maxAgents);
+    if ($maxAgents < 0) {
+      throw new HTException("Invalid number of agents!");
+    }
+    
+    Factory::getTaskFactory()->set($task, Task::MAX_AGENTS, $maxAgents);
+  }
+  
+  /**
    * @param int $hashlistId
    * @param string $name
    * @param string $attackCmd
@@ -668,6 +708,7 @@ class TaskUtils {
    * @param $preprocessorCommand
    * @param int $skip
    * @param int $priority
+   * @param int $maxAgents
    * @param int[] $files
    * @param int $crackerVersionId
    * @param User $user
@@ -677,11 +718,15 @@ class TaskUtils {
    * @return Task
    * @throws HTException
    */
-  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
+  public static function createTask($hashlistId, $name, $attackCmd, $chunkTime, $status, $benchtype, $color, $isCpuOnly, $isSmall, $usePreprocessor, $preprocessorCommand, $skip, $priority, $maxAgents, $files, $crackerVersionId, $user, $notes = "", $staticChunking = DTaskStaticChunking::NORMAL, $chunkSize = 0) {
     $hashlist = Factory::getHashlistFactory()->get($hashlistId);
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
     }
+    else if ($hashlist->getIsArchived()) {
+      throw new HTException("You cannot create a task for an archived hashlist!");
+    }
+    
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     if (strlen($name) == 0) {
       $name = "Task_" . $hashlist->getId() . "_" . date("Ymd_Hi");
@@ -699,6 +744,9 @@ class TaskUtils {
     }
     else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command does not contain hashlist alias!");
+    }
+    else if (strlen($attackCmd) > 256) {
+      throw new HTException("Attack command is too long (max 256 characters)!");
     }
     else if ($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS) {
       throw new HTException("Invalid static chunk setting!");
@@ -757,6 +805,7 @@ class TaskUtils {
       0,
       0,
       $priority,
+      $maxAgents,
       $color,
       $isSmall,
       $isCpuOnly,
@@ -800,12 +849,13 @@ class TaskUtils {
   public static function splitByRules($task, $taskWrapper, $files, $splitFile, $split) {
     // calculate how much we need to split
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
-    $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
+    // replace countLines with fileLineCount? Could be a better option: not OS-dependent
+    $numLines = Util::countLines(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename());
     $linesPerFile = floor($numLines / $numSplits) + 1;
     
     // create the temporary rule files
     $newFiles = [];
-    $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename())));
+    $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename())));
     $count = 0;
     $taskId = $task->getId();
     for ($i = 0; $i < $numLines; $i += $linesPerFile, $count++) {
@@ -813,8 +863,10 @@ class TaskUtils {
       for ($j = $i; $j < $i + $linesPerFile && $j < sizeof($content); $j++) {
         $copy[] = $content[$j];
       }
-      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy) . "\n");
-      $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
+      $filename = $splitFile->getFilename() . "_p$taskId-$count";
+      $path = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename() . "_p$taskId-$count";
+      file_put_contents($path, implode("\n", $copy) . "\n");
+      $f = new File(null, $filename, Util::filesize($path), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId(), Util::fileLineCount($path));
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
@@ -840,6 +892,7 @@ class TaskUtils {
         0,
         0,
         $prio,
+        $task->getMaxAgents(),
         $task->getColor(),
         (SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_SMALL_TASKS) == 0) ? 0 : 1,
         $task->getIsCpuTask(),
@@ -924,11 +977,20 @@ class TaskUtils {
         continue; // all hashes of this hashlist are cracked, so we continue
       }
       
+      $candidateTasks = [];
+      
       // load assigned tasks for this TaskWrapper
       $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
       $oF = new OrderFilter(Task::PRIORITY, "DESC");
       $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
       foreach ($tasks as $task) {
+        // check if it's a small task or maxAgents limits the number of assignments
+        if ($task->getIsSmall() == 1 || $task->getMaxAgents() > 0) {
+          if (self::isSaturatedByOtherAgents($task, $agent)) {
+            continue;
+          }
+        }
+        
         // check if a task suits to this agent
         $files = TaskUtils::getFilesOfTask($task);
         $permitted = true;
@@ -950,27 +1012,20 @@ class TaskUtils {
           continue; // if it is completed we go to the next
         }
         
-        // check if it's a small task
-        if ($task->getIsSmall() == 1) {
-          $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-          $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "<>");
-          $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
-          if ($numAssignments > 0) {
-            continue; // at least one agent is already assigned here
-          }
-        }
         // check if it's a cpu/gpu task
         if ($task->getIsCpuTask() != $agent->getCpuOnly()) {
           continue;
         }
         
-        // this task is available for this user regarding permissions
-        if ($all) {
-          $allTasks[] = $task;
-          continue;
+        if (!$all) {
+          return $task;
         }
-        return $task;
+        // accumulate all candidate tasks
+        $candidateTasks[] = $task;
       }
+      
+      // These tasks are available for this user regarding permissions, assignments.
+      $allTasks = array_merge($allTasks, $candidateTasks);
     }
     if ($all) {
       return $allTasks;
@@ -1011,7 +1066,7 @@ class TaskUtils {
     foreach ($files as $file) {
       /** @var $file File */
       if ($file->getFileType() == DFileType::TEMPORARY) {
-        unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
+        unlink(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename());
         $toDelete[] = $file;
       }
     }
@@ -1276,5 +1331,21 @@ class TaskUtils {
     else {
       return "Access denied";
     }
+  }
+  
+  /**
+   * Check if a task already has enough agents - apart from given agent - working on it,
+   * with respect to the 'maxAgents' configuration
+   *
+   * @param Task $task
+   * @param Agent $agent
+   * @return boolean true if maxAgents != 0 and number of assigned agents >= maxAgents, false otherwise
+   */
+  public static function isSaturatedByOtherAgents($task, $agent) {
+    $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "<>");
+    $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+    return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
+      ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
   }
 }

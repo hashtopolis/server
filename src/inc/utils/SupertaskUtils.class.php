@@ -120,6 +120,7 @@ class SupertaskUtils {
         $benchtype,
         $priority,
         0,
+        0,
         $crackerBinaryType->getId()
       );
       $pretask = Factory::getPretaskFactory()->save($pretask);
@@ -249,6 +250,9 @@ class SupertaskUtils {
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
     }
+    else if ($hashlist->getIsArchived()) {
+      throw new HTException("Supertask cannot be applied to an archived hashlist!");
+    }
     $cracker = Factory::getCrackerBinaryFactory()->get($crackerId);
     if ($cracker == null) {
       throw new HTException("Invalid cracker ID!");
@@ -286,6 +290,7 @@ class SupertaskUtils {
         0,
         0,
         $pretask->getPriority(),
+        $pretask->getMaxAgents(),
         $pretask->getColor(),
         $pretask->getIsSmall(),
         $pretask->getIsCpuTask(),
@@ -431,6 +436,7 @@ class SupertaskUtils {
         $isCpu,
         $newBench,
         $priority,
+        0,
         1,
         $crackerBinaryType->getId()
       );
@@ -462,5 +468,45 @@ class SupertaskUtils {
       }
       $masks[$i] = $mask;
     }
+  }
+  
+  /**
+   * @param $supertaskId
+   * @param $pretaskId
+   * @throws HTException
+   */
+  public static function removePretaskFromSupertask($supertaskId, $pretaskId) {
+    if ($supertaskId == null) {
+      throw new HTException("Invalid supertask ID!");
+    }
+    if ($pretaskId == null) {
+      throw new HTException("Invalid pretask ID!");
+    }
+    $qF1 = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $supertaskId, "=");
+    $qF2 = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretaskId, "=");
+    $supertaskPretask = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+    Factory::getSupertaskPretaskFactory()->delete($supertaskPretask);
+    
+    // check if the preconfigured task was from an import. in this case also delete it
+    $pretask = PretaskUtils::getPretask($pretaskId);
+    if ($pretask->getIsMaskImport() == 1) {
+      PretaskUtils::deletePretask($pretaskId);
+    }
+  }
+  
+  /**
+   * @param $supertaskId
+   * @param $pretaskId
+   * @throws HTException
+   */
+  public static function addPretaskToSupertask($supertaskId, $pretaskId) {
+    if ($supertaskId == null) {
+      throw new HTException("Invalid supertask ID!");
+    }
+    if ($pretaskId == null) {
+      throw new HTException("Invalid pretask ID!");
+    }
+    $supertaskPretask = new SupertaskPretask(null, $supertaskId, $pretaskId);
+    Factory::getSupertaskPretaskFactory()->save($supertaskPretask);
   }
 }

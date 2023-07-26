@@ -40,6 +40,21 @@ class HealthCheckAgent extends AbstractModel {
     return $dict;
   }
   
+  static function getFeatures() {
+    $dict = array();
+    $dict['healthCheckAgentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "healthCheckAgentId"];
+    $dict['healthCheckId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "healthCheckId"];
+    $dict['agentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "agentId"];
+    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status"];
+    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked"];
+    $dict['numGpus'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "numGpus"];
+    $dict['start'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "start"];
+    $dict['end'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "end"];
+    $dict['errors'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "errors"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "healthCheckAgentId";
   }

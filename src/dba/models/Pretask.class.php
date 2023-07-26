@@ -13,10 +13,11 @@ class Pretask extends AbstractModel {
   private $isCpuTask;
   private $useNewBench;
   private $priority;
+  private $maxAgents;
   private $isMaskImport;
   private $crackerBinaryTypeId;
   
-  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $isMaskImport, $crackerBinaryTypeId) {
+  function __construct($pretaskId, $taskName, $attackCmd, $chunkTime, $statusTimer, $color, $isSmall, $isCpuTask, $useNewBench, $priority, $maxAgents, $isMaskImport, $crackerBinaryTypeId) {
     $this->pretaskId = $pretaskId;
     $this->taskName = $taskName;
     $this->attackCmd = $attackCmd;
@@ -27,6 +28,7 @@ class Pretask extends AbstractModel {
     $this->isCpuTask = $isCpuTask;
     $this->useNewBench = $useNewBench;
     $this->priority = $priority;
+    $this->maxAgents = $maxAgents;
     $this->isMaskImport = $isMaskImport;
     $this->crackerBinaryTypeId = $crackerBinaryTypeId;
   }
@@ -43,12 +45,32 @@ class Pretask extends AbstractModel {
     $dict['isCpuTask'] = $this->isCpuTask;
     $dict['useNewBench'] = $this->useNewBench;
     $dict['priority'] = $this->priority;
+    $dict['maxAgents'] = $this->maxAgents;
     $dict['isMaskImport'] = $this->isMaskImport;
     $dict['crackerBinaryTypeId'] = $this->crackerBinaryTypeId;
     
     return $dict;
   }
   
+  static function getFeatures() {
+    $dict = array();
+    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "pretaskId"];
+    $dict['taskName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskName"];
+    $dict['attackCmd'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "attackCmd"];
+    $dict['chunkTime'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkTime"];
+    $dict['statusTimer'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "statusTimer"];
+    $dict['color'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "color"];
+    $dict['isSmall'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSmall"];
+    $dict['isCpuTask'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isCpuTask"];
+    $dict['useNewBench'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "useNewBench"];
+    $dict['priority'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "priority"];
+    $dict['maxAgents'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "maxAgents"];
+    $dict['isMaskImport'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isMaskImport"];
+    $dict['crackerBinaryTypeId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackerBinaryTypeId"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "pretaskId";
   }
@@ -145,6 +167,14 @@ class Pretask extends AbstractModel {
     $this->priority = $priority;
   }
   
+  function getMaxAgents() {
+    return $this->maxAgents;
+  }
+  
+  function setMaxAgents($maxAgents) {
+    $this->maxAgents = $maxAgents;
+  }
+  
   function getIsMaskImport() {
     return $this->isMaskImport;
   }
@@ -171,6 +201,7 @@ class Pretask extends AbstractModel {
   const IS_CPU_TASK = "isCpuTask";
   const USE_NEW_BENCH = "useNewBench";
   const PRIORITY = "priority";
+  const MAX_AGENTS = "maxAgents";
   const IS_MASK_IMPORT = "isMaskImport";
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
 }

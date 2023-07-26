@@ -77,6 +77,10 @@ class TaskHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_PRIORITY_PERM);
           TaskUtils::updatePriority($_POST["task"], $_POST['priority'], Login::getInstance()->getUser());
           break;
+        case DTaskAction::SET_MAX_AGENTS:
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_MAX_AGENTS_PERM);
+          TaskUtils::updateMaxAgents($_POST["task"], $_POST['maxAgents'], Login::getInstance()->getUser());
+          break;
         case DTaskAction::SET_TOP_PRIORITY:
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_PRIORITY_PERM);
           TaskUtils::updatePriority($_POST["task"], -1, Login::getInstance()->getUser(), true);
@@ -147,6 +151,7 @@ class TaskHandler implements Handler {
     $staticChunking = intval(@$_POST['staticChunking']);
     $chunkSize = intval(@$_POST['chunkSize']);
     $priority = intval(@$_POST['priority']);
+    $maxAgents = intval(@$_POST['maxAgents']);
     $enforcePipe = intval(@$_POST['enforcePipe']);
     $usePreprocessor = intval(@$_POST['usePreprocessor']);
     $preprocessorCommand = @$_POST['preprocessorCommand'];
@@ -156,6 +161,10 @@ class TaskHandler implements Handler {
     $hashlist = Factory::getHashlistFactory()->get($_POST["hashlist"]);
     if ($hashlist == null) {
       UI::addMessage(UI::ERROR, "No hashlist was selected!");
+      return;
+    }
+    else if ($hashlist->getIsArchived()) {
+      UI::addMessage(UI::ERROR, "You cannot create a task for an archived hashlist!");
       return;
     }
     $accessGroup = Factory::getAccessGroupFactory()->get($hashlist->getAccessGroupId());
@@ -255,6 +264,7 @@ class TaskHandler implements Handler {
         0,
         0,
         $priority,
+        $maxAgents,
         $color,
         $isSmall,
         $isCpuTask,
@@ -288,6 +298,7 @@ class TaskHandler implements Handler {
         0,
         0,
         $priority,
+        $copy->getMaxAgents(),
         $copy->getColor(),
         $copy->getIsSmall(),
         $copy->getIsCpuTask(),

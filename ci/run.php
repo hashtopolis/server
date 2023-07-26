@@ -4,16 +4,10 @@
  * This is the entry point to run the full environment
  */
 
-$CONN = [
-  "db" => "hashtopolis",
-  "server" => "localhost",
-  "user" => "root",
-  "pass" => "",
-  "port" => 3306
-];
-require_once("/var/www/html/hashtopolis/src/dba/init.php");
-require_once("/var/www/html/hashtopolis/src/inc/defines/config.php");
-require_once("/var/www/html/hashtopolis/src/inc/info.php");
+require_once(dirname(__FILE__) . "/../src/inc/confv2.php");
+require_once(dirname(__FILE__) . "/../src/dba/init.php");
+require_once(dirname(__FILE__) . "/../src/inc/defines/config.php");
+require_once(dirname(__FILE__) . "/../src/inc/info.php");
 require_once(dirname(__FILE__) . "/../src/inc/Util.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/Encryption.class.php");
 require_once(dirname(__FILE__) . "/../src/inc/utils/AccessUtils.class.php");
@@ -26,23 +20,50 @@ foreach ($dir as $entry) {
     require_once(dirname(__FILE__) . "/tests/" . $entry);
   }
 }
+$dir = scandir(dirname(__FILE__) . "/tests/integration/");
+foreach ($dir as $entry) {
+  if (strpos($entry, ".php") !== false) {
+    require_once(dirname(__FILE__) . "/tests/integration/" . $entry);
+  }
+}
 
 $TEST = true;
 
-if (sizeof($argv) < 2) {
-  die("Invalid number of arguments!\nphp -f run.php <version> [upgrade]\n");
+// determine the version, upgrade and which tests to run
+$options = getopt("v:t::u::");
+
+if (empty($options["v"])) {
+  HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "No version specified! \nphp -f run.php -v <version> [-t <tests> ] [-u <upgrade> ]");
+  die();
 }
-$version = $argv[1];
+
+$version = $options["v"];
+
+if (empty($options["t"])) {
+  HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Running all tests");
+  $testNames = [];
+}
+else {
+  $testNames = explode(",", $options["t"]);
+}
+
+if (empty($options["u"])) {
+  HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "No upgrade selected");
+}
+else {
+  $upgrade = $options["u"];
+}
+
 HashtopolisTestFramework::$logLevel = HashtopolisTestFramework::LOG_DEBUG;
 
 $framework = new HashtopolisTestFramework();
-if (isset($argv[2]) && $argv[2] != 'master') {
-  $returnStatus = $framework->executeWithUpgrade($argv[2], HashtopolisTest::RUN_FULL);
+if (isset($upgrade) && $upgrade != 'master') {
+  $returnStatus = $framework->executeWithUpgrade($upgrade, $testNames, HashtopolisTest::RUN_FULL);
 }
 else {
-  $returnStatus = $framework->execute($version, HashtopolisTest::RUN_FULL);
+  $returnStatus = $framework->execute($version, $testNames, HashtopolisTest::RUN_FULL);
 }
 
-HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, HashtopolisTest::getTestCount() . " tests executed");
+HashtopolisTestFramework::reportTestSummary();
 
 exit($returnStatus);

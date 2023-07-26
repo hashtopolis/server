@@ -71,7 +71,7 @@ if (!in_array($line->getAccessGroupId(), $accessGroupIds)) {
   die("Access denied to file because of access groups!");
 }
 
-$filename = dirname(__FILE__) . "/files/" . $line->getFilename();
+$filename = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $line->getFilename();
 
 //file not found
 if (!file_exists($filename)) {

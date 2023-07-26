@@ -3,33 +3,21 @@
 <h2>Supertask Details</h2>
 {%TEMPLATE->struct/messages%}
 {{IF ! [[supertask]]}}
-	<div class='alert alert-danger'>Invalid supertask!</div>
+  <div class='alert alert-danger'>Invalid supertask!</div>
 {{ELSE}}
-	<div class="card">
+  <div class="card">
     <div class="table-responsive">
       <table class="table table-bordered">
-			  <tr>
-				  <th>ID</th>
+        <tr>
+          <th>Supertask ID</th>
           <td>[[supertask.getId()]]</td>
         </tr>
         <tr>
-				  <th>Name</th>
+          <th>Name</th>
           <td>[[supertask.getSupertaskName()]]</td>
         </tr>
         <tr>
-				  <th>Tasks</th>
-          <td>
-            {{FOREACH task;[[tasks]]}}
-              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
-                <a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
-              {{ELSE}}
-                [[task.getTaskName()]]<br>
-              {{ENDIF}}
-            {{ENDFOREACH}}
-          </td>
-        </tr>
-        <tr>
-				  <th>Actions</th>
+          <th>Actions</th>
           <td>
             {{IF [[accessControl.hasPermission([[$DAccessControl::RUN_TASK_ACCESS]])]]}}
               <form style ='float: left; padding-right: 5px;' action="supertasks.php?new=true&id=[[supertask.getId()]]" method="post">
@@ -38,17 +26,447 @@
               </form>
             {{ENDIF}}
             {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
-              <form style ='float: left;' action="supertasks.php" method="POST" onSubmit="if (!confirm('Really delete supertasktask [[supertask.getId()]]?')) return false;">
+              <form style ='float: left;' action="supertasks.php?id=[[supertask.getId()]]" method="POST" onSubmit="if (!confirm('Really delete supertask [[supertask.getId()]]?')) return false;">
                 <input type="hidden" name="action" value="[[$DSupertaskAction::DELETE_SUPERTASK]]">
                 <input type="hidden" name="supertask" value="[[supertask.getId()]]">
                 <input type="hidden" name="csrf" value="[[csrf]]">
-                <input type="submit" class='btn btn-danger' value="X">
+                <input type="submit" class='btn btn-danger' value="Delete">
               </form>
             {{ENDIF}}
           </td>
-			  </tr>
-		  </table>
+        </tr>
+        <tr>
+          <th>
+            Estimate runtime
+          </th>
+          <td>
+            <form style ='float: left;' action="supertasks.php?id=[[supertask.getId()]]" method="POST" id="keyspaceCalculation">
+              <i>Benchmark for -a0 attacks :</i>
+              <input type="text" name="benchmarka0" class="form-control" title="Hashes per second" value=[[benchmarka0]]>
+              <i>Benchmark for -a3 attacks :</i>
+              <input type="text" name="benchmarka3" class="form-control" title="Hashes per second" value=[[benchmarka3]]>
+              <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}} my-1' value="Calculate runtime">
+            </form>
+          </td>
+        </tr>
+        {{IF [[benchmarka0]] != 0 AND [[benchmarka3]] != 0}}
+        <tr>
+          <th>
+            Estimated total runtime of supertask
+          </th>
+          <td class="runtimeOfSupertask">
+          </td>
+        </tr>
+      {{ENDIF}}
+        <tr>
+          <td colspan="2">
+            The benchmark number to enter above is the total amount of hashes per second per attack type of all of the agents combined that will run the supertask.
+          </td>
+        </tr>
+      </table>
     </div>
-	</div>
+  </div>
+
+  <hr>
+
+  <h4>Pretasks part of this supertask</h4>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm" id="pretasksOfSupertasks">
+        <thead>
+          <tr>
+            <th>Pretask ID</th>
+            <th>Name</th>
+            <th>Attack command</th>
+            <th>Estimated keyspace</th>
+            <th>Attack runtime</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{FOREACH task;[[tasks]]}}
+            <tr class="taskInSuper">
+              <td{{IF [[strlen([[task.getColor()]])]] > 0}} style="background-color: #[[task.getColor()]]"{{ENDIF}}>
+                {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+                  <a href="pretasks.php?id=[[task.getId()]]">[[task.getId()]]</a><br>
+                {{ELSE}}
+                  [[task.getId()]]<br>
+                {{ENDIF}}
+              </td>
+              <td>
+                {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+                  <a href="pretasks.php?id=[[task.getId()]]">[[task.getTaskName()]]</a><br>
+                {{ELSE}}
+                  [[task.getTaskName()]]<br>
+                {{ENDIF}}
+              </td>
+              <td class="attackCmd">
+                [[task.getAttackCmd()]]
+              </td>
+              <td>
+                [[pretaskAuxiliaryKeyspace.getVal([[task.getId()]])]]
+              </td>
+              <td class="attackRuntime">
+              </td>
+              <td>
+                {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
+                  <form style ='float: left;' action="supertasks.php?id=[[supertask.getId()]]&benchmarka0=[[benchmarka0]]&benchmarka3=[[benchmarka3]]" method="POST" onSubmit="if (!confirm('Really remove pretask [[task.getId()]] from this supertask [[supertask.getId()]]?')) return false;">
+                    <input type="hidden" name="action" value="[[$DSupertaskAction::REMOVE_PRETASK_FROM_SUPERTASK]]">
+                    <input type="hidden" name="supertaskId" value="[[supertask.getId()]]">
+                    <input type="hidden" name="pretaskId" value="[[task.getId()]]">
+                    <input type="hidden" name="csrf" value="[[csrf]]">
+                    <input type="hidden" name="benchmarka0" value="[[benchmarka0]]">
+                    <input type="hidden" name="benchmarka3" value="[[benchmarka3]]">
+                    <input type="submit" class='btn btn-danger' value="Remove">
+                  </form>
+                {{ENDIF}}
+              </td>
+            </tr>
+          {{ENDFOREACH}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  <h4>Pretasks not part of this supertask</h4>
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm" id="remainingPretasks">
+      <thead>
+        <tr>
+          <th>Pretask ID</th>
+          <th>Name</th>
+          <th>Attack command</th>
+          <th>Estimated keyspace</th>
+          <th>Attack runtime</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{FOREACH pretask;[[allOtherPretasks]]}}
+          <tr class="taskNotInSuper">
+            <td{{IF [[strlen([[pretask.getColor()]])]] > 0}} style="background-color: #[[pretask.getColor()]]"{{ENDIF}}>
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+                <a href="pretasks.php?id=[[pretask.getId()]]">[[pretask.getId()]]</a><br>
+              {{ELSE}}
+                [[pretask.getId()]]<br>
+              {{ENDIF}}
+            </td>
+            <td>
+              {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_PRETASK_ACCESS]])]]}}
+                <a href="pretasks.php?id=[[pretask.getId()]]">[[pretask.getTaskName()]]</a><br>
+              {{ELSE}}
+                [[pretask.getTaskName()]]<br>
+              {{ENDIF}}
+            </td>
+            <td>
+              [[pretask.getAttackCmd()]]<br>
+            </td>
+            <td>
+              [[pretaskAuxiliaryKeyspace.getVal([[pretask.getId()]])]]
+            </td>
+            <td class="attackRuntime">
+            </td>
+            <td>
+              {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_SUPERTASK_ACCESS]])]]}}
+                <form style ='float: left;' action="supertasks.php?id=[[supertask.getId()]]&benchmarka0=[[benchmarka0]]&benchmarka3=[[benchmarka3]]" method="POST" onSubmit="if (!confirm('Really add pretask [[pretask.getId()]] from this supertask [[supertask.getId()]]?')) return false;">
+                  <input type="hidden" name="action" value="[[$DSupertaskAction::ADD_PRETASK_TO_SUPERTASK]]">
+                  <input type="hidden" name="supertaskId" value="[[supertask.getId()]]">
+                  <input type="hidden" name="pretaskId" value="[[pretask.getId()]]">
+                  <input type="hidden" name="csrf" value="[[csrf]]">
+                  <input type="hidden" name="benchmarka0" value="[[benchmarka0]]">
+                  <input type="hidden" name="benchmarka3" value="[[benchmarka3]]">
+                  <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Add">
+                </form>
+              {{ENDIF}}
+            </td>
+          </tr>
+        {{ENDFOREACH}}
+      </tbody>
+      </table>
+    </div>
+  </div>
+
+    <!-- Parse attack command and compute runtime based on benchmark from form input value -->
+    <script src="static/optparse.1.1.1.js"></script>
+    <script src="static/optparse.hashtopolis.1.1.1.js"></script>
+    <script>
+        function calc_keyspace_size(cmd) {
+            // resetting the options
+            options = defaultOptions;
+            options.ruleFiles = [];
+            options.posArgs = [];
+            options.unrecognizedFlag = [];
+
+            // example cmd = "hashcat #HL# -a3 ?d?d?d?d"
+            // Ideally the opt-parser itself works for '-a3' instead of requiring a space as in '-a 3' to parse attackType
+            args = cmd.replace('hashcat', '');
+            args = args.replace(/(-a)(\d)(\s)/,"-a $2 "); // ensures that "-a3" becomes a valid attack mode: the opt-parser does not approve it (yet)
+            args = args.replace(/(-\d)(\S+)(\s)/,"$1 $2 "); // ensures that "-1?l?d" becomes a valid customCharset: the opt-parser does not approve it (yet)
+            args = args.replace(/\s+/g, ' '); // ensures that multiple consecutive spaces are reduced to a single space
+            args = args.trim();
+            args = args.split(/ |=/g);
+            parser.parse(args);
+            // console.log(options);
+
+            function customCharsetToOptions(mask) {
+                numA  = (mask.match(/\?a/g) || []).length;
+                numD  = (mask.match(/\?d/g) || []).length;
+                numL  = (mask.match(/\?l/g) || []).length;
+                numU  = (mask.match(/\?u/g) || []).length;
+                numS  = (mask.match(/\?s/g) || []).length;
+                numLH = (mask.match(/\?h/g) || []).length;
+                numUH = (mask.match(/\?H/g) || []).length;
+                numB  = (mask.match(/\?b/g) || []).length;
+                var charsetOptions = 95 * Math.min(1, numA);
+                charsetOptions = charsetOptions + 10 * Math.min(1, numD);
+                charsetOptions = charsetOptions + 26 * Math.min(1, numL);
+                charsetOptions = charsetOptions + 26 * Math.min(1, numU);
+                charsetOptions = charsetOptions + 33 * Math.min(1, numS);
+                charsetOptions = charsetOptions + 16 * Math.min(1, numLH);
+                charsetOptions = charsetOptions + 16 * Math.min(1, numUH);
+                charsetOptions = charsetOptions + 256 * Math.min(1, numB);
+                // add single characters that are part of the custom charset
+                // we assume no duplicate single characters are present in the custom charset!
+                //       i.e. -1 abbc is considered to be a charset of 4 different characters in the calculation
+                charsetOptions = charsetOptions + mask.length - 2 * (numA + numD + numL + numU + numS + numLH + numUH + numB);
+                // console.log("mask = " + mask + " this is " + charsetOptions+ " many options")
+                return charsetOptions;
+            }
+
+            function maskToKeyspace(mask) {
+                var keyspaceCustomMask = 1;
+                // The size of the custom charset equals the result of customCharsetToOptions.
+                // This number is multiplied by the number occurrences of the custom mask to get the size of the keyspace formed by the custom masks alone
+                if (options.customCharset1 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset1), (mask.match(/\?1/g) || []).length);}
+                if (options.customCharset2 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset2), (mask.match(/\?2/g) || []).length);}
+                if (options.customCharset3 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset3), (mask.match(/\?3/g) || []).length);}
+                if (options.customCharset4 !== "")
+                    {
+                        keyspaceCustomMask = keyspaceCustomMask * Math.pow(customCharsetToOptions(options.customCharset4), (mask.match(/\?4/g) || []).length);}
+
+                var keyspaceRegularMask = 1;
+
+                // compute the keyspace size for the custom charsets separately, and multiply with the keyspace size formed by the regular mask part
+                keyspaceRegularMask = Math.pow(95, (mask.match(/\?a/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(10, (mask.match(/\?d/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(26, (mask.match(/\?l/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(26, (mask.match(/\?u/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(33, (mask.match(/\?s/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(16, (mask.match(/\?h/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(16, (mask.match(/\?H/g) || []).length);
+                keyspaceRegularMask = keyspaceRegularMask * Math.pow(256, (mask.match(/\?b/g) || []).length);
+                // console.log("total keyspace: "+keyspaceRegularMask +" * "+ keyspaceCustomMask);
+
+                return keyspaceRegularMask * keyspaceCustomMask;
+            }
+
+            var keyspace;
+            if (options.attackType === 3) {
+                // compute keyspace for bruteforce attacks
+                for (var i = 0; i < options.posArgs.length; i++) {
+                    posArg = options.posArgs[i];
+                    if (posArg.includes("?")) {
+                        mask = posArg;
+                        keyspace = maskToKeyspace(mask);
+                        return [keyspace, options.attackType];
+                    }
+                }
+            }
+            return [null, options.attackType]
+        }
+    </script>
+    <script>
+      $(".taskInSuper").each(function (index) {
+        var keyspace_size;
+        // auxiliary keyspace is the keyspace formed by the product of the line counts of the files linked to a pretask
+        var auxiliaryKeyspace = $(this).find("td:nth-child(4)").text();
+        var keyspace_attackType_pair;
+        var seconds = null;
+        var attackCmd = $(this).find("td:nth-child(3)").text();
+        if (auxiliaryKeyspace != 1) {
+            // console.log("Attack command: " + attackCmd);
+            // it is not a bruteforce attack, and so we calculate the keyspace the product of the number of lines in the relevant files
+            keyspace_attackType_pair = calc_keyspace_size(attackCmd);
+            keyspace_size = auxiliaryKeyspace;
+        } else {
+            // console.log("Attack command: " + attackCmd);
+            keyspace_attackType_pair = calc_keyspace_size(attackCmd);
+            keyspace_size = keyspace_attackType_pair[0];
+        }
+
+        $(this).find("td:nth-child(4)").html(keyspace_size);
+      });
+
+      $(".taskNotInSuper").each(function (index) {
+        var keyspace_size;
+        var filesCountLinesProduct = $(this).find("td:nth-child(4)").text();
+        var keyspace_attackType_pair;
+        var seconds;
+        var attackCmd = $(this).find("td:nth-child(3)").text();
+        if (filesCountLinesProduct != 1) {
+            // it is not a bruteforce attack, and so we calculate the keyspace as being the product of the number of lines in the relevant files
+            keyspace_attackType_pair = calc_keyspace_size(attackCmd);
+            keyspace_size = filesCountLinesProduct;
+        } else {
+            // console.log("Attack command: " + attackCmd);
+            keyspace_attackType_pair = calc_keyspace_size(attackCmd);
+            keyspace_size = keyspace_attackType_pair[0];
+        }
+        $(this).find("td:nth-child(4)").html(keyspace_size);
+      });
+    </script>
+
+  {{IF [[benchmarka0]] != 0 AND [[benchmarka3]] != 0}}
+    <input type=hidden id="benchmarka0" value="[[benchmarka0]]">
+    <input type=hidden id="benchmarka3" value="[[benchmarka3]]">
+
+    <script>
+        // compute keyspace size and runtime
+        var totalSecondsSupertask = 0;
+        var unknown_runtime_included = 0;
+        $(".taskInSuper").each(function (index) {
+            var keyspace_size = $(this).find("td:nth-child(4)").text();
+            var keyspace_attackType_pair;
+            var seconds = null;
+            var attackCmd = $(this).find("td:nth-child(3)").text();
+            keyspace_attackType_pair = calc_keyspace_size(attackCmd);
+
+            var benchmarka0 = $('#benchmarka0').val();
+            var benchmarka3 = $('#benchmarka3').val();
+
+            if (keyspace_size === null) {
+                unknown_runtime_included = 1;
+                runtime = "Unknown";
+            } else if (keyspace_attackType_pair[1] === 3) {
+                seconds = Math.floor(keyspace_size / benchmarka3);
+            } else if (keyspace_attackType_pair[1] === 0) {
+                seconds = Math.floor(keyspace_size / benchmarka0);
+            }
+
+            if (Number.isInteger(seconds)) {
+                totalSecondsSupertask = totalSecondsSupertask + seconds;
+                var days = Math.floor(seconds / (3600 * 24));
+                seconds -= days * 3600 * 24;
+                var hrs = Math.floor(seconds / 3600);
+                seconds -= hrs * 3600;
+                var mins = Math.floor(seconds / 60);
+                seconds -= mins * 60;
+
+                runtime = days + "d, " + hrs + "h, " + mins + "m, " + seconds + "s";
+            } else {
+                unknown_runtime_included = 1;
+                runtime = "Unknown";
+            }
+
+            // console.log("Benchmark a0: " + benchmarka0);
+            // console.log("Benchmark a3: " + benchmarka3);
+            // console.log("Runtime: " + runtime);
+            $(this).find("td:nth-child(5)").html(runtime);
+        });
+
+        // reduce total runtime to a human format
+        var seconds = totalSecondsSupertask;
+        var days = Math.floor(seconds / (3600 * 24));
+        seconds -= days * 3600 * 24;
+        var hrs = Math.floor(seconds / 3600);
+        seconds -= hrs * 3600;
+        var mins = Math.floor(seconds / 60);
+        seconds -= mins * 60;
+
+        totalRuntimeSupertask = days + "d, " + hrs + "h, " + mins + "m, " + seconds + "s";
+        if (unknown_runtime_included === 1) {
+            totalRuntimeSupertask = totalRuntimeSupertask + ", plus additional unknown runtime"
+        }
+
+        $(".runtimeOfSupertask").html(totalRuntimeSupertask)
+        // do not add to total runtime of supertask the runtime of those tasks that are not in the supertask
+        $(".taskNotInSuper").each(function (index) {
+            var keyspace_size = $(this).find("td:nth-child(4)").text();
+            var keyspace_attackType_pair;
+            var seconds;
+            var attackCmd = $(this).find("td:nth-child(3)").text();
+            keyspace_attackType_pair = calc_keyspace_size(attackCmd);
+
+            var benchmarka0 = $('#benchmarka0').val();
+            var benchmarka3 = $('#benchmarka3').val();
+
+            if (keyspace_attackType_pair[1] === 3) {
+                seconds = Math.floor(keyspace_size / benchmarka3);
+            }
+
+            if (keyspace_attackType_pair[1] === 0) {
+                seconds = Math.floor(keyspace_size / benchmarka0);
+            }
+
+            if (Number.isInteger(seconds)) {
+                var days = Math.floor(seconds / (3600 * 24));
+                seconds -= days * 3600 * 24;
+                var hrs = Math.floor(seconds / 3600);
+                seconds -= hrs * 3600;
+                var mins = Math.floor(seconds / 60);
+                seconds -= mins * 60;
+
+                runtime = days + "d, " + hrs + "h, " + mins + "m, " + seconds + "s";
+            } else {
+                runtime = "Unknown";
+            }
+
+            // console.log("Benchmark: " + benchmark);
+            // console.log("Runtime: " + runtime);
+            $(this).find("td:nth-child(5)").html(runtime);
+        });
+    </script>
+  {{ENDIF}}
+
+  <!-- Create JTables from tables -->
+  <script type="text/javascript">
+      // make jtable
+      $(document).ready(function () {
+          $('#pretasksOfSupertasks').DataTable({
+              pageLength: 10,
+              "order": [ [0, 'asc'], [1, 'asc'] ],
+              "columnDefs": [
+                  { "orderable": true, "targets": [0, 1, 2, 3, 4, 5]}
+              ]
+          });
+      });
+      $(document).ready(function () {
+          $('td[rel=popover]').popover({
+              html: true,
+              trigger: 'hover',
+              container: 'body',
+              content: function () { return '<img style="width: 100%; height: 6px; padding: 0px;" src="' + $(this).data('img') + '">'; }
+          });
+      });
+  </script>
+  <script type="text/javascript">
+      // make jtable
+      $(document).ready(function () {
+          $('#remainingPretasks').DataTable({
+              pageLength: 10,
+              "order": [ [0, 'desc'], [1, 'asc'] ],
+              "columnDefs": [
+                  { "orderable": true, "targets": [0, 1, 2, 3, 4, 5]}
+              ]
+          });
+      });
+      $(document).ready(function () {
+          $('td[rel=popover]').popover({
+              html: true,
+              trigger: 'hover',
+              container: 'body',
+              content: function () { return '<img style="width: 100%; height: 6px; padding: 0px;" src="' + $(this).data('img') + '">'; }
+          });
+      });
+  </script>
 {{ENDIF}}
 {%TEMPLATE->struct/foot%}

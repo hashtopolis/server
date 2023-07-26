@@ -1,0 +1,17 @@
+{
+  "name": "Hashlist-md5sum-test123",
+  "hashTypeId": 1,
+  "format": 0,
+  "separator": ";",
+  "isSalted": false,
+  "isHexSalt": false,
+  "accessGroupId": 1,
+  "useBrain": false,
+  "brainFeatures": 3,
+  "notes": "gj",
+  "sourceType": "paste",
+  "sourceData": "Y2MwM2U3NDdhNmFmYmJjYmY4YmU3NjY4YWNmZWJlZTUK",
+  "hashCount": 0,
+  "isArchived": false,
+  "isSecret": false
+}

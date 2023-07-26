@@ -16,6 +16,9 @@ class UserAPIPretask extends UserAPIBasic {
         case USectionPretask::SET_PRETASK_PRIORITY:
           $this->setPretaskPriority($QUERY);
           break;
+        case USectionPretask::SET_PRETASK_MAX_AGENTS:
+          $this->setPretaskMaxAgents($QUERY);
+          break;
         case USectionpretask::SET_PRETASK_NAME:
           $this->setPretaskName($QUERY);
           break;
@@ -131,6 +134,18 @@ class UserAPIPretask extends UserAPIBasic {
    * @param array $QUERY
    * @throws HTException
    */
+  private function setPretaskMaxAgents($QUERY) {
+    if (!isset($QUERY[UQueryTask::PRETASK_ID]) || !isset($QUERY[UQueryTask::PRETASK_MAX_AGENTS])) {
+      throw new HTException("Invalid query!");
+    }
+    PretaskUtils::setMaxAgents($QUERY[UQueryTask::PRETASK_ID], $QUERY[UQueryTask::PRETASK_MAX_AGENTS], $this->user);
+    $this->sendSuccessResponse($QUERY);
+  }
+
+  /**
+   * @param array $QUERY
+   * @throws HTException
+   */
   private function createPretask($QUERY) {
     $toCheck = [
       UQueryTask::TASK_NAME,
@@ -143,7 +158,8 @@ class UserAPIPretask extends UserAPIBasic {
       UQueryTask::TASK_SMALL,
       UQueryTask::TASK_CRACKER_TYPE,
       UQueryTask::TASK_FILES,
-      UQueryTask::TASK_PRIORITY
+      UQueryTask::TASK_PRIORITY,
+      UQueryTask::TASK_MAX_AGENTS
     ];
     foreach ($toCheck as $input) {
       if (!isset($QUERY[$input])) {
@@ -153,6 +169,10 @@ class UserAPIPretask extends UserAPIBasic {
     $priority = $QUERY[UQueryTask::TASK_PRIORITY];
     if ($priority < 0) {
       $priority = 0;
+    }
+    $maxAgents = $QUERY[UQueryTask::TASK_MAX_AGENTS];
+    if ($maxAgents < 0) {
+      $maxAgents = 0;
     }
     PretaskUtils::createPretask(
       $QUERY[UQueryTask::TASK_NAME],
@@ -165,6 +185,7 @@ class UserAPIPretask extends UserAPIBasic {
       ($QUERY[UQueryTask::TASK_BENCHTYPE] == 'speed') ? 1 : 0,
       $QUERY[UQueryTask::TASK_FILES],
       $QUERY[UQueryTask::TASK_CRACKER_TYPE],
+      $maxAgents,
       $priority
     );
     $this->sendSuccessResponse($QUERY);
@@ -192,6 +213,7 @@ class UserAPIPretask extends UserAPIBasic {
       UResponseTask::PRETASK_BENCH_TYPE => ($pretask->getUseNewBench() == 1) ? "speed" : "runtime",
       UResponseTask::PRETASK_STATUS => (int)$pretask->getStatusTimer(),
       UResponseTask::PRETASK_PRIORITY => (int)$pretask->getPriority(),
+      UResponseTask::PRETASK_MAX_AGENTS => (int)$pretask->getMaxAgents(),
       UResponseTask::PRETASK_CPU_ONLY => ($pretask->getIsCpuTask() == 1) ? true : false,
       UResponseTask::PRETASK_SMALL => ($pretask->getIsSmall() == 1) ? true : false
     ];

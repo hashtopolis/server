@@ -27,6 +27,11 @@ class FileHandler implements Handler {
           FileUtils::saveChanges($_POST['fileId'], $_POST['filename'], $_POST['accessGroupId'], AccessControl::getInstance()->getUser());
           FileUtils::setFileType($_POST['fileId'], $_POST['filetype'], AccessControl::getInstance()->getUser());
           break;
+        case DFileAction::COUNT_FILE_LINES:
+          AccessControl::getInstance()->checkPermission(DFileAction::COUNT_FILE_LINES_PERM);
+          FileUtils::fileCountLines($_POST['file']);
+          UI::addMessage(UI::SUCCESS, "Line count has been successfully calculated!");
+          break;
         default:
           UI::addMessage(UI::ERROR, "Invalid action!");
           break;
