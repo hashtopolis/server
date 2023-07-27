@@ -55,7 +55,6 @@ class APIGetChunk extends APIBasic {
       );
     }
     else if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) { // benchmark only required on non-small tasks and on non-special chunk tasks
-      //toegevoegde code voor cache
       $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
       $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
 
