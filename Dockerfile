@@ -68,7 +68,7 @@ RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
     && chown www-data:www-data ${HASHTOPOLIS_CONFIG_PATH} \
     && chmod g+w ${HASHTOPOLIS_CONFIG_PATH}
 
-COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/
+COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
 COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
 RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
