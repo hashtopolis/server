@@ -140,12 +140,12 @@ RUN apt-get autoremove -y \
 
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
-    && chown -R www-data:www-data /var/www \
+    && chown -R vscode:www-data /var/www \
     && chmod -R g+w /var/www
 
 # This is a seperate step so that changes to the code do not cause the container to be rebuild
 # And it will be ran last
-COPY --chown=www-data:www-data . ${HASHTOPOLIS_DOCUMENT_ROOT}/..
+COPY --chown=vscode:www-data . ${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 USER vscode
 # ----END----
