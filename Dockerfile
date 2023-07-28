@@ -16,6 +16,14 @@ ARG CONTAINER_USER_CMD_POST
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NODE_OPTIONS='--use-openssl-ca'
 
+# Set default hashtopolis env
+ENV HASHTOPOLIS_DOCUMENT_ROOT=/var/www/html/src
+ENV HASHTOPOLIS_PATH=/usr/local/share/hashtopolis
+ENV HASHTOPOLIS_FILES_PATH=${HASHTOPOLIS_PATH}/files
+ENV HASHTOPOLIS_IMPORT_PATH=${HASHTOPOLIS_PATH}/import
+ENV HASHTOPOLIS_LOG_PATH=${HASHTOPOLIS_PATH}/log
+ENV HASHTOPOLIS_CONFIG_PATH=${HASHTOPOLIS_PATH}/config
+
 # Add support for TLS inspection corporate setups, see .env.sample for details
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt 
 
@@ -24,7 +32,7 @@ RUN if [ -n "${CONTAINER_USER_CMD_PRE}" ]; then echo "${CONTAINER_USER_CMD_PRE}"
 
 # Configure apt and install packages
 RUN apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils zip unzip nano ncdu 2>&1 \
+    && apt-get -y install --no-install-recommends apt-utils zip unzip nano ncdu gettext-base 2>&1 \
     #
     # Install git, procps, lsb-release (useful for CLI installs)
     && apt-get -y install git iproute2 procps lsb-release \
@@ -42,17 +50,36 @@ RUN apt-get update \
 
 RUN sed -i 's/KeepAliveTimeout 5/KeepAliveTimeout 10/' /etc/apache2/apache2.conf
 
-RUN mkdir /var/www/.git/
-COPY --from=preprocess /HEA[D] /var/www/.git/
+RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
+    && mkdir ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/ \
+    && mkdir -p ${HASHTOPOLIS_PATH} \
+    && chown www-data:www-data ${HASHTOPOLIS_PATH} \
+    && chmod g+w ${HASHTOPOLIS_PATH} \
+    && mkdir -p ${HASHTOPOLIS_FILES_PATH} \
+    && chown www-data:www-data ${HASHTOPOLIS_FILES_PATH} \
+    && chmod g+w ${HASHTOPOLIS_FILES_PATH} \
+    && mkdir -p ${HASHTOPOLIS_IMPORT_PATH} \
+    && chown www-data:www-data ${HASHTOPOLIS_IMPORT_PATH} \
+    && chmod g+w ${HASHTOPOLIS_IMPORT_PATH} \
+    && mkdir -p ${HASHTOPOLIS_LOG_PATH} \
+    && chown www-data:www-data ${HASHTOPOLIS_LOG_PATH} \
+    && chmod g+w ${HASHTOPOLIS_LOG_PATH} \
+    && mkdir -p ${HASHTOPOLIS_CONFIG_PATH} \
+    && chown www-data:www-data ${HASHTOPOLIS_CONFIG_PATH} \
+    && chmod g+w ${HASHTOPOLIS_CONFIG_PATH}
 
-# data folder for log, import, files
-#TODO: use environment variable here?
-RUN mkdir -p /usr/local/share/hashtopolis
-RUN mkdir /usr/local/share/hashtopolis/log /usr/local/share/hashtopolis/import /usr/local/share/hashtopolis/files
-RUN chown -R www-data:www-data /usr/local/share/hashtopolis
+COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../../.git/
+
+COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
+RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 ENV DEBIAN_FRONTEND=dialog
 COPY docker-entrypoint.sh /usr/local/bin
+
+# Setting the hashtopolis document root is done at build time. Because the www-data user cannot write to the apache config folder.
+COPY 000-default.conf /tmp/
+RUN envsubst '${HASHTOPOLIS_DOCUMENT_ROOT}' < /tmp/000-default.conf > /etc/apache2/sites-available/000-default.conf && rm /tmp/000-default.conf
+
 ENTRYPOINT [ "docker-entrypoint.sh" ]
 # ----END----
 
@@ -61,9 +88,7 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-prod
 
-COPY --chown=www-data:www-data ./src/ /var/www/html/
-COPY composer.json /var/www/
-RUN composer install --working-dir=/var/www/
+COPY --chown=www-data:www-data ./src/ $HASHTOPOLIS_DOCUMENT_ROOT
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && touch "/usr/local/etc/php/conf.d/custom.ini" \
@@ -75,17 +100,14 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
+
+USER www-data
 # ----END----
 
 
 # DEVELOPMENT Image
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-dev
-
-# The dev container expects the source code to be hosted at src/
-# Thus the vendor code will be hosted one dir higher.
-COPY composer.json /var/www/html/
-RUN composer install --working-dir=/var/www/html/
 
 # Setting up development requirements, install xdebug
 RUN yes | pecl install xdebug \
@@ -115,19 +137,15 @@ RUN apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
 
-# Link our site config to the devcontainer
-RUN rm -rf /etc/apache2/sites-enabled \
-    && ln -s /var/www/html/.devcontainer/sites-enabled /etc/apache2/sites-enabled
 
 # Adding VSCode user and fixing permissions
 RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-data -u 1001 vscode \
     && chown -R www-data:www-data /var/www \
-    && chmod -R g+w /var/www \
-    && chmod -R g+w /usr/local/share/hashtopolis
+    && chmod -R g+w /var/www
 
 # This is a seperate step so that changes to the code do not cause the container to be rebuild
 # And it will be ran last
-COPY --chown=www-data:www-data . /var/www/html/
+COPY --chown=www-data:www-data . ${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 USER vscode
 # ----END----
