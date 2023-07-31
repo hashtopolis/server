@@ -215,11 +215,11 @@ abstract class AbstractBaseAPI
   /** 
    * Convert Database resturn value to JSON object value 
    */
-  private static function db2json(string $type, mixed $val): mixed
+  protected function db2json(array $feature, mixed $val): mixed
   {
-    if ($type == 'bool') {
+    if ($feature['type'] == 'bool') {
       $obj = ($val == "1") ? True : False;
-    } elseif ($type == 'dict') {
+    } elseif ($feature['type'] == 'dict') {
       $obj = json_decode($val, true, 512, JSON_OBJECT_AS_ARRAY);
       // During encoding of the data, the data is saved as an empty array
       // An empty array is something different in json and in python.
@@ -274,7 +274,7 @@ abstract class AbstractBaseAPI
       if ($FEATURE['private'] === true) {
         continue;
       } else {
-        $item[$FEATURE['alias']] = self::db2json($FEATURE['type'], $kv[$NAME]);
+        $item[$FEATURE['alias']] = $this->db2json($FEATURE, $kv[$NAME]);
       }
     }
     return $item;

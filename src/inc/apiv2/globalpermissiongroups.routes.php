@@ -41,6 +41,41 @@ class GlobalPermissionGroupsAPI extends AbstractBaseAPI {
       return [];
     }
 
+    /** 
+     * Rewrite permissions DB values to CRUD field values
+     * Temponary exception until old API is removed and we 
+     * are allowed to write CRUD permissions to database
+     */
+    protected function db2json(array $feature, mixed $val): mixed {
+      if ($feature['alias'] == 'permissions') {
+        $all_perms = array_unique(array_merge(...array_values(self::$acl_mapping)));
+
+        if ($val == 'ALL') {
+          // Special case ALL should set all permissions to true
+          return array_combine($all_perms, array_fill(0,count($all_perms), true));
+        }
+        else {
+          // Create listing of enabled permissions based on permission set in database
+          $user_available_perms = array();
+          foreach(json_decode($val) as $rightgroup_perm => $permission_set) {
+            if ($permission_set) {
+              $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
+            }
+          }
+
+          // Create output document
+          $group_perms = array_combine($all_perms, array_fill(0,count($all_perms), false));
+          foreach($user_available_perms as $perm) {
+            $group_perms[$perm] = True;
+          }
+          return $group_perms; 
+        }
+      } else {
+        // Consider all other fields normal conversions
+        return parent::db2json($feature, $val);
+      }
+    }
+
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [];
