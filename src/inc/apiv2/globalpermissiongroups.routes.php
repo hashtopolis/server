@@ -52,7 +52,7 @@ class GlobalPermissionGroupsAPI extends AbstractBaseAPI {
 
         if ($val == 'ALL') {
           // Special case ALL should set all permissions to true
-          return array_combine($all_perms, array_fill(0,count($all_perms), true));
+          $retval_perms = array_combine($all_perms, array_fill(0,count($all_perms), true));
         }
         else {
           // Create listing of enabled permissions based on permission set in database
@@ -64,12 +64,14 @@ class GlobalPermissionGroupsAPI extends AbstractBaseAPI {
           }
 
           // Create output document
-          $group_perms = array_combine($all_perms, array_fill(0,count($all_perms), false));
+          $retval_perms = array_combine($all_perms, array_fill(0,count($all_perms), false));
           foreach($user_available_perms as $perm) {
-            $group_perms[$perm] = True;
+            $retval_perms[$perm] = True;
           }
-          return $group_perms; 
         }
+        // Ensure output is sorted for easy debugging
+        ksort($retval_perms);
+        return $retval_perms; 
       } else {
         // Consider all other fields normal conversions
         return parent::db2json($feature, $val);
