@@ -461,7 +461,7 @@ abstract class AbstractBaseAPI
    */
   protected function ret2json(array $result): string
   {
-    return json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+    return json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . PHP_EOL;
   }
 
   /**
