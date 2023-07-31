@@ -268,7 +268,6 @@ abstract class AbstractBaseAPI
     $item['_self'] = $this->routeParser->urlFor($apiClass . ':getOne', ['id' => $item['_id']]);
 
     foreach ($features as $NAME => $FEATURE) {
-      $test = $kv[$NAME];
       // If a attribute is set to private, it should be hidden and not returned.
       // Example of this is the password hash.
       if ($FEATURE['private'] === true) {
