@@ -151,7 +151,7 @@ abstract class AbstractBaseAPI
   protected static $acl_mapping = array(
     DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ),
     DAccessControl::MANAGE_HASHLIST_ACCESS => array(Hashlist::PERM_READ, Hashlist::PERM_UPDATE, Hashlist::PERM_DELETE),
-    DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE, Hashlist::PERM_READ),
+    DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE),
 
     DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
 
@@ -167,7 +167,7 @@ abstract class AbstractBaseAPI
                                                 RegVoucher::PERM_CREATE, RegVoucher::PERM_READ, RegVoucher::PERM_UPDATE, RegVoucher::PERM_DELETE),
 
     DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ, Speed::PERM_READ, Chunk::PERM_READ),
-    DAccessControl::RUN_TASK_ACCESS[0] => array("TODO_RUN_TASK_ACCESS"),
+    DAccessControl::RUN_TASK_ACCESS[0] => array(Task::PERM_CREATE),
     DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, Task::PERM_READ, Chunk::PERM_READ),
     DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE,
                                                 Chunk::PERM_READ, Chunk::PERM_UPDATE, Chunk::PERM_DELETE,
