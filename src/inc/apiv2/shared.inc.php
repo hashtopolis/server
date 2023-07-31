@@ -215,7 +215,7 @@ abstract class AbstractBaseAPI
   /** 
    * Convert Database resturn value to JSON object value 
    */
-  protected function db2json(array $feature, mixed $val): mixed
+  protected static function db2json(array $feature, mixed $val): mixed
   {
     if ($feature['type'] == 'bool') {
       $obj = ($val == "1") ? True : False;
@@ -273,7 +273,7 @@ abstract class AbstractBaseAPI
       if ($FEATURE['private'] === true) {
         continue;
       } else {
-        $item[$FEATURE['alias']] = $this->db2json($FEATURE, $kv[$NAME]);
+        $item[$FEATURE['alias']] = $apiClass::db2json($FEATURE, $kv[$NAME]);
       }
     }
     return $item;

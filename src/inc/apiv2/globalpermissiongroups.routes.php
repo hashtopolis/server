@@ -46,7 +46,7 @@ class GlobalPermissionGroupsAPI extends AbstractBaseAPI {
      * Temponary exception until old API is removed and we 
      * are allowed to write CRUD permissions to database
      */
-    protected function db2json(array $feature, mixed $val): mixed {
+    protected static function db2json(array $feature, mixed $val): mixed {
       if ($feature['alias'] == 'permissions') {
         $all_perms = array_unique(array_merge(...array_values(self::$acl_mapping)));
 
