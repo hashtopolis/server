@@ -104,11 +104,33 @@ class GlobalPermissionGroupsAPI extends AbstractBaseAPI {
       $key = RightGroup::PERMISSIONS;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
-        // TODO: Modify data to conform with updateGroupPermssions input
 
+        /*
+         * NOTE: If ANY CRUD-permission is satisfied the corresponding OLD-permission is set
+         */
+
+        // Build reverse mapping to speed-up lookups for CRUD-permission to OLD-permission
+        $c2o = array();
+        foreach (self::$acl_mapping as $oldPerm => $crudPerms) {
+          foreach($crudPerms as $crudPerm) {
+            if (array_key_exists($crudPerm, $c2o)) {
+              array_push($c2o[$crudPerm], $oldPerm);
+            } else {
+              $c2o[$crudPerm] = [$oldPerm];
+            }
+          }
+        }
+        
+        $oldPerms = [];
+        foreach($data[$key] as $crudPerm => $value) {
+          if ($value === true) {
+            $oldPerms = array_merge($oldPerms, $c2o[$crudPerm]);
+          }
+        }
+        // Modify data to conform with updateGroupPermssions input
         $permData = [];
-        foreach($data[$key] as $key2 => $value) {
-          array_push($permData, $key2 . "-" . (($value) ? "1" : '0'));
+        foreach($oldPerms as $key) {
+          array_push($permData, $key . "-1");
         }
         AccessControlUtils::updateGroupPermissions($object->getId(), $permData);
       }
