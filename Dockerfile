@@ -84,27 +84,6 @@ ENTRYPOINT [ "docker-entrypoint.sh" ]
 # ----END----
 
 
-# PRODUCTION Image
-# ----BEGIN----
-FROM hashtopolis-server-base as hashtopolis-server-prod
-
-COPY --chown=www-data:www-data ./src/ $HASHTOPOLIS_DOCUMENT_ROOT
-
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && touch "/usr/local/etc/php/conf.d/custom.ini" \
-    && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
-    \
-    # Clean up
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
-
-USER www-data
-# ----END----
-
-
 # DEVELOPMENT Image
 # ----BEGIN----
 FROM hashtopolis-server-base as hashtopolis-server-dev
@@ -148,4 +127,25 @@ RUN groupadd vscode && useradd -rm -d /var/www -s /bin/bash -g vscode -G www-dat
 COPY --chown=vscode:www-data . ${HASHTOPOLIS_DOCUMENT_ROOT}/..
 
 USER vscode
+# ----END----
+
+
+# PRODUCTION Image
+# ----BEGIN----
+FROM hashtopolis-server-base as hashtopolis-server-prod
+
+COPY --chown=www-data:www-data ./src/ $HASHTOPOLIS_DOCUMENT_ROOT
+
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+    && touch "/usr/local/etc/php/conf.d/custom.ini" \
+    && echo "memory_limit = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "upload_max_filesize = 256m" >> /usr/local/etc/php/conf.d/custom.ini \
+    && echo "max_execution_time = 60" >> /usr/local/etc/php/conf.d/custom.ini \
+    \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+USER www-data
 # ----END----
