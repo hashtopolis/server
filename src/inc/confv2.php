@@ -43,13 +43,12 @@ if (file_exists(dirname(__FILE__) . "/conf.php")) {
   if (getenv('HASHTOPOLIS_LOG_PATH') !== false) {
     $DIRECTORIES["log"] = getenv('HASHTOPOLIS_LOG_PATH');
   }
-
-  // load data
-  // test if config file exists
-  if (file_exists($DIRECTORIES['config'] . "/config.json")) {
-    $CONFIG = json_decode(file_get_contents($DIRECTORIES['config'] . "/config.json"), true);
-    $PEPPER = $CONFIG['PEPPER'];
-  } else {
-    $CONFIG = [];
-  }
+}
+// load data
+// test if config file exists
+if (file_exists($DIRECTORIES['config'] . "/config.json")) {
+  $CONFIG = json_decode(file_get_contents($DIRECTORIES['config'] . "/config.json"), true);
+  $PEPPER = $CONFIG['PEPPER'];
+} else {
+  $CONFIG = [];
 }
