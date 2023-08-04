@@ -75,7 +75,8 @@ class HashlistAPI extends AbstractBaseAPI {
         $QUERY[UQueryHashlist::HASHLIST_HEX_SALTED],
         $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
         $QUERY[UQueryHashlist::HASHLIST_FORMAT],
-        $QUERY[UQueryHashlist::HASHLIST_HASHTYPE_ID],
+        // hashTypeId is a bit weird because the UQueryHashlist::HASHLIST_HASH_TYPE_ID is not the same as db column Hashlist::HASH_TYPE_ID
+        $QUERY[Hashlist::HASH_TYPE_ID],
         (array_key_exists("saltSeperator", $QUERY)) ? $QUERY["saltSeparator"] : $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
         $QUERY[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
         $QUERY["sourceType"],
