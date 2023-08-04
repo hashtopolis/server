@@ -342,7 +342,7 @@ abstract class AbstractBaseAPI
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'crackerBinaryType':
-          $obj = Factory::getCrackerBinaryFactory()->get($item['crackerBinaryTypeId']);
+          $obj = Factory::getCrackerBinaryTypeFactory()->get($item['crackerBinaryTypeId']);
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'crackerVersions':
