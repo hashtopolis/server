@@ -17,7 +17,7 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
         stamp = int(time.time() * 1000)
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
-            permissions={'viewHashlistAccess': True}
+            permissions={'permHashlistRead': True}
         )
         obj = globalpermissiongroup.save()
 
@@ -27,21 +27,21 @@ class GlobalPermissionGroupsTest(unittest.TestCase):
 
     def test_patch_globalpermissiongroup(self):
         stamp = int(time.time() * 1000)
-        permissions = {'viewHashlistAccess': True}
+        permissions = {'permHashlistRead': True}
         globalpermissiongroup = GlobalPermissionGroup(
             name=f'test-{stamp}',
             permissions=permissions
         )
         globalpermissiongroup.save()
-        assert globalpermissiongroup.permissions == permissions
+        assert globalpermissiongroup.permissions['permHashlistRead'] == permissions['permHashlistRead']
 
         globalpermissiongroup.permissions = {}
-        globalpermissiongroup.permissions['viewHashlistAccess'] = False
+        globalpermissiongroup.permissions['permHashlistRead'] = False
         globalpermissiongroup.save()
 
         obj = GlobalPermissionGroup.objects.get(id=globalpermissiongroup.id)
 
-        assert obj.permissions['viewHashlistAccess'] == globalpermissiongroup.permissions['viewHashlistAccess']
+        assert obj.permissions['permHashlistRead'] == globalpermissiongroup.permissions['permHashlistRead']
 
         globalpermissiongroup.delete()
 
