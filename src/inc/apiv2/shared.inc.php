@@ -394,6 +394,15 @@ abstract class AbstractBaseAPI
           $obj = Factory::getTaskFactory()->get($item['taskId']);
           $item[$NAME] = $this->obj2Array($obj);
           break;
+        case 'tasks':
+          $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $item['hashlistId'], "=", Factory::getTaskWrapperFactory());
+          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+          $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+
+          $objs = $joined[Factory::getTaskFactory()->getModelName()];
+
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
+          break;
         case 'speeds':
           $qFs = [];
           $qFs[] = new QueryFilter(Speed::TASK_ID, $item['taskId'], "=");

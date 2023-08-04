@@ -27,7 +27,7 @@ class HashlistAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ["accessGroup", "hashType", "hashes"];
+      return ["accessGroup", "hashType", "hashes", "tasks"];
     }
 
     protected function getFilterACL(): array {
