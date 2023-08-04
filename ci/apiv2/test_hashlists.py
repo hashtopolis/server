@@ -13,8 +13,8 @@ import hashtopolis
 from hashtopolis import Hashlist
 
 
-def do_create_hashlist():
-    p = Path(__file__).parent.joinpath('create_hashlist_001.json')
+def do_create_hashlist(file_id='001'):
+    p = Path(__file__).parent.joinpath(f'create_hashlist_{file_id}.json')
     payload = json.loads(p.read_text('UTF-8'))
     hashlist = Hashlist(**payload)
     obj = hashlist.save()
@@ -96,6 +96,11 @@ class HashlistTest(unittest.TestCase):
         assert len(obj.hashes_set) == 1
         hashlist.delete()
 
+    def test_create_hashtype(self):
+        # Test that sets a different hashtype then 0
+        hashlist = do_create_hashlist('003')
+        assert hashlist.hashTypeId == 1000
+        hashlist.delete()
 
 if __name__ == '__main__':
     unittest.main()
