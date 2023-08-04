@@ -18,6 +18,7 @@ use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
 use DBA\File;
 use DBA\FilePretask;
+use DBA\FileTask;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
@@ -398,9 +399,7 @@ abstract class AbstractBaseAPI
           $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $item['hashlistId'], "=", Factory::getTaskWrapperFactory());
           $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
           $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-
           $objs = $joined[Factory::getTaskFactory()->getModelName()];
-
           $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
           break;
         case 'speeds':
@@ -413,6 +412,12 @@ abstract class AbstractBaseAPI
           /* M2M via FilePretask */
           $qF = new QueryFilter(FilePretask::PRETASK_ID, $item[Pretask::PRETASK_ID], "=", Factory::getFilePretaskFactory());
           $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
+          break;
+        case 'files':
+          /* M2M via Filetask */
+          $qF = new QueryFilter(FileTask::TASK_ID, $item[Task::TASK_ID], "=", Factory::getFileTaskFactory());
+          $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
           $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
           break;
         case 'pretasks':
@@ -621,7 +626,7 @@ abstract class AbstractBaseAPI
         if (array_key_exists($cast_key, $features)) {
           // TODO: cast value
           if ($features[$cast_key]['type'] == 'bool') {
-            $val = filter_var($matches['value'], FILTER_NULL_ON_FAILURE);
+            $val = filter_var($matches['value'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
             if (is_null($val)) {
               throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
             }

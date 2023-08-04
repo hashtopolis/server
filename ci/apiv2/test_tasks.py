@@ -161,5 +161,21 @@ class TaskTest(unittest.TestCase):
         hashlist.delete()
 
 
+    def test_archive_filter(self):
+        hashlist = do_create_hashlist()
+        obj = do_create_task(hashlist)
+
+        obj.isArchived = True
+        obj.save()
+
+        # Use filter to get archived tasks
+        test_obj = Task.objects.filter(taskId=obj.id, isArchived=True)
+
+        assert len(test_obj) == 1
+        assert test_obj[0].isArchived == True
+
+        obj.delete()
+        hashlist.delete()
+
 if __name__ == '__main__':
     unittest.main()

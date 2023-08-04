@@ -28,7 +28,7 @@ class TaskAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ["crackerBinary", "crackerBinaryType", "hashlist", "speeds"];
+      return ["crackerBinary", "crackerBinaryType", "hashlist", "speeds", "files"];
     }
 
     protected function getFilterACL(): array {
@@ -74,6 +74,14 @@ class TaskAPI extends AbstractBaseAPI {
 
     protected function deleteObject(object $object): void {
       TaskUtils::deleteTask($object);
+    }
+
+    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {
+      $key = Task::IS_ARCHIVED;
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        TaskUtils::archiveTask($object->getId(), $this->getUser());
+      }
     }
 }
 
