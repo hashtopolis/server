@@ -38,7 +38,7 @@ services:
     depends_on: 
       - hashtopolis-backend
     ports:
-      - 4200:4200
+      - 4200:80
 volumes:
   db:
   hashtopolis:
