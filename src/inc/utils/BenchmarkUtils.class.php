@@ -7,11 +7,9 @@ use DBA\Benchmark;
 
 define("ttl", 216000);
 
-class BenchmarkUtils
-{
+class BenchmarkUtils {
 
-  public static function getBenchmark($benchmarkId)
-  {
+  public static function getBenchmark($benchmarkId) {
     $benchmark = Factory::getBenchmarkFactory()->get($benchmarkId);
     if ($benchmark == null) {
       throw new HTException("Invalid benchmark ID!");
@@ -19,14 +17,12 @@ class BenchmarkUtils
     return $benchmark;
   }
 
-  public static function delete($benchmarkId)
-  {
+  public static function delete($benchmarkId) {
     $benchmark = BenchmarkUtils::getBenchmark($benchmarkId);
     Factory::getBenchmarkFactory()->delete($benchmark);
   }
 
-  static function cleanupAttackParameters($attackCmd)
-  {
+  static function cleanupAttackParameters($attackCmd) {
     $attackCmd = trim($attackCmd);
 
     if (strlen($attackCmd) == 0) {
@@ -116,8 +112,7 @@ class BenchmarkUtils
     return $cleanAttackCmd;
   }
 
-  public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark, $crackerBinaryId)
-  {
+  public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark, $crackerBinaryId) {
     $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
 
@@ -149,14 +144,12 @@ class BenchmarkUtils
     return $res;
   }
 
-  public static function deleteBenchmark($benchmark)
-  {
+  public static function deleteBenchmark($benchmark) {
     Factory::getBenchmarkFactory()->delete($benchmark);
     return true;
   }
 
-  public static function saveBenchmarkInCache($attackParameters, $hardwareGroupId, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId)
-  {
+  public static function saveBenchmarkInCache($attackParameters, $hardwareGroupId, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId) {
     $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
 
     if (!isset($hardwareGroup)) {
@@ -183,20 +176,17 @@ class BenchmarkUtils
   }
 
   //removes all values where the time to live has been exceeded
-  public static function refreshCache()
-  {
+  public static function refreshCache() {
     $qF = new QueryFilter("ttl", time(), "<");
     Factory::getFileTaskFactory()->massDeletion([Factory::FILTER => $qF]);
   }
 
   //removes all values in cache
-  public static function deleteCache()
-  {
+  public static function deleteCache() {
     Factory::getBenchmarkFactory()->massDeletion([]);
   }
 
-  public static function getCacheOfAgent($agentID)
-  {
+  public static function getCacheOfAgent($agentID) {
     $qF = new QueryFilter("agentID", $agentID, "=");
     $oF = new OrderFilter(ttl, "DESC");
 
