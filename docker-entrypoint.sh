@@ -38,6 +38,9 @@ fi
 if [ ! -d ${HASHTOPOLIS_IMPORT_PATH} ];then
 	mkdir -p ${HASHTOPOLIS_IMPORT_PATH} && chown www-data:www-data ${HASHTOPOLIS_IMPORT_PATH}
 fi
+if [ ! -d ${HASHTOPOLIS_BINARIES_PATH} ];then
+  mkdir -p ${HASHTOPOLIS_BINARIES_PATH} && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH}
+fi
 
 # required to trigger the initialization
 echo "Start initialization process..."

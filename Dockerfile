@@ -23,6 +23,7 @@ ENV HASHTOPOLIS_FILES_PATH=${HASHTOPOLIS_PATH}/files
 ENV HASHTOPOLIS_IMPORT_PATH=${HASHTOPOLIS_PATH}/import
 ENV HASHTOPOLIS_LOG_PATH=${HASHTOPOLIS_PATH}/log
 ENV HASHTOPOLIS_CONFIG_PATH=${HASHTOPOLIS_PATH}/config
+ENV HASHTOPOLIS_BINARIES_PATH=${HASHTOPOLIS_PATH}/binaries
 
 # Add support for TLS inspection corporate setups, see .env.sample for details
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt 
@@ -66,7 +67,10 @@ RUN mkdir -p ${HASHTOPOLIS_DOCUMENT_ROOT} \
     && chmod g+w ${HASHTOPOLIS_LOG_PATH} \
     && mkdir -p ${HASHTOPOLIS_CONFIG_PATH} \
     && chown www-data:www-data ${HASHTOPOLIS_CONFIG_PATH} \
-    && chmod g+w ${HASHTOPOLIS_CONFIG_PATH}
+    && chmod g+w ${HASHTOPOLIS_CONFIG_PATH} \
+    && mkdir -p ${HASHTOPOLIS_BINARIES_PATH} \
+    && chown www-data:www-data ${HASHTOPOLIS_BINARIES_PATH} \
+    && chmod g+w ${HASHTOPOLIS_BINARIES_PATH}
 
 COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
@@ -78,7 +82,7 @@ COPY docker-entrypoint.sh /usr/local/bin
 
 # Setting the hashtopolis document root is done at build time. Because the www-data user cannot write to the apache config folder.
 COPY 000-default.conf /tmp/
-RUN envsubst '${HASHTOPOLIS_DOCUMENT_ROOT}' < /tmp/000-default.conf > /etc/apache2/sites-available/000-default.conf && rm /tmp/000-default.conf
+RUN envsubst '${HASHTOPOLIS_DOCUMENT_ROOT} ${HASHTOPOLIS_BINARIES_PATH}' < /tmp/000-default.conf > /etc/apache2/sites-available/000-default.conf && rm /tmp/000-default.conf
 
 ENTRYPOINT [ "docker-entrypoint.sh" ]
 # ----END----
