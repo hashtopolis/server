@@ -9,6 +9,10 @@ define("ttl", 216000);
 
 class BenchmarkUtils {
 
+  /**
+  * @param int $benchmarkId
+  * @throws HTException
+  */
   public static function getBenchmark($benchmarkId) {
     $benchmark = Factory::getBenchmarkFactory()->get($benchmarkId);
     if ($benchmark == null) {
@@ -17,11 +21,22 @@ class BenchmarkUtils {
     return $benchmark;
   }
 
+  /**
+  * @param int $benchmarkId
+  * @throws HTException
+  */ 
   public static function delete($benchmarkId) {
     $benchmark = BenchmarkUtils::getBenchmark($benchmarkId);
+    if ($benchmark == null) {
+      throw new HTException("Invalid benchmark ID!");
+    }
     Factory::getBenchmarkFactory()->delete($benchmark);
   }
 
+  /**
+  * @param string $attackCmd
+  * @throws HTException
+  */ 
   static function cleanupAttackParameters($attackCmd) {
     $attackCmd = trim($attackCmd);
 
@@ -112,12 +127,22 @@ class BenchmarkUtils {
     return $cleanAttackCmd;
   }
 
+   /**
+   * @param string $attackParameters
+   * @param int $hardwareGroupId
+   * @param int $hashmode
+   * @param string $useNewBenchmark
+   * @param int $crackerBinaryId
+   */
   public static function getBenchmarkByValue($attackParameters, $hardwareGroupId, $hashmode, $useNewBenchmark, $crackerBinaryId) {
     $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
 
-    if (!isset($hardwareGroup) || !isset($crackerBinary)) {
-      return null;
+    if ($hardwareGroup == null) {
+      throw new HTException("Invallid hardwareGroupId!");
+    }
+    if ($crackerBinary == null) {
+      throw new HTException("Invallid crackerBinaryId!");
     }
 
     $cleanAttackParameter = self::cleanupAttackParameters($attackParameters);
@@ -144,11 +169,15 @@ class BenchmarkUtils {
     return $res;
   }
 
-  public static function deleteBenchmark($benchmark) {
-    Factory::getBenchmarkFactory()->delete($benchmark);
-    return true;
-  }
-
+  /**
+  * @param string $attackParamters
+  * @param int $hardwareGroupId
+  * @param string $benchmarkValue
+  * @param int $hashmode
+  * @param string $benchmarkType
+  * @param int $crackerBinaryId
+  * @throws HTException
+  */ 
   public static function saveBenchmarkInCache($attackParameters, $hardwareGroupId, $benchmarkValue, $hashmode, $benchmarkType, $crackerBinaryId) {
     $hardwareGroup = Factory::getHardwareGroupFactory()->get($hardwareGroupId);
 
@@ -184,13 +213,5 @@ class BenchmarkUtils {
   //removes all values in cache
   public static function deleteCache() {
     Factory::getBenchmarkFactory()->massDeletion([]);
-  }
-
-  public static function getCacheOfAgent($agentID) {
-    $qF = new QueryFilter("agentID", $agentID, "=");
-    $oF = new OrderFilter(ttl, "DESC");
-
-    $benchmarks = Factory::getBenchmarkFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-    return $benchmarks;
   }
 }
