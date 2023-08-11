@@ -674,7 +674,8 @@ abstract class AbstractBaseAPI
    */
   protected function validatePermissions(array $required_perms): bool {
     // Retrieve permissions from RightGroup part of the User
-    $group = Factory::getRightGroupFactory()->get($this->user->getId());
+    $group = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
+    
   
     if ($group->getPermissions() == 'ALL') {
       // Special (legacy) case for administative access, enable all available permissions

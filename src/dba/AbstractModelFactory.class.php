@@ -855,7 +855,7 @@ abstract class AbstractModelFactory {
     }
     else {
       global $CONN;
-      $dsn = 'mysql:dbname=' . $CONN['db'] . ";host=" . $CONN['server'] . ";port=" . $CONN['port'];
+      $dsn = 'mysql:dbname=' . $CONN['db'] . ";host=" . $CONN['server'] . ";port=" . $CONN['port'] . ";charset=utf8";
       $user = $CONN['user'];
       $password = $CONN['pass'];
     }
