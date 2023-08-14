@@ -65,7 +65,7 @@ class PreTaskAPI extends AbstractBaseAPI {
       /* Hackish way to retreive object since Id is not returned on creation */
       $oF = new OrderFilter(PreTask::PRETASK_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
-      assert(count($objects) == 1);
+      assert(count($objects) >= 1);
 
       return $objects[0]->getId();      
     }
