@@ -14,6 +14,7 @@ use DBA\AgentBinary;
 use DBA\AgentStat;
 use DBA\Chunk;
 use DBA\Config;
+use DBA\ConfigSection;
 use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
 use DBA\File;
@@ -71,6 +72,43 @@ function getRequiredPermissions(string $model, string $method): array
       throw new HTException("Method '" . $method . "' is not allowed ");
   }
   return array($required_perm);
+}
+
+ /**
+ * Retrieve permissions based on expand section
+  */
+function getExpandPermissions(string $expand): array
+{
+  $expand_to_perm_mapping = array(
+    'agent' => [Agent::PERM_READ],
+    'agents' => [AccessGroup::PERM_READ],
+    'agentstats' => [AgentStat::PERM_READ],
+    'accessGroup' => [AccessGroup::PERM_READ],
+    'chunk' => [Chunk::PERM_READ],
+    'configSection' => [ConfigSection::PERM_READ],
+    'crackerBinary' => [CrackerBinary::PERM_READ],
+    'crackerBinaryType' => [CrackerBinaryType::PERM_READ],
+    'hashes' => [Hash::PERM_READ],
+    'hashlist' => [Hashlist::PERM_READ],
+    'hashType' => [HashType::PERM_READ],
+    'healthCheck' => [HealthCheck::PERM_READ],
+    'healthCheckAgents' => [HealthCheckAgent::PERM_READ],
+    'globalPermissionGroup' => [RightGroup::PERM_READ],
+    'task' => [Task::PERM_READ],
+    'tasks' => [Task::PERM_READ],
+    'speeds' => [Speed::PERM_READ],
+    'pretaskFiles' => [FilePretask::PERM_READ, File::PERM_READ],
+    'files' => [FileTask::PERM_READ, File::PERM_READ],
+    'pretasks' => [Supertask::PERM_READ, Pretask::PERM_READ],
+    'user' => [User::PERM_READ],
+    'userMembers' => [User::PERM_READ],
+    'agentMembers' => [Agent::PERM_READ],
+  );
+
+  if (array_key_exists($expand, $expand_to_perm_mapping) === False) {
+    throw new BadFunctionCallException("Internal error: Expand type '$expand' has no permission mapping implemented in getExpandPermissions()!");
+  }
+  return $expand_to_perm_mapping[$expand];
 }
 
 /**   
@@ -581,6 +619,15 @@ abstract class AbstractBaseAPI
       } else {
         throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($expandables)) . ")");
       }
+    }
+
+    /* Validate expand parameters for required permissions */
+    $required_perms = [];
+    foreach ($mergedExpands as $expand) {
+        array_push($required_perms, ...getExpandPermissions($expand));
+    }
+    if ($this->validatePermissions($required_perms) === FALSE) {
+      throw new HttpForbiddenException($request, 'Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
     }
 
     return [$expandable, $mergedExpands];
