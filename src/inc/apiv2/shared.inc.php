@@ -175,9 +175,9 @@ abstract class AbstractBaseAPI
                                                 // src/inc/defines/tasks.php
                                                 TaskWrapper::PERM_READ, TaskWrapper::PERM_UPDATE),
 
-    DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ),
-    DAccessControl::CREATE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_CREATE),
-    DAccessControl::MANAGE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_UPDATE, Pretask::PERM_DELETE),
+    DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ, FilePretask::PERM_READ),
+    DAccessControl::CREATE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_CREATE, FilePretask::PERM_CREATE),
+    DAccessControl::MANAGE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_UPDATE, Pretask::PERM_DELETE, FilePretask::PERM_UPDATE, FilePretask::PERM_DELETE),
 
     DAccessControl::VIEW_SUPERTASK_ACCESS[0] => array(Supertask::PERM_READ),
     DAccessControl::CREATE_SUPERTASK_ACCESS => array(Supertask::PERM_CREATE, Supertask::PERM_READ),
