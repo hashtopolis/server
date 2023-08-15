@@ -141,6 +141,7 @@ class HashtopolisConnector(object):
             logger.debug("Going to patch object '%s' property '%s' from '%s' to '%s'", obj, k, v[0], v[1])
             payload[k] = v[1]
 
+        logger.debug("Sending PATCH payload: %s to %s", json.dumps(payload), uri)
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, 201, "Patching failed")
 
@@ -154,7 +155,7 @@ class HashtopolisConnector(object):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
         headers = self._headers
-        payload = dict([(k, v[1]) for (k, v) in obj.diff().items()])
+        payload = obj.get_fields()
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, 201, "Creation of object failed")
@@ -345,11 +346,19 @@ class Model(metaclass=ModelBase):
             if not k.startswith('_'):
                 self.__fields.append(k)
 
+    def get_fields(self):
+        return dict([(k, getattr(self, k)) for k in self.__fields])
 
     def diff(self):
-        d1 = self.__initial
-        d2 = dict([(k, getattr(self, k)) for k in self.__fields])
-        diffs = [(k, (v, d2[k])) for k, v in d2.items() if v != d1.get(k, None)]
+        # Stored database values
+        d_initial = self.__initial
+        # Possible changes values
+        d_current = self.get_fields()
+        diffs = []
+        for key, v_current in d_current.items():
+            v_innitial = d_initial[key]
+            if v_current != v_innitial:
+                diffs.append((key, (v_innitial, v_current)))
         return dict(diffs)
 
     def has_changed(self):
