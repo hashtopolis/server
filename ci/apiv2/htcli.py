@@ -23,10 +23,8 @@ from hashtopolis import Agent, Task, Hashlist
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
-ALL_MODELS_PLURAL = [x[0] + 's' for x in inspect.getmembers(hashtopolis, inspect.isclass)
-                     if issubclass(x[1], hashtopolis.Model) and
-                     type(x[1]) != hashtopolis.Model]
-
+ALL_MODELS = [x[1] for x in inspect.getmembers(hashtopolis, inspect.isclass) \
+                     if issubclass(x[1], hashtopolis.Model) and x[1] is not hashtopolis.Model]
 
 @click.group()
 def main():
@@ -65,14 +63,14 @@ def delete_everything(commit):
 
 
 @main.command()
-@click.argument('model', type=click.Choice(ALL_MODELS_PLURAL, case_sensitive=True))
-@click.option('-j', '--json', 'export_json', is_flag=True, help="Output objects in JSON format")
+@click.argument('model_plural', type=click.Choice([x.verbose_name_plural for x in ALL_MODELS], case_sensitive=True))
+@click.option('-b', '--brief', 'is_brief', is_flag=True, help="Condense output to list of items")
 # TODO: Add --filter option to filter objects
 # TODO: Add --expand support for objects
 @click.option('--fields', help="Comma seperated list of fields to display")
 @click_log.simple_verbosity_option(logger)
-def list(model, export_json, fields):
-    model_class = getattr(hashtopolis, model[:-1])
+def list(model_plural, is_brief, fields):
+    model_class = [x for x in ALL_MODELS if x.verbose_name_plural == model_plural][0]
     objs = model_class.objects.all()
 
     # List fields to display
@@ -81,16 +79,7 @@ def list(model, export_json, fields):
     else:
         display_field_filter = []
 
-    if export_json is True:
-        export = []
-        for obj in objs:
-            obj_dict = obj.serialize()
-            if fields:
-                export.append(dict([(k, v) for k, v in obj_dict.items() if k in display_field_filter]))
-            else:
-                export.append(obj_dict)
-        print(json.dumps(export, indent=4))
-    else:
+    if is_brief is True:
         rows = []
         if display_field_filter:
             header = display_field_filter
@@ -101,6 +90,15 @@ def list(model, export_json, fields):
 
         for row in rows:
             print(' || '.join(row))
+    else:
+        export = []
+        for obj in objs:
+            obj_dict = obj.serialize()
+            if fields:
+                export.append(dict([(k, v) for k, v in obj_dict.items() if k in display_field_filter]))
+            else:
+                export.append(obj_dict)
+        print(json.dumps(export, indent=4))
 
 
 if __name__ == '__main__':

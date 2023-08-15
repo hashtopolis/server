@@ -259,6 +259,19 @@ class ModelBase(type):
         setattr(new_class.objects, '_model', new_class)
         cls_registry[clsname] = new_class
 
+        # Insert Meta properties
+        if hasattr(new_class, 'Meta'):
+            META_FIELDS = ['verbose_name', 'verbose_name_plural']
+            for field in META_FIELDS:
+                if hasattr(new_class.Meta, field):
+                    setattr(new_class, field, getattr(new_class.Meta, field))
+
+        if not hasattr(new_class, 'verbose_name'):
+            new_class.verbose_name = new_class.__name__
+
+        if not hasattr(new_class, 'verbose_name_plural'):
+            new_class.verbose_name_plural = new_class.verbose_name + 's'
+
         return new_class
 
 
@@ -332,6 +345,7 @@ class Model(metaclass=ModelBase):
             if not k.startswith('_'):
                 self.__fields.append(k)
 
+
     def diff(self):
         d1 = self.__initial
         d2 = dict([(k, getattr(self, k)) for k in self.__fields])
@@ -393,6 +407,8 @@ class HashType(Model, uri="/ui/hashtypes"):
 class Hash(Model, uri="/ui/hashes"):
     def __repr__(self):
         return self._self
+    class Meta:
+        verbose_name_plural = 'Hashes'
 
 
 class AccessGroup(Model, uri="/ui/accessgroups"):
