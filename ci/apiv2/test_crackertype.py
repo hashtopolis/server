@@ -1,19 +1,13 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# PoC testing/development framework for APIv2
-# Written in python to work on creation of hashtopolis APIv2 python binding.
-#
 import json
-import unittest
 import datetime
 from pathlib import Path
 
 from hashtopolis import CrackerType
 from hashtopolis import HashtopolisError
+from utils import BaseTest
 
 
-class CrackerTypes(unittest.TestCase):
+class CrackerTypeTest(BaseTest):
     def test_create_crackertype(self):
         p = Path(__file__).parent.joinpath('create_crackertype_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -21,7 +15,7 @@ class CrackerTypes(unittest.TestCase):
         crackertype.save()
 
         obj = CrackerType.objects.get(crackerBinaryTypeId=crackertype.id)
-        assert obj.typeName == payload.get('typeName')
+        self.assertEqual(obj.typeName, payload.get('typeName'))
 
         crackertype.delete()
 
@@ -37,7 +31,7 @@ class CrackerTypes(unittest.TestCase):
         crackertype.save()
 
         obj = CrackerType.objects.get(crackerBinaryTypeId=crackertype.id)
-        assert obj.typeName == obj_name
+        self.assertEqual(obj.typeName, obj_name)
 
         crackertype.delete()
 
@@ -53,7 +47,7 @@ class CrackerTypes(unittest.TestCase):
 
         objs = CrackerType.objects.filter(crackerBinaryTypeId=id)
 
-        assert objs == []
+        self.assertEqual(objs, [])
 
     def test_exception_crackertype(self):
         p = Path(__file__).parent.joinpath('create_crackertype_002.json')
@@ -62,9 +56,5 @@ class CrackerTypes(unittest.TestCase):
 
         with self.assertRaises(HashtopolisError) as e:
             crackertype.save()
-        assert e.exception.args[1] == 'Creation of object failed'
-        assert 'is not of type string' in e.exception.args[4]
-
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(e.exception.args[1],  'Creation of object failed')
+        self.assertIn('is not of type string', e.exception.args[4])

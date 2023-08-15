@@ -1,31 +1,18 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# PoC testing/development framework for APIv2
-# Written in python to work on creation of hashtopolis APIv2 python binding.
-#
-import unittest
-
 from hashtopolis import Config
+from utils import BaseTest
 
 
-class Configs(unittest.TestCase):
+class ConfigTest(BaseTest):
     def test_patch_config(self):
-        config = Config()
-        obj = config.objects.get(item='hashcatBrainEnable')
-        obj.value = "0"
-        obj.save()
+        config = Config.objects.get(item='hashcatBrainEnable')
+        config.value = "0"
+        config.save()
 
-        assert obj.value == "0"
-        obj.value = "1"
-        obj.save()
+        obj = Config.objects.get(item='hashcatBrainEnable')
+        self.assertEqual(obj.value, "0")
 
-        obj2 = config.objects.get(item='hashcatBrainEnable')
-        assert obj2.value == "1"
+        config.value = "1"
+        config.save()
 
-        obj2.value = "0"
-        obj.save()
-
-
-if __name__ == '__main__':
-    unittest.main()
+        obj = Config.objects.get(item='hashcatBrainEnable')
+        self.assertEqual(obj.value, "1")

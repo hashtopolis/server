@@ -47,7 +47,7 @@ def delete_test_data(commit):
     else:
         prefix = ''
 
-    for model in [Agent, Hashlist, File, Pretask, Task]:
+    for model in [Agent, Pretask, Task, Hashlist, File]:
         for obj in model.objects.all():
             logger.warning("%s Deleting %s", prefix, obj)
             if commit is True:

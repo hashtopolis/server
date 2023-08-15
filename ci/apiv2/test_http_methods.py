@@ -1,9 +1,10 @@
-from hashtopolis import HashtopolisConnector, HashtopolisConfig
-import unittest
 import requests
 
+from hashtopolis import HashtopolisConnector, HashtopolisConfig
+from utils import BaseTest
 
-class HttpMethods(unittest.TestCase):
+
+class HttpMethodsTest(BaseTest):
     def test_empty_body(self):
         config = HashtopolisConfig()
         conn = HashtopolisConnector('/ui/users', config)
@@ -17,4 +18,4 @@ class HttpMethods(unittest.TestCase):
         r = requests.get(uri, headers=headers)
         values = r.json().get('values')
 
-        assert len(values) >= 1
+        self.assertGreaterEqual(len(values), 1)

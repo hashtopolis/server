@@ -1,12 +1,6 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-from utils import BaseTest
 from hashtopolis import Speed
-
-from test_hashlists import do_create_hashlist
-from test_tasks import do_create_task
-from test_agent import do_create_agent
+from utils import BaseTest
+from utils import do_create_agent, do_create_hashlist, do_create_task
 
 
 class SpeedTest(BaseTest):
@@ -20,7 +14,7 @@ class SpeedTest(BaseTest):
         task = do_create_task(hashlist)
         self.delete_after_test(task)
 
-        #TODO: Assign agent to task
+        # TODO: Assign agent to task
         dummy_agent.get_task()
         self.assertEqual(dummy_agent.task['hashlistId'], hashlist.id,
                          "Hashlist created is not being working on by agent!")

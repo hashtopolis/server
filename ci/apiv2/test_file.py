@@ -1,103 +1,37 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# PoC testing/development framework for APIv2
-# Written in python to work on creation of hashtopolis APIv2 python binding.
-#
-import json
-import unittest
-import datetime
-from pathlib import Path
-from io import BytesIO
-
-from hashtopolis import FileImport
 from hashtopolis import File
+from utils import BaseTest
+from utils import do_create_file
 
 
-class TasksTest(unittest.TestCase):
+class FileTest(BaseTest):
     def test_create_file(self):
-        stamp = datetime.datetime.now().isoformat()
-        filename = f'test-{stamp}.txt'
-        file_import = FileImport()
-        text = '12345678\n123456\nprincess\n'.encode('utf-8')
-        fs = BytesIO(text)
-        file_import.do_upload(filename, fs)
-
-        p = Path(__file__).parent.joinpath('create_file_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        payload['sourceData'] = filename
-        payload['filename'] = filename
-        file_obj = File(**payload)
-        file_obj.save()
-
-        file_obj2 = File()
-
-        assert len(file_obj2.objects.filter(filename=filename)) == 1
-        file_obj.delete()
+        file = do_create_file()
+        self.delete_after_test(file)
+      
+        objs = File.objects.filter(filename=file.filename)
+        self.assertEqual(len(objs), 1)
 
     def test_patch_file(self):
-        stamp = datetime.datetime.now().isoformat()
-        filename = f'test-{stamp}.txt'
-        file_import = FileImport()
-        text = '12345678\n123456\nprincess\n'.encode('utf-8')
-        fs = BytesIO(text)
-        file_import.do_upload(filename, fs)
+        file = do_create_file()
+        self.delete_after_test(file)
 
-        p = Path(__file__).parent.joinpath('create_file_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        payload['sourceData'] = filename
-        payload['filename'] = filename
-        file_obj = File(**payload)
-        file_obj.save()
+        file.isSecret = True
+        file.save()
 
-        file_obj.isSecret = True
-        file_obj.save()
-
-        id = file_obj.id
-        obj = File.objects.get(fileId=id)
-
-        assert obj.isSecret is True
+        obj = File.objects.get(fileId=file.id)
+        self.assertTrue(obj.isSecret)
 
     def test_delete_file(self):
-        stamp = datetime.datetime.now().isoformat()
-        filename = f'test-{stamp}.txt'
-        file_import = FileImport()
-        text = '12345678\n123456\nprincess\n'.encode('utf-8')
-        fs = BytesIO(text)
-        file_import.do_upload(filename, fs)
+        file = do_create_file()
+        file.delete()
 
-        p = Path(__file__).parent.joinpath('create_file_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        payload['sourceData'] = filename
-        payload['filename'] = filename
-        file_obj = File(**payload)
-        file_obj.save()
-
-        id = file_obj.id
-
-        file_obj.delete()
-
-        objs = File.objects.filter(fileId=id)
-
-        assert objs == []
+        objs = File.objects.filter(fileId=file.id)
+        self.assertEqual(objs, [])
 
     def test_expand_file(self):
-        stamp = datetime.datetime.now().isoformat()
-        filename = f'test-{stamp}.txt'
-        file_import = FileImport()
-        text = '12345678\n123456\nprincess\n'.encode('utf-8')
-        fs = BytesIO(text)
-        file_import.do_upload(filename, fs)
-
-        p = Path(__file__).parent.joinpath('create_file_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        payload['sourceData'] = filename
-        payload['filename'] = filename
-        file_obj = File(**payload)
-        file_obj.save()
+        file = do_create_file()
+        self.delete_after_test(file)
 
         # One-to-one casting
-        objects = File.objects.filter(fileId=file_obj.id, expand='accessGroup')
-        assert objects[0].accessGroup_set.groupName == 'Default Group'
-
-        file_obj.delete()
+        objects = File.objects.filter(fileId=file.id, expand='accessGroup')
+        self.assertEqual(objects[0].accessGroup_set.groupName, 'Default Group')

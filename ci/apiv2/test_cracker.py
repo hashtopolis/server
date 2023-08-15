@@ -5,15 +5,15 @@
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
 import json
-import unittest
 import datetime
 from pathlib import Path
 
 from hashtopolis import Cracker
 from hashtopolis import HashtopolisError
+from utils import BaseTest
 
 
-class Crackers(unittest.TestCase):
+class CrackerTest(BaseTest):
     def test_create_cracker(self):
         p = Path(__file__).parent.joinpath('create_cracker_001.json')
         payload = json.loads(p.read_text('UTF-8'))
@@ -21,7 +21,7 @@ class Crackers(unittest.TestCase):
         cracker.save()
 
         obj = Cracker.objects.get(crackerBinaryId=cracker.id)
-        assert obj.binaryName == payload.get('binaryName')
+        self.assertEqual(obj.binaryName, payload.get('binaryName'))
 
         cracker.delete()
 
@@ -37,7 +37,7 @@ class Crackers(unittest.TestCase):
         cracker.save()
 
         obj = cracker.objects.get(crackerBinaryId=cracker.id)
-        assert obj.binaryName == obj_name
+        self.assertEqual(obj.binaryName, obj_name)
 
         cracker.delete()
 
@@ -53,7 +53,7 @@ class Crackers(unittest.TestCase):
 
         objs = Cracker.objects.filter(crackerBinaryId=id)
 
-        assert objs == []
+        self.assertEqual(objs, [])
 
     def test_exception_cracker(self):
         p = Path(__file__).parent.joinpath('create_cracker_002.json')
@@ -62,9 +62,5 @@ class Crackers(unittest.TestCase):
 
         with self.assertRaises(HashtopolisError) as e:
             cracker.save()
-        assert e.exception.args[1] == 'Creation of object failed'
-        assert 'Required parameter' in e.exception.args[4]
-
-
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(e.exception.args[1], 'Creation of object failed')
+        self.assertIn('Required parameter', e.exception.args[4])

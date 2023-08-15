@@ -416,6 +416,7 @@ class HashType(Model, uri="/ui/hashtypes"):
 class Hash(Model, uri="/ui/hashes"):
     def __repr__(self):
         return self._self
+
     class Meta:
         verbose_name_plural = 'Hashes'
 

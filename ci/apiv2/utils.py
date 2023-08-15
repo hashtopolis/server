@@ -1,16 +1,88 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# PoC testing/development framework for APIv2
-# Written in python to work on creation of hashtopolis APIv2 python binding.
-#
-
-import requests
-import unittest
-from pathlib import Path
 import abc
+import datetime
+from io import BytesIO
+import json
+from pathlib import Path
+import requests
+import time
+import unittest
 
 import confidence
+
+from hashtopolis import Agent, Hashlist, GlobalPermissionGroup, File, FileImport, User, Voucher, Task
+from hashtopolis_agent import DummyAgent
+
+
+def do_create_agent():
+    stamp = int(time.time() * 1000)
+    voucher = Voucher(voucher=f'dummy-test-{stamp}').save()
+
+    dummy_agent = DummyAgent()
+    dummy_agent.register(voucher=voucher.voucher, name=f'test-agent-{stamp}')
+    dummy_agent.login()
+
+    # Validate automatically deleted when an test-agent claims the voucher
+    assert Voucher.objects.filter(_id=voucher.id) == []
+
+    agent = Agent.objects.get(agentName=dummy_agent.name)
+    return (dummy_agent, agent)
+
+
+def do_create_file(file_id='001', content='12345678\n123456\nprincess\n'.encode('utf-8')):
+    stamp = datetime.datetime.now().isoformat()
+    filename = f'test-{stamp}.txt'
+
+    file_import = FileImport()
+    file_import.do_upload(filename, BytesIO(content))
+
+    p = Path(__file__).parent.joinpath(f'create_file_{file_id}.json')
+    payload = json.loads(p.read_text('UTF-8'))
+    payload['sourceData'] = filename
+    payload['filename'] = filename
+    obj = File(**payload)
+    obj.save()
+
+    return obj
+
+
+def do_create_globalpermissiongroup(permissions={'permHashlistRead': True}):
+    stamp = int(time.time() * 1000)
+    payload = dict(
+        name=f'group-{stamp}',
+        permissions=permissions,
+    )
+    obj = GlobalPermissionGroup(**payload)
+    obj.save()
+    return obj
+
+
+def do_create_hashlist(file_id='001'):
+    p = Path(__file__).parent.joinpath(f'create_hashlist_{file_id}.json')
+    payload = json.loads(p.read_text('UTF-8'))
+    hashlist = Hashlist(**payload)
+    obj = hashlist.save()
+    return obj
+
+
+def do_create_task(hashlist, file_id='001'):
+    p = Path(__file__).parent.joinpath(f'create_task_{file_id}.json')
+    payload = json.loads(p.read_text('UTF-8'))
+    payload['hashlistId'] = int(hashlist.id)
+    obj = Task(**payload)
+    obj.save()
+    return obj
+
+
+def do_create_user(global_permission_group_id=1):
+    stamp = int(time.time() * 1000)
+    payload = dict(
+        name=f'test-{stamp}',
+        email='test@example.com',
+        globalPermissionGroupId=global_permission_group_id,
+    )
+    obj = User(**payload)
+    obj.save()
+    return obj
 
 
 class TestBase(unittest.TestCase, abc.ABC):

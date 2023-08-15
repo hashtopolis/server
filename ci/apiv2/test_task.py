@@ -1,26 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# PoC testing/development framework for APIv2
-# Written in python to work on creation of hashtopolis APIv2 python binding.
-#
-import json
 import datetime
-from pathlib import Path
 
-from utils import BaseTest
 from hashtopolis import Task
-
-from test_hashlists import do_create_hashlist
-
-
-def do_create_task(hashlist, file_id='001'):
-    p = Path(__file__).parent.joinpath(f'create_task_{file_id}.json')
-    payload = json.loads(p.read_text('UTF-8'))
-    payload['hashlistId'] = int(hashlist.id)
-    obj = Task(**payload)
-    obj.save()
-    return obj
+from utils import BaseTest
+from utils import do_create_hashlist, do_create_task
 
 
 class TaskTest(BaseTest):
