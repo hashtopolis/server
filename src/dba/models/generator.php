@@ -174,7 +174,7 @@ $CONF['Hashlist'] = [
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['HashType'] = [
-  ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
   ['name' => 'description', 'read_only' => False, 'type' => 'str(256)'],
   ['name' => 'isSalted', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'isSlowHash', 'read_only' => False, 'type' => 'bool']
