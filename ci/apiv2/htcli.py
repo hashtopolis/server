@@ -17,7 +17,7 @@ import click_log
 import json
 
 import hashtopolis
-from hashtopolis import Agent, Task, Hashlist
+from hashtopolis import Agent, Hashlist, Pretask, Task
 
 
 logger = logging.getLogger(__name__)
@@ -47,20 +47,11 @@ def delete_everything(commit):
     else:
         prefix = ''
 
-    for obj in Agent.objects.all():
-        logger.warning("%s Deleting %s", prefix, obj)
-        if commit is True:
-            obj.delete()
-
-    for obj in Hashlist.objects.all():
-        logger.warning("%s Deleting %s", prefix, obj)
-        if commit is True:
-            obj.delete()
-
-    for obj in Task.objects.all():
-        logger.warning("%s Deleting %s", prefix, obj)
-        if commit is True:
-            obj.delete()
+    for model in [Agent, Hashlist, Pretask, Task]:
+        for obj in model.objects.all():
+            logger.warning("%s Deleting %s", prefix, obj)
+            if commit is True:
+                obj.delete()
 
 
 @main.command()
