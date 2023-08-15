@@ -23,8 +23,9 @@ from hashtopolis import Agent, Task, Hashlist
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
 
-ALL_MODELS = [x[1] for x in inspect.getmembers(hashtopolis, inspect.isclass) \
-                     if issubclass(x[1], hashtopolis.Model) and x[1] is not hashtopolis.Model]
+ALL_MODELS = [x[1] for x in inspect.getmembers(hashtopolis, inspect.isclass)
+              if issubclass(x[1], hashtopolis.Model) and x[1] is not hashtopolis.Model]
+
 
 @click.group()
 def main():
