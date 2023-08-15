@@ -82,6 +82,8 @@ class TaskAPI extends AbstractBaseAPI {
         array_push($processed, $key);
         TaskUtils::archiveTask($object->getId(), $this->getUser());
       }
+
+      parent::updateObject($object, $data, $mappedFeatures, $processed);
     }
 }
 
