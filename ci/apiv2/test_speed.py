@@ -20,8 +20,10 @@ class SpeedTest(BaseTest):
         task = do_create_task(hashlist)
         self.delete_after_test(task)
 
+        #TODO: Assign agent to task
         dummy_agent.get_task()
-        # TODO: Validate if agent is actually working on assigned task
+        self.assertEqual(dummy_agent.task['hashlistId'], hashlist.id,
+                         "Hashlist created is not being working on by agent!")
         dummy_agent.get_hashlist()
 
         dummy_agent.get_chunk()
