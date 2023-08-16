@@ -46,8 +46,8 @@ class AttributeTypeTest(BaseTest):
         )
         with self.assertRaises(HashtopolisError) as e:
             user.save()
-        self.assertEqual(e.exception.args[1], 'Creation of object failed')
-        self.assertIn('is not valid input key', e.exception.args[4])
+        self.assertEqual(e.exception.status_code, 500)
+        self.assertIn('is not valid input key', e.exception.exception_details[0]['message'])
 
     def test_get_private(self):
         stamp = int(time.time() * 1000)

@@ -1,44 +1,32 @@
-import datetime
-
-import hashtopolis
 from hashtopolis import Hashlist
 from utils import BaseTest
 from utils import do_create_hashlist
 
 
 class HashlistTest(BaseTest):
-    def test_create_hashlist(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
+    model_class = Hashlist
 
-        objs = Hashlist.objects.filter(hashlistId=hashlist.id)
-        self.assertEqual(len(objs), 1)
+    def create_test_object(self, delete=True):
+        model_obj = do_create_hashlist()
+        if delete:
+            self.delete_after_test(model_obj)
+        return model_obj
+
+    def test_create_hashlist(self):
+        model_obj = self.create_test_object()
+        self._test_create(model_obj)
 
     def test_patch_hashlist(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        stamp = datetime.datetime.now().isoformat()
-        new_name = f'Dummy Hashlist - {stamp}'
-        hashlist.name = new_name
-        hashlist.save()
-
-        obj = Hashlist.objects.get(hashlistId=hashlist.id)
-        self.assertEqual(obj.name, new_name)
+        model_obj = self.create_test_object()
+        attr = 'name'
+        self._test_patch(model_obj, attr)
 
     def test_delete_hashlist(self):
-        hashlist = do_create_hashlist()
-        hashlist.delete()
-
-        objs = Hashlist.objects.filter(hashlistId=id)
-        self.assertEqual(objs, [])
+        model_obj = self.create_test_object(delete=False)
+        self._test_delete(model_obj)
 
     def test_exception_hashlist(self):
-        with self.assertRaises(hashtopolis.HashtopolisError):
-            _ = do_create_hashlist(file_id='002')
-
-        objs = Hashlist.objects.filter(name='Hashlist-md5sum-002')
-        self.assertEqual(objs, [])
+        self._test_exception(do_create_hashlist, '002')
 
     def test_filter_archived(self):
         hashlist = do_create_hashlist()
@@ -47,16 +35,14 @@ class HashlistTest(BaseTest):
         obj = Hashlist.objects.get(hashlistId=hashlist.id, isArchived=False)
         self.assertEqual(obj.id, hashlist.id)
 
-    def test_expand_hashlist(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        obj = Hashlist.objects.get(hashlistId=hashlist.id, expand='hashes')
-        self.assertEqual(len(obj.hashes_set), 1)
-
     def test_create_hashtype(self):
         hashlist = do_create_hashlist('003')
         self.delete_after_test(hashlist)
 
         obj = Hashlist.objects.get(pk=hashlist.id)
         self.assertEqual(obj.hashTypeId, 1000)
+
+    def test_expandables_hashlist(self):
+        model_obj = self.create_test_object()
+        expandables = ['accessGroup', 'hashType', 'hashes', 'tasks']
+        self._test_expandables(model_obj, expandables)

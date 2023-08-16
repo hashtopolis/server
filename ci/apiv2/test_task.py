@@ -1,50 +1,36 @@
-import datetime
-
 from hashtopolis import Task
 from utils import BaseTest
 from utils import do_create_hashlist, do_create_task
 
 
 class TaskTest(BaseTest):
+    model_class = Task
+
+    def create_test_object(self, file_id='001', delete=True):
+        hashlist = do_create_hashlist()
+        self.delete_after_test(hashlist)
+
+        model_obj = do_create_task(hashlist, file_id)
+        if delete:
+            self.delete_after_test(model_obj)
+        return model_obj
+
     def test_create_task(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
+        model_obj = self.create_test_object()
+        self._test_create(model_obj)
 
-        task = do_create_task(hashlist)
-        self.delete_after_test(task)
+    def test_expand_task(self):
+        model_obj = self.create_test_object()
+        expandables = ['hashlist']
+        self._test_expandables(model_obj, expandables)
 
-    def test_expand_hashlists(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist)
-        self.delete_after_test(task)
-
-        obj_test = Task().objects.filter(taskId=task.id, expand='hashlist')[0]
-        self.assertEqual(obj_test.hashlist_set.name, hashlist.name)
-
-    def test_patch(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist)
-        self.delete_after_test(task)
-
-        stamp = datetime.datetime.now().isoformat()
-
-        task_name = f'Dummy Task - {stamp}'
-        task.taskName = task_name
-        task.save()
-
-        obj = Task.objects.get(taskId=task.id)
-        self.assertEqual(obj.taskName, task_name)
+    def test_patch_task(self):
+        model_obj = self.create_test_object()
+        attr = 'taskName'
+        self._test_patch(model_obj, attr)
 
     def test_patch_color_null(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist)
-        self.delete_after_test(task)
+        task = self.create_test_object()
 
         task.color = None
         task.save()
@@ -53,42 +39,26 @@ class TaskTest(BaseTest):
         self.assertEqual(obj.color, '')
 
     def test_runtime(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist, '002')
-        self.delete_after_test(task)
+        task = self.create_test_object('002')
 
         obj = Task.objects.get(taskId=task.id)
         self.assertEqual(obj.useNewBench, 0)
 
     def test_speed(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist, '001')
-        self.delete_after_test(task)
+        task = self.create_test_object()
 
         obj = Task.objects.get(taskId=task.id)
         self.assertEqual(obj.useNewBench, 1)
 
     def test_preprocessor(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist, '001')
-        self.delete_after_test(task)
+        task = self.create_test_object()
 
         obj = Task.objects.get(taskId=task.id)
         self.assertEqual(obj.preprocessorCommand, "this-is-prepressor")
         self.assertEqual(obj.preprocessorId, 1)
 
     def test_archive_filter(self):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist, '001')
-        self.delete_after_test(task)
+        task = self.create_test_object()
 
         task.isArchived = True
         task.save()

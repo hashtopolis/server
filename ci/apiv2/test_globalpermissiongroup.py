@@ -1,16 +1,20 @@
 from hashtopolis import GlobalPermissionGroup
-from hashtopolis import HashtopolisError
 from utils import BaseTest
-from utils import do_create_globalpermissiongroup, do_create_user
+from utils import do_create_globalpermissiongroup
 
 
 class GlobalPermissionGroupTest(BaseTest):
-    def test_create_globalpermissiongroup(self):
-        gp_group = do_create_globalpermissiongroup()
-        self.delete_after_test(gp_group)
+    model_class = GlobalPermissionGroup
 
-        obj = GlobalPermissionGroup.objects.get(pk=gp_group.id)
-        self.assertEqual(gp_group.name, obj.name)
+    def create_test_object(self, delete=True):
+        model_obj = do_create_globalpermissiongroup()
+        if delete:
+            self.delete_after_test(model_obj)
+        return model_obj
+
+    def test_create_globalpermissiongroup(self):
+        model_obj = self.create_test_object()
+        self._test_create(model_obj)
 
     def test_patch_globalpermissiongroup(self):
         gp_group = do_create_globalpermissiongroup()
@@ -26,25 +30,13 @@ class GlobalPermissionGroupTest(BaseTest):
         self.assertFalse(obj.permissions['permRightGroupCreate'])
 
     def test_delete_globalpermissiongroup(self):
-        gp_group = do_create_globalpermissiongroup()
-        gp_group.delete()
-
-        objs = GlobalPermissionGroup.objects.filter(id=id)
-        self.assertEqual(objs, [])
+        model_obj = self.create_test_object(delete=False)
+        self._test_delete(model_obj)
 
     def test_exception_globalpermissiongroup(self):
-        with self.assertRaises(HashtopolisError) as e:
-            _ = do_create_globalpermissiongroup(permissions='test')
-
-        self.assertEqual(e.exception.args[1], 'Creation of object failed')
-        self.assertIn('is not of type dict', e.exception.args[4])
+        self._test_exception(do_create_globalpermissiongroup, '002')
 
     def test_expand_globalpermissiongroup(self):
-        gp_group = do_create_globalpermissiongroup()
-        self.delete_after_test(gp_group)
-        user = do_create_user(global_permission_group_id=gp_group.id)
-        self.delete_after_test(user)
-
-        obj = GlobalPermissionGroup.objects.get(id=gp_group.id, expand='user')
-        self.assertGreaterEqual(len(obj.user_set), 1)
-        self.assertEqual(obj.user_set[0].name, user.name)
+        model_obj = self.create_test_object()
+        expandables = ['user']
+        self._test_expandables(model_obj, expandables)

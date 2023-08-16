@@ -30,7 +30,11 @@ cls_registry = {}
 
 
 class HashtopolisError(Exception):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args)
+        self.exception_details = kwargs.get('exception_details', [])
+        self.message = kwargs.get('message', '')
+        self.status_code = kwargs.get('status_code', None)
 
 
 class HashtopolisConfig(object):
@@ -91,9 +95,22 @@ class HashtopolisConnector(object):
         }
 
     def validate_status_code(self, r, expected_status_code, error_msg):
-        if r.status_code != expected_status_code:
-            raise HashtopolisError("%s (status_code: %s != %s): %s", error_msg, r.status_code,
-                                   expected_status_code, r.text)
+        """ Validate response and convert to python exception """
+        # Status code 204 is special and should have no JSON output
+        if r.status_code == 204:
+            assert (r.text == '')
+            return
+
+        # Expected responses below should be valid JSON
+        r_json = self.resp_to_json(r)
+
+        # Application hits a problem
+        if r.status_code not in expected_status_code:
+            raise HashtopolisError(
+                "%s (status_code=%s): %s" % (error_msg, r.status_code, r.text),
+                status_code=r.status_code,
+                exception_details=r_json.get('exception', []),
+                message=r_json.get('message', None))
 
     def filter(self, expand, filter):
         self.authenticate()
@@ -125,7 +142,7 @@ class HashtopolisConnector(object):
         }
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, 200, "Filtering failed")
+        self.validate_status_code(r, [200], "Filtering failed")
         return self.resp_to_json(r).get('values')
 
     def get_one(self, pk, expand):
@@ -138,7 +155,7 @@ class HashtopolisConnector(object):
         }
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, 200, "Filtering failed")
+        self.validate_status_code(r, [200], "Get single object failed")
         return self.resp_to_json(r)
 
     def patch_one(self, obj):
@@ -157,7 +174,7 @@ class HashtopolisConnector(object):
 
         logger.debug("Sending PATCH payload: %s to %s", json.dumps(payload), uri)
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, 201, "Patching failed")
+        self.validate_status_code(r, [201], "Patching failed")
 
         # TODO: Validate if return objects matches digital twin
         obj.set_initial(self.resp_to_json(r).copy())
@@ -172,7 +189,7 @@ class HashtopolisConnector(object):
         payload = obj.get_fields()
 
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, 201, "Creation of object failed")
+        self.validate_status_code(r, [201], "Creation of object failed")
 
         # TODO: Validate if return objects matches digital twin
         obj.set_initial(self.resp_to_json(r).copy())
@@ -188,7 +205,7 @@ class HashtopolisConnector(object):
         payload = {}
 
         r = requests.delete(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, 204, "Deletion of object failed")
+        self.validate_status_code(r, [204], "Deletion of object failed")
 
         # TODO: Cleanup object to allow re-creation
 
@@ -239,12 +256,22 @@ class ManagerBase(type):
     @classmethod
     def get(cls, expand=None, **kwargs):
         if 'pk' in kwargs:
-            api_obj = cls.get_conn().get_one(kwargs['pk'], expand)
+            try:
+                api_obj = cls.get_conn().get_one(kwargs['pk'], expand)
+            except HashtopolisError as e:
+                if e.status_code == 404:
+                    raise cls._model.DoesNotExist
+                else:
+                    # Re-raise error if generic failure took place
+                    raise
             new_obj = cls._model(**api_obj)
             return new_obj
         else:
             objs = cls.filter(expand, **kwargs)
-            assert len(objs) == 1
+            if len(objs) == 0:
+                raise cls._model.DoesNotExist
+            elif len(objs) > 1:
+                raise cls._model.MultipleObjectsReturned
             return objs[0]
 
     @classmethod
@@ -261,6 +288,14 @@ class ManagerBase(type):
         return objs
 
 
+class ObjectDoesNotExist(Exception):
+    """The requested object does not exist"""
+
+
+class MultipleObjectsReturned(Exception):
+    """The query returned multiple objects when only one was expected."""
+
+
 # Build Django ORM style 'ModelName.objects' interface
 class ModelBase(type):
     def __new__(cls, clsname, bases, attrs, uri=None, **kwargs):
@@ -272,6 +307,17 @@ class ModelBase(type):
 
         setattr(new_class, 'objects', type('Manager', (ManagerBase,), {'_model_uri': uri}))
         setattr(new_class.objects, '_model', new_class)
+
+        def add_to_class(class_name, class_type):
+            setattr(new_class,
+                    class_name,
+                    type(class_name, (class_type,), {
+                        "__qualname__": "%s.%s" % (new_class.__qualname__, class_name),
+                        '__module__': "%s.%s" % (__name__, new_class.__name__)
+                        }))
+        add_to_class('DoesNotExist', ObjectDoesNotExist)
+        add_to_class('MultipleObjectsReturned', MultipleObjectsReturned)
+
         cls_registry[clsname] = new_class
 
         # Insert Meta properties

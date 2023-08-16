@@ -1,33 +1,28 @@
-import datetime
-
 from hashtopolis import Agent
 
 from utils import BaseTest
-from utils import do_create_agent, do_create_hashlist, do_create_task
+from utils import do_create_agent
 
 
 class AgentTest(BaseTest):
-    def test_new_agent(self):
-        dummy_agent, agent = do_create_agent()
-        self.delete_after_test(agent)
+    model_class = Agent
 
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
+    def create_test_object(self, delete=True):
+        _, model_obj = do_create_agent()
+        if delete:
+            self.delete_after_test(model_obj)
+        return model_obj
 
-        task = do_create_task(hashlist)
-        self.delete_after_test(task)
-
-        dummy_agent.get_task()
-        dummy_agent.get_hashlist()
-        dummy_agent.get_chunk()
+    def test_create_agent(self):
+        model_obj = self.create_test_object()
+        self._test_create(model_obj)
 
     def test_patch_agent(self):
-        _, agent = do_create_agent()
-        self.delete_after_test(agent)
+        model_obj = self.create_test_object()
+        attr = 'agentName'
+        self._test_patch(model_obj, attr)
 
-        new_name = f'agent-patch-{datetime.datetime.now().isoformat()}'
-        agent.agentName = new_name
-        agent.save()
-
-        obj = Agent.objects.get(pk=agent.id)
-        self.assertEqual(obj.agentName, new_name)
+    def test_expandables_agent(self):
+        model_obj = self.create_test_object()
+        expandables = ['agentstats']
+        self._test_expandables(model_obj, expandables)
