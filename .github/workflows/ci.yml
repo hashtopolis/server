@@ -28,4 +28,8 @@ jobs:
       - name: Test with pytest
         run: docker exec hashtopolis-server-dev pytest /var/www/html/ci/apiv2
       - name: Show docker log files
+        if: ${{ always() }}
         run: docker logs hashtopolis-server-dev
+      - name: Show installed files tree in /var/www/html
+        if: ${{ always() }}
+        run: docker exec hashtopolis-server-dev find /var/www/html
