@@ -45,7 +45,10 @@ if (!isset($PRESENT["v0.14.x_benchmark_cache"])) {
 
   Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Benchmark`
   ADD CONSTRAINT `Benchmark_ibfk_1` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);"); 
-    
+
+  Factory::getAgentFactory()->getDB()->query("INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
+  (78, 1, 'benchmarkcacheTtl', '216000');"); 
+
   $EXECUTED["v0.14.x_benchmark_cache"] = true;
 }
 

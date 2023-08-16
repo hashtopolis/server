@@ -2,10 +2,7 @@
 
 use DBA\Factory;
 use DBA\QueryFilter;
-use DBA\OrderFilter;
 use DBA\Benchmark;
-
-define("ttl", 216000);
 
 class BenchmarkUtils {
 
@@ -186,6 +183,7 @@ class BenchmarkUtils {
     }
 
     $cleanAttackParameters = self::cleanupAttackParameters($attackParameters);
+    $ttl = SConfig::getInstance()->getVal(DConfig::BENCHMARKCACHE_TTL);
 
     $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
     $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroupId, "=");
@@ -193,11 +191,12 @@ class BenchmarkUtils {
     $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
 
     if (isset($foundBenchmark)) { //if benchmark already in cache, update the value
-      $foundBenchmark->setTtl(time() + ttl);
+
+      $foundBenchmark->setTtl(time() + $ttl);
       $foundBenchmark->setBenchmarkValue($benchmarkValue);
       $benchmark = Factory::getBenchmarkFactory()->update($foundBenchmark);
     } else {
-      $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroupId, time() + ttl, $crackerBinaryId);
+      $newBenchmark = new Benchmark(null, $benchmarkType, $benchmarkValue, $cleanAttackParameters, $hashmode, $hardwareGroupId, time() + $ttl, $crackerBinaryId);
       $benchmark = Factory::getBenchmarkFactory()->save($newBenchmark);
     }
 
