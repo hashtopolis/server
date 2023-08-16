@@ -45,10 +45,23 @@ class HashtopolisConfig(object):
         self.password = self._cfg['password']
 
 
+class HashtopolisResponseError(Exception):
+    pass
+
+
 class HashtopolisConnector(object):
     # Cache authorisation token per endpoint
     token = {}
     token_expires = {}
+
+    @staticmethod
+    def resp_to_json(response):
+        content_type_header = response.headers.get('Content-Type', '')
+        if 'application/json' in content_type_header:
+            return response.json()
+        else:
+            raise HashtopolisResponseError("Response type '%s' is not valid JSON document, text='%s'" %
+                                           (content_type_header, response.text))
 
     def __init__(self, model_uri, config):
         self._model_uri = model_uri
@@ -65,8 +78,9 @@ class HashtopolisConnector(object):
             auth = (self.config.username, self.config.password)
             r = requests.post(auth_uri, auth=auth)
 
-            HashtopolisConnector.token[self._api_endpoint] = r.json()['token']
-            HashtopolisConnector.token_expires[self._api_endpoint] = r.json()['token']
+            r_json = self.resp_to_json(r)
+            HashtopolisConnector.token[self._api_endpoint] = r_json['token']
+            HashtopolisConnector.token_expires[self._api_endpoint] = r_json['token']
 
         self._token = HashtopolisConnector.token[self._api_endpoint]
         self._token_expires = HashtopolisConnector.token_expires[self._api_endpoint]
@@ -112,7 +126,7 @@ class HashtopolisConnector(object):
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, 200, "Filtering failed")
-        return r.json().get('values')
+        return self.resp_to_json(r).get('values')
 
     def get_one(self, pk, expand):
         self.authenticate()
@@ -125,7 +139,7 @@ class HashtopolisConnector(object):
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, 200, "Filtering failed")
-        return r.json()
+        return self.resp_to_json(r)
 
     def patch_one(self, obj):
         if not obj.has_changed():
@@ -146,7 +160,7 @@ class HashtopolisConnector(object):
         self.validate_status_code(r, 201, "Patching failed")
 
         # TODO: Validate if return objects matches digital twin
-        obj.set_initial(r.json().copy())
+        obj.set_initial(self.resp_to_json(r).copy())
 
     def create(self, obj):
         # Check if object to be created is new
@@ -161,7 +175,7 @@ class HashtopolisConnector(object):
         self.validate_status_code(r, 201, "Creation of object failed")
 
         # TODO: Validate if return objects matches digital twin
-        obj.set_initial(r.json().copy())
+        obj.set_initial(self.resp_to_json(r).copy())
 
     def delete(self, obj):
         """ Delete object from database """
