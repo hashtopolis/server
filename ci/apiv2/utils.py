@@ -9,7 +9,7 @@ import unittest
 
 import confidence
 
-from hashtopolis import Agent, Hashlist, GlobalPermissionGroup, File, FileImport, User, Voucher, Task
+from hashtopolis import Agent, Cracker, Hashlist, GlobalPermissionGroup, File, FileImport, User, Voucher, Task
 from hashtopolis_agent import DummyAgent
 
 
@@ -26,6 +26,14 @@ def do_create_agent():
 
     agent = Agent.objects.get(agentName=dummy_agent.name)
     return (dummy_agent, agent)
+
+
+def do_create_cracker(file_id='001'):
+    p = Path(__file__).parent.joinpath(f'create_cracker_{file_id}.json')
+    payload = json.loads(p.read_text('UTF-8'))
+    cracker = Cracker(**payload)
+    obj = cracker.save()
+    return obj
 
 
 def do_create_file(file_id='001', content='12345678\n123456\nprincess\n'.encode('utf-8')):
@@ -130,6 +138,11 @@ class BaseTest(unittest.TestCase):
     @classmethod
     def setUp(cls):
         cls.obj_heap = []
+
+    def _test_expandables(self, model_class, model_obj, expandables):
+        self.delete_after_test(model_obj)
+        obj = model_class.objects.get(pk=model_obj.id, expand=expandables)
+        self.assertIsNotNone(obj)
 
     @classmethod
     def tearDown(cls):

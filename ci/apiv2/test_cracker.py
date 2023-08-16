@@ -1,35 +1,22 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# PoC testing/development framework for APIv2
-# Written in python to work on creation of hashtopolis APIv2 python binding.
-#
-import json
 import datetime
-from pathlib import Path
 
 from hashtopolis import Cracker
 from hashtopolis import HashtopolisError
 from utils import BaseTest
+from utils import do_create_cracker
 
 
 class CrackerTest(BaseTest):
     def test_create_cracker(self):
-        p = Path(__file__).parent.joinpath('create_cracker_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        cracker = Cracker(**payload)
-        cracker.save()
+        cracker = do_create_cracker()
+        self.delete_after_test(cracker)
 
         obj = Cracker.objects.get(crackerBinaryId=cracker.id)
-        self.assertEqual(obj.binaryName, payload.get('binaryName'))
-
-        cracker.delete()
+        self.assertEqual(obj.binaryName, cracker.binaryName)
 
     def test_patch_cracker(self):
-        p = Path(__file__).parent.joinpath('create_cracker_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        cracker = Cracker(**payload)
-        cracker.save()
+        cracker = do_create_cracker()
+        self.delete_after_test(cracker)
 
         stamp = datetime.datetime.now().isoformat()
         obj_name = f'Dummy Cracker - {stamp}'
@@ -39,28 +26,20 @@ class CrackerTest(BaseTest):
         obj = cracker.objects.get(crackerBinaryId=cracker.id)
         self.assertEqual(obj.binaryName, obj_name)
 
-        cracker.delete()
-
     def test_delete_cracker(self):
-        p = Path(__file__).parent.joinpath('create_cracker_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        cracker = Cracker(**payload)
-        cracker.save()
+        cracker = do_create_cracker()
 
-        id = cracker.id
+        obj = cracker.objects.get(crackerBinaryId=cracker.id)
+        self.assertIsNotNone(obj)
 
         cracker.delete()
 
-        objs = Cracker.objects.filter(crackerBinaryId=id)
-
+        objs = Cracker.objects.filter(crackerBinaryId=cracker.id)
         self.assertEqual(objs, [])
 
     def test_exception_cracker(self):
-        p = Path(__file__).parent.joinpath('create_cracker_002.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        cracker = Cracker(**payload)
-
         with self.assertRaises(HashtopolisError) as e:
-            cracker.save()
+            _ = do_create_cracker('002')
         self.assertEqual(e.exception.args[1], 'Creation of object failed')
         self.assertIn('Required parameter', e.exception.args[4])
+
