@@ -205,13 +205,14 @@ abstract class AbstractBaseAPI
                                                 // src/inc/defines/agents.php
                                                 RegVoucher::PERM_CREATE, RegVoucher::PERM_READ, RegVoucher::PERM_UPDATE, RegVoucher::PERM_DELETE),
 
-    DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ, Speed::PERM_READ, Chunk::PERM_READ),
-    DAccessControl::RUN_TASK_ACCESS[0] => array(Task::PERM_CREATE),
-    DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, Task::PERM_READ, Chunk::PERM_READ),
+    DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ, Speed::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ),
+    DAccessControl::RUN_TASK_ACCESS[0] => array(Task::PERM_CREATE, FileTask::PERM_CREATE),
+    DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, Task::PERM_READ, Chunk::PERM_READ, FileTask::PERM_CREATE, FileTask::PERM_READ),
     DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE,
                                                 Chunk::PERM_READ, Chunk::PERM_UPDATE, Chunk::PERM_DELETE,
                                                 // src/inc/defines/tasks.php
-                                                TaskWrapper::PERM_READ, TaskWrapper::PERM_UPDATE),
+                                                TaskWrapper::PERM_READ, TaskWrapper::PERM_UPDATE,
+                                                FileTask::PERM_READ, FileTask::PERM_UPDATE, FileTask::PERM_DELETE),
 
     DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ, FilePretask::PERM_READ),
     DAccessControl::CREATE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_CREATE, FilePretask::PERM_CREATE),
