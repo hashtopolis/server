@@ -88,6 +88,7 @@ function getExpandPermissions(string $expand): array
     'configSection' => [ConfigSection::PERM_READ],
     'crackerBinary' => [CrackerBinary::PERM_READ],
     'crackerBinaryType' => [CrackerBinaryType::PERM_READ],
+    'crackerVersions' => [CrackerBinary::PERM_READ],
     'hashes' => [Hash::PERM_READ],
     'hashlist' => [Hashlist::PERM_READ],
     'hashType' => [HashType::PERM_READ],
