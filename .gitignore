@@ -1,6 +1,7 @@
 /.buildpath
 /.project
 /.settings/
+/.devcontainer/ssl/*
 query.log
 .idea/
 *.iml

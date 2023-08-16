@@ -18,6 +18,7 @@ services:
       - hashtopolis-db-dev
     ports:
       - "8080:80"
+      - "9443:443"
     volumes:
       # This is where VS Code should expect to find your project's source code
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json

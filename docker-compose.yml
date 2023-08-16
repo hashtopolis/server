@@ -18,6 +18,7 @@ services:
       - db
     ports:
       - 8080:80
+      - 9443:443
   db:
     container_name: db
     image: mysql:5.7
