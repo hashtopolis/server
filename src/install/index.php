@@ -180,7 +180,7 @@ switch ($STEP) {
         $group = $group[0];
         $newSalt = Util::randomString(20);
         $newHash = Encryption::passwordHash($password, $newSalt);
-        $user = new User(null, $username, $email, $newHash, $newSalt, 1, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
+        $user = new User(null, $username, $email, $newHash, $newSalt, 1, 0, 1, 0, time(), 3600, $group->getId(), 0, "", "", "", "");
         Factory::getUserFactory()->save($user);
         
         // create default group

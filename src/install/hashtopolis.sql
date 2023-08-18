@@ -170,7 +170,10 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (74, 4, 'agentUtilThreshold1', '90'),
   (75, 4, 'agentUtilThreshold2', '75'),
   (76, 3, 'uApiSendTaskIsComplete', '0'),
-  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed'),
+  (78, 8, 'ldap_server', ''),
+  (79, 8, 'ldap_domain', '');
+
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -184,7 +187,8 @@ INSERT INTO `ConfigSection` (`configSectionId`, `sectionName`) VALUES
   (4, 'UI'),
   (5, 'Server'),
   (6, 'Multicast'),
-  (7, 'Notifications');
+  (7, 'Notifications'),
+  (8, 'LDAP');
 
 CREATE TABLE `CrackerBinary` (
   `crackerBinaryId`     INT(11)      NOT NULL,
@@ -899,6 +903,7 @@ CREATE TABLE `User` (
   `passwordHash`       VARCHAR(256) NOT NULL,
   `passwordSalt`       VARCHAR(256) NOT NULL,
   `isValid`            TINYINT(4)   NOT NULL,
+  `isLDAP`             TINYINT(4)   NOT NULL DEFAULT 0,
   `isComputedPassword` TINYINT(4)   NOT NULL,
   `lastLoginDate`      BIGINT       NOT NULL,
   `registeredSince`    BIGINT       NOT NULL,

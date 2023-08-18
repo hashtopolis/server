@@ -9,6 +9,7 @@ class User extends AbstractModel {
   private $passwordHash;
   private $passwordSalt;
   private $isValid;
+  private $isLDAP;
   private $isComputedPassword;
   private $lastLoginDate;
   private $registeredSince;
@@ -20,13 +21,14 @@ class User extends AbstractModel {
   private $otp3;
   private $otp4;
   
-  function __construct($userId, $username, $email, $passwordHash, $passwordSalt, $isValid, $isComputedPassword, $lastLoginDate, $registeredSince, $sessionLifetime, $rightGroupId, $yubikey, $otp1, $otp2, $otp3, $otp4) {
+  function __construct($userId, $username, $email, $passwordHash, $passwordSalt, $isValid, $isLDAP, $isComputedPassword, $lastLoginDate, $registeredSince, $sessionLifetime, $rightGroupId, $yubikey, $otp1, $otp2, $otp3, $otp4) {
     $this->userId = $userId;
     $this->username = $username;
     $this->email = $email;
     $this->passwordHash = $passwordHash;
     $this->passwordSalt = $passwordSalt;
     $this->isValid = $isValid;
+    $this->isLDAP = $isLDAP;
     $this->isComputedPassword = $isComputedPassword;
     $this->lastLoginDate = $lastLoginDate;
     $this->registeredSince = $registeredSince;
@@ -47,6 +49,7 @@ class User extends AbstractModel {
     $dict['passwordHash'] = $this->passwordHash;
     $dict['passwordSalt'] = $this->passwordSalt;
     $dict['isValid'] = $this->isValid;
+    $dict['isLDAP'] = $this->isLDAP;
     $dict['isComputedPassword'] = $this->isComputedPassword;
     $dict['lastLoginDate'] = $this->lastLoginDate;
     $dict['registeredSince'] = $this->registeredSince;
@@ -147,6 +150,14 @@ class User extends AbstractModel {
     $this->isValid = $isValid;
   }
   
+  function getIsLDAP() {
+    return $this->isLDAP;
+  }
+  
+  function setIsLDAP($isLDAP) {
+    $this->isLDAP = $isLDAP;
+  }
+
   function getIsComputedPassword() {
     return $this->isComputedPassword;
   }
@@ -233,6 +244,7 @@ class User extends AbstractModel {
   const PASSWORD_HASH = "passwordHash";
   const PASSWORD_SALT = "passwordSalt";
   const IS_VALID = "isValid";
+  const IS_LDAP = "isLDAP";
   const IS_COMPUTED_PASSWORD = "isComputedPassword";
   const LAST_LOGIN_DATE = "lastLoginDate";
   const REGISTERED_SINCE = "registeredSince";

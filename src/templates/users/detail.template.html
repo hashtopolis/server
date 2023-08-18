@@ -58,6 +58,28 @@
 				  {{ENDIF}}
 			  </td>
 		  </tr>
+		  		  <tr>
+			  <th>Enable/Disable LDAP</th>
+			  <td>
+				  {{IF [[user.getIsLDAP()]] == 1}}
+					  LDAP is currently enabled
+					  <form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
+						  <input type='hidden' name='action' value='[[$DUserAction::DISABLE_LDAP]]'>
+						  <input type='hidden' name='user' value='[[user.getId()]]'>
+						  <input type="hidden" name="csrf" value="[[csrf]]">
+						  <input type="submit" class='btn btn-warning' value="Disable">
+					  </form>
+				  {{ELSE}}
+					  LDAP is currently disabled
+					  <form class='form-inline' action="users.php?id=[[user.getId()]]" method="post">
+						  <input type='hidden' name='action' value='[[$DUserAction::ENABLE_LDAP]]'>
+						  <input type='hidden' name='user' value='[[user.getId()]]'>
+						  <input type="hidden" name="csrf" value="[[csrf]]">
+						  <input type="submit" class='btn btn-success' value="Enable">
+					  </form>
+				  {{ENDIF}}
+			  </td>
+		  </tr>
 		  <tr>
 			  <th>Set users right group</th>
 			  <td>

@@ -59,6 +59,10 @@ class DConfig {
   const YUBIKEY_ID  = "yubikey_id";
   const YUBIKEY_KEY = "yubikey_key";
   const YUBIKEY_URL = "yubikey_url";
+
+  // Section: LDAP
+  const LDAP_SERVER = "ldap_server";
+  const LDAP_DOMAIN = "ldap_domain";  
   
   // Section: Finetuning
   const HASHES_PAGE_SIZE           = "pagingSize";
@@ -316,6 +320,10 @@ class DConfig {
         return "Yubikey Secret Key.";
       case DConfig::YUBIKEY_URL:
         return "Yubikey API URL.";
+      case DConfig::LDAP_SERVER:
+        return "LDAP Server.";
+      case DConfig::LDAP_DOMAIN:
+        return "LDAP Domain.";
       case DConfig::BASE_HOST:
         return "Base hostname/port/protocol to use. Only fill this in to override the auto-determined value.";
       case DConfig::DONATE_OFF:
