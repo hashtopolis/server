@@ -83,8 +83,6 @@ class HashtopolisAuthenticator implements AuthenticatorInterface {
             Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
             return false;
         }
-
-        $arguments['foobar'] = 'True';
         return true;
     }
 }
