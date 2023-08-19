@@ -83,7 +83,7 @@ class NotificationSettingAPI extends AbstractBaseAPI {
     }
 
     protected function deleteObject(object $object): void {
-      NotificationUtils::delete($object, $this->getUser());
+      NotificationUtils::delete($object->getId(), $this->getUser());
     }
 }
 
