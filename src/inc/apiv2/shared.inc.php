@@ -235,7 +235,7 @@ abstract class AbstractBaseAPI
                                                    // src/inc/defines/agents.php
                                                    AgentBinary::PERM_CREATE, AgentBinary::PERM_READ, AgentBinary::PERM_UPDATE, AgentBinary::PERM_DELETE),
 
-    DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE, 
+    DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE,
                                                   ConfigSection::PERM_CREATE, ConfigSection::PERM_READ, ConfigSection::PERM_UPDATE, ConfigSection::PERM_DELETE,
                                                   // src/inc/defines/preprocessor.php
                                                   Preprocessor::PERM_CREATE, Preprocessor::PERM_READ, Preprocessor::PERM_UPDATE, Preprocessor::PERM_DELETE,
@@ -1156,7 +1156,7 @@ abstract class AbstractBaseAPI
       return $response;
     });
 
-    $available_methods = self::getAvailableMethods();
+    $available_methods = $me::getAvailableMethods();
 
     if (in_array("GET", $available_methods)) {
       $app->get($baseUri, $me . ':get')->setname($me . ':get');

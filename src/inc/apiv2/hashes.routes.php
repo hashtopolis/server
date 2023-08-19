@@ -44,14 +44,17 @@ class HashAPI extends AbstractBaseAPI {
 
     protected function createObject($QUERY): int {
       /* Dummy code to implement abstract functions */
-      assert(False, "Chunks cannot be created via API");
+      assert(False, "Hashes cannot be created via API");
       return -1;
     }
 
+    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+       assert(False, "Hashes cannot be updated via API");
+    }
 
     protected function deleteObject(object $object): void {
       /* Dummy code to implement abstract functions */
-      assert(False, "Chunks cannot be deleted via API");
+      assert(False, "Hashes cannot be deleted via API");
     }
 }
 

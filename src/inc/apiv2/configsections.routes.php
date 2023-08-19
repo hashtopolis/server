@@ -46,12 +46,18 @@ class ConfigSectionAPI extends AbstractBaseAPI {
 
     protected function createObject($QUERY): int {
        /* Dummy code to implement abstract functions */
-       assert(False, "Configs cannot be created via API");
+       assert(False, "ConfigSections cannot be created via API");
        return -1;
+    }
+
+    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+      assert(False, "ConfigSections cannot be updated via API");
     }
 
     protected function deleteObject(object $object): void {
       /* Dummy code to implement abstract functions */
-      assert(False, "Configs cannot be deleted via API");
+      assert(False, "ConfigSections cannot be deleted via API");
     }
 }
+
+ConfigSectionAPI::register($app);

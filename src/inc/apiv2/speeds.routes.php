@@ -53,6 +53,10 @@ class SpeedAPI extends AbstractBaseAPI {
       return -1;
    }
 
+   public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+    assert(False, "Speeds cannot be updated via API");
+   }
+
    protected function deleteObject(object $object): void {
      assert(False, "Speeds cannot be deleted via API");
    }

@@ -48,6 +48,10 @@ class ChunkAPI extends AbstractBaseAPI {
       return -1;
     }
 
+    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+      assert(False, "Chunks cannot be updated via API");
+    }
+
     protected function deleteObject(object $object): void {
       /* Dummy code to implement abstract functions */
       assert(False, "Chunks cannot be deleted via API");

@@ -45,6 +45,10 @@ class AgentStatsAPI extends AbstractBaseAPI {
       return -1;
     }
 
+    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+      assert(False, "AgentStats cannot be updated via API");
+    }
+
     protected function deleteObject(object $object): void {
       Factory::getAgentStatFactory()->delete($object);
     }

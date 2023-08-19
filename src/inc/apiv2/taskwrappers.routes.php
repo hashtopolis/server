@@ -21,6 +21,10 @@ class TaskWrappersAPI extends AbstractBaseAPI {
       return "/api/v2/ui/taskwrappers";
     }
 
+    public static function getAvailableMethods(): array {
+      return ['GET'];
+    }
+
     public static function getDBAclass(): string {
       return TaskWrapper::class;
     }    
@@ -52,6 +56,10 @@ class TaskWrappersAPI extends AbstractBaseAPI {
       return -1;
     }
 
+    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+      assert(False, "TaskWrappers cannot be updated via API");
+    }
+    
     protected function deleteObject(object $object): void {
       assert(False, "TaskWrappers cannot be deleted via API");
     }
