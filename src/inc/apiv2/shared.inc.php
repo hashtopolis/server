@@ -534,7 +534,7 @@ abstract class AbstractBaseAPI
   {
     foreach ($data as $KEY => $VALUE) {
       // Validate if field can be left empty or not
-      if ($mappedFeatures[$KEY]['null'] == False) {
+      if (($mappedFeatures[$KEY]['null'] ?? True) == False) {
         if (is_null($VALUE) == True) {
           throw new HttpErrorException("Key '$KEY' is cannot be null.");
         }
