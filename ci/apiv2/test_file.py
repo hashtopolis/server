@@ -24,3 +24,7 @@ class FileTest(BaseTest):
         model_obj = self.create_test_object()
         expandables = ['accessGroup']
         self._test_expandables(model_obj, expandables)
+
+    def test_create_binary(self):
+        model_obj = self.create_test_object(compress=True)
+        self._test_create(model_obj)

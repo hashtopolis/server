@@ -4,8 +4,10 @@ from io import BytesIO
 import json
 from pathlib import Path
 import requests
+import tempfile
 import time
 import unittest
+import zipfile
 
 import confidence
 
@@ -79,10 +81,21 @@ def do_create_crackertype(**kwargs):
 
 def do_create_file(content='12345678\n123456\nprincess\n'.encode('utf-8'), **kwargs):
     stamp = datetime.datetime.now().isoformat()
-    filename = kwargs.get('filename', f'test-{stamp}.txt')
+    fname_base = kwargs.get('filename', f'test-{stamp}.txt')
 
     file_import = FileImport()
-    file_import.do_upload(filename, BytesIO(content))
+    if kwargs.get('compress', False):
+        with tempfile.NamedTemporaryFile() as fh:
+            with zipfile.ZipFile(fh.name, mode='w') as myzip:
+                myzip.writestr(fname_base, content)
+            fh.seek(0)
+            filename = f'{fname_base}.zip'
+            content_final = fh.read()
+    else:
+        filename = f'{fname_base}'
+        content_final = content
+
+    file_import.do_upload(filename, BytesIO(content_final))
 
     kwargs['extra_payload'] = dict(sourceData=filename, filename=filename)
     return _do_create_obj_from_file(File, 'create_file', **kwargs)
