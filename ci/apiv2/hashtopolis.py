@@ -4,6 +4,7 @@
 # PoC testing/development framework for APIv2
 # Written in python to work on creation of hashtopolis APIv2 python binding.
 #
+import copy
 import json
 import requests
 from pathlib import Path
@@ -368,7 +369,7 @@ class Model(metaclass=ModelBase):
         self.__fields = []
         # Store fields allowing us to detect changed values
         if '_self' in kv:
-            self.__initial = kv.copy()
+            self.__initial = copy.deepcopy(kv)
         else:
             # New model
             self.__initial = {}
