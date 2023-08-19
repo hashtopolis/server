@@ -50,7 +50,7 @@ class HashtopolisConfig(object):
         self.password = self._cfg['password']
 
 
-class HashtopolisResponseError(Exception):
+class HashtopolisResponseError(HashtopolisError):
     pass
 
 
@@ -66,7 +66,8 @@ class HashtopolisConnector(object):
             return response.json()
         else:
             raise HashtopolisResponseError("Response type '%s' is not valid JSON document, text='%s'" %
-                                           (content_type_header, response.text))
+                                           (content_type_header, response.text),
+                                           status_code=response.status_code)
 
     def __init__(self, model_uri, config):
         self._model_uri = model_uri
