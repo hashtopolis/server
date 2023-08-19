@@ -772,6 +772,15 @@ abstract class AbstractBaseAPI
     $userId = $request->getAttribute(('userId'));
     $this->user = UserUtils::getUser($userId);
 
+    # 'Innitiate' AccessControl class, by requesting instance with parameter of logged-in user.
+    # This will cause the AccessControle class to initiate it's static 'instance' parameter,
+    # which is in turn used at later stages (e.g. src/inc/utils/NotificationUtils.class.php) to
+    # request an object on which authentication takes place.
+    #
+    # At some point we might want to remove this strange behaviour always pass the $user object
+    # to the AccessControl class when requested. 
+    AccessControl::getInstance($this->user);
+
     $routeContext = RouteContext::fromRequest($request);
     $this->routeParser = $routeContext->getRouteParser();
     
