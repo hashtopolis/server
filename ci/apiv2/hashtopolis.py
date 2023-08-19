@@ -343,6 +343,9 @@ class Model(metaclass=ModelBase):
         self.set_initial(kwargs)
         super().__init__()
 
+    def __repr__(self):
+        return self._self
+
     def _dict2obj(self, dict):
         # Function to convert a dict to an object.
         uri = dict.get('_self')
@@ -445,72 +448,117 @@ class Model(metaclass=ModelBase):
         return self._id
 
 
+##
+# Begin of API objects
+#
+class AccessGroup(Model, uri="/ui/accessgroups"):
+    pass
+
+
 class Agent(Model, uri="/ui/agents"):
-    def __repr__(self):
-        return self._self
+    pass
 
 
-class Task(Model, uri="/ui/tasks"):
-    def __repr__(self):
-        return self._self
+class AgentStat(Model, uri="/ui/agentstats"):
+    pass
 
 
-class Pretask(Model, uri="/ui/pretasks"):
-    def __repr__(self):
-        return self._self
+class AgentBinary(Model, uri="/ui/agentbinaries"):
+    class Meta:
+        verbose_name_plural = 'AgentBinaries'
 
 
-class User(Model, uri="/ui/users"):
-    def __repr__(self):
-        return self._self
+class Chunk(Model, uri="/ui/chunks"):
+    pass
 
 
-class Hashlist(Model, uri="/ui/hashlists"):
-    def __repr__(self):
-        return self._self
+class Config(Model, uri="/ui/configs"):
+    pass
 
 
-class HashType(Model, uri="/ui/hashtypes"):
-    def __repr__(self):
-        return self._self
+class ConfigSection(Model, uri="/ui/configsections"):
+    pass
+
+
+class Cracker(Model, uri="/ui/crackers"):
+    pass
+
+
+class CrackerType(Model, uri="/ui/crackertypes"):
+    pass
+
+
+class File(Model, uri="/ui/files"):
+    pass
+
+
+class GlobalPermissionGroup(Model, uri="/ui/globalpermissiongroups"):
+    pass
 
 
 class Hash(Model, uri="/ui/hashes"):
-    def __repr__(self):
-        return self._self
-
     class Meta:
         verbose_name_plural = 'Hashes'
 
 
-class AccessGroup(Model, uri="/ui/accessgroups"):
-    def __repr__(self):
-        return self._self
+class Hashlist(Model, uri="/ui/hashlists"):
+    pass
 
 
-class Cracker(Model, uri="/ui/crackers"):
-    def __repr__(self):
-        return self._self
+class HashType(Model, uri="/ui/hashtypes"):
+    pass
 
 
-class CrackerType(Model, uri="/ui/crackertypes"):
-    def __repr__(self):
-        return self._self
+class HealthCheck(Model, uri="/ui/healthchecks"):
+    pass
 
 
-class Config(Model, uri="/ui/configs"):
-    def __repr__(self):
-        return self._self
+class HealthCheckAgent(Model, uri="/ui/healthcheckagents"):
+    pass
 
 
-class File(Model, uri="/ui/files"):
-    def __repr__(self):
-        return self._self
+class LogEntry(Model, uri="/ui/logentries"):
+    class Meta:
+        verbose_name_plural = 'LogEntries'
 
 
-class GlobalPermissionGroup(Model, uri="/ui/globalpermissiongroups"):
-    def __repr__(self):
-        return self._self
+class Notification(Model, uri="/ui/notifications"):
+    pass
+
+
+class Preprocessor(Model, uri="/ui/preprocessors"):
+    pass
+
+
+class Pretask(Model, uri="/ui/pretasks"):
+    pass
+
+
+class Speed(Model, uri="/ui/speeds"):
+    pass
+
+
+class Supertask(Model, uri="/ui/supertasks"):
+    pass
+
+
+class Task(Model, uri="/ui/tasks"):
+    pass
+
+
+class TaskWrapper(Model, uri="/ui/taskwrappers"):
+    pass
+
+
+class User(Model, uri="/ui/users"):
+    pass
+
+
+class Voucher(Model, uri="/ui/vouchers"):
+    pass
+#
+# End of API objects
+##
 
 
 class FileImport(HashtopolisConnector):
@@ -538,13 +586,3 @@ class FileImport(HashtopolisConnector):
                 metadata=metadata
                 )
         uploader.upload()
-
-
-class Voucher(Model, uri="/ui/vouchers"):
-    def __repr__(self):
-        return self._self
-
-
-class Speed(Model, uri="/ui/speeds"):
-    def __repr__(self):
-        return self._self
