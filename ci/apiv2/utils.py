@@ -9,7 +9,9 @@ import unittest
 
 import confidence
 
+from hashtopolis import AccessGroup
 from hashtopolis import Agent
+from hashtopolis import AgentBinary
 from hashtopolis import Cracker
 from hashtopolis import CrackerType
 from hashtopolis import File
@@ -18,7 +20,11 @@ from hashtopolis import GlobalPermissionGroup
 from hashtopolis import Hashlist
 from hashtopolis import HashtopolisError
 from hashtopolis import HashType
+from hashtopolis import HealthCheck
+from hashtopolis import Notification
+from hashtopolis import Preprocessor
 from hashtopolis import Pretask
+from hashtopolis import Supertask
 from hashtopolis import Task
 from hashtopolis import User
 from hashtopolis import Voucher
@@ -26,7 +32,8 @@ from hashtopolis import Voucher
 from hashtopolis_agent import DummyAgent
 
 
-def _do_create_obj_from_file(model_class, file_prefix, file_id='001', extra_payload={}):
+def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwargs):
+    file_id = kwargs.get('file_id') or '001'
     p = Path(__file__).parent.joinpath(f'{file_prefix}_{file_id}.json')
     payload = json.loads(p.read_text('UTF-8'))
     final_payload = {**payload, **extra_payload}
@@ -35,9 +42,9 @@ def _do_create_obj_from_file(model_class, file_prefix, file_id='001', extra_payl
     return obj
 
 
-def do_create_agent():
-    stamp = int(time.time() * 1000)
-    voucher = Voucher(voucher=f'dummy-test-{stamp}').save()
+def create_dummy_agent():
+    stamp = datetime.datetime.now().isoformat()
+    voucher = do_create_voucher()
 
     dummy_agent = DummyAgent()
     dummy_agent.register(voucher=voucher.voucher, name=f'test-agent-{stamp}')
@@ -50,26 +57,38 @@ def do_create_agent():
     return (dummy_agent, agent)
 
 
-def do_create_cracker(file_id='001'):
-    return _do_create_obj_from_file(Cracker, 'create_cracker', file_id)
+def do_create_agent():
+    return create_dummy_agent()[1]
 
 
-def do_create_crackertype(file_id='001'):
-    return _do_create_obj_from_file(CrackerType, 'create_crackertype', file_id)
+def do_create_agentbinary(**kwargs):
+    return _do_create_obj_from_file(AgentBinary, 'create_agentbinary', **kwargs)
 
 
-def do_create_file(file_id='001', content='12345678\n123456\nprincess\n'.encode('utf-8')):
+def do_create_accessgroup(**kwargs):
+    return _do_create_obj_from_file(AccessGroup, 'create_accessgroup', **kwargs)
+
+
+def do_create_cracker(**kwargs):
+    return _do_create_obj_from_file(Cracker, 'create_cracker', **kwargs)
+
+
+def do_create_crackertype(**kwargs):
+    return _do_create_obj_from_file(CrackerType, 'create_crackertype', **kwargs)
+
+
+def do_create_file(content='12345678\n123456\nprincess\n'.encode('utf-8'), **kwargs):
     stamp = datetime.datetime.now().isoformat()
-    filename = f'test-{stamp}.txt'
+    filename = kwargs.get('filename', f'test-{stamp}.txt')
 
     file_import = FileImport()
     file_import.do_upload(filename, BytesIO(content))
 
-    extra_payload = dict(sourceData=filename, filename=filename)
-    return _do_create_obj_from_file(File, 'create_file', file_id, extra_payload)
+    kwargs['extra_payload'] = dict(sourceData=filename, filename=filename)
+    return _do_create_obj_from_file(File, 'create_file', **kwargs)
 
 
-def do_create_globalpermissiongroup(permissions={'permHashlistRead': True}):
+def do_create_globalpermissiongroup(permissions={'permHashlistRead': True}, **kwargs):
     stamp = int(time.time() * 1000)
     payload = dict(
         name=f'group-{stamp}',
@@ -80,22 +99,39 @@ def do_create_globalpermissiongroup(permissions={'permHashlistRead': True}):
     return obj
 
 
-def do_create_hashlist(file_id='001'):
-    return _do_create_obj_from_file(Hashlist, 'create_hashlist', file_id)
+def do_create_hashlist(**kwargs):
+    return _do_create_obj_from_file(Hashlist, 'create_hashlist', **kwargs)
 
 
-def do_create_hashtype(file_id='001'):
-    return _do_create_obj_from_file(HashType, 'create_hashtype', file_id)
+def do_create_hashtype(**kwargs):
+    return _do_create_obj_from_file(HashType, 'create_hashtype', **kwargs)
 
 
-def do_create_pretask(file_id='001', files=[]):
-    extra_payload = dict(files=[file.id for file in files])
-    return _do_create_obj_from_file(Pretask, 'create_pretask', file_id, extra_payload)
+def do_create_healthcheck(**kwargs):
+    return _do_create_obj_from_file(HealthCheck, 'create_healthcheck', **kwargs)
 
 
-def do_create_task(hashlist, file_id='001'):
-    extra_payload = dict(hashlistId=int(hashlist.id))
-    return _do_create_obj_from_file(Task, 'create_task', file_id, extra_payload)
+def do_create_notification(**kwargs):
+    return _do_create_obj_from_file(Notification, 'create_notification', **kwargs)
+
+
+def do_create_preprocessor(**kwargs):
+    return _do_create_obj_from_file(Preprocessor, 'create_preprocessor', **kwargs)
+
+
+def do_create_pretask(files=[], **kwargs):
+    kwargs['extra_payload'] = dict(files=[file.id for file in files])
+    return _do_create_obj_from_file(Pretask, 'create_pretask', **kwargs)
+
+
+def do_create_supertask(pretasks=[], **kwargs):
+    kwargs['extra_payload'] = dict(pretasks=[pretask.id for pretask in pretasks])
+    return _do_create_obj_from_file(Supertask, 'create_supertask', **kwargs)
+
+
+def do_create_task(hashlist, **kwargs):
+    kwargs['extra_payload'] = dict(hashlistId=int(hashlist.id))
+    return _do_create_obj_from_file(Task, 'create_task', **kwargs)
 
 
 def do_create_user(global_permission_group_id=1):
@@ -108,6 +144,11 @@ def do_create_user(global_permission_group_id=1):
     obj = User(**payload)
     obj.save()
     return obj
+
+
+def do_create_voucher():
+    stamp = int(time.time() * 1000)
+    return Voucher(voucher=f'dummy-test-{stamp}').save()
 
 
 class TestBase(unittest.TestCase, abc.ABC):
@@ -156,8 +197,66 @@ class BaseTest(unittest.TestCase):
     def setUp(cls):
         cls.obj_heap = []
 
-    def create_test_object(self, delete=True):
-        raise NotImplementedError("Implement create_test_object(self, delete=True) to allow using generic testing")
+    def _create_test_object(self, model_create_func, *nargs, delete=True, **kwargs):
+        model_obj = model_create_func(*nargs, **kwargs)
+        if delete:
+            self.delete_after_test(model_obj)
+        self.assertIsNotNone(model_obj)
+        return model_obj
+
+    def create_test_object(self, *nargs, **kwargs):
+        raise NotImplementedError("Implement class specific create_test_object mapping function")
+
+    def create_accessgroup(self, **kwargs):
+        return self._create_test_object(do_create_accessgroup, **kwargs)
+
+    def create_agent(self, **kwargs):
+        return self._create_test_object(do_create_agent, **kwargs)
+
+    def create_agentbinary(self, **kwargs):
+        return self._create_test_object(do_create_agentbinary, **kwargs)
+
+    def create_cracker(self, **kwargs):
+        return self._create_test_object(do_create_cracker, **kwargs)
+
+    def create_crackertype(self, **kwargs):
+        return self._create_test_object(do_create_crackertype, **kwargs)
+
+    def create_file(self, **kwargs):
+        return self._create_test_object(do_create_file, **kwargs)
+
+    def create_globalpermissiongroup(self, **kwargs):
+        return self._create_test_object(do_create_globalpermissiongroup, **kwargs)
+
+    def create_healthcheck(self, **kwargs):
+        return self._create_test_object(do_create_healthcheck, **kwargs)
+
+    def create_hashlist(self, **kwargs):
+        return self._create_test_object(do_create_hashlist, **kwargs)
+
+    def create_hashtype(self, **kwargs):
+        return self._create_test_object(do_create_hashtype, **kwargs)
+
+    def create_notification(self, **kwargs):
+        return self._create_test_object(do_create_notification, **kwargs)
+
+    def create_preprocessor(self, **kwargs):
+        return self._create_test_object(do_create_preprocessor, **kwargs)
+
+    def create_pretask(self, **kwargs):
+        return self._create_test_object(do_create_pretask, **kwargs)
+
+    def create_supertask(self, pretasks, **kwargs):
+        return self._create_test_object(do_create_supertask, pretasks, **kwargs)
+
+    def create_task(self, hashlist, **kwargs):
+        return self._create_test_object(do_create_task, hashlist, **kwargs)
+
+    def create_user(self, **kwargs):
+        return self._create_test_object(do_create_user, **kwargs)
+
+    def create_voucher(self, **kwargs):
+        return self._create_test_object(do_create_voucher, **kwargs)
 
     def _test_create(self, model_obj):
         """ Generic test worker to CREATE object"""

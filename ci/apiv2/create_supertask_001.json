@@ -1,0 +1,5 @@
+  {
+      "supertaskName": "Dummy Supertask",
+      "pretasks": ["will", "be", "autogenrated"]
+  }
+

@@ -17,7 +17,21 @@ import click_log
 import json
 
 import hashtopolis
-from hashtopolis import Agent, Hashlist, File, Pretask, Task
+from hashtopolis import AccessGroup
+from hashtopolis import Agent
+from hashtopolis import Cracker
+from hashtopolis import CrackerType
+from hashtopolis import File
+from hashtopolis import GlobalPermissionGroup
+from hashtopolis import Hashlist
+from hashtopolis import HealthCheck
+from hashtopolis import HashType
+from hashtopolis import Notification
+from hashtopolis import Pretask
+from hashtopolis import Supertask
+from hashtopolis import Task
+from hashtopolis import User
+from hashtopolis import Voucher
 
 
 logger = logging.getLogger(__name__)
@@ -47,11 +61,29 @@ def delete_test_data(commit):
     else:
         prefix = ''
 
-    for model in [Agent, Pretask, Task, Hashlist, File]:
-        for obj in model.objects.all():
-            logger.warning("%s Deleting %s", prefix, obj)
-            if commit is True:
-                obj.delete()
+    # Order matters, for example a Task needs to be removed before Hashlist can be removed
+    # Note: we are not removing default database objects
+    test_objs = []
+    test_objs.extend(HashType.objects.filter(hashTypeId=98765))
+    test_objs.extend(AccessGroup.objects.filter(groupName="Testing Group"))
+    test_objs.extend(Notification.objects.all())
+    test_objs.extend(HealthCheck.objects.all())
+    test_objs.extend(Agent.objects.all())
+    test_objs.extend(Voucher.objects.all())
+    test_objs.extend(Supertask.objects.all())
+    test_objs.extend(Task.objects.all())
+    test_objs.extend(Pretask.objects.all())
+    test_objs.extend(Hashlist.objects.all())
+    test_objs.extend(File.objects.all())
+    test_objs.extend(User.objects.filter(id__gt=1))
+    test_objs.extend(GlobalPermissionGroup.objects.filter(id__gt=1))
+    test_objs.extend(Cracker.objects.filter(_id__gt=1))
+    test_objs.extend(CrackerType.objects.filter(_id__gt=1))
+
+    for obj in test_objs:
+        logger.warning("%s Deleting %s", prefix, obj)
+        if commit is True:
+            obj.delete()
 
 
 @main.command()

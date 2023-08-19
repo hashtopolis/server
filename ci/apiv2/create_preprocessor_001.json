@@ -1,0 +1,8 @@
+  {
+      "binaryName": "dummy",
+      "keyspaceCommand": "--dummy-keyspace",
+      "limitCommand": "--dummy-limit",
+      "name": "DummyTest",
+      "skipCommand": "--dummy-skip",
+      "url": "https://example.org/dummy-1.2.3.zip"
+  }

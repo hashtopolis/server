@@ -1,33 +1,30 @@
 from hashtopolis import Task
 from utils import BaseTest
-from utils import do_create_hashlist, do_create_task
 
 
 class TaskTest(BaseTest):
     model_class = Task
 
-    def create_test_object(self, file_id='001', delete=True):
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
+    def create_test_object(self, **kwargs):
+        hashlist_kwargs = kwargs.copy()
+        hashlist_kwargs['file_id'] = kwargs.get('hashlist_file_id', '001')
 
-        model_obj = do_create_task(hashlist, file_id)
-        if delete:
-            self.delete_after_test(model_obj)
-        return model_obj
+        hashlist = self.create_hashlist(**hashlist_kwargs)
+        task = self.create_task(hashlist=hashlist, **kwargs)
+        return task
 
-    def test_create_task(self):
+    def test_create(self):
         model_obj = self.create_test_object()
         self._test_create(model_obj)
 
-    def test_expand_task(self):
+    def test_expand(self):
         model_obj = self.create_test_object()
-        expandables = ['hashlist']
+        expandables = ['crackerBinary', 'crackerBinaryType', 'hashlist', 'files', 'speeds']
         self._test_expandables(model_obj, expandables)
 
-    def test_patch_task(self):
+    def test_patch(self):
         model_obj = self.create_test_object()
-        attr = 'taskName'
-        self._test_patch(model_obj, attr)
+        self._test_patch(model_obj, 'taskName')
 
     def test_patch_color_null(self):
         task = self.create_test_object()
@@ -39,7 +36,7 @@ class TaskTest(BaseTest):
         self.assertEqual(obj.color, '')
 
     def test_runtime(self):
-        task = self.create_test_object('002')
+        task = self.create_test_object(file_id='002')
 
         obj = Task.objects.get(taskId=task.id)
         self.assertEqual(obj.useNewBench, 0)

@@ -1,0 +1,7 @@
+  {
+      "action": "agentError",
+      "actionFilter": "ALL",
+      "isActive": true,
+      "notification": "Example",
+      "receiver": "foobar@example.org"
+  }

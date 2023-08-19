@@ -1,12 +1,12 @@
-from hashtopolis import CrackerType
+from hashtopolis import AccessGroup
 from utils import BaseTest
 
 
-class CrackerTypeTest(BaseTest):
-    model_class = CrackerType
+class AccessGroupTest(BaseTest):
+    model_class = AccessGroup
 
     def create_test_object(self, *nargs, **kwargs):
-        return self.create_crackertype(*nargs, **kwargs)
+        return self.create_accessgroup(*nargs, **kwargs)
 
     def test_create(self):
         model_obj = self.create_test_object()
@@ -14,7 +14,7 @@ class CrackerTypeTest(BaseTest):
 
     def test_patch(self):
         model_obj = self.create_test_object()
-        self._test_patch(model_obj, 'typeName', 'Generic - edited')
+        self._test_patch(model_obj, 'groupName')
 
     def test_delete(self):
         model_obj = self.create_test_object(delete=False)
@@ -25,5 +25,5 @@ class CrackerTypeTest(BaseTest):
 
     def test_expandables(self):
         model_obj = self.create_test_object()
-        expandables = ['crackerVersions']
+        expandables = ['userMembers', 'agentMembers']
         self._test_expandables(model_obj, expandables)

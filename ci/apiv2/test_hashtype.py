@@ -1,35 +1,21 @@
-import datetime
-
 from hashtopolis import HashType
 from utils import BaseTest
-from utils import do_create_hashtype
 
 
-class HashtypeTest(BaseTest):
-    def test_create_hashtype(self):
-        hashtype = do_create_hashtype()
-        self.delete_after_test(hashtype)
+class HashTypeTest(BaseTest):
+    model_class = HashType
 
-        objs = HashType.objects.filter(hashTypeId=hashtype.id)
-        self.assertEqual(len(objs), 1)
+    def create_test_object(self, *nargs, **kwargs):
+        return self.create_hashtype(*nargs, **kwargs)
 
-    def test_get_one_hashtype(self):
-        hashtype = do_create_hashtype()
-        self.delete_after_test(hashtype)
+    def test_create(self):
+        model_obj = self.create_test_object()
+        self._test_create(model_obj)
 
-        obj = HashType.objects.get(pk=hashtype.id)
-        self.assertIsNotNone(obj)
+    def test_patch(self):
+        model_obj = self.create_test_object()
+        self._test_patch(model_obj, 'description')
 
-    def test_patch_hashtype(self):
-        hashtype = do_create_hashtype()
-        self.delete_after_test(hashtype)
-
-        # TODO: Boring to only request the first one
-        stamp = datetime.datetime.now().isoformat()
-        new_description = f'MD5 - {stamp}'
-
-        hashtype.description = new_description
-        hashtype.save()
-
-        obj = HashType.objects.get(pk=hashtype.id)
-        self.assertEqual(obj.description, new_description)
+    def test_delete(self):
+        model_obj = self.create_test_object(delete=False)
+        self._test_delete(model_obj)

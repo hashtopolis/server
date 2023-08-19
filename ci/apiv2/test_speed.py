@@ -1,17 +1,19 @@
-from hashtopolis import Speed
+from hashtopolis import HashtopolisResponseError, Speed
 from utils import BaseTest
-from utils import do_create_agent, do_create_hashlist, do_create_task
+from utils import create_dummy_agent, do_create_hashlist, do_create_task
 
 
 class SpeedTest(BaseTest):
-    def test_speed_value(self):
-        dummy_agent, agent = do_create_agent()
+    model_class = Speed
+
+    def create_test_object(self, *nargs, **kwargs):
+        dummy_agent, agent = create_dummy_agent()
         self.delete_after_test(agent)
 
         hashlist = do_create_hashlist()
         self.delete_after_test(hashlist)
 
-        task = do_create_task(hashlist)
+        task = do_create_task(hashlist=hashlist)
         self.delete_after_test(task)
 
         # TODO: Assign agent to task
@@ -27,4 +29,28 @@ class SpeedTest(BaseTest):
         dummy_agent.get_chunk()
         dummy_agent.send_process(progress=50)
 
-        self.assertTrue(Speed.objects.filter(taskId=task.id))
+        return Speed.objects.filter(taskId=task.id)[0]
+
+    def test_create(self):
+        model_obj = self.create_test_object()
+        print(vars(model_obj))
+        self._test_create(model_obj)
+
+    def test_patch(self):
+        # Patching should not be possible via API
+        model_obj = self.create_test_object()
+        with self.assertRaises(HashtopolisResponseError) as e:
+            self._test_patch(model_obj, 'speed', 1234)
+        self.assertEqual(e.exception.status_code, 500)
+
+    def test_delete(self):
+        # Delete should not be possible via API
+        model_obj = self.create_test_object(delete=False)
+        with self.assertRaises(HashtopolisResponseError) as e:
+            self._test_delete(model_obj)
+        self.assertEqual(e.exception.status_code, 500)
+
+    def test_expandables(self):
+        model_obj = self.create_test_object()
+        expandables = ['agent', 'task']
+        self._test_expandables(model_obj, expandables)
