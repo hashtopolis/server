@@ -375,10 +375,16 @@ abstract class AbstractBaseAPI
           $agentstats = Factory::getAgentStatFactory()->filter([Factory::FILTER => $qFs]);
           $item[$NAME] = array_map(array($this, 'obj2Array'), $agentstats);
           break;
-        case 'accessGroups':         
-          /* M2M via AccessGroupUser */
-          $qF = new QueryFilter(AccessGroupUser::USER_ID, $item['id'], "=", Factory::getAccessGroupUserFactory());
-          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+        case 'accessGroups':
+          if (get_class($object) == User::class) {
+            /* M2M via AccessGroupUser */
+            $qF = new QueryFilter(AccessGroupUser::USER_ID, $item['id'], "=", Factory::getAccessGroupUserFactory());
+            $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+          } else {
+            /* M2M via AccessGroupAgent */
+            $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $item[Agent::AGENT_ID], "=", Factory::getAccessGroupAgentFactory());
+            $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+          }
           $item[$NAME] = $this->joinQuery(Factory::getAccessGroupFactory(), $qF, $jF);
           break;
         case 'accessGroup':

@@ -26,5 +26,5 @@ class AgentTest(BaseTest):
 
     def test_expandables(self):
         model_obj = self.create_test_object()
-        expandables = ['agentstats']
+        expandables = ['accessGroups', 'agentstats']
         self._test_expandables(model_obj, expandables)

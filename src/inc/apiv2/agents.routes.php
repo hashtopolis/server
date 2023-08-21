@@ -28,7 +28,7 @@ class AgentAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ['agentstats'];
+      return ['accessGroups', 'agentstats'];
     }
 
     protected function getFilterACL(): array {
