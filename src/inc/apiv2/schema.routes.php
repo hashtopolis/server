@@ -30,15 +30,12 @@ function typeLookup($feature): array {
     $type = "object";
   } elseif ($feature['type'] == 'array') {
     $type = "array";
-    /* TODO: Specify item type */
   } elseif ($feature['type'] == 'bool') {
     $type = "boolean";
   } elseif (str_starts_with($feature['type'], 'str(')) {
     $type = "string";
   } elseif ($feature['type'] ==  'str') {
     $type = "string";
-  } elseif ($feature['type'] ==  'list') {
-    $type = "array";
   } else {
     throw new HttpErrorException("Cast for type  '" . $feature['type'] . "' not implemented");
   }

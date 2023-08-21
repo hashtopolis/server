@@ -276,7 +276,7 @@ abstract class AbstractBaseAPI
       if (empty($obj)) {
         $obj = (object)[];
       }
-    } elseif ($feature['type'] == 'list' && $feature['subtype'] == 'int') {
+    } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
       $obj = array_map('intval', explode(",", $val));
     } else {
       // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
@@ -296,7 +296,7 @@ abstract class AbstractBaseAPI
       $val = $obj;
     } elseif (str_starts_with($feature['type'], 'str')) {
       $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
-    } elseif ($feature['type'] == 'list' && $feature['subtype'] == 'int') {
+    } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
         $val = implode(",", $obj);
     } else {
       $val = strval($obj);
