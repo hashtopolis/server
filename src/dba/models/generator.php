@@ -1,7 +1,5 @@
 <?php
 
-use phpDocumentor\Reflection\PseudoTypes\True_;
-
 $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
