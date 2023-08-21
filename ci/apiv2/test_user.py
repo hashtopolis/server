@@ -28,7 +28,7 @@ class UserTest(BaseTest):
 
     def test_expand(self):
         model_obj = self.create_test_object()
-        expandables = ['globalPermissionGroup']
+        expandables = ['accessGroups', 'globalPermissionGroup']
         self._test_expandables(model_obj, expandables)
 
     def test_disable_enable_user(self):

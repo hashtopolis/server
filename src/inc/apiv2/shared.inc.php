@@ -86,6 +86,7 @@ function getExpandPermissions(string $expand): array
     'agent' => [Agent::PERM_READ],
     'agents' => [AccessGroup::PERM_READ],
     'agentstats' => [AgentStat::PERM_READ],
+    'accessGroups' => [AccessGroup::PERM_READ], 
     'accessGroup' => [AccessGroup::PERM_READ],
     'chunk' => [Chunk::PERM_READ],
     'configSection' => [ConfigSection::PERM_READ],
@@ -373,6 +374,12 @@ abstract class AbstractBaseAPI
           $qFs[] = new QueryFilter(AgentStat::AGENT_ID, $item['agentId'], "=");
           $agentstats = Factory::getAgentStatFactory()->filter([Factory::FILTER => $qFs]);
           $item[$NAME] = array_map(array($this, 'obj2Array'), $agentstats);
+          break;
+        case 'accessGroups':         
+          /* M2M via AccessGroupUser */
+          $qF = new QueryFilter(AccessGroupUser::USER_ID, $item['id'], "=", Factory::getAccessGroupUserFactory());
+          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getAccessGroupFactory(), $qF, $jF);
           break;
         case 'accessGroup':
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);

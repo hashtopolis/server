@@ -28,7 +28,7 @@ class UserAPI extends AbstractBaseAPI {
     }
 
     public function getExpandables(): array {
-      return ["globalPermissionGroup"];
+      return ["accessGroups", "globalPermissionGroup"];
     }
 
     protected function getFilterACL(): array {
