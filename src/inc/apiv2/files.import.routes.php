@@ -75,12 +75,13 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
   });
 
 
-  $group->post('', function (Request $request, Response $response, array $args): Response {
+  $group->post('', function (Request $request, Response $response, array $args): Response {  
     $update = [];
     if ($request->hasHeader('Upload-Metadata')) {
       $update["upload_metadata_raw"] = $request->getHeader('Upload-Metadata')[0];
       if (preg_match('/^[a-zA-Z0-9=, ]+$/', $update["upload_metadata_raw"], $match) === false) {
-        return $response->withStatus(400, 'Error Upload-Metadata contains non-ASCII characters');
+        $response->getBody()->write('Error Upload-Metadata contains non-ASCII characters');
+        return $response->withStatus(400);
       }
      
       $update_metadata = [];
@@ -88,7 +89,8 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
       foreach ($list as $item) {
         list($key, $b64val) = explode(" ", $item);
         if (($val = base64_decode($b64val, true)) === false) {
-          return $response->withStatus(400, "Error Upload-Metadata '$key' invalid base64 encoding");
+          $response->getBody()->write("Error Upload-Metadata '$key' invalid base64 encoding");
+          return $response->withStatus(400);
         }
         $update_metadata[$key] = $val;
       }
@@ -99,7 +101,8 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
       $id = md5($filename);
       if ((file_exists(getImportPath($filename))) || 
           (file_exists(getUploadPath($id)))) {
-            return $response->withStatus(400, "Error filename '$filename' already exists!");
+            $response->getBody()->write("Error filename '$filename' already exists!");
+            return $response->withStatus(400);
           }
     } else {
       $id = bin2hex(random_bytes(16));
@@ -110,7 +113,8 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
       if ($request->getHeader('Upload-Defer-Length')[0] == "1") {
         $update["upload_defer_length"] = true;
       } else {
-        return $response->withStatus(400, 'Invalid Upload-Defer-Length value (choices: 1)');
+        $response->getBody()->write('Invalid Upload-Defer-Length value (choices: 1)');
+        return $response->withStatus(400);
       }
     }
     if ($request->hasHeader('Upload-Length')) {
@@ -180,24 +184,28 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
     // Check for Content-Type: application/offset+octet-stream or return 415
     if (($request->hasHeader('Content-Type') == false) || 
         ($request->getHeader('Content-Type')[0] != "application/offset+octet-stream")) {
-      return $response->withStatus(415, 'Unsupported Media Type');
+      $response->getBody()->write('Unsupported Media Type');
+      return $response->withStatus(415);
     }
 
     /* Return 404 if entry is not found */
     $filename = getUploadPath($args['id']);
     if (file_exists($filename) === false) {
       // TODO: Maybe 410 if actual file still exists and meta file also exists?
-      return $response->withStatus(404, "Upload ID does not exists"); 
+      $response->getBody()->write('Upload ID does not exists');
+      return $response->withStatus(404); 
     }
 
     /* Offset mismatch check and 409 Conflict */
     $currentSize = filesize($filename);
     if ($request->hasHeader('Upload-Offset') == false) {
-      return $response->withStatus(409, "Conflict (Upload-Offset header missing)");
+      $response->getBody()->write('Conflict (Upload-Offset header missing)');
+      return $response->withStatus(409);
     } else {
       $uploadOffset = intval($request->getHeader('Upload-Offset')[0]);
       if ($uploadOffset != $currentSize) {
-        return $response->withStatus(409, "Conflict (currentSize=$currentSize uploadOffset=$uploadOffset)");
+        $response->getBody()->write("Conflict (currentSize=$currentSize uploadOffset=$uploadOffset)");
+        return $response->withStatus(409);
       }
     }
 
@@ -207,7 +215,8 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
     $contentLength = intval($request->getHeader('Content-Length')[0]);
     $chunk = $body->getContents();
     if (strlen($chunk) != $contentLength) {
-      return $response->withStatus(400, 'Mismatch between Content-Length specified and sent');
+      $response->getBody()->write('Mismatch between Content-Length specified and sent');
+      return $response->withStatus(400);
     }
 
     $ds = getMetaStorage($args['id']);
@@ -220,7 +229,8 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
         "[ ]+((?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=))?$/";
       
       if(preg_match($regex, $uploadChecksum, $matches) === false) {
-        return $response->withStatus(400, 'Syntax of Upload-Checksum header incorrect');
+        $response->getBody()->write('Syntax of Upload-Checksum header incorrect');
+        return $response->withStatus(400);
       } else {
         $algo = $matches[1];
         $incomingHash = $matches[2];
@@ -240,7 +250,8 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
         }
 
         if ($chunkHash != $incomingHash) {
-          return $response->withStatus(460, 'Checksum Mismatch');
+          $response->getBody()->write('Checksum Mismatch');
+          return $response->withStatus(460);
         }
       }
     }
@@ -277,7 +288,8 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
       $statusMsg = "Next chunk please";
     }
 
-    return $response->withStatus(204, $statusMsg)
+    $response->getBody()->write($statusMsg);
+    return $response->withStatus(204)
       ->withHeader("Tus-Resumable", "1.0.0")
       ->withHeader("Upload-Length", strval($ds["upload_length"]))
       ->withHeader("Upload-Offset", strval($newSize))
