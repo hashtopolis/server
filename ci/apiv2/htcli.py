@@ -89,24 +89,36 @@ def delete_test_data(commit):
 @main.command()
 @click.argument('model_plural', type=click.Choice([x.verbose_name_plural for x in ALL_MODELS], case_sensitive=True))
 @click.option('-b', '--brief', 'is_brief', is_flag=True, help="Condense output to list of items")
-# TODO: Add --filter option to filter objects
-# TODO: Add --expand support for objects
-@click.option('--fields', help="Comma seperated list of fields to display")
+@click.option('--expand', 'opt_expand', help="Comma seperated list of items to expand", multiple=True)
+@click.option('--fields', 'opt_fields', help="Comma seperated list of fields to display", multiple=True)
+@click.option('--filter', 'opt_filter', help="Filter objects based on filter provided", multiple=True)
 @click_log.simple_verbosity_option(logger)
-def list(model_plural, is_brief, fields):
+def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter):
     model_class = [x for x in ALL_MODELS if x.verbose_name_plural == model_plural][0]
-    objs = model_class.objects.all()
 
-    # List fields to display
-    if fields:
-        display_field_filter = fields.split(',')
+    def get_opt_list(options):
+        if options:
+            # Options can be specified with comma sperators or as multiple --<name> options
+            return ','.join(options).split(',')
+        else:
+            return ()
+
+    # Parse options and arguments
+    expand = get_opt_list(opt_expand)  
+    filter = dict([filter_item.split('=', 1) for filter_item in get_opt_list(opt_filter) if filter_item])
+    display_field_filter = get_opt_list(opt_fields)
+
+    # Retrieve objects
+    if not opt_filter:
+        objs = model_class.objects.all(expand)
     else:
-        display_field_filter = []
+        objs = model_class.objects.filter(expand, **filter)
 
+    # Display objects
     if is_brief is True:
         rows = []
         if display_field_filter:
-            header = display_field_filter
+            header = ['object_uri'] + display_field_filter
             rows.append(header)
         for obj in objs:
             row = [str(obj)] + [getattr(obj, field) for field in display_field_filter]
@@ -118,7 +130,7 @@ def list(model_plural, is_brief, fields):
         export = []
         for obj in objs:
             obj_dict = obj.serialize()
-            if fields:
+            if display_field_filter:
                 export.append(dict([(k, v) for k, v in obj_dict.items() if k in display_field_filter]))
             else:
                 export.append(obj_dict)
