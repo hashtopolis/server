@@ -81,6 +81,7 @@ function getRequiredPermissions(string $model, string $method): array
 function getExpandPermissions(string $expand): array
 {
   $expand_to_perm_mapping = array(
+    'assignedAgents' => [Agent::PERM_READ],
     'agent' => [Agent::PERM_READ],
     'agents' => [AccessGroup::PERM_READ],
     'agentstats' => [AgentStat::PERM_READ],
@@ -375,6 +376,12 @@ abstract class AbstractBaseAPI
         case 'accessGroup':
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
           $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'assignedAgents':
+          /* M2M via Assignment */
+          $qF = new QueryFilter(Assignment::TASK_ID, $item[Task::TASK_ID], "=", Factory::getAssignmentFactory());
+          $jF = new JoinFilter(Factory::getAssignmentFactory(), Agent::AGENT_ID, Assignment::AGENT_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
           break;
         case 'chunk':
           if ($item['chunkId'] === null) {

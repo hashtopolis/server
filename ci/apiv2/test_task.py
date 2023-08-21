@@ -19,7 +19,7 @@ class TaskTest(BaseTest):
 
     def test_expand(self):
         model_obj = self.create_test_object()
-        expandables = ['crackerBinary', 'crackerBinaryType', 'hashlist', 'files', 'speeds']
+        expandables = ['assignedAgents', 'crackerBinary', 'crackerBinaryType', 'hashlist', 'files', 'speeds']
         self._test_expandables(model_obj, expandables)
 
     def test_patch(self):
