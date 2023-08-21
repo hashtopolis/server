@@ -18,6 +18,7 @@ require_once(dirname(__FILE__) . "/shared.inc.php");
 
 function typeLookup($feature): array {
   $type_format = null;
+  $type_enum = null;
   if ($feature['type'] == 'int') {
     $type = "integer";
   } elseif ($feature['type'] == 'uint64') {
@@ -39,12 +40,33 @@ function typeLookup($feature): array {
   } else {
     throw new HttpErrorException("Cast for type  '" . $feature['type'] . "' not implemented");
   }
+
+  if (is_array($feature['choices'])) {
+    $type_enum = array_keys($feature['choices']);
+  }
+
   $result = [
      "type" => $type,
       "type_format" => $type_format,
+      "type_enum" => $type_enum,
   ];
 
   return $result;
+};
+
+function makeProperties($features): array {
+  $propertyVal = [];
+  foreach ($features as $feature) {
+    $ret = typeLookup($feature);
+    $propertyVal[$feature['alias']]["type"] = $ret["type"];
+    if ($ret["type_format"] !== null) {
+      $propertyVal[$feature['alias']]["format"] = $ret["type_format"];
+    }
+    if ($ret["type_enum"] !== null) {
+      $propertyVal[$feature['alias']]["enum"] = $ret["type_enum"];
+    }
+  }
+  return $propertyVal;
 };
 
 $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use ($app) {
@@ -176,29 +198,9 @@ $app->group("/api/v2/ui/openapi.json", function (RouteCollectorProxy $group) use
           ]
           ];
 
-        foreach ($class->getMappedFeatures() as $feature) {
-          $ret = typeLookup($feature);
-          $properties_get[$feature['alias']]["type"] = $ret["type"];
-          if ($ret["type_format"] !== null) {
-            $properties_get[$feature['alias']]["format"] = $ret["type_format"];
-          }
-        };
-
-        foreach ($class->getCreateValidFeatures() as $feature) {
-          $ret = typeLookup($feature);
-          $properties_create[$feature['alias']]["type"] = $ret["type"];
-          if ($ret["type_format"] !== null) {
-            $properties_create[$feature['alias']]["format"] = $ret["type_format"];
-          }
-        }
-
-        foreach ($class->getPatchValidFeatures() as $feature) {
-          $ret = typeLookup($feature);
-          $properties_patch[$feature['alias']]["type"] = $ret["type"];
-          if ($ret["type_format"] !== null) {
-            $properties_patch[$feature['alias']]["format"] = $ret["type_format"];
-          }
-        }
+        $properties_create = makeProperties($class->getCreateValidFeatures());
+        $properties_get = array_merge($properties_get, makeProperties($class->getMappedFeatures()));
+        $properties_patch = makeProperties($class->getPatchValidFeatures());
 
         $components[$name . "Create"] =
         [

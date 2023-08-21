@@ -2,7 +2,17 @@
 
 $CONF = array();
 
+require_once(dirname(__FILE__) . "/../../inc/defines/agents.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
+
+//
+// Field choice declarations
+// 
+$FieldIgnoreErrorsChoices = [
+  [ 'key' => DAgentIgnoreErrors::NO, 'label' => 'Deactivate agent on error'],
+  [ 'key' => DAgentIgnoreErrors::IGNORE_SAVE, 'label' => 'Keep agent running, but save errors'],
+  [ 'key' => DAgentIgnoreErrors::IGNORE_NOSAVE, 'label' => 'Keep agent running and discard errors'],
+];
 
 // Type: describes what kind of type the attribute is
 // Subtype: in case type is dict, the first level of the dict will also be checked.
@@ -31,7 +41,7 @@ $CONF['Agent'] = [
     ['name' => 'os', 'read_only' => False, 'type' => 'int'],
     ['name' => 'devices', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'cmdPars', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'int', 'choices' => $FieldIgnoreErrorsChoices],],
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isTrusted', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'token', 'read_only' => False, 'type' => 'str(30)'],
@@ -498,9 +508,22 @@ foreach ($CONF as $NAME => $MODEL_CONF) {
     $params[] = "\$$col";
     $vars[] = "private \$$col;";
     $init[] = "\$this->$col = \$$col;";
+
+    if (array_key_exists("choices", $COLUMN)) { 
+      $choicesVal = '[';
+      foreach ($COLUMN['choices'] as $CHOICE) {
+        $choicesVal .= $CHOICE['key'] . ' => "' . $CHOICE['label'] . '", ';
+      }
+      $choicesVal .= ']';
+      
+    } else {
+      $choicesVal = '"unset"';
+    }
+
     $features[] = "\$dict['$col'] = ['read_only' => " . ($COLUMN['read_only'] ? 'True' : "False") . ', ' . 
                                      '"type" => "' . $COLUMN['type'] . '", ' .
                                      '"subtype" => "' . (array_key_exists("subtype", $COLUMN) ? $COLUMN['subtype'] : 'unset') . '", ' .
+                                     '"choices" => ' . $choicesVal . ', ' .
                                      '"null" => ' . (array_key_exists("null", $COLUMN) ? ($COLUMN['null'] ? 'True' : 'False') : 'False') . ', ' .
                                      '"pk" => ' . (($col == $COLUMNS[0]['name']) ? 'True' : 'False') . ', ' .
                                      '"protected" => ' . (array_key_exists("protected", $COLUMN) ? ($COLUMN['protected'] ? 'True' : 'False') : 'False') . ', ' .

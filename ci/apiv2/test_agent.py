@@ -1,4 +1,5 @@
 from hashtopolis import Agent
+from hashtopolis import HashtopolisError
 
 from utils import BaseTest
 
@@ -16,6 +17,12 @@ class AgentTest(BaseTest):
     def test_patch(self):
         model_obj = self.create_test_object()
         self._test_patch(model_obj, 'agentName')
+
+    def test_patch_field_ignorerrors_invalid_choice(self):
+        model_obj = self.create_test_object()
+        with self.assertRaises(HashtopolisError) as e:
+            self._test_patch(model_obj, 'ignoreErrors', 5)
+        self.assertEqual(e.exception.status_code, 500)
 
     def test_expandables(self):
         model_obj = self.create_test_object()

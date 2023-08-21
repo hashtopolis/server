@@ -605,6 +605,16 @@ abstract class AbstractBaseAPI
       } else {
         throw new HttpErrorException("Typemapping error for key '$KEY' ");
       }
+
+      // Validate values limited by choices
+      if (is_array($mappedFeatures[$KEY]['choices'])) {
+        if (array_key_exists($VALUE, $mappedFeatures[$KEY]['choices']) == false) {
+          throw new HttpErrorException("Key '$KEY' value is not valid, choices=[" . 
+                                       join(",", array_keys($mappedFeatures[$KEY]['choices'])) .
+                                       "], choices_details=['" . 
+                                       join("', '", array_values($mappedFeatures[$KEY]['choices'])) . "']");
+        }
+      }
     }
   }
 
