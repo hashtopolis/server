@@ -77,14 +77,16 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_orderin
     # Parse options and arguments
     expand = get_opt_list(opt_expand)
     filter = dict([filter_item.split('=', 1) for filter_item in get_opt_list(opt_filter) if filter_item])
-    ordering = get_opt_list(opt_ordering)
     display_field_filter = get_opt_list(opt_fields)
+
+    if opt_ordering:
+        filter['ordering'] = get_opt_list(opt_ordering)
 
     # Retrieve objects
     if not opt_filter:
-        objs = model_class.objects.all(expand, ordering)
+        objs = model_class.objects.all(expand)
     else:
-        objs = model_class.objects.filter(expand, ordering, **filter)
+        objs = model_class.objects.filter(expand, **filter)
 
     # Display objects
     if is_brief is True:
