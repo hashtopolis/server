@@ -15,7 +15,7 @@ class ExpandTest(BaseTest):
         task = self.create_task(hashlist)
 
         objs = Task.objects.filter(taskId=task.id, expand='crackerBinary')
-        self.assertEqual(objs[0].crackerBinary_set.binaryName, 'hashcat')
+        self.assertEqual(objs[0].crackerBinary.binaryName, 'hashcat')
 
     def test_individual_object_expanding(self):
         hashlist = self.create_hashlist()

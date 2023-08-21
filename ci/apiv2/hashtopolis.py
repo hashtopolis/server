@@ -349,28 +349,18 @@ class Model(metaclass=ModelBase):
     def _dict2obj(self, dict):
         # Function to convert a dict to an object.
         uri = dict.get('_self')
-
         # Loop through all the registers classes
-        for modelname, model in cls_registry.items():
+        for _, model in cls_registry.items():
             model_uri = model.objects._model_uri
             # Check if part of the uri is in the model uri
             if model_uri in uri:
-
-                obj = model()
-
-                # Set all the attributes of the object.
-                for k2, v2 in dict.items():
-                    # See set_initial why the if statement is here
-                    if k2 != 'id':
-                        setattr(obj, k2, v2)
-                if not k2.startswith('_'):
-                    obj.__fields.append(k2)
-                return obj
+                return model(**dict)
         # If we are here, it means that no uri matched, thus we don't know the object.
         raise TypeError('Object not valid model')
 
     def set_initial(self, kv):
         self.__fields = []
+        self.__expanded = []
         # Store fields allowing us to detect changed values
         if '_self' in kv:
             self.__initial = copy.deepcopy(kv)
@@ -396,13 +386,15 @@ class Model(metaclass=ModelBase):
                 # Also check if it really were objects
                 if len(obj_list) > 0:
                     setattr(self, f"{k}_set", obj_list)
+                    self.__expanded.append(f"{k}_set")
                     continue
             # This does the same as above, only one-to-one relations
             if type(v) is dict and v.get('_self'):
-                setattr(self, f"{k}_set", self._dict2obj(v))
+                setattr(self, f"{k}", self._dict2obj(v))
+                self.__expanded.append(f"{k}")
                 continue
 
-            # Skip over ID, as it is also something from the model itself.
+            # Skip over field 'id', as it is automatic property of model itself.
             # This should be removed if there is a concensus on the full model.
             # Example: not rightgroupName but name, and not rightgroupId but id
             if k != 'id':
@@ -441,7 +433,13 @@ class Model(metaclass=ModelBase):
             self.objects.delete(self)
 
     def serialize(self):
-        return dict([(x, getattr(self, x)) for x in self.__fields] + [('_self', self._self), ('_id', self._id)])
+        retval = dict([(x, getattr(self, x)) for x in self.__fields] + [('_self', self._self), ('_id', self._id)])
+        for expandable in self.__expanded:
+            if expandable.endswith('_set'):
+                retval[expandable] = [x.serialize() for x in getattr(self, expandable)]
+            else:
+                retval[expandable] = getattr(self, expandable).serialize()
+        return retval
 
     @property
     def id(self):

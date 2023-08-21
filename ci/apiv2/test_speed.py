@@ -11,7 +11,6 @@ class SpeedTest(BaseTest):
 
     def test_create(self):
         model_obj = self.create_test_object()
-        print(vars(model_obj))
         self._test_create(model_obj)
 
     def test_patch(self):
