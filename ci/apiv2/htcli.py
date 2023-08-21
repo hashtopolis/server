@@ -63,8 +63,9 @@ def delete_test_data(commit):
 @click.option('--fields', 'opt_fields', help="Comma seperated list of fields to display", multiple=True)
 @click.option('--filter', 'opt_filter', help="Filter objects based on filter provided", multiple=True)
 @click.option('--ordering', 'opt_ordering', help="Field to select for ordering output", multiple=True)
+@click.option('--max_results', 'opt_max_results', default=None, help="Maximum results to display", type=int)
 @click_log.simple_verbosity_option(logger)
-def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_ordering):
+def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_results, opt_ordering):
     model_class = [x for x in ALL_MODELS if x.verbose_name_plural == model_plural][0]
 
     def get_opt_list(options):
@@ -84,9 +85,9 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_orderin
 
     # Retrieve objects
     if not opt_filter:
-        objs = model_class.objects.all(expand)
+        objs = model_class.objects.all(expand, max_results=opt_max_results)
     else:
-        objs = model_class.objects.filter(expand, **filter)
+        objs = model_class.objects.filter(expand, max_results=opt_max_results, **filter)
 
     # Display objects
     if is_brief is True:

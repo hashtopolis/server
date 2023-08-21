@@ -115,7 +115,7 @@ class HashtopolisConnector(object):
                 exception_details=r_json.get('exception', []),
                 message=r_json.get('message', None))
 
-    def filter(self, expand, ordering, filter):
+    def filter(self, expand, max_results, ordering, filter):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
         headers = self._headers
@@ -140,7 +140,7 @@ class HashtopolisConnector(object):
 
         payload = {
             'filter': filter_list,
-            'maxResults': 999,
+            'maxResults': max_results if max_results is not None else 999,
         }
         if expand is not None:
             payload['expand'] = expand
@@ -149,6 +149,8 @@ class HashtopolisConnector(object):
                 payload['ordering'] = [ordering]
             else:
                 payload['ordering'] = ordering
+
+        print(payload)
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, [200], "Filtering failed")
         return self.resp_to_json(r).get('values')
@@ -233,12 +235,12 @@ class ManagerBase(type):
         return cls.conn[cls._model_uri]
 
     @classmethod
-    def all(cls, expand=None, ordering=None):
+    def all(cls, expand=None, max_results=None, ordering=None):
         """
         Retrieve all backend objects
         TODO: Make iterator supporting loading of objects via pages
         """
-        return cls.filter(expand, ordering)
+        return cls.filter(expand, max_results, ordering)
 
     @classmethod
     def patch(cls, obj):
@@ -283,9 +285,9 @@ class ManagerBase(type):
             return objs[0]
 
     @classmethod
-    def filter(cls, expand=None, ordering=None, **kwargs):
+    def filter(cls, expand=None, max_results=None, ordering=None, **kwargs):
         # Get all objects
-        api_objs = cls.get_conn().filter(expand, ordering, kwargs)
+        api_objs = cls.get_conn().filter(expand, max_results, ordering, kwargs)
 
         # Convert into class
         objs = []
