@@ -41,7 +41,7 @@ $CONF['Agent'] = [
     ['name' => 'os', 'read_only' => False, 'type' => 'int'],
     ['name' => 'devices', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'cmdPars', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'int', 'choices' => $FieldIgnoreErrorsChoices],],
+    ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'int', 'choices' => $FieldIgnoreErrorsChoices],
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isTrusted', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'token', 'read_only' => False, 'type' => 'str(30)'],
