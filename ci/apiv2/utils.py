@@ -44,13 +44,16 @@ def _do_create_obj_from_file(model_class, file_prefix, extra_payload={}, **kwarg
     return obj
 
 
-def create_dummy_agent():
+def do_create_dummy_agent():
     stamp = datetime.datetime.now().isoformat()
     voucher = do_create_voucher()
 
     dummy_agent = DummyAgent()
     dummy_agent.register(voucher=voucher.voucher, name=f'test-agent-{stamp}')
     dummy_agent.login()
+
+    # Add some dummy GPUs
+    dummy_agent.update_information()
 
     # Validate automatically deleted when an test-agent claims the voucher
     assert Voucher.objects.filter(_id=voucher.id) == []
@@ -60,7 +63,25 @@ def create_dummy_agent():
 
 
 def do_create_agent():
-    return create_dummy_agent()[1]
+    return do_create_dummy_agent()[1]
+
+
+def do_create_agent_with_task(*nargs, **kwargs):
+    dummy_agent, agent = do_create_dummy_agent()
+    hashlist = do_create_hashlist()
+    task = do_create_task(hashlist=hashlist)
+
+    # TODO: Assign agent to task
+    dummy_agent.get_task()
+    dummy_agent.get_hashlist()
+
+    dummy_agent.get_chunk()
+    dummy_agent.send_keyspace()
+    dummy_agent.get_chunk()
+    dummy_agent.send_benchmark()
+    dummy_agent.get_chunk()
+    dummy_agent.send_process(progress=50, **kwargs)
+    return dict(dummy_agent=dummy_agent, agent=agent, hashlist=hashlist, task=task)
 
 
 def do_create_agentbinary(**kwargs):
@@ -234,6 +255,17 @@ class BaseTest(unittest.TestCase):
 
     def create_crackertype(self, **kwargs):
         return self._create_test_object(do_create_crackertype, **kwargs)
+
+    def create_agent_with_task(self, *nargs, **kwargs):
+        retval = do_create_agent_with_task(*nargs, **kwargs)
+        self.assertEqual(retval['dummy_agent'].task['hashlistId'], retval['hashlist'].id,
+                         "Hashlist created is not being working on by agent!")
+
+        if kwargs.get('delete', True):
+            self.delete_after_test(retval['agent'])
+            self.delete_after_test(retval['hashlist'])
+            self.delete_after_test(retval['task'])
+        return retval
 
     def create_file(self, **kwargs):
         return self._create_test_object(do_create_file, **kwargs)

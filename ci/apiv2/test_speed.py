@@ -1,35 +1,13 @@
 from hashtopolis import HashtopolisResponseError, Speed
 from utils import BaseTest
-from utils import create_dummy_agent, do_create_hashlist, do_create_task
 
 
 class SpeedTest(BaseTest):
     model_class = Speed
 
     def create_test_object(self, *nargs, **kwargs):
-        dummy_agent, agent = create_dummy_agent()
-        self.delete_after_test(agent)
-
-        hashlist = do_create_hashlist()
-        self.delete_after_test(hashlist)
-
-        task = do_create_task(hashlist=hashlist)
-        self.delete_after_test(task)
-
-        # TODO: Assign agent to task
-        dummy_agent.get_task()
-        self.assertEqual(dummy_agent.task['hashlistId'], hashlist.id,
-                         "Hashlist created is not being working on by agent!")
-        dummy_agent.get_hashlist()
-
-        dummy_agent.get_chunk()
-        dummy_agent.send_keyspace()
-        dummy_agent.get_chunk()
-        dummy_agent.send_benchmark()
-        dummy_agent.get_chunk()
-        dummy_agent.send_process(progress=50)
-
-        return Speed.objects.filter(taskId=task.id)[0]
+        retval = self.create_agent_with_task(*nargs, **kwargs)
+        return Speed.objects.filter(taskId=retval['task'].id)[0]
 
     def test_create(self):
         model_obj = self.create_test_object()

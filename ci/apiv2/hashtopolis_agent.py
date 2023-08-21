@@ -7,7 +7,7 @@
 import enum
 import json
 import logging
-import random
+from random import randint
 import requests
 from pathlib import Path
 import time
@@ -236,7 +236,10 @@ class DummyAgent(object):
         retval = self._do_request(payload)
         self.benchmark = retval
 
-    def send_process(self, progress=50, state=ProcessState.RUNNING, speed=5700):
+    def send_process(self, progress=50, state=ProcessState.RUNNING, speed=5700,
+                     gpu_temperatures=[randint(20, 40), randint(60, 80)],
+                     gpu_utilisations=[randint(50, 75), randint(80, 100)],
+                     cpu_utilisations=[randint(0, 10), randint(10, 20), randint(20, 30), randint(30, 40)]):       
         assert self.task and self.task['taskId']
         assert self.chunk and self.chunk['chunkId']
 
@@ -264,20 +267,9 @@ class DummyAgent(object):
                     "78652"
                 ]
             ],
-            "gpuTemp": [
-                random.randint(20, 40),
-                random.randint(60, 80),
-            ],
-            "gpuUtil": [
-                random.randint(50, 75),
-                random.randint(80, 100),
-            ],
-            "cpuUtil": [
-                random.randint(0, 10),
-                random.randint(10, 20),
-                random.randint(20, 30),
-                random.randint(30, 40),
-            ],
+            "gpuTemp": gpu_temperatures,
+            "gpuUtil": gpu_utilisations,
+            "cpuUtil": cpu_utilisations,
         }
         retval = self._do_request(payload)
         self.process = retval

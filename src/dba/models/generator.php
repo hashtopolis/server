@@ -72,7 +72,7 @@ $CONF['AgentStat'] = [
     ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'str(128)', 'protected' => True],
+    ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'list', 'subtype' => 'int', 'protected' => True],
   ],
 ];
 $CONF['AgentZap'] = [

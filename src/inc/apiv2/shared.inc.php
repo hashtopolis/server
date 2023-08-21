@@ -257,7 +257,7 @@ abstract class AbstractBaseAPI
   );
 
   /** 
-   * Convert Database resturn value to JSON object value 
+   * Convert Database value to JSON object value 
    */
   protected static function db2json(array $feature, mixed $val): mixed
   {
@@ -272,6 +272,8 @@ abstract class AbstractBaseAPI
       if (empty($obj)) {
         $obj = (object)[];
       }
+    } elseif ($feature['type'] == 'list' && $feature['subtype'] == 'int') {
+      $obj = array_map('intval', explode(",", $val));
     } else {
       // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
       $obj = $val;
@@ -282,14 +284,16 @@ abstract class AbstractBaseAPI
   /** 
    * Convert JSON object value to DB insert value, supported by DBA
    */
-  private static function json2db(string $type, mixed $obj): mixed
+  private static function json2db(array $feature, mixed $obj): mixed
   {
-    if ($type == 'bool') {
+    if ($feature['type'] == 'bool') {
       $val = ($obj) ? "1" : "0";
-    } elseif ($type == 'int' && is_null($obj)){
+    } elseif ($feature['type'] == 'int' && is_null($obj)){
       $val = $obj;
-    } elseif (str_starts_with($type, 'str')) {
+    } elseif (str_starts_with($feature['type'], 'str')) {
       $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
+    } elseif ($feature['type'] == 'list' && $feature['subtype'] == 'int') {
+        $val = implode(",", $obj);
     } else {
       $val = strval($obj);
     }
@@ -1026,7 +1030,7 @@ abstract class AbstractBaseAPI
       }
 
       // Sanity values
-      $val = self::json2db($mappedFeatures[$KEY]['type'], $data[$KEY]);
+      $val = self::json2db($mappedFeatures[$KEY], $data[$KEY]);
       // Use the original attribute name to update the object.
       $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
     }
