@@ -24,7 +24,7 @@ class FilterTest(BaseTest):
     def test_ordering(self):
         model_objs = self.create_test_objects()
         objs = HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000,
-                                       ordering=['-hashTypeId'])  
+                                       ordering=['-hashTypeId'])
         sorted_model_objs = sorted(model_objs, key=lambda x: x.hashTypeId, reverse=True)
         self.assertEqual([x.id for x in sorted_model_objs], [x.id for x in objs])
 
