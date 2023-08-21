@@ -12,6 +12,7 @@ use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\AgentBinary;
 use DBA\AgentStat;
+use DBA\Assignment;
 use DBA\Chunk;
 use DBA\Config;
 use DBA\ConfigSection;
@@ -197,11 +198,14 @@ abstract class AbstractBaseAPI
     DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
 
     DAccessControl::VIEW_HASHES_ACCESS => array(Hash::PERM_READ),
-    DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ),
+    DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ, Assignment::PERM_READ),
 
     DAccessControl::MANAGE_AGENT_ACCESS => array(Agent::PERM_READ, Agent::PERM_UPDATE, Agent::PERM_DELETE,
                                                 // src/inc/defines/agents.php
-                                                AgentStat::PERM_CREATE, AgentStat::PERM_READ, AgentStat::PERM_UPDATE, AgentStat::PERM_DELETE),
+                                                AgentStat::PERM_CREATE, AgentStat::PERM_READ, AgentStat::PERM_UPDATE, AgentStat::PERM_DELETE,
+                                                Assignment::PERM_CREATE, Assignment::PERM_READ, Assignment::PERM_UPDATE, Assignment::PERM_DELETE,
+                                              
+                                              ),
 
     DAccessControl::CREATE_AGENT_ACCESS => array(Agent::PERM_CREATE, Agent::PERM_READ,
                                                 // src/inc/defines/agents.php

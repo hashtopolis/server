@@ -468,6 +468,10 @@ class AgentBinary(Model, uri="/ui/agentbinaries"):
         verbose_name_plural = 'AgentBinaries'
 
 
+class AgentAssignment(Model, uri="/ui/agentassignments"):
+    pass
+
+
 class Chunk(Model, uri="/ui/chunks"):
     pass
 

@@ -13,6 +13,7 @@ import confidence
 
 from hashtopolis import AccessGroup
 from hashtopolis import Agent
+from hashtopolis import AgentAssignment
 from hashtopolis import AgentBinary
 from hashtopolis import Cracker
 from hashtopolis import CrackerType
@@ -71,20 +72,30 @@ def do_create_agent_with_task(gpu_temperatures=None, gpu_utilisations=None,
     dummy_agent, agent = do_create_dummy_agent()
     hashlist = do_create_hashlist()
     task = do_create_task(hashlist=hashlist)
+    # Assign agent to task created
+    _ = do_create_agentassignent(agent, task)
 
-    # TODO: Assign agent to task
+    # agent: Retrieve required Task
     dummy_agent.get_task()
     dummy_agent.get_hashlist()
-
+    # agent: Calculate Keyspace
     dummy_agent.get_chunk()
     dummy_agent.send_keyspace()
+    # agent: Send benchmark information
     dummy_agent.get_chunk()
     dummy_agent.send_benchmark()
+    # agent: Send progress information
     dummy_agent.get_chunk()
+
     dummy_agent.send_process(progress=50, gpu_temperatures=gpu_temperatures,
                              gpu_utilisations=gpu_utilisations,
                              cpu_utilisations=cpu_utilisations)
+
     return dict(dummy_agent=dummy_agent, agent=agent, hashlist=hashlist, task=task)
+
+
+def do_create_agentassignent(agent, task):
+    return AgentAssignment(agentId=agent.id, taskId=task.id).save()
 
 
 def do_create_agentbinary(**kwargs):
@@ -252,6 +263,12 @@ class BaseTest(unittest.TestCase):
 
     def create_agentbinary(self, **kwargs):
         return self._create_test_object(do_create_agentbinary, **kwargs)
+
+    def create_agentassignment(self, **kwargs):
+        agent = self.create_agent()
+        hashlist = self.create_hashlist()
+        task = self.create_task(hashlist)
+        return self._create_test_object(do_create_agentassignent, agent, task, **kwargs)
 
     def create_cracker(self, **kwargs):
         return self._create_test_object(do_create_cracker, **kwargs)
