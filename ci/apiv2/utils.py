@@ -66,7 +66,8 @@ def do_create_agent():
     return do_create_dummy_agent()[1]
 
 
-def do_create_agent_with_task(*nargs, **kwargs):
+def do_create_agent_with_task(gpu_temperatures=None, gpu_utilisations=None,
+                              cpu_utilisations=None, **kwargs):
     dummy_agent, agent = do_create_dummy_agent()
     hashlist = do_create_hashlist()
     task = do_create_task(hashlist=hashlist)
@@ -80,7 +81,9 @@ def do_create_agent_with_task(*nargs, **kwargs):
     dummy_agent.get_chunk()
     dummy_agent.send_benchmark()
     dummy_agent.get_chunk()
-    dummy_agent.send_process(progress=50, **kwargs)
+    dummy_agent.send_process(progress=50, gpu_temperatures=gpu_temperatures,
+                             gpu_utilisations=gpu_utilisations,
+                             cpu_utilisations=cpu_utilisations)
     return dict(dummy_agent=dummy_agent, agent=agent, hashlist=hashlist, task=task)
 
 

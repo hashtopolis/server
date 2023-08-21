@@ -239,7 +239,7 @@ class DummyAgent(object):
     def send_process(self, progress=50, state=ProcessState.RUNNING, speed=5700,
                      gpu_temperatures=[randint(20, 40), randint(60, 80)],
                      gpu_utilisations=[randint(50, 75), randint(80, 100)],
-                     cpu_utilisations=[randint(0, 10), randint(10, 20), randint(20, 30), randint(30, 40)]):       
+                     cpu_utilisations=[randint(0, 10), randint(10, 20), randint(20, 30), randint(30, 40)]):
         assert self.task and self.task['taskId']
         assert self.chunk and self.chunk['chunkId']
 
