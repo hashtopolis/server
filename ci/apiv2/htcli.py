@@ -55,14 +55,16 @@ def delete_test_data(commit):
 
     sys.exit(1 if (len(test_objs) > 1 and commit is False) else 0)
 
+
 @main.command()
 @click.argument('model_plural', type=click.Choice([x.verbose_name_plural for x in ALL_MODELS], case_sensitive=True))
 @click.option('-b', '--brief', 'is_brief', is_flag=True, help="Condense output to list of items")
 @click.option('--expand', 'opt_expand', help="Comma seperated list of items to expand", multiple=True)
 @click.option('--fields', 'opt_fields', help="Comma seperated list of fields to display", multiple=True)
 @click.option('--filter', 'opt_filter', help="Filter objects based on filter provided", multiple=True)
+@click.option('--ordering', 'opt_ordering', help="Field to select for ordering output", multiple=True)
 @click_log.simple_verbosity_option(logger)
-def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter):
+def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_ordering):
     model_class = [x for x in ALL_MODELS if x.verbose_name_plural == model_plural][0]
 
     def get_opt_list(options):
@@ -73,15 +75,16 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter):
             return ()
 
     # Parse options and arguments
-    expand = get_opt_list(opt_expand)  
+    expand = get_opt_list(opt_expand)
     filter = dict([filter_item.split('=', 1) for filter_item in get_opt_list(opt_filter) if filter_item])
+    ordering = get_opt_list(opt_ordering)
     display_field_filter = get_opt_list(opt_fields)
 
     # Retrieve objects
     if not opt_filter:
-        objs = model_class.objects.all(expand)
+        objs = model_class.objects.all(expand, ordering)
     else:
-        objs = model_class.objects.filter(expand, **filter)
+        objs = model_class.objects.filter(expand, ordering, **filter)
 
     # Display objects
     if is_brief is True:

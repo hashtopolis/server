@@ -115,7 +115,7 @@ class HashtopolisConnector(object):
                 exception_details=r_json.get('exception', []),
                 message=r_json.get('message', None))
 
-    def filter(self, expand, filter):
+    def filter(self, expand, ordering, filter):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
         headers = self._headers
@@ -140,10 +140,15 @@ class HashtopolisConnector(object):
 
         payload = {
             'filter': filter_list,
-            'expand': expand,
             'maxResults': 999,
         }
-
+        if expand is not None:
+            payload['expand'] = expand
+        if ordering is not None:
+            if type(ordering) is not list:
+                payload['ordering'] = [ordering]
+            else:
+                payload['ordering'] = ordering
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, [200], "Filtering failed")
         return self.resp_to_json(r).get('values')
@@ -228,12 +233,12 @@ class ManagerBase(type):
         return cls.conn[cls._model_uri]
 
     @classmethod
-    def all(cls, expand=None):
+    def all(cls, expand=None, ordering=None):
         """
         Retrieve all backend objects
         TODO: Make iterator supporting loading of objects via pages
         """
-        return cls.filter(expand)
+        return cls.filter(expand, ordering)
 
     @classmethod
     def patch(cls, obj):
@@ -257,7 +262,7 @@ class ManagerBase(type):
         return cls.all()[0]
 
     @classmethod
-    def get(cls, expand=None, **kwargs):
+    def get(cls, expand=None, ordering=None, **kwargs):
         if 'pk' in kwargs:
             try:
                 api_obj = cls.get_conn().get_one(kwargs['pk'], expand)
@@ -270,7 +275,7 @@ class ManagerBase(type):
             new_obj = cls._model(**api_obj)
             return new_obj
         else:
-            objs = cls.filter(expand, **kwargs)
+            objs = cls.filter(expand, ordering, **kwargs)
             if len(objs) == 0:
                 raise cls._model.DoesNotExist
             elif len(objs) > 1:
@@ -278,9 +283,9 @@ class ManagerBase(type):
             return objs[0]
 
     @classmethod
-    def filter(cls, expand=None, **kwargs):
+    def filter(cls, expand=None, ordering=None, **kwargs):
         # Get all objects
-        api_objs = cls.get_conn().filter(expand, kwargs)
+        api_objs = cls.get_conn().filter(expand, ordering, kwargs)
 
         # Convert into class
         objs = []

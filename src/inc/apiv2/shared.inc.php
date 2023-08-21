@@ -41,6 +41,7 @@ use DBA\User;
 use DBA\Factory;
 use DBA\JoinFilter;
 use DBA\LogEntry;
+use DBA\OrderFilter;
 use DBA\Preprocessor;
 use DBA\QueryFilter;
 
@@ -678,6 +679,20 @@ abstract class AbstractBaseAPI
     }
   }
 
+  private function getFilterParameters(Request $request, string $key): array {
+    $data = $request->getParsedBody();
+    if (!is_null(($data))) {
+      $bodyFilter = (array_key_exists($key, $data)) ? $data[$key] : [];
+    } else {
+      $bodyFilter = [];
+    }
+
+    $queryFilter = (array_key_exists($key, $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()[$key]) : [];
+    $mergedFilters = array_merge($bodyFilter, $queryFilter);
+
+    return $mergedFilters;
+  }
+
   /**
    * Check for valid filter parameters and build QueryFilter
    */
@@ -685,16 +700,7 @@ abstract class AbstractBaseAPI
   {
     $qFs = [];
 
-    $data = $request->getParsedBody();
-    if (!is_null(($data))) {
-      $bodyFilter = (array_key_exists('filter', $data)) ? $data['filter'] : [];
-    } else {
-      $bodyFilter = [];
-    }
-
-    $queryFilter = (array_key_exists('filter', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['filter']) : [];
-    $mergedFilters = array_merge($bodyFilter, $queryFilter);
-
+    $mergedFilters = $this->getFilterParameters($request, 'filter');
     foreach ($mergedFilters as $filter) {
       // TODO: Add sanity checking
       if (preg_match('/^(?P<key>[_a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
@@ -724,6 +730,34 @@ abstract class AbstractBaseAPI
 
     return $qFs;
   }
+
+
+  /**
+   * Check for valid ordering parameters and build QueryFilter
+   */
+  protected function makeOrderFilter(Request $request, array $features): array
+  {
+    $oFs = [];
+
+    $mergedOrdering = $this->getFilterParameters($request, 'ordering');
+    foreach ($mergedOrdering as $order) {
+      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
+        // Special filtering of _id to use for uniform access to model primary key
+        $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+        if (array_key_exists($cast_key, $features)) {
+          $remappedKey = $features[$cast_key]['dbname'];
+          $oFs[] = new OrderFilter($remappedKey, ($matches['operator'] == '-') ? "DESC" : "ASC");
+        } else {
+          throw new HTException("Ordering parameter '" . $order . "' is not valid");
+        }
+      } else {
+        throw new HTException("Ordering parameter '" . $order . "' is not valid");
+      }
+    }
+
+    return $oFs;
+  }
+
 
   /**
    * Validate if user is allowed to access hashlist
@@ -860,12 +894,24 @@ abstract class AbstractBaseAPI
 
     list($expandable, $expands) = $this->makeExpandables($request, $expandables);
 
+    /* Generate filters */
     $qFs_Filter = $this->makeFilter($request, $mappedFeatures);
     $qFs_ACL = $this->getFilterACL();
     $qFs = array_merge($qFs_ACL, $qFs_Filter);
 
+    $oFs = $this->makeOrderFilter($request, $mappedFeatures);
+
+    /* Generate query */
+    $allFilters = [];
+    if (count($qFs) > 0) {
+      $allFilters[Factory::FILTER] = $qFs;
+    }
+    if (count($oFs) > 0) {
+      $allFilters[Factory::ORDER] = $oFs;
+    }
+
     // TODO: Optimize code, should only fetch subsection of database, when pagination is in play
-    $objects = $factory->filter((count($qFs) > 0) ? [Factory::FILTER => $qFs] : []);
+    $objects = $factory->filter($allFilters);
 
     $lists = [];
     foreach ($objects as $object) {
