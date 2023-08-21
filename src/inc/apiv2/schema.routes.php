@@ -37,6 +37,8 @@ function typeLookup($feature): array {
     $type = "string";
   } elseif ($feature['type'] ==  'str') {
     $type = "string";
+  } elseif ($feature['type'] ==  'list') {
+    $type = "array";
   } else {
     throw new HttpErrorException("Cast for type  '" . $feature['type'] . "' not implemented");
   }

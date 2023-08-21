@@ -590,3 +590,14 @@ class FileImport(HashtopolisConnector):
                 metadata=metadata
                 )
         uploader.upload()
+
+
+class Meta(HashtopolisConnector):
+    def __init__(self):
+        super().__init__("/ui/openapi.json", HashtopolisConfig())
+
+    def get_meta(self):
+        uri = self._api_endpoint + self._model_uri
+        r = requests.get(uri)
+        self.validate_status_code(r, [200], "Unable to retrieve Meta definitions")
+        return self.resp_to_json(r)
