@@ -403,7 +403,7 @@ class BaseTest(unittest.TestCase):
         # TODO: This is potentially really confusing since it will cause all tests to fail if database consist of
         # TODO: stale (test) objects. Potential workaround would be to run the following command on an empty database
         # TODO: to find out which test is creating test entries and not removing them:
-        # TODO:     for T in test_*.py; do pytest $T && ./htcli.py run delete-test-data --commit | grep -q "Deleting" && exit 1; done; echo $?
+        # TODO:     for T in test_*.py; do pytest $T && ./htcli.py run delete-test-data --commit || exit 1; done
         #
         # test_objs = find_stale_test_objects()
         # self.assertEqual(len(test_objs), 0, msg=f"Created objects are not marked for removal! {test_objs}")
