@@ -42,12 +42,12 @@ class AgentAssignmentAPI extends AbstractBaseAPI {
       return  [];
     }
 
-    protected function createObject($QUERY): int {
-      AgentUtils::assign($QUERY[Assignment::AGENT_ID], $QUERY[Assignment::TASK_ID], $this->getUser());
+    protected function createObject($mappedQuery, $QUERY): int {
+      AgentUtils::assign($mappedQuery[Assignment::AGENT_ID], $mappedQuery[Assignment::TASK_ID], $this->getUser());
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(Assignment::AGENT_ID, $QUERY[Assignment::AGENT_ID], '='),
-        new QueryFilter(Assignment::TASK_ID, $QUERY[Assignment::TASK_ID], '=')
+        new QueryFilter(Assignment::AGENT_ID, $mappedQuery[Assignment::AGENT_ID], '='),
+        new QueryFilter(Assignment::TASK_ID, $mappedQuery[Assignment::TASK_ID], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

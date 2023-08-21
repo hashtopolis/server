@@ -40,7 +40,7 @@ class AccessGroupAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       /* Parameter is used as primary key in database */
 
       $object = AccessGroupUtils::createGroup($QUERY[AccessGroup::GROUP_NAME]);

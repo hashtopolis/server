@@ -40,22 +40,22 @@ class LogEntryAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       /* Parameter is used as primary key in database */
 
       Util::createLogEntry(
-        $QUERY[LogEntry::ISSUER],
-        $QUERY[LogEntry::ISSUER_ID],
-        $QUERY[LogEntry::LEVEL],
-        $QUERY[LogEntry::MESSAGE]
+        $mappedQuery[LogEntry::ISSUER],
+        $mappedQuery[LogEntry::ISSUER_ID],
+        $mappedQuery[LogEntry::LEVEL],
+        $mappedQuery[LogEntry::MESSAGE]
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(LogEntry::ISSUER, $QUERY[LogEntry::ISSUER], '='),
-        new QueryFilter(LogEntry::ISSUER_ID, $QUERY[LogEntry::ISSUER_ID], '='),
-        new QueryFilter(LogEntry::LEVEL, $QUERY[LogEntry::LEVEL], '='),
-        new QueryFilter(LogEntry::MESSAGE, $QUERY[LogEntry::MESSAGE], '=')
+        new QueryFilter(LogEntry::ISSUER, $mappedQuery[LogEntry::ISSUER], '='),
+        new QueryFilter(LogEntry::ISSUER_ID, $mappedQuery[LogEntry::ISSUER_ID], '='),
+        new QueryFilter(LogEntry::LEVEL, $mappedQuery[LogEntry::LEVEL], '='),
+        new QueryFilter(LogEntry::MESSAGE, $mappedQuery[LogEntry::MESSAGE], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

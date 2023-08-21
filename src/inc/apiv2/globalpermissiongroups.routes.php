@@ -83,15 +83,15 @@ class GlobalPermissionGroupsAPI extends AbstractBaseAPI {
     return  [];
     }
     
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       $features = $this->getFeatures();
-      $group = AccessControlUtils::createGroup($QUERY[$features[RightGroup::GROUP_NAME]['alias']]);
+      $group = AccessControlUtils::createGroup($mappedQuery[$features[RightGroup::GROUP_NAME]['alias']]);
 
       // The utils function does not allow to set permissions directly. This call is to workaround this.
       // This causes the issue that if some error happens during updating the object the object is still created
       // but the permissions will not be set.
       $mappedFeatures = $this->getMappedFeatures();
-      $this->updateObject($group, $QUERY, $mappedFeatures);
+      $this->updateObject($group, $mappedQuery, $mappedFeatures);
       
       return $group->getId();
     }

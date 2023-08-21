@@ -125,7 +125,7 @@ abstract class AbstractBaseAPI
   abstract public function getFormFields(): array;
   abstract public static function getBaseUri(): string;
 
-  abstract protected function createObject($QUERY): int;
+  abstract protected function createObject($mappedQuery, $QUERY): int;
   abstract protected function deleteObject(object $object): void;
 
   /** @var DBA\User|null $user is currently logged in user */
@@ -976,7 +976,12 @@ abstract class AbstractBaseAPI
     // Validate incoming data
     $this->validateData($QUERY, $mappedFeatures);
 
-    $pk = $this->createObject($QUERY);
+    // Convert incoming (JSON) data to DB values
+    $mappedQuery = [];
+    foreach ($QUERY as $KEY => $VALUE) {
+      $mappedQuery[$KEY] = self::json2db($mappedFeatures[$KEY], $VALUE);
+    }
+    $pk = $this->createObject($mappedQuery, $QUERY);
 
     // Request object again, since post-modified entries are not reflected into object.
     $body = $response->getBody();

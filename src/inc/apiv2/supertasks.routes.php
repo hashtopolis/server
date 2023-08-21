@@ -40,15 +40,15 @@ class SupertaskAPI extends AbstractBaseAPI {
       ];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       SupertaskUtils::createSupertask(
-        $QUERY[Supertask::SUPERTASK_NAME],
+        $mappedQuery[Supertask::SUPERTASK_NAME],
         $QUERY["pretasks"],
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(Supertask::SUPERTASK_NAME, $QUERY[Supertask::SUPERTASK_NAME], '=')
+        new QueryFilter(Supertask::SUPERTASK_NAME, $mappedQuery[Supertask::SUPERTASK_NAME], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

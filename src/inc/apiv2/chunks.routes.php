@@ -42,7 +42,7 @@ class ChunkAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       /* Dummy code to implement abstract functions */
       assert(False, "Chunks cannot be created via API");
       return -1;

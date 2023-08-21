@@ -40,37 +40,37 @@ class NotificationSettingAPI extends AbstractBaseAPI {
     return  ['actionFilter' => ['type' => 'str(256)']];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       $dummyPost = [];
-      switch (DNotificationType::getObjectType($QUERY['action'])) {
+      switch (DNotificationType::getObjectType($mappedQuery['action'])) {
         case DNotificationObjectType::USER:
-          $dummyPost['user'] = $QUERY['actionFilter'];
+          $dummyPost['user'] = $mappedQuery['actionFilter'];
           break;
         case DNotificationObjectType::AGENT:
-          $dummyPost['agents'] = $QUERY['actionFilter'];
+          $dummyPost['agents'] = $mappedQuery['actionFilter'];
           break;
         case DNotificationObjectType::HASHLIST:
-          $dummyPost['hashlists'] = $QUERY['actionFilter'];
+          $dummyPost['hashlists'] = $mappedQuery['actionFilter'];
           break;
         case DNotificationObjectType::TASK:
-          $dummyPost['tasks'] = $QUERY['actionFilter'];
+          $dummyPost['tasks'] = $mappedQuery['actionFilter'];
           break;
       }
 
 
       NotificationUtils::createNotificaton(
-        $QUERY['action'],
-        $QUERY['notification'],
-        $QUERY['receiver'],
+        $mappedQuery['action'],
+        $mappedQuery['notification'],
+        $mappedQuery['receiver'],
         $dummyPost,
         $this->getUser(),
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(NotificationSetting::ACTION, $QUERY['action'], '='),
-        new QueryFilter(NotificationSetting::NOTIFICATION, $QUERY['notification'], '='),
-        new QueryFilter(NotificationSetting::RECEIVER, $QUERY['receiver'], '='),
+        new QueryFilter(NotificationSetting::ACTION, $mappedQuery['action'], '='),
+        new QueryFilter(NotificationSetting::NOTIFICATION, $mappedQuery['notification'], '='),
+        new QueryFilter(NotificationSetting::RECEIVER, $mappedQuery['receiver'], '='),
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

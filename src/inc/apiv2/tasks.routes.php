@@ -43,30 +43,30 @@ class TaskAPI extends AbstractBaseAPI {
     ];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       /* Parameter is used as primary key in database */
 
       $object = TaskUtils::createTask(
-        $QUERY["hashlistId"],
-        $QUERY[Task::TASK_NAME],
-        $QUERY[Task::ATTACK_CMD],
-        $QUERY[Task::CHUNK_TIME],
-        $QUERY[Task::STATUS_TIMER],
-        $QUERY[Task::USE_NEW_BENCH] ? 'speed': 'runtime',
-        $QUERY[Task::COLOR],
-        $QUERY[Task::IS_CPU_TASK],
-        $QUERY[Task::IS_SMALL],
-        $QUERY['preprocessorId'],
-        $QUERY[Task::PREPROCESSOR_COMMAND],
-        $QUERY[Task::SKIP_KEYSPACE],
-        $QUERY[Task::PRIORITY],
-        $QUERY[Task::MAX_AGENTS],
+        $mappedQuery["hashlistId"],
+        $mappedQuery[Task::TASK_NAME],
+        $mappedQuery[Task::ATTACK_CMD],
+        $mappedQuery[Task::CHUNK_TIME],
+        $mappedQuery[Task::STATUS_TIMER],
+        $mappedQuery[Task::USE_NEW_BENCH] ? 'speed': 'runtime',
+        $mappedQuery[Task::COLOR],
+        $mappedQuery[Task::IS_CPU_TASK],
+        $mappedQuery[Task::IS_SMALL],
+        $mappedQuery['preprocessorId'],
+        $mappedQuery[Task::PREPROCESSOR_COMMAND],
+        $mappedQuery[Task::SKIP_KEYSPACE],
+        $mappedQuery[Task::PRIORITY],
+        $mappedQuery[Task::MAX_AGENTS],
         $QUERY["files"],
-        $QUERY[Task::CRACKER_BINARY_TYPE_ID],
+        $mappedQuery[Task::CRACKER_BINARY_TYPE_ID],
         $this->getUser(),
-        $QUERY[Task::NOTES],
-        $QUERY[Task::STATIC_CHUNKS],
-        $QUERY[Task::CHUNK_SIZE]
+        $mappedQuery[Task::NOTES],
+        $mappedQuery[Task::STATIC_CHUNKS],
+        $mappedQuery[Task::CHUNK_SIZE]
       );
       
       return $object->getId();

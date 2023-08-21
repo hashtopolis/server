@@ -24,3 +24,7 @@ class PretaskTest(BaseTest):
         model_obj = self.create_test_object()
         expandables = ['pretaskFiles']
         self._test_expandables(model_obj, expandables)
+
+    def test_create_pretask_alt(self):
+        model_obj = self.create_test_object(file_id='003')
+        self._test_create(model_obj)

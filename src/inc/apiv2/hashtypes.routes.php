@@ -36,15 +36,15 @@ class HashTypeAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       /* Parameter is used as primary key in database */
-      $hashtypeId = $QUERY[HashType::HASH_TYPE_ID];
+      $hashtypeId = $mappedQuery[HashType::HASH_TYPE_ID];
 
       HashtypeUtils::addHashtype(
         $hashtypeId,
-        $QUERY[HashType::DESCRIPTION],
-        $QUERY[HashType::IS_SALTED],
-        $QUERY[HashType::IS_SLOW_HASH],
+        $mappedQuery[HashType::DESCRIPTION],
+        $mappedQuery[HashType::IS_SALTED],
+        $mappedQuery[HashType::IS_SLOW_HASH],
         $this->getUser()
       );
 

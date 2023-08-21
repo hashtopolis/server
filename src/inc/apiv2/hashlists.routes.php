@@ -42,56 +42,56 @@ class HashlistAPI extends AbstractBaseAPI {
       ];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       // Cast to createHashlist compatible upload format
       $dummyPost = [];
-      switch ($QUERY["sourceType"]) {
+      switch ($mappedQuery["sourceType"]) {
         case "paste":
-          $dummyPost["hashfield"] = base64_decode($QUERY["sourceData"]);
+          $dummyPost["hashfield"] = base64_decode($mappedQuery["sourceData"]);
           break;
         case "import":
-          $dummyPost["importfile"] = $QUERY["sourceData"];
+          $dummyPost["importfile"] = $mappedQuery["sourceData"];
           break;
         case "url":
-          $dummyPost["url"] = $QUERY["sourceData"];
+          $dummyPost["url"] = $mappedQuery["sourceData"];
           break;
         default:
           // TODO: Choice validation are model based checks
-          throw new HttpErrorException("sourceType value '" . $QUERY["sourceType"] . "' is not supported (choices paste, import, url");
+          throw new HttpErrorException("sourceType value '" . $mappedQuery["sourceType"] . "' is not supported (choices paste, import, url");
       }
 
       // TODO: validate input is valid base64 encoded
-      if ($QUERY["sourceType"] == "paste") {
-        if (strlen($QUERY["sourceData"]) == 0) {
+      if ($mappedQuery["sourceType"] == "paste") {
+        if (strlen($mappedQuery["sourceData"]) == 0) {
           // TODO: Should be 400 instead
           throw new HttpErrorException("sourceType=paste, requires sourceData to be non-empty");
         }
       }
       
       $hashlist = HashlistUtils::createHashlist(
-        $QUERY[UQueryHashlist::HASHLIST_NAME],
-        $QUERY[UQueryHashlist::HASHLIST_IS_SALTED],
-        $QUERY[UQueryHashlist::HASHLIST_IS_SECRET],
-        $QUERY[UQueryHashlist::HASHLIST_HEX_SALTED],
-        $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
-        $QUERY[UQueryHashlist::HASHLIST_FORMAT],
+        $mappedQuery[UQueryHashlist::HASHLIST_NAME],
+        $mappedQuery[UQueryHashlist::HASHLIST_IS_SALTED],
+        $mappedQuery[UQueryHashlist::HASHLIST_IS_SECRET],
+        $mappedQuery[UQueryHashlist::HASHLIST_HEX_SALTED],
+        $mappedQuery[UQueryHashlist::HASHLIST_SEPARATOR],
+        $mappedQuery[UQueryHashlist::HASHLIST_FORMAT],
         // hashTypeId is a bit weird because the UQueryHashlist::HASHLIST_HASH_TYPE_ID is not the same as db column Hashlist::HASH_TYPE_ID
-        $QUERY[Hashlist::HASH_TYPE_ID],
-        (array_key_exists("saltSeperator", $QUERY)) ? $QUERY["saltSeparator"] : $QUERY[UQueryHashlist::HASHLIST_SEPARATOR],
-        $QUERY[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
-        $QUERY["sourceType"],
+        $mappedQuery[Hashlist::HASH_TYPE_ID],
+        (array_key_exists("saltSeperator", $mappedQuery)) ? $mappedQuery["saltSeparator"] : $mappedQuery[UQueryHashlist::HASHLIST_SEPARATOR],
+        $mappedQuery[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
+        $mappedQuery["sourceType"],
         $dummyPost,
         [],
         $this->getUser(),
-        $QUERY[UQueryHashlist::HASHLIST_USE_BRAIN],
-        $QUERY[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
+        $mappedQuery[UQueryHashlist::HASHLIST_USE_BRAIN],
+        $mappedQuery[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
       );
 
       // Modify fields not set on hashlist creation
-      if (array_key_exists("notes", $QUERY)) {
-        HashlistUtils::editNotes($hashlist->getId(), $QUERY["notes"], $this->getUser());
+      if (array_key_exists("notes", $mappedQuery)) {
+        HashlistUtils::editNotes($hashlist->getId(), $mappedQuery["notes"], $this->getUser());
       };
-      HashlistUtils::setArchived($hashlist->getId(), $QUERY[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getUser());
+      HashlistUtils::setArchived($hashlist->getId(), $mappedQuery[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getUser());
 
       return $hashlist->getId();
     }

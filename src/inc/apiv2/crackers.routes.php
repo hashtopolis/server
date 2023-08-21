@@ -42,20 +42,20 @@ class CrackerBinaryAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       $object = CrackerUtils::createBinary(
-        $QUERY[CrackerBinary::VERSION],
-        $QUERY[CrackerBinary::BINARY_NAME],
-        $QUERY[CrackerBinary::DOWNLOAD_URL],
-        $QUERY[CrackerBinary::CRACKER_BINARY_TYPE_ID]
+        $mappedQuery[CrackerBinary::VERSION],
+        $mappedQuery[CrackerBinary::BINARY_NAME],
+        $mappedQuery[CrackerBinary::DOWNLOAD_URL],
+        $mappedQuery[CrackerBinary::CRACKER_BINARY_TYPE_ID]
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(CrackerBinary::VERSION, $QUERY[CrackerBinary::VERSION], '='),
-        new QueryFilter(CrackerBinary::BINARY_NAME, $QUERY[CrackerBinary::BINARY_NAME], '='),
-        new QueryFilter(CrackerBinary::DOWNLOAD_URL, $QUERY[CrackerBinary::DOWNLOAD_URL], '='),
-        new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $QUERY[CrackerBinary::CRACKER_BINARY_TYPE_ID], '='),
+        new QueryFilter(CrackerBinary::VERSION, $mappedQuery[CrackerBinary::VERSION], '='),
+        new QueryFilter(CrackerBinary::BINARY_NAME, $mappedQuery[CrackerBinary::BINARY_NAME], '='),
+        new QueryFilter(CrackerBinary::DOWNLOAD_URL, $mappedQuery[CrackerBinary::DOWNLOAD_URL], '='),
+        new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $mappedQuery[CrackerBinary::CRACKER_BINARY_TYPE_ID], '='),
 
       ];
 

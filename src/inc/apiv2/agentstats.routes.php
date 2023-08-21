@@ -40,7 +40,7 @@ class AgentStatsAPI extends AbstractBaseAPI {
     return  [];
     }
    
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       assert(False, "AgentStats cannot be created via API");
       return -1;
     }

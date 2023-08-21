@@ -43,20 +43,20 @@ class AgentBinaryAPI extends AbstractBaseAPI {
     return  [];
     }
   
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       AgentBinaryUtils::newBinary(
-        $QUERY[AgentBinary::TYPE],
-        $QUERY[AgentBinary::OPERATING_SYSTEMS],
-        $QUERY[AgentBinary::FILENAME],
-        $QUERY[AgentBinary::VERSION],
-        $QUERY[AgentBinary::UPDATE_TRACK],
+        $mappedQuery[AgentBinary::TYPE],
+        $mappedQuery[AgentBinary::OPERATING_SYSTEMS],
+        $mappedQuery[AgentBinary::FILENAME],
+        $mappedQuery[AgentBinary::VERSION],
+        $mappedQuery[AgentBinary::UPDATE_TRACK],
         $this->getUser()
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(AgentBinary::FILENAME, $QUERY[AgentBinary::FILENAME], '='),
-        new QueryFilter(AgentBinary::VERSION, $QUERY[AgentBinary::VERSION], '='),
+        new QueryFilter(AgentBinary::FILENAME, $mappedQuery[AgentBinary::FILENAME], '='),
+        new QueryFilter(AgentBinary::VERSION, $mappedQuery[AgentBinary::VERSION], '='),
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

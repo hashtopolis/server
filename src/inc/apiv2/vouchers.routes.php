@@ -39,7 +39,7 @@ class VoucherAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       AgentUtils::createVoucher($QUERY[RegVoucher::VOUCHER]);
 
       /* On succesfully insert, return ID */

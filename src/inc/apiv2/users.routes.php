@@ -40,21 +40,21 @@ class UserAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       /* Parameter is used as primary key in database */
       $features = $this->getFeatures();
       $object = UserUtils::createUser(
-          $QUERY[$features[USER::USERNAME]['alias']],
-          $QUERY[User::EMAIL],
-          $QUERY[$features[User::RIGHT_GROUP_ID]['alias']],
+          $mappedQuery[$features[USER::USERNAME]['alias']],
+          $mappedQuery[User::EMAIL],
+          $mappedQuery[$features[User::RIGHT_GROUP_ID]['alias']],
           $this->getUser()
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(User::USERNAME, $QUERY[$features[USER::USERNAME]['alias']], '='),
-        new QueryFilter(User::EMAIL, $QUERY[User::EMAIL], '='),
-        new QueryFilter(User::RIGHT_GROUP_ID, $QUERY[$features[User::RIGHT_GROUP_ID]['alias']], '=')
+        new QueryFilter(User::USERNAME, $mappedQuery[$features[USER::USERNAME]['alias']], '='),
+        new QueryFilter(User::EMAIL, $mappedQuery[User::EMAIL], '='),
+        new QueryFilter(User::RIGHT_GROUP_ID, $mappedQuery[$features[User::RIGHT_GROUP_ID]['alias']], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

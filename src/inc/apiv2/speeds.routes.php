@@ -48,7 +48,7 @@ class SpeedAPI extends AbstractBaseAPI {
       return [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       assert(False, "Speeds cannot be created via API");
       return -1;
    }

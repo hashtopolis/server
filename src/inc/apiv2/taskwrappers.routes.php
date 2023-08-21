@@ -51,7 +51,7 @@ class TaskWrappersAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       assert(False, "TaskWrappers cannot be created via API");
       return -1;
     }

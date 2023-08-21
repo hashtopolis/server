@@ -40,26 +40,26 @@ class PreTaskAPI extends AbstractBaseAPI {
       ];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       PretaskUtils::createPretask(
-        $QUERY[PreTask::TASK_NAME],
-        $QUERY[PreTask::ATTACK_CMD],
-        $QUERY[PreTask::CHUNK_TIME],
-        $QUERY[PreTask::STATUS_TIMER],
-        $QUERY[PreTask::COLOR],
-        $QUERY[PreTask::IS_CPU_TASK],
-        $QUERY[PreTask::IS_SMALL],
-        $QUERY[PreTask::USE_NEW_BENCH],
+        $mappedQuery[PreTask::TASK_NAME],
+        $mappedQuery[PreTask::ATTACK_CMD],
+        $mappedQuery[PreTask::CHUNK_TIME],
+        $mappedQuery[PreTask::STATUS_TIMER],
+        $mappedQuery[PreTask::COLOR],
+        $mappedQuery[PreTask::IS_CPU_TASK],
+        $mappedQuery[PreTask::IS_SMALL],
+        $mappedQuery[PreTask::USE_NEW_BENCH],
         $QUERY["files"],
-        $QUERY[PreTask::CRACKER_BINARY_TYPE_ID],
-        $QUERY[PreTask::MAX_AGENTS],
-        $QUERY[PreTask::PRIORITY]
+        $mappedQuery[PreTask::CRACKER_BINARY_TYPE_ID],
+        $mappedQuery[PreTask::MAX_AGENTS],
+        $mappedQuery[PreTask::PRIORITY]
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(PreTask::TASK_NAME, $QUERY[PreTask::TASK_NAME], '='),
-        new QueryFilter(PreTask::ATTACK_CMD, $QUERY[PreTask::ATTACK_CMD], '=')
+        new QueryFilter(PreTask::TASK_NAME, $mappedQuery[PreTask::TASK_NAME], '='),
+        new QueryFilter(PreTask::ATTACK_CMD, $mappedQuery[PreTask::ATTACK_CMD], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

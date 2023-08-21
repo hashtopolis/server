@@ -40,11 +40,11 @@ class HealthCheckAPI extends AbstractBaseAPI {
     return  [];
     }
 
-    protected function createObject($QUERY): int {
+    protected function createObject($mappedQuery, $QUERY): int {
       $obj = HealthUtils::createHealthCheck(
-        $QUERY['hashtypeId'],
-        $QUERY['checkType'],
-        $QUERY['crackerBinaryId']
+        $mappedQuery['hashtypeId'],
+        $mappedQuery['checkType'],
+        $mappedQuery['crackerBinaryId']
       );
 
       return $obj->getId();
