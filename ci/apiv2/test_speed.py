@@ -22,7 +22,7 @@ class SpeedTest(BaseTest):
 
     def test_delete(self):
         # Delete should not be possible via API
-        model_obj = self.create_test_object(delete=False)
+        model_obj = self.create_test_object()
         with self.assertRaises(HashtopolisResponseError) as e:
             self._test_delete(model_obj)
         self.assertEqual(e.exception.status_code, 500)

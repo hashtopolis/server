@@ -199,6 +199,28 @@ def do_create_voucher():
     return Voucher(voucher=f'dummy-test-{stamp}').save()
 
 
+def find_stale_test_objects():
+    # Order matters, for example a Task needs to be removed before Hashlist can be removed
+    # Note: we are not removing default database objects
+    test_objs = []
+    test_objs.extend(HashType.objects.filter(hashTypeId=98765))
+    test_objs.extend(AccessGroup.objects.filter(groupName="Testing Group"))
+    test_objs.extend(Notification.objects.all())
+    test_objs.extend(HealthCheck.objects.all())
+    test_objs.extend(Agent.objects.all())
+    test_objs.extend(Voucher.objects.all())
+    test_objs.extend(Supertask.objects.all())
+    test_objs.extend(Task.objects.all())
+    test_objs.extend(Pretask.objects.all())
+    test_objs.extend(Hashlist.objects.all())
+    test_objs.extend(File.objects.all())
+    test_objs.extend(User.objects.filter(id__gt=1))
+    test_objs.extend(GlobalPermissionGroup.objects.filter(id__gt=1))
+    test_objs.extend(Cracker.objects.filter(_id__gt=1))
+    test_objs.extend(CrackerType.objects.filter(_id__gt=1))
+    return test_objs
+
+
 class TestBase(unittest.TestCase, abc.ABC):
     @abc.abstractmethod
     def getBaseURI(self):
@@ -372,11 +394,19 @@ class BaseTest(unittest.TestCase):
         obj = self.model_class.objects.get(pk=model_obj.id)
         self.assertEqual(getattr(obj, attr), new_attr_value)
 
-    @classmethod
-    def tearDown(cls):
-        while len(cls.obj_heap) > 0:
-            obj = cls.obj_heap.pop()
+    def tearDown(self):
+        while len(self.obj_heap) > 0:
+            obj = self.obj_heap.pop()
             obj.delete()
+
+        # Testing the internal test framework
+        # TODO: This is potentially really confusing since it will cause all tests to fail if database consist of
+        # TODO: stale (test) objects. Potential workaround would be to run the following command on an empty database
+        # TODO: to find out which test is creating test entries and not removing them:
+        # TODO:     for T in test_*.py; do pytest $T && ./htcli.py run delete-test-data --commit | grep -q "Deleting" && exit 1; done; echo $?
+        #
+        # test_objs = find_stale_test_objects()
+        # self.assertEqual(len(test_objs), 0, msg=f"Created objects are not marked for removal! {test_objs}")
 
     def delete_after_test(self, obj):
         self.obj_heap.append(obj)

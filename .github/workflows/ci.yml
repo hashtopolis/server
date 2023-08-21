@@ -29,6 +29,8 @@ jobs:
         run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/
       - name: Test with pytest
         run: docker exec hashtopolis-server-dev pytest /var/www/html/ci/apiv2
+      - name: Test if pytest is removing all test objects
+        run: docker exec hashtopolis-server-dev python3 /var/www/html/ci/apiv2/htcli.py run delete-test-data
       - name: Show docker log files
         if: ${{ always() }}
         run: docker logs hashtopolis-server-dev

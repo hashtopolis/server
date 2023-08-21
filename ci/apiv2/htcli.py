@@ -15,24 +15,10 @@ import inspect
 import click
 import click_log
 import json
+import sys
 
 import hashtopolis
-from hashtopolis import AccessGroup
-from hashtopolis import Agent
-from hashtopolis import Cracker
-from hashtopolis import CrackerType
-from hashtopolis import File
-from hashtopolis import GlobalPermissionGroup
-from hashtopolis import Hashlist
-from hashtopolis import HealthCheck
-from hashtopolis import HashType
-from hashtopolis import Notification
-from hashtopolis import Pretask
-from hashtopolis import Supertask
-from hashtopolis import Task
-from hashtopolis import User
-from hashtopolis import Voucher
-
+from utils import find_stale_test_objects
 
 logger = logging.getLogger(__name__)
 click_log.basic_config(logger)
@@ -61,30 +47,13 @@ def delete_test_data(commit):
     else:
         prefix = ''
 
-    # Order matters, for example a Task needs to be removed before Hashlist can be removed
-    # Note: we are not removing default database objects
-    test_objs = []
-    test_objs.extend(HashType.objects.filter(hashTypeId=98765))
-    test_objs.extend(AccessGroup.objects.filter(groupName="Testing Group"))
-    test_objs.extend(Notification.objects.all())
-    test_objs.extend(HealthCheck.objects.all())
-    test_objs.extend(Agent.objects.all())
-    test_objs.extend(Voucher.objects.all())
-    test_objs.extend(Supertask.objects.all())
-    test_objs.extend(Task.objects.all())
-    test_objs.extend(Pretask.objects.all())
-    test_objs.extend(Hashlist.objects.all())
-    test_objs.extend(File.objects.all())
-    test_objs.extend(User.objects.filter(id__gt=1))
-    test_objs.extend(GlobalPermissionGroup.objects.filter(id__gt=1))
-    test_objs.extend(Cracker.objects.filter(_id__gt=1))
-    test_objs.extend(CrackerType.objects.filter(_id__gt=1))
-
+    test_objs = find_stale_test_objects()
     for obj in test_objs:
         logger.warning("%s Deleting %s", prefix, obj)
         if commit is True:
             obj.delete()
 
+    sys.exit(1 if (len(test_objs) > 1 and commit is False) else 0)
 
 @main.command()
 @click.argument('model_plural', type=click.Choice([x.verbose_name_plural for x in ALL_MODELS], case_sensitive=True))
