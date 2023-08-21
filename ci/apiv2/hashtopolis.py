@@ -571,7 +571,7 @@ class FileImport(HashtopolisConnector):
     def __repr__(self):
         return self._self
 
-    def do_upload(self, filename, file_stream):
+    def do_upload(self, filename, file_stream, chunk_size=1000000000):
         self.authenticate()
 
         uri = self._api_endpoint + self._model_uri
@@ -584,7 +584,7 @@ class FileImport(HashtopolisConnector):
                     "filetype": "application/text"}
         uploader = my_client.uploader(
                 file_stream=file_stream,
-                chunk_size=1000000000,
+                chunk_size=chunk_size,
                 upload_checksum=True,
                 metadata=metadata
                 )

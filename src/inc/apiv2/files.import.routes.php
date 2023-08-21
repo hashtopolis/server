@@ -8,10 +8,11 @@
  *  2) Server checks filename does not exists yet:
  *     - Checked not part of ongoing transfer (<uuid>.part / <uuid>.metatadata in import directory)
  *     - Checked not uploaded yet (import/<filename>)
- *     - Checked not present yet (files/<filename>)
  *     If all conditions are met, upload is created and user informed about UUID to push to.
  *  3) Client pushes parts to ./api/v2/ui/files/<uuid>
+ *     - Checked if upload timeout is not expired
  *  4) Server check if upload is completed
+ *     - Checked if not present yet (import/<filename>)
  *     - Marks file and stores as import/<filename>
  */ 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -22,6 +23,9 @@ use Slim\Routing\RouteCollectorProxy;
 use DBA\QueryFilter;
 use DBA\User;
 use DBA\Factory;
+
+/* Default timeout interval for considering an upload stale/incomplete */
+define('DEFAULT_UPLOAD_EXPIRES_TIMEOUT', 3600);
 
 require_once(dirname(__FILE__) . "/../load.php");
 
@@ -69,7 +73,7 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
       ->withHeader('Tus-Resumable', '1.0.0')
       ->withHeader('Tus-Checksum-Algorithm', join(',', getChecksumAlgorithm()))
       //TODO: Maybe add Upload-Expires support. Return in PATCH with RFC 7231
-      ->withHeader('Tus-Extension', 'checksum,creation,creation-defer-length,termination')
+      ->withHeader('Tus-Extension', 'checksum,creation,creation-defer-length,expiration,termination')
       ->withHeader('Access-Control-Expose-Headers', 'Tus-Version, Tus-Resumable, Tus-Checksum-Algorithm, Tus-Extension');
       //TODO: Option for Tus-Max-Size: 1073741824
   });
@@ -98,7 +102,8 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
     // TODO: Should filename be mandatory?
     if (array_key_exists('filename', $update_metadata)) {
       $filename = $update_metadata['filename'];
-      $id = md5($filename);
+      /* Generate unique upload identifier */
+      $id = date("YmdHis") . "-" . md5($filename);
       if ((file_exists(getImportPath($filename))) || 
           (file_exists(getUploadPath($id)))) {
             $response->getBody()->write("Error filename '$filename' already exists!");
@@ -122,6 +127,9 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
       $update["upload_defer_length"] = false;
     }
 
+    /* Give user fix amount of time to upload file, before temponary files are removed */
+    $update["upload_expires"] = (new DateTime())->getTimestamp() + DEFAULT_UPLOAD_EXPIRES_TIMEOUT;
+
     updateStorage($id, $update);
     file_put_contents(getUploadPath($id), '');
 
@@ -133,7 +141,7 @@ $app->group("/api/v2/ui/files/import", function (RouteCollectorProxy $group) {
     });
 });
 
-$app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollectorProxy $group) { 
+$app->group("/api/v2/ui/files/import/{id:[0-9]{14}-[0-9a-f]{32}}", function (RouteCollectorProxy $group) { 
   /* Allow preflight requests */
   $group->options('', function (Request $request, Response $response, array $args): Response {
     return $response;
@@ -220,6 +228,15 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
     }
 
     $ds = getMetaStorage($args['id']);
+    
+    /* Validate if upload time is still valid */
+    $now = new DateTimeImmutable();
+    $dt = (new DateTime())->setTimeStamp($ds['upload_expires']);
+    if (($dt->getTimestamp() - $now->getTimestamp()) <= 0) {
+      // TODO: Remove expired uploads
+      $response->getBody()->write('Upload token expired');
+      return $response->withStatus(410);
+    }
 
     /* Validate checksum */
     if ($request->hasHeader('Upload-Checksum')) {
@@ -279,11 +296,16 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
         $targetFile = $args['id'];
       }
 
+      /* Check if completed file is not created meanwhile */
       $importPath = getImportPath($targetFile);
-      if (file_exists($importPath) === false) {
-        rename($filename, $importPath);
-        unlink(getMetaPath($args['id']));
-      }
+      if (file_exists($importPath)) {
+        $response->getBody()->write("Error filename '$targetFile' already exists!");
+        return $response->withStatus(400);
+      };
+
+      /* Migrate completed file to import folder */
+      rename($filename, $importPath);
+      unlink(getMetaPath($args['id']));
     } else {
       $statusMsg = "Next chunk please";
     }
@@ -293,6 +315,7 @@ $app->group("/api/v2/ui/files/import/{id:[0-9a-f]{32}}", function (RouteCollecto
       ->withHeader("Tus-Resumable", "1.0.0")
       ->withHeader("Upload-Length", strval($ds["upload_length"]))
       ->withHeader("Upload-Offset", strval($newSize))
+      ->withHeader('Upload-Expires', $dt->format(DateTimeInterface::RFC7231))
       ->WithHeader("Access-Control-Expose-Headers", "Tus-Resumable, Upload-Length, Upload-Offset");
   });
 
