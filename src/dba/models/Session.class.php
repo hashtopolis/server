@@ -37,12 +37,12 @@ class Session extends AbstractModel {
   static function getFeatures() {
     $dict = array();
     $dict['sessionId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "sessionId"];
-    $dict['userId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
-    $dict['sessionStartDate'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "sessionStartDate"];
-    $dict['lastActionDate'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "lastActionDate"];
-    $dict['isOpen'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isOpen"];
-    $dict['sessionLifetime'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "sessionLifetime"];
-    $dict['sessionKey'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "sessionKey"];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "userId"];
+    $dict['sessionStartDate'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "sessionStartDate"];
+    $dict['lastActionDate'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "lastActionDate"];
+    $dict['isOpen'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "isOpen"];
+    $dict['sessionLifetime'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "sessionLifetime"];
+    $dict['sessionKey'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "sessionKey"];
 
     return $dict;
   }
