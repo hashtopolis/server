@@ -928,6 +928,9 @@ CREATE TABLE `HardwareGroup` (
     `devices` VARCHAR(65000) NULL
 ) ENGINE = InnoDB;
 
+INSERT INTO `HardwareGroup` (`hardwareGroupId`, `devices`) VALUES
+  (0, 'Default'); 
+
 CREATE TABLE `Zap` (
   `zapId`      INT(11)    NOT NULL,
   `hash`       MEDIUMTEXT NOT NULL,
