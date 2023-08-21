@@ -16,15 +16,15 @@ require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
 // Alias: used for setting new names for attributes. This is for the transition between APIv1 and APIv2.
 //        Alias determines the name for the attribute as it should be called by APIv2
 
-// entities
-// FIXME: Add correct read_only mapping to relevant fields
+//
+// Entities
+//
 $CONF['AccessGroup'] = [
   'columns' => [
     ['name' => 'accessGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'groupName', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['Agent'] = [
   'columns' => [
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -37,15 +37,14 @@ $CONF['Agent'] = [
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isTrusted', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'token', 'read_only' => False, 'type' => 'str(30)'],
-    ['name' => 'lastAct', 'read_only' => False, 'type' => 'str(50)'],
-    ['name' => 'lastTime', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'lastIp', 'read_only' => False, 'type' => 'str(50)'],
+    ['name' => 'lastAct', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'lastTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'lastIp', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
     ['name' => 'userId', 'read_only' => False, 'type' => 'int', 'null' => True],
     ['name' => 'cpuOnly', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'clientSignature', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['AgentBinary'] = [
   'columns' => [
     ['name' => 'agentBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -60,59 +59,72 @@ $CONF['AgentBinary'] = [
 $CONF['AgentError'] = [
   'columns' => [
     ['name' => 'agentErrorId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'taskId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'chunkId', 'read_only' => True, 'type' => 'int'],
-    ['name' => 'time', 'read_only' => True, 'type' => 'int64'],
-    ['name' => 'error', 'read_only' => True, 'type' => 'str(65535)'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'error', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['AgentStat'] = [
   'columns' => [
     ['name' => 'agentStatId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int'],
-    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int'],
-    ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64'],
-    ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'str(128)'],
+    ['name' => 'agentId', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'statType', 'read_only' => True, 'protected' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'time', 'read_only' => True, 'protected' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'value', 'read_only' => True, 'protected' => True, 'type' => 'str(128)', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['AgentZap'] = [
   'columns' => [
     ['name' => 'agentZapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'lastZapId', 'read_only' => False, 'type' => 'str(128)'],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'lastZapId', 'read_only' => True, 'type' => 'str(128)', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
+$CONF['ApiKey'] = [
+  'columns' => [
+    ['name' => 'apiKeyId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'startValid', 'read_only' => False, 'type' => 'int64'],
+    ['name' => 'endValid', 'read_only' => False, 'type' => 'int64'],
+    ['name' => 'accessKey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+    ['name' => 'accessCount', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'userId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'apiGroupId', 'read_only' => False, 'type' => 'int'],
+  ],
+];
+$CONF['ApiGroup'] = [
+  'columns' => [
+    ['name' => 'apiGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'permissions', 'read_only' => False, 'type' => 'str(65535)'],
+    ['name' => 'name', 'read_only' => False, 'type' => 'str(100)'],
+  ],
+];
 $CONF['Assignment'] = [
   'permission_alias' => 'AgentAssignment',
   'columns' => [
     ['name' => 'assignmentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskId', 'read_only' => False, 'type' => 'int'],
     ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)'],
+    ['name' => 'benchmark', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['Chunk'] = [
   'columns' => [
     ['name' => 'chunkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'taskId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'skip', 'read_only' => False, 'type' => 'uint64'],
-    ['name' => 'length', 'read_only' => False, 'type' => 'uint64'],
-    ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'dispatchTime', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'solveTime', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'checkpoint', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'progress', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'state', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'cracked', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'speed', 'read_only' => False, 'type' => 'int64'],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'skip', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
+    ['name' => 'length', 'read_only' => True, 'type' => 'uint64', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'dispatchTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'checkpoint', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'progress', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'state', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'speed', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['Config'] = [
   'columns' => [
     ['name' => 'configId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -121,14 +133,12 @@ $CONF['Config'] = [
     ['name' => 'value', 'read_only' => False, 'type' => 'str(65535)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['ConfigSection'] = [
   'columns' => [
     ['name' => 'configSectionId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'sectionName', 'read_only' => False, 'type' => 'str(100)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['CrackerBinary'] = [
   'columns' => [
     ['name' => 'crackerBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -138,7 +148,6 @@ $CONF['CrackerBinary'] = [
     ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['CrackerBinaryType'] = [
   'columns' => [
     ['name' => 'crackerBinaryTypeId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -146,7 +155,6 @@ $CONF['CrackerBinaryType'] = [
     ['name' => 'isChunkingAvailable', 'read_only' => False, 'type' => 'bool'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['File'] = [
   'columns' => [
     ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -158,7 +166,21 @@ $CONF['File'] = [
     ['name' => 'lineCount', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
+$CONF['FileDelete'] = [
+  'columns' => [
+    ['name' => 'fileDeleteId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'filename', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+    ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ],
+];
+$CONF['FileDownload'] = [
+  'columns' => [
+    ['name' => 'fileDownloadId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'fileId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ],
+];
 $CONF['Hash'] = [
   'columns' => [
     ['name' => 'hashId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -172,7 +194,6 @@ $CONF['Hash'] = [
     ['name' => 'crackPos', 'read_only' => False, 'type' => 'int64'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['HashBinary'] = [
   'columns' => [
     ['name' => 'hashBinaryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -205,7 +226,6 @@ $CONF['Hashlist'] = [
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['HashType'] = [
   'columns' => [
     ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
@@ -214,18 +234,41 @@ $CONF['HashType'] = [
     ['name' => 'isSlowHash', 'read_only' => False, 'type' => 'bool'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
+$CONF['HealthCheck'] = [
+  'columns' => [
+    ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'checkType', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+  ],
+];
+$CONF['HealthCheckAgent'] = [
+  'columns' => [
+    ['name' => 'healthCheckAgentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'numGpus', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'start', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'end', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'errors', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
+  ],
+];
 $CONF['LogEntry'] = [
   'columns' => [
     ['name' => 'logEntryId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'issuer', 'read_only' => False, 'type' => 'str(50)'],
-    ['name' => 'issuerId', 'read_only' => False, 'type' => 'str(50)'],
-    ['name' => 'level', 'read_only' => False, 'type' => 'str(50)'],
-    ['name' => 'message', 'read_only' => False, 'type' => 'str(65535)'],
+    ['name' => 'issuer', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'issuerId', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'level', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
+    ['name' => 'message', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['NotificationSetting'] = [
   'columns' => [
     ['name' => 'notificationSettingId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -237,7 +280,17 @@ $CONF['NotificationSetting'] = [
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
+$CONF['Preprocessor'] = [
+  'columns' => [
+    ['name' => 'preprocessorId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'name', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'url', 'read_only' => False, 'type' => 'str(512)'],
+    ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'keyspaceCommand', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'skipCommand', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'limitCommand', 'read_only' => False, 'type' => 'str(256)'],
+  ],
+];
 $CONF['Pretask'] = [
   'columns' => [
     ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -255,7 +308,6 @@ $CONF['Pretask'] = [
     ['name' => 'crackerBinaryTypeId', 'read_only' => False, 'type' => 'int'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['RegVoucher'] = [
   'columns' => [
     ['name' => 'regVoucherId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -263,7 +315,6 @@ $CONF['RegVoucher'] = [
     ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['RightGroup'] = [
   'columns' => [
     ['name' => 'rightGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True, 'alias' => 'id'],
@@ -271,33 +322,38 @@ $CONF['RightGroup'] = [
     ['name' => 'permissions', 'read_only' => False, 'type' => 'dict', 'subtype' => 'bool', 'null' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['Session'] = [
   'columns' => [
     ['name' => 'sessionId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'userId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'sessionStartDate', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'lastActionDate', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'isOpen', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'sessionLifetime', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'sessionKey', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'userId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'sessionStartDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'lastActionDate', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'isOpen', 'read_only' => True, 'type' => 'bool', 'protected' => True],
+    ['name' => 'sessionLifetime', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'sessionKey', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
+$CONF['Speed'] = [
+  'columns' => [
+    ['name' => 'speedId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'speed', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+    ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
+  ],
+];
 $CONF['StoredValue'] = [
   'columns' => [
     ['name' => 'storedValueId', 'read_only' => True, 'type' => 'str(50)', 'protected' => True],
     ['name' => 'val', 'read_only' => False, 'type' => 'str(256)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['Supertask'] = [
   'columns' => [
     ['name' => 'supertaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'supertaskName', 'read_only' => False, 'type' => 'str(50)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['Task'] = [
   'columns' => [
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -333,7 +389,6 @@ $CONF['TaskDebugOutput'] = [
     ['name' => 'output', 'read_only' => True, 'type' => 'str(256)'],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['TaskWrapper'] = [
   'columns' => [
     ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
@@ -366,104 +421,18 @@ $CONF['User'] = [
     ['name' => 'otp4', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
 $CONF['Zap'] = [
   'columns' => [
     ['name' => 'zapId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'hash', 'read_only' => False, 'type' => 'str(65535)'],
-    ['name' => 'solveTime', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int'],
-  ],
-];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['ApiKey'] = [
-  'columns' => [
-    ['name' => 'apiKeyId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'startValid', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'endValid', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'accessKey', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'accessCount', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'userId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'apiGroupId', 'read_only' => False, 'type' => 'int'],
-  ],
-];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['ApiGroup'] = [
-  'columns' => [
-    ['name' => 'apiGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'permissions', 'read_only' => False, 'type' => 'str(65535)'],
-    ['name' => 'name', 'read_only' => False, 'type' => 'str(100)'],
-  ],
-];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['FileDownload'] = [
-  'columns' => [
-    ['name' => 'fileDownloadId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'time', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'fileId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'status', 'read_only' => False, 'type' => 'int'],
-  ],
-];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['FileDelete'] = [
-  'columns' => [
-    ['name' => 'fileDeleteId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'filename', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'time', 'read_only' => False, 'type' => 'int64'],
-  ],
-];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['HealthCheck'] = [
-  'columns' => [
-    ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'time', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'checkType', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
-  ],
-];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['HealthCheckAgent'] = [
-  'columns' => [
-    ['name' => 'healthCheckAgentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'healthCheckId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+    ['name' => 'hash', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
+    ['name' => 'solveTime', 'read_only' => True, 'type' => 'int64', 'protected' => True],
     ['name' => 'agentId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'status', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'cracked', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'numGpus', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'start', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'end', 'read_only' => True, 'type' => 'int64', 'protected' => True],
-    ['name' => 'errors', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ],
 ];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['Speed'] = [
-  'columns' => [
-    ['name' => 'speedId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'taskId', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'speed', 'read_only' => False, 'type' => 'int64'],
-    ['name' => 'time', 'read_only' => False, 'type' => 'int64'],
-  ],
-];
-// FIXME: Add correct read_only mapping to relevant fields
-$CONF['Preprocessor'] = [
-  'columns' => [
-    ['name' => 'preprocessorId', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'name', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'url', 'read_only' => False, 'type' => 'str(512)'],
-    ['name' => 'binaryName', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'keyspaceCommand', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'skipCommand', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'limitCommand', 'read_only' => False, 'type' => 'str(256)'],
-  ],
-];
-
-// relations
+//
+// Relations
+//
 $CONF['AccessGroupUser'] = [
   'columns' => [
     ['name' => 'accessGroupUserId', 'read_only' => True, 'type' => 'int', 'protected' => True],
