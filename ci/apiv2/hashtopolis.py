@@ -14,6 +14,7 @@ import logging
 import http
 import confidence
 import tusclient.client
+from tusclient.exceptions import TusCommunicationError
 
 logger = logging.getLogger(__name__)
 
@@ -587,7 +588,13 @@ class FileImport(HashtopolisConnector):
                 upload_checksum=True,
                 metadata=metadata
                 )
-        uploader.upload()
+        try:
+            uploader.upload()
+        except TusCommunicationError as e:
+            response_content = e.response_content.decode('utf-8')
+            raise HashtopolisResponseError(f"{e}: {response_content}",
+                                           exception_details=response_content,
+                                           status_code=e.status_code)
 
 
 class Meta(HashtopolisConnector):
