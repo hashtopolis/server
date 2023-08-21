@@ -7,6 +7,7 @@
 import enum
 import json
 import logging
+import random
 import requests
 from pathlib import Path
 import time
@@ -264,11 +265,19 @@ class DummyAgent(object):
                 ]
             ],
             "gpuTemp": [
-                67
+                random.randint(20, 40),
+                random.randint(60, 80),
             ],
             "gpuUtil": [
-                99
-            ]
+                random.randint(50, 75),
+                random.randint(80, 100),
+            ],
+            "cpuUtil": [
+                random.randint(0, 10),
+                random.randint(10, 20),
+                random.randint(20, 30),
+                random.randint(30, 40),
+            ],
         }
         retval = self._do_request(payload)
         self.process = retval
