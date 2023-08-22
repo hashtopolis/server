@@ -204,6 +204,7 @@ def find_stale_test_objects():
     # Note: we are not removing default database objects
     test_objs = []
     test_objs.extend(HashType.objects.filter(hashTypeId=98765))
+    test_objs.extend(HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000))
     test_objs.extend(AccessGroup.objects.filter(groupName="Testing Group"))
     test_objs.extend(Notification.objects.all())
     test_objs.extend(HealthCheck.objects.all())
