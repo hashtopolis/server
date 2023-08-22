@@ -27,8 +27,7 @@ class TaskWrappersAPI extends AbstractModelAPI {
     }
 
     public function getExpandables(): array {
-      // TODO: Implement
-      return [];
+      return ['accessGroup', 'tasks'];
     }
 
     protected function getFilterACL(): array {

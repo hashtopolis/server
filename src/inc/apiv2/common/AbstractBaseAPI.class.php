@@ -431,12 +431,15 @@ abstract class AbstractBaseAPI
           $item[$NAME] = $this->obj2Array($obj);
           break;
         case 'tasks':
-          $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $item['hashlistId'], "=", Factory::getTaskWrapperFactory());
-          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
-          /** @var $objs Task[] */
-          $joinedTasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-          $objs = $joinedTasks[Factory::getTaskFactory()->getModelName()];
-          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
+          if (get_class($object) == Hashlist::class) {
+            $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $item['hashlistId'], "=", Factory::getTaskWrapperFactory());
+            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+            $item[$NAME] = $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);
+          } else {
+            $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $item[TaskWrapper::TASK_WRAPPER_ID], "=", Factory::getTaskWrapperFactory());
+            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+            $item[$NAME] = $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);
+          }
           break;
         case 'speeds':
           $qFs = [];

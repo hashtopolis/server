@@ -25,3 +25,8 @@ class TaskWrapperTest(BaseTest):
         with self.assertRaises(HashtopolisResponseError) as e:
             self._test_delete(model_obj)
         self.assertEqual(e.exception.status_code, 500)
+
+    def test_expand(self):
+        model_obj = self.create_test_object()
+        expandables = ['accessGroup', 'tasks']
+        self._test_expandables(model_obj, expandables)
