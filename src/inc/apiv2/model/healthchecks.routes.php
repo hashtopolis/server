@@ -1,0 +1,49 @@
+<?php
+use DBA\Factory;
+use DBA\HealthCheck;
+
+require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
+
+
+class HealthCheckAPI extends AbstractModelAPI {
+    public static function getBaseUri(): string {
+      return "/api/v2/ui/healthchecks";
+    }
+ 
+    public static function getDBAclass(): string {
+      return HealthCheck::class;
+    }
+
+    protected function getFactory(): object {
+      return Factory::getHealthCheckFactory();
+    }
+
+    public function getExpandables(): array {
+      return ['crackerBinary', 'healthCheckAgents'];
+    }
+ 
+    protected function getFilterACL(): array {
+      return [];
+    }
+
+    public function getFormFields(): array {
+    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
+    return  [];
+    }
+
+    protected function createObject($mappedQuery, $QUERY): int {
+      $obj = HealthUtils::createHealthCheck(
+        $mappedQuery['hashtypeId'],
+        $mappedQuery['checkType'],
+        $mappedQuery['crackerBinaryId']
+      );
+
+      return $obj->getId();
+    }
+
+    protected function deleteObject(object $object): void {
+      HealthUtils::deleteHealthCheck($object->getId());
+    }
+}
+
+HealthCheckAPI::register($app);

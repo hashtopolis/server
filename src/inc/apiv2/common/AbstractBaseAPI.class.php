@@ -1,0 +1,864 @@
+<?php
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+
+use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpForbiddenException;
+use Slim\Routing\RouteContext;
+
+use DBA\AccessGroup;
+use DBA\AccessGroupAgent;
+use DBA\AccessGroupUser;
+use DBA\Agent;
+use DBA\AgentBinary;
+use DBA\AgentStat;
+use DBA\Assignment;
+use DBA\Chunk;
+use DBA\Config;
+use DBA\ConfigSection;
+use DBA\CrackerBinary;
+use DBA\CrackerBinaryType;
+use DBA\File;
+use DBA\FilePretask;
+use DBA\FileTask;
+use DBA\Hash;
+use DBA\Hashlist;
+use DBA\HashlistHashlist;
+use DBA\HashType;
+use DBA\HealthCheck;
+use DBA\HealthCheckAgent;
+use DBA\NotificationSetting;
+use DBA\Pretask;
+use DBA\RegVoucher;
+use DBA\RightGroup;
+use DBA\Speed;
+use DBA\Supertask;
+use DBA\SupertaskPretask;
+use DBA\Task;
+use DBA\TaskWrapper;
+use DBA\User;
+
+use DBA\Factory;
+use DBA\JoinFilter;
+use DBA\LogEntry;
+use DBA\OrderFilter;
+use DBA\Preprocessor;
+use DBA\QueryFilter;
+
+use Middlewares\Utils\HttpErrorException;
+use Psr\Container\ContainerInterface;
+
+require_once(dirname(__FILE__) . "/../../load.php");
+
+
+/**   
+ * This class acts as the BaseAPI implementation of API model endpoints
+ */
+abstract class AbstractBaseAPI
+{
+  abstract public function getFormFields(): array;
+  abstract public static function getBaseUri(): string;
+  abstract public function getFeatures(): array;
+  abstract public function getRequiredPermissions(string $method): array;
+
+  /** @var DBA\User|null $user is currently logged in user */
+  private $user;
+
+  /** @var \Slim\Interfaces\RouteParserInterface|null $routeParser contains routing information
+   * which are for example used dynamic creation of _self references
+   */
+  private $routeParser;
+
+  /** @var ContainerInterface|null $container dynamically generated model mappings 
+   * which are for example used for retrival of objects based on string identity
+   */
+  protected $container;
+
+  /** @var mixed|null $permissionErrors contained detailed results of last 
+   * validatePermissions function call
+  */
+  private $permissionErrors;
+
+  /**
+   * Constructor receives container instance
+   */
+  public function __construct(ContainerInterface $container)
+  {
+    $this->container = $container;
+  }
+
+  /**
+   * Take all the dba features and converts them to a list.
+   * It uses the data from the generator and replaces the keys with the aliasses.
+   * structure: hashlist: name: [dbname => hashlistId]
+   */
+  public function getMappedFeatures(): array
+  {
+    $features = $this->getFeatures();
+    $mappedFeatures = [];
+    foreach ($features as $KEY => $VALUE) {
+      $mappedFeatures[$VALUE['alias']] = $VALUE;
+      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
+    }
+    return $mappedFeatures;
+  }
+
+  /** 
+   * Retrieve currently logged-in user
+   */
+  final protected function getUser()
+  {
+    return $this->user;
+  }
+
+
+ /**
+ * Retrieve permissions based on expand section
+  */
+  protected static function getExpandPermissions(string $expand): array
+  {
+    $expand_to_perm_mapping = array(
+      'assignedAgents' => [Agent::PERM_READ],
+      'agent' => [Agent::PERM_READ],
+      'agents' => [AccessGroup::PERM_READ],
+      'agentstats' => [AgentStat::PERM_READ],
+      'accessGroups' => [AccessGroup::PERM_READ], 
+      'accessGroup' => [AccessGroup::PERM_READ],
+      'chunk' => [Chunk::PERM_READ],
+      'configSection' => [ConfigSection::PERM_READ],
+      'crackerBinary' => [CrackerBinary::PERM_READ],
+      'crackerBinaryType' => [CrackerBinaryType::PERM_READ],
+      'crackerVersions' => [CrackerBinary::PERM_READ],
+      'hashes' => [Hash::PERM_READ],
+      'hashlist' => [Hashlist::PERM_READ],
+      'hashType' => [HashType::PERM_READ],
+      'healthCheck' => [HealthCheck::PERM_READ],
+      'healthCheckAgents' => [HealthCheckAgent::PERM_READ],
+      'globalPermissionGroup' => [RightGroup::PERM_READ],
+      'task' => [Task::PERM_READ],
+      'tasks' => [Task::PERM_READ],
+      'speeds' => [Speed::PERM_READ],
+      'pretaskFiles' => [FilePretask::PERM_READ, File::PERM_READ],
+      'files' => [FileTask::PERM_READ, File::PERM_READ],
+      'pretasks' => [Supertask::PERM_READ, Pretask::PERM_READ],
+      'user' => [User::PERM_READ],
+      'userMembers' => [User::PERM_READ],
+      'agentMembers' => [Agent::PERM_READ],
+    );
+  
+    if (array_key_exists($expand, $expand_to_perm_mapping) === False) {
+      throw new BadFunctionCallException("Internal error: Expand type '$expand' has no permission mapping implemented in getExpandPermissions()!");
+    }
+    return $expand_to_perm_mapping[$expand];
+  }
+
+  /**
+   * Temponary mapping until src/inc/defines/accessControl.php permissions are no longer used
+   */
+  protected static $acl_mapping = array(
+    DAccessControl::VIEW_HASHLIST_ACCESS[0] => array(Hashlist::PERM_READ),
+    DAccessControl::MANAGE_HASHLIST_ACCESS => array(Hashlist::PERM_READ, Hashlist::PERM_UPDATE, Hashlist::PERM_DELETE,
+                                                    Hash::PERM_READ, Hash::PERM_UPDATE, Hash::PERM_DELETE),
+    DAccessControl::CREATE_HASHLIST_ACCESS => array(Hashlist::PERM_CREATE, Hash::PERM_CREATE),
+
+    DAccessControl::CREATE_SUPERHASHLIST_ACCESS => array(HashlistHashlist::PERM_CREATE, HashlistHashlist::PERM_READ),
+
+    DAccessControl::VIEW_HASHES_ACCESS => array(Hash::PERM_READ),
+    DAccessControl::VIEW_AGENT_ACCESS[0] => array(Agent::PERM_READ, Assignment::PERM_READ),
+
+    DAccessControl::MANAGE_AGENT_ACCESS => array(Agent::PERM_READ, Agent::PERM_UPDATE, Agent::PERM_DELETE,
+                                                // src/inc/defines/agents.php
+                                                AgentStat::PERM_CREATE, AgentStat::PERM_READ, AgentStat::PERM_UPDATE, AgentStat::PERM_DELETE,
+                                                Assignment::PERM_CREATE, Assignment::PERM_READ, Assignment::PERM_UPDATE, Assignment::PERM_DELETE,
+                                              
+                                              ),
+
+    DAccessControl::CREATE_AGENT_ACCESS => array(Agent::PERM_CREATE, Agent::PERM_READ,
+                                                // src/inc/defines/agents.php
+                                                RegVoucher::PERM_CREATE, RegVoucher::PERM_READ, RegVoucher::PERM_UPDATE, RegVoucher::PERM_DELETE),
+
+    DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ, Speed::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ),
+    DAccessControl::RUN_TASK_ACCESS[0] => array(Task::PERM_CREATE, FileTask::PERM_CREATE),
+    DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, FileTask::PERM_CREATE,
+                                                  Task::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ),
+    DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE,
+                                                Chunk::PERM_READ, Chunk::PERM_UPDATE, Chunk::PERM_DELETE,
+                                                // src/inc/defines/tasks.php
+                                                TaskWrapper::PERM_READ, TaskWrapper::PERM_UPDATE, TaskWrapper::PERM_DELETE,
+                                                FileTask::PERM_READ, FileTask::PERM_UPDATE, FileTask::PERM_DELETE),
+
+    DAccessControl::VIEW_PRETASK_ACCESS[0] => array(Pretask::PERM_READ, FilePretask::PERM_READ),
+    DAccessControl::CREATE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_CREATE, FilePretask::PERM_CREATE),
+    DAccessControl::MANAGE_PRETASK_ACCESS => array(Pretask::PERM_READ, Pretask::PERM_UPDATE, Pretask::PERM_DELETE, FilePretask::PERM_UPDATE, FilePretask::PERM_DELETE),
+
+    DAccessControl::VIEW_SUPERTASK_ACCESS[0] => array(Supertask::PERM_READ),
+    DAccessControl::CREATE_SUPERTASK_ACCESS => array(Supertask::PERM_CREATE, Supertask::PERM_READ),
+    DAccessControl::MANAGE_SUPERTASK_ACCESS => array(Supertask::PERM_READ, Supertask::PERM_UPDATE, Supertask::PERM_DELETE),
+
+    DAccessControl::VIEW_FILE_ACCESS[0] => array(File::PERM_READ),
+    DAccessControl::MANAGE_FILE_ACCESS => array(File::PERM_READ, File::PERM_UPDATE, File::PERM_DELETE),
+    DAccessControl::ADD_FILE_ACCESS => array(File::PERM_CREATE, File::PERM_READ),
+
+     // src/inc/defines/cracker.php
+    DAccessControl::CRACKER_BINARY_ACCESS => array(CrackerBinary::PERM_CREATE, CrackerBinary::PERM_READ, CrackerBinary::PERM_UPDATE, CrackerBinary::PERM_DELETE,
+                                                   CrackerBinaryType::PERM_CREATE, CrackerBinaryType::PERM_READ, CrackerBinaryType::PERM_UPDATE, CrackerBinaryType::PERM_DELETE,
+                                                   // src/inc/defines/agents.php
+                                                   AgentBinary::PERM_CREATE, AgentBinary::PERM_READ, AgentBinary::PERM_UPDATE, AgentBinary::PERM_DELETE),
+
+    DAccessControl::SERVER_CONFIG_ACCESS => array(Config::PERM_CREATE, Config::PERM_READ, Config::PERM_UPDATE, Config::PERM_DELETE,
+                                                  ConfigSection::PERM_CREATE, ConfigSection::PERM_READ, ConfigSection::PERM_UPDATE, ConfigSection::PERM_DELETE,
+                                                  // src/inc/defines/preprocessor.php
+                                                  Preprocessor::PERM_CREATE, Preprocessor::PERM_READ, Preprocessor::PERM_UPDATE, Preprocessor::PERM_DELETE,
+                                                  // src/inc/defines/health.php
+                                                  HealthCheck::PERM_CREATE, HealthCheck::PERM_READ, HealthCheck::PERM_UPDATE, HealthCheck::PERM_DELETE,
+                                                  HealthCheckAgent::PERM_CREATE, HealthCheckAgent::PERM_READ, HealthCheckAgent::PERM_UPDATE, HealthCheckAgent::PERM_DELETE,
+                                                  // src/inc/defines/hashlists.php
+                                                  HashType::PERM_CREATE, HashType::PERM_READ, HashType::PERM_UPDATE, HashType::PERM_DELETE),
+
+    DAccessControl::USER_CONFIG_ACCESS => array(User::PERM_CREATE, User::PERM_READ, User::PERM_UPDATE, User::PERM_DELETE, RightGroup::PERM_CREATE, RightGroup::PERM_READ, RightGroup::PERM_UPDATE, RightGroup::PERM_DELETE),
+
+    DAccessControl::MANAGE_ACCESS_GROUP_ACCESS => array(AccessGroup::PERM_CREATE, AccessGroup::PERM_READ, AccessGroup::PERM_UPDATE, AccessGroup::PERM_DELETE),
+
+    // src/inc/defines/accessControl.php
+    DAccessControl::PUBLIC_ACCESS => array(LogEntry::PERM_READ),
+
+    // src/inc/defines/notifications.php
+    DAccessControl::LOGIN_ACCESS => array(NotificationSetting::PERM_CREATE, NotificationSetting::PERM_READ, NotificationSetting::PERM_UPDATE, NotificationSetting::PERM_DELETE),
+  );
+
+  /** 
+   * Convert Database value to JSON object value 
+   */
+  protected static function db2json(array $feature, mixed $val): mixed
+  {
+    if ($feature['type'] == 'bool') {
+      $obj = ($val == "1") ? True : False;
+    } elseif ($feature['type'] == 'dict') {
+      $obj = json_decode($val, true, 512, JSON_OBJECT_AS_ARRAY);
+      // During encoding of the data, the data is saved as an empty array
+      // An empty array is something different in json and in python.
+      // The following code casts the empty array to an empty 'object'
+      // which will be intepreted by python and json correctly as dict or object.
+      if (empty($obj)) {
+        $obj = (object)[];
+      }
+    } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
+      $obj = array_map('intval', explode(",", $val));
+    } else {
+      // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
+      $obj = $val;
+    }
+    return $obj;
+  }
+
+  /** 
+   * Convert JSON object value to DB insert value, supported by DBA
+   */
+  protected static function json2db(array $feature, mixed $obj): mixed
+  {
+    if ($feature['type'] == 'bool') {
+      $val = ($obj) ? "1" : "0";
+    } elseif ($feature['type'] == 'int' && is_null($obj)){
+      $val = $obj;
+    } elseif (str_starts_with($feature['type'], 'str')) {
+      $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
+    } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
+        $val = implode(",", $obj);
+    } else {
+      $val = strval($obj);
+    }
+    return $val;
+  }
+
+  /** 
+   * Convert JSON object value to DB insert value, supported by DBA
+   */
+  protected function obj2Array(mixed $obj)
+  {
+    // Convert values to JSON supported types
+    $features = $obj->getFeatures();
+    $kv = $obj->getKeyValueDict();
+
+    $item = [];
+
+    $apiClass = $this->container->get('classMapper')->get(get_class($obj));
+    $item['_id'] = $obj->getId();
+    $item['_self'] = $this->routeParser->urlFor($apiClass . ':getOne', ['id' => $item['_id']]);
+
+    foreach ($features as $NAME => $FEATURE) {
+      // If a attribute is set to private, it should be hidden and not returned.
+      // Example of this is the password hash.
+      if ($FEATURE['private'] === true) {
+        continue;
+      } else {
+        $item[$FEATURE['alias']] = $apiClass::db2json($FEATURE, $kv[$NAME]);
+      }
+    }
+    return $item;
+  }
+
+  /**
+   * Quirck to resolve objects via ManyToMany relation table 
+   */
+  private function joinQuery(mixed $objFactory, DBA\QueryFilter $qF, DBA\JoinFilter $jF): array
+  {
+    $joined = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+    $objects = $joined[$objFactory->getModelName()];
+
+    $ret = [];
+    foreach ($objects as $object) {
+      array_push($ret, $this->obj2Array($object));
+    }
+
+    return $ret;
+  }
+
+  /** 
+   * Expands object items
+   */
+  protected function object2Array(mixed $object, array $expand)
+  {
+    $item = $this->obj2Array($object);
+    $features = $this->getFeatures();
+
+    /* TODO Refactor expansions logic to class objects */
+    foreach ($expand as $NAME) {
+      switch ($NAME) {
+        case 'agent':
+          $obj = Factory::getAgentFactory()->get($item['agentId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'agents':
+          $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'agentstats':
+          $qFs = [];
+          $qFs[] = new QueryFilter(AgentStat::AGENT_ID, $item['agentId'], "=");
+          $agentstats = Factory::getAgentStatFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $agentstats);
+          break;
+        case 'accessGroups':
+          if (get_class($object) == User::class) {
+            /* M2M via AccessGroupUser */
+            $qF = new QueryFilter(AccessGroupUser::USER_ID, $item['id'], "=", Factory::getAccessGroupUserFactory());
+            $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+          } else {
+            /* M2M via AccessGroupAgent */
+            $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $item[Agent::AGENT_ID], "=", Factory::getAccessGroupAgentFactory());
+            $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
+          }
+          $item[$NAME] = $this->joinQuery(Factory::getAccessGroupFactory(), $qF, $jF);
+          break;
+        case 'accessGroup':
+          $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'assignedAgents':
+          /* M2M via Assignment */
+          $qF = new QueryFilter(Assignment::TASK_ID, $item[Task::TASK_ID], "=", Factory::getAssignmentFactory());
+          $jF = new JoinFilter(Factory::getAssignmentFactory(), Agent::AGENT_ID, Assignment::AGENT_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
+          break;
+        case 'chunk':
+          if ($item['chunkId'] === null) {
+            /* Chunk expansions are optional, hence the chunk object could be null */
+            $item[$NAME] = null;
+          } else {
+            $obj = Factory::getChunkFactory()->get($item['chunkId']);
+            $item[$NAME] = $this->obj2Array($obj);
+          }
+          break;
+        case 'configSection':
+          $obj = Factory::getConfigSectionFactory()->get($item['configSectionId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'crackerBinary':
+          $obj = Factory::getCrackerBinaryFactory()->get($item['crackerBinaryId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'crackerBinaryType':
+          $obj = Factory::getCrackerBinaryTypeFactory()->get($item['crackerBinaryTypeId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'crackerVersions':
+          $qFs = [];
+          $qFs[] = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $item['crackerBinaryTypeId'], "=");
+          $hashes = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $hashes);
+          break;
+        case 'hashes':
+          $qFs = [];
+          $qFs[] = new QueryFilter(Hash::HASHLIST_ID, $item['hashlistId'], "=");
+          $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $hashes);
+          break;
+        case 'hashlist':
+          if (get_class($object) == Task::class) {
+            // Tasks are bit of a specialcase, as in the task the hashlist is not directly available.
+            // To get this information we need to join the task with the Hashlist and the TaskWrapper to get the Hashlist.
+            $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $item['taskWrapperId'], "=", Factory::getTaskWrapperFactory());
+            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID);
+            $joined = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+            // Now cast the database data to an object.
+            $obj = reset($joined[Factory::getHashlistFactory()->getModelName()]);
+          } else {
+            // Used in expanding hashes.
+            $obj = Factory::getHashListFactory()->get($item['hashlistId']);
+          }
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'hashType':
+          $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'healthCheck':
+          $obj = Factory::getHealthCheckFactory()->get($item['healthCheckId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'healthCheckAgents':
+          $qFs = [];
+          $qFs[] = new QueryFilter(HealthCheck::HEALTH_CHECK_ID, $item['healthCheckId'], "=");
+          $objs = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
+          break;
+        case 'globalPermissionGroup':
+          $obj = Factory::getRightGroupFactory()->get($item['globalPermissionGroupId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'task':
+          $obj = Factory::getTaskFactory()->get($item['taskId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
+        case 'tasks':
+          $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $item['hashlistId'], "=", Factory::getTaskWrapperFactory());
+          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+          /** @var $objs Task[] */
+          $joinedTasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+          $objs = $joinedTasks[Factory::getTaskFactory()->getModelName()];
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
+          break;
+        case 'speeds':
+          $qFs = [];
+          $qFs[] = new QueryFilter(Speed::TASK_ID, $item['taskId'], "=");
+          $objs = Factory::getSpeedFactory()->filter([Factory::FILTER => $qFs]);
+          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
+          break;
+        case 'pretaskFiles':
+          /* M2M via FilePretask */
+          $qF = new QueryFilter(FilePretask::PRETASK_ID, $item[Pretask::PRETASK_ID], "=", Factory::getFilePretaskFactory());
+          $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
+          break;
+        case 'files':
+          /* M2M via Filetask */
+          $qF = new QueryFilter(FileTask::TASK_ID, $item[Task::TASK_ID], "=", Factory::getFileTaskFactory());
+          $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
+          break;
+        case 'pretasks':
+          /* M2M via SupertaskPretask */
+          $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $item[Supertask::SUPERTASK_ID], "=", Factory::getSupertaskPretaskFactory());
+          $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
+          break;
+        case 'user':
+          if (get_class($object) == RightGroup::class) {
+            $mapped_id = $features[RightGroup::RIGHT_GROUP_ID]['alias'];
+            $qF = new QueryFilter(User::RIGHT_GROUP_ID, $item[$mapped_id], "=");
+            $objs = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
+            $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
+          } elseif (get_class($object) == NotificationSetting::class) {
+            $obj = Factory::getUserFactory()->get($item['userId']);
+            $item[$NAME] = $this->obj2Array($obj);
+          }
+          break;
+        case 'userMembers':
+          /* M2M via AccessGroupUser */
+          $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $item[AccessGroup::ACCESS_GROUP_ID], "=", Factory::getAccessGroupUserFactory());
+          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getUserFactory(), $qF, $jF);
+          break;
+        case 'agentMembers':
+          /* M2M via AccessGroupAgent */
+          $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $item[AccessGroupAgent::ACCESS_GROUP_ID], "=", Factory::getAccessGroupAgentFactory());
+          $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
+          $item[$NAME] = $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
+          break;
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");
+      }
+    }
+
+    $expandLeft = array_diff($expand, array_keys($item));
+    if (sizeof($expandLeft) > 0) {
+      /* This should never happen, since valid parameter checking is done pre-flight 
+       * in makeExpandables and assignment should be done for every expansion 
+       */
+      throw new BadFunctionCallException("Internal error: Expansion(s) '" .  join(',', $expandLeft) . "' not implemented!");
+    }
+
+    /* Ensure sorted, for easy debugging of fields */
+    ksort($item);
+
+    return $item;
+  }
+
+
+  /**
+   * Uniform conversion of php array to JSON output 
+   */
+  protected function ret2json(array $result): string
+  {
+    return json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . PHP_EOL;
+  }
+
+  /**
+   * Helper conversion of single object to JSON string
+   */
+  protected function object2JSON(object $object): string
+  {
+    $item = $this->object2Array($object, []);
+    return $this->ret2json($item);
+  }
+
+  /**
+   * Validate incoming data
+   */
+  protected function validateData(array $data, array $mappedFeatures)
+  {
+    foreach ($data as $KEY => $VALUE) {
+      // Validate if field can be left empty or not
+      if (($mappedFeatures[$KEY]['null'] ?? True) == False) {
+        if (is_null($VALUE) == True) {
+          throw new HttpErrorException("Key '$KEY' is cannot be null.");
+        }
+      } else {
+        if (is_null($VALUE) == True) {
+          // Key can be null and is null, so skip type checking.
+          continue;
+        }
+      }
+
+      // Perform type mapping
+      if ($mappedFeatures[$KEY]['type'] == 'bool') {
+        if (is_bool($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type boolean");
+        }
+        // Int
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'int')) {
+        // TODO: int32, int64 range validation
+        if (is_integer($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type integer");
+        }
+        // Str
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
+        if (is_string($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type string");
+        }
+        // TODO: Length validation
+        // Array
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'array')) {
+        if (is_array($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type array");
+        }
+        // Array[Int]
+        if ($mappedFeatures[$KEY]['subtype'] == 'int') {
+          if (in_array(false, array_map('is_integer', $VALUE)) == true) {
+            throw new HttpErrorException("Key '$KEY' array contains non-integer values");
+          }
+        }
+        // Dict
+      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'dict')) {
+        if (is_array($VALUE) == False) {
+          throw new HttpErrorException("Key '$KEY' is not of type dict");
+        }
+        // Dict[Bool]
+        if ($mappedFeatures[$KEY]['subtype'] == 'bool') {
+          if (in_array(false, array_map('is_bool', $VALUE)) == true) {
+            throw new HttpErrorException("Key '$KEY' dict contains non-boolean values");
+          }
+        }
+      } else {
+        throw new HttpErrorException("Typemapping error for key '$KEY' ");
+      }
+
+      // Validate values limited by choices
+      if (is_array($mappedFeatures[$KEY]['choices'])) {
+        if (array_key_exists($VALUE, $mappedFeatures[$KEY]['choices']) == false) {
+          throw new HttpErrorException("Key '$KEY' value is not valid, choices=[" . 
+                                       join(",", array_keys($mappedFeatures[$KEY]['choices'])) .
+                                       "], choices_details=['" . 
+                                       join("', '", array_values($mappedFeatures[$KEY]['choices'])) . "']");
+        }
+      }
+    }
+  }
+
+  /**
+   * Check for valid expand parameters
+   */
+  protected function makeExpandables(Request $request, array $expandables): array
+  {
+    $expandable = $expandables;
+    $expands = [];
+
+    $data = $request->getParsedBody();
+    if (!is_null($data)) {
+      $bodyExpand_raw = (array_key_exists('expand', $data)) ? $data['expand'] : [];
+    } else {
+      $bodyExpand_raw = [];
+    }
+
+    $queryExpand = (array_key_exists('expand', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['expand']) : [];
+
+    if (is_string($bodyExpand_raw)) {
+      $bodyExpand = [$bodyExpand_raw];
+    } elseif (is_null($bodyExpand_raw)) {
+      $bodyExpand = [];
+    } else {
+      $bodyExpand = $bodyExpand_raw;
+    }
+    $mergedExpands = array_merge($bodyExpand, $queryExpand);
+
+    foreach ($mergedExpands as $expand) {
+      if (($key = array_search($expand, $expandable)) !== false) {
+        unset($expandable[$key]);
+      } else {
+        throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($expandables)) . ")");
+      }
+    }
+
+    /* Validate expand parameters for required permissions */
+    $required_perms = [];
+    foreach ($mergedExpands as $expand) {
+        array_push($required_perms, ...self::getExpandPermissions($expand));
+    }
+    if ($this->validatePermissions($required_perms) === FALSE) {
+      throw new HttpForbiddenException($request, 'Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
+    }
+
+    return [$expandable, $mergedExpands];
+  }
+
+  /**
+   * Find primary key for DBA object
+   */
+  private function getPrimaryKey(): string
+  {
+    $features = $this->getFeatures();
+    # Word-around required since getPrimaryKey is not static in dba/models/*.php
+    foreach($features as $key => $value) {
+      if ($value['pk'] == True) {
+        return $key;
+      }
+    }
+  }
+
+  private function getFilterParameters(Request $request, string $key): array {
+    $data = $request->getParsedBody();
+    if (!is_null(($data))) {
+      $bodyFilter = (array_key_exists($key, $data)) ? $data[$key] : [];
+    } else {
+      $bodyFilter = [];
+    }
+
+    $queryFilter = (array_key_exists($key, $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()[$key]) : [];
+    $mergedFilters = array_merge($bodyFilter, $queryFilter);
+
+    return $mergedFilters;
+  }
+
+  /**
+   * Check for valid filter parameters and build QueryFilter
+   */
+  protected function makeFilter(Request $request, array $features): array
+  {
+    $qFs = [];
+
+    $mergedFilters = $this->getFilterParameters($request, 'filter');
+    foreach ($mergedFilters as $filter) {
+      // TODO: Add sanity checking
+      if (preg_match('/^(?P<key>[_a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
+        // Special filtering of _id to use for uniform access to model primary key
+        $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+
+        if (array_key_exists($cast_key, $features)) {
+          // TODO: cast value
+          if ($features[$cast_key]['type'] == 'bool') {
+            $val = filter_var($matches['value'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            if (is_null($val)) {
+              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
+            }
+          } else {
+            $val = $matches['value'];
+          }
+          // We need to remap any aliased key to the key as it appears in the database.
+          $remappedKey = $features[$cast_key]['dbname'];
+          $qFs[] = new QueryFilter($remappedKey, $val, $matches['operator']);
+        } else {
+          throw new HTException("Filter parameter '" . $filter . "' is not valid");
+        }
+      } else {
+        throw new HTException("Filter parameter '" . $filter . "' is not valid");
+      }
+    }
+
+    return $qFs;
+  }
+
+
+  /**
+   * Check for valid ordering parameters and build QueryFilter
+   */
+  protected function makeOrderFilter(Request $request, array $features): array
+  {
+    $oFs = [];
+
+    $mergedOrdering = $this->getFilterParameters($request, 'ordering');
+    foreach ($mergedOrdering as $order) {
+      if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
+        // Special filtering of _id to use for uniform access to model primary key
+        $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+        if (array_key_exists($cast_key, $features)) {
+          $remappedKey = $features[$cast_key]['dbname'];
+          $oFs[] = new OrderFilter($remappedKey, ($matches['operator'] == '-') ? "DESC" : "ASC");
+        } else {
+          throw new HTException("Ordering parameter '" . $order . "' is not valid");
+        }
+      } else {
+        throw new HTException("Ordering parameter '" . $order . "' is not valid");
+      }
+    }
+
+    return $oFs;
+  }
+
+
+  /**
+   * Validate if user is allowed to access hashlist
+   */
+  protected function validateHashlistAccess(Request $request, User $user, String $hashlistId): Hashlist
+  {
+    // TODO: Fix permissions
+    if (!AccessControl::getInstance($user)->hasPermission(DAccessControl::MANAGE_HASHLIST_ACCESS)) {
+      throw new HttpForbiddenException($request, "No '" . DAccessControl::getDescription(DAccessControl::MANAGE_HASHLIST_ACCESS) . "' permission");
+    }
+
+    try {
+      $hashlist = HashlistUtils::getHashlist($hashlistId);
+    } catch (HTException $ex) {
+      throw new HttpNotFoundException($request, $ex->getMessage());
+    }
+    if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
+      throw new HttpForbiddenException($request, "No access to hashlist!");
+    }
+
+    return $hashlist;
+  }
+
+  /** 
+   * Validate permissions
+   */
+  protected function validatePermissions(array $required_perms): bool {
+    // Retrieve permissions from RightGroup part of the User
+    $group = Factory::getRightGroupFactory()->get($this->user->getRightGroupId());
+    
+  
+    if ($group->getPermissions() == 'ALL') {
+      // Special (legacy) case for administative access, enable all available permissions
+      $all_perms = array_keys(self::$acl_mapping);
+      $rightgroup_perms = array_combine($all_perms, array_fill(0,count($all_perms), true));
+    } else {
+      $rightgroup_perms = json_decode($group->getPermissions(), true);
+    }
+
+    // Validate if no undefined permissions are set in $acl_mapping
+    assert(count(array_diff(array_keys($rightgroup_perms), array_keys(self::$acl_mapping))) == 0);
+
+    // Create listing of available permissions for user
+    $user_available_perms = array();
+    foreach($rightgroup_perms as $rightgroup_perm => $permission_set) {
+      if ($permission_set) {
+        $user_available_perms = array_unique(array_merge($user_available_perms, self::$acl_mapping[$rightgroup_perm]));
+      }
+    };
+
+    // Sort to display values in a unified format for user and debugging
+    sort($required_perms);
+    sort($user_available_perms);
+
+    // Find if all permissions are matched
+    $missing_permissions = array_diff($required_perms, $user_available_perms);
+    if (count($missing_permissions) > 0) {
+      $this->permissionErrors = array("No '" . join(",", $missing_permissions) . "' permission(s). [required_permissions='" .join(", ", $required_perms). "', user_permissions='" . join(", ", $user_available_perms) . "']");
+      return FALSE;
+    } else {
+      $this->permissionErrors = array();
+      return TRUE;
+    }
+  }
+
+  /**
+   *  Common features for all requests, like setting user and checking basic permissions
+   */
+  protected function preCommon(Request $request): void
+  {
+    $userId = $request->getAttribute(('userId'));
+    $this->user = UserUtils::getUser($userId);
+
+    # 'Innitiate' AccessControl class, by requesting instance with parameter of logged-in user.
+    # This will cause the AccessControle class to initiate it's static 'instance' parameter,
+    # which is in turn used at later stages (e.g. src/inc/utils/NotificationUtils.class.php) to
+    # request an object on which authentication takes place.
+    #
+    # At some point we might want to remove this strange behaviour always pass the $user object
+    # to the AccessControl class when requested. 
+    AccessControl::getInstance($this->user);
+
+    $routeContext = RouteContext::fromRequest($request);
+    $this->routeParser = $routeContext->getRouteParser();
+    
+    try {
+      $required_perms = $this->getRequiredPermissions($request->getMethod());  
+    } catch (HTException $e) {
+      # Annotate error message, with suitable candidates
+      throw new HTException($e->getMessage() . 
+                            "(valid methods are for model are: " . join(",", $this->getAvailableMethods()) . ")");  
+    }
+
+
+    if ($this->validatePermissions($required_perms) === FALSE) {
+      throw new HttpForbiddenException($request, join('||', $this->permissionErrors));
+    }
+  }
+
+  /* 
+   * Return requested parameter, prioritize query parameter over inline payload parameter 
+   */
+  protected function getParam(Request $request, string $param, int $default): int
+  {
+    $queryParams = $request->getQueryParams();
+    $bodyParams = $request->getParsedBody();
+
+    // Check query parameters and make sure it is an array
+    if (is_array($queryParams) && array_key_exists($param, $queryParams)) {
+      return intval($queryParams[$param]);
+    }
+    // Check body parameters and make sure it is an array
+    elseif (is_array($bodyParams) && array_key_exists($param, $bodyParams)) {
+      return intval($bodyParams[$param]);
+    // Return default value if parameter not found
+    } else {
+      return $default;
+    }
+  }
+
+  /**
+   * Override-able activated methods 
+   */
+  static public function getAvailableMethods(): array
+  {
+    return ["GET", "POST", "PATCH", "DELETE"];
+  }
+}

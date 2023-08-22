@@ -150,7 +150,6 @@ class HashtopolisConnector(object):
             else:
                 payload['ordering'] = ordering
 
-        print(payload)
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, [200], "Filtering failed")
         return self.resp_to_json(r).get('values')
@@ -573,7 +572,7 @@ class Voucher(Model, uri="/ui/vouchers"):
 
 class FileImport(HashtopolisConnector):
     def __init__(self):
-        super().__init__("/ui/files/import", HashtopolisConfig())
+        super().__init__("/helper/importFile", HashtopolisConfig())
 
     def __repr__(self):
         return self._self
@@ -606,10 +605,12 @@ class FileImport(HashtopolisConnector):
 
 class Meta(HashtopolisConnector):
     def __init__(self):
-        super().__init__("/ui/openapi.json", HashtopolisConfig())
+        super().__init__("/openapi.json", HashtopolisConfig())
 
     def get_meta(self):
+        self.authenticate()
         uri = self._api_endpoint + self._model_uri
+        print(uri)
         r = requests.get(uri)
         self.validate_status_code(r, [200], "Unable to retrieve Meta definitions")
         return self.resp_to_json(r)
