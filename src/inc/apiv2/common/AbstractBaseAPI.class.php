@@ -331,8 +331,7 @@ abstract class AbstractBaseAPI
    */
   protected function filterQuery(mixed $objFactory, DBA\QueryFilter $qF): array
   {
-    $joined = $objFactory->filter([Factory::FILTER => $qF]);
-    $objects = $joined[$objFactory->getModelName()];
+    $objects = $objFactory->filter([Factory::FILTER => $qF]);
 
     $ret = [];
     foreach ($objects as $object) {
