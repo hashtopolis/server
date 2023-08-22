@@ -610,7 +610,6 @@ class Meta(HashtopolisConnector):
     def get_meta(self):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
-        print(uri)
         r = requests.get(uri)
         self.validate_status_code(r, [200], "Unable to retrieve Meta definitions")
         return self.resp_to_json(r)
