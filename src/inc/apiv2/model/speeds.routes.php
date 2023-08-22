@@ -1,6 +1,7 @@
 <?php
-use DBA\Speed;
 use DBA\Factory;
+
+use DBA\Speed;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -30,6 +31,18 @@ class SpeedAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return [ 'agent', 'task' ];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof Speed);
+      switch($expand) {
+        case 'agent':
+          $obj = Factory::getAgentFactory()->get($object->getAgentId());
+          return $this->obj2Array($obj);
+        case 'task':
+          $obj = Factory::getTaskFactory()->get($object->getTaskId());
+          return $this->obj2Array($obj);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

@@ -1,8 +1,12 @@
 <?php
 use DBA\Factory;
-use DBA\User;
-use DBA\QueryFilter;
+use DBA\JoinFilter;
 use DBA\OrderFilter;
+use DBA\QueryFilter;
+
+use DBA\AccessGroup;
+use DBA\AccessGroupUser;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,6 +27,19 @@ class UserAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["accessGroups", "globalPermissionGroup"];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof User);
+      switch($expand) {
+        case 'accessGroups':
+          $qF = new QueryFilter(AccessGroupUser::USER_ID, $object->getId(), "=", Factory::getAccessGroupUserFactory());
+          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
+          return $this->joinQuery(Factory::getAccessGroupFactory(), $qF, $jF);
+      case 'globalPermissionGroup':
+          $obj = Factory::getRightGroupFactory()->get($object->getRightGroupId());
+          return $this->obj2Array($obj);   
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

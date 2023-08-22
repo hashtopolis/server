@@ -1,8 +1,9 @@
 <?php
 use DBA\Factory;
-use DBA\File;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\File;
 use Middlewares\Utils\HttpErrorException;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -23,6 +24,15 @@ class FileAPI extends AbstractModelAPI {
 
     public function getExpandables(): array {
       return ["accessGroup"];
+    }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof File);
+      switch($expand) {
+        case 'accessGroup':
+          $obj = Factory::getAccessGroupFactory()->get($object->getAccessGroupId());
+          return $this->obj2Array($obj);
+      }
     }
 
     protected function getFilterACL(): array {

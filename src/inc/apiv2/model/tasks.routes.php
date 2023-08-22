@@ -1,6 +1,16 @@
 <?php
 use DBA\Factory;
+use DBA\JoinFilter;
+use DBA\QueryFilter;
+
+use DBA\Agent;
+use DBA\Assignment;
+use DBA\File;
+use DBA\FileTask;
+use DBA\Hashlist;
+use DBA\Speed;
 use DBA\Task;
+use DBA\TaskWrapper;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -21,6 +31,35 @@ class TaskAPI extends AbstractModelAPI {
       return ["assignedAgents", "crackerBinary", "crackerBinaryType", "hashlist", "speeds", "files"];
     }
 
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof Task);
+      switch($expand) {
+        case 'assignedAgents':
+          $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=", Factory::getAssignmentFactory());
+          $jF = new JoinFilter(Factory::getAssignmentFactory(), Agent::AGENT_ID, Assignment::AGENT_ID);
+          return $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
+        case 'crackerBinary':
+          $obj = Factory::getCrackerBinaryFactory()->get($object->getCrackerBinaryId());
+          return $this->obj2Array($obj);
+        case 'crackerBinaryType':
+          $obj = Factory::getCrackerBinaryTypeFactory()->get($object->getCrackerBinaryTypeId());
+          return $this->obj2Array($obj);
+        case 'hashlist':
+          // Tasks are bit of a special case, as in the task the hashlist is not directly available.
+          // To get this information we need to join the task with the Hashlist and the TaskWrapper to get the Hashlist.
+          $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getTaskWrapperId(), "=", Factory::getTaskWrapperFactory());
+          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID);
+          return $this->joinQuery(Factory::getHashlistFactory(), $qF, $jF);
+        case 'speeds':
+          $qF = new QueryFilter(Speed::TASK_ID, $object->getId(), "=");
+          return $this->filterQuery(Factory::getSpeedFactory(), $qF);
+        case 'files':
+          $qF = new QueryFilter(FileTask::TASK_ID, $object->getId(), "=", Factory::getFileTaskFactory());
+          $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
+          return $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
+      }
+    }  
+    
     protected function getFilterACL(): array {
       return [];
     }

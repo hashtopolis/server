@@ -1,6 +1,10 @@
 <?php
-use DBA\TaskWrapper;
 use DBA\Factory;
+use DBA\JoinFilter;
+use DBA\QueryFilter;
+
+use DBA\Task;
+use DBA\TaskWrapper;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -28,6 +32,19 @@ class TaskWrappersAPI extends AbstractModelAPI {
 
     public function getExpandables(): array {
       return ['accessGroup', 'tasks'];
+    }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof TaskWrapper);
+      switch($expand) {
+        case 'accessGroup':
+          $obj = Factory::getAccessGroupFactory()->get($object->getAccessGroupId());
+          return $this->obj2Array($obj);
+        case 'tasks':
+          $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskWrapperFactory());
+          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+          return $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);    
+      }
     }
 
     protected function getFilterACL(): array {

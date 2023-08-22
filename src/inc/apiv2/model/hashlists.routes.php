@@ -1,7 +1,13 @@
 <?php
-use DBA\Hashlist;
-use DBA\Factory;
 use DBA\ContainFilter;
+use DBA\JoinFilter;
+use DBA\Factory;
+use DBA\QueryFilter;
+
+use DBA\Hash;
+use DBA\Hashlist;
+use DBA\Task;
+use DBA\TaskWrapper;
 
 use Middlewares\Utils\HttpErrorException;
 
@@ -24,6 +30,25 @@ class HashlistAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["accessGroup", "hashType", "hashes", "tasks"];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof Hashlist);
+      switch($expand) {
+        case 'accessGroup':
+          $obj = Factory::getAccessGroupFactory()->get($object->getAccessGroupId());
+          return $this->obj2Array($obj);
+        case 'hashType':
+          $obj = Factory::getHashTypeFactory()->get($object->getHashTypeId());
+          return $this->obj2Array($obj);
+        case 'hashes':
+          $qF = new QueryFilter(Hash::HASHLIST_ID, $object->getId(), "=");
+          return $this->filterQuery(Factory::getHashFactory(), $qF);
+        case 'tasks':
+          $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $object->getHashTypeId(), "=", Factory::getTaskWrapperFactory());
+          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+          return $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getUser())))];

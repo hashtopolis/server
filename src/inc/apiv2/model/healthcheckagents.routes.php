@@ -1,5 +1,6 @@
 <?php
 use DBA\Factory;
+use DBA\HealthCheck;
 use DBA\HealthCheckAgent;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -24,6 +25,18 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ['agent', 'healthCheck'];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof HealthCheckAgent);
+      switch($expand) {
+        case 'agent':
+          $obj = Factory::getAgentFactory()->get($object->getAgentId());
+          return $this->obj2Array($obj);      
+        case 'healthCheck':
+          $obj = Factory::getHealthCheckFactory()->get($object->getHealthCheckId());
+          return $this->obj2Array($obj);
+      }
+    }  
  
     protected function getFilterACL(): array {
       return [];

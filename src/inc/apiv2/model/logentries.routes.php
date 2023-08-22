@@ -1,8 +1,9 @@
 <?php
 use DBA\Factory;
-use DBA\LogEntry;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\LogEntry;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -18,10 +19,6 @@ class LogEntryAPI extends AbstractModelAPI {
 
     protected function getFactory(): object {
       return Factory::getLogEntryFactory();
-    }
-
-    public function getExpandables(): array {
-      return [];
     }
 
     protected function getFilterACL(): array {

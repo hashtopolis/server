@@ -1,8 +1,9 @@
 <?php
-use DBA\AgentBinary;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\AgentBinary;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -22,10 +23,6 @@ class AgentBinaryAPI extends AbstractModelAPI {
 
     protected function getFactory(): object {
       return Factory::getAgentBinaryFactory();
-    }
-
-    public function getExpandables(): array {
-      return [];
     }
 
     protected function getFilterACL(): array {

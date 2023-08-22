@@ -1,5 +1,7 @@
 <?php
 use DBA\Factory;
+use DBA\QueryFilter;
+
 use DBA\HealthCheck;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -22,6 +24,18 @@ class HealthCheckAPI extends AbstractModelAPI {
       return ['crackerBinary', 'healthCheckAgents'];
     }
  
+    protected function doExpand($object, string $expand): mixed {
+      assert($object instanceof HealthCheck);
+      switch($expand) {
+        case 'crackerBinary':
+          $obj = Factory::getCrackerBinaryFactory()->get($object->getCrackerBinaryId());
+          return $this->obj2Array($obj);
+        case 'healthCheckAgents':
+          $qF = new QueryFilter(HealthCheck::HEALTH_CHECK_ID, $object->getId(), "=");
+          return $this->filterQuery(Factory::getHealthCheckAgentFactory(), $qF);
+      }
+    }  
+    
     protected function getFilterACL(): array {
       return [];
     }

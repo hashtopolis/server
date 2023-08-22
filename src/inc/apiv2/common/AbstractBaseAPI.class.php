@@ -111,6 +111,19 @@ abstract class AbstractBaseAPI
     return $this->user;
   }
 
+  /** 
+   * Available 'expand' parameters on $object
+   */
+  public function getExpandables(): array {
+    return [];
+  }
+
+
+  /** 
+   * Process $expand on $object
+   */
+  protected function doExpand(object $object, string $expand): mixed {
+  }
 
  /**
  * Retrieve permissions based on expand section
@@ -300,7 +313,7 @@ abstract class AbstractBaseAPI
   /**
    * Quirck to resolve objects via ManyToMany relation table 
    */
-  private function joinQuery(mixed $objFactory, DBA\QueryFilter $qF, DBA\JoinFilter $jF): array
+  protected function joinQuery(mixed $objFactory, DBA\QueryFilter $qF, DBA\JoinFilter $jF): array
   {
     $joined = $objFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $objects = $joined[$objFactory->getModelName()];
@@ -313,185 +326,36 @@ abstract class AbstractBaseAPI
     return $ret;
   }
 
+  /**
+   * Quirck to resolve objects via ForeignKey relation table 
+   */
+  protected function filterQuery(mixed $objFactory, DBA\QueryFilter $qF): array
+  {
+    $joined = $objFactory->filter([Factory::FILTER => $qF]);
+    $objects = $joined[$objFactory->getModelName()];
+
+    $ret = [];
+    foreach ($objects as $object) {
+      array_push($ret, $this->obj2Array($object));
+    }
+
+    return $ret;
+  }
+
+  
   /** 
    * Expands object items
    */
   protected function object2Array(mixed $object, array $expand)
   {
     $item = $this->obj2Array($object);
-    $features = $this->getFeatures();
 
-    /* TODO Refactor expansions logic to class objects */
     foreach ($expand as $NAME) {
-      switch ($NAME) {
-        case 'agent':
-          $obj = Factory::getAgentFactory()->get($item['agentId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'agents':
-          $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'agentstats':
-          $qFs = [];
-          $qFs[] = new QueryFilter(AgentStat::AGENT_ID, $item['agentId'], "=");
-          $agentstats = Factory::getAgentStatFactory()->filter([Factory::FILTER => $qFs]);
-          $item[$NAME] = array_map(array($this, 'obj2Array'), $agentstats);
-          break;
-        case 'accessGroups':
-          if (get_class($object) == User::class) {
-            /* M2M via AccessGroupUser */
-            $qF = new QueryFilter(AccessGroupUser::USER_ID, $item['id'], "=", Factory::getAccessGroupUserFactory());
-            $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
-          } else {
-            /* M2M via AccessGroupAgent */
-            $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $item[Agent::AGENT_ID], "=", Factory::getAccessGroupAgentFactory());
-            $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
-          }
-          $item[$NAME] = $this->joinQuery(Factory::getAccessGroupFactory(), $qF, $jF);
-          break;
-        case 'accessGroup':
-          $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'assignedAgents':
-          /* M2M via Assignment */
-          $qF = new QueryFilter(Assignment::TASK_ID, $item[Task::TASK_ID], "=", Factory::getAssignmentFactory());
-          $jF = new JoinFilter(Factory::getAssignmentFactory(), Agent::AGENT_ID, Assignment::AGENT_ID);
-          $item[$NAME] = $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
-          break;
-        case 'chunk':
-          if ($item['chunkId'] === null) {
-            /* Chunk expansions are optional, hence the chunk object could be null */
-            $item[$NAME] = null;
-          } else {
-            $obj = Factory::getChunkFactory()->get($item['chunkId']);
-            $item[$NAME] = $this->obj2Array($obj);
-          }
-          break;
-        case 'configSection':
-          $obj = Factory::getConfigSectionFactory()->get($item['configSectionId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'crackerBinary':
-          $obj = Factory::getCrackerBinaryFactory()->get($item['crackerBinaryId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'crackerBinaryType':
-          $obj = Factory::getCrackerBinaryTypeFactory()->get($item['crackerBinaryTypeId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'crackerVersions':
-          $qFs = [];
-          $qFs[] = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $item['crackerBinaryTypeId'], "=");
-          $hashes = Factory::getCrackerBinaryFactory()->filter([Factory::FILTER => $qFs]);
-          $item[$NAME] = array_map(array($this, 'obj2Array'), $hashes);
-          break;
-        case 'hashes':
-          $qFs = [];
-          $qFs[] = new QueryFilter(Hash::HASHLIST_ID, $item['hashlistId'], "=");
-          $hashes = Factory::getHashFactory()->filter([Factory::FILTER => $qFs]);
-          $item[$NAME] = array_map(array($this, 'obj2Array'), $hashes);
-          break;
-        case 'hashlist':
-          if (get_class($object) == Task::class) {
-            // Tasks are bit of a specialcase, as in the task the hashlist is not directly available.
-            // To get this information we need to join the task with the Hashlist and the TaskWrapper to get the Hashlist.
-            $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $item['taskWrapperId'], "=", Factory::getTaskWrapperFactory());
-            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID);
-            $joined = Factory::getHashlistFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-            // Now cast the database data to an object.
-            $obj = reset($joined[Factory::getHashlistFactory()->getModelName()]);
-          } else {
-            // Used in expanding hashes.
-            $obj = Factory::getHashListFactory()->get($item['hashlistId']);
-          }
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'hashType':
-          $obj = Factory::getHashTypeFactory()->get($item['hashTypeId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'healthCheck':
-          $obj = Factory::getHealthCheckFactory()->get($item['healthCheckId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'healthCheckAgents':
-          $qFs = [];
-          $qFs[] = new QueryFilter(HealthCheck::HEALTH_CHECK_ID, $item['healthCheckId'], "=");
-          $objs = Factory::getHealthCheckAgentFactory()->filter([Factory::FILTER => $qFs]);
-          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
-          break;
-        case 'globalPermissionGroup':
-          $obj = Factory::getRightGroupFactory()->get($item['globalPermissionGroupId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'task':
-          $obj = Factory::getTaskFactory()->get($item['taskId']);
-          $item[$NAME] = $this->obj2Array($obj);
-          break;
-        case 'tasks':
-          if (get_class($object) == Hashlist::class) {
-            $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $item['hashlistId'], "=", Factory::getTaskWrapperFactory());
-            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
-            $item[$NAME] = $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);
-          } else {
-            $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $item[TaskWrapper::TASK_WRAPPER_ID], "=", Factory::getTaskWrapperFactory());
-            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
-            $item[$NAME] = $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);
-          }
-          break;
-        case 'speeds':
-          $qFs = [];
-          $qFs[] = new QueryFilter(Speed::TASK_ID, $item['taskId'], "=");
-          $objs = Factory::getSpeedFactory()->filter([Factory::FILTER => $qFs]);
-          $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
-          break;
-        case 'pretaskFiles':
-          /* M2M via FilePretask */
-          $qF = new QueryFilter(FilePretask::PRETASK_ID, $item[Pretask::PRETASK_ID], "=", Factory::getFilePretaskFactory());
-          $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
-          $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
-          break;
-        case 'files':
-          /* M2M via Filetask */
-          $qF = new QueryFilter(FileTask::TASK_ID, $item[Task::TASK_ID], "=", Factory::getFileTaskFactory());
-          $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
-          $item[$NAME] = $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
-          break;
-        case 'pretasks':
-          /* M2M via SupertaskPretask */
-          $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $item[Supertask::SUPERTASK_ID], "=", Factory::getSupertaskPretaskFactory());
-          $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
-          $item[$NAME] = $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
-          break;
-        case 'user':
-          if (get_class($object) == RightGroup::class) {
-            $mapped_id = $features[RightGroup::RIGHT_GROUP_ID]['alias'];
-            $qF = new QueryFilter(User::RIGHT_GROUP_ID, $item[$mapped_id], "=");
-            $objs = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
-            $item[$NAME] = array_map(array($this, 'obj2Array'), $objs);
-          } elseif (get_class($object) == NotificationSetting::class) {
-            $obj = Factory::getUserFactory()->get($item['userId']);
-            $item[$NAME] = $this->obj2Array($obj);
-          }
-          break;
-        case 'userMembers':
-          /* M2M via AccessGroupUser */
-          $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $item[AccessGroup::ACCESS_GROUP_ID], "=", Factory::getAccessGroupUserFactory());
-          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
-          $item[$NAME] = $this->joinQuery(Factory::getUserFactory(), $qF, $jF);
-          break;
-        case 'agentMembers':
-          /* M2M via AccessGroupAgent */
-          $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $item[AccessGroupAgent::ACCESS_GROUP_ID], "=", Factory::getAccessGroupAgentFactory());
-          $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
-          $item[$NAME] = $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
-          break;
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");
+      $item[$NAME] = $this->doExpand($object, $NAME);
+      if (is_null($item[$NAME])) {
+        throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");
       }
-    }
+    };
 
     $expandLeft = array_diff($expand, array_keys($item));
     if (sizeof($expandLeft) > 0) {

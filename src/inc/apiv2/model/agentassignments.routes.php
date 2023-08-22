@@ -1,8 +1,9 @@
 <?php
-use DBA\Assignment;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\Assignment;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -27,6 +28,19 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["task", "agent"];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof Assignment);
+
+      switch($expand) {
+        case 'task':
+          $obj = Factory::getTaskFactory()->get($object->getTaskId());
+          return $this->obj2Array($obj);
+        case 'agent':
+          $obj = Factory::getAgentFactory()->get($object->getAgentId());
+          return $this->obj2Array($obj);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

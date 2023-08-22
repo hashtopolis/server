@@ -1,6 +1,7 @@
 <?php
-use DBA\Chunk;
 use DBA\Factory;
+
+use DBA\Chunk;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -25,6 +26,15 @@ class ChunkAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["task"];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof Chunk);
+      switch($expand) {
+        case 'task':
+          $obj = Factory::getTaskFactory()->get($object->getTaskId());
+          return $this->obj2Array($obj);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

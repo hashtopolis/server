@@ -1,8 +1,12 @@
 <?php
-use DBA\Supertask;
 use DBA\Factory;
+use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\Pretask;
+use DBA\Supertask;
+use DBA\SupertaskPretask;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,6 +27,16 @@ class SupertaskAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return [ "pretasks" ];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof Supertask);
+      switch($expand) {
+        case 'pretasks':
+          $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $object->getId(), "=", Factory::getSupertaskPretaskFactory());
+          $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
+          return $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

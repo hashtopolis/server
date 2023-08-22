@@ -1,6 +1,10 @@
 <?php
-use DBA\RightGroup;
 use DBA\Factory;
+use DBA\QueryFilter;
+use DBA\OrderFilter;
+
+use DBA\User;
+use DBA\RightGroup;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -25,6 +29,15 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ['user'];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof RightGroup);
+      switch($expand) {
+        case 'user':
+          $qF = new QueryFilter(User::RIGHT_GROUP_ID, $object->getId(), "=");
+          return $this->filterQuery(Factory::getUserFactory(), $qF);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

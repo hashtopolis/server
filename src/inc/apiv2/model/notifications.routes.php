@@ -1,8 +1,9 @@
 <?php
 use DBA\Factory;
-use DBA\NotificationSetting;
-use DBA\QueryFilter;
 use DBA\OrderFilter;
+use DBA\QueryFilter;
+
+use DBA\NotificationSetting;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,6 +24,15 @@ class NotificationSettingAPI extends AbstractModelAPI {
       return ['user'];
     }
  
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof NotificationSetting);
+      switch($expand) {
+        case 'user':
+          $obj = Factory::getUserFactory()->get($object->getUserId());
+          return $this->obj2Array($obj);
+      }
+    }  
+    
     protected function getFilterACL(): array {
       return [];
     }

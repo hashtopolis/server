@@ -1,5 +1,6 @@
 <?php
 use DBA\Factory;
+
 use DBA\ConfigSection;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -20,10 +21,6 @@ class ConfigSectionAPI extends AbstractModelAPI {
 
     protected function getFactory(): object {
       return Factory::getConfigSectionFactory();
-    }
-
-    public function getExpandables(): array {
-      return [];
     }
  
     protected function getFilterACL(): array {

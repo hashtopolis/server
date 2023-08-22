@@ -1,8 +1,9 @@
 <?php
-use DBA\Preprocessor;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\Preprocessor;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -18,10 +19,6 @@ class PreprocessorAPI extends AbstractModelAPI {
 
     protected function getFactory(): object {
       return Factory::getPreprocessorFactory();
-    }
-
-    public function getExpandables(): array {
-      return [];
     }
 
     protected function getFilterACL(): array {

@@ -1,6 +1,7 @@
 <?php
-use DBA\Hash;
 use DBA\Factory;
+
+use DBA\Hash;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -25,6 +26,23 @@ class HashAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["hashlist", "chunk"];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof Hash);
+      switch($expand) {
+        case 'hashlist':
+          $obj = Factory::getHashListFactory()->get($object->getHashlistId());
+          return $this->obj2Array($obj);
+        case 'chunk':
+          if (is_null($object->getChunkId())) {
+            /* Chunk expansions are optional, hence the chunk object could be empty */
+            return [];
+          } else {
+            $obj = Factory::getChunkFactory()->get($object->getChunkId());
+            return $this->obj2Array($obj);
+          }
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

@@ -14,7 +14,6 @@ use Middlewares\Utils\HttpErrorException;
 abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract static public function getDBAClass(): string;
   abstract protected function getFactory(): object;
-  abstract public function getExpandables(): array;
   abstract protected function getFilterACL(): array;
   abstract protected function createObject($mappedQuery, $QUERY): int;
   abstract protected function deleteObject(object $object): void;

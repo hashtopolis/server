@@ -1,6 +1,9 @@
 <?php
-use DBA\AgentStat;
 use DBA\Factory;
+use DBA\QueryFilter;
+use DBA\OrderFilter;
+
+use DBA\AgentStat;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -20,10 +23,6 @@ class AgentStatsAPI extends AbstractModelAPI {
 
     protected function getFactory(): object {
       return Factory::getAgentStatFactory();
-    }
-
-    public function getExpandables(): array {
-      return [];
     }
 
     protected function getFilterACL(): array {

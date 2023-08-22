@@ -1,8 +1,12 @@
 <?php
-use DBA\Pretask;
 use DBA\Factory;
+use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\File;
+use DBA\FilePretask;
+use DBA\Pretask;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,6 +27,16 @@ class PreTaskAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["pretaskFiles"];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof PreTask);
+      switch($expand) {
+        case 'pretaskFiles':
+          $qF = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
+          $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
+          return $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];

@@ -1,8 +1,9 @@
 <?php
-use DBA\CrackerBinary;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
+
+use DBA\CrackerBinary;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -27,6 +28,15 @@ class CrackerBinaryAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["crackerBinaryType"];
     }
+
+    protected function doExpand(object $object, string $expand): mixed {
+      assert($object instanceof CrackerBinary);
+      switch($expand) {
+        case 'crackerBinaryType':
+          $obj = Factory::getCrackerBinaryTypeFactory()->get($object->getCrackerBinaryTypeId());
+          return $this->obj2Array($obj);
+      }
+    }  
 
     protected function getFilterACL(): array {
       return [];
