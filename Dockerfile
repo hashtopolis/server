@@ -113,7 +113,7 @@ RUN apt-get update \
     && apt-get install -y python3 python3-pip python3-requests python3-pytest
 
 #TODO: Should source from ./ci/apiv2/requirements.txt
-RUN pip3 install confidence tuspy --break-system-packages
+RUN pip3 install click click_log confidence pytest tuspy --break-system-packages
 
 # Clean up
 RUN apt-get autoremove -y \
