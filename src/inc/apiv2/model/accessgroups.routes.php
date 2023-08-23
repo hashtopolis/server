@@ -43,15 +43,6 @@ class AccessGroupAPI extends AbstractModelAPI {
       }
     }  
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-
     protected function createObject(array $data): int {
       $object = AccessGroupUtils::createGroup($data[AccessGroup::GROUP_NAME]);
       return $object->getId();

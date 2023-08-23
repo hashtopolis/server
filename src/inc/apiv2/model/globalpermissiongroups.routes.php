@@ -35,10 +35,6 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
       }
     }  
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
     /** 
      * Rewrite permissions DB values to CRUD field values
      * Temponary exception until old API is removed and we 
@@ -75,12 +71,7 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
         return parent::db2json($feature, $val);
       }
     }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-    
+   
     protected function createObject(array $data): int {
       $group = AccessControlUtils::createGroup($data[RightGroup::GROUP_NAME]);
 

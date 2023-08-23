@@ -22,15 +22,6 @@ class HashTypeAPI extends AbstractModelAPI {
       return Factory::getHashTypeFactory();
     }
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-
     protected function createObject(array $data): int {
       HashtypeUtils::addHashtype(
         $data[HashType::HASH_TYPE_ID],

@@ -37,15 +37,6 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
           return $this->obj2Array($obj);
       }
     }  
- 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
     
     protected function createObject(array $object): int {
        /* Dummy code to implement abstract functions */

@@ -41,10 +41,6 @@ class UserAPI extends AbstractModelAPI {
       }
     }  
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
     public function getFormFields(): array {
       return  ["password" => ["type" => "str", "null" => True]];
     }

@@ -36,15 +36,6 @@ class HealthCheckAPI extends AbstractModelAPI {
       }
     }  
     
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-
     protected function createObject(array $data): int {
       $obj = HealthUtils::createHealthCheck(
         $data[HealthCheck::HASHTYPE_ID],

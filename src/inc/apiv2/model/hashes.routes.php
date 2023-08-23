@@ -44,15 +44,6 @@ class HashAPI extends AbstractModelAPI {
       }
     }  
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-
     protected function createObject(array $data): int {
       /* Dummy code to implement abstract functions */
       assert(False, "Hashes cannot be created via API");

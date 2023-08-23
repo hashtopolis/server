@@ -59,10 +59,6 @@ class TaskAPI extends AbstractModelAPI {
           return $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
       }
     }  
-    
-    protected function getFilterACL(): array {
-      return [];
-    }
 
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications

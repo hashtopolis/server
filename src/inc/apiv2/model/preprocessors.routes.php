@@ -21,15 +21,6 @@ class PreprocessorAPI extends AbstractModelAPI {
       return Factory::getPreprocessorFactory();
     }
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-
     protected function createObject(array $data): int {
       PreprocessorUtils::addPreprocessor(
         $data[Preprocessor::NAME],

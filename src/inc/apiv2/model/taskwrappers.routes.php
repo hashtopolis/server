@@ -43,15 +43,6 @@ class TaskWrappersAPI extends AbstractModelAPI {
       }
     }
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-
     protected function createObject(array $data): int {
       assert(False, "TaskWrappers cannot be created via API");
       return -1;

@@ -56,7 +56,6 @@ require_once(dirname(__FILE__) . "/../../load.php");
  */
 abstract class AbstractBaseAPI
 {
-  abstract public function getFormFields(): array;
   abstract public static function getBaseUri(): string;
   abstract public function getRequiredPermissions(string $method): array;
 
@@ -84,6 +83,17 @@ abstract class AbstractBaseAPI
   public function __construct(ContainerInterface $container)
   {
     $this->container = $container;
+  }
+
+  protected function getFilterACL(): array {
+    return [];
+  }
+
+  /** 
+   * Extra fields which are valid for creation of object
+   */
+  public function getFormFields(): array {
+    return  [];
   }
 
   /**

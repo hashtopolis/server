@@ -14,7 +14,6 @@ use Middlewares\Utils\HttpErrorException;
 abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract static public function getDBAClass(): string;
   abstract protected function getFactory(): object;
-  abstract protected function getFilterACL(): array;
   abstract protected function createObject(array $data): int;
   abstract protected function deleteObject(object $object): void;
 
@@ -84,6 +83,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     return $object;
   }
+
+  /**
+   * Additional filtering required for limiting access to objects 
+   */
+  protected function getFilterACL(): array {
+    return [];
+  }
+
 
    /**
    * API entry point for requesting multiple objects

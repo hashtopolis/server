@@ -20,15 +20,6 @@ class AgentBinaryAPI extends AbstractModelAPI {
     protected function getFactory(): object {
       return Factory::getAgentBinaryFactory();
     }
-
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
   
     protected function createObject(array $data): int {
       AgentBinaryUtils::newBinary(

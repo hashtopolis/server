@@ -45,15 +45,6 @@ class AgentAPI extends AbstractModelAPI {
           return $this->filterQuery(Factory::getAgentStatFactory(), $qF);
       }
     }  
-
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
    
     protected function createObject(array $data): int {
       assert(False, "Chunks cannot be created via API");

@@ -38,10 +38,6 @@ class SupertaskAPI extends AbstractModelAPI {
       }
     }  
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
     public function getFormFields(): array {
       return  [
         "pretasks" => ['type' => 'array', 'subtype' => 'int']

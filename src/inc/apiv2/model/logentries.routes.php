@@ -21,18 +21,7 @@ class LogEntryAPI extends AbstractModelAPI {
       return Factory::getLogEntryFactory();
     }
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
-    }
-
     protected function createObject(array $data): int {
-      /* Parameter is used as primary key in database */
-
       Util::createLogEntry(
         $data[LogEntry::ISSUER],
         $data[LogEntry::ISSUER_ID],

@@ -42,14 +42,6 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       }
     }  
 
-    protected function getFilterACL(): array {
-      return [];
-    }
-
-    public function getFormFields(): array {
-      return  [];
-    }
-
     protected function createObject(array $data): int {
       AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getUser());
       /* On succesfully insert, return ID */
