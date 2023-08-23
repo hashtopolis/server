@@ -6,20 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost($mappedFeatures, $QUERY): array|null;
-
-  public function getFeatures(): array
-  {
-    $features = [];
-    foreach($this->getFormFields() as $key => $feature) {
-      /* Innitate default values */
-      $features[$key] = $feature + ['null' => False, 'protected' => False, 'choices' => "unset"];
-      if (!array_key_exists('alias', $feature)) {
-        $features[$key]['alias'] = $key;
-      }
-    }
-    return $features;
-  }
-
+  
   
   protected function validateParameters($QUERY, $validFeatures) 
   {

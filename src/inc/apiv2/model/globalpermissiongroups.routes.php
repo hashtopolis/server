@@ -18,10 +18,6 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
       return RightGroup::class;
     }    
 
-    public function getFeatures(): array {
-      return RightGroup::getFeatures();
-    }
-
     protected function getFactory(): object {
       return Factory::getRightGroupFactory();
     }
@@ -85,15 +81,13 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
     return  [];
     }
     
-    protected function createObject($mappedQuery, $QUERY): int {
-      $features = $this->getFeatures();
-      $group = AccessControlUtils::createGroup($mappedQuery[$features[RightGroup::GROUP_NAME]['alias']]);
+    protected function createObject(array $data): int {
+      $group = AccessControlUtils::createGroup($data[RightGroup::GROUP_NAME]);
 
       // The utils function does not allow to set permissions directly. This call is to workaround this.
       // This causes the issue that if some error happens during updating the object the object is still created
       // but the permissions will not be set.
-      $mappedFeatures = $this->getMappedFeatures();
-      $this->updateObject($group, $mappedQuery, $mappedFeatures);
+      $this->updateObject($group, $data);
       
       return $group->getId();
     }
@@ -102,14 +96,16 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
       AccessControlUtils::deleteGroup($object->getId());
     }
 
-    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {    
+
+    /**
+     * NOTE: If ANY CRUD-permission is satisfied the corresponding OLD-permission is set
+     */
+    public function updateObject(object $object, $data, $processed = []): void {    
+      /* Use quirk on 'permissions' since this is casted to 'incorrect' DB representation already */
+      $permissions = unserialize($data[RightGroup::PERMISSIONS]);
       $key = RightGroup::PERMISSIONS;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
-
-        /*
-         * NOTE: If ANY CRUD-permission is satisfied the corresponding OLD-permission is set
-         */
 
         // Build reverse mapping to speed-up lookups for CRUD-permission to OLD-permission
         $c2o = array();
@@ -123,21 +119,23 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
           }
         }
         
-        $oldPerms = [];
-        foreach($data[$key] as $crudPerm => $value) {
+        // Get enabled 'old-style' permissions
+        $legacyPerms = [];
+        foreach($permissions as $crudPerm => $value) {
           if ($value === true) {
-            $oldPerms = array_merge($oldPerms, $c2o[$crudPerm]);
+            $legacyPerms = array_merge($legacyPerms, $c2o[$crudPerm]);
           }
         }
+        
         // Modify data to conform with updateGroupPermssions input
         $permData = [];
-        foreach($oldPerms as $key) {
+        foreach($legacyPerms as $key) {
           array_push($permData, $key . "-1");
         }
         AccessControlUtils::updateGroupPermissions($object->getId(), $permData);
       }
 
-      parent::updateObject($object, $data, $mappedFeatures, $processed);
+      parent::updateObject($object, $data, $processed);
     }
 }
 

@@ -43,21 +43,21 @@ class SupertaskAPI extends AbstractModelAPI {
     }
 
     public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
       return  [
         "pretasks" => ['type' => 'array', 'subtype' => 'int']
       ];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
+      /* Use quirk on 'pretasks' since this is casted to DB representation  */
       SupertaskUtils::createSupertask(
-        $mappedQuery[Supertask::SUPERTASK_NAME],
-        $QUERY["pretasks"],
+        $data[Supertask::SUPERTASK_NAME],
+        $this->db2json($this->getFeatures()['pretasks'], $data["pretasks"])
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(Supertask::SUPERTASK_NAME, $mappedQuery[Supertask::SUPERTASK_NAME], '=')
+        new QueryFilter(Supertask::SUPERTASK_NAME, $data[Supertask::SUPERTASK_NAME], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

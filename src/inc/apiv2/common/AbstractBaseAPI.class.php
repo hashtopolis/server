@@ -58,7 +58,6 @@ abstract class AbstractBaseAPI
 {
   abstract public function getFormFields(): array;
   abstract public static function getBaseUri(): string;
-  abstract public function getFeatures(): array;
   abstract public function getRequiredPermissions(string $method): array;
 
   /** @var DBA\User|null $user is currently logged in user */
@@ -88,17 +87,33 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Create features from formfields
+   */
+  protected function getFeatures(): array
+  {
+    $features = [];
+    foreach($this->getFormFields() as $key => $feature) {
+      /* Innitate default values */
+      $features[$key] = $feature + ['null' => False, 'protected' => False, 'private' => False, 'choices' => "unset"];
+      if (!array_key_exists('alias', $feature)) {
+        $features[$key]['alias'] = $key;
+      }
+    }
+    return $features;
+  }
+
+  /**
    * Take all the dba features and converts them to a list.
    * It uses the data from the generator and replaces the keys with the aliasses.
    * structure: hashlist: name: [dbname => hashlistId]
    */
-  public function getMappedFeatures(): array
+  public function getAliasedFeatures(): array
   {
     $features = $this->getFeatures();
     $mappedFeatures = [];
-    foreach ($features as $KEY => $VALUE) {
-      $mappedFeatures[$VALUE['alias']] = $VALUE;
-      $mappedFeatures[$VALUE['alias']]['dbname'] = $KEY;
+    foreach ($features as $key => $value) {
+      $mappedFeatures[$value['alias']] = $value;
+      $mappedFeatures[$value['alias']]['dbname'] = $key;
     }
     return $mappedFeatures;
   }
@@ -257,6 +272,8 @@ abstract class AbstractBaseAPI
       }
     } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
       $obj = array_map('intval', explode(",", $val));
+    } elseif ($feature['type'] == 'dict' && $feature['subtype'] = 'bool') {
+      $obj = unserialize($val);
     } else {
       // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
       $obj = $val;
@@ -269,14 +286,18 @@ abstract class AbstractBaseAPI
    */
   protected static function json2db(array $feature, mixed $obj): mixed
   {
-    if ($feature['type'] == 'bool') {
+    if(($feature['null'] == true) && is_null($obj)) {
+      return null;
+    } elseif ($feature['type'] == 'bool') {
       $val = ($obj) ? "1" : "0";
     } elseif ($feature['type'] == 'int' && is_null($obj)){
       $val = $obj;
     } elseif (str_starts_with($feature['type'], 'str')) {
       $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
     } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
-        $val = implode(",", $obj);
+      $val = implode(",", $obj);
+    } elseif ($feature['type'] == 'dict' && $feature['subtype'] = 'bool') {
+      $val = serialize($obj);
     } else {
       $val = strval($obj);
     }
@@ -286,7 +307,7 @@ abstract class AbstractBaseAPI
   /** 
    * Convert JSON object value to DB insert value, supported by DBA
    */
-  protected function obj2Array(mixed $obj)
+  protected function obj2Array(object $obj)
   {
     // Convert values to JSON supported types
     $features = $obj->getFeatures();
@@ -298,14 +319,13 @@ abstract class AbstractBaseAPI
     $item['_id'] = $obj->getId();
     $item['_self'] = $this->routeParser->urlFor($apiClass . ':getOne', ['id' => $item['_id']]);
 
-    foreach ($features as $NAME => $FEATURE) {
+    foreach ($features as $name => $feature) {
       // If a attribute is set to private, it should be hidden and not returned.
       // Example of this is the password hash.
-      if ($FEATURE['private'] === true) {
+      if ($feature['private'] === true) {
         continue;
-      } else {
-        $item[$FEATURE['alias']] = $apiClass::db2json($FEATURE, $kv[$NAME]);
       }
+      $item[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
     return $item;
   }
@@ -345,18 +365,18 @@ abstract class AbstractBaseAPI
   /** 
    * Expands object items
    */
-  protected function object2Array(mixed $object, array $expand)
+  protected function object2Array(object $object, array $expands): array
   {
     $item = $this->obj2Array($object);
-
-    foreach ($expand as $NAME) {
-      $item[$NAME] = $this->doExpand($object, $NAME);
-      if (is_null($item[$NAME])) {
-        throw new BadFunctionCallException("Internal error: Expansion '$NAME' not implemented!");
+    
+    foreach ($expands as $expand) {
+      $item[$expand] = $this->doExpand($object, $expand);
+      if (is_null($item[$expand])) {
+        throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
     };
 
-    $expandLeft = array_diff($expand, array_keys($item));
+    $expandLeft = array_diff($expands, array_keys($item));
     if (sizeof($expandLeft) > 0) {
       /* This should never happen, since valid parameter checking is done pre-flight 
        * in makeExpandables and assignment should be done for every expansion 
@@ -389,77 +409,89 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Convert incoming (JSON) data to DB values
+   */
+  protected function unaliasData(array $data, array $features): array {
+    $mappedData = [];
+    foreach ($data as $key => $value) {
+      $mappedData[$features[$key]['dbname']] = self::json2db($features[$key], $value);
+    }
+    return $mappedData;
+  }
+
+  /**
    * Validate incoming data
    */
-  protected function validateData(array $data, array $mappedFeatures)
+  protected function validateData(array $data, array $features)
   {
-    foreach ($data as $KEY => $VALUE) {
+    foreach ($data as $key => $value) {
       // Validate if field can be left empty or not
-      if (($mappedFeatures[$KEY]['null'] ?? True) == False) {
-        if (is_null($VALUE) == True) {
-          throw new HttpErrorException("Key '$KEY' is cannot be null.");
+      if (($features[$key]['null'] ?? True) == False) {
+        if (is_null($value) == True) {
+          throw new HttpErrorException("Key '$key' is cannot be null.");
         }
       } else {
-        if (is_null($VALUE) == True) {
+        if (is_null($value) == True) {
           // Key can be null and is null, so skip type checking.
           continue;
         }
       }
 
       // Perform type mapping
-      if ($mappedFeatures[$KEY]['type'] == 'bool') {
-        if (is_bool($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type boolean");
+      if ($features[$key]['type'] == 'bool') {
+        if (is_bool($value) == False) {
+          throw new HttpErrorException("Key '$key' is not of type boolean");
         }
         // Int
-      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'int')) {
+      } elseif (str_starts_with($features[$key]['type'], 'int')) {
         // TODO: int32, int64 range validation
-        if (is_integer($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type integer");
+        if (is_integer($value) == False) {
+          throw new HttpErrorException("Key '$key' is not of type integer");
         }
         // Str
-      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'str')) {
-        if (is_string($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type string");
+      } elseif (str_starts_with($features[$key]['type'], 'str')) {
+        if (is_string($value) == False) {
+          throw new HttpErrorException("Key '$key' is not of type string");
         }
         // TODO: Length validation
         // Array
-      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'array')) {
-        if (is_array($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type array");
+      } elseif (str_starts_with($features[$key]['type'], 'array')) {
+        if (is_array($value) == False) {
+          throw new HttpErrorException("Key '$key' is not of type array");
         }
         // Array[Int]
-        if ($mappedFeatures[$KEY]['subtype'] == 'int') {
-          if (in_array(false, array_map('is_integer', $VALUE)) == true) {
-            throw new HttpErrorException("Key '$KEY' array contains non-integer values");
+        if ($features[$key]['subtype'] == 'int') {
+          if (in_array(false, array_map('is_integer', $value)) == true) {
+            throw new HttpErrorException("Key '$key' array contains non-integer values");
           }
         }
         // Dict
-      } elseif (str_starts_with($mappedFeatures[$KEY]['type'], 'dict')) {
-        if (is_array($VALUE) == False) {
-          throw new HttpErrorException("Key '$KEY' is not of type dict");
+      } elseif (str_starts_with($features[$key]['type'], 'dict')) {
+        if (is_array($value) == False) {
+          throw new HttpErrorException("Key '$key' is not of type dict");
         }
         // Dict[Bool]
-        if ($mappedFeatures[$KEY]['subtype'] == 'bool') {
-          if (in_array(false, array_map('is_bool', $VALUE)) == true) {
-            throw new HttpErrorException("Key '$KEY' dict contains non-boolean values");
+        if ($features[$key]['subtype'] == 'bool') {
+          if (in_array(false, array_map('is_bool', $value)) == true) {
+            throw new HttpErrorException("Key '$key' dict contains non-boolean values");
           }
         }
       } else {
-        throw new HttpErrorException("Typemapping error for key '$KEY' ");
+        throw new HttpErrorException("Typemapping error for key '$key' ");
       }
 
       // Validate values limited by choices
-      if (is_array($mappedFeatures[$KEY]['choices'])) {
-        if (array_key_exists($VALUE, $mappedFeatures[$KEY]['choices']) == false) {
-          throw new HttpErrorException("Key '$KEY' value is not valid, choices=[" . 
-                                       join(",", array_keys($mappedFeatures[$KEY]['choices'])) .
+      if (is_array($features[$key]['choices'])) {
+        if (array_key_exists($value, $features[$key]['choices']) == false) {
+          throw new HttpErrorException("Key '$key' value is not valid, choices=[" . 
+                                       join(",", array_keys($features[$key]['choices'])) .
                                        "], choices_details=['" . 
-                                       join("', '", array_values($mappedFeatures[$KEY]['choices'])) . "']");
+                                       join("', '", array_values($features[$key]['choices'])) . "']");
         }
       }
     }
   }
+    
 
   /**
    * Check for valid expand parameters

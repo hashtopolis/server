@@ -52,10 +52,8 @@ class AccessGroupAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
-      /* Parameter is used as primary key in database */
-
-      $object = AccessGroupUtils::createGroup($QUERY[AccessGroup::GROUP_NAME]);
+    protected function createObject(array $data): int {
+      $object = AccessGroupUtils::createGroup($data[AccessGroup::GROUP_NAME]);
       return $object->getId();
     }
 

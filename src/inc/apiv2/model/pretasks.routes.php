@@ -49,26 +49,27 @@ class PreTaskAPI extends AbstractModelAPI {
       ];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
+      /* Use quirk on 'files' since this is casted to DB representation  */
       PretaskUtils::createPretask(
-        $mappedQuery[PreTask::TASK_NAME],
-        $mappedQuery[PreTask::ATTACK_CMD],
-        $mappedQuery[PreTask::CHUNK_TIME],
-        $mappedQuery[PreTask::STATUS_TIMER],
-        $mappedQuery[PreTask::COLOR],
-        $mappedQuery[PreTask::IS_CPU_TASK],
-        $mappedQuery[PreTask::IS_SMALL],
-        $mappedQuery[PreTask::USE_NEW_BENCH],
-        $QUERY["files"],
-        $mappedQuery[PreTask::CRACKER_BINARY_TYPE_ID],
-        $mappedQuery[PreTask::MAX_AGENTS],
-        $mappedQuery[PreTask::PRIORITY]
+        $data[PreTask::TASK_NAME],
+        $data[PreTask::ATTACK_CMD],
+        $data[PreTask::CHUNK_TIME],
+        $data[PreTask::STATUS_TIMER],
+        $data[PreTask::COLOR],
+        $data[PreTask::IS_CPU_TASK],
+        $data[PreTask::IS_SMALL],
+        $data[PreTask::USE_NEW_BENCH],
+        $this->db2json($this->getFeatures()['files'], $data["files"]),
+        $data[PreTask::CRACKER_BINARY_TYPE_ID],
+        $data[PreTask::MAX_AGENTS],
+        $data[PreTask::PRIORITY]
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(PreTask::TASK_NAME, $mappedQuery[PreTask::TASK_NAME], '='),
-        new QueryFilter(PreTask::ATTACK_CMD, $mappedQuery[PreTask::ATTACK_CMD], '=')
+        new QueryFilter(PreTask::TASK_NAME, $data[PreTask::TASK_NAME], '='),
+        new QueryFilter(PreTask::ATTACK_CMD, $data[PreTask::ATTACK_CMD], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

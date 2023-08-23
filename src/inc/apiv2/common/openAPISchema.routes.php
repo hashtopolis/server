@@ -197,7 +197,7 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
           ];
 
         $properties_create = makeProperties($class->getCreateValidFeatures());
-        $properties_get = array_merge($properties_get, makeProperties($class->getMappedFeatures()));
+        $properties_get = array_merge($properties_get, makeProperties($class->getAliasedFeatures()));
         $properties_patch = makeProperties($class->getPatchValidFeatures());
 
         $components[$name . "Create"] =

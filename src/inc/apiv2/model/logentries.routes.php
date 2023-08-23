@@ -30,22 +30,22 @@ class LogEntryAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       /* Parameter is used as primary key in database */
 
       Util::createLogEntry(
-        $mappedQuery[LogEntry::ISSUER],
-        $mappedQuery[LogEntry::ISSUER_ID],
-        $mappedQuery[LogEntry::LEVEL],
-        $mappedQuery[LogEntry::MESSAGE]
+        $data[LogEntry::ISSUER],
+        $data[LogEntry::ISSUER_ID],
+        $data[LogEntry::LEVEL],
+        $data[LogEntry::MESSAGE]
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(LogEntry::ISSUER, $mappedQuery[LogEntry::ISSUER], '='),
-        new QueryFilter(LogEntry::ISSUER_ID, $mappedQuery[LogEntry::ISSUER_ID], '='),
-        new QueryFilter(LogEntry::LEVEL, $mappedQuery[LogEntry::LEVEL], '='),
-        new QueryFilter(LogEntry::MESSAGE, $mappedQuery[LogEntry::MESSAGE], '=')
+        new QueryFilter(LogEntry::ISSUER, $data[LogEntry::ISSUER], '='),
+        new QueryFilter(LogEntry::ISSUER_ID, $data[LogEntry::ISSUER_ID], '='),
+        new QueryFilter(LogEntry::LEVEL, $data[LogEntry::LEVEL], '='),
+        new QueryFilter(LogEntry::MESSAGE, $data[LogEntry::MESSAGE], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

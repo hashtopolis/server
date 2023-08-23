@@ -72,30 +72,30 @@ class TaskAPI extends AbstractModelAPI {
     ];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       /* Parameter is used as primary key in database */
 
       $object = TaskUtils::createTask(
-        $mappedQuery["hashlistId"],
-        $mappedQuery[Task::TASK_NAME],
-        $mappedQuery[Task::ATTACK_CMD],
-        $mappedQuery[Task::CHUNK_TIME],
-        $mappedQuery[Task::STATUS_TIMER],
-        $mappedQuery[Task::USE_NEW_BENCH] ? 'speed': 'runtime',
-        $mappedQuery[Task::COLOR],
-        $mappedQuery[Task::IS_CPU_TASK],
-        $mappedQuery[Task::IS_SMALL],
-        $mappedQuery['preprocessorId'],
-        $mappedQuery[Task::PREPROCESSOR_COMMAND],
-        $mappedQuery[Task::SKIP_KEYSPACE],
-        $mappedQuery[Task::PRIORITY],
-        $mappedQuery[Task::MAX_AGENTS],
-        $QUERY["files"],
-        $mappedQuery[Task::CRACKER_BINARY_TYPE_ID],
+        $data["hashlistId"],
+        $data[Task::TASK_NAME],
+        $data[Task::ATTACK_CMD],
+        $data[Task::CHUNK_TIME],
+        $data[Task::STATUS_TIMER],
+        $data[Task::USE_NEW_BENCH] ? 'speed': 'runtime',
+        $data[Task::COLOR],
+        $data[Task::IS_CPU_TASK],
+        $data[Task::IS_SMALL],
+        $data[Task::USE_PREPROCESSOR],
+        $data[Task::PREPROCESSOR_COMMAND],
+        $data[Task::SKIP_KEYSPACE],
+        $data[Task::PRIORITY],
+        $data[Task::MAX_AGENTS],
+        $data["files"],
+        $data[Task::CRACKER_BINARY_TYPE_ID],
         $this->getUser(),
-        $mappedQuery[Task::NOTES],
-        $mappedQuery[Task::STATIC_CHUNKS],
-        $mappedQuery[Task::CHUNK_SIZE]
+        $data[Task::NOTES],
+        $data[Task::STATIC_CHUNKS],
+        $data[Task::CHUNK_SIZE]
       );
       
       return $object->getId();
@@ -105,14 +105,14 @@ class TaskAPI extends AbstractModelAPI {
       TaskUtils::deleteTask($object);
     }
 
-    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {
+    public function updateObject(object $object, $data,  $processed = []): void {
       $key = Task::IS_ARCHIVED;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
         TaskUtils::archiveTask($object->getId(), $this->getUser());
       }
 
-      parent::updateObject($object, $data, $mappedFeatures, $processed);
+      parent::updateObject($object, $data, $processed);
     }
 }
 

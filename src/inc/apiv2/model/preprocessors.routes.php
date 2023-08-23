@@ -30,20 +30,20 @@ class PreprocessorAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       PreprocessorUtils::addPreprocessor(
-        $mappedQuery[Preprocessor::NAME],
-        $mappedQuery[Preprocessor::BINARY_NAME],
-        $mappedQuery[Preprocessor::URL],
-        $mappedQuery[Preprocessor::KEYSPACE_COMMAND],
-        $mappedQuery[Preprocessor::SKIP_COMMAND],
-        $mappedQuery[Preprocessor::LIMIT_COMMAND]
+        $data[Preprocessor::NAME],
+        $data[Preprocessor::BINARY_NAME],
+        $data[Preprocessor::URL],
+        $data[Preprocessor::KEYSPACE_COMMAND],
+        $data[Preprocessor::SKIP_COMMAND],
+        $data[Preprocessor::LIMIT_COMMAND]
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(Preprocessor::NAME, $mappedQuery[Preprocessor::NAME], '='),
-        new QueryFilter(Preprocessor::BINARY_NAME, $mappedQuery[Preprocessor::BINARY_NAME], '=')
+        new QueryFilter(Preprocessor::NAME, $data[Preprocessor::NAME], '='),
+        new QueryFilter(Preprocessor::BINARY_NAME, $data[Preprocessor::BINARY_NAME], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

@@ -45,7 +45,7 @@ class ConfigAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
        /* Dummy code to implement abstract functions */
        assert(False, "Configs cannot be created via API");
        return -1;

@@ -15,16 +15,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract static public function getDBAClass(): string;
   abstract protected function getFactory(): object;
   abstract protected function getFilterACL(): array;
-  abstract protected function createObject($mappedQuery, $QUERY): int;
+  abstract protected function createObject(array $data): int;
   abstract protected function deleteObject(object $object): void;
-  /**
-   * Constructor receives features
-   */
-  public function getFeatures(): array
-  {
-    return call_user_func($this->getDBAclass() . '::getFeatures');
-  }
 
+  /** 
+   * Get features based on Formfields and DBA model features
+   */
+  final protected function getFeatures(): array
+  {    
+    return array_merge(
+      parent::getFeatures(),
+      call_user_func($this->getDBAclass() . '::getFeatures'),
+    );
+  }
 
   /** 
    * Retrieve  permissions based on class and method requested
@@ -89,7 +92,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   {
     $this->preCommon($request);
 
-    $mappedFeatures = $this->getMappedFeatures();
+    $aliasedfeatures = $this->getAliasedFeatures();
     $factory = $this->getFactory();
     $expandables = $this->getExpandables();
 
@@ -99,11 +102,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     list($expandable, $expands) = $this->makeExpandables($request, $expandables);
 
     /* Generate filters */
-    $qFs_Filter = $this->makeFilter($request, $mappedFeatures);
+    $qFs_Filter = $this->makeFilter($request, $aliasedfeatures);
     $qFs_ACL = $this->getFilterACL();
     $qFs = array_merge($qFs_ACL, $qFs_Filter);
 
-    $oFs = $this->makeOrderFilter($request, $mappedFeatures);
+    $oFs = $this->makeOrderFilter($request, $aliasedfeatures);
 
     /* Generate query */
     $allFilters = [];
@@ -145,27 +148,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   final public function getCreateValidFeatures(): array
   {
-    $features = $this->getMappedFeatures();
-    $formFields = $this->getFormfields();
-
-    // Generate listing of validFeatures
-    $featureFields = [];
-    foreach ($features as $NAME => $FEATURE) {
-      /* Protected and private features cannot be specified */
-      if ($FEATURE['protected'] == True) {
-        continue;
-      } elseif ($FEATURE['private'] == True) {
-        continue;
-      }
-      /* Use API aliased naming */
-      array_push($featureFields, $FEATURE);
-    }
-    $validFeatures = array_merge($featureFields, $formFields);
-
-    // Ensure debugging response lists are in sorted order
-    ksort($validFeatures);
-
-    return $validFeatures;
+    return $this->getAliasedFeatures();
   }
 
 
@@ -202,36 +185,36 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $object = $this->doFetch($request, $args['id']);
 
     $data = $request->getParsedBody();
-    $mappedFeatures = $this->getMappedFeatures();
-
+    $aliasedfeatures = $this->getAliasedFeatures();
+  
     // Validate incoming data
-    foreach ($data as $KEY => $VALUE) {
+    foreach (array_keys($data) as $key) {
       // Ensure key is a regular string
-      if (is_string($KEY) == False) {
-        throw new HttpErrorException("Key '$KEY' invalid");
+      if (is_string($key) == False) {
+        throw new HttpErrorException("Key '$key' invalid");
       }
       // Ensure key exists in target array
-      if (array_key_exists($KEY, $mappedFeatures) == False) {
-        throw new HttpErrorException("Key '$KEY' does not exists!");
+      if (array_key_exists($key, $aliasedfeatures) == False) {
+        throw new HttpErrorException("Key '$key' does not exists!");
       }
 
       // Ensure key can be updated 
-      if ($mappedFeatures[$KEY]['read_only'] == True) {
-        throw new HttpErrorException("Key '$KEY' is immutable");
+      if ($aliasedfeatures[$key]['read_only'] == True) {
+        throw new HttpErrorException("Key '$key' is immutable");
       }
-      if ($mappedFeatures[$KEY]['protected'] == True) {
-        throw new HttpErrorException("Key '$KEY' is protected");
+      if ($aliasedfeatures[$key]['protected'] == True) {
+        throw new HttpErrorException("Key '$key' is protected");
       }
-      if ($mappedFeatures[$KEY]['private'] == True) {
-        throw new HttpErrorException("Key '$KEY' is private");
+      if ($aliasedfeatures[$key]['private'] == True) {
+        throw new HttpErrorException("Key '$key' is private");
       }
     }
-
     // Validate input data if it matches the correct type or subtype
-    $this->validateData($data, $mappedFeatures);
+    $this->validateData($data, $aliasedfeatures);
 
     // This does the real things, patch the values that were sent in the data.
-    $this->updateObject($object, $data, $mappedFeatures);
+    $mappedData = $this->unaliasData($data, $aliasedfeatures);
+    $this->updateObject($object, $mappedData);
 
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());
@@ -251,80 +234,55 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   {
     $this->preCommon($request);
 
-    $QUERY = $request->getParsedBody();
-    /* TODO: Rework with $this->getMappedFeatures() and remove all alias references below */
-    $features = $this->getFeatures();
-    $formFields = $this->getFormfields();
+    $data = $request->getParsedBody();
+    $allFeatures = $this->getAliasedFeatures();
 
-    // Generate listing of validFeatures
-    $featureFields = [];
-    foreach ($features as $NAME => $FEATURE) {
-      /* Protected and private features cannot be specified */
-      if ($FEATURE['protected'] == True) {
+    $validFeatures = [];
+    foreach($allFeatures as $key => $value) {
+      if ($value['protected'] == True) {
         continue;
-      } elseif ($FEATURE['private'] == True) {
+      } 
+      if ($value['private'] == True) {
         continue;
       }
-      /* Use API aliased naming */
-      array_push($featureFields, $FEATURE['alias']);
+      $validFeatures[$key] = $value;
     }
-    $validFeatures = array_merge($featureFields, array_keys($formFields));
 
     // Ensure debugging response lists are in sorted order
     ksort($validFeatures);
 
     // Find keys which are invalid
-    $invalidKeys = [];
-    foreach ($QUERY as $NAME => $VALUE) {
-      if (!in_array($NAME, $validFeatures)) {
-        array_push($invalidKeys, $NAME);
-      }
-    }
-    if (sizeof($invalidKeys) == 1) {
-      throw new HTException("Parameter '" . $invalidKeys[0] . "' is not valid input key (valid keys are: " . join(", ", $validFeatures) . ")");
-    } elseif (sizeof($invalidKeys) > 1) {
+    $invalidKeys = array_diff(array_keys($data), array_keys($validFeatures));
+    if (sizeof($invalidKeys) > 0) {
       ksort($invalidKeys);
-      throw new HTException("Parameters '" . join(", ", $invalidKeys) . "' are not valid input keys (valid keys are: " . join(", ", $validFeatures) . ")");
+      throw new HTException("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
+                            "(valid key(s) : '" . join(", ", array_keys($validFeatures)) . ")'");
+    }
+   
+    // Make listing of features requires for creation
+    $requiredFeatures = [];
+    foreach($allFeatures as $key => $value) {
+      if ($value['null'] == True) {
+        continue;
+      } 
+      if ($value['protected'] == True) {
+        continue;
+      }
+      $validFeatures[$key] = $value;
     }
 
-    // Find out about mandatory keys which are not provided
-    $missingKeys = [];
-    foreach ($features as $NAME => $FEATURE) {
-      // Optional keys are not required entities
-      if ($FEATURE['null'] == True) {
-        continue;
-      }
-      // Protected fields are not required on creation
-      if ($FEATURE['protected'] == True) {
-        continue;
-      }
-      if (!array_key_exists($FEATURE['alias'], $QUERY)) {
-        $missingKeys[] = $FEATURE['alias'];
-      }
-    }
-    // Consider all formFields mandatory input
-    foreach ($formFields as $NAME => $FEATURE) {
-      if (!array_key_exists($NAME, $QUERY)) {
-        $missingKeys[] = $NAME;
-      }
-    }
+    // Find out about mandatory parameters which are not provided
+    $missingKeys = array_diff(array_keys($requiredFeatures), array_keys($data));
     if (count($missingKeys) > 0) {
       throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
     }
 
-    // Map to alias and extend with fields which are only present at the webui
-    // aka formFields.
-    $mappedFeatures = array_merge($this->getMappedFeatures(), $formFields);
-
     // Validate incoming data
-    $this->validateData($QUERY, $mappedFeatures);
+    $this->validateData($data, $allFeatures);
 
-    // Convert incoming (JSON) data to DB values
-    $mappedQuery = [];
-    foreach ($QUERY as $KEY => $VALUE) {
-      $mappedQuery[$KEY] = self::json2db($mappedFeatures[$KEY], $VALUE);
-    }
-    $pk = $this->createObject($mappedQuery, $QUERY);
+    // Remove key aliases and sanitize to 'db values and request creation
+    $mappedData = $this->unaliasData($data, $allFeatures);
+    $pk = $this->createObject($mappedData);
 
     // Request object again, since post-modified entries are not reflected into object.
     $body = $response->getBody();
@@ -338,18 +296,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Update object with provided values
    */
-  public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void
+  public function updateObject(object $object, array $data, array $processed = []): void
   {
     // Apply changes 
-    foreach ($data as $KEY => $VALUE) {
-      if (in_array($KEY, $processed)) {
+    foreach ($data as $key => $value) {
+      if (in_array($key, $processed)) {
         continue;
       }
 
-      // Sanity values
-      $val = self::json2db($mappedFeatures[$KEY], $data[$KEY]);
-      // Use the original attribute name to update the object.
-      $this->getFactory()->set($object, $mappedFeatures[$KEY]['dbname'], $val);
+      $this->getFactory()->set($object, $key, $value);
     }
   }
 
@@ -358,11 +313,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   final public function getPatchValidFeatures(): array
   {
-    $mappedFeatures = $this->getMappedFeatures();
+    $aliasedfeatures = $this->getAliasedFeatures();
     $validFeatures = [];
 
     // Generate listing of validFeatures
-    foreach ($mappedFeatures as $name => $feature) {
+    foreach ($aliasedfeatures as $name => $feature) {
       // Ensure key can be updated 
       if ($feature['read_only'] == True) {
         continue;

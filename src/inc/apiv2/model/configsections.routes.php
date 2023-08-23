@@ -32,13 +32,13 @@ class ConfigSectionAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
        /* Dummy code to implement abstract functions */
        assert(False, "ConfigSections cannot be created via API");
        return -1;
     }
 
-    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+    public function updateObject(object $object, array $data, array $processed = []): void {
       assert(False, "ConfigSections cannot be updated via API");
     }
 

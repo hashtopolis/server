@@ -33,7 +33,7 @@ class TaskTest(BaseTest):
         task.save()
 
         obj = Task.objects.get(taskId=task.id)
-        self.assertEqual(obj.color, '')
+        self.assertIsNone(obj.color)
 
     def test_runtime(self):
         task = self.create_test_object(file_id='002')

@@ -22,10 +22,6 @@ class TaskWrappersAPI extends AbstractModelAPI {
       return TaskWrapper::class;
     }    
 
-    public function getFeatures(): array {
-      return TaskWrapper::getFeatures();
-    }
-
     protected function getFactory(): object {
       return Factory::getTaskWrapperFactory();
     }
@@ -56,12 +52,12 @@ class TaskWrappersAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       assert(False, "TaskWrappers cannot be created via API");
       return -1;
     }
 
-    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+    public function updateObject(object $object, array $data, array $processed = []): void {
       assert(False, "TaskWrappers cannot be updated via API");
     }
     

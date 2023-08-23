@@ -55,7 +55,7 @@ class AgentAPI extends AbstractModelAPI {
     return  [];
     }
    
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       assert(False, "Chunks cannot be created via API");
       return -1;
     }

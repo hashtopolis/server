@@ -44,12 +44,12 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
     return  [];
     }
     
-    protected function createObject($mappedQuery, $QUERY): int {
-      CrackerUtils::createBinaryType($mappedQuery[CrackerBinaryType::TYPE_NAME]);
+    protected function createObject(array $data): int {
+      CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(CrackerBinaryType::TYPE_NAME, $mappedQuery[CrackerBinaryType::TYPE_NAME], '=')
+        new QueryFilter(CrackerBinaryType::TYPE_NAME, $data[CrackerBinaryType::TYPE_NAME], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

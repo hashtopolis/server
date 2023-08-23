@@ -57,61 +57,61 @@ class HashlistAPI extends AbstractModelAPI {
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
     return  [
+        "hashlistSeperator" => ['type' => 'str', "null" => True],
         "sourceType" => ['type' => 'str'],
         "sourceData" => ['type' => 'str'],
       ];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       // Cast to createHashlist compatible upload format
       $dummyPost = [];
-      switch ($mappedQuery["sourceType"]) {
+      switch ($data["sourceType"]) {
         case "paste":
-          $dummyPost["hashfield"] = base64_decode($mappedQuery["sourceData"]);
+          $dummyPost["hashfield"] = base64_decode($data["sourceData"]);
           break;
         case "import":
-          $dummyPost["importfile"] = $mappedQuery["sourceData"];
+          $dummyPost["importfile"] = $data["sourceData"];
           break;
         case "url":
-          $dummyPost["url"] = $mappedQuery["sourceData"];
+          $dummyPost["url"] = $data["sourceData"];
           break;
         default:
           // TODO: Choice validation are model based checks
-          throw new HttpErrorException("sourceType value '" . $mappedQuery["sourceType"] . "' is not supported (choices paste, import, url");
+          throw new HttpErrorException("sourceType value '" . $data["sourceType"] . "' is not supported (choices paste, import, url");
       }
 
       // TODO: validate input is valid base64 encoded
-      if ($mappedQuery["sourceType"] == "paste") {
-        if (strlen($mappedQuery["sourceData"]) == 0) {
+      if ($data["sourceType"] == "paste") {
+        if (strlen($data["sourceData"]) == 0) {
           // TODO: Should be 400 instead
           throw new HttpErrorException("sourceType=paste, requires sourceData to be non-empty");
         }
       }
-      
+    
       $hashlist = HashlistUtils::createHashlist(
-        $mappedQuery[UQueryHashlist::HASHLIST_NAME],
-        $mappedQuery[UQueryHashlist::HASHLIST_IS_SALTED],
-        $mappedQuery[UQueryHashlist::HASHLIST_IS_SECRET],
-        $mappedQuery[UQueryHashlist::HASHLIST_HEX_SALTED],
-        $mappedQuery[UQueryHashlist::HASHLIST_SEPARATOR],
-        $mappedQuery[UQueryHashlist::HASHLIST_FORMAT],
-        // hashTypeId is a bit weird because the UQueryHashlist::HASHLIST_HASH_TYPE_ID is not the same as db column Hashlist::HASH_TYPE_ID
-        $mappedQuery[Hashlist::HASH_TYPE_ID],
-        (array_key_exists("saltSeperator", $mappedQuery)) ? $mappedQuery["saltSeparator"] : $mappedQuery[UQueryHashlist::HASHLIST_SEPARATOR],
-        $mappedQuery[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
-        $mappedQuery["sourceType"],
+        $data[Hashlist::HASHLIST_NAME],
+        $data[Hashlist::IS_SALTED],
+        $data[Hashlist::IS_SECRET],
+        $data[Hashlist::HEX_SALT],
+        $data["hashlistSeperator"] ?? "",
+        $data[Hashlist::FORMAT],
+        $data[Hashlist::HASH_TYPE_ID],
+        $data[Hashlist::SALT_SEPARATOR] ?? $data["hashlistSeperator"] ?? "",
+        $data[UQueryHashlist::HASHLIST_ACCESS_GROUP_ID],
+        $data["sourceType"],
         $dummyPost,
         [],
         $this->getUser(),
-        $mappedQuery[UQueryHashlist::HASHLIST_USE_BRAIN],
-        $mappedQuery[UQueryHashlist::HASHLIST_BRAIN_FEATURES]
+        $data[Hashlist::BRAIN_ID],
+        $data[Hashlist::BRAIN_FEATURES]
       );
 
       // Modify fields not set on hashlist creation
-      if (array_key_exists("notes", $mappedQuery)) {
-        HashlistUtils::editNotes($hashlist->getId(), $mappedQuery["notes"], $this->getUser());
+      if (array_key_exists("notes", $data)) {
+        HashlistUtils::editNotes($hashlist->getId(), $data["notes"], $this->getUser());
       };
-      HashlistUtils::setArchived($hashlist->getId(), $mappedQuery[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getUser());
+      HashlistUtils::setArchived($hashlist->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getUser());
 
       return $hashlist->getId();
     }
@@ -120,7 +120,7 @@ class HashlistAPI extends AbstractModelAPI {
       HashlistUtils::delete($object->getId(), $this->getUser());
     }
 
-    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {
+    public function updateObject(object $object, $data, $processed = []): void {
 
       $key = Hashlist::IS_ARCHIVED;
       if (array_key_exists($key, $data)) {
@@ -134,8 +134,7 @@ class HashlistAPI extends AbstractModelAPI {
         HashlistUtils::editNotes($object->getId(), $data[$key], $this->getUser());
       }
 
-
-      parent::updateObject($object, $data, $mappedFeatures, $processed = []);
+      parent::updateObject($object, $data, $processed = []);
     }
 }
 

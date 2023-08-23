@@ -17,10 +17,6 @@ class AgentBinaryAPI extends AbstractModelAPI {
       return AgentBinary::class;
     }    
 
-    public function getFeatures(): array {
-      return AgentBinary::getFeatures();
-    }
-
     protected function getFactory(): object {
       return Factory::getAgentBinaryFactory();
     }
@@ -34,20 +30,20 @@ class AgentBinaryAPI extends AbstractModelAPI {
     return  [];
     }
   
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       AgentBinaryUtils::newBinary(
-        $mappedQuery[AgentBinary::TYPE],
-        $mappedQuery[AgentBinary::OPERATING_SYSTEMS],
-        $mappedQuery[AgentBinary::FILENAME],
-        $mappedQuery[AgentBinary::VERSION],
-        $mappedQuery[AgentBinary::UPDATE_TRACK],
+        $data[AgentBinary::TYPE],
+        $data[AgentBinary::OPERATING_SYSTEMS],
+        $data[AgentBinary::FILENAME],
+        $data[AgentBinary::VERSION],
+        $data[AgentBinary::UPDATE_TRACK],
         $this->getUser()
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(AgentBinary::FILENAME, $mappedQuery[AgentBinary::FILENAME], '='),
-        new QueryFilter(AgentBinary::VERSION, $mappedQuery[AgentBinary::VERSION], '='),
+        new QueryFilter(AgentBinary::FILENAME, $data[AgentBinary::FILENAME], '='),
+        new QueryFilter(AgentBinary::VERSION, $data[AgentBinary::VERSION], '='),
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

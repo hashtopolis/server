@@ -46,28 +46,24 @@ class UserAPI extends AbstractModelAPI {
     }
 
     public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [];
+      return  ["password" => ["type" => "str", "null" => True]];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
-      /* Parameter is used as primary key in database */
-      $features = $this->getFeatures();
-      $object = UserUtils::createUser(
-          $mappedQuery[$features[USER::USERNAME]['alias']],
-          $mappedQuery[User::EMAIL],
-          $mappedQuery[$features[User::RIGHT_GROUP_ID]['alias']],
+    protected function createObject($data): int {
+      UserUtils::createUser(
+          $data[User::USERNAME],
+          $data[User::EMAIL],
+          $data[User::RIGHT_GROUP_ID],
           $this->getUser()
       );
 
-      /* On succesfully insert, return ID */
+      /* Hackish way to retreive object since Id is not returned on creation */
       $qFs = [
-        new QueryFilter(User::USERNAME, $mappedQuery[$features[USER::USERNAME]['alias']], '='),
-        new QueryFilter(User::EMAIL, $mappedQuery[User::EMAIL], '='),
-        new QueryFilter(User::RIGHT_GROUP_ID, $mappedQuery[$features[User::RIGHT_GROUP_ID]['alias']], '=')
+        new QueryFilter(User::USERNAME, $data[USER::USERNAME], '='),
+        new QueryFilter(User::EMAIL, $data[User::EMAIL], '='),
+        new QueryFilter(User::RIGHT_GROUP_ID, $data[User::RIGHT_GROUP_ID], '=')
       ];
 
-      /* Hackish way to retreive object since Id is not returned on creation */
       $oF = new OrderFilter(User::USER_ID, "DESC");
       $objects = $this->getFactory()->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
       assert(count($objects) == 1);
@@ -80,18 +76,19 @@ class UserAPI extends AbstractModelAPI {
       UserUtils::deleteUser($object->getId(), $this->getUser());
     }
 
-    public function updateObject(object $object, $data, $mappedFeatures, $processed = []): void {    
+    public function updateObject(object $object, $data, $processed = []): void {    
       $features = $this->getFeatures();
       $key = $features[USER::RIGHT_GROUP_ID]['alias'];
 
+      $key = USER::RIGHT_GROUP_ID;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
         UserUtils::setRights($object->getId(), $data[$key], $this->getUser());
       }
 
-      $key = $features[USER::IS_VALID]['alias'];
+      $key = USER::RIGHT_GROUP_ID;
       if (array_key_exists($key, $data)) {
-        array_push($processed, $key);
+        array_push($processed, USER::IS_VALID);
         if ($data[$key] == True) {
           UserUtils::enableUser($object->getId());
         } else {
@@ -99,7 +96,7 @@ class UserAPI extends AbstractModelAPI {
         }
       }
 
-      parent::updateObject($object, $data, $mappedFeatures, $processed);
+      parent::updateObject($object, $data, $processed);
     }
 
 }

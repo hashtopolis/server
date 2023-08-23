@@ -42,37 +42,37 @@ class NotificationSettingAPI extends AbstractModelAPI {
     return  ['actionFilter' => ['type' => 'str(256)']];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
+    protected function createObject(array $data): int {
       $dummyPost = [];
-      switch (DNotificationType::getObjectType($mappedQuery['action'])) {
+      switch (DNotificationType::getObjectType($data['action'])) {
         case DNotificationObjectType::USER:
-          $dummyPost['user'] = $mappedQuery['actionFilter'];
+          $dummyPost['user'] = $data['actionFilter'];
           break;
         case DNotificationObjectType::AGENT:
-          $dummyPost['agents'] = $mappedQuery['actionFilter'];
+          $dummyPost['agents'] = $data['actionFilter'];
           break;
         case DNotificationObjectType::HASHLIST:
-          $dummyPost['hashlists'] = $mappedQuery['actionFilter'];
+          $dummyPost['hashlists'] = $data['actionFilter'];
           break;
         case DNotificationObjectType::TASK:
-          $dummyPost['tasks'] = $mappedQuery['actionFilter'];
+          $dummyPost['tasks'] = $data['actionFilter'];
           break;
       }
 
 
       NotificationUtils::createNotificaton(
-        $mappedQuery['action'],
-        $mappedQuery['notification'],
-        $mappedQuery['receiver'],
+        $data[NotificationSetting::ACTION],
+        $data[NotificationSetting::NOTIFICATION],
+        $data[NotificationSetting::RECEIVER],
         $dummyPost,
         $this->getUser(),
       );
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(NotificationSetting::ACTION, $mappedQuery['action'], '='),
-        new QueryFilter(NotificationSetting::NOTIFICATION, $mappedQuery['notification'], '='),
-        new QueryFilter(NotificationSetting::RECEIVER, $mappedQuery['receiver'], '='),
+        new QueryFilter(NotificationSetting::ACTION, $data[NotificationSetting::ACTION], '='),
+        new QueryFilter(NotificationSetting::NOTIFICATION, $data[NotificationSetting::NOTIFICATION], '='),
+        new QueryFilter(NotificationSetting::RECEIVER, $data[NotificationSetting::RECEIVER], '='),
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */

@@ -50,12 +50,12 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
-      AgentUtils::assign($mappedQuery[Assignment::AGENT_ID], $mappedQuery[Assignment::TASK_ID], $this->getUser());
+    protected function createObject(array $data): int {
+      AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getUser());
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(Assignment::AGENT_ID, $mappedQuery[Assignment::AGENT_ID], '='),
-        new QueryFilter(Assignment::TASK_ID, $mappedQuery[Assignment::TASK_ID], '=')
+        new QueryFilter(Assignment::AGENT_ID, $data[Assignment::AGENT_ID], '='),
+        new QueryFilter(Assignment::TASK_ID, $data[Assignment::TASK_ID], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */
@@ -66,7 +66,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       return $objects[0]->getId();      
     }
 
-    public function updateObject(object $object, array $data, array $mappedFeatures, array $processed = []): void {
+    public function updateObject(object $object, array $data, array $processed = []): void {
       assert(False, "AgentAssignments cannot be updated via API");
     }
 

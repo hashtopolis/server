@@ -1,5 +1,6 @@
 <?php
 use DBA\Factory;
+use DBA\Hash;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
 
@@ -30,20 +31,16 @@ class HashTypeAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
-      /* Parameter is used as primary key in database */
-      $hashtypeId = $mappedQuery[HashType::HASH_TYPE_ID];
-
+    protected function createObject(array $data): int {
       HashtypeUtils::addHashtype(
-        $hashtypeId,
-        $mappedQuery[HashType::DESCRIPTION],
-        $mappedQuery[HashType::IS_SALTED],
-        $mappedQuery[HashType::IS_SLOW_HASH],
+        $data[HashType::HASH_TYPE_ID],
+        $data[HashType::DESCRIPTION],
+        $data[HashType::IS_SALTED],
+        $data[HashType::IS_SLOW_HASH],
         $this->getUser()
       );
 
-      /* On succesfully insert, return ID */
-      return $hashtypeId;
+      return $data[HashType::HASH_TYPE_ID];
     }
 
     protected function deleteObject(object $object): void {

@@ -30,12 +30,12 @@ class VoucherAPI extends AbstractModelAPI {
     return  [];
     }
 
-    protected function createObject($mappedQuery, $QUERY): int {
-      AgentUtils::createVoucher($QUERY[RegVoucher::VOUCHER]);
+    protected function createObject(array $data): int {
+      AgentUtils::createVoucher($data[RegVoucher::VOUCHER]);
 
       /* On succesfully insert, return ID */
       $qFs = [
-        new QueryFilter(RegVoucher::VOUCHER, $QUERY[RegVoucher::VOUCHER], '=')
+        new QueryFilter(RegVoucher::VOUCHER, $data[RegVoucher::VOUCHER], '=')
       ];
 
       /* Hackish way to retreive object since Id is not returned on creation */
