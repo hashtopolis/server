@@ -9,6 +9,17 @@ if (!$enabled || $enabled == 'false') {
 date_default_timezone_set("UTC");
 error_reporting(E_ALL);
 ini_set("display_errors", '1');
+/**
+ * Treat warnings as error, very usefull during unit testing.
+ * TODO: How-ever during Xdebug debugging under VS Code, this is very 
+ * TODO: slightly annoying since the last call stack is not very interesting. 
+ * TODO: Thus for the time-being do not-enable by default.
+ */
+// set_error_handler(function ($severity, $message, $file, $line) {
+//   if (error_reporting() & $severity) {
+//       throw new \ErrorException($message, 0, $severity, $file, $line);
+//   }
+// });
 
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ContentLengthMiddleware;
