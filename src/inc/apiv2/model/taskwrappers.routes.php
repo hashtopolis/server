@@ -15,7 +15,7 @@ class TaskWrappersAPI extends AbstractModelAPI {
     }
 
     public static function getAvailableMethods(): array {
-      return ['GET', 'PATCH'];
+      return ['GET', 'PATCH', 'DELETE'];
     }
 
     public static function getDBAclass(): string {
@@ -71,7 +71,21 @@ class TaskWrappersAPI extends AbstractModelAPI {
     }
     
     protected function deleteObject(object $object): void {
-      assert(False, "TaskWrappers cannot be deleted via API");
+      switch ($object->getTaskType()) {
+        case DTaskTypes::NORMAL:
+          $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskWrapperFactory());
+          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+          $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+          $task = $joined[Factory::getTaskFactory()->getModelName()][0];
+
+          TaskUtils::deleteTask($task);
+          break;
+        case DTaskTypes::SUPERTASK:
+          TaskUtils::deleteSupertask($object->getId(), $this->getCurrentUser());
+          break;
+        default:
+          assert(False, "Internal Error: taskType not recognized");
+      }
     }
 }
 
