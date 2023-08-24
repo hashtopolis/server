@@ -271,9 +271,6 @@ class SupertaskUtils {
       if ($wrapperPriority == 0 || $wrapperPriority > $pretask->getPriority()) {
         $wrapperPriority = $pretask->getPriority();
       }
-      if ($wrapperMaxAgents == 0 || $wrapperMaxAgents > $pretask->getMaxAgents()) {
-        $wrapperMaxAgents = $pretask->getMaxAgents();
-      }
     }    
 
     $taskWrapper = new TaskWrapper(null, $wrapperPriority, $wrapperMaxAgents, DTaskTypes::SUPERTASK, $hashlist->getId(), $hashlist->getAccessGroupId(), $supertask->getSupertaskName(), 0, 0);
