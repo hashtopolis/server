@@ -3,42 +3,85 @@ require_once(dirname(__FILE__) . "/AbstractBaseAPI.class.php");
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
 use DBA\Factory;
+
+use DBA\AbstractModelFactory;
+
 use DBA\Chunk;
+use DBA\CrackerBinary;
+use DBA\Hashlist;
+use DBA\RightGroup;
+use DBA\Supertask;
 use DBA\Task;
 use DBA\User;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost(array $data): array|null;
 
-  final protected static function getOneChunk(int $pk): Chunk
+  private static function getFactory(string $model): object {
+    switch($model) {
+      case Chunk::class:
+        return Factory::getChunkFactory();
+      case CrackerBinary::class;
+        return Factory::getCrackerBinaryFactory();
+      case Hashlist::class:
+        return Factory::getHashlistFactory();
+      case RightGroup::class:
+        return Factory::getRightGroupFactory();
+      case Supertask::class:
+        return Factory::getSupertaskFactory();
+      case Task::class:
+        return Factory::getTaskFactory();
+      case User::class:
+        return Factory::getUserFactory();
+      }
+    assert(False, "Model '$model' cannot be mapped to Factory");
+  }
+
+  final protected static function fetchOne(string $model, int $pk): object
   {
-    $object = Factory::getChunkFactory()->get($pk);
+    $factory = self::getFactory($model);
+    $object = $factory->get($pk);
     if ($object === null) {
-      throw new HTException("Chunk '$pk' not found!", 400);
+      throw new HTException("$model '$pk' not found!", 400);
     }
     return $object;
   }
 
-  final protected static function getOneUser(int $pk): User
+  final protected static function getChunk(int $pk): Chunk
   {
-    $object = Factory::getUserFactory()->get($pk);
-    if ($object === null) {
-      throw new HTException("User '$pk' not found!", 400);
-    }
-    return $object;
+    return self::fetchOne(Chunk::class, $pk);
   }
 
-  final protected static function getOneTask(int $pk): Task
+  final protected static function getCrackerBinary(int $pk): CrackerBinary
   {
-    $object = Factory::getTaskFactory()->get($pk);
-    if ($object === null) {
-      throw new HTException("Task'$pk' not found!", 400);
-    }
-    return $object;
+    return self::fetchOne(CrackerBinary::class, $pk);
   }
 
+  final protected static function getHashlist(int $pk): Hashlist
+  {
+    return self::fetchOne(Hashlist::class, $pk);
+  }
+
+  final protected static function getRightGroup(int $pk): RightGroup
+  {
+    return self::fetchOne(RightGroup::class, $pk);
+  }
+
+  final protected static function getSupertask(int $pk): Supertask
+  {
+    return self::fetchOne(Supertask::class, $pk);
+  }
+
+  final protected static function getTask(int $pk): Task
+  {
+    return self::fetchOne(Task::class, $pk);
+  }
+
+  final protected static function getUser(int $pk): User
+  {
+    return self::fetchOne(User::class, $pk);
+  }
 
   /* Chunk API endpoint specific call to abort chunk */
   public function processPost(Request $request, Response $response, array $args): Response 

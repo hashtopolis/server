@@ -26,10 +26,9 @@ class PurgeTaskHelperAPI extends AbstractHelperAPI {
   }
 
   public function actionPost($data): array|null {
-    $pk = $data[Task::TASK_ID];
-    $object = self::getOneTask($pk);
+    $task = self::getTask($data[Task::TASK_ID]);
 
-    TaskUtils::purgeTask($object->getId(), $this->getUser());   
+    TaskUtils::purgeTask($task->getId(), $this->getCurrentUser());   
     return null;
   }
 }  

@@ -25,11 +25,9 @@ class ChunkAbortHelperAPI extends AbstractHelperAPI {
   }
 
   public function actionPost(array $data): array|null {
-    $pk = $data[Chunk::CHUNK_ID];
-    $object = self::getOneChunk($pk);
-
-    // Call action
-    TaskUtils::abortChunk($object->getId(), $this->getUser());
+    $chunk = self::getChunk($data[Chunk::CHUNK_ID]);
+    
+    TaskUtils::abortChunk($chunk->getId(), $this->getCurrentUser());
     return null;
   }  
 }
