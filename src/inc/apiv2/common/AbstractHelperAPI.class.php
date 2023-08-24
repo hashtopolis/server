@@ -104,9 +104,9 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
       $returnData = $this->actionPost($data);
       $status = ($returnData) ? 200 : 204;
       $retval['data'] = $returnData;
-    } catch (Exception $e) {
+    } catch (Error | Exception $e) {
       // https://jsonapi.org/format/#error-objects
-      $status = $e->getCode();
+      $status = 400;
       $retval['errors'] = [
         'status' => $e->getCode(),
         'source' => $e->getFile() . ':' . $e->getLine(),
