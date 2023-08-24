@@ -25,10 +25,6 @@ class AgentAPI extends AbstractModelAPI {
       return Agent::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getAgentFactory();
-    }
-
     public function getExpandables(): array {
       return ['accessGroups', 'agentstats'];
     }

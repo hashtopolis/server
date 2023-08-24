@@ -18,10 +18,6 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
       return RightGroup::class;
     }    
 
-    protected function getFactory(): object {
-      return Factory::getRightGroupFactory();
-    }
-
     public function getExpandables(): array {
       return ['user'];
     }

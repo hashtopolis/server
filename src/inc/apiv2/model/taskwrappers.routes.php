@@ -22,10 +22,6 @@ class TaskWrappersAPI extends AbstractModelAPI {
       return TaskWrapper::class;
     }    
 
-    protected function getFactory(): object {
-      return Factory::getTaskWrapperFactory();
-    }
-
     public function getExpandables(): array {
       return ['accessGroup', 'tasks'];
     }

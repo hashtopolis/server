@@ -18,10 +18,6 @@ class ConfigSectionAPI extends AbstractModelAPI {
     public static function getDBAclass(): string {
       return ConfigSection::class;
     }   
-
-    protected function getFactory(): object {
-      return Factory::getConfigSectionFactory();
-    }
  
     protected function createObject(array $data): int {
        /* Dummy code to implement abstract functions */

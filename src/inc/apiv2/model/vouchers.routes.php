@@ -16,10 +16,6 @@ class VoucherAPI extends AbstractModelAPI {
    public static function getDBAclass(): string {
       return RegVoucher::class;
     }
-
-    protected function getFactory(): object {
-      return Factory::getRegVoucherFactory();
-    }
     
     protected function createObject(array $data): int {
       AgentUtils::createVoucher($data[RegVoucher::VOUCHER]);

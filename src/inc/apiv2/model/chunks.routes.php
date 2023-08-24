@@ -19,10 +19,6 @@ class ChunkAPI extends AbstractModelAPI {
       return Chunk::class;
     }   
 
-    protected function getFactory(): object {
-      return Factory::getChunkFactory();
-    }
-
     public function getExpandables(): array {
       return ["task"];
     }

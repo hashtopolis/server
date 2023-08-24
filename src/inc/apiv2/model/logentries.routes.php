@@ -17,10 +17,6 @@ class LogEntryAPI extends AbstractModelAPI {
       return LogEntry::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getLogEntryFactory();
-    }
-
     protected function createObject(array $data): int {
       Util::createLogEntry(
         $data[LogEntry::ISSUER],

@@ -17,10 +17,6 @@ class PreprocessorAPI extends AbstractModelAPI {
       return Preprocessor::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getPreprocessorFactory();
-    }
-
     protected function createObject(array $data): int {
       PreprocessorUtils::addPreprocessor(
         $data[Preprocessor::NAME],

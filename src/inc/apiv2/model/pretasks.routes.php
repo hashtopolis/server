@@ -20,10 +20,6 @@ class PreTaskAPI extends AbstractModelAPI {
       return Pretask::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getPretaskFactory();
-    }
-
     public function getExpandables(): array {
       return ["pretaskFiles"];
     }

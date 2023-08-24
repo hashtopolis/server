@@ -16,10 +16,6 @@ class HealthCheckAPI extends AbstractModelAPI {
       return HealthCheck::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getHealthCheckFactory();
-    }
-
     public function getExpandables(): array {
       return ['crackerBinary', 'healthCheckAgents'];
     }

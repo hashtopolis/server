@@ -16,10 +16,6 @@ class AgentBinaryAPI extends AbstractModelAPI {
     public static function getDBAclass(): string {
       return AgentBinary::class;
     }    
-
-    protected function getFactory(): object {
-      return Factory::getAgentBinaryFactory();
-    }
   
     protected function createObject(array $data): int {
       AgentBinaryUtils::newBinary(

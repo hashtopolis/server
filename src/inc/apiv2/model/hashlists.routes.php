@@ -23,10 +23,6 @@ class HashlistAPI extends AbstractModelAPI {
       return Hashlist::class;
     }   
 
-    protected function getFactory(): object {
-      return Factory::getHashlistFactory();
-    }
-
     public function getExpandables(): array {
       return ["accessGroup", "hashType", "hashes", "tasks"];
     }

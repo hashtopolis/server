@@ -24,10 +24,6 @@ class SpeedAPI extends AbstractModelAPI {
       return Speed::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getSpeedFactory();
-    }
-
     public function getExpandables(): array {
       return [ 'agent', 'task' ];
     }

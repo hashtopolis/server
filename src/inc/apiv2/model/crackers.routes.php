@@ -17,10 +17,6 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       return CrackerBinary::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getCrackerBinaryFactory();
-    }
-
     public function getExpandables(): array {
       return ["crackerBinaryType"];
     }

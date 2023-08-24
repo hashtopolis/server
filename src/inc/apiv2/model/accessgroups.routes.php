@@ -21,10 +21,6 @@ class AccessGroupAPI extends AbstractModelAPI {
       return AccessGroup::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getAccessGroupFactory();
-    }
-
     public function getExpandables(): array {
       return ["userMembers", "agentMembers"];
     }

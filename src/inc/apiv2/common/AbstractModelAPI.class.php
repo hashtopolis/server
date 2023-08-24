@@ -13,9 +13,12 @@ use Middlewares\Utils\HttpErrorException;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract static public function getDBAClass(): string;
-  abstract protected function getFactory(): object;
   abstract protected function createObject(array $data): int;
   abstract protected function deleteObject(object $object): void;
+
+  protected function getFactory(): object {
+    return self::getModelFactory($this->getDBAclass());
+  }
 
   /** 
    * Get features based on Formfields and DBA model features

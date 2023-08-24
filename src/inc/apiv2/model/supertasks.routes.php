@@ -20,10 +20,6 @@ class SupertaskAPI extends AbstractModelAPI {
       return Supertask::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getSupertaskFactory();
-    }
-
     public function getExpandables(): array {
       return [ "pretasks" ];
     }

@@ -19,10 +19,6 @@ class HashAPI extends AbstractModelAPI {
       return Hash::class;
     }   
 
-    protected function getFactory(): object {
-      return Factory::getHashFactory();
-    }
-
     public function getExpandables(): array {
       return ["hashlist", "chunk"];
     }

@@ -18,9 +18,6 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
     public static function getDBAclass(): string {
       return HealthCheckAgent::class;
     }
-    protected function getFactory(): object {
-      return Factory::getHealthCheckAgentFactory();
-    }
 
     public function getExpandables(): array {
       return ['agent', 'healthCheck'];

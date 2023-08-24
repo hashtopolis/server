@@ -21,10 +21,6 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       return Assignment::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getAssignmentFactory();
-    }
-
     public function getExpandables(): array {
       return ["task", "agent"];
     }

@@ -18,10 +18,6 @@ class FileAPI extends AbstractModelAPI {
       return File::class;
     }   
     
-    protected function getFactory(): object {
-      return Factory::getFileFactory();
-    }
-
     public function getExpandables(): array {
       return ["accessGroup"];
     }

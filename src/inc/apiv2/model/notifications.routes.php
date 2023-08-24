@@ -16,10 +16,6 @@ class NotificationSettingAPI extends AbstractModelAPI {
       return NotificationSetting::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getNotificationSettingFactory();
-    }
-
     public function getExpandables(): array {
       return ['user'];
     }

@@ -22,10 +22,6 @@ class TaskAPI extends AbstractModelAPI {
     public static function getDBAclass(): string {
       return Task::class;
     }
-    
-    protected function getFactory(): object {
-      return Factory::getTaskFactory();
-    }
 
     public function getExpandables(): array {
       return ["assignedAgents", "crackerBinary", "crackerBinaryType", "hashlist", "speeds", "files"];

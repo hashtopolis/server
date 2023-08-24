@@ -18,10 +18,6 @@ class HashTypeAPI extends AbstractModelAPI {
       return HashType::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getHashTypeFactory();
-    }
-
     protected function createObject(array $data): int {
       HashtypeUtils::addHashtype(
         $data[HashType::HASH_TYPE_ID],

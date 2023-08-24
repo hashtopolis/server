@@ -87,6 +87,8 @@ abstract class AbstractBaseAPI
     $this->container = $container;
   }
 
+  
+
   protected function getFilterACL(): array {
     return [];
   }
@@ -151,6 +153,117 @@ abstract class AbstractBaseAPI
    */
   protected function doExpand(object $object, string $expand): mixed {
   }
+
+  protected static function getModelFactory(string $model): object {
+    switch($model) {
+      case AccessGroup::class:
+        return Factory::getAccessGroupFactory();
+      case Agent::class:
+        return Factory::getAgentFactory();
+      case AgentBinary::class:
+        return Factory::getAgentBinaryFactory();
+      case AgentStat::class:
+        return Factory::getAgentStatFactory();
+      case Assignment::class:
+        return Factory::getAssignmentFactory();
+      case Chunk::class:
+        return Factory::getChunkFactory();
+      case Config::class:
+        return Factory::getConfigFactory();
+      case ConfigSection::class:
+        return Factory::getConfigSectionFactory();
+      case CrackerBinary::class:
+        return Factory::getCrackerBinaryFactory();
+      case CrackerBinaryType::class:
+        return Factory::getCrackerBinaryTypeFactory();
+      case File::class:
+        return Factory::getFileFactory();
+      case Hash::class:
+        return Factory::getHashFactory();
+      case Hashlist::class:
+        return Factory::getHashlistFactory();
+      case HashType::class:
+        return Factory::getHashTypeFactory();
+      case HealthCheckAgent::class:
+        return Factory::getHealthCheckAgentFactory();
+      case HealthCheck::class:
+        return Factory::getHealthCheckFactory();
+      case LogEntry::class:
+        return Factory::getLogEntryFactory();
+      case NotificationSetting::class:
+        return Factory::getNotificationSettingFactory();
+      case Preprocessor::class:
+        return Factory::getPreprocessorFactory();
+      case Pretask::class:
+        return Factory::getPretaskFactory();
+      case RegVoucher::class:
+        return Factory::getRegVoucherFactory();
+      case RightGroup::class:
+        return Factory::getRightGroupFactory();
+      case Speed::class:
+        return Factory::getSpeedFactory();
+      case Supertask::class:
+        return Factory::getSupertaskFactory();
+      case Task::class:
+        return Factory::getTaskFactory();
+      case TaskWrapper::class:
+        return Factory::getTaskWrapperFactory();
+      case User::class:
+        return Factory::getUserFactory();
+      }
+    assert(False, "Model '$model' cannot be mapped to Factory");
+  }
+
+  final protected static function fetchOne(string $model, int $pk): object
+  {
+    $factory = self::getModelFactory($model);
+    $object = $factory->get($pk);
+    if ($object === null) {
+      throw new HTException("$model '$pk' not found!", 400);
+    }
+    return $object;
+  }
+
+  final protected static function getChunk(int $pk): Chunk
+  {
+    return self::fetchOne(Chunk::class, $pk);
+  }
+
+  final protected static function getCrackerBinary(int $pk): CrackerBinary
+  {
+    return self::fetchOne(CrackerBinary::class, $pk);
+  }
+
+  final protected static function getHashlist(int $pk): Hashlist
+  {
+    return self::fetchOne(Hashlist::class, $pk);
+  }
+
+  final protected static function getPretask(int $pk): Pretask
+  {
+    return self::fetchOne(Pretask::class, $pk);
+  }
+
+  final protected static function getRightGroup(int $pk): RightGroup
+  {
+    return self::fetchOne(RightGroup::class, $pk);
+  }
+
+  final protected static function getSupertask(int $pk): Supertask
+  {
+    return self::fetchOne(Supertask::class, $pk);
+  }
+
+  final protected static function getTask(int $pk): Task
+  {
+    return self::fetchOne(Task::class, $pk);
+  }
+
+  final protected static function getUser(int $pk): User
+  {
+    return self::fetchOne(User::class, $pk);
+  }
+
 
  /**
  * Retrieve permissions based on expand section

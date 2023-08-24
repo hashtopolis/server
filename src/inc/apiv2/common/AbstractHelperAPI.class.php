@@ -18,74 +18,7 @@ use DBA\User;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost(array $data): array|null;
-
-  protected static function getFactory(string $model): object {
-    switch($model) {
-      case Chunk::class:
-        return Factory::getChunkFactory();
-      case CrackerBinary::class;
-        return Factory::getCrackerBinaryFactory();
-      case Hashlist::class:
-        return Factory::getHashlistFactory();
-      case RightGroup::class:
-        return Factory::getRightGroupFactory();
-      case Supertask::class:
-        return Factory::getSupertaskFactory();
-      case Task::class:
-        return Factory::getTaskFactory();
-      case TaskWrapper::class:
-        return Factory::getTaskWrapperFactory();
-      case User::class:
-        return Factory::getUserFactory();
-      }
-    assert(False, "Model '$model' cannot be mapped to Factory");
-  }
-
-  final protected static function fetchOne(string $model, int $pk): object
-  {
-    $factory = self::getFactory($model);
-    $object = $factory->get($pk);
-    if ($object === null) {
-      throw new HTException("$model '$pk' not found!", 400);
-    }
-    return $object;
-  }
-
-  final protected static function getChunk(int $pk): Chunk
-  {
-    return self::fetchOne(Chunk::class, $pk);
-  }
-
-  final protected static function getCrackerBinary(int $pk): CrackerBinary
-  {
-    return self::fetchOne(CrackerBinary::class, $pk);
-  }
-
-  final protected static function getHashlist(int $pk): Hashlist
-  {
-    return self::fetchOne(Hashlist::class, $pk);
-  }
-
-  final protected static function getRightGroup(int $pk): RightGroup
-  {
-    return self::fetchOne(RightGroup::class, $pk);
-  }
-
-  final protected static function getSupertask(int $pk): Supertask
-  {
-    return self::fetchOne(Supertask::class, $pk);
-  }
-
-  final protected static function getTask(int $pk): Task
-  {
-    return self::fetchOne(Task::class, $pk);
-  }
-
-  final protected static function getUser(int $pk): User
-  {
-    return self::fetchOne(User::class, $pk);
-  }
-
+  
   /* Chunk API endpoint specific call to abort chunk */
   public function processPost(Request $request, Response $response, array $args): Response 
   {

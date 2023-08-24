@@ -52,7 +52,7 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     ];
     $oF = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
     
-    $objects = self::getFactory(TaskWrapper::class)->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
+    $objects = self::getModelFactory(TaskWrapper::class)->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
     assert(count($objects) > 0);
 
     return $this->object2Array($objects[0]);

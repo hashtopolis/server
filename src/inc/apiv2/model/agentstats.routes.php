@@ -20,10 +20,6 @@ class AgentStatsAPI extends AbstractModelAPI {
     public static function getDBAclass(): string {
       return AgentStat::class;
     }
-
-    protected function getFactory(): object {
-      return Factory::getAgentStatFactory();
-    }
    
     protected function createObject(array $data): int {
       assert(False, "AgentStats cannot be created via API");

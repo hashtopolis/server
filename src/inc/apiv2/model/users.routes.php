@@ -20,10 +20,6 @@ class UserAPI extends AbstractModelAPI {
       return User::class;
     }
 
-    protected function getFactory(): object {
-      return Factory::getUserFactory();
-    }
-
     public function getExpandables(): array {
       return ["accessGroups", "globalPermissionGroup"];
     }
