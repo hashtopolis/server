@@ -3,6 +3,9 @@
 ## Bugfixes
 - Clicking pretask in Supertask create screen now directs correctly to the pretask and not a task with the same id (#945)
 
+## New feature
+- Number of agents per supertask/taskwrapper can be limited (#769).
+
 
 # v0.13.1 -> v0.14.0
 
