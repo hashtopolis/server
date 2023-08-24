@@ -84,6 +84,7 @@ class HashtopolisConnector(object):
             auth_uri = self._api_endpoint + '/auth/token'
             auth = (self.config.username, self.config.password)
             r = requests.post(auth_uri, auth=auth)
+            self.validate_status_code(r, [201], "Authentication failed")
 
             r_json = self.resp_to_json(r)
             HashtopolisConnector.token[self._api_endpoint] = r_json['token']
@@ -613,3 +614,46 @@ class Meta(HashtopolisConnector):
         r = requests.get(uri)
         self.validate_status_code(r, [200], "Unable to retrieve Meta definitions")
         return self.resp_to_json(r)
+
+
+class Helper(HashtopolisConnector):
+    def __init__(self):
+        super().__init__("/helper/", HashtopolisConfig())
+
+    def _helper_request(self, helper_uri, payload):
+        self.authenticate()
+        uri = self._api_endpoint + self._model_uri + helper_uri
+        headers = self._headers
+
+        logging.debug(f"Makeing POST request to {uri}, headers={headers} payload={payload}")
+        r = requests.post(uri, headers=headers, data=json.dumps(payload))
+        self.validate_status_code(r, [200], "Helper request {helper_uri} failed")
+        if r.status_code == 204:
+            return None
+        else:
+            return self.resp_to_json(r)
+
+    def _test_authentication(self, username, password):
+        auth_uri = self._api_endpoint + '/auth/token'
+        auth = (username, password)
+        r = requests.post(auth_uri, auth=auth)
+        self.validate_status_code(r, [201], "Authentication failed")
+
+    def abortChunk(self, chunk):
+        payload = {
+            'chunkId': chunk.id,
+        }
+        return self._helper_request("abortChunk", payload)
+
+    def setUserPassword(self, user, password):
+        payload = {
+            'userId': user.id,
+            'password': password,
+        }
+        return self._helper_request("setUserPassword", payload)
+    
+    def resetChunk(self, chunk):
+        payload = {
+            'chunkId': chunk.id,
+        }
+        return self._helper_request("resetChunk", payload)

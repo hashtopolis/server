@@ -41,10 +41,6 @@ class UserAPI extends AbstractModelAPI {
       }
     }  
 
-    public function getFormFields(): array {
-      return  ["password" => ["type" => "str", "null" => True]];
-    }
-
     protected function createObject($data): int {
       UserUtils::createUser(
           $data[User::USERNAME],
@@ -73,18 +69,15 @@ class UserAPI extends AbstractModelAPI {
     }
 
     public function updateObject(object $object, $data, $processed = []): void {    
-      $features = $this->getFeatures();
-      $key = $features[USER::RIGHT_GROUP_ID]['alias'];
-
       $key = USER::RIGHT_GROUP_ID;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
         UserUtils::setRights($object->getId(), $data[$key], $this->getUser());
       }
 
-      $key = USER::RIGHT_GROUP_ID;
+      $key = USER::IS_VALID;
       if (array_key_exists($key, $data)) {
-        array_push($processed, USER::IS_VALID);
+        array_push($processed, $key);
         if ($data[$key] == True) {
           UserUtils::enableUser($object->getId());
         } else {

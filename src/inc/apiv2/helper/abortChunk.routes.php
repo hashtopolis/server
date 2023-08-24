@@ -24,12 +24,10 @@ class ChunkAbortHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($mappedFeatures, $QUERY): array|null {
-    $pk = $mappedFeatures[Chunk::CHUNK_ID];
-    $object = Factory::getChunkFactory()->get($pk);
-    if ($object === null) {
-      throw new HTException("Chunk '$pk' not found!", 404);
-    }
+  public function actionPost(array $data): array|null {
+    $pk = $data[Chunk::CHUNK_ID];
+    $object = self::getOneChunk($pk);
+
     // Call action
     TaskUtils::abortChunk($object->getId(), $this->getUser());
     return null;

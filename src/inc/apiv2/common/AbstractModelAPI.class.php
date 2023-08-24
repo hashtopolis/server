@@ -244,47 +244,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $data = $request->getParsedBody();
     $allFeatures = $this->getAliasedFeatures();
 
-    $validFeatures = [];
-    foreach($allFeatures as $key => $value) {
-      if ($value['protected'] == True) {
-        continue;
-      } 
-      if ($value['private'] == True) {
-        continue;
-      }
-      $validFeatures[$key] = $value;
-    }
+    // Validate incoming parameters
+    $this->validateParameters($data, $allFeatures);
 
-    // Ensure debugging response lists are in sorted order
-    ksort($validFeatures);
-
-    // Find keys which are invalid
-    $invalidKeys = array_diff(array_keys($data), array_keys($validFeatures));
-    if (sizeof($invalidKeys) > 0) {
-      ksort($invalidKeys);
-      throw new HTException("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
-                            "(valid key(s) : '" . join(", ", array_keys($validFeatures)) . ")'");
-    }
-   
-    // Make listing of features requires for creation
-    $requiredFeatures = [];
-    foreach($allFeatures as $key => $value) {
-      if ($value['null'] == True) {
-        continue;
-      } 
-      if ($value['protected'] == True) {
-        continue;
-      }
-      $validFeatures[$key] = $value;
-    }
-
-    // Find out about mandatory parameters which are not provided
-    $missingKeys = array_diff(array_keys($requiredFeatures), array_keys($data));
-    if (count($missingKeys) > 0) {
-      throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
-    }
-
-    // Validate incoming data
+    // Validate incoming data by value
     $this->validateData($data, $allFeatures);
 
     // Remove key aliases and sanitize to 'db values and request creation
