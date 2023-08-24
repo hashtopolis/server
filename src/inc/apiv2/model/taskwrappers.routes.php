@@ -82,8 +82,8 @@ class TaskWrappersAPI extends AbstractModelAPI {
           $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
           $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
           $task = $joined[Factory::getTaskFactory()->getModelName()][0];
-
-          TaskUtils::deleteTask($task);
+          // api=true to avoid TaskUtils::delete setting 'Location:' header
+          TaskUtils::delete($task->getId(), $this->getCurrentUser(), true);
           break;
         case DTaskTypes::SUPERTASK:
           TaskUtils::deleteSupertask($object->getId(), $this->getCurrentUser());
