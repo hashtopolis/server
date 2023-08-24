@@ -100,7 +100,7 @@ class SupertaskUtils {
    * @param int $benchtype
    * @return Pretask[]
    */
-  public static function createIterationPretasks($command, $name, $basefiles, $iterfiles, $isSmall, $isCpuOnly, $crackerBinaryType, $benchtype) {
+  public static function createIterationPretasks($command, $name, $basefiles, $iterfiles, $isSmall, $maxAgents, $isCpuOnly, $crackerBinaryType, $benchtype) {
     // create the preconf tasks
     $preTasks = array();
     $priority = sizeof($iterfiles) + 1;
@@ -119,7 +119,7 @@ class SupertaskUtils {
         $isCpuOnly,
         $benchtype,
         $priority,
-        0,
+        $maxAgents,
         0,
         $crackerBinaryType->getId()
       );
@@ -362,7 +362,7 @@ class SupertaskUtils {
    * @param string $benchtype
    * @throws HTException
    */
-  public static function importSupertask($name, $isCpuOnly, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype) {
+  public static function importSupertask($name, $isCpuOnly, $maxAgents, $isSmall, $useOptimized, $crackerBinaryTypeId, $masks, $benchtype) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
@@ -381,7 +381,7 @@ class SupertaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $pretasks = SupertaskUtils::createImportPretasks($masks, $isSmall, $isCpuOnly, $crackerBinaryType, $useOptimized, $benchtype);
+    $pretasks = SupertaskUtils::createImportPretasks($masks, $isSmall, $maxAgents, $isCpuOnly, $crackerBinaryType, $useOptimized, $benchtype);
     
     $supertask = new Supertask(null, $name);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
@@ -401,7 +401,7 @@ class SupertaskUtils {
    * @param int $newBench
    * @return array
    */
-  private static function createImportPretasks($masks, $isSmall, $isCpu, $crackerBinaryType, $useOptimized = false, $newBench = 1) {
+  private static function createImportPretasks($masks, $isSmall, $maxAgents, $isCpu, $crackerBinaryType, $useOptimized = false, $newBench = 1) {
     // create the preconf tasks
     $preTasks = array();
     $priority = sizeof($masks) + 1;
@@ -440,7 +440,7 @@ class SupertaskUtils {
         $isCpu,
         $newBench,
         $priority,
-        0,
+        $maxAgents,
         1,
         $crackerBinaryType->getId()
       );
