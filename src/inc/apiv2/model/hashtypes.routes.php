@@ -28,7 +28,7 @@ class HashTypeAPI extends AbstractModelAPI {
         $data[HashType::DESCRIPTION],
         $data[HashType::IS_SALTED],
         $data[HashType::IS_SLOW_HASH],
-        $this->getUser()
+        $this->getCurrentUser()
       );
 
       return $data[HashType::HASH_TYPE_ID];

@@ -58,10 +58,10 @@ class TaskWrappersAPI extends AbstractModelAPI {
         array_push($processed, $key);
         switch ($object->getTaskType()) {
           case DTaskTypes::NORMAL:
-            TaskUtils::updatePriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getUser());
+            TaskUtils::updatePriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getCurrentUser());
             break;
           case DTaskTypes::SUPERTASK:
-            TaskUtils::setSupertaskPriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getUser());
+            TaskUtils::setSupertaskPriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getCurrentUser());
             break;
           default:
             assert(False, "Internal Error: taskType not recognized");

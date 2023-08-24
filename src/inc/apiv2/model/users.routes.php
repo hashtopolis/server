@@ -46,7 +46,7 @@ class UserAPI extends AbstractModelAPI {
           $data[User::USERNAME],
           $data[User::EMAIL],
           $data[User::RIGHT_GROUP_ID],
-          $this->getUser()
+          $this->getCurrentUser()
       );
 
       /* Hackish way to retreive object since Id is not returned on creation */
@@ -65,14 +65,14 @@ class UserAPI extends AbstractModelAPI {
 
 
     protected function deleteObject(object $object): void {
-      UserUtils::deleteUser($object->getId(), $this->getUser());
+      UserUtils::deleteUser($object->getId(), $this->getCurrentUser());
     }
 
     public function updateObject(object $object, $data, $processed = []): void {    
       $key = USER::RIGHT_GROUP_ID;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
-        UserUtils::setRights($object->getId(), $data[$key], $this->getUser());
+        UserUtils::setRights($object->getId(), $data[$key], $this->getCurrentUser());
       }
 
       $key = USER::IS_VALID;
@@ -81,7 +81,7 @@ class UserAPI extends AbstractModelAPI {
         if ($data[$key] == True) {
           UserUtils::enableUser($object->getId());
         } else {
-          UserUtils::disableUser($object->getId(), $this->getUser());
+          UserUtils::disableUser($object->getId(), $this->getCurrentUser());
         }
       }
 

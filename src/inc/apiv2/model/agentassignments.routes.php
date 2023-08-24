@@ -43,7 +43,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     }  
 
     protected function createObject(array $data): int {
-      AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getUser());
+      AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());
       /* On succesfully insert, return ID */
       $qFs = [
         new QueryFilter(Assignment::AGENT_ID, $data[Assignment::AGENT_ID], '='),
@@ -63,7 +63,7 @@ class AgentAssignmentAPI extends AbstractModelAPI {
     }
 
     protected function deleteObject(object $object): void {
-      AgentUtils::assign($object->getAgentId(), 0, $this->getUser());
+      AgentUtils::assign($object->getAgentId(), 0, $this->getCurrentUser());
     }
 }
 

@@ -51,7 +51,7 @@ class HashlistAPI extends AbstractModelAPI {
     }  
 
     protected function getFilterACL(): array {
-      return [new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getUser())))];
+      return [new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))];
     }
 
     public function getFormFields(): array {
@@ -102,22 +102,22 @@ class HashlistAPI extends AbstractModelAPI {
         $data["sourceType"],
         $dummyPost,
         [],
-        $this->getUser(),
+        $this->getCurrentUser(),
         $data[Hashlist::BRAIN_ID],
         $data[Hashlist::BRAIN_FEATURES]
       );
 
       // Modify fields not set on hashlist creation
       if (array_key_exists("notes", $data)) {
-        HashlistUtils::editNotes($hashlist->getId(), $data["notes"], $this->getUser());
+        HashlistUtils::editNotes($hashlist->getId(), $data["notes"], $this->getCurrentUser());
       };
-      HashlistUtils::setArchived($hashlist->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getUser());
+      HashlistUtils::setArchived($hashlist->getId(), $data[UQueryHashlist::HASHLIST_IS_ARCHIVED], $this->getCurrentUser());
 
       return $hashlist->getId();
     }
 
     protected function deleteObject(object $object): void {
-      HashlistUtils::delete($object->getId(), $this->getUser());
+      HashlistUtils::delete($object->getId(), $this->getCurrentUser());
     }
 
     public function updateObject(object $object, $data, $processed = []): void {
@@ -125,13 +125,13 @@ class HashlistAPI extends AbstractModelAPI {
       $key = Hashlist::IS_ARCHIVED;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
-        HashlistUtils::setArchived($object->getId(), $data[$key], $this->getUser());
+        HashlistUtils::setArchived($object->getId(), $data[$key], $this->getCurrentUser());
       }
 
       $key = Hashlist::NOTES;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
-        HashlistUtils::editNotes($object->getId(), $data[$key], $this->getUser());
+        HashlistUtils::editNotes($object->getId(), $data[$key], $this->getCurrentUser());
       }
 
       parent::updateObject($object, $data, $processed = []);

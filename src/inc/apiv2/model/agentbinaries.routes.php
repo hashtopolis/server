@@ -28,7 +28,7 @@ class AgentBinaryAPI extends AbstractModelAPI {
         $data[AgentBinary::FILENAME],
         $data[AgentBinary::VERSION],
         $data[AgentBinary::UPDATE_TRACK],
-        $this->getUser()
+        $this->getCurrentUser()
       );
 
       /* On succesfully insert, return ID */

@@ -36,7 +36,7 @@ class SetUserPasswordHelperAPI extends AbstractHelperAPI {
     UserUtils::setPassword(
       $object->getId(),
       $data["password"],
-      $this->getUser()
+      $this->getCurrentUser()
     );
     return null;
   }

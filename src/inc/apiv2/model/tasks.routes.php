@@ -88,7 +88,7 @@ class TaskAPI extends AbstractModelAPI {
         $data[Task::MAX_AGENTS],
         $data["files"],
         $data[Task::CRACKER_BINARY_TYPE_ID],
-        $this->getUser(),
+        $this->getCurrentUser(),
         $data[Task::NOTES],
         $data[Task::STATIC_CHUNKS],
         $data[Task::CHUNK_SIZE]
@@ -105,7 +105,7 @@ class TaskAPI extends AbstractModelAPI {
       $key = Task::IS_ARCHIVED;
       if (array_key_exists($key, $data)) {
         array_push($processed, $key);
-        TaskUtils::archiveTask($object->getId(), $this->getUser());
+        TaskUtils::archiveTask($object->getId(), $this->getCurrentUser());
       }
 
       parent::updateObject($object, $data, $processed);

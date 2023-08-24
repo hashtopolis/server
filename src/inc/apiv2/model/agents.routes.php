@@ -52,7 +52,7 @@ class AgentAPI extends AbstractModelAPI {
     }
 
     protected function deleteObject(object $object): void {
-      AgentUtils::delete($object->getId(), $this->getUser());
+      AgentUtils::delete($object->getId(), $this->getCurrentUser());
     }
 }
 

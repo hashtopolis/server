@@ -60,7 +60,7 @@ class NotificationSettingAPI extends AbstractModelAPI {
         $data[NotificationSetting::NOTIFICATION],
         $data[NotificationSetting::RECEIVER],
         $dummyPost,
-        $this->getUser(),
+        $this->getCurrentUser(),
       );
 
       /* On succesfully insert, return ID */
@@ -80,7 +80,7 @@ class NotificationSettingAPI extends AbstractModelAPI {
     }
 
     protected function deleteObject(object $object): void {
-      NotificationUtils::delete($object->getId(), $this->getUser());
+      NotificationUtils::delete($object->getId(), $this->getCurrentUser());
     }
 }
 

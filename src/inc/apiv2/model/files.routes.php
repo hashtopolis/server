@@ -146,7 +146,7 @@ class FileAPI extends AbstractModelAPI {
       assert(count($objects) == 1);
 
       /* Manually set secret, since it not set when adding file */
-      FileUtils::switchSecret($objects[0]->getId(), ($data[File::IS_SECRET]) ? 1 : 0, $this->getUser());
+      FileUtils::switchSecret($objects[0]->getId(), ($data[File::IS_SECRET]) ? 1 : 0, $this->getCurrentUser());
 
       /* On succesfully insert, return ID */
       return $objects[0]->getId();
@@ -154,7 +154,7 @@ class FileAPI extends AbstractModelAPI {
 
 
     protected function deleteObject(object $object): void {
-      FileUtils::delete($object->getId(), $this->getUser());
+      FileUtils::delete($object->getId(), $this->getCurrentUser());
     }
 }
 

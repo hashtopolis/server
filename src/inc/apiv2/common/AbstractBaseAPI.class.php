@@ -131,7 +131,7 @@ abstract class AbstractBaseAPI
   /** 
    * Retrieve currently logged-in user
    */
-  final protected function getUser()
+  final protected function getCurrentUser()
   {
     return $this->user;
   }
