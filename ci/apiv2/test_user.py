@@ -48,9 +48,9 @@ class UserTest(BaseTest):
         obj = User.objects.get(id=user.id)
         self.assertTrue(obj.isValid)
 
-    def test_helper_setUserPassword(self):
+    def test_helper_set_user_password(self):
         user = self.create_test_object()
         newPassword = "testing123"
         helper = Helper()
-        helper.setUserPassword(user, newPassword)
+        helper.set_user_password(user, newPassword)
         helper._test_authentication(user.name, newPassword)

@@ -639,20 +639,20 @@ class Helper(HashtopolisConnector):
         r = requests.post(auth_uri, auth=auth)
         self.validate_status_code(r, [201], "Authentication failed")
 
-    def abortChunk(self, chunk):
+    def abort_chunk(self, chunk):
         payload = {
             'chunkId': chunk.id,
         }
         return self._helper_request("abortChunk", payload)
 
-    def setUserPassword(self, user, password):
+    def set_user_password(self, user, password):
         payload = {
             'userId': user.id,
             'password': password,
         }
         return self._helper_request("setUserPassword", payload)
-    
-    def resetChunk(self, chunk):
+
+    def reset_chunk(self, chunk):
         payload = {
             'chunkId': chunk.id,
         }

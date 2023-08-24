@@ -21,12 +21,12 @@ class ChunkTest(BaseTest):
         expandables = ['task']
         self._test_expandables(model_obj, expandables)
 
-    def test_helper_abortChunk(self):
+    def test_helper_abort_chunk(self):
         chunk = self.create_test_object()
         helper = Helper()
-        helper.abortChunk(chunk)
+        helper.abort_chunk(chunk)
 
-    def test_helper_resetChunk(self):
+    def test_helper_reset_chunk(self):
         chunk = self.create_test_object()
         helper = Helper()
-        helper.abortChunk(chunk)
+        helper.reset_chunk(chunk)
