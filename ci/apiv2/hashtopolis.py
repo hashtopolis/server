@@ -610,7 +610,7 @@ class Helper(HashtopolisConnector):
 
         logging.debug(f"Makeing POST request to {uri}, headers={headers} payload={payload}")
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
-        self.validate_status_code(r, [200], "Helper request {helper_uri} failed")
+        self.validate_status_code(r, [200], f"Helper request at {uri} failed")
         if r.status_code == 204:
             return None
         else:
