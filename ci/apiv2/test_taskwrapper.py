@@ -1,4 +1,4 @@
-from hashtopolis import HashtopolisResponseError, HashtopolisError, TaskWrapper
+from hashtopolis import Helper, HashtopolisError, TaskWrapper
 from utils import BaseTest
 
 
@@ -38,3 +38,13 @@ class TaskWrapperTest(BaseTest):
     def test_patch_priority(self):
         model_obj = self.create_test_object()
         self._test_patch(model_obj, 'priority', 100)
+
+    def test_helper_create_supertask(self):
+        pretasks = [self.create_pretask() for i in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks)
+        cracker = self.create_cracker()
+        hashlist = self.create_hashlist()
+
+        helper = Helper()
+        helper.create_supertask(supertask, hashlist, cracker)
+        self.assertEqual(len(TaskWrapper.objects.filter(hashlistId=hashlist.id)), 1)

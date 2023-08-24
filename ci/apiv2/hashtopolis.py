@@ -645,6 +645,14 @@ class Helper(HashtopolisConnector):
         }
         return self._helper_request("abortChunk", payload)
 
+    def create_supertask(self, supertask, hashlist, cracker):
+        payload = {
+          'supertaskTemplateId': supertask.id,
+          'hashlistId': hashlist.id,
+          'crackerVersionId': cracker.id,
+        }
+        return self._helper_request("createSupertask", payload)
+
     def set_user_password(self, user, password):
         payload = {
             'userId': user.id,

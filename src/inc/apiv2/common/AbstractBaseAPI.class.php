@@ -218,7 +218,8 @@ abstract class AbstractBaseAPI
     DAccessControl::VIEW_TASK_ACCESS[0] => array(Task::PERM_READ, Speed::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ),
     DAccessControl::RUN_TASK_ACCESS[0] => array(Task::PERM_CREATE, FileTask::PERM_CREATE),
     DAccessControl::CREATE_TASK_ACCESS[0] => array(Task::PERM_CREATE, FileTask::PERM_CREATE,
-                                                  Task::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ),
+                                                  Task::PERM_READ, Chunk::PERM_READ, FileTask::PERM_READ,
+                                                  TaskWrapper::PERM_CREATE, TaskWrapper::PERM_READ),
     DAccessControl::MANAGE_TASK_ACCESS => array(Task::PERM_READ, Task::PERM_UPDATE, Task::PERM_DELETE,
                                                 Chunk::PERM_READ, Chunk::PERM_UPDATE, Chunk::PERM_DELETE,
                                                 // src/inc/defines/tasks.php
@@ -507,43 +508,34 @@ abstract class AbstractBaseAPI
    * Validate incoming parameter keys
    */
   protected function validateParameters($data, $allFeatures): void {
+    // Features which MAY be present
     $validFeatures = [];
-    foreach($allFeatures as $key => $value) {
-      if ($value['protected'] == True) {
-        continue;
-      } 
-      if ($value['private'] == True) {
-        continue;
-      }
-      $validFeatures[$key] = $value;
-    }
-
-    // Ensure debugging response lists are in sorted order
-    ksort($validFeatures);
-
-    // Find keys which are invalid
-    $invalidKeys = array_diff(array_keys($data), array_keys($validFeatures));
-    if (sizeof($invalidKeys) > 0) {
-      ksort($invalidKeys);
-      throw new HTException("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
-                            "(valid key(s) : '" . join(", ", array_keys($validFeatures)) . ")'");
-    }
-
-    // Make listing of features requires for creation
+    // Features which MUST be present
     $requiredFeatures = [];
     foreach($allFeatures as $key => $value) {
-      if ($value['null'] == True) {
-        continue;
-      } 
-      if ($value['protected'] == True) {
-        continue;
+      if (($value['protected'] == False) and ($value['private'] == False)) {
+        array_push($validFeatures, $key);
       }
-      $validFeatures[$key] = $value;
+      if (($value['protected'] == False) and ($value['null'] == False)) {
+        array_push($requiredFeatures, $key);
+      }
+    }
+
+    // Find keys which are invalid
+    $invalidKeys = array_diff(array_keys($data), $validFeatures);
+    if (sizeof($invalidKeys) > 0) {
+      // Ensure debugging response lists are in sorted order
+      ksort($invalidKeys);
+      ksort($validFeatures);
+      throw new HTException("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
+                            "(valid key(s) : '" . join(", ", $validFeatures) . ")'");
     }
 
     // Find out about mandatory parameters which are not provided
-    $missingKeys = array_diff(array_keys($requiredFeatures), array_keys($data));
+    $missingKeys = array_diff($requiredFeatures, array_keys($data));
     if (count($missingKeys) > 0) {
+      // Ensure debugging response lists are in sorted order
+      ksort($missingKeys);
       throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
     }
   }
