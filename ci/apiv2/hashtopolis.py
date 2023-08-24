@@ -657,3 +657,9 @@ class Helper(HashtopolisConnector):
             'chunkId': chunk.id,
         }
         return self._helper_request("resetChunk", payload)
+
+    def purge_task(self, task):
+        payload = {
+            'taskId': task.id,
+        }
+        return self._helper_request("purgeTask", payload)

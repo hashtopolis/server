@@ -6,6 +6,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use DBA\Factory;
 use DBA\Chunk;
+use DBA\Task;
 use DBA\User;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
@@ -28,6 +29,16 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     }
     return $object;
   }
+
+  final protected static function getOneTask(int $pk): Task
+  {
+    $object = Factory::getTaskFactory()->get($pk);
+    if ($object === null) {
+      throw new HTException("Task'$pk' not found!", 400);
+    }
+    return $object;
+  }
+
 
   /* Chunk API endpoint specific call to abort chunk */
   public function processPost(Request $request, Response $response, array $args): Response 

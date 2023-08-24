@@ -30,3 +30,12 @@ class ChunkTest(BaseTest):
         chunk = self.create_test_object()
         helper = Helper()
         helper.reset_chunk(chunk)
+
+    def test_helper_purge_task(self):
+        retval = self.create_agent_with_task()
+
+        helper = Helper()
+        helper.purge_task(retval['task'])
+
+        chunks = Chunk.objects.filter(taskId=retval['task'].id)
+        self.assertEqual(len(chunks), 0)
