@@ -58,7 +58,12 @@ class TaskWrappersAPI extends AbstractModelAPI {
         array_push($processed, $key);
         switch ($object->getTaskType()) {
           case DTaskTypes::NORMAL:
-            TaskUtils::updatePriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getCurrentUser());
+            $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskWrapperFactory());
+            $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
+            $joined = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+            $task = $joined[Factory::getTaskFactory()->getModelName()][0];
+        
+            TaskUtils::updatePriority($task->getId(), $data[TaskWrapper::PRIORITY], $this->getCurrentUser());
             break;
           case DTaskTypes::SUPERTASK:
             TaskUtils::setSupertaskPriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getCurrentUser());
