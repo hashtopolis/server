@@ -27,7 +27,7 @@ class SupertaskHandler implements Handler {
           break;
         case DSupertaskAction::BULK_SUPERTASK:
           AccessControl::getInstance()->checkPermission(DSupertaskAction::BULK_SUPERTASK_PERM);
-          SupertaskUtils::bulkSupertask($_POST['name'], $_POST['command'], $_POST['isCpu'], $_POST['isSmall'], $_POST['crackerBinaryTypeId'], $_POST['benchtype'], @$_POST['basefile'], @$_POST['iterfile'], Login::getInstance()->getUser());
+          SupertaskUtils::bulkSupertask($_POST['name'], $_POST['command'], $_POST['isCpu'], $_POST['maxAgents'], $_POST['isSmall'], $_POST['crackerBinaryTypeId'], $_POST['benchtype'], @$_POST['basefile'], @$_POST['iterfile'], Login::getInstance()->getUser());
           break;
         case DSupertaskAction::REMOVE_PRETASK_FROM_SUPERTASK:
           AccessControl::getInstance()->checkPermission(DSupertaskAction::REMOVE_PRETASK_FROM_SUPERTASK_PERM);

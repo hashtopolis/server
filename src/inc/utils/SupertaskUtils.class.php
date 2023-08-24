@@ -27,7 +27,7 @@ class SupertaskUtils {
    * @param User $user
    * @throws HTException
    */
-  public static function bulkSupertask($name, $command, $isCpuOnly, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user) {
+  public static function bulkSupertask($name, $command, $isCpuOnly, $maxAgents, $isSmall, $crackerBinaryTypeId, $benchtype, $basefiles, $iterfiles, $user) {
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $isCpuOnly = ($isCpuOnly) ? 1 : 0;
     $isSmall = ($isSmall) ? 1 : 0;
@@ -78,7 +78,7 @@ class SupertaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $pretasks = SupertaskUtils::createIterationPretasks($command, $name, $basefilesChecked, $iterfilesChecked, $isSmall, $isCpuOnly, $crackerBinaryType, $benchtype);
+    $pretasks = SupertaskUtils::createIterationPretasks($command, $name, $basefilesChecked, $iterfilesChecked, $isSmall, $maxAgents, $isCpuOnly, $crackerBinaryType, $benchtype);
     
     $supertask = new Supertask(null, $name);
     $supertask = Factory::getSupertaskFactory()->save($supertask);
