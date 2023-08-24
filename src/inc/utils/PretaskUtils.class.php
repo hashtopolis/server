@@ -244,7 +244,7 @@ class PretaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(null, $pretask->getPriority(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0);
+    $taskWrapper = new TaskWrapper(null, $pretask->getPriority(), $pretask->getMaxAgents(), DTaskTypes::NORMAL, $hashlist->getId(), $hashlist->getAccessGroupId(), "", 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     $task = new Task(
