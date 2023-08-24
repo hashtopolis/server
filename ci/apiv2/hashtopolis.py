@@ -121,24 +121,7 @@ class HashtopolisConnector(object):
         uri = self._api_endpoint + self._model_uri
         headers = self._headers
 
-        filter_list = []
-        cast = {
-            '__gt': '>',
-            '__gte': '>=',
-            '__lt': '<',
-            '__lte': '<=',
-        }
-        for k, v in filter.items():
-            filter_item = None
-            for k2, v2 in cast.items():
-                if k.endswith(k2):
-                    filter_item = f'{k[:-len(k2)]}{v2}{v}'
-                    break
-            # Default to equal assignment
-            if filter_item is None:
-                filter_item = f'{k}={v}'
-            filter_list.append(filter_item)
-
+        filter_list = [f'{k}={v}' for k, v in filter.items()]
         payload = {
             'filter': filter_list,
             'maxResults': max_results if max_results is not None else 999,
