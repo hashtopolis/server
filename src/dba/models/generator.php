@@ -4,6 +4,7 @@ $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/agents.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/tasks.php");
 
 //
 // Field choice declarations
@@ -13,6 +14,13 @@ $FieldIgnoreErrorsChoices = [
   [ 'key' => DAgentIgnoreErrors::IGNORE_SAVE, 'label' => 'Keep agent running, but save errors'],
   [ 'key' => DAgentIgnoreErrors::IGNORE_NOSAVE, 'label' => 'Keep agent running and discard errors'],
 ];
+
+$FieldTaskTypeChoices = [
+  [ 'key' => DTaskTypes::NORMAL, 'label' => 'TaskType is Task'],
+  [ 'key' => DTaskTypes::SUPERTASK, 'label' => 'TaskType is Supertask'],
+];
+
+
 
 // Type: describes what kind of type the attribute is
 // Subtype: in case type is dict, the first level of the dict will also be checked.
@@ -401,12 +409,12 @@ $CONF['TaskWrapper'] = [
   'columns' => [
     ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'taskType', 'read_only' => False, 'type' => 'int'],
-    ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'taskType', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldTaskTypeChoices],
+    ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
     ['name' => 'taskWrapperName', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'isArchived', 'read_only' => False, 'type' => 'bool'],
-    ['name' => 'cracked', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'cracked', 'read_only' => False, 'type' => 'int', 'protected' => True],
   ],
 ];
 $CONF['User'] = [

@@ -1,4 +1,4 @@
-from hashtopolis import HashtopolisResponseError, TaskWrapper
+from hashtopolis import HashtopolisResponseError, HashtopolisError, TaskWrapper
 from utils import BaseTest
 
 
@@ -14,10 +14,16 @@ class TaskWrapperTest(BaseTest):
         model_obj = self.create_test_object()
         self._test_create(model_obj)
 
-    def test_patch(self):
+    def test_patch_invalid_key(self):
         model_obj = self.create_test_object()
-        with self.assertRaises(HashtopolisResponseError) as e:
-            self._test_patch(model_obj, 'taskWrapperName')
+        # Internal error, since field is not defined
+        with self.assertRaises(AttributeError):
+            self._test_patch(model_obj, 'invalidKey', 2)
+
+    def test_patch_immutable(self):
+        model_obj = self.create_test_object()
+        with self.assertRaises(HashtopolisError) as e:
+            self._test_patch(model_obj, 'taskType', 2)
         self.assertEqual(e.exception.status_code, 500)
 
     def test_delete(self):
@@ -30,3 +36,7 @@ class TaskWrapperTest(BaseTest):
         model_obj = self.create_test_object()
         expandables = ['accessGroup', 'tasks']
         self._test_expandables(model_obj, expandables)
+
+    def test_patch_priority(self):
+        model_obj = self.create_test_object()
+        self._test_patch(model_obj, 'priority', 100)

@@ -15,7 +15,7 @@ class TaskWrappersAPI extends AbstractModelAPI {
     }
 
     public static function getAvailableMethods(): array {
-      return ['GET'];
+      return ['GET', 'PATCH'];
     }
 
     public static function getDBAclass(): string {
@@ -49,7 +49,25 @@ class TaskWrappersAPI extends AbstractModelAPI {
     }
 
     public function updateObject(object $object, array $data, array $processed = []): void {
-      assert(False, "TaskWrappers cannot be updated via API");
+      assert($object instanceof TaskWrapper);
+
+      // Priority is a bit special, when called on a 'NORMAL' running task 
+      // the underlying Task object priority also gets updated
+      $key = TaskWrapper::PRIORITY;
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        switch ($object->getTaskType()) {
+          case DTaskTypes::NORMAL:
+            TaskUtils::updatePriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getUser());
+            break;
+          case DTaskTypes::SUPERTASK:
+            TaskUtils::setSupertaskPriority($object->getId(), $data[TaskWrapper::PRIORITY], $this->getUser());
+            break;
+          default:
+            assert(False, "Internal Error: taskType not recognized");
+        }
+      }
+      parent::updateObject($object, $data, $processed);
     }
     
     protected function deleteObject(object $object): void {
