@@ -1,13 +1,16 @@
 from hashtopolis import Helper, HashtopolisError, TaskWrapper
+from hashtopolis import Cracker
 from utils import BaseTest
 
 
 class TaskWrapperTest(BaseTest):
     model_class = TaskWrapper
 
-    def create_test_object(self, *nargs, **kwargs):
+    def create_test_object(self, *nargs, delete=True, **kwargs):
+        # Always cleanup hashlist when done, this is potentially confusing, 
+        # since it will also remove the related task
         hashlist = self.create_hashlist()
-        task = self.create_task(hashlist)
+        task = self.create_task(hashlist, delete=delete)
         return TaskWrapper.objects.get(pk=task.taskWrapperId)
 
     def test_create(self):
@@ -48,3 +51,24 @@ class TaskWrapperTest(BaseTest):
         helper = Helper()
         helper.create_supertask(supertask, hashlist, cracker)
         self.assertEqual(len(TaskWrapper.objects.filter(hashlistId=hashlist.id)), 1)
+
+    # Broken due to https://github.com/hashtopolis/server/issues/969
+    def test_helper_create_supertask_generic_cracker(self):
+        pretasks = [self.create_pretask() for i in range(2)]
+        supertask = self.create_supertask(pretasks=pretasks)
+        crackertype = self.create_crackertype()
+        cracker = Cracker(
+            crackerBinaryTypeId=crackertype.id,
+            version='1.2.3',
+            downloadUrl='https://example.org/generic-1.2.3.gz',
+            binaryName='generic-x64')
+        cracker.save()
+        self.delete_after_test(cracker)
+        hashlist = self.create_hashlist()
+
+        helper = Helper()
+        taskwrapper = helper.create_supertask(supertask, hashlist, cracker)       
+        objs = TaskWrapper.objects.filter(hashlistId=hashlist.id)
+        self.assertEqual(len(objs), 1, "Should only create 1 TaskWrapper")
+        self.assertEqual(taskwrapper, objs[0],
+                         "Returned create_supertask object != object found by filter")

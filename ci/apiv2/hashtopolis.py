@@ -337,6 +337,10 @@ class Model(metaclass=ModelBase):
     def __repr__(self):
         return self._self
 
+    def __eq__(self, other):
+        return ((self._id == other._id) and
+                (self.__fields == other.__fields))
+
     def _dict2obj(self, dict):
         # Function to convert a dict to an object.
         uri = dict.get('_self')
@@ -634,7 +638,9 @@ class Helper(HashtopolisConnector):
           'hashlistId': hashlist.id,
           'crackerVersionId': cracker.id,
         }
-        return self._helper_request("createSupertask", payload)
+        # Response is JSON:API type
+        response = self._helper_request("createSupertask", payload)
+        return TaskWrapper(**response['data'])
 
     def set_user_password(self, user, password):
         payload = {

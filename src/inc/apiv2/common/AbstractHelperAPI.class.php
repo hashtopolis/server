@@ -13,12 +13,13 @@ use DBA\Hashlist;
 use DBA\RightGroup;
 use DBA\Supertask;
 use DBA\Task;
+use DBA\TaskWrapper;
 use DBA\User;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
   abstract public function actionPost(array $data): array|null;
 
-  private static function getFactory(string $model): object {
+  protected static function getFactory(string $model): object {
     switch($model) {
       case Chunk::class:
         return Factory::getChunkFactory();
@@ -32,6 +33,8 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
         return Factory::getSupertaskFactory();
       case Task::class:
         return Factory::getTaskFactory();
+      case TaskWrapper::class:
+        return Factory::getTaskWrapperFactory();
       case User::class:
         return Factory::getUserFactory();
       }

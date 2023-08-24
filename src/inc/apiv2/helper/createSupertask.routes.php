@@ -1,4 +1,7 @@
 <?php
+use DBA\Factory;
+use DBA\OrderFilter;
+use DBA\QueryFilter;
 
 use DBA\CrackerBinary;
 use DBA\Hashlist;
@@ -41,8 +44,18 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
         $hashlist->getId(),
         $crackerBinary->getId()
     );
+   
+    /* Quick to retrieve newly created TaskWrapper */
+    $qFs = [
+       new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "="),
+       new QueryFilter(TaskWrapper::TASK_TYPE, DTaskTypes::SUPERTASK, "=")
+    ];
+    $oF = new OrderFilter(TaskWrapper::TASK_WRAPPER_ID, "DESC");
+    
+    $objects = self::getFactory(TaskWrapper::class)->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
+    assert(count($objects) > 0);
 
-    return ['rick' => 'foo'];
+    return $this->object2Array($objects[0]);
   }
 }  
 

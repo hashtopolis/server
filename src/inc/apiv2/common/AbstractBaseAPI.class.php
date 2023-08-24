@@ -378,7 +378,7 @@ abstract class AbstractBaseAPI
   /** 
    * Expands object items
    */
-  protected function object2Array(object $object, array $expands): array
+  protected function object2Array(object $object, array $expands = []): array
   {
     $item = $this->obj2Array($object);
     
