@@ -160,9 +160,9 @@ class HashtopolisConnector(object):
         uri = self._api_endpoint + self._model_uri + f'/{pk}'
         headers = self._headers
 
-        payload = {
-            'expand': expand,
-        }
+        payload = {}
+        if expand is not None:
+            payload['expand'] = expand
 
         r = requests.get(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, [200], "Get single object failed")

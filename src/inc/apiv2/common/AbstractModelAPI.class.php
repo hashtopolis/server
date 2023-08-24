@@ -101,12 +101,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     $aliasedfeatures = $this->getAliasedFeatures();
     $factory = $this->getFactory();
-    $expandables = $this->getExpandables();
 
     $startAt = $this->getParam($request, 'startsAt', 0);
     $maxResults = $this->getParam($request, 'maxResults', 5);
 
-    list($expandable, $expands) = $this->makeExpandables($request, $expandables);
+    $validExpandables = $this->getExpandables();
+    $expands = $this->makeExpandables($request, $validExpandables);
+    $expandable = array_diff($validExpandables, $expands);
 
     /* Generate filters */
     $qFs_Filter = $this->makeFilter($request, $aliasedfeatures);
@@ -166,8 +167,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   {
     $this->preCommon($request);
 
-    $expandables = $this->getExpandables();
-    list($expandable, $expands) = $this->makeExpandables($request, $expandables);
+    $validExpandables = $this->getExpandables();
+    $expands = $this->makeExpandables($request, $validExpandables);
+    $expandable = array_diff($validExpandables, $expands);
 
     $object = $this->doFetch($request, $args['id']);
 

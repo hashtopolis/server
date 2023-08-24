@@ -551,36 +551,29 @@ abstract class AbstractBaseAPI
     
 
   /**
-   * Check for valid expand parameters
+   * Check for valid expand parameters.
    */
-  protected function makeExpandables(Request $request, array $expandables): array
+  protected function makeExpandables(Request $request, array $validExpandables): array
   {
-    $expandable = $expandables;
-    $expands = [];
-
     $data = $request->getParsedBody();
-    if (!is_null($data)) {
-      $bodyExpand_raw = (array_key_exists('expand', $data)) ? $data['expand'] : [];
-    } else {
-      $bodyExpand_raw = [];
-    }
 
-    $queryExpand = (array_key_exists('expand', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['expand']) : [];
-
-    if (is_string($bodyExpand_raw)) {
-      $bodyExpand = [$bodyExpand_raw];
-    } elseif (is_null($bodyExpand_raw)) {
-      $bodyExpand = [];
-    } else {
-      $bodyExpand = $bodyExpand_raw;
-    }
-    $mergedExpands = array_merge($bodyExpand, $queryExpand);
-
-    foreach ($mergedExpands as $expand) {
-      if (($key = array_search($expand, $expandable)) !== false) {
-        unset($expandable[$key]);
+    // Body expand can be specified as single item or array of items
+    $bodyExpands = [];
+    if (!is_null($data) and array_key_exists('expand', $data)) {
+      if (is_array($data['expand'])) {
+        array_push($bodyExpands, ...$data['expand']);
+     } else if (is_string($data['expand'])) {
+        array_push($bodyExpands, ...preg_split("/[,\ ]+/", $data['expand']));
       } else {
-        throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($expandables)) . ")");
+        assert(False, "Parameter expand type: '" . gettype($data['expand']) . "' not allowed");
+      }
+    }   
+    $queryExpands = (array_key_exists('expand', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['expand']) : [];
+
+    $mergedExpands = array_merge($bodyExpands, $queryExpands);   
+    foreach ($mergedExpands as $expand) {
+      if (in_array($expand, $validExpandables) == false) {
+        throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($validExpandables)) . ")");
       }
     }
 
@@ -593,7 +586,7 @@ abstract class AbstractBaseAPI
       throw new HttpForbiddenException($request, 'Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
     }
 
-    return [$expandable, $mergedExpands];
+    return $mergedExpands;
   }
 
   /**
