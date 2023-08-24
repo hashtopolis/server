@@ -40,6 +40,8 @@ use DBA\User;
 
 use DBA\Factory;
 use DBA\JoinFilter;
+use DBA\LikeFilter;
+use DBA\LikeFilterInsensitive;
 use DBA\LogEntry;
 use DBA\OrderFilter;
 use DBA\Preprocessor;
@@ -619,31 +621,84 @@ abstract class AbstractBaseAPI
     $mergedFilters = $this->getFilterParameters($request, 'filter');
     foreach ($mergedFilters as $filter) {
       // TODO: Add sanity checking
-      if (preg_match('/^(?P<key>[_a-zA-Z]+)(?<operator>=|!=|<|<=|>|>=)(?P<value>[^=]+)$/', $filter, $matches)) {
-        // Special filtering of _id to use for uniform access to model primary key
-        $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
-
-        if (array_key_exists($cast_key, $features)) {
-          // TODO: cast value
-          if ($features[$cast_key]['type'] == 'bool') {
-            $val = filter_var($matches['value'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            if (is_null($val)) {
-              throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
-            }
-          } else {
-            $val = $matches['value'];
-          }
-          // We need to remap any aliased key to the key as it appears in the database.
-          $remappedKey = $features[$cast_key]['dbname'];
-          $qFs[] = new QueryFilter($remappedKey, $val, $matches['operator']);
-        } else {
-          throw new HTException("Filter parameter '" . $filter . "' is not valid");
-        }
-      } else {
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>=|__eq=|!=|__ne=|>|__lt=|>=|__lte=|<|__gt=|<=|__gte=|__contains=|__startswith=|__endswith=|__icontains=|__istartswith=|__iendswith=)(?P<value>[^=]+)$/', $filter, $matches) == 0) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid");
       }
-    }
 
+      // Special filtering of _id to use for uniform access to model primary key
+      $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+
+      if (array_key_exists($cast_key, $features) == false) {
+        throw new HTException("Filter parameter '" . $filter . "' is not valid (key not valid field)");
+      };
+ 
+      // TODO Merge/Combine with validate parameters 
+      switch($features[$cast_key]['type']) {
+        case 'bool':
+          $val = filter_var($matches['value'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+          if (is_null($val)) {
+            throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
+          }
+          break;
+        case 'int':
+          $val = filter_var($matches['value'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+          if (is_null($val)) {
+            throw new HTException("Filter parameter '" . $filter . "' is not valid integer value");
+          }
+        default:
+          $val = $matches['value'];
+      }            
+
+      // We need to remap any aliased key to the key as it appears in the database.
+      $remappedKey = $features[$cast_key]['dbname'];
+
+      switch($matches['operator']) {
+        case '=':
+        case '__eq=':
+          array_push($qFs, new QueryFilter($remappedKey, $val, '='));
+          break;
+        case '!=':
+        case '__ne=':
+          array_push($qFs, new QueryFilter($remappedKey, $val, '!='));
+          break;
+        case '<':
+        case '__lt=':
+          array_push($qFs, new QueryFilter($remappedKey, $val, '<'));
+          break;
+        case '<=':
+        case '__lte=':
+          array_push($qFs, new QueryFilter($remappedKey, $val, '<='));
+          break;
+        case '>':
+        case '__gt=':
+          array_push($qFs, new QueryFilter($remappedKey, $val, '>'));
+          break;
+        case '>=':
+        case '__gte=':
+          array_push($qFs, new QueryFilter($remappedKey, $val, '>='));
+          break;
+        case '__contains=':
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%"));
+          break;
+        case '__startswith=':
+          array_push($qFs, new LikeFilter($remappedKey, $val . "%"));
+          break;
+        case '__endswith=':
+          array_push($qFs, new LikeFilter($remappedKey, "%" . $val));
+          break;
+        case '__icontains=':
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val . "%"));
+          break;
+        case '__istartswith=':
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, $val . "%"));
+          break;
+        case '__iendswith=':
+          array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val));
+          break;
+        default:
+          assert(False, "Operator '" . $matches['operator'] . "' not implemented");
+      }
+    }
     return $qFs;
   }
 
