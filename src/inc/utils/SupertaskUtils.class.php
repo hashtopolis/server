@@ -250,6 +250,9 @@ class SupertaskUtils {
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
     }
+    else if ($hashlist->getIsArchived()) {
+      throw new HTException("Supertask cannot be applied to an archived hashlist!");
+    }
     $cracker = Factory::getCrackerBinaryFactory()->get($crackerId);
     if ($cracker == null) {
       throw new HTException("Invalid cracker ID!");
@@ -487,6 +490,12 @@ class SupertaskUtils {
     $qF2 = new QueryFilter(SupertaskPretask::PRETASK_ID, $pretaskId, "=");
     $supertaskPretask = Factory::getSupertaskPretaskFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
     Factory::getSupertaskPretaskFactory()->delete($supertaskPretask);
+    
+    // check if the preconfigured task was from an import. in this case also delete it
+    $pretask = PretaskUtils::getPretask($pretaskId);
+    if ($pretask->getIsMaskImport() == 1) {
+      PretaskUtils::deletePretask($pretaskId);
+    }
   }
   
   /**

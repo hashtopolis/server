@@ -1,7 +1,7 @@
 {
     "version": "0.2.0",
-    "configurations": [
 
+    "configurations": [
         {
             "name": "Listen for Xdebug",
             "type": "php",
@@ -24,6 +24,21 @@
             }
         },
         {
+          "name": "Launch test framework",
+          "type": "php",
+          "request": "launch",
+          "program": "${workspaceFolder}/ci/run.php",
+          "args": ["-v", "master", "-t${input:testToRun}"],
+          "port": 0,
+          "runtimeArgs": [
+              "-dxdebug.start_with_request=yes"
+          ],
+          "env": {
+              "XDEBUG_MODE": "debug,develop",
+              "XDEBUG_CONFIG": "client_port=${port}"
+          }
+        },
+        {
             "name": "Launch Built-in web server",
             "type": "php",
             "request": "launch",
@@ -31,7 +46,9 @@
                 "-dxdebug.mode=debug",
                 "-dxdebug.start_with_request=yes",
                 "-S",
-                "localhost:0"
+                "localhost:0",
+                "-t",
+                "src"
             ],
             "program": "",
             "cwd": "${workspaceRoot}",
@@ -41,6 +58,20 @@
                 "uriFormat": "http://localhost:%s",
                 "action": "openExternally"
             }
+        },
+        {
+            "name": "Python: File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "justMyCode": true
         }
-    ]
+    ],
+    "inputs": [
+      {
+        "id": "testToRun",
+        "type": "promptString",
+        "description": "Name of test to run, example: MaxAgentsTest. If empty, all tests."
+      }
+    ],
 }

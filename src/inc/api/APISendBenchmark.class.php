@@ -50,7 +50,7 @@ class APISendBenchmark extends APIBasic {
           foreach ($files as $file) {
             if ($file->getFileType() == DFileType::RULE) {
               // test if splitting makes sense here
-              if (Util::countLines(dirname(__FILE__) . "/../../files/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_ALWAYS)) {
+              if (Util::countLines(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename()) > $split[1] / 1000 / $task->getChunkTime() || SConfig::getInstance()->getVal(DConfig::RULE_SPLIT_ALWAYS)) {
                 // --> split
                 DServerLog::log(DServerLog::INFO, "Rule splitting possible on file", [$this->agent, $task, $file]);
                 TaskUtils::splitByRules($task, $taskWrapper, $files, $file, $split);

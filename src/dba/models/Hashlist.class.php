@@ -17,8 +17,9 @@ class Hashlist extends AbstractModel {
   private $notes;
   private $brainId;
   private $brainFeatures;
+  private $isArchived;
   
-  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted, $accessGroupId, $notes, $brainId, $brainFeatures) {
+  function __construct($hashlistId, $hashlistName, $format, $hashTypeId, $hashCount, $saltSeparator, $cracked, $isSecret, $hexSalt, $isSalted, $accessGroupId, $notes, $brainId, $brainFeatures, $isArchived) {
     $this->hashlistId = $hashlistId;
     $this->hashlistName = $hashlistName;
     $this->format = $format;
@@ -33,6 +34,7 @@ class Hashlist extends AbstractModel {
     $this->notes = $notes;
     $this->brainId = $brainId;
     $this->brainFeatures = $brainFeatures;
+    $this->isArchived = $isArchived;
   }
   
   function getKeyValueDict() {
@@ -51,10 +53,32 @@ class Hashlist extends AbstractModel {
     $dict['notes'] = $this->notes;
     $dict['brainId'] = $this->brainId;
     $dict['brainFeatures'] = $this->brainFeatures;
+    $dict['isArchived'] = $this->isArchived;
     
     return $dict;
   }
   
+  static function getFeatures() {
+    $dict = array();
+    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistId"];
+    $dict['hashlistName'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name"];
+    $dict['format'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "format"];
+    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashTypeId"];
+    $dict['hashCount'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashCount"];
+    $dict['saltSeparator'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "separator"];
+    $dict['cracked'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "cracked"];
+    $dict['isSecret'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSecret"];
+    $dict['hexSalt'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isHexSalt"];
+    $dict['isSalted'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSalted"];
+    $dict['accessGroupId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId"];
+    $dict['notes'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "notes"];
+    $dict['brainId'] = ['read_only' => True, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "useBrain"];
+    $dict['brainFeatures'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "brainFeatures"];
+    $dict['isArchived'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isArchived"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "hashlistId";
   }
@@ -183,6 +207,14 @@ class Hashlist extends AbstractModel {
     $this->brainFeatures = $brainFeatures;
   }
   
+  function getIsArchived() {
+    return $this->isArchived;
+  }
+  
+  function setIsArchived($isArchived) {
+    $this->isArchived = $isArchived;
+  }
+  
   const HASHLIST_ID = "hashlistId";
   const HASHLIST_NAME = "hashlistName";
   const FORMAT = "format";
@@ -197,4 +229,5 @@ class Hashlist extends AbstractModel {
   const NOTES = "notes";
   const BRAIN_ID = "brainId";
   const BRAIN_FEATURES = "brainFeatures";
+  const IS_ARCHIVED = "isArchived";
 }

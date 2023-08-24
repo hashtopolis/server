@@ -582,8 +582,8 @@ class TaskUtils {
     }
     Factory::getTaskFactory()->set($task, Task::IS_SMALL, $isSmall);
   }
-
-    /**
+  
+  /**
    * @param int $taskId
    * @param int $maxAgents
    * @param User $user
@@ -679,8 +679,8 @@ class TaskUtils {
       Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::PRIORITY, $priority);
     }
   }
-
-    /**
+  
+  /**
    * @param int $taskId
    * @param int $maxAgents
    * @param User $user
@@ -735,6 +735,10 @@ class TaskUtils {
     if ($hashlist == null) {
       throw new HTException("Invalid hashlist ID!");
     }
+    else if ($hashlist->getIsArchived()) {
+      throw new HTException("You cannot create a task for an archived hashlist!");
+    }
+    
     $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     if (strlen($name) == 0) {
       $name = "Task_" . $hashlist->getId() . "_" . date("Ymd_Hi");
@@ -858,12 +862,12 @@ class TaskUtils {
     // calculate how much we need to split
     $numSplits = floor($split[1] / 1000 / $task->getChunkTime());
     // replace countLines with fileLineCount? Could be a better option: not OS-dependent
-    $numLines = Util::countLines(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename());
+    $numLines = Util::countLines(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename());
     $linesPerFile = floor($numLines / $numSplits) + 1;
     
     // create the temporary rule files
     $newFiles = [];
-    $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename())));
+    $content = explode("\n", str_replace("\r\n", "\n", file_get_contents(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename())));
     $count = 0;
     $taskId = $task->getId();
     for ($i = 0; $i < $numLines; $i += $linesPerFile, $count++) {
@@ -871,8 +875,10 @@ class TaskUtils {
       for ($j = $i; $j < $i + $linesPerFile && $j < sizeof($content); $j++) {
         $copy[] = $content[$j];
       }
-      file_put_contents(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count", implode("\n", $copy) . "\n");
-      $f = new File(null, $splitFile->getFilename() . "_p$taskId-$count", Util::filesize(dirname(__FILE__) . "/../../files/" . $splitFile->getFilename() . "_p$taskId-$count"), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId());
+      $filename = $splitFile->getFilename() . "_p$taskId-$count";
+      $path = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $splitFile->getFilename() . "_p$taskId-$count";
+      file_put_contents($path, implode("\n", $copy) . "\n");
+      $f = new File(null, $filename, Util::filesize($path), $splitFile->getIsSecret(), DFileType::TEMPORARY, $taskWrapper->getAccessGroupId(), Util::fileLineCount($path));
       $f = Factory::getFileFactory()->save($f);
       $newFiles[] = $f;
     }
@@ -988,7 +994,7 @@ class TaskUtils {
       if (!$all && !empty($candidateTasks)) {
         return current($candidateTasks);
       }
-
+      
       // These tasks are available for this user regarding permissions, assignments.
       $allTasks = array_merge($allTasks, $candidateTasks);
     }
@@ -1086,7 +1092,7 @@ class TaskUtils {
     foreach ($files as $file) {
       /** @var $file File */
       if ($file->getFileType() == DFileType::TEMPORARY) {
-        unlink(dirname(__FILE__) . "/../../files/" . $file->getFilename());
+        unlink(Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $file->getFilename());
         $toDelete[] = $file;
       }
     }
@@ -1352,7 +1358,7 @@ class TaskUtils {
       return "Access denied";
     }
   }
-
+  
   /**
    * Get the number of agents - apart from given agent -.working on given task.
    *
@@ -1377,6 +1383,6 @@ class TaskUtils {
   public static function isSaturatedByOtherAgents($task, $agent) {
     $numAssignments = self::numberOfOtherAssignedAgents($task, $agent);
     return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
-           ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
+      ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
   }
 }

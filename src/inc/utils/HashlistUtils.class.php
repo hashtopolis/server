@@ -63,10 +63,11 @@ class HashlistUtils {
    * @param User $user
    * @return Hashlist[]
    */
-  public static function getHashlists($user) {
+  public static function getHashlists($user, $archived = false) {
     $qF1 = new QueryFilter(Hashlist::FORMAT, DHashlistFormat::SUPERHASHLIST, "<>");
     $qF2 = new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($user)));
-    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    $qF3 = new QueryFilter(Hashlist::IS_ARCHIVED, $archived ? 1 : 0, "=");
+    return Factory::getHashlistFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3]]);
   }
   
   /**
@@ -173,7 +174,7 @@ class HashlistUtils {
     }
     
     $wordlistName = "Wordlist_" . $hashlist->getId() . "_" . date("d.m.Y_H.i.s") . ".txt";
-    $wordlistFilename = dirname(__FILE__) . "/../../files/" . $wordlistName;
+    $wordlistFilename = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/" . $wordlistName;
     $wordlistFile = fopen($wordlistFilename, "wb");
     if ($wordlistFile === false) {
       throw new HTException("Failed to write wordlist file!");
@@ -248,6 +249,37 @@ class HashlistUtils {
   
   /**
    * @param int $hashlistId
+   * @param int $isSecret
+   * @param User $user
+   * @throws HTException
+   */
+  public static function setArchived($hashlistId, $isArchived, $user) {
+    // switch hashlist archived state
+    $hashlist = HashlistUtils::getHashlist($hashlistId);
+    if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
+      throw new HTException("No access to hashlist!");
+    }
+    
+    // check if there is any task which is not archived yet
+    $qF1 = new QueryFilter(TaskWrapper::IS_ARCHIVED, 0, "=");
+    $qF2 = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
+    $count = Factory::getTaskWrapperFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+    if ($count > 0) {
+      throw new HTException("Hashlist cannot be archived as there are still unarchived tasks belonging to it!");
+    }
+    
+    // check if the hashlist is part of a superhashlist
+    $qF = new QueryFilter(HashlistHashlist::HASHLIST_ID, $hashlist->getId(), "=");
+    $count = Factory::getHashlistHashlistFactory()->countFilter([Factory::FILTER => $qF]);
+    if ($count > 0) {
+      throw new HTException("Hashlist cannot be archived as it is part of an existing superhashlist!");
+    }
+    
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::IS_ARCHIVED, intval($isArchived));
+  }
+  
+  /**
+   * @param int $hashlistId
    * @param string $name
    * @param User $user
    * @throws HTException
@@ -297,7 +329,7 @@ class HashlistUtils {
     }
     
     //put input into a temp file
-    $tmpfile = dirname(__FILE__) . "/../../tmp/zaplist_" . $hashlist->getId();
+    $tmpfile = "/tmp/zaplist_" . $hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $sourcedata)) {
       throw new HTException("Failed to process file!");
     }
@@ -502,13 +534,13 @@ class HashlistUtils {
     foreach ($superHashlists as $superHashlist) {
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::HASH_COUNT, $hashlist->getHashCount());
       Factory::getHashlistFactory()->dec($superHashlist, Hashlist::CRACKED, $hashlist->getCracked());
-  
+      
       if ($superHashlist->getHashCount() <= 0) {
         // this superhashlist has no hashlist which belongs to it anymore -> delete it
         $toDelete[] = $superHashlist;
       }
     }
-
+    
     // when we delete all zaps, we have to make sure that from agentZap, there are no references to zaps of this hashlist
     $qF = new QueryFilter(Zap::HASHLIST_ID, $hashlist->getId(), "=");
     $zapIds = Util::arrayOfIds(Factory::getZapFactory()->filter([Factory::FILTER => $qF]));
@@ -516,12 +548,12 @@ class HashlistUtils {
     $uS = new UpdateSet(AgentZap::LAST_ZAP_ID, null);
     Factory::getAgentZapFactory()->massUpdate([Factory::UPDATE => $uS, Factory::FILTER => $qF1]);
     Factory::getZapFactory()->massDeletion([Factory::FILTER => $qF]);
-
+    
     Factory::getHashlistHashlistFactory()->massDeletion([Factory::FILTER => $qF]);
     
     $payload = new DataSet(array(DPayloadKeys::HASHLIST => $hashlist));
     NotificationHandler::checkNotifications(DNotificationType::DELETE_HASHLIST, $payload);
-
+    
     $qF = new QueryFilter(NotificationSetting::OBJECT_ID, $hashlist->getId(), "=");
     $notifications = Factory::getNotificationSettingFactory()->filter([Factory::FILTER => $qF]);
     foreach ($notifications as $notification) {
@@ -556,7 +588,10 @@ class HashlistUtils {
           }
         }
         else {
+          // in case there is only one hashlist to delete, truncate the Hash table.
           Factory::getAgentFactory()->getDB()->query("TRUNCATE TABLE Hash");
+          // Make sure that a transaction is active, this is what the rest of the function expects.
+          Factory::getAgentFactory()->getDB()->beginTransaction();
         }
         break;
       case 1:
@@ -630,7 +665,7 @@ class HashlistUtils {
     }
     
     $tmpname = "Pre-cracked_" . $hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
-    $tmpfile = dirname(__FILE__) . "/../../files/$tmpname";
+    $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/$tmpname";
     $factory = Factory::getHashFactory();
     $format = Factory::getHashlistFactory()->get($hashlists[0]->getId());
     $orderObject = Hash::HASH_ID;
@@ -740,7 +775,7 @@ class HashlistUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures);
+    $hashlist = new Hashlist(null, $name, $format, $hashtype, 0, $separator, 0, $secret, $hexsalted, $salted, $accessGroup->getId(), '', $brainId, $brainFeatures, 0);
     $hashlist = Factory::getHashlistFactory()->save($hashlist);
     
     $dataSource = "";
@@ -758,7 +793,7 @@ class HashlistUtils {
         $dataSource = $post["url"];
         break;
     }
-    $tmpfile = dirname(__FILE__) . "/../../tmp/hashlist_" . $hashlist->getId();
+    $tmpfile = "/tmp/hashlist_" . $hashlist->getId();
     if (!Util::uploadFile($tmpfile, $source, $dataSource) && file_exists($tmpfile)) {
       Factory::getAgentFactory()->getDB()->rollback();
       throw new HTException("Failed to process file!");
@@ -989,9 +1024,12 @@ class HashlistUtils {
       else if ($accessGroupId != $list->getAccessGroupId()) {
         throw new HTException("You cannot create superhashlists from hashlists which belong to different access groups");
       }
+      else if ($list->getIsArchived()) {
+        throw new HTException("You cannot create a superhashlist containing archived hashlists!");
+      }
     }
     
-    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0, 0);
+    $superhashlist = new Hashlist(null, $name, DHashlistFormat::SUPERHASHLIST, $lists[0]->getHashtypeId(), $hashcount, $lists[0]->getSaltSeparator(), $cracked, 0, $lists[0]->getHexSalt(), $lists[0]->getIsSalted(), $accessGroupId, '', 0, 0, 0);
     $superhashlist = Factory::getHashlistFactory()->save($superhashlist);
     $relations = array();
     foreach ($lists as $list) {
@@ -1026,7 +1064,7 @@ class HashlistUtils {
     }
     
     $tmpname = "Leftlist_" . $hashlist->getId() . "_" . date("d-m-Y_H-i-s") . ".txt";
-    $tmpfile = dirname(__FILE__) . "/../../files/$tmpname";
+    $tmpfile = Factory::getStoredValueFactory()->get(DDirectories::FILES)->getVal() . "/$tmpname";
     
     $file = fopen($tmpfile, "wb");
     if (!$file) {
@@ -1110,7 +1148,7 @@ class HashlistUtils {
     $qF = new QueryFilter(Hashlist::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(Hashlist::ACCESS_GROUP_ID, $accessGroup->getId(), "=");
     Factory::getHashlistFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);
-
+    
     $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $hashlist->getId(), "=");
     $uS = new UpdateSet(TaskWrapper::ACCESS_GROUP_ID, $accessGroup->getId());
     Factory::getTaskWrapperFactory()->massUpdate([Factory::FILTER => $qF, Factory::UPDATE => $uS]);

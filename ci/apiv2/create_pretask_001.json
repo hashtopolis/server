@@ -1,0 +1,15 @@
+{
+  "taskName": "Example - create_pretasks_001",
+  "attackCmd": "#HL# -a3 ?l?l?l?l?l",
+  "chunkTime": 600,
+  "statusTimer": 700,
+  "color": "7C6EFF",
+  "isSmall": true,
+  "isCpuTask": true,
+  "useNewBench": true,
+  "priority": 10,
+  "maxAgents": 10,
+  "isMaskImport": false,
+  "crackerBinaryTypeId": 1,
+  "files": []
+}

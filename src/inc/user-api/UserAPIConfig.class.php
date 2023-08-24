@@ -72,6 +72,10 @@ class UserAPIConfig extends UserAPIBasic {
         if (!is_bool($config->getValue())) {
           throw new HTException("Value most be boolean!");
         }
+        # Workaround, inserting 'false' into text field will cause an empty field.
+        if ($config->getValue() === false) {
+          $config->setValue(0);
+        }
         break;
       case DConfigType::SELECT:
         if (!in_array($config->getValue(), DConfig::getSelection($config->getItem())->getKeys())) {

@@ -15,6 +15,7 @@ src/files/*
 /db/
 data/conf.php
 .env
-src/ipmort/*
+src/import/*
 .gitignore
 .dockerignore
+src/inc/conf.php

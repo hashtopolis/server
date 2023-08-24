@@ -109,7 +109,7 @@ else {
 
 // render report
 $template = new Template("report/$found");
-$baseName = dirname(__FILE__) . "/tmp/" . time() . "-$type-" . $typeId;
+$baseName = "/tmp/" . time() . "-$type-" . $typeId;
 $tempName = $baseName . ".tex";
 file_put_contents($tempName, $template->render($objects));
 
@@ -117,7 +117,7 @@ sleep(1);
 
 // create PDF
 $output = [];
-$cmd = "cd \"" . dirname(__FILE__) . "/tmp/\" && pdflatex \"" . $tempName . "\"";
+$cmd = "cd \"/tmp/\" && pdflatex \"" . $tempName . "\"";
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
   $cmd = str_replace("/", "\\", $cmd);
 }

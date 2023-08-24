@@ -78,9 +78,9 @@ class TaskHandler implements Handler {
           TaskUtils::updatePriority($_POST["task"], $_POST['priority'], Login::getInstance()->getUser());
           break;
         case DTaskAction::SET_MAX_AGENTS:
-            AccessControl::getInstance()->checkPermission(DTaskAction::SET_MAX_AGENTS_PERM);
-            TaskUtils::updateMaxAgents($_POST["task"], $_POST['maxAgents'], Login::getInstance()->getUser());
-            break;
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_MAX_AGENTS_PERM);
+          TaskUtils::updateMaxAgents($_POST["task"], $_POST['maxAgents'], Login::getInstance()->getUser());
+          break;
         case DTaskAction::SET_TOP_PRIORITY:
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_PRIORITY_PERM);
           TaskUtils::updatePriority($_POST["task"], -1, Login::getInstance()->getUser(), true);
@@ -165,6 +165,10 @@ class TaskHandler implements Handler {
     $hashlist = Factory::getHashlistFactory()->get($_POST["hashlist"]);
     if ($hashlist == null) {
       UI::addMessage(UI::ERROR, "No hashlist was selected!");
+      return;
+    }
+    else if ($hashlist->getIsArchived()) {
+      UI::addMessage(UI::ERROR, "You cannot create a task for an archived hashlist!");
       return;
     }
     $accessGroup = Factory::getAccessGroupFactory()->get($hashlist->getAccessGroupId());

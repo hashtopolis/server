@@ -386,8 +386,8 @@ class UserAPITask extends UserAPIBasic {
       $QUERY[UQueryTask::TASK_PREPROCESSOR],
       $QUERY[UQueryTask::TASK_PREPROCESSOR_COMMAND],
       $QUERY[UQueryTask::TASK_SKIP],
-      $QUERY[UQueryTask::TASK_PRIORITY],
-      $QUERY[UQueryTask::TASK_MAX_AGENTS],
+      (isset($QUERY[UQueryTask::TASK_PRIORITY])) ? intval($QUERY[UQueryTask::TASK_PRIORITY]) : 0,
+      (isset($QUERY[UQueryTask::TASK_MAX_AGENTS])) ? intval($QUERY[UQueryTask::TASK_MAX_AGENTS]) : 0,
       $QUERY[UQueryTask::TASK_FILES],
       $QUERY[UQueryTask::TASK_CRACKER_VERSION],
       $this->user

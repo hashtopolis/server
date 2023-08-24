@@ -1,0 +1,12 @@
+DirectoryIndex index.php
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # rewrite empty (without host/port/query) to index.php
+    # re-appending the query string and ignoring any further rules
+    RewriteRule ^$ index.php [QSA,L]
+    # don't rewrite for files or directories which exist on the filesystem...
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    # ...and rewrite the remaining
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>

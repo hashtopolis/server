@@ -20,6 +20,6 @@ jobs:
       - name: Wait until entrypoint is finished and Hashtopolis is started
         run: bash .github/scripts/await-hashtopolis-startup.sh
       - name: Give Apache permissions on necessary directories # for the tests, only src/files and src/inc/utils/locks seem necessary
-        run: docker exec -u root hashtopolis bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
+        run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
       - name: Run test suite
-        run: docker exec hashtopolis php /var/www/html/ci/run.php -vmaster
+        run: docker exec hashtopolis-server-dev php /var/www/html/ci/run.php -vmaster

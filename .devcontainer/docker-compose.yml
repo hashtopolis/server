@@ -1,47 +1,50 @@
-version: "3"
+version: "3.7"
 services:
-  hashtopolis:
-    container_name: hashtopolis
+  hashtopolis-server-dev:
+    container_name: hashtopolis-server-dev
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      target: hashtopolis-server-dev
       args:
-        - DEV_CONTAINER_USER_CMD
+        - CONTAINER_USER_CMD_PRE
+        - CONTAINER_USER_CMD_POST
+    environment:
+      HASHTOPOLIS_DB_USER: hashtopolis
+      HASHTOPOLIS_DB_PASS: hashtopolis
+      HASHTOPOLIS_DB_HOST: hashtopolis-db-dev
+      HASHTOPOLIS_DB_DATABASE: hashtopolis
+      HASHTOPOLIS_APIV2_ENABLE: 1
     depends_on:
-      - db
+      - hashtopolis-db-dev
     ports:
       - "8080:80"
     volumes:
       # This is where VS Code should expect to find your project's source code
       # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
       - ..:/var/www/html
-  db:
-    container_name: db
+      - hashtopolis-server-dev:/usr/local/share/hashtopolis:Z
+    networks:
+      - hashtopolis_dev
+  hashtopolis-db-dev:
+    container_name: hashtopolis-db-dev
     image: mysql:5.7
     restart: always
     ports:
       - "3306:3306"
     volumes:
-      - db:/var/lib/mysql
+      - hashtopolis-db-dev:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: hashtopolis
       MYSQL_DATABASE: hashtopolis
       MYSQL_USER: hashtopolis
       MYSQL_PASSWORD: hashtopolis
-    cap_drop:
-      - ALL
-    cap_add:
-      # used to change files since non-priv user
-      - CHOWN
-      # used because container uses find command
-      - CAP_DAC_READ_SEARCH
-      # used for the gosu binary
-      - CAP_SETGID
-      - CAP_SETUID
+    networks:
+      - hashtopolis_dev
 volumes:
-  db:
+  hashtopolis-db-dev:
+  hashtopolis-server-dev:
 
 networks:
-  default:
+  hashtopolis_dev:
     # This network will also be used by the python-agent
     name: hashtopolis_dev

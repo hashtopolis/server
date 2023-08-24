@@ -7,13 +7,11 @@ $CONN['server'] = '__DBSERVER__';
 $CONN['db'] = '__DBDB__';
 $CONN['port'] = '__DBPORT__';
 
-$PEPPER = [
-  "__PEPPER1__",
-  "__PEPPER2__",
-  "__PEPPER3__",
-  "__CSRF__"
+$DIRECTORIES = [
+  "files" => "/var/www/hashtopolis/files/",
+  "import" => "/var/www/hashtopolis/import/",
+  "log" => "/var/www/hashtopolis/log/",
+  "config" => "/var/www/hashtopolis/config/",
 ];
-
-$INSTALL = false; //set this to true if you config the mysql and setup manually
 
 //END CONFIG

@@ -22,6 +22,15 @@ class RightGroup extends AbstractModel {
     return $dict;
   }
   
+  static function getFeatures() {
+    $dict = array();
+    $dict['rightGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "id"];
+    $dict['groupName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name"];
+    $dict['permissions'] = ['read_only' => False, "type" => "dict", "subtype" => "bool", "null" => True, "pk" => False, "protected" => False, "private" => False, "alias" => "permissions"];
+
+    return $dict;
+  }
+
   function getPrimaryKey() {
     return "rightGroupId";
   }
