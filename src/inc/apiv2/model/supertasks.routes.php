@@ -61,6 +61,38 @@ class SupertaskAPI extends AbstractModelAPI {
       return $objects[0]->getId();      
     }
 
+    public function updateObject(object $object, $data,  $processed = []): void {
+      $key = "pretasks";
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+
+        // Retrieve requested pretasks
+        $wantedPretasks = [];
+        foreach(self::db2json($this->getAliasedFeatures()['pretasks'], $data[$key]) as $pretaskId) {
+          array_push($wantedPretasks, self::getPretask($pretaskId));
+        }
+
+        // Find out which to add and remove
+        $currentPretasks = SupertaskUtils::getPretasksOfSupertask($object->getId());
+        function compare_ids($a, $b) 
+        { 
+          return ($a->getId() - $b->getId()); 
+        }
+        $toAddPretasks = array_udiff($wantedPretasks, $currentPretasks, 'compare_ids');
+        $toRemovePretasks = array_udiff($currentPretasks, $wantedPretasks, 'compare_ids');
+
+        // Update model
+        foreach($toAddPretasks as $pretask) {
+          SupertaskUtils::addPretaskToSupertask($object->getId(), $pretask->getId());
+        }
+        foreach($toRemovePretasks as $pretask) {
+          SupertaskUtils::removePretaskFromSupertask($object->getId(), $pretask->getId());
+        }
+      }
+
+      parent::updateObject($object, $data, $processed);
+    }
+
     protected function deleteObject(object $object): void {
       SupertaskUtils::deleteSupertask($object->getId());
     }

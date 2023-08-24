@@ -338,8 +338,7 @@ class Model(metaclass=ModelBase):
         return self._self
 
     def __eq__(self, other):
-        return ((self._id == other._id) and
-                (self.__fields == other.__fields))
+        return (self.get_fields() == other.get_fields())
 
     def _dict2obj(self, dict):
         # Function to convert a dict to an object.
@@ -399,7 +398,7 @@ class Model(metaclass=ModelBase):
                 self.__fields.append(k)
 
     def get_fields(self):
-        return dict([(k, getattr(self, k)) for k in self.__fields])
+        return dict([(k, getattr(self, k)) for k in sorted(self.__fields)])
 
     def diff(self):
         # Stored database values
@@ -411,6 +410,21 @@ class Model(metaclass=ModelBase):
             v_innitial = d_initial[key]
             if v_current != v_innitial:
                 diffs.append((key, (v_innitial, v_current)))
+
+        # Find expandables sets which have changed
+        for expand in self.__expanded:
+            if expand.endswith('_set'):
+                innitial_name = expand[:-4]
+                # Retrieve innitial keys
+                v_innitial = self.__initial[innitial_name]
+                v_innitial_ids = [x['_id'] for x in v_innitial]
+                # Retrieve new/current keys
+                v_current = getattr(self, expand)
+                v_current_ids = [x.id for x in v_current]
+                # Use ID of ojbects as new current/update identifiers
+                if sorted(v_innitial_ids) != sorted(v_current_ids):
+                    diffs.append((innitial_name, (v_innitial_ids, v_current_ids)))
+
         return dict(diffs)
 
     def has_changed(self):

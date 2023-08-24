@@ -25,3 +25,16 @@ class SupertaskTest(BaseTest):
         model_obj = self.create_test_object()
         expandables = ['pretasks']
         self._test_expandables(model_obj, expandables)
+
+    def test_new_pretasks(self):
+        model_obj = self.create_test_object()
+
+        # Quirk for expanding object to allow update to take place
+        work_obj = Supertask.objects.get(pk=model_obj.id, expand='pretasks')
+        new_pretasks = [self.create_pretask() for i in range(2)]
+        selected_pretasks = [work_obj.pretasks_set[0], new_pretasks[1]]
+        work_obj.pretasks_set = selected_pretasks
+        work_obj.save()
+
+        obj = Supertask.objects.get(pk=model_obj.id, expand='pretasks')
+        self.assertListEqual(selected_pretasks, obj.pretasks_set)
