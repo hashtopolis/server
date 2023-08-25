@@ -1,9 +1,8 @@
 <?php
 class BenchmarkHandler implements Handler {  
   public function __construct($benchmarkId = null) {
-        //we need nothing to load
+    //we need nothing to load
   }
-  
 
   public function handle($action) {
     try {

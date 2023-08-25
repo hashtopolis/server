@@ -26,8 +26,8 @@ class DAccessControl {
   const SERVER_CONFIG_ACCESS        = "serverConfigAccess";
   const USER_CONFIG_ACCESS          = "userConfigAccess";
   const MANAGE_ACCESS_GROUP_ACCESS  = "manageAccessGroupAccess";
-  const VIEW_BENCHMARK_ACCESS  = "ViewBenchmarkAccess";
-  const DELETE_BENCHMARK_ACCESS  = "DeleteBenchmarkAccess";
+  const VIEW_BENCHMARK_ACCESS       = "ViewBenchmarkAccess";
+  const DELETE_BENCHMARK_ACCESS     = "DeleteBenchmarkAccess";
   
   // special access definitions for public access pages and pages which are viewable if logged in
   const PUBLIC_ACCESS = "publicAccess";

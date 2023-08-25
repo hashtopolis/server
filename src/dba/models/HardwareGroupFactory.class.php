@@ -33,7 +33,7 @@ class HardwareGroupFactory extends AbstractModelFactory {
    * @return HardwareGroup
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new HardwareGroup($dict['hardwareGroupId'], $dict['devices'], $dict['benchmarkId']);
+    $o = new HardwareGroup($dict['hardwareGroupId'], $dict['devices']);
     return $o;
   }
   

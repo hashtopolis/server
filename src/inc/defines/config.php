@@ -54,7 +54,7 @@ class DConfig {
   const HASHCAT_BRAIN_PASS     = "hashcatBrainPass";
   const HASHLIST_IMPORT_CHECK  = "hashlistImportCheck";
   const HC_ERROR_IGNORE        = "hcErrorIgnore";
-  const BENCHMARKCACHE_TTL       = "benchmarkcacheTtl";
+  const BENCHMARKCACHE_TTL     = "benchmarkcacheTtl";
   
   // Section: Yubikey
   const YUBIKEY_ID  = "yubikey_id";
@@ -409,8 +409,8 @@ class DConfig {
         return "Also send 'isComplete' for each task on the User API when listing all tasks (might affect performance)";
       case DConfig::HC_ERROR_IGNORE:
         return "Ignore error messages from crackers which contain given strings (multiple values separated by comma)";
-        case DConfig::BENCHMARKCACHE_TTL:
-          return "The time to live of the cached benchmarks in seconds (set to 0 to turn off caching)";
+      case DConfig::BENCHMARKCACHE_TTL:
+        return "The time to live of the cached benchmarks in seconds (set to 0 to turn off caching)";
     }
     return $config;
   }

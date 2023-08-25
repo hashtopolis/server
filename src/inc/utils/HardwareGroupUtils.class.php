@@ -7,7 +7,7 @@ use DBA\QueryFilter;
 class HardwareGroupUtils {
 
 public static function updateHardwareOfAgent($devices, $agent) {
-  $qF = new QueryFilter("devices", $devices, "=");
+  $qF = new QueryFilter(HardwareGroup::DEVICES, $devices, "=");
 
   $res = Factory::getHardwareGroupFactory()->filter([Factory::FILTER => [$qF]], true);
 
@@ -24,13 +24,13 @@ public static function updateHardwareOfAgent($devices, $agent) {
 }
 
 public static function getDevicesFromBenchmark($benchmark) {
-  $qF = new QueryFilter("HardwareGroupId", $benchmark->getHardwareGroupId(), "=");
+  $qF = new QueryFilter(HardwareGroup::HARDWARE_GROUP_ID, $benchmark->getHardwareGroupId(), "=");
   $res = Factory::getHardwareGroupFactory()->filter([Factory::FILTER => [$qF]], true);
   return $res->getDevices();
 }
 
 public static function getHardwareGroupByDevices($devices) {
-  $qF = new QueryFilter("devices", $devices, "=");
+  $qF = new QueryFilter(HardwareGroup::DEVICES, $devices, "=");
   $res = Factory::getHardwareGroupFactory()->filter([Factory::FILTER => [$qF]], true);
 
   return $res;

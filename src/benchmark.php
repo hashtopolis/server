@@ -15,26 +15,14 @@ Template::loadInstance("benchmarks/index");
 
 AccessControl::getInstance()->checkPermission(DViewControl::AGENTS_VIEW_PERM);
 
+Menu::get()->setActive("benchmark_cache");
+
 if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   $benchmarkHandler = new BenchmarkHandler();
   $benchmarkHandler->handle($_POST['action']);
   if (UI::getNumMessages() == 0) {
     Util::refresh();
   }
-}
-
-if (isset($_GET['id'])) {
-  //go to detail page
-  // Template::loadInstance("benchmark/detail");
-  $agent = Factory::getAgentFactory()->get($_GET['id']);
-  if (!$agent) {
-    UI::printError("ERROR", "Agent not found!");
-  } else {
-  $qF = new QueryFilter("agentId", $agent->getId(), "="); 
-  $benchmarks = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF]]);
-  }
-} else {
-  $benchmarks = Factory::getBenchmarkFactory()->filter([]);
 }
 
 $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");

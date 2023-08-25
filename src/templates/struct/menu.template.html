@@ -19,9 +19,9 @@
             			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
 							<a class="dropdown-item[[menu.isActive('agents_status')]]" href="agentStatus.php">Agent Status</a>
 						{{ENDIF}}
-            			{{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_BENCHMARK_ACCESS]])]]}}
-              				<a class="dropdown-item[[menu.isActive('Benchmark_cache')]]" href="benchmark.php">Benchmark cache</a>
-            			{{ENDIF}}
+            {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_BENCHMARK_ACCESS]])]]}}
+              <a class="dropdown-item[[menu.isActive('benchmark_cache')]]" href="benchmark.php">Benchmark Cache</a>
+            {{ENDIF}}
 					</div>
 				</li>
 			{{ENDIF}}

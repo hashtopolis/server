@@ -136,24 +136,24 @@ class BenchmarkUtils {
     $crackerBinary = Factory::getCrackerBinaryFactory()->get($crackerBinaryId);
 
     if ($hardwareGroup == null) {
-      throw new HTException("Invallid hardwareGroupId!");
+      throw new HTException("Invalid hardwareGroupId!");
     }
     if ($crackerBinary == null) {
-      throw new HTException("Invallid crackerBinaryId!");
+      throw new HTException("Invalid crackerBinaryId!");
     }
 
     $cleanAttackParameter = self::cleanupAttackParameters($attackParameters);
 
-    $qF = new QueryFilter("attackParameters", $cleanAttackParameter, "=");
-    $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroup->getId(), "=");
-    $qF3 = new QueryFilter("hashMode", $hashmode, "=");
+    $qF1 = new QueryFilter(Benchmark::ATTACK_PARAMETERS, $cleanAttackParameter, "=");
+    $qF2 = new QueryFilter(Benchmark::HARDWARE_GROUP_ID, $hardwareGroup->getId(), "=");
+    $qF3 = new QueryFilter(Benchmark::HASH_MODE, $hashmode, "=");
 
     $benchmarkType = $useNewBenchmark == 1 ? "speed" : "runtime";
 
-    $qF4 = new QueryFilter("benchmarkType", $benchmarkType, "=");
-    $qF5 = new QueryFilter("crackerBinaryId", $crackerBinary->getId(), "=");
+    $qF4 = new QueryFilter(Benchmark::BENCHMARK_TYPE, $benchmarkType, "=");
+    $qF5 = new QueryFilter(Benchmark::CRACKER_BINARY_ID, $crackerBinary->getId(), "=");
 
-    $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2, $qF3, $qF4, $qF5]], true);
+    $res = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF1, $qF2, $qF3, $qF4, $qF5]], true);
 
     if (isset($res)) {
       if ($res->getTtl() < time()) { // if ttl has been exceeded, remove value and return null
@@ -185,10 +185,10 @@ class BenchmarkUtils {
     $cleanAttackParameters = self::cleanupAttackParameters($attackParameters);
     $ttl = SConfig::getInstance()->getVal(DConfig::BENCHMARKCACHE_TTL);
 
-    $qF = new QueryFilter("attackParameters", $cleanAttackParameters, "=");
-    $qF2 = new QueryFilter("hardwareGroupId", $hardwareGroupId, "=");
+    $qF1 = new QueryFilter(Benchmark::ATTACK_PARAMETERS, $cleanAttackParameters, "=");
+    $qF2 = new QueryFilter(Benchmark::HARDWARE_GROUP_ID, $hardwareGroupId, "=");
 
-    $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF, $qF2]], true);
+    $foundBenchmark = Factory::getBenchmarkFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
 
     if (isset($foundBenchmark)) { //if benchmark already in cache, update the value
 
@@ -205,8 +205,8 @@ class BenchmarkUtils {
 
   //removes all values where the time to live has been exceeded
   public static function refreshCache() {
-    $qF = new QueryFilter("ttl", time(), "<");
-    Factory::getFileTaskFactory()->massDeletion([Factory::FILTER => $qF]);
+    $qF = new QueryFilter(Benchmark::TTL, time(), "<");
+    Factory::getBenchmarkFactory()->massDeletion([Factory::FILTER => $qF]);
   }
 
   //removes all values in cache

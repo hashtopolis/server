@@ -3,7 +3,7 @@
 <h2>Benchmarks ([[numBenchmarks]])</h2>
 {%TEMPLATE->struct/messages%}
 <div style='overflow: auto;'>
-  <form style ='float: left; padding-right: 5px;' action="tasks.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really refresh the cache?')) return false;">
+  <form style ='float: left; padding-right: 5px;' action="benchmark.php" class='form-inline' method="POST" onSubmit="if (!confirm('Really refresh the cache?')) return false;">
     <input type='hidden' name='action' value='[[$DBenchmarkAction::DELETE_BENCHMARK]]'>
     <input type="hidden" name="csrf" value="[[csrf]]">
     <input type="submit" value="Refresh cache" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}'>
@@ -15,14 +15,14 @@
     <table class="table table-bordered table-sm" id="benchmarks">
       <thead>
         <tr>
-          <th>id</th>
-          <th>Cmd</th>
+          <th>ID</th>
+          <th>CMD</th>
           <th>Hashmode</th>
           <th>Cracker Binary</th>
           <th>CPU/GPU</th>
           <th>Benchmark value</th>
-          <th>ttl</th>
-          <th>action</th>
+          <th>TTL</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>

@@ -31,8 +31,6 @@ class APIUpdateClientInformation extends APIBasic {
     }
 
     Factory::getAgentFactory()->mset($this->agent, [
-        //change to hardware group
-        // Agent::DEVICES => htmlentities(implode("\n", $devices), ENT_QUOTES, "UTF-8"),
         Agent::UID => $uid,
         Agent::OS => $os
       ]
