@@ -25,6 +25,8 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
   }
 }
 
+$benchmarks = Factory::getBenchmarkFactory()->filter([]);
+
 $oF = new OrderFilter(CrackerBinary::CRACKER_BINARY_ID, "DESC");
 $versions = Factory::getCrackerBinaryFactory()->filter([Factory::ORDER => $oF]);
 usort($versions, ["Util", "versionComparisonBinary"]);
