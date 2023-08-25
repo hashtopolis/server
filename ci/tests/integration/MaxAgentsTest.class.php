@@ -277,9 +277,9 @@ class MaxAgentsTest extends HashtopolisTest {
     ], HashtopolisTestFramework::REQUEST_UAPI);
     $taskWrapper = current(array_filter($response["tasks"], fn($task) => $task["name"] == "supertask-1"));
 
-    // check if the max agents of this wrapper is 1 (since it should be the minimum > 0 of all pretasks)
-    if ($taskWrapper["maxAgents"] != 1) {
-      $this->testFailed("MaxAgentsTest:testSupertaskMaxAgents()", sprintf("Expected taskwrapper to have maxAgents value of 1, instead got: %s", $taskWrapper["maxAgents"]));
+    // Check if the max agents of the wrapper is 0, since it should not take over the maxAgents value of the pretasks
+    if ($taskWrapper["maxAgents"] != 0) {
+      $this->testFailed("MaxAgentsTest:testSupertaskMaxAgents()", sprintf("Expected taskwrapper to have maxAgents value of 0, instead got: %s", $taskWrapper["maxAgents"]));
       return;
     }
 
@@ -296,6 +296,15 @@ class MaxAgentsTest extends HashtopolisTest {
       $this->testFailed("MaxAgentsTest:testSupertaskMaxAgents()", sprintf("Expected agent 1 to be assigned to pretask-3, instead assigned to to: %s", $task["name"]));
       return;
     }
+
+    // now update the max allowed agents of the supertask to 1
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "setSupertaskMaxAgents",
+      "accessKey" => "mykey",
+      "supertaskId" => $taskWrapper["supertaskId"],
+      "supertaskMaxAgents" => 1
+    ], HashtopolisTestFramework::REQUEST_UAPI);
 
     // request a task for agent 2
     $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent2["token"]]);
