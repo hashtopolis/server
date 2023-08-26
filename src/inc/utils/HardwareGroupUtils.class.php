@@ -23,6 +23,12 @@ public static function updateHardwareOfAgent($devices, $agent) {
   return $agent;
 }
 
+public static function getDevicesForAgent($agent) {
+  $qF = new QueryFilter(HardwareGroup::HARDWARE_GROUP_ID, $agent->getHardwareGroupId(), "=");
+  $res = Factory::getHardwareGroupFactory()->filter([Factory::FILTER => [$qF]], true);
+  return $res->getDevices();
+}
+
 public static function getDevicesFromBenchmark($benchmark) {
   $qF = new QueryFilter(HardwareGroup::HARDWARE_GROUP_ID, $benchmark->getHardwareGroupId(), "=");
   $res = Factory::getHardwareGroupFactory()->filter([Factory::FILTER => [$qF]], true);
