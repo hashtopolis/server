@@ -83,10 +83,12 @@ class APISendBenchmark extends APIBasic {
 
     if ($ttl != 0) {
       $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
-      BenchmarkUtils::saveBenchmarkInCache($task->getAttackCmd(), $this->agent->getHardwareGroupId(), $benchmark, $hashlist->getHashTypeId(), $type, $task->getCrackerBinaryId());
+      $attackParameters = $task->getAttackCmd(). " " . $this->agent->getCmdPars();
+
+      BenchmarkUtils::saveBenchmarkInCache($attackParameters, $this->agent->getHardwareGroupId(), $benchmark, $hashlist->getHashTypeId(), $type, $task->getCrackerBinaryId());
+      DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
     }
 
-    DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
     $this->sendResponse(array(
         PResponseSendBenchmark::ACTION => PActions::SEND_BENCHMARK,
         PResponseSendBenchmark::RESPONSE => PValues::SUCCESS,
