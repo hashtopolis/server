@@ -2,6 +2,7 @@
 
 use DBA\Agent;
 use DBA\Benchmark;
+use DBA\CrackerBinary;
 use DBA\Factory;
 
  class BenchmarkTest extends HashtopolisTest {
@@ -10,6 +11,7 @@ use DBA\Factory;
   protected $runType    = HashtopolisTest::RUN_FAST;
 
   private  $agent = null;
+  private  $crackerBinary = null;
   
   public function init($version) {
     HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_INFO, "Initializing " . $this->getTestName() . "...");
@@ -60,18 +62,21 @@ use DBA\Factory;
   }
 
   private function testAddToCache(){
-
-    $benchmark = BenchmarkUtils::saveBenchmarkInCache("#HL# -a 3 ?l?l?l?l -d 1 --force", $this->agent->getHardwareGroupId(), "676:1.78", 1000, "speed", 1);
+    $crackerBinary = new CrackerBinary(3036, 1, "6.2.6", "https://hashcat.net/files/hashcat-6.2.6.7z", "hashcat");
+    Factory::getCrackerBinaryFactory()->save($crackerBinary);
+    $benchmark = BenchmarkUtils::saveBenchmarkInCache("#HL# -a 3 ?l?l?l?l -d 1 --force", $this->agent->getHardwareGroupId(), "676:1.78", 1000, "speed", $crackerBinary->getId());
 
     if(!isset($benchmark)) {
       $this->testFailed("BenchmarkTest:testAddToCache", "Cannot add benchmark to cache");
     } else {
       $this->testSuccess("BenchmarkTest:testAddToCache");
     }
+
+    $this->crackerBinary = $crackerBinary; //save crackerbinary for future tests
   }
 
   private function testGetFromCache(){
-    $benchmark = BenchmarkUtils::getBenchmarkByValue("#HL# -a 3 ?l?l?l?l -d 1 --force", $this->agent->getHardwareGroupId(), 1000, 1, 1);
+    $benchmark = BenchmarkUtils::getBenchmarkByValue("#HL# -a 3 ?l?l?l?l -d 1 --force", $this->agent->getHardwareGroupId(), 1000, 1, $this->crackerBinary->getId());
 
     if(!isset($benchmark)) {
       $this->testFailed("BenchmarkTest:testGetFromCache", "Cannot get benchmark from cache in normal situation");
@@ -79,9 +84,9 @@ use DBA\Factory;
       $this->testSuccess("BenchmarkTest:testGetFromCache");
     } 
     
-    $benchmark2 = BenchmarkUtils::getBenchmarkByValue("#HL# -a3     ?l?l?l?l -d 1 --force", $this->agent->getHardwareGroupId(),1000, 1, 1);
-    $benchmark3 = BenchmarkUtils::getBenchmarkByValue("#HL# -d 1 --attack-mode 3 ?l?l?l?l --force", $this->agent->getHardwareGroupId(),1000, 1, 1);
-    $benchmark4 = BenchmarkUtils::getBenchmarkByValue("#HL# --force -a3       ?l?l?l?l -d      1", $this->agent->getHardwareGroupId(), 1000, 1, 1);
+    $benchmark2 = BenchmarkUtils::getBenchmarkByValue("#HL# -a3     ?l?l?l?l -d 1 --force", $this->agent->getHardwareGroupId(),1000, 1, $this->crackerBinary->getId());
+    $benchmark3 = BenchmarkUtils::getBenchmarkByValue("#HL# -d 1 --attack-mode 3 ?l?l?l?l --force", $this->agent->getHardwareGroupId(),1000, 1, $this->crackerBinary->getId());
+    $benchmark4 = BenchmarkUtils::getBenchmarkByValue("#HL# --force -a3       ?l?l?l?l -d      1", $this->agent->getHardwareGroupId(), 1000, 1, $this->crackerBinary->getId());
 
     if(!isset($benchmark2) || !isset($benchmark3) || !isset($benchmark4)) {
       $this->testFailed("BenchmarkTest:testGetFromCache", "Cannot get benchmark from cache with parsing commandline in different formats");
@@ -92,7 +97,7 @@ use DBA\Factory;
 
   private function testDeleteCache() {
     BenchmarkUtils::deleteCache();
-    $benchmark = BenchmarkUtils::getBenchmarkByValue(1000, "#HL# -a 3 ?l?l?l?l -d 1 --force", 1, "1", 0);
+    $benchmark = BenchmarkUtils::getBenchmarkByValue("#HL# -a 3 ?l?l?l?l -d 1 --force", $this->agent->getHardwareGroupId(), 1000, "1", $this->crackerBinary->getId());
     if(isset($benchmark)) {
       $this->testFailed("BenchmarkTest:testDeleteCache", "There is still a value in the cache!");
     } else {
@@ -101,9 +106,9 @@ use DBA\Factory;
   }
   
   private function testTtl() {
-    $benchmark = new Benchmark(3, "speed", "1234:88","#HL# -a 3 ?u?u?u", 200, 1, time() - 10, 1); //ttl in the past to test invalid ttl
+    $benchmark = new Benchmark(3, "speed", "1234:88","#HL# -a 3 ?u?u?u", 200, $this->agent->getHardwareGroupId(), time() - 10, $this->crackerBinary->getId()); //ttl in the past to test invalid ttl
     Factory::getBenchmarkFactory()->save($benchmark);
-    $found = BenchmarkUtils::getBenchmarkByValue("#HL# -a 3 ?u?u?u", 1, 200, 1, 1);
+    $found = BenchmarkUtils::getBenchmarkByValue("#HL# -a 3 ?u?u?u", $this->agent->getHardwareGroupId(), 200, 1, $this->crackerBinary->getId());
     if($found != null) {
       $this->testFailed("BenchmarkTest:testTtl", "benchmark with ttl in the past should not be valid!");
     } else {

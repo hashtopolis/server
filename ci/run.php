@@ -18,6 +18,7 @@ require_once(dirname(__FILE__) . "/../src/inc/Dataset.class.php");
 
 require_once(dirname(__FILE__) . "/HashtopolisTest.class.php");
 require_once(dirname(__FILE__) . "/HashtopolisTestFramework.class.php");
+require_once(dirname(__FILE__) . "/../src/inc/HTException.class.php");
 
 $dir = scandir(dirname(__FILE__) . "/tests/");
 foreach ($dir as $entry) {
