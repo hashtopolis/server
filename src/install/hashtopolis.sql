@@ -884,6 +884,7 @@ CREATE TABLE `TaskDebugOutput` (
 CREATE TABLE `TaskWrapper` (
   `taskWrapperId`   INT(11)      NOT NULL,
   `priority`        INT(11)      NOT NULL,
+  `maxAgents`       INT(11)      NOT NULL,
   `taskType`        INT(11)      NOT NULL,
   `hashlistId`      INT(11)      NOT NULL,
   `accessGroupId`   INT(11)      DEFAULT NULL,

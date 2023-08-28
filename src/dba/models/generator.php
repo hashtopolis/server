@@ -282,6 +282,7 @@ $CONF['TaskDebugOutput'] = [
 $CONF['TaskWrapper'] = [
   ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
   ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
   ['name' => 'taskType', 'read_only' => False, 'type' => 'int'],
   ['name' => 'hashlistId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],

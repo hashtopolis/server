@@ -48,15 +48,16 @@ class UQueryTask extends UQuery {
   const TASK_PREPROCESSOR_COMMAND = "preprocessorCommand";
   const TASK_PREPROCESSOR         = "preprocessorId";
   
-  const TASK_CRACKER_TYPE  = "crackerTypeId";
-  const PRETASKS           = "pretasks";
-  const MASKS              = "masks";
-  const TASK_OPTIMIZED     = "optimizedFlag";
-  const AGENT_ID           = "agentId";
-  const SUPERTASK_PRIORITY = "supertaskPriority";
-  const SUPERTASK_NAME     = "name";
-  const TASK_BASEFILES     = "basefiles";
-  const TASK_ITERFILES     = "iterfiles";
+  const TASK_CRACKER_TYPE    = "crackerTypeId";
+  const PRETASKS             = "pretasks";
+  const MASKS                = "masks";
+  const TASK_OPTIMIZED       = "optimizedFlag";
+  const AGENT_ID             = "agentId";
+  const SUPERTASK_PRIORITY   = "supertaskPriority";
+  const SUPERTASK_MAX_AGENTS = "supertaskMaxAgents";
+  const SUPERTASK_NAME       = "name";
+  const TASK_BASEFILES       = "basefiles";
+  const TASK_ITERFILES       = "iterfiles";
   
   const PRETASK_PRIORITY   = "priority";
   const PRETASK_MAX_AGENTS = "maxAgents";
@@ -220,6 +221,7 @@ class UResponseTask extends UResponse {
   const TASKS_TYPE         = "type";
   const TASKS_HASHLIST     = "hashlistId";
   const TASKS_PRIORITY     = "priority";
+  const TASKS_MAX_AGENTS   = "maxAgents";
   const TASKS_IS_COMPLETE  = "isComplete";
   
   const TASK_ID                   = "taskId";
@@ -256,10 +258,11 @@ class UResponseTask extends UResponse {
   
   const SUBTASKS = "subtasks";
   
-  const PRETASKS          = "pretasks";
-  const PRETASKS_ID       = "pretaskId";
-  const PRETASKS_NAME     = "name";
-  const PRETASKS_PRIORITY = "priority";
+  const PRETASKS            = "pretasks";
+  const PRETASKS_ID         = "pretaskId";
+  const PRETASKS_NAME       = "name";
+  const PRETASKS_PRIORITY   = "priority";
+  const PRETASKS_MAX_AGENTS = "maxAgents";
   
   const PRETASK_ID         = "pretaskId";
   const PRETASK_NAME       = "name";
@@ -281,8 +284,9 @@ class UResponseTask extends UResponse {
   const SUPERTASKS_ID   = "supertaskId";
   const SUPERTASKS_NAME = "name";
   
-  const SUPERTASK_ID   = "supertaskId";
-  const SUPERTASK_NAME = "name";
+  const SUPERTASK_ID         = "supertaskId";
+  const SUPERTASK_NAME       = "name";
+  const SUPERTASK_MAX_AGENTS = "maxAgents";
   
   const CHUNK_ID         = "chunkId";
   const CHUNK_START      = "start";
@@ -611,6 +615,7 @@ class USectionTask extends UApi {
   const SET_TASK_PRIORITY          = "setTaskPriority";
   const SET_TASK_TOP_PRIORITY      = "setTaskTopPriority";
   const SET_SUPERTASK_PRIORITY     = "setSupertaskPriority";
+  const SET_SUPERTASK_MAX_AGENTS   = "setSupertaskMaxAgents";
   const SET_SUPERTASK_TOP_PRIORITY = "setSupertaskTopPriority";
   const SET_TASK_NAME              = "setTaskName";
   const SET_TASK_COLOR             = "setTaskColor";

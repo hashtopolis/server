@@ -36,6 +36,11 @@ class PretaskHandler implements Handler {
         case DPretaskAction::SET_MAX_AGENTS:
           AccessControl::getInstance()->checkPermission(DPretaskAction::SET_MAX_AGENTS_PERM);
           PretaskUtils::setMaxAgents($_POST['pretaskId'], $_POST['maxAgents']);
+          if (isset($_GET['super'])) {
+            header("Location: supertasks.php");
+            die();
+          }
+          break;
           break;
         case DPretaskAction::SET_CPU_TASK:
           AccessControl::getInstance()->checkPermission(DPretaskAction::SET_CPU_TASK_PERM);

@@ -117,6 +117,9 @@ class DTaskAction {
   
   const SET_SUPERTASK_PRIORITY      = "setSupertaskPriority";
   const SET_SUPERTASK_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;
+
+  const SET_SUPERTASK_MAX_AGENTS      = "setSupertaskMaxAgents";
+  const SET_SUPERTASK_MAX_AGENTS_PERM = DAccessControl::MANAGE_TASK_ACCESS;
   
   const SET_SUPERTASK_TOP_PRIORITY      = "setSupertaskTopPriority";
   const SET_SUPERTASK_TOP_PRIORITY_PERM = DAccessControl::MANAGE_TASK_ACCESS;

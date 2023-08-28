@@ -44,6 +44,7 @@
 									    <th>ID</th>
 									    <th>Name</th>
 									    <th>Subtask Priority</th>
+                      <th>Subtask Max Agents</th>
 									    <th class="right">Action</th>
 								    </tr>
 								    {{FOREACH task;[[tasks.getVal([[supertask.getId()]])]]}}
@@ -67,6 +68,19 @@
 												    </form>
 											    {{ELSE}}
 												    [[task.getPriority()]]
+											    {{ENDIF}}
+										    </td>
+                        <td>
+											    {{IF [[accessControl.hasPermission([[$DAccessControl::MANAGE_PRETASK_ACCESS]])]]}}
+												    <form class="form-inline" action="pretasks.php?super=true" method="POST">
+													    <input type='hidden' name='action' value='[[$DPretaskAction::SET_MAX_AGENTS]]'>
+													    <input type="hidden" name="pretaskId" value="[[task.getId()]]">
+													    <input type="text" class='form-control' style='width: 60px;' name="maxAgents" size="4" value="[[task.getMaxAgents()]]" title="Max Agents">&nbsp;&nbsp;
+													    <input type="hidden" name="csrf" value="[[csrf]]">
+													    <input type="submit" class='btn {{IF [[toggledarkmode]] > 0}}btn-primary{{ELSE}}btn-light{{ENDIF}}' value="Set">
+												    </form>
+											    {{ELSE}}
+												    [[task.getMaxAgents()]]
 											    {{ENDIF}}
 										    </td>
 										    <td class="right">
