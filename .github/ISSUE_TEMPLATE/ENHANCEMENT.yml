@@ -1,0 +1,20 @@
+name: Enhancement
+description: Enhancement of a feature or functionality
+title: "[ENHANCEMENT]: "
+labels: ["enhancement"]
+assignees:
+- octocat
+body:
+- type: markdown
+  attributes:
+    value: |
+      Please try to describe the desired enhancement as exactly as possible.
+- type: textarea
+  id: description
+  attributes:
+    label: Description
+    description: "Describe your enhancement proposal as detailed as possible, providing examples helps to understand the desired behavior."
+    value: "Enhancement Description"
+  validations:
+    required: true
+
