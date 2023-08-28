@@ -1,4 +1,4 @@
-from hashtopolis import Hashlist
+from hashtopolis import Hashlist, Helper
 from utils import BaseTest
 
 
@@ -25,7 +25,7 @@ class HashlistTest(BaseTest):
 
     def test_expandables(self):
         model_obj = self.create_test_object()
-        expandables = ['accessGroup', 'hashType', 'hashes', 'tasks']
+        expandables = ['accessGroup', 'hashType', 'hashes', 'hashlists', 'tasks']
         self._test_expandables(model_obj, expandables)
 
     def test_filter_archived(self):
@@ -37,3 +37,17 @@ class HashlistTest(BaseTest):
     def test_create_alternative_hashtype(self):
         model_obj = self.create_test_object(file_id='003')
         self._test_create(model_obj)
+
+    def test_helper_create_superhashlist(self):
+        hashlists = [self.create_test_object() for _ in range(2)]
+
+        helper = Helper()
+        hashlist = helper.create_superhashlist(name="Testing 123", hashlists=hashlists)
+        self.delete_after_test(hashlist)
+
+        # Ensure is created as superhashlist
+        self.assertEqual(hashlist.format, 3)
+
+        # Validate if created with provided hashlists
+        obj = Hashlist.objects.get(pk=hashlist.id, expand='hashlists')
+        self.assertListEqual(hashlists, obj.hashlists_set)

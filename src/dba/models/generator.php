@@ -1,8 +1,11 @@
 <?php
 
+use DHashlistFormat as GlobalDHashlistFormat;
+
 $CONF = array();
 
 require_once(dirname(__FILE__) . "/../../inc/defines/agents.php");
+require_once(dirname(__FILE__) . "/../../inc/defines/hashlists.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/userApi.php");
 require_once(dirname(__FILE__) . "/../../inc/defines/tasks.php");
 
@@ -20,7 +23,12 @@ $FieldTaskTypeChoices = [
   [ 'key' => DTaskTypes::SUPERTASK, 'label' => 'TaskType is Supertask'],
 ];
 
-
+$FieldHashlistFormatChoices = [
+  [ 'key' => DHashlistFormat::PLAIN, 'label' => 'Hashlist format is PLAIN'],
+  [ 'key' => DHashlistFormat::WPA, 'label' => 'Hashlist format is WPA'],
+  [ 'key' => DHashlistFormat::BINARY, 'label' => 'Hashlist format is BINARY'],
+  [ 'key' => DHashlistFormat::SUPERHASHLIST, 'label' => 'Hashlist is SUPERHASHLIST'],
+];
 
 // Type: describes what kind of type the attribute is
 // Subtype: in case type is dict, the first level of the dict will also be checked.
@@ -227,7 +235,7 @@ $CONF['Hashlist'] = [
   'columns' => [
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'hashlistName', 'read_only' => False, 'type' => 'str(100)', 'alias' => UQueryHashlist::HASHLIST_NAME],
-    ['name' => 'format', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'format', 'read_only' => True, 'type' => 'int', 'choices' => $FieldHashlistFormatChoices],
     ['name' => 'hashTypeId', 'read_only' => True, 'type' => 'int'],
     ['name' => 'hashCount', 'read_only' => True, 'type' => 'int'],
     ['name' => 'saltSeparator', 'read_only' => True, 'type' => 'str(10)', 'null' => True, 'alias' => UQueryHashlist::HASHLIST_SEPARATOR],

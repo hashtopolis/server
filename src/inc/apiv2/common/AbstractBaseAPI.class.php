@@ -182,6 +182,8 @@ abstract class AbstractBaseAPI
         return Factory::getHashFactory();
       case Hashlist::class:
         return Factory::getHashlistFactory();
+      case HashlistHashlist::class:
+        return Factory::getHashlistHashlistFactory();
       case HashType::class:
         return Factory::getHashTypeFactory();
       case HealthCheckAgent::class:
@@ -284,6 +286,7 @@ abstract class AbstractBaseAPI
       'crackerVersions' => [CrackerBinary::PERM_READ],
       'hashes' => [Hash::PERM_READ],
       'hashlist' => [Hashlist::PERM_READ],
+      'hashlists' => [Hashlist::PERM_READ],
       'hashType' => [HashType::PERM_READ],
       'healthCheck' => [HealthCheck::PERM_READ],
       'healthCheckAgents' => [HealthCheckAgent::PERM_READ],
@@ -496,7 +499,8 @@ abstract class AbstractBaseAPI
     $item = $this->obj2Array($object);
     
     foreach ($expands as $expand) {
-      $item[$expand] = $this->doExpand($object, $expand);
+      $apiClass = $this->container->get('classMapper')->get(get_class($object));
+      $item[$expand] = $apiClass::doExpand($object, $expand);     
       if (is_null($item[$expand])) {
         throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }

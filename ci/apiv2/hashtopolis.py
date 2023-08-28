@@ -656,6 +656,15 @@ class Helper(HashtopolisConnector):
         response = self._helper_request("createSupertask", payload)
         return TaskWrapper(**response['data'])
 
+    def create_superhashlist(self, name, hashlists):
+        payload = {
+          'name': name,
+          'hashlistIds': [x.id for x in hashlists],
+        }
+        # Response is JSON:API type
+        response = self._helper_request("createSuperHashlist", payload)
+        return Hashlist(**response['data'])
+
     def set_user_password(self, user, password):
         payload = {
             'userId': user.id,

@@ -6,6 +6,7 @@ use DBA\QueryFilter;
 
 use DBA\Hash;
 use DBA\Hashlist;
+use DBA\HashlistHashlist;
 use DBA\Task;
 use DBA\TaskWrapper;
 
@@ -24,7 +25,7 @@ class HashlistAPI extends AbstractModelAPI {
     }   
 
     public function getExpandables(): array {
-      return ["accessGroup", "hashType", "hashes", "tasks"];
+      return ["accessGroup", "hashType", "hashes", "tasks", "hashlists"];
     }
 
     protected function doExpand(object $object, string $expand): mixed {
@@ -39,6 +40,10 @@ class HashlistAPI extends AbstractModelAPI {
         case 'hashes':
           $qF = new QueryFilter(Hash::HASHLIST_ID, $object->getId(), "=");
           return $this->filterQuery(Factory::getHashFactory(), $qF);
+        case 'hashlists':
+          $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $object->getId(), "=", Factory::getHashlistHashlistFactory());        
+          $jF = new JoinFilter(Factory::getHashlistHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
+          return $this->joinQuery(Factory::getHashlistFactory(), $qF, $jF);  
         case 'tasks':
           $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $object->getHashTypeId(), "=", Factory::getTaskWrapperFactory());
           $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
