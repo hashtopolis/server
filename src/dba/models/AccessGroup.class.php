@@ -21,8 +21,8 @@ class AccessGroup extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "accessGroupId"];
-    $dict['groupName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "groupName"];
+    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "accessGroupId"];
+    $dict['groupName'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "groupName"];
 
     return $dict;
   }
@@ -61,4 +61,9 @@ class AccessGroup extends AbstractModel {
   
   const ACCESS_GROUP_ID = "accessGroupId";
   const GROUP_NAME = "groupName";
+
+  const PERM_CREATE = "permAccessGroupCreate";
+  const PERM_READ = "permAccessGroupRead";
+  const PERM_UPDATE = "permAccessGroupUpdate";
+  const PERM_DELETE = "permAccessGroupDelete";
 }

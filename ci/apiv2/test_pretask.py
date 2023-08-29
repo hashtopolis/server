@@ -1,93 +1,30 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# PoC testing/development framework for APIv2
-# Written in python to work on creation of hashtopolis APIv2 python binding.
-#
-import json
-import unittest
-import datetime
-from pathlib import Path
-from io import BytesIO
-
-from hashtopolis import Pretask 
-from hashtopolis import File
-from hashtopolis import FileImport
+from hashtopolis import Pretask
+from utils import BaseTest
 
 
-class PretaskTest(unittest.TestCase):
-    def test_create_pretask(self):
-        p = Path(__file__).parent.joinpath('create_pretask_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        pretask = Pretask(**payload)
-        obj = pretask.save()
+class PretaskTest(BaseTest):
+    model_class = Pretask
 
-        obj = Pretask.objects.get(pretaskId=pretask.id)
+    def create_test_object(self, *nargs, **kwargs):
+        return self.create_pretask(*nargs, **kwargs)
 
-        assert obj.taskName == payload.get('taskName')
+    def test_create(self):
+        model_obj = self.create_test_object()
+        self._test_create(model_obj)
 
-        pretask.delete()
-    
-    def test_patch_pretask(self):
-        p = Path(__file__).parent.joinpath('create_pretask_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        pretask = Pretask(**payload)
-        pretask.save()
+    def test_patch(self):
+        model_obj = self.create_test_object()
+        self._test_patch(model_obj, 'taskName')
 
-        stamp = datetime.datetime.now().isoformat()
-        obj_name = f'Dummy Pretask - {stamp}'
-        pretask.taskName = obj_name
-        pretask.save()
+    def test_delete(self):
+        model_obj = self.create_test_object(delete=False)
+        self._test_delete(model_obj)
 
-        obj = Pretask.objects.get(pretaskId=pretask.id)
-        assert obj.taskName == obj_name
+    def test_expandables(self):
+        model_obj = self.create_test_object()
+        expandables = ['pretaskFiles']
+        self._test_expandables(model_obj, expandables)
 
-        pretask.delete()
-
-    def test_delete_pretask(self):
-        p = Path(__file__).parent.joinpath('create_pretask_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        pretask = Pretask(**payload)
-        pretask.save()
-
-        id = pretask.id
-
-        pretask.delete()
-        objs = Pretask.objects.filter(pretaskId=id)
-
-        assert objs == []
-
-    def test_expand_pretask_files(self):
-        # Create file
-        stamp = datetime.datetime.now().isoformat()
-        filename = f'test-{stamp}.txt'
-        file_import = FileImport()
-        text = '12345678\n123456\nprincess\n'.encode('utf-8')
-        fs = BytesIO(text)
-        file_import.do_upload(filename, fs)
-
-        p = Path(__file__).parent.joinpath('create_file_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        payload['sourceData'] = filename
-        payload['filename'] = filename
-        file_obj = File(**payload)
-        file_obj.save()
-
-
-        # Create pretask
-        p = Path(__file__).parent.joinpath('create_pretask_001.json')
-        payload = json.loads(p.read_text('UTF-8'))
-        payload['files'] = [file_obj.id]
-        pretask = Pretask(**payload)
-        pretask.save()
-
-        to_check = pretask.id
-
-        objects = Pretask.objects.filter(pretaskId=to_check,expand='pretaskFiles')
-        assert objects[0].pretaskFiles_set[0].filename == filename
-
-        file_obj.delete()
-        pretask.delete()
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_create_pretask_alt(self):
+        model_obj = self.create_test_object(file_id='003')
+        self._test_create(model_obj)

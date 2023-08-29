@@ -24,9 +24,9 @@ class CrackerBinaryType extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryTypeId"];
-    $dict['typeName'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "typeName"];
-    $dict['isChunkingAvailable'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isChunkingAvailable"];
+    $dict['crackerBinaryTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "crackerBinaryTypeId"];
+    $dict['typeName'] = ['read_only' => False, "type" => "str(30)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "typeName"];
+    $dict['isChunkingAvailable'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isChunkingAvailable"];
 
     return $dict;
   }
@@ -74,4 +74,9 @@ class CrackerBinaryType extends AbstractModel {
   const CRACKER_BINARY_TYPE_ID = "crackerBinaryTypeId";
   const TYPE_NAME = "typeName";
   const IS_CHUNKING_AVAILABLE = "isChunkingAvailable";
+
+  const PERM_CREATE = "permCrackerBinaryTypeCreate";
+  const PERM_READ = "permCrackerBinaryTypeRead";
+  const PERM_UPDATE = "permCrackerBinaryTypeUpdate";
+  const PERM_DELETE = "permCrackerBinaryTypeDelete";
 }

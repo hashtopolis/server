@@ -24,9 +24,9 @@ class FileTask extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['fileTaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileTaskId"];
-    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileId"];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
+    $dict['fileTaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileTaskId"];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileId"];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
 
     return $dict;
   }
@@ -74,4 +74,9 @@ class FileTask extends AbstractModel {
   const FILE_TASK_ID = "fileTaskId";
   const FILE_ID = "fileId";
   const TASK_ID = "taskId";
+
+  const PERM_CREATE = "permFileTaskCreate";
+  const PERM_READ = "permFileTaskRead";
+  const PERM_UPDATE = "permFileTaskUpdate";
+  const PERM_DELETE = "permFileTaskDelete";
 }

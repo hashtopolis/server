@@ -27,10 +27,10 @@ class HashType extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashTypeId"];
-    $dict['description'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "description"];
-    $dict['isSalted'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSalted"];
-    $dict['isSlowHash'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSlowHash"];
+    $dict['hashTypeId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => False, "private" => False, "alias" => "hashTypeId"];
+    $dict['description'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "description"];
+    $dict['isSalted'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSalted"];
+    $dict['isSlowHash'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isSlowHash"];
 
     return $dict;
   }
@@ -87,4 +87,9 @@ class HashType extends AbstractModel {
   const DESCRIPTION = "description";
   const IS_SALTED = "isSalted";
   const IS_SLOW_HASH = "isSlowHash";
+
+  const PERM_CREATE = "permHashTypeCreate";
+  const PERM_READ = "permHashTypeRead";
+  const PERM_UPDATE = "permHashTypeUpdate";
+  const PERM_DELETE = "permHashTypeDelete";
 }

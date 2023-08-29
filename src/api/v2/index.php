@@ -9,6 +9,17 @@ if (!$enabled || $enabled == 'false') {
 date_default_timezone_set("UTC");
 error_reporting(E_ALL);
 ini_set("display_errors", '1');
+/**
+ * Treat warnings as error, very usefull during unit testing.
+ * TODO: How-ever during Xdebug debugging under VS Code, this is very 
+ * TODO: slightly annoying since the last call stack is not very interesting. 
+ * TODO: Thus for the time-being do not-enable by default.
+ */
+// set_error_handler(function ($severity, $message, $file, $line) {
+//   if (error_reporting() & $severity) {
+//       throw new \ErrorException($message, 0, $severity, $file, $line);
+//   }
+// });
 
 use Slim\Factory\AppFactory;
 use Slim\Middleware\ContentLengthMiddleware;
@@ -83,8 +94,6 @@ class HashtopolisAuthenticator implements AuthenticatorInterface {
             Util::createLogEntry(DLogEntryIssuer::USER, $user->getId(), DLogEntry::WARN, "Failed login attempt due to wrong password!");
             return false;
         }
-
-        $arguments['foobar'] = 'True';
         return true;
     }
 }
@@ -123,7 +132,7 @@ $container->set("JwtAuthentication", function (\Psr\Container\ContainerInterface
     include(dirname(__FILE__) . '/../../inc/confv2.php');
     return new JwtAuthentication([
         "path" => "/",
-        "ignore" => ["/api/v2/auth/token", "/api/v2/ui/openapi.json"],
+        "ignore" => ["/api/v2/auth/token", "/api/v2/openapi.json"],
         "secret" => $PEPPER[0],
         "attribute" => false,
         "secure" => false,
@@ -216,41 +225,53 @@ $app->add("HttpBasicAuthentication");
 $app->add("JwtAuthentication");
 $app->add(new TokenAsParameterMiddleware());
 $app->add(new ContentLengthMiddleware());       // NOTE: Add any middleware which may modify the response body before adding the ContentLengthMiddleware
-$app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
-$app->addRoutingMiddleware();
 
-require __DIR__ . "/../../inc/apiv2/schema.routes.php";
-require __DIR__ . "/../../inc/apiv2/accessgroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/globalpermissiongroups.routes.php";
-require __DIR__ . "/../../inc/apiv2/agents.routes.php";
-require __DIR__ . "/../../inc/apiv2/agentstats.routes.php";
-require __DIR__ . "/../../inc/apiv2/agentbinaries.routes.php";
-require __DIR__ . "/../../inc/apiv2/chunks.routes.php";
-require __DIR__ . "/../../inc/apiv2/configs.routes.php";
-require __DIR__ . "/../../inc/apiv2/configsections.routes.php";
-require __DIR__ . "/../../inc/apiv2/crackers.routes.php";
-require __DIR__ . "/../../inc/apiv2/crackertypes.routes.php";
-require __DIR__ . "/../../inc/apiv2/files.import.routes.php";
-require __DIR__ . "/../../inc/apiv2/files.routes.php";
-require __DIR__ . "/../../inc/apiv2/hashes.routes.php";
-require __DIR__ . "/../../inc/apiv2/hashlists.routes.php";
-require __DIR__ . "/../../inc/apiv2/hashtypes.routes.php";
-require __DIR__ . "/../../inc/apiv2/healthchecks.routes.php";
-require __DIR__ . "/../../inc/apiv2/healthcheckagents.routes.php";
-require __DIR__ . "/../../inc/apiv2/logentries.routes.php";
-require __DIR__ . "/../../inc/apiv2/notifications.routes.php";
-require __DIR__ . "/../../inc/apiv2/pretasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/preprocessors.routes.php";
-require __DIR__ . "/../../inc/apiv2/supertasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/tasks.routes.php";
-require __DIR__ . "/../../inc/apiv2/token.routes.php";
-require __DIR__ . "/../../inc/apiv2/users.routes.php";
-require __DIR__ . "/../../inc/apiv2/vouchers.routes.php";
-require __DIR__ . "/../../inc/apiv2/taskwrappers.routes.php";
-
-
+// NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 $errorHandler = $errorMiddleware->getDefaultErrorHandler();
 $errorHandler->forceContentType('application/json');
+
+$app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
+$app->addRoutingMiddleware();
+
+require __DIR__ . "/../../inc/apiv2/auth/token.routes.php";
+
+require __DIR__ . "/../../inc/apiv2/common/openAPISchema.routes.php";
+
+require __DIR__ . "/../../inc/apiv2/model/accessgroups.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/agentassignments.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/agentbinaries.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/agents.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/agentstats.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/chunks.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/configs.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/configsections.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/crackers.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/crackertypes.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/files.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/globalpermissiongroups.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/hashes.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/hashlists.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/hashtypes.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/healthcheckagents.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/healthchecks.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/logentries.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/notifications.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/preprocessors.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/pretasks.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/speeds.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/supertasks.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/tasks.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/taskwrappers.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/users.routes.php";
+require __DIR__ . "/../../inc/apiv2/model/vouchers.routes.php";
+
+require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
 
 $app->run();

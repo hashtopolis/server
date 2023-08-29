@@ -1,20 +1,21 @@
-from hashtopolis import HashtopolisConnector, HashtopolisConfig
-import unittest
 import requests
 import json
 import time
 
+from hashtopolis import HashtopolisConnector, HashtopolisConfig, HashtopolisError
 from hashtopolis import User
+from utils import BaseTest
 
-class AttributeTypes(unittest.TestCase):   
+
+class AttributeTypeTest(BaseTest):
     def test_patch_read_only(self):
         # Test to verify that we cannot patch a read_only field
         stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         user = User(
-            name = username,
-            email = 'test@example.com',
-            globalPermissionGroupId = 1,
+            name=username,
+            email='test@example.com',
+            globalPermissionGroupId=1,
         )
         user.save()
 
@@ -29,8 +30,8 @@ class AttributeTypes(unittest.TestCase):
         payload['passwordHash'] = 'test'
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
 
-        assert r.status_code == 500
-        assert 'immutable' in r.json().get('exception')[0].get('message')
+        self.assertEqual(r.status_code, 500)
+        self.assertIn('immutable', r.json().get('exception')[0].get('message'))
         user.delete()
 
     def test_create_protected(self):
@@ -38,26 +39,25 @@ class AttributeTypes(unittest.TestCase):
         username = f'test-{stamp}'
 
         user = User(
-            name = username,
-            email = 'test@example.com',
-            globalPermissionGroupId = 1,
-            passwordHash = 'test',
+            name=username,
+            email='test@example.com',
+            globalPermissionGroupId=1,
+            passwordHash='test',
         )
-        user.save()
+        with self.assertRaises(HashtopolisError) as e:
+            user.save()
+        self.assertEqual(e.exception.status_code, 500)
+        self.assertIn(' not valid input ', e.exception.exception_details[0]['message'])
 
-        assert user.message == 'Slim Application Error'
-        assert 'is not valid input key' in user.exception[0].get('message')
-    
     def test_get_private(self):
         stamp = int(time.time() * 1000)
         username = f'test-{stamp}'
         user = User(
-            name = username,
-            email = 'test@example.com',
-            globalPermissionGroupId = 1,
+            name=username,
+            email='test@example.com',
+            globalPermissionGroupId=1,
         )
         user.save()
-        id = user.id
 
         with self.assertRaises(AttributeError):
             user.passwordHash

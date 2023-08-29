@@ -4,9 +4,11 @@ on:
   push:
     branches:
     - master
+    - dev
   pull_request:
     branches:
     - master
+    - dev
 
 jobs:
   build:
@@ -23,3 +25,15 @@ jobs:
         run: docker exec -u root hashtopolis-server-dev bash -c "chown -R www-data:www-data /var/www/html/src && chmod -R g+w /var/www/html/src"
       - name: Run test suite
         run: docker exec hashtopolis-server-dev php /var/www/html/ci/run.php -vmaster
+      - name: Install composer dependencies packages
+        run: docker exec hashtopolis-server-dev composer install --working-dir=/var/www/html/
+      - name: Test with pytest
+        run: docker exec hashtopolis-server-dev pytest /var/www/html/ci/apiv2
+      - name: Test if pytest is removing all test objects
+        run: docker exec hashtopolis-server-dev python3 /var/www/html/ci/apiv2/htcli.py run delete-test-data
+      - name: Show docker log files
+        if: ${{ always() }}
+        run: docker logs hashtopolis-server-dev
+      - name: Show installed files tree in /var/www/html
+        if: ${{ always() }}
+        run: docker exec hashtopolis-server-dev find /var/www/html

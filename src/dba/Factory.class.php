@@ -9,6 +9,8 @@ class Factory {
   private static $agentErrorFactory = null;
   private static $agentStatFactory = null;
   private static $agentZapFactory = null;
+  private static $apiKeyFactory = null;
+  private static $apiGroupFactory = null;
   private static $assignmentFactory = null;
   private static $chunkFactory = null;
   private static $configFactory = null;
@@ -16,16 +18,22 @@ class Factory {
   private static $crackerBinaryFactory = null;
   private static $crackerBinaryTypeFactory = null;
   private static $fileFactory = null;
+  private static $fileDeleteFactory = null;
+  private static $fileDownloadFactory = null;
   private static $hashFactory = null;
   private static $hashBinaryFactory = null;
   private static $hashlistFactory = null;
   private static $hashTypeFactory = null;
+  private static $healthCheckFactory = null;
+  private static $healthCheckAgentFactory = null;
   private static $logEntryFactory = null;
   private static $notificationSettingFactory = null;
+  private static $preprocessorFactory = null;
   private static $pretaskFactory = null;
   private static $regVoucherFactory = null;
   private static $rightGroupFactory = null;
   private static $sessionFactory = null;
+  private static $speedFactory = null;
   private static $storedValueFactory = null;
   private static $supertaskFactory = null;
   private static $taskFactory = null;
@@ -33,14 +41,6 @@ class Factory {
   private static $taskWrapperFactory = null;
   private static $userFactory = null;
   private static $zapFactory = null;
-  private static $apiKeyFactory = null;
-  private static $apiGroupFactory = null;
-  private static $fileDownloadFactory = null;
-  private static $fileDeleteFactory = null;
-  private static $healthCheckFactory = null;
-  private static $healthCheckAgentFactory = null;
-  private static $speedFactory = null;
-  private static $preprocessorFactory = null;
   private static $accessGroupUserFactory = null;
   private static $accessGroupAgentFactory = null;
   private static $fileTaskFactory = null;
@@ -105,6 +105,26 @@ class Factory {
       return $f;
     } else {
       return self::$agentZapFactory;
+    }
+  }
+  
+  public static function getApiKeyFactory() {
+    if (self::$apiKeyFactory == null) {
+      $f = new ApiKeyFactory();
+      self::$apiKeyFactory = $f;
+      return $f;
+    } else {
+      return self::$apiKeyFactory;
+    }
+  }
+  
+  public static function getApiGroupFactory() {
+    if (self::$apiGroupFactory == null) {
+      $f = new ApiGroupFactory();
+      self::$apiGroupFactory = $f;
+      return $f;
+    } else {
+      return self::$apiGroupFactory;
     }
   }
   
@@ -178,6 +198,26 @@ class Factory {
     }
   }
   
+  public static function getFileDeleteFactory() {
+    if (self::$fileDeleteFactory == null) {
+      $f = new FileDeleteFactory();
+      self::$fileDeleteFactory = $f;
+      return $f;
+    } else {
+      return self::$fileDeleteFactory;
+    }
+  }
+  
+  public static function getFileDownloadFactory() {
+    if (self::$fileDownloadFactory == null) {
+      $f = new FileDownloadFactory();
+      self::$fileDownloadFactory = $f;
+      return $f;
+    } else {
+      return self::$fileDownloadFactory;
+    }
+  }
+  
   public static function getHashFactory() {
     if (self::$hashFactory == null) {
       $f = new HashFactory();
@@ -218,6 +258,26 @@ class Factory {
     }
   }
   
+  public static function getHealthCheckFactory() {
+    if (self::$healthCheckFactory == null) {
+      $f = new HealthCheckFactory();
+      self::$healthCheckFactory = $f;
+      return $f;
+    } else {
+      return self::$healthCheckFactory;
+    }
+  }
+  
+  public static function getHealthCheckAgentFactory() {
+    if (self::$healthCheckAgentFactory == null) {
+      $f = new HealthCheckAgentFactory();
+      self::$healthCheckAgentFactory = $f;
+      return $f;
+    } else {
+      return self::$healthCheckAgentFactory;
+    }
+  }
+  
   public static function getLogEntryFactory() {
     if (self::$logEntryFactory == null) {
       $f = new LogEntryFactory();
@@ -235,6 +295,16 @@ class Factory {
       return $f;
     } else {
       return self::$notificationSettingFactory;
+    }
+  }
+  
+  public static function getPreprocessorFactory() {
+    if (self::$preprocessorFactory == null) {
+      $f = new PreprocessorFactory();
+      self::$preprocessorFactory = $f;
+      return $f;
+    } else {
+      return self::$preprocessorFactory;
     }
   }
   
@@ -275,6 +345,16 @@ class Factory {
       return $f;
     } else {
       return self::$sessionFactory;
+    }
+  }
+  
+  public static function getSpeedFactory() {
+    if (self::$speedFactory == null) {
+      $f = new SpeedFactory();
+      self::$speedFactory = $f;
+      return $f;
+    } else {
+      return self::$speedFactory;
     }
   }
   
@@ -345,86 +425,6 @@ class Factory {
       return $f;
     } else {
       return self::$zapFactory;
-    }
-  }
-  
-  public static function getApiKeyFactory() {
-    if (self::$apiKeyFactory == null) {
-      $f = new ApiKeyFactory();
-      self::$apiKeyFactory = $f;
-      return $f;
-    } else {
-      return self::$apiKeyFactory;
-    }
-  }
-  
-  public static function getApiGroupFactory() {
-    if (self::$apiGroupFactory == null) {
-      $f = new ApiGroupFactory();
-      self::$apiGroupFactory = $f;
-      return $f;
-    } else {
-      return self::$apiGroupFactory;
-    }
-  }
-  
-  public static function getFileDownloadFactory() {
-    if (self::$fileDownloadFactory == null) {
-      $f = new FileDownloadFactory();
-      self::$fileDownloadFactory = $f;
-      return $f;
-    } else {
-      return self::$fileDownloadFactory;
-    }
-  }
-  
-  public static function getFileDeleteFactory() {
-    if (self::$fileDeleteFactory == null) {
-      $f = new FileDeleteFactory();
-      self::$fileDeleteFactory = $f;
-      return $f;
-    } else {
-      return self::$fileDeleteFactory;
-    }
-  }
-  
-  public static function getHealthCheckFactory() {
-    if (self::$healthCheckFactory == null) {
-      $f = new HealthCheckFactory();
-      self::$healthCheckFactory = $f;
-      return $f;
-    } else {
-      return self::$healthCheckFactory;
-    }
-  }
-  
-  public static function getHealthCheckAgentFactory() {
-    if (self::$healthCheckAgentFactory == null) {
-      $f = new HealthCheckAgentFactory();
-      self::$healthCheckAgentFactory = $f;
-      return $f;
-    } else {
-      return self::$healthCheckAgentFactory;
-    }
-  }
-  
-  public static function getSpeedFactory() {
-    if (self::$speedFactory == null) {
-      $f = new SpeedFactory();
-      self::$speedFactory = $f;
-      return $f;
-    } else {
-      return self::$speedFactory;
-    }
-  }
-  
-  public static function getPreprocessorFactory() {
-    if (self::$preprocessorFactory == null) {
-      $f = new PreprocessorFactory();
-      self::$preprocessorFactory = $f;
-      return $f;
-    } else {
-      return self::$preprocessorFactory;
     }
   }
   

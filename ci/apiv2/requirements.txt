@@ -1,2 +1,5 @@
+click
+click_log
 confidence
+pytest
 tuspy

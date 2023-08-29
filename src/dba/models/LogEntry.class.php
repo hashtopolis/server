@@ -33,12 +33,12 @@ class LogEntry extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['logEntryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "logEntryId"];
-    $dict['issuer'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "issuer"];
-    $dict['issuerId'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "issuerId"];
-    $dict['level'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "level"];
-    $dict['message'] = ['read_only' => False, "type" => "str(65535)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "message"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
+    $dict['logEntryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "logEntryId"];
+    $dict['issuer'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "issuer"];
+    $dict['issuerId'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "issuerId"];
+    $dict['level'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "level"];
+    $dict['message'] = ['read_only' => True, "type" => "str(65535)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "message"];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
 
     return $dict;
   }
@@ -113,4 +113,9 @@ class LogEntry extends AbstractModel {
   const LEVEL = "level";
   const MESSAGE = "message";
   const TIME = "time";
+
+  const PERM_CREATE = "permLogEntryCreate";
+  const PERM_READ = "permLogEntryRead";
+  const PERM_UPDATE = "permLogEntryUpdate";
+  const PERM_DELETE = "permLogEntryDelete";
 }

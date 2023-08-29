@@ -36,13 +36,13 @@ class Preprocessor extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['preprocessorId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "preprocessorId"];
-    $dict['name'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name"];
-    $dict['url'] = ['read_only' => False, "type" => "str(512)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "url"];
-    $dict['binaryName'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "binaryName"];
-    $dict['keyspaceCommand'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "keyspaceCommand"];
-    $dict['skipCommand'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "skipCommand"];
-    $dict['limitCommand'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "limitCommand"];
+    $dict['preprocessorId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "preprocessorId"];
+    $dict['name'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "name"];
+    $dict['url'] = ['read_only' => False, "type" => "str(512)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "url"];
+    $dict['binaryName'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "binaryName"];
+    $dict['keyspaceCommand'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "keyspaceCommand"];
+    $dict['skipCommand'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "skipCommand"];
+    $dict['limitCommand'] = ['read_only' => False, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "limitCommand"];
 
     return $dict;
   }
@@ -126,4 +126,9 @@ class Preprocessor extends AbstractModel {
   const KEYSPACE_COMMAND = "keyspaceCommand";
   const SKIP_COMMAND = "skipCommand";
   const LIMIT_COMMAND = "limitCommand";
+
+  const PERM_CREATE = "permPreprocessorCreate";
+  const PERM_READ = "permPreprocessorRead";
+  const PERM_UPDATE = "permPreprocessorUpdate";
+  const PERM_DELETE = "permPreprocessorDelete";
 }

@@ -1,6 +1,6 @@
 {
   "name": "Hashlist-md5sum-test123",
-  "hashTypeId": 1,
+  "hashTypeId": 0,
   "format": 0,
   "separator": ";",
   "isSalted": false,

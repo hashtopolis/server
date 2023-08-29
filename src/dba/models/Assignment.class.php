@@ -27,10 +27,10 @@ class Assignment extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['assignmentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "assignmentId"];
-    $dict['taskId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
-    $dict['agentId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentId"];
-    $dict['benchmark'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "benchmark"];
+    $dict['assignmentId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "assignmentId"];
+    $dict['taskId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
+    $dict['agentId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "agentId"];
+    $dict['benchmark'] = ['read_only' => True, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "benchmark"];
 
     return $dict;
   }
@@ -87,4 +87,9 @@ class Assignment extends AbstractModel {
   const TASK_ID = "taskId";
   const AGENT_ID = "agentId";
   const BENCHMARK = "benchmark";
+
+  const PERM_CREATE = "permAgentAssignmentCreate";
+  const PERM_READ = "permAgentAssignmentRead";
+  const PERM_UPDATE = "permAgentAssignmentUpdate";
+  const PERM_DELETE = "permAgentAssignmentDelete";
 }

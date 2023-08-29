@@ -24,9 +24,9 @@ class HashlistHashlist extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['hashlistHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistHashlistId"];
-    $dict['parentHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "parentHashlistId"];
-    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId"];
+    $dict['hashlistHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashlistHashlistId"];
+    $dict['parentHashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "parentHashlistId"];
+    $dict['hashlistId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId"];
 
     return $dict;
   }
@@ -74,4 +74,9 @@ class HashlistHashlist extends AbstractModel {
   const HASHLIST_HASHLIST_ID = "hashlistHashlistId";
   const PARENT_HASHLIST_ID = "parentHashlistId";
   const HASHLIST_ID = "hashlistId";
+
+  const PERM_CREATE = "permHashlistHashlistCreate";
+  const PERM_READ = "permHashlistHashlistRead";
+  const PERM_UPDATE = "permHashlistHashlistUpdate";
+  const PERM_DELETE = "permHashlistHashlistDelete";
 }

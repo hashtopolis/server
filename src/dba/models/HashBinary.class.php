@@ -42,15 +42,15 @@ class HashBinary extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['hashBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashBinaryId"];
-    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId"];
-    $dict['essid'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "essid"];
-    $dict['hash'] = ['read_only' => False, "type" => "str(4294967295)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hash"];
-    $dict['plaintext'] = ['read_only' => False, "type" => "str(1024)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "plaintext"];
-    $dict['timeCracked'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "timeCracked"];
-    $dict['chunkId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkId"];
-    $dict['isCracked'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isCracked"];
-    $dict['crackPos'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackPos"];
+    $dict['hashBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "hashBinaryId"];
+    $dict['hashlistId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashlistId"];
+    $dict['essid'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "essid"];
+    $dict['hash'] = ['read_only' => False, "type" => "str(4294967295)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hash"];
+    $dict['plaintext'] = ['read_only' => False, "type" => "str(1024)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "plaintext"];
+    $dict['timeCracked'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "timeCracked"];
+    $dict['chunkId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "chunkId"];
+    $dict['isCracked'] = ['read_only' => False, "type" => "bool", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "isCracked"];
+    $dict['crackPos'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackPos"];
 
     return $dict;
   }
@@ -152,4 +152,9 @@ class HashBinary extends AbstractModel {
   const CHUNK_ID = "chunkId";
   const IS_CRACKED = "isCracked";
   const CRACK_POS = "crackPos";
+
+  const PERM_CREATE = "permHashBinaryCreate";
+  const PERM_READ = "permHashBinaryRead";
+  const PERM_UPDATE = "permHashBinaryUpdate";
+  const PERM_DELETE = "permHashBinaryDelete";
 }

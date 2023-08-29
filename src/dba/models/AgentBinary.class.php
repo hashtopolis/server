@@ -36,13 +36,13 @@ class AgentBinary extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentBinaryId"];
-    $dict['type'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "type"];
-    $dict['version'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "version"];
-    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "operatingSystems"];
-    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename"];
-    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "updateTrack"];
-    $dict['updateAvailable'] = ['read_only' => True, "type" => "str(20)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "updateAvailable"];
+    $dict['agentBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "agentBinaryId"];
+    $dict['type'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "type"];
+    $dict['version'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "version"];
+    $dict['operatingSystems'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "operatingSystems"];
+    $dict['filename'] = ['read_only' => False, "type" => "str(50)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "filename"];
+    $dict['updateTrack'] = ['read_only' => False, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "updateTrack"];
+    $dict['updateAvailable'] = ['read_only' => True, "type" => "str(20)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "updateAvailable"];
 
     return $dict;
   }
@@ -126,4 +126,9 @@ class AgentBinary extends AbstractModel {
   const FILENAME = "filename";
   const UPDATE_TRACK = "updateTrack";
   const UPDATE_AVAILABLE = "updateAvailable";
+
+  const PERM_CREATE = "permAgentBinaryCreate";
+  const PERM_READ = "permAgentBinaryRead";
+  const PERM_UPDATE = "permAgentBinaryUpdate";
+  const PERM_DELETE = "permAgentBinaryDelete";
 }

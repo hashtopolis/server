@@ -32,11 +32,13 @@ services:
   hashtopolis-frontend:
     container_name: hashtopolis-frontend
     image: hashtopolis/frontend:latest
+    environment:
+      HASHTOPOLIS_BACKEND_URL: $HASHTOPOLIS_BACKEND_URL
     restart: always
     depends_on: 
       - hashtopolis-backend
     ports:
-      - 4200:4200
+      - 4200:80
 volumes:
   db:
   hashtopolis:

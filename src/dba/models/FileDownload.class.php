@@ -27,10 +27,10 @@ class FileDownload extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['fileDownloadId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileDownloadId"];
-    $dict['time'] = ['read_only' => False, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "time"];
-    $dict['fileId'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "fileId"];
-    $dict['status'] = ['read_only' => False, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "status"];
+    $dict['fileDownloadId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "fileDownloadId"];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
+    $dict['fileId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "fileId"];
+    $dict['status'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "status"];
 
     return $dict;
   }
@@ -87,4 +87,9 @@ class FileDownload extends AbstractModel {
   const TIME = "time";
   const FILE_ID = "fileId";
   const STATUS = "status";
+
+  const PERM_CREATE = "permFileDownloadCreate";
+  const PERM_READ = "permFileDownloadRead";
+  const PERM_UPDATE = "permFileDownloadUpdate";
+  const PERM_DELETE = "permFileDownloadDelete";
 }

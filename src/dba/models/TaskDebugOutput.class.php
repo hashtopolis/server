@@ -24,9 +24,9 @@ class TaskDebugOutput extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "taskDebugOutputId"];
-    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
-    $dict['output'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "output"];
+    $dict['taskDebugOutputId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "taskDebugOutputId"];
+    $dict['taskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "taskId"];
+    $dict['output'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "output"];
 
     return $dict;
   }
@@ -74,4 +74,9 @@ class TaskDebugOutput extends AbstractModel {
   const TASK_DEBUG_OUTPUT_ID = "taskDebugOutputId";
   const TASK_ID = "taskId";
   const OUTPUT = "output";
+
+  const PERM_CREATE = "permTaskDebugOutputCreate";
+  const PERM_READ = "permTaskDebugOutputRead";
+  const PERM_UPDATE = "permTaskDebugOutputUpdate";
+  const PERM_DELETE = "permTaskDebugOutputDelete";
 }

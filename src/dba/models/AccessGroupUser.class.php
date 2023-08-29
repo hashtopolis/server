@@ -24,9 +24,9 @@ class AccessGroupUser extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['accessGroupUserId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "accessGroupUserId"];
-    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId"];
-    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
+    $dict['accessGroupUserId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "accessGroupUserId"];
+    $dict['accessGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "accessGroupId"];
+    $dict['userId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "userId"];
 
     return $dict;
   }
@@ -74,4 +74,9 @@ class AccessGroupUser extends AbstractModel {
   const ACCESS_GROUP_USER_ID = "accessGroupUserId";
   const ACCESS_GROUP_ID = "accessGroupId";
   const USER_ID = "userId";
+
+  const PERM_CREATE = "permAccessGroupUserCreate";
+  const PERM_READ = "permAccessGroupUserRead";
+  const PERM_UPDATE = "permAccessGroupUserUpdate";
+  const PERM_DELETE = "permAccessGroupUserDelete";
 }

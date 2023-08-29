@@ -24,9 +24,9 @@ class SupertaskPretask extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['supertaskPretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "supertaskPretaskId"];
-    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "supertaskId"];
-    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "pretaskId"];
+    $dict['supertaskPretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "supertaskPretaskId"];
+    $dict['supertaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "supertaskId"];
+    $dict['pretaskId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "pretaskId"];
 
     return $dict;
   }
@@ -74,4 +74,9 @@ class SupertaskPretask extends AbstractModel {
   const SUPERTASK_PRETASK_ID = "supertaskPretaskId";
   const SUPERTASK_ID = "supertaskId";
   const PRETASK_ID = "pretaskId";
+
+  const PERM_CREATE = "permSupertaskPretaskCreate";
+  const PERM_READ = "permSupertaskPretaskRead";
+  const PERM_UPDATE = "permSupertaskPretaskUpdate";
+  const PERM_DELETE = "permSupertaskPretaskDelete";
 }

@@ -24,9 +24,9 @@ class RegVoucher extends AbstractModel {
   
   static function getFeatures() {
     $dict = array();
-    $dict['regVoucherId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "regVoucherId"];
-    $dict['voucher'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "voucher"];
-    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
+    $dict['regVoucherId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "regVoucherId"];
+    $dict['voucher'] = ['read_only' => False, "type" => "str(100)", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "voucher"];
+    $dict['time'] = ['read_only' => True, "type" => "int64", "subtype" => "unset", "choices" => "unset", "null" => False, "pk" => False, "protected" => True, "private" => False, "alias" => "time"];
 
     return $dict;
   }
@@ -74,4 +74,9 @@ class RegVoucher extends AbstractModel {
   const REG_VOUCHER_ID = "regVoucherId";
   const VOUCHER = "voucher";
   const TIME = "time";
+
+  const PERM_CREATE = "permRegVoucherCreate";
+  const PERM_READ = "permRegVoucherRead";
+  const PERM_UPDATE = "permRegVoucherUpdate";
+  const PERM_DELETE = "permRegVoucherDelete";
 }
