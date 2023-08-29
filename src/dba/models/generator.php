@@ -417,6 +417,7 @@ $CONF['TaskWrapper'] = [
   'columns' => [
     ['name' => 'taskWrapperId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'priority', 'read_only' => False, 'type' => 'int'],
+    ['name' => 'maxAgents', 'read_only' => False, 'type' => 'int'],
     ['name' => 'taskType', 'read_only' => True, 'type' => 'int', 'protected' => True, 'choices' => $FieldTaskTypeChoices],
     ['name' => 'hashlistId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'accessGroupId', 'read_only' => False, 'type' => 'int'],
