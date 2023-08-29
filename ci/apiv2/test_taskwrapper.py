@@ -52,7 +52,6 @@ class TaskWrapperTest(BaseTest):
         helper.create_supertask(supertask, hashlist, cracker)
         self.assertEqual(len(TaskWrapper.objects.filter(hashlistId=hashlist.id)), 1)
 
-    # Broken due to https://github.com/hashtopolis/server/issues/969
     def test_helper_create_supertask_generic_cracker(self):
         pretasks = [self.create_pretask() for i in range(2)]
         supertask = self.create_supertask(pretasks=pretasks)
