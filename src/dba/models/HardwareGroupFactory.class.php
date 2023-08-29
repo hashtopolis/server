@@ -2,13 +2,13 @@
 
 namespace DBA;
 
-class AgentFactory extends AbstractModelFactory {
+class HardwareGroupFactory extends AbstractModelFactory {
   function getModelName() {
-    return "Agent";
+    return "HardwareGroup";
   }
   
   function getModelTable() {
-    return "Agent";
+    return "HardwareGroup";
   }
   
   function isCachable() {
@@ -20,27 +20,27 @@ class AgentFactory extends AbstractModelFactory {
   }
   
   /**
-   * @return Agent
+   * @return HardwareGroup
    */
   function getNullObject() {
-    $o = new Agent(-1, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    $o = new HardwareGroup(-1, null, null);
     return $o;
   }
   
   /**
    * @param string $pk
    * @param array $dict
-   * @return Agent
+   * @return HardwareGroup
    */
   function createObjectFromDict($pk, $dict) {
-    $o = new Agent($dict['agentId'], $dict['agentName'], $dict['uid'], $dict['os'], $dict['hardwareGroupId'], $dict['cmdPars'], $dict['ignoreErrors'], $dict['isActive'], $dict['isTrusted'], $dict['token'], $dict['lastAct'], $dict['lastTime'], $dict['lastIp'], $dict['userId'], $dict['cpuOnly'], $dict['clientSignature']);
+    $o = new HardwareGroup($dict['hardwareGroupId'], $dict['devices']);
     return $o;
   }
   
   /**
    * @param array $options
    * @param bool $single
-   * @return Agent|Agent[]
+   * @return HardwareGroup|HardwareGroup[]
    */
   function filter($options, $single = false) {
     $join = false;
@@ -51,7 +51,7 @@ class AgentFactory extends AbstractModelFactory {
       if ($join) {
         return parent::filter($options, $single);
       }
-      return Util::cast(parent::filter($options, $single), Agent::class);
+      return Util::cast(parent::filter($options, $single), HardwareGroup::class);
     }
     $objects = parent::filter($options, $single);
     if ($join) {
@@ -59,24 +59,24 @@ class AgentFactory extends AbstractModelFactory {
     }
     $models = array();
     foreach ($objects as $object) {
-      $models[] = Util::cast($object, Agent::class);
+      $models[] = Util::cast($object, HardwareGroup::class);
     }
     return $models;
   }
   
   /**
    * @param string $pk
-   * @return Agent
+   * @return HardwareGroup
    */
   function get($pk) {
-    return Util::cast(parent::get($pk), Agent::class);
+    return Util::cast(parent::get($pk), HardwareGroup::class);
   }
   
   /**
-   * @param Agent $model
-   * @return Agent
+   * @param HardwareGroup $model
+   * @return HardwareGroup
    */
   function save($model) {
-    return Util::cast(parent::save($model), Agent::class);
+    return Util::cast(parent::save($model), HardwareGroup::class);
   }
 }

@@ -40,6 +40,7 @@ class APIGetChunk extends APIBasic {
     $qF1 = new QueryFilter(Assignment::AGENT_ID, $this->agent->getId(), "=");
     $qF2 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
     $assignment = Factory::getAssignmentFactory()->filter([Factory::FILTER => [$qF1, $qF2]], true);
+
     if ($assignment == null) {
       DServerLog::log(DServerLog::WARNING, "Requested chunk on task it is not assigned to!", [$this->agent]);
       $this->sendErrorResponse(PActions::GET_CHUNK, "You are not assigned to this task!");
@@ -54,13 +55,27 @@ class APIGetChunk extends APIBasic {
       );
     }
     else if ($assignment->getBenchmark() == 0 && $task->getIsSmall() == 0 && $task->getStaticChunks() == DTaskStaticChunking::NORMAL) { // benchmark only required on non-small tasks and on non-special chunk tasks
-      DServerLog::log(DServerLog::TRACE, "Need to run a benchmark!", [$this->agent, $task]);
+      $taskWrapper = Factory::getTaskWrapperFactory()->get($task->getTaskWrapperId());
+      $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
+
+      $ttl = SConfig::getInstance()->getVal(DConfig::BENCHMARKCACHE_TTL);
+      $attackParameters = $task->getAttackCmd() . " " . $this->agent->getCmdPars();
+
+      $benchmark = BenchmarkUtils::getBenchmarkByValue($attackParameters, $this->agent->getHardwareGroupId(), $hashlist->getHashTypeId(), $task->getUseNewBench(), $task->getCrackerBinaryId());
+
+      if ($benchmark === NULL || $ttl == 0) {
+      DServerLog::log(DServerLog::INFO, "Need to run a benchmark!", [$this->agent, $task]);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
           PResponseGetChunk::RESPONSE => PValues::SUCCESS,
           PResponseGetChunk::CHUNK_STATUS => PValuesChunkType::BENCHMARK_REQUIRED
         )
       );
+      } else {
+        DServerLog::log(DServerLog::INFO, "Found benchmark in cache", [$this->agent, $task]);
+        $assignment->setBenchmark($benchmark->getBenchmarkValue());
+        Factory::getAssignmentFactory()->update($assignment);
+      }
     }
     else if ($this->agent->getIsActive() == 0) {
       DServerLog::log(DServerLog::TRACE, "Agent is inactive!", [$this->agent]);

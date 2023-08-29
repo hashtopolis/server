@@ -30,6 +30,7 @@ $CONF['Agent'] = [
   ['name' => 'os', 'read_only' => False, 'type' => 'int'],
   ['name' => 'devices', 'read_only' => False, 'type' => 'str(65535)'],
   ['name' => 'cmdPars', 'read_only' => False, 'type' => 'str(256)'],
+  ['name' => 'hardwareGroupId', 'read_only' => True, 'type' => 'int'],
   ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'isTrusted', 'read_only' => False, 'type' => 'bool'],
@@ -79,6 +80,16 @@ $CONF['Assignment'] = [
   ['name' => 'taskId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'agentId', 'read_only' => False, 'type' => 'int'],
   ['name' => 'benchmark', 'read_only' => False, 'type' => 'str(50)'],
+];
+// FIXME: Add correct read_only mapping to relevant fields
+$CONF['Benchmark'] = [
+  ['name' => 'benchmarkId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'benchmarkValue', 'read_only' => False, 'type' => 'str(256)'],
+  ['name' => 'hardwareGroupId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'ttl', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'hashmode', 'read_only' => False, 'type' => 'int'],
+  ['name' => 'benchmarkType', 'read_only' => False, 'type' => 'str(10)'],
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['Chunk'] = [
@@ -178,6 +189,10 @@ $CONF['HashType'] = [
   ['name' => 'description', 'read_only' => False, 'type' => 'str(256)'],
   ['name' => 'isSalted', 'read_only' => False, 'type' => 'bool'],
   ['name' => 'isSlowHash', 'read_only' => False, 'type' => 'bool']
+];
+$CONF['HardwareGroup'] = [
+  ['name' => 'hardwareGroupId', 'read_only' => True, 'type' => 'int', 'protected' => True],
+  ['name' => 'devices', 'read_only' => False, 'type' => 'str(65000)'],
 ];
 // FIXME: Add correct read_only mapping to relevant fields
 $CONF['LogEntry'] = [

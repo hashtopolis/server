@@ -170,8 +170,7 @@ INSERT INTO `Config` (`configId`, `configSectionId`, `item`, `value`) VALUES
   (74, 4, 'agentUtilThreshold1', '90'),
   (75, 4, 'agentUtilThreshold2', '75'),
   (76, 3, 'uApiSendTaskIsComplete', '0'),
-  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed'),
-  (78, 1, 'benchmarkcacheTtl', '216000');
+  (77, 1, 'hcErrorIgnore', 'DeviceGetFanSpeed');
 
 CREATE TABLE `ConfigSection` (
   `configSectionId` INT(11)      NOT NULL,
@@ -885,7 +884,6 @@ CREATE TABLE `TaskDebugOutput` (
 CREATE TABLE `TaskWrapper` (
   `taskWrapperId`   INT(11)      NOT NULL,
   `priority`        INT(11)      NOT NULL,
-  `maxAgents`       INT(11)      NOT NULL,
   `taskType`        INT(11)      NOT NULL,
   `hashlistId`      INT(11)      NOT NULL,
   `accessGroupId`   INT(11)      DEFAULT NULL,
@@ -928,9 +926,6 @@ CREATE TABLE `HardwareGroup` (
     `hardwareGroupId` INT(11) NOT NULL,
     `devices` VARCHAR(65000) NULL
 ) ENGINE = InnoDB;
-
-INSERT INTO `HardwareGroup` (`hardwareGroupId`, `devices`) VALUES
-  (0, 'Default'); 
 
 CREATE TABLE `Zap` (
   `zapId`      INT(11)    NOT NULL,
@@ -1022,7 +1017,8 @@ ALTER TABLE `HardwareGroup`
 ALTER TABLE `Agent`
   ADD PRIMARY KEY (`agentId`),
   ADD KEY `userId` (`userId`);
-  
+  -- ADD KEY `hardwareGroupId` (`hardwareGroupId`);
+
 ALTER TABLE `AgentBinary`
   ADD PRIMARY KEY (`agentBinaryId`);
 
@@ -1334,8 +1330,8 @@ ALTER TABLE `AccessGroupUser`
   ADD CONSTRAINT `AccessGroupUser_ibfk_2` FOREIGN KEY (`userId`)        REFERENCES `User` (`userId`);
 
 ALTER TABLE `Agent`
-  ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`),
-  ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
+  ADD CONSTRAINT `Agent_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `User` (`userId`);
+  -- ADD CONSTRAINT `Agent_ibfk_2` FOREIGN KEY (`hardwareGroupId`) REFERENCES `HardwareGroup` (`hardwareGroupId`);
 
 ALTER TABLE `AgentError`
   ADD CONSTRAINT `AgentError_ibfk_1` FOREIGN KEY (`agentId`) REFERENCES `Agent` (`agentId`),

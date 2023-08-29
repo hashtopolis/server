@@ -79,12 +79,13 @@ class UserAPIAgent extends UserAPIBasic {
    */
   private function getAgent($QUERY) {
     $agent = AgentUtils::getAgent($QUERY[UQueryAgent::AGENT_ID], $this->user);
+    $devices = HardwareGroupUtils::getDevicesForAgent($agent);
     $response = [
       UResponseAgent::SECTION => $QUERY[UQueryAgent::SECTION],
       UResponseAgent::REQUEST => $QUERY[UQueryAgent::REQUEST],
       UResponseAgent::RESPONSE => UValues::OK,
       UResponseAgent::AGENT_NAME => $agent->getAgentName(),
-      UResponseAgent::AGENT_DEVICES => explode("\n", $agent->getDevices()),
+      UResponseAgent::AGENT_DEVICES => explode("\n", $devices),
       UResponseAgent::AGENT_OWNER => [
         UResponseAgent::AGENT_OWNER_ID => (int)$agent->getUserId(),
         UResponseAgent::AGENT_OWNER_NAME => Util::getUsernameById($agent->getUserId())
@@ -203,10 +204,12 @@ class UserAPIAgent extends UserAPIBasic {
     $agents = Factory::getAgentFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
     $arr = [];
     foreach ($agents as $agent) {
+      $devices = HardwareGroupUtils::getDevicesForAgent($agent);
+
       $arr[] = array(
         UResponseAgent::AGENTS_ID => $agent->getId(),
         UResponseAgent::AGENTS_NAME => $agent->getAgentName(),
-        UResponseAgent::AGENTS_DEVICES => explode("\n", $agent->getDevices())
+        UResponseAgent::AGENTS_DEVICES => explode("\n", $devices)
       );
     }
     $this->sendResponse(array(

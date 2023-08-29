@@ -56,6 +56,7 @@ if (isset($_GET['id'])) {
   //show agent detail
   Template::loadInstance("agents/detail");
   $agent = Factory::getAgentFactory()->get($_GET['id']);
+  $hardwareGroup = Factory::getHardwareGroupFactory()->get($agent->getHardwareGroupId());
   if (!$agent) {
     UI::printError("ERROR", "Agent not found!");
   }
@@ -64,12 +65,12 @@ if (isset($_GET['id'])) {
   }
   else {
     // uniq devices lines and prepend with count
-    $tmp_devices_tuple = array_count_values(explode("\n", $agent->getDevices()));
+    $tmp_devices_tuple = array_count_values(explode("\n", $hardwareGroup->getDevices()));
     $devices_tuple = array();
     foreach ($tmp_devices_tuple as $key => $value) {
       $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
     }
-    $agent->setDevices(implode("\n", $devices_tuple));
+    $agent->setHardwareGroupId(implode("\n", $devices_tuple));
 
     UI::add('agent', $agent);
     UI::add('users', Factory::getUserFactory()->filter([]));
@@ -158,12 +159,14 @@ else {
     $joined = Factory::getAccessGroupFactory()->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
     $accessGroupAgents->addValue($agent->getId(), $joined[Factory::getAccessGroupFactory()->getModelName()]);
     // uniq devices lines and prepend with count
-    $tmp_devices_tuple = array_count_values(explode("\n", $agent->getDevices()));
+    $hardwareGroup = Factory::getHardwareGroupFactory()->get($agent->getHardwareGroupId());
+
+    $tmp_devices_tuple = array_count_values(explode("\n", $hardwareGroup->getDevices()));
     $devices_tuple = array();
     foreach ($tmp_devices_tuple as $key => $value) {
       $devices_tuple[] = str_replace("*", "&nbsp;&nbsp", sprintf("%'*2d&times ", $value) . $key);
     }
-    $agent->setDevices(implode("\n", $devices_tuple));
+    $agent->setHardwareGroupId(implode("\n", $devices_tuple));
   }
   
   UI::add('accessGroupAgents', $accessGroupAgents);

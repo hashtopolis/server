@@ -8,6 +8,14 @@
 ## New feature
 - Number of agents per supertask/taskwrapper can be limited (#769).
 
+## Benchmark cache system 
+A cache for the benchmarks so that benchmarks can be reused and the benchmark process can be skipped when the benchmark has already been cached.
+Key components:
+
+- Added a benchmark model. The benchmark model got a field for all the dependencies of the benchmark output. These are the benchmark type (speed or runtime), the cracker binary, the hardware that is used, the attack parameters and the hashmode.
+- Agents are split up into hardware groups, so that benchmark can be linked to a hardwaregroup and not a single agent.
+- Benchmarks get invalidated by a time to live.
+- frontend for the benchmarks in /benchmark.php to show what has been cached and to manually remove values.
 
 # v0.13.1 -> v0.14.0
 

@@ -4,7 +4,6 @@ use DBA\Agent;
 use DBA\Assignment;
 use DBA\QueryFilter;
 use DBA\Factory;
-use DBA\File;
 
 class APISendBenchmark extends APIBasic {
   public function execute($QUERY = array()) {
@@ -75,10 +74,21 @@ class APISendBenchmark extends APIBasic {
         Factory::getAgentFactory()->set($this->agent, Agent::IS_ACTIVE, 0);
         $this->sendErrorResponse(PActions::SEND_BENCHMARK, "Invalid benchmark type!");
     }
-    
+
     $assignment->setBenchmark($benchmark);
     Factory::getAssignmentFactory()->update($assignment);
-    DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
+
+    // save benchmark in cache if cache ttl is higher than 0
+    $ttl = SConfig::getInstance()->getVal(DConfig::BENCHMARKCACHE_TTL);
+
+    if ($ttl != 0) {
+      $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
+      $attackParameters = $task->getAttackCmd(). " " . $this->agent->getCmdPars();
+
+      BenchmarkUtils::saveBenchmarkInCache($attackParameters, $this->agent->getHardwareGroupId(), $benchmark, $hashlist->getHashTypeId(), $type, $task->getCrackerBinaryId());
+      DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
+    }
+
     $this->sendResponse(array(
         PResponseSendBenchmark::ACTION => PActions::SEND_BENCHMARK,
         PResponseSendBenchmark::RESPONSE => PValues::SUCCESS,
