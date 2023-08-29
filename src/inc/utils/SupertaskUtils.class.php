@@ -279,7 +279,7 @@ class SupertaskUtils {
     foreach ($pretasks as $pretask) {
       $crackerBinaryId = $cracker->getId();
       if ($cracker->getCrackerBinaryTypeId() != $pretask->getCrackerBinaryTypeId()) {
-        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId());
+        $crackerBinaryId = CrackerBinaryUtils::getNewestVersion($pretask->getCrackerBinaryTypeId())->getId();
       }
       
       $task = new Task(
