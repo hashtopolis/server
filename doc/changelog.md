@@ -3,6 +3,7 @@
 ## Bugfixes
 - Clicking pretask in Supertask create screen now directs correctly to the pretask and not a task with the same id (#945)
 - Pretask attackCmd parameter was not checked for maximum length of 256 on creation (#963)
+- Creating supertask fails when provided crackerType != pretask.crackerType (#969)
 
 
 # v0.13.1 -> v0.14.0
