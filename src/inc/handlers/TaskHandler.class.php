@@ -97,6 +97,10 @@ class TaskHandler implements Handler {
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
           TaskUtils::setSupertaskPriority($_POST['supertaskId'], $_POST['priority'], Login::getInstance()->getUser());
           break;
+        case DTaskAction::SET_SUPERTASK_MAX_AGENTS:
+          AccessControl::getInstance()->checkPermission(DTaskAction::SET_SUPERTASK_MAX_AGENTS_PERM);
+          TaskUtils::setSuperTaskMaxAgents($_POST['supertaskId'], $_POST['maxAgents'], Login::getInstance()->getUser());
+          break;
         case DTaskAction::SET_SUPERTASK_TOP_PRIORITY:
           AccessControl::getInstance()->checkPermission(DTaskAction::SET_SUPERTASK_PRIORITY_PERM);
           TaskUtils::setSupertaskPriority($_POST['supertaskId'], -1, Login::getInstance()->getUser(), true);
@@ -234,6 +238,9 @@ class TaskHandler implements Handler {
     if ($priority < 0) {
       $priority = 0;
     }
+    if ($maxAgents < 0) {
+      $maxAgents = 0;
+    }
     if ($usePreprocessor && !$useNewBench) {
       // enforce speed benchmark when using prince
       $useNewBench = 1;
@@ -251,7 +258,7 @@ class TaskHandler implements Handler {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0, 0);
+    $taskWrapper = new TaskWrapper(null, $priority, $maxAgents, DTaskTypes::NORMAL, $hashlistId, $accessGroup->getId(), "", 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     if (AccessControl::getInstance()->hasPermission(DAccessControl::CREATE_TASK_ACCESS)) {

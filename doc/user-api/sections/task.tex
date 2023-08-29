@@ -398,6 +398,30 @@
 				}
 				\end{verbatim}
 			}
+		\subsection*{\textit{setSupertaskMaxAgents}}
+			Set the maximum number of assigned agents for a running supertask. Takes effect when agents request a new chunk.
+			{
+				\color{blue}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskMaxAgents",
+				  "supertaskId": 42,
+				  "supertaskMaxAgents": 2,
+				  "accessKey": "mykey"
+				}
+				\end{verbatim}
+			}
+			{
+				\color{OliveGreen}
+				\begin{verbatim}
+				{
+				  "section": "task",
+				  "request": "setSupertaskMaxAgents",
+				  "response": "OK"
+				}
+				\end{verbatim}
+			}
 		\subsection*{\textit{setTaskName}}
 			Set the name for a task.
 			{

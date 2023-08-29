@@ -594,7 +594,19 @@ class TaskUtils {
     $maxAgents = intval($maxAgents);
     Factory::getTaskFactory()->set($task, Task::MAX_AGENTS, $maxAgents);
   }
-  
+
+  /**
+   * @param int $superTaskId
+   * @param int $maxAgents
+   * @param User $user
+   * @throws HTException
+   */
+  public static function setSuperTaskMaxAgents($superTaskId, $maxAgents, $user) {
+    $taskWrapper = TaskUtils::getTaskWrapper($superTaskId, $user);
+    $maxAgents = intval($maxAgents);
+    Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::MAX_AGENTS, $maxAgents);
+  }
+
   /**
    * @param int $taskId
    * @param string $color
@@ -793,7 +805,7 @@ class TaskUtils {
     }
     
     Factory::getAgentFactory()->getDB()->beginTransaction();
-    $taskWrapper = new TaskWrapper(null, $priority, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0, 0);
+    $taskWrapper = new TaskWrapper(null, $priority, $maxAgents, DTaskTypes::NORMAL, $hashlist->getId(), $accessGroup->getId(), "", 0, 0);
     $taskWrapper = Factory::getTaskWrapperFactory()->save($taskWrapper);
     
     $task = new Task(
@@ -880,7 +892,7 @@ class TaskUtils {
     }
     
     // create new tasks as supertask
-    $newWrapper = new TaskWrapper(null, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName() . " (From Rule Split)", 0, 0);
+    $newWrapper = new TaskWrapper(null, 0, 0, DTaskTypes::SUPERTASK, $taskWrapper->getHashlistId(), $taskWrapper->getAccessGroupId(), $task->getTaskName() . " (From Rule Split)", 0, 0);
     $newWrapper = Factory::getTaskWrapperFactory()->save($newWrapper);
     $prio = sizeof($newFiles) + 1;
     foreach ($newFiles as $newFile) {
@@ -920,6 +932,7 @@ class TaskUtils {
       $prio--;
     }
     $newWrapper->setPriority($taskWrapper->getPriority());
+    $newWrapper->setMaxAgents($taskWrapper->getMaxAgents());
     Factory::getTaskWrapperFactory()->update($newWrapper);
     
     // cleanup
@@ -976,52 +989,10 @@ class TaskUtils {
       else if ($fullyCracked) {
         continue; // all hashes of this hashlist are cracked, so we continue
       }
-      
-      $candidateTasks = [];
-      
-      // load assigned tasks for this TaskWrapper
-      $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
-      $oF = new OrderFilter(Task::PRIORITY, "DESC");
-      $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
-      foreach ($tasks as $task) {
-        // check if it's a small task or maxAgents limits the number of assignments
-        if ($task->getIsSmall() == 1 || $task->getMaxAgents() > 0) {
-          if (self::isSaturatedByOtherAgents($task, $agent)) {
-            continue;
-          }
-        }
-        
-        // check if a task suits to this agent
-        $files = TaskUtils::getFilesOfTask($task);
-        $permitted = true;
-        foreach ($files as $file) {
-          if ($file->getIsSecret() > $agent->getIsTrusted()) {
-            $permitted = false;
-          }
-          else if (!in_array($file->getAccessGroupId(), $accessGroups)) {
-            $permitted = false;
-          }
-        }
-        if (!$permitted) {
-          continue; // at least one of the files required for this task is secret and the agent not, so this task cannot be used
-        }
-        
-        // we need to check now if the task is already completed or fully dispatched
-        $task = TaskUtils::checkTask($task, $agent);
-        if ($task == null) {
-          continue; // if it is completed we go to the next
-        }
-        
-        // check if it's a cpu/gpu task
-        if ($task->getIsCpuTask() != $agent->getCpuOnly()) {
-          continue;
-        }
-        
-        if (!$all) {
-          return $task;
-        }
-        // accumulate all candidate tasks
-        $candidateTasks[] = $task;
+
+      $candidateTasks = self::getCandidateTasks($agent, $accessGroups, $taskWrapper);
+      if (!$all && !empty($candidateTasks)) {
+        return current($candidateTasks);
       }
       
       // These tasks are available for this user regarding permissions, assignments.
@@ -1031,6 +1002,61 @@ class TaskUtils {
       return $allTasks;
     }
     return null;
+  }
+
+  private static function getCandidateTasks($agent, $accessGroups, $taskWrapper) {
+    $totalAssignments = 0;
+    $candidateTasks = [];
+
+    // load assigned tasks for this TaskWrapper
+    $qF = new QueryFilter(Task::TASK_WRAPPER_ID, $taskWrapper->getId(), "=");
+    $oF = new OrderFilter(Task::PRIORITY, "DESC");
+    $tasks = Factory::getTaskFactory()->filter([Factory::FILTER => $qF, Factory::ORDER => $oF]);
+    foreach ($tasks as $task) {
+      // count number of other agents already working on the task,
+      // no tasks can be candidates if limit is already reached
+      $totalAssignments += self::numberOfOtherAssignedAgents($task, $agent);
+      if ($taskWrapper->getMaxAgents() > 0 && $totalAssignments >= $taskWrapper->getMaxAgents()) {
+        return [];
+      }
+
+      // check if it's a small task or maxAgents limits the number of assignments
+      if ($task->getIsSmall() == 1 || $task->getMaxAgents() > 0) {
+        if (self::isSaturatedByOtherAgents($task, $agent)) {
+          continue;
+        }
+      }
+
+      // check if a task suits to this agent
+      $files = TaskUtils::getFilesOfTask($task);
+      $permitted = true;
+      foreach ($files as $file) {
+        if ($file->getIsSecret() > $agent->getIsTrusted()) {
+          $permitted = false;
+        }
+        else if (!in_array($file->getAccessGroupId(), $accessGroups)) {
+          $permitted = false;
+        }
+      }
+      if (!$permitted) {
+        continue; // at least one of the files required for this task is secret and the agent not, so this task cannot be used
+      }
+
+      // we need to check now if the task is already completed or fully dispatched
+      $task = TaskUtils::checkTask($task, $agent);
+      if ($task == null) {
+        continue; // if it is completed we go to the next
+      }
+
+      // check if it's a cpu/gpu task
+      if ($task->getIsCpuTask() != $agent->getCpuOnly()) {
+        continue;
+      }
+
+      // accumulate all candidate tasks
+      $candidateTasks[] = $task;
+    }
+    return $candidateTasks;
   }
   
   /**
@@ -1334,6 +1360,19 @@ class TaskUtils {
   }
   
   /**
+   * Get the number of agents - apart from given agent -.working on given task.
+   *
+   * @param $task
+   * @param $agent
+   * @return int the number of agents working on given task
+   */
+  public static function numberOfOtherAssignedAgents($task, $agent) {
+    $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
+    $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "<>");
+    return  Factory::getAssignmentFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+  }
+
+  /**
    * Check if a task already has enough agents - apart from given agent - working on it,
    * with respect to the 'maxAgents' configuration
    *
@@ -1342,9 +1381,7 @@ class TaskUtils {
    * @return boolean true if maxAgents != 0 and number of assigned agents >= maxAgents, false otherwise
    */
   public static function isSaturatedByOtherAgents($task, $agent) {
-    $qF1 = new QueryFilter(Assignment::TASK_ID, $task->getId(), "=");
-    $qF2 = new QueryFilter(Assignment::AGENT_ID, $agent->getId(), "<>");
-    $numAssignments = Factory::getAssignmentFactory()->countFilter([Factory::FILTER => [$qF1, $qF2]]);
+    $numAssignments = self::numberOfOtherAssignedAgents($task, $agent);
     return ($task->getIsSmall() == 1 && $numAssignments > 0) || // at least one agent is already assigned here
       ($task->getMaxAgents() > 0 && $numAssignments >= $task->getMaxAgents()); // at least maxAgents agents are already assigned
   }
