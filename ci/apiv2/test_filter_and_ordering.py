@@ -1,5 +1,6 @@
 from hashtopolis import HashType
 from utils import BaseTest
+import pytest
 
 
 class FilterTest(BaseTest):
@@ -23,7 +24,7 @@ class FilterTest(BaseTest):
             [x.id for x in model_objs],
             [x.id for x in objs])
 
-    # Broken due to bug https://github.com/hashtopolis/server/issues/968
+    @pytest.mark.skip(reason="Broken due to bug https://github.com/hashtopolis/server/issues/968")
     def test_filter__contains(self):
         search_token = "SHA"
         objs = HashType.objects.filter(description__contains=search_token)
@@ -32,7 +33,7 @@ class FilterTest(BaseTest):
             [x.id for x in all_objs if search_token in x.description],
             [x.id for x in objs])
 
-    # Broken due to bug https://github.com/hashtopolis/server/issues/968
+    @pytest.mark.skip(reason="Broken due to bug https://github.com/hashtopolis/server/issues/968")
     def test_filter__endswith(self):
         search_token = 'sha512'
         objs = HashType.objects.filter(description__endswith=search_token)
@@ -107,7 +108,7 @@ class FilterTest(BaseTest):
             [x.id for x in all_objs if x.hashTypeId != 100],
             [x.id for x in objs])
 
-    # Broken due to bug https://github.com/hashtopolis/server/issues/968
+    @pytest.mark.skip(reason="Broken due to bug https://github.com/hashtopolis/server/issues/968")
     def test_filter__startswith(self):
         objs = HashType.objects.filter(description__startswith="net")
         all_objs = HashType.objects.all()
