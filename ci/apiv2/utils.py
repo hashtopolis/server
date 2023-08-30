@@ -114,7 +114,7 @@ def do_create_crackertype(**kwargs):
     return _do_create_obj_from_file(CrackerType, 'create_crackertype', **kwargs)
 
 
-def do_create_file(content='12345678\n123456\nprincess\n'.encode('utf-8'), **kwargs):
+def do_create_file(content='12345678\n123456\nprincess\n'.encode('utf-8'), extra_payload={}, **kwargs):
     stamp = datetime.datetime.now().isoformat()
     fname_base = kwargs.get('filename', f'test-{stamp}.txt')
 
@@ -132,8 +132,9 @@ def do_create_file(content='12345678\n123456\nprincess\n'.encode('utf-8'), **kwa
 
     file_import.do_upload(filename, BytesIO(content_final))
 
-    kwargs['extra_payload'] = dict(sourceData=filename, filename=filename)
-    return _do_create_obj_from_file(File, 'create_file', **kwargs)
+    extra_payload['sourceData'] = filename
+    extra_payload['filename'] = filename
+    return _do_create_obj_from_file(File, 'create_file', extra_payload, **kwargs)
 
 
 def do_create_globalpermissiongroup(permissions={'permHashlistRead': True}, **kwargs):
@@ -167,19 +168,19 @@ def do_create_preprocessor(**kwargs):
     return _do_create_obj_from_file(Preprocessor, 'create_preprocessor', **kwargs)
 
 
-def do_create_pretask(files=[], **kwargs):
-    kwargs['extra_payload'] = dict(files=[file.id for file in files])
-    return _do_create_obj_from_file(Pretask, 'create_pretask', **kwargs)
+def do_create_pretask(files=[], extra_payload={}, **kwargs):
+    extra_payload['files'] = [file.id for file in files]
+    return _do_create_obj_from_file(Pretask, 'create_pretask', extra_payload, **kwargs)
 
 
-def do_create_supertask(pretasks=[], **kwargs):
-    kwargs['extra_payload'] = dict(pretasks=[pretask.id for pretask in pretasks])
-    return _do_create_obj_from_file(Supertask, 'create_supertask', **kwargs)
+def do_create_supertask(pretasks=[], extra_payload={}, **kwargs):
+    extra_payload['pretasks'] = [pretask.id for pretask in pretasks]
+    return _do_create_obj_from_file(Supertask, 'create_supertask', extra_payload, **kwargs)
 
 
-def do_create_task(hashlist, **kwargs):
-    kwargs['extra_payload'] = dict(hashlistId=int(hashlist.id))
-    return _do_create_obj_from_file(Task, 'create_task', **kwargs)
+def do_create_task(hashlist, extra_payload={}, **kwargs):
+    extra_payload['hashlistId'] = int(hashlist.id)
+    return _do_create_obj_from_file(Task, 'create_task', extra_payload, **kwargs)
 
 
 def do_create_user(global_permission_group_id=1):
