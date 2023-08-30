@@ -84,7 +84,6 @@ class APISendBenchmark extends APIBasic {
     if ($ttl != 0) {
       $hashlist = Factory::getHashlistFactory()->get($taskWrapper->getHashlistId());
       $attackParameters = $task->getAttackCmd(). " " . $this->agent->getCmdPars();
-
       BenchmarkUtils::saveBenchmarkInCache($attackParameters, $this->agent->getHardwareGroupId(), $benchmark, $hashlist->getHashTypeId(), $type, $task->getCrackerBinaryId());
       DServerLog::log(DServerLog::DEBUG, "Saved agent benchmark", [$this->agent, $task, $assignment]);
     }

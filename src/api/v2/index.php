@@ -247,6 +247,8 @@ require __DIR__ . "/../../inc/apiv2/token.routes.php";
 require __DIR__ . "/../../inc/apiv2/users.routes.php";
 require __DIR__ . "/../../inc/apiv2/vouchers.routes.php";
 require __DIR__ . "/../../inc/apiv2/taskwrappers.routes.php";
+require __DIR__ . "/../../inc/apiv2/benchmark.routes.php";
+require __DIR__ . "/../../inc/apiv2/hardwaregroup.routes.php";
 
 
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);

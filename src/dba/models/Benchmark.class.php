@@ -36,6 +36,20 @@ class Benchmark extends AbstractModel {
     
     return $dict;
   }
+
+  static function getFeatures() {
+    $dict = array();
+    $dict['benchmarkId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "benchmarkId"];
+    $dict['benchmarkType'] = ['read_only' => True, "type" => "str(10)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "benchmarkType"];
+    $dict['benchmarkValue'] = ['read_only' => True, "type" => "str(256)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "benchmarkValue"];
+    $dict['attackParameters'] = ['read_only' => True, "type" => "str(512)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "attackParameters"];
+    $dict['hashMode'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hashMode"];
+    $dict['hardwareGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "hardwareGroupId"];
+    $dict['ttl'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "ttl"];
+    $dict['crackerBinaryId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "crackerBinaryId"];
+
+    return $dict;
+  }
   
   function getPrimaryKey() {
     return "benchmarkId";

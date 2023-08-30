@@ -222,6 +222,10 @@ abstract class AbstractBaseAPI
           $obj = Factory::getAccessGroupFactory()->get($item['accessGroupId']);
           $item[$NAME] = $this->obj2Array($obj);
           break;
+        case 'hardwareGroup':
+          $obj = Factory::getHardwareGroupFactory()->get($item['hardwareGroupId']);
+          $item[$NAME] = $this->obj2Array($obj);
+          break;
         case 'chunk':
           if ($item['chunkId'] === null) {
             /* Chunk expansions are optional, hence the chunk object could be null */

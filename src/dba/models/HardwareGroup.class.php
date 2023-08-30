@@ -18,6 +18,14 @@ class HardwareGroup extends AbstractModel {
     
     return $dict;
   }
+
+  static function getFeatures() {
+    $dict = array();
+    $dict['hardwareGroupId'] = ['read_only' => True, "type" => "int", "subtype" => "unset", "null" => False, "pk" => True, "protected" => True, "private" => False, "alias" => "benchmarkId"];
+    $dict['devices'] = ['read_only' => True, "type" => "str(65000)", "subtype" => "unset", "null" => False, "pk" => False, "protected" => False, "private" => False, "alias" => "devices"];
+
+    return $dict;
+  }
   
   function getPrimaryKey() {
     return "hardwareGroupId";
@@ -51,15 +59,6 @@ class HardwareGroup extends AbstractModel {
     $this->devices = $devices;
   }
   
-  // function getBenchmarkId() {
-  //   return $this->benchmarkId;
-  // }
-  
-  // function setBenchmarkId($benchmarkId) {
-  //   $this->benchmarkId = $benchmarkId;
-  // }
-  
   const HARDWARE_GROUP_ID = "hardwareGroupId";
   const DEVICES = "devices";
-  // const BENCHMARK_ID = "benchmarkId";
 }

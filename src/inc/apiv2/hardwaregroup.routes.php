@@ -1,39 +1,40 @@
 <?php
+
+use DBA\Benchmark;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Routing\RouteCollectorProxy;
 
-use DBA\Agent;
+use DBA\Hash;
 use DBA\Factory;
+use DBA\HardwareGroup;
+use Slim\Exception\HttpException;
+use Slim\Exception\HttpNotImplementedException;
 
 require_once(dirname(__FILE__) . "/shared.inc.php");
 
 
-class AgentAPI extends AbstractBaseAPI {
+class HardwareGroupAPI extends AbstractBaseAPI {
     public static function getBaseUri(): string {
-      return "/api/v2/ui/agents";
-    }
-
-    public static function getAvailableMethods(): array {
-      return ['GET', 'PATCH', 'DELETE'];
+      return "/api/v2/ui/hardwareGroup";
     }
 
     public function getPermission(): string {
       // TODO: Find proper permission
-      return DAccessControl::CREATE_HASHLIST_ACCESS;
+      return DAccessControl::DELETE_BENCHMARK_ACCESS;
     }
 
     public static function getDBAclass(): string {
-      return Agent::class;
-    }
+      return HardwareGroup::class;
+    }   
 
     protected function getFactory(): object {
-      return Factory::getAgentFactory();
+      return Factory::getHardwareGroupFactory();
     }
 
     public function getExpandables(): array {
-      return ['agentstats', "hardwareGroup"];
+      return [];
     }
 
     protected function getFilterACL(): array {
@@ -50,14 +51,18 @@ class AgentAPI extends AbstractBaseAPI {
       return true;
     }
     
+
     protected function createObject($QUERY): int {
-      assert(False, "Chunks cannot be created via API");
+      /* Dummy code to implement abstract functions */
+      assert(False, "Benchmarks cannot be created via API");
       return -1;
     }
 
+
     protected function deleteObject(object $object): void {
-      AgentUtils::delete($object->getId(), $this->getUser());
+      /* Dummy code to implement abstract functions */
+      assert(False, "HardwareGroups cannot be deleted via API");
     }
 }
 
-AgentAPI::register($app);
+HardwareGroupAPI::register($app);
