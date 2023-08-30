@@ -65,3 +65,13 @@ class TaskTest(BaseTest):
 
         self.assertEqual(len(test_obj), 1)
         self.assertTrue(test_obj[0].isArchived)
+
+    def test_task_with_file(self):
+        hashlist = self.create_hashlist()
+        files = [self.create_file()]
+
+        #  Not part of default model fields, how-ever expanded field
+        extra_payload = dict(files=[x.id for x in files])
+        task = self.create_task(hashlist, extra_payload=extra_payload)
+        obj = Task.objects.get(pk=task.id, expand='files')
+        self.assertListEqual([x.id for x in files], [x.id for x in obj.files_set])
