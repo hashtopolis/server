@@ -400,7 +400,7 @@ abstract class AbstractBaseAPI
         $obj = (object)[];
       }
     } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
-      $obj = array_map('intval', explode(",", $val));
+      $obj = array_map('intval', preg_split("/,/", $val, -1, PREG_SPLIT_NO_EMPTY));
     } elseif ($feature['type'] == 'dict' && $feature['subtype'] = 'bool') {
       $obj = unserialize($val);
     } else {
