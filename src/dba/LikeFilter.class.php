@@ -35,7 +35,7 @@ class LikeFilter extends Filter {
       $inv = " NOT";
     }
     
-    return $table . $this->key . $inv . " LIKE ?";
+    return $table . $this->key . $inv . " LIKE BINARY ?";
   }
   
   function getValue() {

@@ -4,7 +4,7 @@ use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\Hashlist;
 use DBA\JoinFilter;
-use DBA\LikeFilter;
+use DBA\LikeFilterInsensitive;
 use DBA\QueryFilter;
 use DBA\Factory;
 
@@ -64,7 +64,7 @@ class SearchHandler implements Handler {
       // TODO: add option to select if exact match or like match
       
       $filters = array();
-      $filters[] = new LikeFilter(Hash::HASH, "%" . $hash . "%");
+      $filters[] = new LikeFilterInsensitive(Hash::HASH, "%" . $hash . "%");
       $filters[] = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists), Factory::getHashFactory());
       if (strlen($salt) > 0) {
         $filters[] = new QueryFilter(Hash::SALT, $salt, "=");
@@ -72,7 +72,7 @@ class SearchHandler implements Handler {
       $jF = new JoinFilter(Factory::getHashlistFactory(), Hash::HASHLIST_ID, Hashlist::HASHLIST_ID);
       $joined = Factory::getHashFactory()->filter([Factory::FILTER => $filters, Factory::JOIN => $jF]);
       
-      $qF1 = new LikeFilter(Hash::PLAINTEXT, "%" . $queryEntry . "%");
+      $qF1 = new LikeFilterInsensitive(Hash::PLAINTEXT, "%" . $queryEntry . "%");
       $qF2 = new ContainFilter(Hash::HASHLIST_ID, Util::arrayOfIds($userHashlists), Factory::getHashFactory());
       $joined2 = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2], Factory::JOIN => $jF]);
       /** @var $hashes Hash[] */

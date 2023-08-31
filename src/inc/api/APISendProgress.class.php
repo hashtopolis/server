@@ -9,7 +9,7 @@ use DBA\ContainFilter;
 use DBA\Hash;
 use DBA\HashBinary;
 use DBA\Hashlist;
-use DBA\LikeFilter;
+use DBA\LikeFilterInsensitive;
 use DBA\QueryFilter;
 use DBA\Task;
 use DBA\Zap;
@@ -219,7 +219,7 @@ class APISendProgress extends APIBasic {
               $split[3] = Util::strToHex($split[3]);
               $identifier = "WPA*%*" . implode("*", $split) . "%";
             }
-            $qF1 = new LikeFilter(Hash::HASH, $identifier);
+            $qF1 = new LikeFilterInsensitive(Hash::HASH, $identifier);
           }
           else { // we use the exact match for all other hashes to avoid performance loss
             $qF1 = new QueryFilter(Hash::HASH, $splitLine[0], "=");

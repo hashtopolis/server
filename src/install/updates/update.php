@@ -1,6 +1,6 @@
 <?php
 
-use DBA\LikeFilter;
+use DBA\LikeFilterInsensitive;
 use DBA\StoredValue;
 use DBA\Factory;
 
@@ -16,7 +16,7 @@ if (!isset($TEST)) {
   require_once(dirname(__FILE__) . "/../../inc/Util.class.php");
 }
 
-$qF = new LikeFilter(StoredValue::STORED_VALUE_ID, "update_%");
+$qF = new LikeFilterInsensitive(StoredValue::STORED_VALUE_ID, "update_%");
 $entries = Factory::getStoredValueFactory()->filter([Factory::FILTER => $qF]);
 $PRESENT = [];
 foreach ($entries as $entry) {
