@@ -20,7 +20,7 @@ services:
       - 8080:80
   db:
     container_name: db
-    image: mysql:5.7
+    image: mysql:8.0
     restart: always
     volumes:
       - db:/var/lib/mysql
