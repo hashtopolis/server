@@ -1,4 +1,7 @@
-# v0.14.0 -> x.x.x
+# v0.14.0 -> 0.14.1
+
+## Tech Preview New API
+Release 0.14.1 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 ## Bugfixes
 - Clicking pretask in Supertask create screen now directs correctly to the pretask and not a task with the same id (#945)
