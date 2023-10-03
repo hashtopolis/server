@@ -27,7 +27,7 @@ services:
       - hashtopolis_dev
   hashtopolis-db-dev:
     container_name: hashtopolis-db-dev
-    image: mysql:5.7
+    image: mysql:8.0
     restart: always
     ports:
       - "3306:3306"
