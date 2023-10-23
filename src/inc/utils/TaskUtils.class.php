@@ -591,8 +591,12 @@ class TaskUtils {
    */
   public static function setTaskMaxAgents($taskId, $maxAgents, $user) {
     $task = TaskUtils::getTask($taskId, $user);
+    $taskWrapper = TaskUtils::getTaskWrapper($task->getTaskWrapperId(), $user);
     $maxAgents = intval($maxAgents);
     Factory::getTaskFactory()->set($task, Task::MAX_AGENTS, $maxAgents);
+    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
+      Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::MAX_AGENTS, $maxAgents);
+    }
   }
 
   /**
@@ -702,7 +706,9 @@ class TaskUtils {
     if ($maxAgents < 0) {
       throw new HTException("Invalid number of agents!");
     }
-    
+    if ($taskWrapper->getTaskType() != DTaskTypes::SUPERTASK) {
+      Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::MAX_AGENTS, $maxAgents);
+    }
     Factory::getTaskFactory()->set($task, Task::MAX_AGENTS, $maxAgents);
   }
   
