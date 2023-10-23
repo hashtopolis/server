@@ -31,6 +31,15 @@ class MaxAgentsTest extends HashtopolisTest {
     $status &= $this->deleteFileIfExists("example.dict");
     $status &= $this->deleteFileIfExists("best64.rule");
 
+    // delete the added agents
+    $status &= $this->deleteAgent("agent-1");
+    $status &= $this->deleteAgent("agent-2");
+    $status &= $this->deleteAgent("agent-1013-1");
+    $status &= $this->deleteAgent("agent-1013-2");
+    $status &= $this->deleteAgent("agent-pt-1");
+    $status &= $this->deleteAgent("agent-pt-2");
+    $status &= $this->deleteAgent("agent-pt-3");
+
     if (!$status) {
       HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Some cleanup failed, deleting task or deleting files not succesful!");
     }
@@ -502,6 +511,33 @@ class MaxAgentsTest extends HashtopolisTest {
       "trusted" => true
     ], HashtopolisTestFramework::REQUEST_UAPI);
     return array("agentId" => $agent["agentId"], "token" => $token);
+  }
+
+  private function deleteAgent($name) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "agent",
+      "request" => "listAgents",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+    $agent = current(array_filter($response["agents"], function($a) use ($name) {
+      return $a["name"] == $name;
+    }));
+    // if agent doesn't exists return true
+    if ($agent == null) {
+      return true;
+    }
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "agent",
+      "request" => "deleteAgent",
+      "accessKey" => "mykey",
+      "agentId" => $agent["agentId"]
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+    // if response is success return true
+    if ($response["response"] == "OK") {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private function createTask($values = []) {
