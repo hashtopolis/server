@@ -44,6 +44,7 @@ class MaxAgentsTest extends HashtopolisTest {
       $hashlistId = $response["hashlistId"];
 
       $this->testTaskMaxAgents($hashlistId);
+      $this->testTaskMaxAgents_bug_1013($hashlistId);
       $this->testSuperTaskMaxAgents($hashlistId);
     }
     finally {
@@ -198,6 +199,62 @@ class MaxAgentsTest extends HashtopolisTest {
       return;
     }
     $this->testSuccess("MaxAgentsTest:testTaskMaxAgents()");
+  }
+
+  private function testTaskMaxAgents_bug_1013($hashlistId) {
+    $agent1 = $this->createAgent("agent-1013-1");
+    $agent2 = $this->createAgent("agent-1013-2");
+
+    // disable existing tasks
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "listTasks",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+    foreach ($response["tasks"] as $task) {
+      $this->setTaskPriority($task["taskId"], 0);
+    }
+
+    // Register a single task, max agents set to 1
+    // Agent 1 should get the task, calculate keyspace and benchmark
+    // Set max agents to 2, agent 2 should get the task
+
+    $response = $this->createTask([
+      "name" => "task-1",
+      "hashlistId" => $hashlistId,
+      "attackCmd" => "#HL# -a 0 -r best64.rule example.dict",
+      "priority" => 100,
+      "color" => "FFFFFF",
+      "crackerVersionId" => 1,
+      "files" => [],
+      "maxAgents" => 1]);
+
+    $task1Id = $response["taskId"];
+
+    // verify agent 1 is assigned to task 1
+    $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent1["token"]]);
+    if ($response["taskId"] != $task1Id) {
+      $this->testFailed("MaxAgentsTest:testTaskMaxAgents_bug_1013()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
+      return;
+    }
+
+    // now set the task to only allow 2 agent to work on it
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "setTaskMaxAgents",
+      "accessKey" => "mykey",
+      "taskId" => $task1Id,
+      "maxAgents" => 2
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+
+    // verify agent 2 is NOT assigned to task 1
+    $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent2["token"]]);
+    if ($response["taskId"] != $task1Id) {
+      $this->testFailed("MaxAgentsTest:testTaskMaxAgents_bug_1013()", sprintf("Expected task with id '%d' for agent 2", implode(", ", $response)));
+      return;
+    }
+
+    $this->testSuccess("MaxAgentsTest:testTaskMaxAgents_bug_1013()");
   }
 
   private function testSuperTaskMaxAgents($hashlistId) {
