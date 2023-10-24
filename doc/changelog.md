@@ -1,3 +1,8 @@
+# v0.14.1 -> x.x.x
+
+## Bugfixes
+- Setting maxAgent after creating doesn't update the maxAgents of the taskwrapper. This only causes issues when the maxAgents was set at creation time. #1013
+
 # v0.14.0 -> 0.14.1
 
 ## Tech Preview New API

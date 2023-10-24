@@ -31,6 +31,15 @@ class MaxAgentsTest extends HashtopolisTest {
     $status &= $this->deleteFileIfExists("example.dict");
     $status &= $this->deleteFileIfExists("best64.rule");
 
+    // delete the added agents
+    $status &= $this->deleteAgent("agent-1");
+    $status &= $this->deleteAgent("agent-2");
+    $status &= $this->deleteAgent("agent-1013-1");
+    $status &= $this->deleteAgent("agent-1013-2");
+    $status &= $this->deleteAgent("agent-pt-1");
+    $status &= $this->deleteAgent("agent-pt-2");
+    $status &= $this->deleteAgent("agent-pt-3");
+
     if (!$status) {
       HashtopolisTestFramework::log(HashtopolisTestFramework::LOG_ERROR, "Some cleanup failed, deleting task or deleting files not succesful!");
     }
@@ -44,6 +53,7 @@ class MaxAgentsTest extends HashtopolisTest {
       $hashlistId = $response["hashlistId"];
 
       $this->testTaskMaxAgents($hashlistId);
+      $this->testTaskMaxAgents_bug_1013($hashlistId);
       $this->testSuperTaskMaxAgents($hashlistId);
     }
     finally {
@@ -198,6 +208,62 @@ class MaxAgentsTest extends HashtopolisTest {
       return;
     }
     $this->testSuccess("MaxAgentsTest:testTaskMaxAgents()");
+  }
+
+  private function testTaskMaxAgents_bug_1013($hashlistId) {
+    $agent1 = $this->createAgent("agent-1013-1");
+    $agent2 = $this->createAgent("agent-1013-2");
+
+    // disable existing tasks
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "listTasks",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+    foreach ($response["tasks"] as $task) {
+      $this->setTaskPriority($task["taskId"], 0);
+    }
+
+    // Register a single task, max agents set to 1
+    // Agent 1 should get the task, calculate keyspace and benchmark
+    // Set max agents to 2, agent 2 should get the task
+
+    $response = $this->createTask([
+      "name" => "task-1",
+      "hashlistId" => $hashlistId,
+      "attackCmd" => "#HL# -a 0 -r best64.rule example.dict",
+      "priority" => 100,
+      "color" => "FFFFFF",
+      "crackerVersionId" => 1,
+      "files" => [],
+      "maxAgents" => 1]);
+
+    $task1Id = $response["taskId"];
+
+    // verify agent 1 is assigned to task 1
+    $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent1["token"]]);
+    if ($response["taskId"] != $task1Id) {
+      $this->testFailed("MaxAgentsTest:testTaskMaxAgents_bug_1013()", sprintf("Expected task with id '%d' for agent 1, instead got: %s", $task1Id, implode(", ", $response)));
+      return;
+    }
+
+    // now set the task to only allow 2 agent to work on it
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "task",
+      "request" => "setTaskMaxAgents",
+      "accessKey" => "mykey",
+      "taskId" => $task1Id,
+      "maxAgents" => 2
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+
+    // verify agent 2 is NOT assigned to task 1
+    $response = HashtopolisTestFramework::doRequest(["action" => "getTask", "token" => $agent2["token"]]);
+    if ($response["taskId"] != $task1Id) {
+      $this->testFailed("MaxAgentsTest:testTaskMaxAgents_bug_1013()", sprintf("Expected task with id '%d' for agent 2", implode(", ", $response)));
+      return;
+    }
+
+    $this->testSuccess("MaxAgentsTest:testTaskMaxAgents_bug_1013()");
   }
 
   private function testSuperTaskMaxAgents($hashlistId) {
@@ -445,6 +511,33 @@ class MaxAgentsTest extends HashtopolisTest {
       "trusted" => true
     ], HashtopolisTestFramework::REQUEST_UAPI);
     return array("agentId" => $agent["agentId"], "token" => $token);
+  }
+
+  private function deleteAgent($name) {
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "agent",
+      "request" => "listAgents",
+      "accessKey" => "mykey"
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+    $agent = current(array_filter($response["agents"], function($a) use ($name) {
+      return $a["name"] == $name;
+    }));
+    // if agent doesn't exists return true
+    if ($agent == null) {
+      return true;
+    }
+    $response = HashtopolisTestFramework::doRequest([
+      "section" => "agent",
+      "request" => "deleteAgent",
+      "accessKey" => "mykey",
+      "agentId" => $agent["agentId"]
+    ], HashtopolisTestFramework::REQUEST_UAPI);
+    // if response is success return true
+    if ($response["response"] == "OK") {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private function createTask($values = []) {
