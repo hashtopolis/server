@@ -87,3 +87,15 @@ class TaskTest(BaseTest):
 
         obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
         self.assertEqual(new_priority, obj.priority)
+    
+    def test_task_update_maxagent(self):
+        task = self.create_test_object()
+        obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertEqual(task.maxAgents, obj.maxAgents)
+
+        new_maxagent = task.maxAgents + 1234
+        task.maxAgents = new_maxagent
+        task.save()
+
+        obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertEqual(new_maxagent, obj.maxAgents)

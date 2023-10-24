@@ -111,6 +111,13 @@ class TaskAPI extends AbstractModelAPI {
         TaskUtils::updatePriority($object->getId(), $data[Task::PRIORITY], $this->getCurrentUser());
       }
 
+      /* Update connected TaskWrapper maxAgents as well */
+      $key = Task::MAX_AGENTS;
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        TaskUtils::updateMaxAgents($object->getId(), $data[Task::MAX_AGENTS], $this->getCurrentUser());
+      }
+
       parent::updateObject($object, $data, $processed);
     }
 }
