@@ -104,6 +104,13 @@ class TaskAPI extends AbstractModelAPI {
         TaskUtils::archiveTask($object->getId(), $this->getCurrentUser());
       }
 
+      /* Update connected TaskWrapper priority as well */
+      $key = Task::PRIORITY;
+      if (array_key_exists($key, $data)) {
+        array_push($processed, $key);
+        TaskUtils::updatePriority($object->getId(), $data[Task::PRIORITY], $this->getCurrentUser());
+      }
+
       parent::updateObject($object, $data, $processed);
     }
 }
