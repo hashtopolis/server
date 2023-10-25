@@ -3,7 +3,9 @@ use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
 
+use DBA\Agent;
 use DBA\Assignment;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -25,18 +27,30 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       return ["task", "agent"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Assignment);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Assignment); });
 
+      /* Expand requested section */
       switch($expand) {
         case 'task':
-          $obj = Factory::getTaskFactory()->get($object->getTaskId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Assignment::TASK_ID,
+            Factory::getTaskFactory(),
+            Task::TASK_ID
+          );
         case 'agent':
-          $obj = Factory::getAgentFactory()->get($object->getAgentId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Assignment::AGENT_ID,
+            Factory::getAgentFactory(),
+            Agent::AGENT_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     protected function createObject(array $data): int {
       AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());

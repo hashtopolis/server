@@ -1,7 +1,5 @@
 <?php
 use DBA\Factory;
-use DBA\QueryFilter;
-use DBA\OrderFilter;
 
 use DBA\User;
 use DBA\RightGroup;
@@ -22,14 +20,23 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
       return ['user'];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof RightGroup);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof RightGroup); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'user':
-          $qF = new QueryFilter(User::RIGHT_GROUP_ID, $object->getId(), "=");
-          return $this->filterQuery(Factory::getUserFactory(), $qF);
+          return $this->getManyToOneRelation(
+            $objects,
+            RightGroup::RIGHT_GROUP_ID,
+            Factory::getUserFactory(),
+            User::RIGHT_GROUP_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     /** 
      * Rewrite permissions DB values to CRUD field values

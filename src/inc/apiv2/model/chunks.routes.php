@@ -2,6 +2,7 @@
 use DBA\Factory;
 
 use DBA\Chunk;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,12 +24,21 @@ class ChunkAPI extends AbstractModelAPI {
       return ["task"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Chunk);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Chunk); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'task':
-          $obj = Factory::getTaskFactory()->get($object->getTaskId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Chunk::TASK_ID,
+            Factory::getTaskFactory(),
+            Task::TASK_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
     }  
 

@@ -1,10 +1,11 @@
 <?php
+
+use DBA\AccessGroup;
 use DBA\ContainFilter;
-use DBA\JoinFilter;
 use DBA\Factory;
-use DBA\QueryFilter;
 
 use DBA\Hash;
+use DBA\HashType;
 use DBA\Hashlist;
 use DBA\HashlistHashlist;
 use DBA\Task;
@@ -27,29 +28,57 @@ class HashlistAPI extends AbstractModelAPI {
     public function getExpandables(): array {
       return ["accessGroup", "hashType", "hashes", "tasks", "hashlists"];
     }
+     
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Hashlist); });
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Hashlist);
+      /* Expand requested section */
       switch($expand) {
         case 'accessGroup':
-          $obj = Factory::getAccessGroupFactory()->get($object->getAccessGroupId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Hashlist::ACCESS_GROUP_ID,
+            Factory::getAccessGroupFactory(),
+            AccessGroup::ACCESS_GROUP_ID
+          );
         case 'hashType':
-          $obj = Factory::getHashTypeFactory()->get($object->getHashTypeId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Hashlist::HASH_TYPE_ID,
+            Factory::getHashTypeFactory(),
+            HashType::HASH_TYPE_ID
+          );        
         case 'hashes':
-          $qF = new QueryFilter(Hash::HASHLIST_ID, $object->getId(), "=");
-          return $this->filterQuery(Factory::getHashFactory(), $qF);
+          return $this->getManyToOneRelation(
+            $objects,
+            Hashlist::HASHLIST_ID,
+            Factory::getHashFactory(),
+            Hash::HASHLIST_ID
+          );
         case 'hashlists':
-          $qF = new QueryFilter(HashlistHashlist::PARENT_HASHLIST_ID, $object->getId(), "=", Factory::getHashlistHashlistFactory());        
-          $jF = new JoinFilter(Factory::getHashlistHashlistFactory(), Hashlist::HASHLIST_ID, HashlistHashlist::HASHLIST_ID);
-          return $this->joinQuery(Factory::getHashlistFactory(), $qF, $jF);  
+          /* PARENT_HASHLIST_ID in use in intermediate table */
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects, 
+            Hashlist::HASHLIST_ID,
+            Factory::getHashlistHashlistFactory(),
+            HashlistHashlist::PARENT_HASHLIST_ID,
+            Factory::getHashlistFactory(),
+            Hashlist::HASHLIST_ID,
+          );
         case 'tasks':
-          $qF = new QueryFilter(TaskWrapper::HASHLIST_ID, $object->getHashTypeId(), "=", Factory::getTaskWrapperFactory());
-          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
-          return $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            Hashlist::HASHLIST_ID,
+            Factory::getTaskWrapperFactory(),
+            TaskWrapper::HASHLIST_ID, 
+            Factory::getTaskFactory(),
+            Task::TASK_WRAPPER_ID,
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     protected function getFilterACL(): array {
       return [new ContainFilter(Hashlist::ACCESS_GROUP_ID, Util::arrayOfIds(AccessUtils::getAccessGroupsOfUser($this->getCurrentUser())))];

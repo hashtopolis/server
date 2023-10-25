@@ -1,8 +1,5 @@
 <?php
 use DBA\Factory;
-use DBA\QueryFilter;
-use DBA\JoinFilter;
-use DBA\OrderFilter;
 
 use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
@@ -29,16 +26,30 @@ class AgentAPI extends AbstractModelAPI {
       return ['accessGroups', 'agentstats'];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Agent);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Agent); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'accessGroups':
-          $qF = new QueryFilter(AccessGroupAgent::AGENT_ID, $object->getId(), "=", Factory::getAccessGroupAgentFactory());
-          $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupAgent::ACCESS_GROUP_ID);
-          return $this->joinQuery(Factory::getAccessGroupFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            Agent::AGENT_ID,
+            Factory::getAccessGroupAgentFactory(),
+            AccessGroupAgent::AGENT_ID,
+            Factory::getAccessGroupFactory(),
+            AccessGroup::ACCESS_GROUP_ID
+          );
         case 'agentstats':
-          $qF = new QueryFilter(AgentStat::AGENT_ID, $object->getId(), "=");
-          return $this->filterQuery(Factory::getAgentStatFactory(), $qF);
+          return $this->getManyToOneRelation(
+            $objects,
+            Agent::AGENT_ID,
+            Factory::getAgentStatFactory(),
+            AgentStat::AGENT_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
     }  
    

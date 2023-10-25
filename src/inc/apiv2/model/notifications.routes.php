@@ -4,6 +4,7 @@ use DBA\OrderFilter;
 use DBA\QueryFilter;
 
 use DBA\NotificationSetting;
+use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -20,14 +21,23 @@ class NotificationSettingAPI extends AbstractModelAPI {
       return ['user'];
     }
  
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof NotificationSetting);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof NotificationSetting); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'user':
-          $obj = Factory::getUserFactory()->get($object->getUserId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            NotificationSetting::USER_ID,
+            Factory::getUserFactory(),
+            User::USER_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
     
     public function getFormFields(): array {
       return  ['actionFilter' => ['type' => 'str(256)']];

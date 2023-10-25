@@ -1,10 +1,10 @@
 <?php
 use DBA\Factory;
-use DBA\JoinFilter;
-use DBA\QueryFilter;
 
 use DBA\Agent;
 use DBA\Assignment;
+use DBA\CrackerBinary;
+use DBA\CrackerBinaryType;
 use DBA\File;
 use DBA\FileTask;
 use DBA\Hashlist;
@@ -27,41 +27,71 @@ class TaskAPI extends AbstractModelAPI {
       return ["assignedAgents", "crackerBinary", "crackerBinaryType", "hashlist", "speeds", "files"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Task);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Task); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'assignedAgents':
-          $qF = new QueryFilter(Assignment::TASK_ID, $object->getId(), "=", Factory::getAssignmentFactory());
-          $jF = new JoinFilter(Factory::getAssignmentFactory(), Agent::AGENT_ID, Assignment::AGENT_ID);
-          return $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            Task::TASK_ID,
+            Factory::getAssignmentFactory(),
+            Assignment::TASK_ID,
+            Factory::getAgentFactory(),
+            Agent::AGENT_ID
+          );
         case 'crackerBinary':
-          $obj = Factory::getCrackerBinaryFactory()->get($object->getCrackerBinaryId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Task::CRACKER_BINARY_ID,
+            Factory::getCrackerBinaryFactory(),
+            CrackerBinary::CRACKER_BINARY_ID
+          );
         case 'crackerBinaryType':
-          $obj = Factory::getCrackerBinaryTypeFactory()->get($object->getCrackerBinaryTypeId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Task::CRACKER_BINARY_TYPE_ID,
+            Factory::getCrackerBinaryTypeFactory(),
+            CrackerBinaryType::CRACKER_BINARY_TYPE_ID
+          );
         case 'hashlist':
-          // Tasks are bit of a special case, as in the task the hashlist is not directly available.
-          // To get this information we need to join the task with the Hashlist and the TaskWrapper to get the Hashlist.
-          $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getTaskWrapperId(), "=", Factory::getTaskWrapperFactory());
-          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Hashlist::HASHLIST_ID, TaskWrapper::HASHLIST_ID);
-          return $this->joinQuery(Factory::getHashlistFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            Task::TASK_WRAPPER_ID,
+            Factory::getTaskWrapperFactory(),
+            TaskWrapper::TASK_WRAPPER_ID,
+            Factory::getHashlistFactory(),
+            Hashlist::HASHLIST_ID
+          );
         case 'speeds':
-          $qF = new QueryFilter(Speed::TASK_ID, $object->getId(), "=");
-          return $this->filterQuery(Factory::getSpeedFactory(), $qF);
+          return $this->getManyToOneRelation(
+            $objects,
+            Task::TASK_ID,
+            Factory::getSpeedFactory(),
+            Speed::TASK_ID
+          );
         case 'files':
-          $qF = new QueryFilter(FileTask::TASK_ID, $object->getId(), "=", Factory::getFileTaskFactory());
-          $jF = new JoinFilter(Factory::getFileTaskFactory(), File::FILE_ID, FileTask::FILE_ID);
-          return $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            Task::TASK_ID,
+            Factory::getFileTaskFactory(),
+            FileTask::TASK_ID,
+            Factory::getFileFactory(),
+            File::FILE_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
-
+    }
+    
     public function getFormFields(): array {
-    // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
-    return  [
-      "hashlistId" => ['type' => 'int'],
-      "files" => ['type' => 'array', 'subtype' => 'int'],
-    ];
+      // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications
+      return  [
+        "hashlistId" => ['type' => 'int'],
+        "files" => ['type' => 'array', 'subtype' => 'int'],
+      ];
     }
 
     protected function createObject(array $data): int {
