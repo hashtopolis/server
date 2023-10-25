@@ -36,6 +36,8 @@ use Tuupola\Middleware\HttpBasicAuthentication;
 use Tuupola\Middleware\HttpBasicAuthentication\AuthenticatorInterface;
 use Tuupola\Middleware\CorsMiddleware;
 
+use Middlewares\DeflateEncoder;
+
 use Skeleton\Application\Response\UnauthorizedResponse;
 
 use Psr\Http\Message\ResponseInterface;
@@ -225,6 +227,9 @@ $app->add("HttpBasicAuthentication");
 $app->add("JwtAuthentication");
 $app->add(new TokenAsParameterMiddleware());
 $app->add(new ContentLengthMiddleware());       // NOTE: Add any middleware which may modify the response body before adding the ContentLengthMiddleware
+$app->add((new DeflateEncoder())->contentType(
+  '/^(image\/svg\\+xml|text\/.*|application\/json|"application\/vnd\.api+json)(;.*)?$/'
+));
 
 // NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
