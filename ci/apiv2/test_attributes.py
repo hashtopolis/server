@@ -24,6 +24,7 @@ class AttributeTypeTest(BaseTest):
         conn.authenticate()
 
         headers = conn._headers
+        headers['Content-Type'] = 'application/json'
 
         uri = conn._api_endpoint + conn._model_uri + f'/{user.id}'
         payload = {}

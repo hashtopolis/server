@@ -49,5 +49,5 @@ class HashlistTest(BaseTest):
         self.assertEqual(hashlist.format, 3)
 
         # Validate if created with provided hashlists
-        obj = Hashlist.objects.get(pk=hashlist.id, expand='hashlists')
+        obj = Hashlist.objects.prefetch_related('hashlists').get(pk=hashlist.id)
         self.assertListEqual(hashlists, obj.hashlists_set)

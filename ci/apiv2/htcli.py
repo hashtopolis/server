@@ -21,7 +21,9 @@ import hashtopolis
 from utils import find_stale_test_objects
 
 logger = logging.getLogger(__name__)
-click_log.basic_config(logger)
+
+root_logger = logging.getLogger()
+click_log.basic_config(root_logger)
 
 ALL_MODELS = [x[1] for x in inspect.getmembers(hashtopolis, inspect.isclass)
               if issubclass(x[1], hashtopolis.Model) and x[1] is not hashtopolis.Model]
@@ -39,7 +41,7 @@ def run():
 
 @run.command()
 @click.option('-c', '--commit', is_flag=True, help="Non-interactive mode")
-@click_log.simple_verbosity_option(logger)
+@click_log.simple_verbosity_option(root_logger)
 def delete_test_data(commit):
     if commit is False:
         prefix = '[DRY-RUN]'
@@ -64,7 +66,7 @@ def delete_test_data(commit):
 @click.option('--filter', 'opt_filter', help="Filter objects based on filter provided", multiple=True)
 @click.option('--ordering', 'opt_ordering', help="Field to select for ordering output", multiple=True)
 @click.option('--max_results', 'opt_max_results', default=None, help="Maximum results to display", type=int)
-@click_log.simple_verbosity_option(logger)
+@click_log.simple_verbosity_option(root_logger)
 def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_results, opt_ordering):
     model_class = [x for x in ALL_MODELS if x.verbose_name_plural == model_plural][0]
 
@@ -85,9 +87,9 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_res
 
     # Retrieve objects
     if not opt_filter:
-        objs = model_class.objects.all(expand, max_results=opt_max_results)
+        objs = model_class.objects.prefetch_related(*expand).all()[:opt_max_results]
     else:
-        objs = model_class.objects.filter(expand, max_results=opt_max_results, **filter)
+        objs = model_class.objects.prefetch_related(*expand).filter(**filter)[:opt_max_results]
 
     # Display objects
     if is_brief is True:
@@ -113,5 +115,4 @@ def list(model_plural, is_brief, opt_expand, opt_fields, opt_filter, opt_max_res
 
 
 if __name__ == '__main__':
-    logging.basicConfig()
     main()
