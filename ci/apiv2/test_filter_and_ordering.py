@@ -1,6 +1,5 @@
 from hashtopolis import HashType
 from utils import BaseTest
-import pytest
 
 
 class FilterTest(BaseTest):
@@ -115,8 +114,7 @@ class FilterTest(BaseTest):
 
     def test_ordering(self):
         model_objs = self.create_test_objects()
-        objs = HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000,
-                                       ordering=['-hashTypeId'])
+        objs = HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000).order_by('-hashTypeId')
         sorted_model_objs = sorted(model_objs, key=lambda x: x.hashTypeId, reverse=True)
         self.assertEqual(
             [x.id for x in sorted_model_objs],
@@ -124,8 +122,10 @@ class FilterTest(BaseTest):
 
     def test_ordering_twice(self):
         model_objs = self.create_test_objects()
-        objs = HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000,
-                                       ordering=['-isSalted', '-hashTypeId'])
+        objs = (
+            HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000)
+            .order_by('-isSalted', '-hashTypeId')
+        )
         sorted_model_objs = sorted(model_objs, key=lambda x: (x.isSalted, x.hashTypeId), reverse=True)
         self.assertEqual(
             [x.id for x in sorted_model_objs],

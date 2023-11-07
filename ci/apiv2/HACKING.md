@@ -9,7 +9,7 @@ TOKEN=$(curl -X POST --user admin:hashtopolis http://localhost:8080/api/v2/auth/
 
 Fetch object:
 ```
-curl --header "Content-Type: application/json" -X GET --header "Authorization: Bearer $TOKEN" 'http://localhost:8080/api/v2/ui/hashlists/1?expand=hashes' -d '{}'
+curl --compressed --header "Authorization: Bearer $TOKEN" -g 'http://localhost:8080/api/v2/ui/hashtypes?page[size]=5'
 ```
 
 Access database:

@@ -22,18 +22,18 @@ class AgentAPI extends AbstractModelAPI {
       return Agent::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ['accessGroups', 'agentstats'];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Agent); });
 
       /* Expand requested section */
       switch($expand) {
         case 'accessGroups':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             Agent::AGENT_ID,
             Factory::getAccessGroupAgentFactory(),
@@ -42,7 +42,7 @@ class AgentAPI extends AbstractModelAPI {
             AccessGroup::ACCESS_GROUP_ID
           );
         case 'agentstats':
-          return $this->getManyToOneRelation(
+          return self::getManyToOneRelation(
             $objects,
             Agent::AGENT_ID,
             Factory::getAgentStatFactory(),

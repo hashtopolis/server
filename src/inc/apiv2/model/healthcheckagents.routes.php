@@ -21,25 +21,25 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
       return HealthCheckAgent::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ['agent', 'healthCheck'];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof HealthCheckAgent); });
 
       /* Expand requested section */
       switch($expand) {
         case 'agent':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             HealthCheckAgent::AGENT_ID,
             Factory::getAgentFactory(),
             Agent::AGENT_ID
           );
           case 'healthCheck':
-            return $this->getForeignKeyRelation(
+            return self::getForeignKeyRelation(
               $objects,
               HealthCheckAgent::HEALTH_CHECK_ID,
               Factory::getHealthCheckFactory(),

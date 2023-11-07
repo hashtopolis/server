@@ -60,6 +60,14 @@
             }
         },
         {
+          "name": "Python: htcli",
+          "type": "python",
+          "request": "launch",
+          "program": "./ci/apiv2/htcli.py",
+          "args": ["list", "Users", "-v", "DEBUG"], // "--expand", "globalPermissionGroup"],
+          "justMyCode": true
+        },
+        {
             "name": "Python: File",
             "type": "python",
             "request": "launch",

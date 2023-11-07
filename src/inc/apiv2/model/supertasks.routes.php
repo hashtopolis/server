@@ -19,18 +19,18 @@ class SupertaskAPI extends AbstractModelAPI {
       return Supertask::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return [ "pretasks" ];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Supertask); });
 
       /* Expand requested section */
       switch($expand) {
         case 'pretasks':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             Supertask::SUPERTASK_ID,
             Factory::getSupertaskPretaskFactory(),

@@ -73,7 +73,7 @@ class TaskTest(BaseTest):
         #  Not part of default model fields, how-ever expanded field
         extra_payload = dict(files=[x.id for x in files])
         task = self.create_task(hashlist, extra_payload=extra_payload)
-        obj = Task.objects.get(pk=task.id, expand='files')
+        obj = Task.objects.prefetch_related('files').get(pk=task.id)
         self.assertListEqual([x.id for x in files], [x.id for x in obj.files_set])
 
     def test_task_update_priority(self):

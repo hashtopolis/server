@@ -20,18 +20,18 @@ class ChunkAPI extends AbstractModelAPI {
       return Chunk::class;
     }   
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["task"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Chunk); });
 
       /* Expand requested section */
       switch($expand) {
         case 'task':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Chunk::TASK_ID,
             Factory::getTaskFactory(),

@@ -20,18 +20,18 @@ class FileAPI extends AbstractModelAPI {
       return File::class;
     }   
     
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["accessGroup"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof File); });
 
       /* Expand requested section */
       switch($expand) {
         case 'accessGroup':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             File::ACCESS_GROUP_ID,
             Factory::getAccessGroupFactory(),
