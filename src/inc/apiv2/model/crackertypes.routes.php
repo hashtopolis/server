@@ -18,18 +18,18 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
       return CrackerBinaryType::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["crackerVersions"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof CrackerBinaryType); });
 
       /* Expand requested section */
       switch($expand) {
         case 'crackerVersions':
-          return $this->getManyToOneRelation(
+          return self::getManyToOneRelation(
             $objects,
             CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
             Factory::getCrackerBinaryFactory(),

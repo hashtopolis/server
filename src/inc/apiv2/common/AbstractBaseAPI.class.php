@@ -6,6 +6,7 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Routing\RouteContext;
 
 use DBA\AccessGroup;
+use DBA\AccessGroupAgent;
 use DBA\Agent;
 use DBA\AgentBinary;
 use DBA\AgentStat;
@@ -43,7 +44,11 @@ use DBA\Preprocessor;
 use DBA\QueryFilter;
 
 use Middlewares\Utils\HttpErrorException;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+
+use function DI\string;
 
 require_once(dirname(__FILE__) . "/../../load.php");
 
@@ -62,7 +67,7 @@ abstract class AbstractBaseAPI
   /** @var \Slim\Interfaces\RouteParserInterface|null $routeParser contains routing information
    * which are for example used dynamic creation of _self references
    */
-  private $routeParser;
+  protected $routeParser;
 
   /** @var ContainerInterface|null $container dynamically generated model mappings 
    * which are for example used for retrival of objects based on string identity
@@ -138,14 +143,14 @@ abstract class AbstractBaseAPI
   /** 
    * Available 'expand' parameters on $object
    */
-  public function getExpandables(): array {
+  public static function getExpandables(): array {
     return [];
   }
 
   /** 
    * Fetch objects for  $expand on $objects
    */
-  protected function fetchExpandObjects(array $objects, string $expand): mixed {
+  protected static function fetchExpandObjects(array $objects, string $expand): mixed {
   }
 
 
@@ -153,6 +158,11 @@ abstract class AbstractBaseAPI
     switch($model) {
       case AccessGroup::class:
         return Factory::getAccessGroupFactory();
+      case AccessGroupAgent::class:
+        return Factory::getAccessGroupAgentFactory();
+      case AccessGroupUser::class:
+        return Factory::getAccessGroupUserFactory();
+  
       case Agent::class:
         return Factory::getAgentFactory();
       case AgentBinary::class:
@@ -261,9 +271,29 @@ abstract class AbstractBaseAPI
     return self::fetchOne(User::class, $pk);
   }
 
+  /**
+   * Return Object Resource Type Identifier of API object.
+   * 
+   * @param mixed $obj 
+   * @return string 
+   */
+  final protected function getObjectTypeName($obj): string
+  {
+
+    $container = $this->container->get('classMapper');
+
+    if (is_string($obj)) {
+      $apiClass = $this->container->get('classMapper')->get($obj);
+    } else {
+      $apiClass = $this->container->get('classMapper')->get(get_class($obj));
+    }
+
+    /* Use the API class Name as type identifier written in camelCase*/
+    return lcfirst(substr($apiClass, 0, -3));
+  }
 
  /**
- * Retrieve permissions based on expand section
+  * Retrieve permissions based on expand section
   */
   protected static function getExpandPermissions(string $expand): array
   {
@@ -292,7 +322,7 @@ abstract class AbstractBaseAPI
       'pretaskFiles' => [FilePretask::PERM_READ, File::PERM_READ],
       'files' => [FileTask::PERM_READ, File::PERM_READ],
       'pretasks' => [Supertask::PERM_READ, Pretask::PERM_READ],
-      'user' => [User::PERM_READ],
+      'users' => [User::PERM_READ],
       'userMembers' => [User::PERM_READ],
       'agentMembers' => [Agent::PERM_READ],
     );
@@ -452,6 +482,110 @@ abstract class AbstractBaseAPI
       $item[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
     }
     return $item;
+  }
+
+  /** 
+   * Convert DB object JSON:API Resource Object
+   */
+  protected function obj2Resource(object $obj, array $expandResult = [])
+  {
+    // Convert values to JSON supported types
+    $features = $obj->getFeatures();
+    $kv = $obj->getKeyValueDict();
+
+    $apiClass = $this->container->get('classMapper')->get(get_class($obj));
+    $linkSelf = $this->routeParser->urlFor($apiClass . ':getOne', ['id' => $obj->getId()]);
+
+    $attributes = [];
+    $relationships = [];
+
+    /* Collect attributes */
+    foreach ($features as $name => $feature) {
+      // If a attribute is set to private, it should be hidden and not returned.
+      // Example of this is the password hash.
+      if ($feature['private'] === true) {
+        continue;
+      }
+      // Hide the primaryKey from the attributes since this is used as indentifier (id) in response
+      if ($feature['pk'] === true) {
+        continue;
+      }
+      $attributes[$feature['alias']] = $apiClass::db2json($feature, $kv[$name]);
+    }
+
+
+    /* Build JSON::API relationship resource */
+    $toManyRelationships = $apiClass::getToManyRelationships();
+    $toOneRelationships = $apiClass::getToOneRelationships();
+
+    $relationshipsNames = array_merge(array_keys($toOneRelationships), array_keys($toManyRelationships));
+    sort($relationshipsNames);
+    foreach ($relationshipsNames as $relationshipName) {
+      $relationships[$relationshipName] = [ 
+        "links"  => [
+          "self" => $linkSelf . "/relationships/" . $relationshipName,
+          "related" => $linkSelf . "/" . $relationshipName,
+        ]
+      ];
+    }
+
+    /* Generate to-many relationships entries */
+    foreach ($toManyRelationships as $relationshipName => $toManyRelationship) {
+      // Build (optional) compound document resource linkage
+      if (array_key_exists($relationshipName, $expandResult)) {
+        $relationships[$relationshipName]["data"] = [];
+
+        // Empty to-many relationship
+        if (array_key_exists($obj->getId(), $expandResult[$relationshipName]) === false) {
+          continue;
+        }
+
+        // Fetch to-many-objects
+        $expandObjects = $expandResult[$relationshipName][$obj->getId()];
+        foreach($expandObjects as $relationObject) {
+          $relationships[$relationshipName]["data"][] = [
+              "type" => $this->getObjectTypeName($relationObject),
+              "id" => $relationObject->getId()
+          ];
+        }
+      }
+
+      /* Generate to-one relationships entries */
+      foreach ($toOneRelationships as $relationshipName => $toOneRelationship) {
+        // Build (optional) compound document resource linkage
+        if (array_key_exists($relationshipName, $expandResult)) {
+          // Empty to-one relationship
+          if (array_key_exists($obj->getId(), $expandResult[$relationshipName]) === false) {
+            $relationships[$relationshipName]["data"] = null;
+            continue;
+          }
+
+          // Fetch to-one-objects
+          $expandObject = $expandResult[$relationshipName][$obj->getId()];
+
+          $relationships[$relationshipName]["data"] = [
+              "type" => $this->getObjectTypeName($expandObject),
+              "id" => $expandObject->getId()
+          ];
+        }
+      }
+    }
+
+
+    $newObject = [
+      "type" => $this->getObjectTypeName($obj),
+      "id" => $obj->getId(),
+      "attributes" => $attributes,
+      "links" => [
+        "self" => $linkSelf,
+      ],
+    ];
+
+    if (sizeof($relationships) > 0) {
+      $newObject['relationships'] = $relationships;
+    }
+
+    return $newObject;
   }
 
   /**
@@ -671,22 +805,9 @@ abstract class AbstractBaseAPI
   protected function makeExpandables(Request $request, array $validExpandables): array
   {
     $data = $request->getParsedBody();
+    $queryExpands = (array_key_exists('include', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['include']) : [];
 
-    // Body expand can be specified as single item or array of items
-    $bodyExpands = [];
-    if (!is_null($data) and array_key_exists('expand', $data)) {
-      if (is_array($data['expand'])) {
-        array_push($bodyExpands, ...$data['expand']);
-     } else if (is_string($data['expand'])) {
-        array_push($bodyExpands, ...preg_split("/[,\ ]+/", $data['expand']));
-      } else {
-        assert(False, "Parameter expand type: '" . gettype($data['expand']) . "' not allowed");
-      }
-    }   
-    $queryExpands = (array_key_exists('expand', $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()['expand']) : [];
-
-    $mergedExpands = array_merge($bodyExpands, $queryExpands);   
-    foreach ($mergedExpands as $expand) {
+    foreach ($queryExpands as $expand) {
       if (in_array($expand, $validExpandables) == false) {
         throw new HTException("Parameter '" . $expand . "' is not valid expand key (valid keys are: " . join(", ", array_values($validExpandables)) . ")");
       }
@@ -694,14 +815,14 @@ abstract class AbstractBaseAPI
 
     /* Validate expand parameters for required permissions */
     $required_perms = [];
-    foreach ($mergedExpands as $expand) {
+    foreach ($queryExpands as $expand) {
         array_push($required_perms, ...self::getExpandPermissions($expand));
     }
     if ($this->validatePermissions($required_perms) === FALSE) {
       throw new HttpForbiddenException($request, 'Permissions missing on expand parameter objects! || ' . join('||', $this->permissionErrors));
     }
 
-    return $mergedExpands;
+    return $queryExpands;
   }
 
   /**
@@ -718,19 +839,6 @@ abstract class AbstractBaseAPI
     }
   }
 
-  private function getFilterParameters(Request $request, string $key): array {
-    $data = $request->getParsedBody();
-    if (!is_null(($data))) {
-      $bodyFilter = (array_key_exists($key, $data)) ? $data[$key] : [];
-    } else {
-      $bodyFilter = [];
-    }
-
-    $queryFilter = (array_key_exists($key, $request->getQueryParams())) ? preg_split("/[,\ ]+/", $request->getQueryParams()[$key]) : [];
-    $mergedFilters = array_merge($bodyFilter, $queryFilter);
-
-    return $mergedFilters;
-  }
 
   /**
    * Check for valid filter parameters and build QueryFilter
@@ -739,16 +847,16 @@ abstract class AbstractBaseAPI
   {
     $qFs = [];
 
-    $mergedFilters = $this->getFilterParameters($request, 'filter');
-    foreach ($mergedFilters as $filter) {
-      // TODO: Add sanity checking
-      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>=|__eq=|!=|__ne=|>|__lt=|>=|__lte=|<|__gt=|<=|__gte=|__contains=|__startswith=|__endswith=|__icontains=|__istartswith=|__iendswith=)(?P<value>[^=]+)$/', $filter, $matches) == 0) {
+    $filters = $this->getQueryParameterFamily($request, 'filter'); 
+    foreach ($filters as $filter => $value) {
+
+      if (preg_match('/^(?P<key>[_a-zA-Z0-9]+?)(?<operator>|__eq|__ne|__lt|__lte|__gt|__gte|__contains|__startswith|__endswith|__icontains|__istartswith|__iendswith)$/', $filter, $matches) == 0) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid");
       }
 
       // Special filtering of _id to use for uniform access to model primary key
-      $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
-
+      $cast_key = $matches['key'] == '_id' ? array_column($features, 'alias', 'dbname')[$this->getPrimaryKey()] : $matches['key'];
+      
       if (array_key_exists($cast_key, $features) == false) {
         throw new HTException("Filter parameter '" . $filter . "' is not valid (key not valid field)");
       };
@@ -756,64 +864,59 @@ abstract class AbstractBaseAPI
       // TODO Merge/Combine with validate parameters 
       switch($features[$cast_key]['type']) {
         case 'bool':
-          $val = filter_var($matches['value'], FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+          $val = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
           if (is_null($val)) {
             throw new HTException("Filter parameter '" . $filter . "' is not valid boolean value");
           }
           break;
         case 'int':
-          $val = filter_var($matches['value'], FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+          $val = filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
           if (is_null($val)) {
             throw new HTException("Filter parameter '" . $filter . "' is not valid integer value");
           }
         default:
-          $val = $matches['value'];
+          $val = $value;
       }            
 
       // We need to remap any aliased key to the key as it appears in the database.
       $remappedKey = $features[$cast_key]['dbname'];
 
       switch($matches['operator']) {
-        case '=':
-        case '__eq=':
+        case '':
+        case '__eq':
           array_push($qFs, new QueryFilter($remappedKey, $val, '='));
           break;
-        case '!=':
-        case '__ne=':
+        case '__ne':
           array_push($qFs, new QueryFilter($remappedKey, $val, '!='));
           break;
-        case '<':
-        case '__lt=':
+        case '__lt':
           array_push($qFs, new QueryFilter($remappedKey, $val, '<'));
           break;
-        case '<=':
-        case '__lte=':
+        case '__lte':
           array_push($qFs, new QueryFilter($remappedKey, $val, '<='));
           break;
-        case '>':
-        case '__gt=':
+        case '__gt':
           array_push($qFs, new QueryFilter($remappedKey, $val, '>'));
           break;
-        case '>=':
-        case '__gte=':
+        case '__gte':
           array_push($qFs, new QueryFilter($remappedKey, $val, '>='));
           break;
-        case '__contains=':
+        case '__contains':
           array_push($qFs, new LikeFilter($remappedKey, "%" . $val . "%"));
           break;
-        case '__startswith=':
+        case '__startswith':
           array_push($qFs, new LikeFilter($remappedKey, $val . "%"));
           break;
-        case '__endswith=':
+        case '__endswith':
           array_push($qFs, new LikeFilter($remappedKey, "%" . $val));
           break;
-        case '__icontains=':
+        case '__icontains':
           array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val . "%"));
           break;
-        case '__istartswith=':
+        case '__istartswith':
           array_push($qFs, new LikeFilterInsensitive($remappedKey, $val . "%"));
           break;
-        case '__iendswith=':
+        case '__iendswith':
           array_push($qFs, new LikeFilterInsensitive($remappedKey, "%" . $val));
           break;
         default:
@@ -827,18 +930,18 @@ abstract class AbstractBaseAPI
   /**
    * Check for valid ordering parameters and build QueryFilter
    */
-  protected function makeOrderFilter(Request $request, array $features): array
+  protected function makeOrderFilterTemplates(Request $request, array $features): array
   {
-    $oFs = [];
+    $orderTemplates = [];
 
-    $mergedOrdering = $this->getFilterParameters($request, 'ordering');
-    foreach ($mergedOrdering as $order) {
+    $orderings = $this->getQueryParameterAsList($request, 'sort');
+    foreach ($orderings as $order) {
       if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
         $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
         if (array_key_exists($cast_key, $features)) {
           $remappedKey = $features[$cast_key]['dbname'];
-          $oFs[] = new OrderFilter($remappedKey, ($matches['operator'] == '-') ? "DESC" : "ASC");
+          array_push($orderTemplates, ['by' => $remappedKey, 'type' => ($matches['operator'] == '-') ? "DESC" : "ASC" ]);
         } else {
           throw new HTException("Ordering parameter '" . $order . "' is not valid");
         }
@@ -847,9 +950,9 @@ abstract class AbstractBaseAPI
       }
     }
 
-    return $oFs;
+    return $orderTemplates;
   }
-
+  
 
   /**
    * Validate if user is allowed to access hashlist
@@ -969,6 +1072,50 @@ abstract class AbstractBaseAPI
       return $default;
     }
   }
+
+
+  protected function getQueryParameterAsList(Request $request, string $name): array
+  {
+    $queryParams = $request->getQueryParams();
+    if (is_array($queryParams) && array_key_exists($name, $queryParams)) {
+      return preg_split("/[,\ ]+/", $queryParams[$name]);
+    } else {
+      return [];
+    }
+  }
+
+
+  /* 
+   * Return requested parameter, prioritize query parameter over inline payload parameter 
+   */
+  protected function getQueryParameterFamilyMember(Request $request, string $family, string $member): string|null
+  {
+    $queryParams = $request->getQueryParams();
+    // Check query parameters and make sure it is an array
+    if (is_array($queryParams) && array_key_exists($family, $queryParams) && array_key_exists($member, $queryParams[$family])) {
+      return $queryParams[$family][$member];
+    }
+
+    return null;
+  }
+
+
+  /* 
+   * Return requested parameter, prioritize query parameter over inline payload parameter 
+   */
+  protected function getQueryParameterFamily(Request $request, string $family): array
+  {
+    $retval = [];
+    $queryParams = $request->getQueryParams();
+    if (array_key_exists($family, $queryParams) and is_array($queryParams[$family])) {
+      // TODO: Enhance validation
+      return $queryParams[$family];
+    }
+
+    return $retval;
+  }
+
+
 
   /**
    * Override-able activated methods 

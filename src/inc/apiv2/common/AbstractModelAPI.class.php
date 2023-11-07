@@ -8,18 +8,30 @@ use Slim\Exception\HttpNotFoundException;
 
 
 use DBA\AbstractModelFactory;
+use DBA\AccessGroup;
+use DBA\AccessGroupUser;
+use DBA\AccessGroupUserFactory;
 use DBA\JoinFilter;
 use DBA\Factory;
 use DBA\ContainFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 use Middlewares\Utils\HttpErrorException;
+use Psr\Container\NotFoundExceptionInterface;
+use Psr\Container\ContainerExceptionInterface;
+use SebastianBergmann\FileIterator\Facade;
+use Slim\Exception\HttpForbiddenException;
 
+use function PHPUnit\Framework\assertCount;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI {
   abstract static public function getDBAClass(): string;
   abstract protected function createObject(array $data): int;
   abstract protected function deleteObject(object $object): void;
+
+  static public function getToOneRelationships(): array { return []; }
+  static public function getToManyRelationships(): array { return []; }
+
 
   protected function getFactory(): object {
     return self::getModelFactory($this->getDBAclass());
@@ -36,7 +48,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     );
   }
 
-  /** 
+    /**
      * Retrieve ForeignKey Relation
      * 
      * @param array $objects Objects Fetch relation for selected Objects 
@@ -234,6 +246,160 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   protected function getFilterACL(): array {
     return [];
   }
+ 
+   /**
+   * API entry point for requesting multiple objects
+   */
+  public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response
+  {
+    $apiClass->preCommon($request);
+
+    $aliasedfeatures = $apiClass->getAliasedFeatures();
+    $factory = $apiClass->getFactory();
+
+    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
+    // TODO: Maximum and default should be configurable per server instance
+    $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? 50000;
+
+    $validExpandables = $apiClass->getExpandables();
+    $expands = $apiClass->makeExpandables($request, $validExpandables);
+
+    /* Object filter definition */
+    $aFs = [];
+
+    /* Generate filters */
+    $qFs_Filter = $apiClass->makeFilter($request, $aliasedfeatures);
+    $qFs_ACL = $apiClass->getFilterACL();
+    $qFs = array_merge($qFs_ACL, $qFs_Filter);
+    if (count($qFs) > 0) {
+      $aFs[Factory::FILTER] = $qFs;
+    }
+
+    /**
+     * Create pagination
+     * 
+     * LIMIT is not officially supported via Filters, instead hacked in via the 'commonly' abused 
+     * ORDER BY x LIMIT y variants. In our case we need to modify the last order filter.
+     * 
+     * Since we need to append to the last order filter, make sure to redefine default as defined at
+     * /src/dba/AbstractModelFactory.class.php:656 over here.
+     * 
+     * TODO: Deny pagination with un-stable sorting
+     */
+    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures);
+    if (count($orderTemplates) == 0) {
+      array_push($orderTemplates, ['by' => $apiClass->getPrimaryKey(), 'type' => 'ASC']);
+    }
+    // Alter last order filter to include LIMIT parameter.
+    $orderTemplate = array_pop($orderTemplates);
+    $orderTemplate['type'] .= ' LIMIT ' . $pageSize;
+    array_push($orderTemplates, $orderTemplate);
+
+    // Build actual order filters
+    foreach ($orderTemplates as $orderTemplate) {
+      $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
+    }
+
+    // Add page[after] filter, note this depends on the ordering used
+    if ($orderTemplate['type'] == 'ASC') {
+      $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '<', $factory);
+    } else {
+      $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '>', $factory);
+    }
+
+    /* Include relation filters */
+    $finalFs = array_merge($aFs, $relationFs);
+
+    /* Request objects */
+    $filterObjects = $factory->filter($finalFs);
+    // TODO: Yield 'Max Page Size Exceeded Error' if pagination is not possible and more items are returned than the actual page[size] limit
+
+    /* JOIN statements will return related modules as well, discard for now */
+    if (array_key_exists(Factory::JOIN, $finalFs)) {
+      $objects = $filterObjects[$factory->getModelname()];
+    } else {
+      $objects = $filterObjects;
+    }
+
+    /* Resolve all expandables */
+    $expandResult = [];
+    foreach ($expands as $expand) {
+      // mapping from $objectId -> result objects in
+      $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
+    }
+
+    /* Convert objects to JSON:API */
+    $dataResources = [];
+    $includedResources = [];
+
+    // Convert objects to data resources 
+    foreach ($objects as $object) {
+      // Create object  
+      $newObject = $apiClass->obj2Resource($object, $expandResult);
+
+      // For compound document, included resources
+      foreach ($expands as $expand) {
+        if (array_key_exists($object->getId(), $expandResult[$expand])) {
+          $expandResultObject = $expandResult[$expand][$object->getId()];
+          if (is_array($expandResultObject)) {
+            foreach($expandResultObject as $expandObject) {
+              $includedResources[] = $apiClass->obj2Resource($expandObject);
+            }
+          } else {
+            if ($expandResultObject === null) {
+              // to-only relation which is nullable
+              continue;
+            }
+            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
+          }
+        }
+      }
+
+      // Add to result output
+      $dataResources[] = $newObject;
+    }
+
+    // Build self link
+    $selfParams = $request->getQueryParams();
+    $selfParams['page']['size'] = $pageSize;
+    $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
+
+    // Build next link
+    $nextParams = $selfParams;
+    if (count($objects) == $pageSize) {
+      $nextParams['page']['after'] = end($objects)->getId();
+      $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
+    } else {
+      // We have no more entries pending
+      $linksNext = null;
+    }
+
+    // Generate JSON:API GET output
+    $ret = [
+      "jsonapi" => [
+        "version" => "1.1",
+        "ext" => [
+          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+        ],
+      ],
+      "links" => [
+        "self" => $linksSelf,
+        "next" => $linksNext,
+      ],
+      "data" => $dataResources,
+    ];
+
+    if (count($expands) > 0) {
+      $ret['included'] = $includedResources;
+    }
+
+    $body = $response->getBody();
+    $body->write($apiClass->ret2json($ret));
+
+    return $response->withStatus(200)
+      ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
+  }
+
 
 
    /**
@@ -241,68 +407,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    */
   public function get(Request $request, Response $response, array $args): Response
   {
-    $this->preCommon($request);
-
-    $aliasedfeatures = $this->getAliasedFeatures();
-    $factory = $this->getFactory();
-
-    $startAt = $this->getParam($request, 'startsAt', 0);
-    $maxResults = $this->getParam($request, 'maxResults', 5);
-
-    $validExpandables = $this->getExpandables();
-    $expands = $this->makeExpandables($request, $validExpandables);
-    $expandable = array_diff($validExpandables, $expands);
-
-    /* Generate filters */
-    $qFs_Filter = $this->makeFilter($request, $aliasedfeatures);
-    $qFs_ACL = $this->getFilterACL();
-    $qFs = array_merge($qFs_ACL, $qFs_Filter);
-
-    $oFs = $this->makeOrderFilter($request, $aliasedfeatures);
-
-    /* Generate query */
-    $allFilters = [];
-    if (count($qFs) > 0) {
-      $allFilters[Factory::FILTER] = $qFs;
-    }
-    if (count($oFs) > 0) {
-      $allFilters[Factory::ORDER] = $oFs;
-    }
-
-    /* Request objects */
-    $objects = $factory->filter($allFilters);
-
-    /* Resolve all expandables */
-    $expandResult = [];
-    foreach ($expands as $expand) {
-      // mapping from $objectId -> result objects in
-      $expandResult[$expand] = $this->fetchExpandObjects($objects, $expand);
-    }
-
-    /* Convert objects to JSON */
-    $lists = [];
-    foreach ($objects as $object) {
-      $newObject = $this->applyExpansions($object, $expands, $expandResult);
-      $lists[] = $newObject;
-    }
-
-    // TODO: Implement actual expanding
-    $total = count($objects);
-
-    $ret = [
-      "_expandable" => join(",", $expandable),
-      "startAt" => $startAt,
-      "maxResults" => $maxResults,
-      "total" => $total,
-      "isLast" => ($total <= ($startAt + $maxResults)),
-      "values" => array_slice($lists, $startAt, $maxResults)
-    ];
-
-    $body = $response->getBody();
-    $body->write($this->ret2json($ret));
-
-    return $response->withStatus(200)
-      ->withHeader("Content-Type", "application/json");
+    return self::getManyResources($this, $request, $response);
   }
 
   /**
@@ -315,27 +420,97 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
 
   /**
+   * Get single Resource
+   */
+  private static function getOneResource(object $apiClass, object $object, Request $request, Response $response): Response
+  {
+    $apiClass->preCommon($request);
+
+    $validExpandables = $apiClass->getExpandables();
+    $expands = $apiClass->makeExpandables($request, $validExpandables);
+   
+    $objects = [$object];
+
+    /* Resolve all expandables */
+    $expandResult = [];
+    foreach ($expands as $expand) {
+      // mapping from $objectId -> result objects in
+      $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
+    }
+
+    /* Convert objects to JSON:API */
+    $dataResources = [];
+    $includedResources = [];
+
+    // Convert objects to data resources 
+    foreach ($objects as $object) {
+      // Create object
+      $newObject = $apiClass->obj2Resource($object, $expandResult);
+
+      // For compound document, included resources
+      foreach ($expands as $expand) {
+        if (array_key_exists($object->getId(), $expandResult[$expand])) {
+          $expandResultObject = $expandResult[$expand][$object->getId()];
+          if (is_array($expandResultObject)) {
+            foreach($expandResultObject as $expandObject) {
+              $includedResources[] = $apiClass->obj2Resource($expandObject);
+            }
+          } else {
+            if ($expandResultObject === null) {
+              // to-only relation which is nullable
+              continue;
+            }
+            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
+          }
+        }
+      }
+
+      // Add to result output
+      $dataResources[] = $newObject;
+    }
+    
+    $selfParams = $request->getQueryParams();
+    $linksQuery = urldecode(http_build_query($selfParams));
+    
+    $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' .  $linksQuery : '');
+
+    // Generate JSON:API GET output
+    $ret = [
+      "jsonapi" => [
+        "version" => "1.1",
+        "ext" => [
+          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+        ],
+      ],
+      "links" => [
+        "self" => $linksSelf,
+      ],
+      "data" => $dataResources[0],
+    ];
+
+    if (count($expands) > 0) {
+      $ret['included'] = $includedResources;
+    }
+  
+    $body = $response->getBody();
+    $body->write($apiClass->ret2json($ret));
+
+    return $response->withStatus(201)
+      ->withHeader("Content-Type", "application/vnd.api+json");
+  }
+
+
+  /**
    * API entry point for requests of single object
    */
   public function getOne(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-
-    $validExpandables = $this->getExpandables();
-    $expands = $this->makeExpandables($request, $validExpandables);
-    $expandable = array_diff($validExpandables, $expands);
-
     $object = $this->doFetch($request, $args['id']);
 
-    $ret = $this->object2Array($object, $expands);
-    $ret["_expandable"] = join(",", $expandable);
-    ksort($ret);
+    $classMapper = $this->container->get('classMapper');
 
-    $body = $response->getBody();
-    $body->write($this->ret2json($ret));
-
-    return $response->withStatus(200)
-      ->withHeader("Content-Type", "application/json");
+    return self::getOneResource($this, $object, $request, $response);
   }
 
 
@@ -398,6 +573,10 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $this->preCommon($request);
 
     $data = $request->getParsedBody();
+    if ($data == null) {
+      throw new HttpErrorException("POST request requires data to be present");
+    }
+
     $allFeatures = $this->getAliasedFeatures();
 
     // Validate incoming parameters
@@ -416,6 +595,235 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/json");
+  }
+
+
+  /**
+   * 
+   */
+  public function getToOneRelatedResource(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+
+    // Base object
+    $object = $this->doFetch($request, $args['id']);
+   
+    // Relation object
+    $relationObjects = $this->fetchExpandObjects([$object], $args['relation']);  
+    $relationObject = $relationObjects[$args['id']];
+
+    $relationClass = array_column($this->getToOneRelationships(), 'relationType', 'name')[$args['relation']];
+    $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
+
+    return self::getOneResource($relationApiClass, $relationObject, $request, $response);
+  }
+
+
+  /**
+   * 
+   */
+  public function getToOneRelationshipLink(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+
+    // Base object -> Relationship objects
+    $object = $this->doFetch($request, $args['id']);
+
+    $relation = $this->getToOneRelationships()[$args['relation']];
+    $id = $object->getKeyValueDict()[$relation['key']];
+   
+    if (is_null($id)) {
+      $dataResource = null;
+    } else {
+      $dataResource = [
+        'type' => $this->getObjectTypeName($relation['relationType']),
+        'id' => $id,
+      ];
+    }
+
+    $selfParams = $request->getQueryParams();
+    $linksQuery = urldecode(http_build_query($selfParams));
+    $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' .  $linksQuery : '');
+
+    $apiClass = $this->container->get('classMapper')->get(get_class($object));
+    $linksRelated = $this->routeParser->urlFor($apiClass . ':getToOneRelatedResource', $args);
+
+
+    // Generate JSON:API GET output
+    $ret = [
+      "jsonapi" => [
+        "version" => "1.1",
+      ],
+      "links" => [
+        "self" => $linksSelf,
+        "related" => $linksRelated,
+      ],
+      "data" => $dataResource,
+    ];
+
+
+    $body = $response->getBody();
+    $body->write($this->ret2json($ret));
+
+    return $response->withStatus(200)
+      ->withHeader("Content-Type", 'application/vnd.api+json');
+  }
+
+  /**
+   * 
+   */
+  public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+    $object = $this->doFetch($request, $args['id']);
+
+    return $response->withStatus(201)
+      ->withHeader("Content-Type", "application/vnd.api+json");
+  }
+
+
+  /**
+   * 
+   */
+  public function getToManyRelatedResource(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+
+    // Base object -> Relation objects
+    $object = $this->doFetch($request, $args['id']);
+
+    $toManyRelation = $this->getToManyRelationships()[$args['relation']];
+    $relationClass = $toManyRelation['relationType'];
+    $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
+
+    /* Prepare filter for to-many relations */
+
+    // Example:
+    // 'accessGroups' => [
+    //   'intermidiate' => AccessGroupUser::class, 
+    //   'filterField' => AccessGroupUser::USER_ID,
+    //   'joinField' => AccessGroupUser::ACCESS_GROUP_ID,
+    //   'joinFieldRelation' => AccessGroup::ACCESS_GROUP_ID,
+    //   'relationType' => AccessGroup::class,
+    // ],
+
+    $aFs = [];
+    if (array_key_exists('intermidiate', $toManyRelation)) {
+      $aFs[Factory::FILTER][] = new QueryFilter(
+          $toManyRelation['filterField'], 
+          $args['id'], 
+          '=', 
+          self::getModelFactory($toManyRelation['intermidiate'])
+        );
+          
+      $aFs[Factory::JOIN][] = new JoinFilter(
+          self::getModelFactory($toManyRelation['intermidiate']),
+          $toManyRelation['joinField'],
+          $toManyRelation['joinFieldRelation'],
+        );
+    } else {
+      $aFs[Factory::FILTER][] = new QueryFilter(
+        $toManyRelation['filterField'], 
+        $args['id'], 
+        '=', 
+      );
+    };
+    
+    return self::getManyResources($relationApiClass, $request, $response, $aFs);
+  }
+
+
+  /**
+   * 
+   */
+  public function getToManyRelationshipLink(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+
+    // Base object -> Relationship objects
+    $object = $this->doFetch($request, $args['id']);
+    $expandObjects = $this->fetchExpandObjects([$object], $args['relation']);
+    
+    $dataResources = [];
+    if (array_key_exists($object->getId(), $expandObjects)) {
+      foreach ($expandObjects[$object->getId()] as $relationshipObject) {
+        $dataResources[] = [
+          'type' => $this->getObjectTypeName($relationshipObject),
+          'id' => $relationshipObject->getId(),
+        ];
+      }
+    }
+
+    $selfParams = $request->getQueryParams();
+    $linksQuery = urldecode(http_build_query($selfParams));
+    $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' .  $linksQuery : '');
+
+    $apiClass = $this->container->get('classMapper')->get(get_class($object));
+    $linksRelated = $this->routeParser->urlFor($apiClass . ':getToManyRelatedResource', $args);
+
+
+    // TODO implement pagination support
+    $linksNext = null;
+
+    // Generate JSON:API GET output
+    $ret = [
+      "jsonapi" => [
+        "version" => "1.1",
+        "ext" => [
+          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+        ],
+      ],
+      "links" => [
+        "self" => $linksSelf,
+        "related" => $linksRelated,
+        "next" => $linksNext,
+      ],
+      "data" => $dataResources,
+    ];
+
+
+    $body = $response->getBody();
+    $body->write($this->ret2json($ret));
+
+    return $response->withStatus(200)
+      ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
+
+  }
+
+  /**
+   * 
+   */
+  public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+    $object = $this->doFetch($request, $args['id']);
+
+    return $response->withStatus(201)
+      ->withHeader("Content-Type", "application/vnd.api+json");
+  }
+
+  /**
+   * 
+   */
+  public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+    $object = $this->doFetch($request, $args['id']);
+
+    return $response->withStatus(201)
+      ->withHeader("Content-Type", "application/vnd.api+json");
+  }
+
+  /**
+   * 
+   */
+  public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response
+  {
+    $this->preCommon($request);
+    $object = $this->doFetch($request, $args['id']);
+
+    return $response->withStatus(201)
+      ->withHeader("Content-Type", "application/vnd.api+json");
   }
 
 
@@ -473,6 +881,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
 
+    $baseUriRelationships = $baseUri . '/{id:[0-9]+}/relationships';
+
     $classMapper = $app->getContainer()->get('classMapper');
     $classMapper->add($me::getDBAclass(), $me);
 
@@ -488,6 +898,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     if (in_array("GET", $available_methods)) {
       $app->get($baseUri, $me . ':get')->setname($me . ':get');
+    }
+
+    foreach ($me::getToOneRelationships() as $name => $relationship) {
+      $relationUri = '{relation:' . $name . '}';
+      $app->get($baseUriOne . '/' . $relationUri, $me . ':getToOneRelatedResource')->setname($me . ':getToOneRelatedResource');
+      $app->get($baseUriRelationships . '/' . $relationUri, $me . ':getToOneRelationshipLink')->setname($me . ':getToOneRelationshipLink');
+      $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToOneRelationshipLink')->setname($me . ':patchToOneRelationshipLink');
+    }
+
+    foreach ($me::getToManyRelationships() as $name => $relationship) {
+      $relationUri = '{relation:' . $name . '}';
+      $app->get($baseUriOne . '/' . $relationUri, $me . ':getToManyRelatedResource')->setname($me . ':getToManyRelatedResource');
+      $app->get($baseUriRelationships . '/' . $relationUri, $me . ':getToManyRelationshipLink')->setname($me . ':getToManyRelationshipLink');
+      $app->patch($baseUriRelationships . '/' . $relationUri, $me . ':patchToManyRelationshipLink')->setname($me . ':patchToManyRelationshipLink');
+      $app->post($baseUriRelationships . '/' . $relationUri, $me . ':postToManyRelationshipLink')->setname($me . ':postToManyRelationshipLink');
+      $app->delete($baseUriRelationships . '/' . $relationUri, $me . ':deleteToManyRelationshipLink')->setname($me . ':deleteToManyRelationshipLink');
     }
 
     if (in_array("POST", $available_methods)) {

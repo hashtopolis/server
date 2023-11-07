@@ -17,25 +17,25 @@ class HealthCheckAPI extends AbstractModelAPI {
       return HealthCheck::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ['crackerBinary', 'healthCheckAgents'];
     }
  
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static  function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof HealthCheck); });
 
       /* Expand requested section */
       switch($expand) {
         case 'crackerBinary':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             HealthCheck::CRACKER_BINARY_ID,
             Factory::getCrackerBinaryFactory(),
             CrackerBinary::CRACKER_BINARY_ID
           );
         case 'healthCheckAgents':
-          return $this->getManyToOneRelation(
+          return self::getManyToOneRelation(
             $objects,
             HealthCheck::HEALTH_CHECK_ID,
             Factory::getHealthCheckAgentFactory(),

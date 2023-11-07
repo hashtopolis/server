@@ -26,25 +26,25 @@ class SpeedAPI extends AbstractModelAPI {
       return Speed::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return [ 'agent', 'task' ];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Speed); });
 
       /* Expand requested section */
       switch($expand) {
         case 'agent':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Speed::AGENT_ID,
             Factory::getAgentFactory(),
             Agent::AGENT_ID
           );
         case 'task':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Speed::TASK_ID,
             Factory::getTaskFactory(),

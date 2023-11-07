@@ -7,7 +7,7 @@ use DBA\RightGroup;
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
 
-class GlobalPermissionGroupsAPI extends AbstractModelAPI {
+class GlobalPermissionGroupAPI extends AbstractModelAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/globalpermissiongroups";
     }
@@ -16,18 +16,26 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
       return RightGroup::class;
     }    
 
-    public function getExpandables(): array {
-      return ['user'];
+    public static function getExpandables(): array {
+      return ['userMembers'];
+    }
+    public static function getToManyRelationships(): array {
+      return [
+        'userMembers' => [
+          'filterField' => User::RIGHT_GROUP_ID,
+          'relationType' => User::class,
+        ],
+      ];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof RightGroup); });
 
       /* Expand requested section */
       switch($expand) {
-        case 'user':
-          return $this->getManyToOneRelation(
+        case 'userMembers':
+          return self::getManyToOneRelation(
             $objects,
             RightGroup::RIGHT_GROUP_ID,
             Factory::getUserFactory(),
@@ -133,4 +141,4 @@ class GlobalPermissionGroupsAPI extends AbstractModelAPI {
     }
 }
 
-GlobalPermissionGroupsAPI::register($app);
+GlobalPermissionGroupAPI::register($app);

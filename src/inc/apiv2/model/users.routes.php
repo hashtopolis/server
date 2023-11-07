@@ -20,18 +20,36 @@ class UserAPI extends AbstractModelAPI {
       return User::class;
     }
 
-    public function getExpandables(): array {
+    public static function getToOneRelationships(): array {
+      return [
+        'globalPermissionGroup' => ['key' => User::RIGHT_GROUP_ID, 'relationType' => RightGroup::class],
+      ];
+    }
+
+    public static function getToManyRelationships(): array {
+      return [
+        'accessGroups' => [
+          'intermidiate' => AccessGroupUser::class, 
+          'filterField' => AccessGroupUser::USER_ID,
+          'joinField' => AccessGroupUser::ACCESS_GROUP_ID,
+          'joinFieldRelation' => AccessGroup::ACCESS_GROUP_ID,
+          'relationType' => AccessGroup::class,
+        ],
+      ];
+    }
+
+
+    public static function getExpandables(): array {
       return ["accessGroups", "globalPermissionGroup"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {        
       array_walk($objects, function($obj) { assert($obj instanceof User); });
 
       /* Expand requested section */
       switch($expand) {
         case 'accessGroups':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             User::USER_ID,
             Factory::getAccessGroupUserFactory(),
@@ -40,7 +58,7 @@ class UserAPI extends AbstractModelAPI {
             AccessGroup::ACCESS_GROUP_ID
           );
         case 'globalPermissionGroup':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             User::RIGHT_GROUP_ID,
             Factory::getRightGroupFactory(),

@@ -6,7 +6,7 @@ use DBA\AgentStat;
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
 
-class AgentStatsAPI extends AbstractModelAPI {
+class AgentStatAPI extends AbstractModelAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/agentstats";
     }
@@ -33,4 +33,4 @@ class AgentStatsAPI extends AbstractModelAPI {
     }
 }
 
-AgentStatsAPI::register($app);
+AgentStatAPI::register($app);

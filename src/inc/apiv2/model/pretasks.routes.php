@@ -20,18 +20,18 @@ class PreTaskAPI extends AbstractModelAPI {
       return Pretask::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["pretaskFiles"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof PreTask); });
 
       /* Expand requested section */
       switch($expand) {
         case 'pretaskFiles':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             Pretask::PRETASK_ID,
             Factory::getFilePretaskFactory(),

@@ -23,18 +23,18 @@ class TaskAPI extends AbstractModelAPI {
       return Task::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["assignedAgents", "crackerBinary", "crackerBinaryType", "hashlist", "speeds", "files"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Task); });
 
       /* Expand requested section */
       switch($expand) {
         case 'assignedAgents':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             Task::TASK_ID,
             Factory::getAssignmentFactory(),
@@ -43,21 +43,21 @@ class TaskAPI extends AbstractModelAPI {
             Agent::AGENT_ID
           );
         case 'crackerBinary':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Task::CRACKER_BINARY_ID,
             Factory::getCrackerBinaryFactory(),
             CrackerBinary::CRACKER_BINARY_ID
           );
         case 'crackerBinaryType':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Task::CRACKER_BINARY_TYPE_ID,
             Factory::getCrackerBinaryTypeFactory(),
             CrackerBinaryType::CRACKER_BINARY_TYPE_ID
           );
         case 'hashlist':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             Task::TASK_WRAPPER_ID,
             Factory::getTaskWrapperFactory(),
@@ -66,14 +66,14 @@ class TaskAPI extends AbstractModelAPI {
             Hashlist::HASHLIST_ID
           );
         case 'speeds':
-          return $this->getManyToOneRelation(
+          return self::getManyToOneRelation(
             $objects,
             Task::TASK_ID,
             Factory::getSpeedFactory(),
             Speed::TASK_ID
           );
         case 'files':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             Task::TASK_ID,
             Factory::getFileTaskFactory(),

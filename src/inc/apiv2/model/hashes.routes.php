@@ -21,25 +21,25 @@ class HashAPI extends AbstractModelAPI {
       return Hash::class;
     }   
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["hashlist", "chunk"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Hash); });
 
       /* Expand requested section */
       switch($expand) {
         case 'hashlist':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Hash::HASHLIST_ID,
             Factory::getHashListFactory(),
             HashList::HASHLIST_ID
           );
         case 'chunk':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Hash::CHUNK_ID,
             Factory::getChunkFactory(),

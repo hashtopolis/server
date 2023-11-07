@@ -23,25 +23,25 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       return Assignment::class;
     }
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["task", "agent"];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Assignment); });
 
       /* Expand requested section */
       switch($expand) {
         case 'task':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Assignment::TASK_ID,
             Factory::getTaskFactory(),
             Task::TASK_ID
           );
         case 'agent':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Assignment::AGENT_ID,
             Factory::getAgentFactory(),

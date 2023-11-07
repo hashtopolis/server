@@ -25,32 +25,32 @@ class HashlistAPI extends AbstractModelAPI {
       return Hashlist::class;
     }   
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ["accessGroup", "hashType", "hashes", "tasks", "hashlists"];
     }
      
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof Hashlist); });
 
       /* Expand requested section */
       switch($expand) {
         case 'accessGroup':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Hashlist::ACCESS_GROUP_ID,
             Factory::getAccessGroupFactory(),
             AccessGroup::ACCESS_GROUP_ID
           );
         case 'hashType':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             Hashlist::HASH_TYPE_ID,
             Factory::getHashTypeFactory(),
             HashType::HASH_TYPE_ID
           );        
         case 'hashes':
-          return $this->getManyToOneRelation(
+          return self::getManyToOneRelation(
             $objects,
             Hashlist::HASHLIST_ID,
             Factory::getHashFactory(),
@@ -58,7 +58,7 @@ class HashlistAPI extends AbstractModelAPI {
           );
         case 'hashlists':
           /* PARENT_HASHLIST_ID in use in intermediate table */
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects, 
             Hashlist::HASHLIST_ID,
             Factory::getHashlistHashlistFactory(),
@@ -67,7 +67,7 @@ class HashlistAPI extends AbstractModelAPI {
             Hashlist::HASHLIST_ID,
           );
         case 'tasks':
-          return $this->getManyToOneRelationViaIntermediate(
+          return self::getManyToOneRelationViaIntermediate(
             $objects,
             Hashlist::HASHLIST_ID,
             Factory::getTaskWrapperFactory(),

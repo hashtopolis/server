@@ -11,7 +11,7 @@ use DBA\TaskWrapper;
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
 
-class TaskWrappersAPI extends AbstractModelAPI {
+class TaskWrapperAPI extends AbstractModelAPI {
     public static function getBaseUri(): string {
       return "/api/v2/ui/taskwrappers";
     }
@@ -24,25 +24,25 @@ class TaskWrappersAPI extends AbstractModelAPI {
       return TaskWrapper::class;
     }    
 
-    public function getExpandables(): array {
+    public static function getExpandables(): array {
       return ['accessGroup', 'tasks'];
     }
 
-    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
       /* Ensure we receive the proper type */
       array_walk($objects, function($obj) { assert($obj instanceof TaskWrapper); });
 
       /* Expand requested section */
       switch($expand) {
         case 'accessGroup':
-          return $this->getForeignKeyRelation(
+          return self::getForeignKeyRelation(
             $objects,
             TaskWrapper::ACCESS_GROUP_ID,
             Factory::getAccessGroupFactory(),
             AccessGroup::ACCESS_GROUP_ID
           );
         case 'tasks':
-          return $this->getManyToOneRelation(
+          return self::getManyToOneRelation(
             $objects,
             TaskWrapper::TASK_WRAPPER_ID,
             Factory::getTaskFactory(),
@@ -104,4 +104,4 @@ class TaskWrappersAPI extends AbstractModelAPI {
     }
 }
 
-TaskWrappersAPI::register($app);
+TaskWrapperAPI::register($app);
