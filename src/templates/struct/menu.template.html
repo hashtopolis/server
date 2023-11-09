@@ -19,6 +19,12 @@
                         {{IF [[accessControl.hasPermission([[$DAccessControl::VIEW_AGENT_ACCESS]])]]}}
 							<a class="dropdown-item[[menu.isActive('agents_status')]]" href="agentStatus.php">Agent Status</a>
 						{{ENDIF}}
+                        {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_AGENT_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('vast_ai_agents')]]" href="vastaiAgents.php">Show Rented Vast.AI Agents</a>
+						{{ENDIF}}
+                        {{IF [[accessControl.hasPermission([[$DAccessControl::CREATE_AGENT_ACCESS]])]]}}
+							<a class="dropdown-item[[menu.isActive('vast_ai_agents_search')]]" href="vastaiAgentsSearch.php">Search Vast.AI Agents</a>
+						{{ENDIF}}
 					</div>
 				</li>
 			{{ENDIF}}
