@@ -422,7 +422,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Get single Resource
    */
-  private static function getOneResource(object $apiClass, object $object, Request $request, Response $response): Response
+  private static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode=200): Response
   {
     $apiClass->preCommon($request);
 
@@ -495,8 +495,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
 
-    return $response->withStatus(201)
-      ->withHeader("Content-Type", "application/vnd.api+json");
+    return $response->withStatus($statusCode)
+      ->withHeader("Content-Type", "application/vnd.api+json")
+      ->withHeader("Location", $linksSelf);
   }
 
 
@@ -589,12 +590,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $mappedData = $this->unaliasData($data, $allFeatures);
     $pk = $this->createObject($mappedData);
 
-    // Request object again, since post-modified entries are not reflected into object.
-    $body = $response->getBody();
-    $body->write($this->object2JSON($this->getFactory()->get($pk)));
+    // TODO: Return 409 (conflict) if resource already exists or cannot be created
 
-    return $response->withStatus(201)
-      ->withHeader("Content-Type", "application/json");
+    // Request object again, since post-modified entries are not reflected into object.
+    $object = $this->getFactory()->get($pk);
+    return self::getOneResource($this, $object, $request, $response, 201);
   }
 
 

@@ -187,7 +187,7 @@ class HashtopolisConnector(object):
             return
 
         self.authenticate()
-        uri = self._hashtopolis_uri + obj._self
+        uri = self._hashtopolis_uri + obj.uri
         headers = self._headers
         headers['Content-Type'] = 'application/json'
         payload = {}
@@ -205,7 +205,7 @@ class HashtopolisConnector(object):
 
     def create(self, obj):
         # Check if object to be created is new
-        assert not hasattr(obj, '_self')
+        assert obj._new_model is True
 
         self.authenticate()
         uri = self._api_endpoint + self._model_uri
@@ -223,10 +223,10 @@ class HashtopolisConnector(object):
     def delete(self, obj):
         """ Delete object from database """
         # TODO: Check if object to be deleted actually exists
-        assert hasattr(obj, '_self')
+        assert obj._new_model is False
 
         self.authenticate()
-        uri = self._hashtopolis_uri + obj._self
+        uri = self._hashtopolis_uri + obj.uri
         headers = self._headers
         payload = {}
 
@@ -422,11 +422,15 @@ class ModelBase(type):
 
 class Model(metaclass=ModelBase):
     def __init__(self, *args, **kwargs):
-        self.set_initial(kwargs)
+        if 'links' in kwargs:
+            # Loading of existing model
+            self.set_initial(kwargs)
+        else:
+            self.set_initial({'attributes': kwargs})
         super().__init__()
 
     def __repr__(self):
-        return self._self
+        return self.__uri
 
     def __eq__(self, other):
         return (self.get_fields() == other.get_fields())
@@ -454,12 +458,12 @@ class Model(metaclass=ModelBase):
         if 'links' in kv:
             self.__initial = copy.deepcopy(kv)
             self.__uri = kv['links']['self']
+            self.__id = kv['id']
             self._new_model = False
         else:
             # New model
             self.__initial = {}
 
-        self.__id = kv['id']
         self.__relationships = kv.get('relationships', {})
 
         # Create attribute values
@@ -557,6 +561,10 @@ class Model(metaclass=ModelBase):
     @property
     def pk(self):
         return self.__id
+
+    @property
+    def uri(self):
+        return self.__uri
 
 
 ##

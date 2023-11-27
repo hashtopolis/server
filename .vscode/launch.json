@@ -68,6 +68,14 @@
           "justMyCode": true
         },
         {
+          "name": "Python: htcli run delete-test-data",
+          "type": "python",
+          "request": "launch",
+          "program": "./ci/apiv2/htcli.py",
+          "args": ["run", "delete-test-data", "--commit"],
+          "justMyCode": true
+        },
+        {
           "name": "Python: Debug pytest file",
           "type": "python",
           "request": "launch",
