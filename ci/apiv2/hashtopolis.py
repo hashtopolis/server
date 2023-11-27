@@ -145,7 +145,7 @@ class HashtopolisConnector(object):
                 payload[f"filter[{k}]"] = v
 
         if expand:
-            payload['expand'] = ','.join(expand) if type(expand) in (list, tuple) else expand
+            payload['include'] = ','.join(expand) if type(expand) in (list, tuple) else expand
         if ordering:
             payload['sort'] = ','.join(ordering) if type(ordering) in (list, tuple) else ordering
 
@@ -472,6 +472,10 @@ class Model(metaclass=ModelBase):
         Populate prefetched relationships
         """
         for relationship_name, resource_identifier_object in self.__relationships.items():
+            if 'data' not in resource_identifier_object:
+                # TODO Deal with 'link' type related relationships
+                continue
+
             resource_identifier_object_data_type = type(resource_identifier_object['data'])
             if resource_identifier_object_data_type is None:
                 # Empty to-one relationship

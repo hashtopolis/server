@@ -23,6 +23,12 @@ docker exec $(docker ps -aqf "ancestor=mysql:8.0") mysql -u root -phashtopolis -
 docker exec $(docker ps -aqf "ancestor=mysql:8.0") tail -f /tmp/mysql_all.log
 ```
 
+Shortcut for testing within development setup:
+```
+cd ~/src/hashtopolis/server/ci/apiv2
+pytest --exitfirst --last-failed
+```
+
 ### paper flipchart scribbles
 
 #### v2 beta
