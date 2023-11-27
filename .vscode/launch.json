@@ -60,11 +60,11 @@
             }
         },
         {
-          "name": "Python: htcli (list Users with Expand)",
+          "name": "Python: htcli (list Users with Include)",
           "type": "python",
           "request": "launch",
           "program": "./ci/apiv2/htcli.py",
-          "args": ["list", "Users", "-v", "DEBUG", "--expand", "globalPermissionGroup"],
+          "args": ["list", "Users", "-v", "DEBUG", "--include", "globalPermissionGroup"],
           "justMyCode": true
         },
         {

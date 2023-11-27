@@ -135,7 +135,7 @@ class HashtopolisConnector(object):
                 exception_details=r_json.get('exception', []),
                 message=r_json.get('message', None))
 
-    def filter(self, expand, ordering, filter, start_offset):
+    def filter(self, include, ordering, filter, start_offset):
         self.authenticate()
         headers = self._headers
 
@@ -144,8 +144,8 @@ class HashtopolisConnector(object):
             for k, v in filter.items():
                 payload[f"filter[{k}]"] = v
 
-        if expand:
-            payload['include'] = ','.join(expand) if type(expand) in (list, tuple) else expand
+        if include:
+            payload['include'] = ','.join(include) if type(include) in (list, tuple) else include
         if ordering:
             payload['sort'] = ','.join(ordering) if type(ordering) in (list, tuple) else ordering
 
@@ -168,14 +168,14 @@ class HashtopolisConnector(object):
                 break
             request_uri = self._hashtopolis_uri + response['links']['next']
 
-    def get_one(self, pk, expand):
+    def get_one(self, pk, include):
         self.authenticate()
         uri = self._api_endpoint + self._model_uri + f'/{pk}'
         headers = self._headers
 
         payload = {}
-        if expand is not None:
-            payload['expand'] = ','.join(expand) if type(expand) in (list, tuple) else expand
+        if include is not None:
+            payload['include'] = ','.join(include) if type(include) in (list, tuple) else include
 
         r = requests.get(uri, headers=headers, data=payload)
         self.validate_status_code(r, [200], "Get single object failed")
@@ -238,9 +238,9 @@ class HashtopolisConnector(object):
 
 # Build Django ORM style django.query interface
 class QuerySet():
-    def __init__(self, cls, expand=None, ordering=None, filters=None):
+    def __init__(self, cls, include=None, ordering=None, filters=None):
         self.cls = cls
-        self.expand = expand
+        self.include = include
         self.ordering = ordering
         self.filters = filters
 
@@ -267,7 +267,7 @@ class QuerySet():
                 filters['_id'] = filters['pk']
                 del filters['pk']
 
-        filter_generator = self.cls.get_conn().filter(self.expand, self.ordering, filters, start_offset=cursor)
+        filter_generator = self.cls.get_conn().filter(self.include, self.ordering, filters, start_offset=cursor)
 
         while index < stop:
             # Fetch new entries in chunks default to server
@@ -324,8 +324,8 @@ class ManagerBase(type):
     config = None
 
     @classmethod
-    def prefetch_related(cls, *expand):
-        return QuerySet(cls, expand=expand)
+    def prefetch_related(cls, *include):
+        return QuerySet(cls, include=include)
 
     @classmethod
     def get_conn(cls):
@@ -448,7 +448,7 @@ class Model(metaclass=ModelBase):
 
     def set_initial(self, kv):
         self.__fields = []
-        self.__expanded = []
+        self.__included = []
         self._new_model = True
         # Store fields allowing us to detect changed values
         if 'links' in kv:
@@ -480,19 +480,19 @@ class Model(metaclass=ModelBase):
             if resource_identifier_object_data_type is None:
                 # Empty to-one relationship
                 setattr(self, relationship_name, None)
-                self.__expanded.append(relationship_name)
+                self.__included.append(relationship_name)
             elif resource_identifier_object_data_type is dict:
                 # Non-empty to-one relationship
                 to_one_relation_obj = self._dict2obj(included_cache.get(resource_identifier_object['data']))
                 setattr(self, relationship_name, to_one_relation_obj)
-                self.__expanded.append(relationship_name)
+                self.__included.append(relationship_name)
             elif resource_identifier_object_data_type is list:
                 to_many_relation_objs = []
                 # to-many relationship
                 for obj in resource_identifier_object['data']:
                     to_many_relation_objs.append(self._dict2obj(included_cache.get(obj)))
                 setattr(self, relationship_name + '_set', to_many_relation_objs)
-                self.__expanded.append(relationship_name + "_set")
+                self.__included.append(relationship_name + "_set")
             else:
                 raise AssertionError("Invalid resource indentifier object class type=%s" %
                                      resource_identifier_object_data_type)
@@ -511,15 +511,15 @@ class Model(metaclass=ModelBase):
             if v_current != v_innitial:
                 diffs.append((key, (v_innitial, v_current)))
 
-        # Find expandables sets which have changed
-        for expand in self.__expanded:
-            if expand.endswith('_set'):
-                innitial_name = expand[:-4]
+        # Find includeables sets which have changed
+        for include in self.__included:
+            if include.endswith('_set'):
+                innitial_name = include[:-4]
                 # Retrieve innitial keys
                 v_innitial = self.__initial[innitial_name]
                 v_innitial_ids = [x['_id'] for x in v_innitial]
                 # Retrieve new/current keys
-                v_current = getattr(self, expand)
+                v_current = getattr(self, include)
                 v_current_ids = [x.id for x in v_current]
                 # Use ID of ojbects as new current/update identifiers
                 if sorted(v_innitial_ids) != sorted(v_current_ids):
@@ -543,11 +543,11 @@ class Model(metaclass=ModelBase):
 
     def serialize(self):
         retval = dict([(x, getattr(self, x)) for x in self.__fields] + [('_self', self.__uri), ('_id', self.__id)])
-        for expandable in self.__expanded:
-            if expandable.endswith('_set'):
-                retval[expandable] = [x.serialize() for x in getattr(self, expandable)]
+        for includeable in self.__included:
+            if includeable.endswith('_set'):
+                retval[includeable] = [x.serialize() for x in getattr(self, includeable)]
             else:
-                retval[expandable] = getattr(self, expandable).serialize()
+                retval[includeable] = getattr(self, includeable).serialize()
         return retval
 
     @property
