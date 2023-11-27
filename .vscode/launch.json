@@ -68,11 +68,22 @@
           "justMyCode": true
         },
         {
-            "name": "Python: File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "justMyCode": true
+          "name": "Python: Debug pytest file",
+          "type": "python",
+          "request": "launch",
+          "module": "pytest",
+          "args": ["${file}", "--exitfirst"],
+          "justMyCode": true,
+          "env": {
+            "_PYTEST_RAISE": "1"
+          },
+        },
+        {
+          "name": "Python: File",
+          "type": "python",
+          "request": "launch",
+          "program": "${file}",
+          "justMyCode": true
         }
     ],
     "inputs": [
