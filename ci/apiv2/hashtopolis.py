@@ -201,7 +201,7 @@ class HashtopolisConnector(object):
         self.validate_status_code(r, [201], "Patching failed")
 
         # TODO: Validate if return objects matches digital twin
-        obj.set_initial(self.resp_to_json(r).copy())
+        obj.set_initial(self.resp_to_json(r)['data'].copy())
 
     def create(self, obj):
         # Check if object to be created is new
@@ -218,7 +218,7 @@ class HashtopolisConnector(object):
         self.validate_status_code(r, [201], "Creation of object failed")
 
         # TODO: Validate if return objects matches digital twin
-        obj.set_initial(self.resp_to_json(r).copy())
+        obj.set_initial(self.resp_to_json(r)['data'].copy())
 
     def delete(self, obj):
         """ Delete object from database """
@@ -506,7 +506,7 @@ class Model(metaclass=ModelBase):
 
     def diff(self):
         # Stored database values
-        d_initial = self.__initial
+        d_initial = self.__initial['attributes']
         # Possible changes values
         d_current = self.get_fields()
         diffs = []

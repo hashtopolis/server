@@ -557,12 +557,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());
-
-    $body = $response->getBody();
-    $body->write($this->object2JSON($newObject));
-
-    return $response->withStatus(201)
-      ->withHeader("Content-Type", "application/json");
+    return self::getOneResource($this, $newObject, $request, $response, 201);
   }
 
 
