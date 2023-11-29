@@ -19,55 +19,31 @@ class AccessGroupAPI extends AbstractModelAPI {
       return AccessGroup::class;
     }
 
-    public static function getExpandables(): array {
-      return ["userMembers", "agentMembers"];
-    }
-
     public static function getToManyRelationships(): array {
       return [
         'userMembers' => [
-          'intermidiate' => AccessGroupUser::class, 
-          'filterField' => AccessGroupUser::ACCESS_GROUP_ID,
-          'joinField' => User::USER_ID,
+          'key' => AccessGroup::ACCESS_GROUP_ID,
+
+          'junctionTableType' => AccessGroupUser::class, 
+          'junctionTableFilterField' => AccessGroupUser::ACCESS_GROUP_ID,
+          'junctionTableJoinField' => AccessGroupUser::USER_ID,
+
           'relationType' => User::class,
+          'relationKey' => User::USER_ID,
         ],
         'agentMembers' => [
-          'intermidiate' =>AccessGroupAgent::class, 
-          'filterField' => AccessGroupAgent::ACCESS_GROUP_ID,
-          'joinField' => Agent::AGENT_ID,
+          'key' => AccessGroup::ACCESS_GROUP_ID,
+
+          'junctionTableType' =>AccessGroupAgent::class, 
+          'junctionTableFilterField' => AccessGroupAgent::ACCESS_GROUP_ID,
+          'junctionTableJoinField' => AccessGroupAgent::AGENT_ID,
+
           'relationType' => Agent::class,
+          'relationKey' => Agent::AGENT_ID,
         ],
       ];
     }
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof AccessGroup); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'userMembers':
-          return self::getManyToOneRelationViaIntermediate(
-            $objects,
-            AccessGroup::ACCESS_GROUP_ID,
-            Factory::getAccessGroupUserFactory(),
-            AccessGroupUser::ACCESS_GROUP_ID,
-            Factory::getUserFactory(),
-            User::USER_ID
-          );
-        case 'agentMembers':
-          return self::getManyToOneRelationViaIntermediate(
-            $objects,
-            AccessGroup::ACCESS_GROUP_ID,
-            Factory::getAccessGroupAgentFactory(),
-            AccessGroupAgent::ACCESS_GROUP_ID,
-            Factory::getAgentFactory(),
-            Agent::AGENT_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }
 
     protected function createObject(array $data): int {
       $object = AccessGroupUtils::createGroup($data[AccessGroup::GROUP_NAME]);

@@ -355,6 +355,17 @@ $app->group("/api/v2/openapi.json", function (RouteCollectorProxy $group) use ($
                       "content" => [
                         "application/json" => [],     
                     ]];
+        } elseif ($method == 'post') {
+          $paths[$path][$method]["responses"]["204"] = [
+            "description" => "successfully created",
+          ];
+
+                    /* Empty JSON object required */
+                    $paths[$path][$method]["requestBody"] = [
+                      "required" => true,
+                      "content" => [
+                        "application/json" => [],     
+                    ]];
         } else {
           throw new HttpErrorException("Method '$method' not implemented");
         }

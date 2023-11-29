@@ -19,28 +19,19 @@ class SupertaskAPI extends AbstractModelAPI {
       return Supertask::class;
     }
 
-    public static function getExpandables(): array {
-      return [ "pretasks" ];
-    }
+    public static function getToManyRelationships(): array {
+      return [
+        'pretasks' => [
+          'key' => Supertask::SUPERTASK_ID,
+          
+          'junctionTableType' => SupertaskPretask::class,
+          'junctionTableFilterField' => SupertaskPretask::SUPERTASK_ID,
+          'junctionTableJoinField' => SupertaskPretask::PRETASK_ID,
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Supertask); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'pretasks':
-          return self::getManyToOneRelationViaIntermediate(
-            $objects,
-            Supertask::SUPERTASK_ID,
-            Factory::getSupertaskPretaskFactory(),
-            SupertaskPretask::SUPERTASK_ID,
-            Factory::getPretaskFactory(),
-            Pretask::PRETASK_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => Pretask::class,
+          'relationKey' => Pretask::PRETASK_ID,        
+        ],
+      ];
     }    
 
     public function getFormFields(): array {

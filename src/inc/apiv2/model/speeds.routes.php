@@ -26,33 +26,22 @@ class SpeedAPI extends AbstractModelAPI {
       return Speed::class;
     }
 
-    public static function getExpandables(): array {
-      return [ 'agent', 'task' ];
-    }
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Speed); });
+    public static function getToOneRelationships(): array {
+      return [
+        'agent' => [
+          'key' => Speed::AGENT_ID, 
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'agent':
-          return self::getForeignKeyRelation(
-            $objects,
-            Speed::AGENT_ID,
-            Factory::getAgentFactory(),
-            Agent::AGENT_ID
-          );
-        case 'task':
-          return self::getForeignKeyRelation(
-            $objects,
-            Speed::TASK_ID,
-            Factory::getTaskFactory(),
-            Task::TASK_ID
-          );  
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => Agent::class,
+          'relationKey' => Agent::AGENT_ID,
+        ],
+        'task' => [
+          'key' => Speed::TASK_ID, 
+
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_ID,
+        ],
+      ];
     }
 
     protected function createObject(array $data): int {

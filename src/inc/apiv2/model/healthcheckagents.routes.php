@@ -21,33 +21,21 @@ class HealthCheckAgentAPI extends AbstractModelAPI {
       return HealthCheckAgent::class;
     }
 
-    public static function getExpandables(): array {
-      return ['agent', 'healthCheck'];
-    }
+    public static function getToOneRelationships(): array {
+      return [
+        'agent' => [
+          'key' => HealthCheckAgent::AGENT_ID, 
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof HealthCheckAgent); });
+          'relationType' => Agent::class,
+          'relationKey' => Agent::AGENT_ID,
+        ],
+        'healthCheck' => [
+          'key' => HealthCheckAgent::HEALTH_CHECK_ID, 
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'agent':
-          return self::getForeignKeyRelation(
-            $objects,
-            HealthCheckAgent::AGENT_ID,
-            Factory::getAgentFactory(),
-            Agent::AGENT_ID
-          );
-          case 'healthCheck':
-            return self::getForeignKeyRelation(
-              $objects,
-              HealthCheckAgent::HEALTH_CHECK_ID,
-              Factory::getHealthCheckFactory(),
-              HealthCheck::HEALTH_CHECK_ID
-            );  
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => HealthCheck::class,
+          'relationKey' => HealthCheck::HEALTH_CHECK_ID,
+        ],
+      ];
     }
     
     protected function createObject(array $object): int {

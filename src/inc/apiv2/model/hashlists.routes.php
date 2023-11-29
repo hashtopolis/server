@@ -25,59 +25,55 @@ class HashlistAPI extends AbstractModelAPI {
       return Hashlist::class;
     }   
 
-    public static function getExpandables(): array {
-      return ["accessGroup", "hashType", "hashes", "tasks", "hashlists"];
-    }
-     
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Hashlist); });
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'accessGroup':
-          return self::getForeignKeyRelation(
-            $objects,
-            Hashlist::ACCESS_GROUP_ID,
-            Factory::getAccessGroupFactory(),
-            AccessGroup::ACCESS_GROUP_ID
-          );
-        case 'hashType':
-          return self::getForeignKeyRelation(
-            $objects,
-            Hashlist::HASH_TYPE_ID,
-            Factory::getHashTypeFactory(),
-            HashType::HASH_TYPE_ID
-          );        
-        case 'hashes':
-          return self::getManyToOneRelation(
-            $objects,
-            Hashlist::HASHLIST_ID,
-            Factory::getHashFactory(),
-            Hash::HASHLIST_ID
-          );
-        case 'hashlists':
-          /* PARENT_HASHLIST_ID in use in intermediate table */
-          return self::getManyToOneRelationViaIntermediate(
-            $objects, 
-            Hashlist::HASHLIST_ID,
-            Factory::getHashlistHashlistFactory(),
-            HashlistHashlist::PARENT_HASHLIST_ID,
-            Factory::getHashlistFactory(),
-            Hashlist::HASHLIST_ID,
-          );
-        case 'tasks':
-          return self::getManyToOneRelationViaIntermediate(
-            $objects,
-            Hashlist::HASHLIST_ID,
-            Factory::getTaskWrapperFactory(),
-            TaskWrapper::HASHLIST_ID, 
-            Factory::getTaskFactory(),
-            Task::TASK_WRAPPER_ID,
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+    public static function getToOneRelationships(): array {
+      return [
+        'accessGroup' => [
+          'key' => Hashlist::ACCESS_GROUP_ID, 
+
+          'relationType' => AccessGroup::class,
+          'relationKey' => AccessGroup::ACCESS_GROUP_ID,
+        ],
+        'hashType' => [
+          'key' => Hashlist::HASH_TYPE_ID, 
+
+          'relationType' => HashType::class,
+          'relationKey' => HashType::HASH_TYPE_ID,
+        ],
+      ];
+    }
+
+
+    public static function getToManyRelationships(): array {
+      return [
+        'hashes' => [
+          'key' => Hashlist::HASHLIST_ID,
+          
+          'relationType' => Hash::class,
+          'relationKey' => Hash::HASHLIST_ID,        
+        ],
+        /* Special case due to superhashlist setup. PARENT_HASHLIST_ID in use in intermediate table */
+        'hashlists' => [
+          'key' => Hashlist::HASHLIST_ID,
+
+          'junctionTableType' => HashlistHashlist::class,
+          'junctionTableFilterField' => HashlistHashlist::PARENT_HASHLIST_ID,
+          'junctionTableJoinField' => HashlistHashlist::HASHLIST_ID,
+
+          'relationType' => Hashlist::class,
+          'relationKey' => Hashlist::HASHLIST_ID,        
+        ],
+        'tasks' => [
+          'key' => Hashlist::HASHLIST_ID,
+          
+          'junctionTableType' => TaskWrapper::class,
+          'junctionTableFilterField' => TaskWrapper::HASHLIST_ID,
+          'junctionTableJoinField' => TaskWrapper::TASK_WRAPPER_ID,
+
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_WRAPPER_ID,        
+        ],
+      ];
     }
 
     protected function getFilterACL(): array {

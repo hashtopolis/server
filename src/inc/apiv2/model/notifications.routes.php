@@ -17,28 +17,18 @@ class NotificationSettingAPI extends AbstractModelAPI {
       return NotificationSetting::class;
     }
 
-    public static function getExpandables(): array {
-      return ['user'];
-    }
- 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof NotificationSetting); });
+    public static function getToOneRelationships(): array {
+      return [
+        'user' => [
+          'key' => NotificationSetting::USER_ID, 
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'user':
-          return self::getForeignKeyRelation(
-            $objects,
-            NotificationSetting::USER_ID,
-            Factory::getUserFactory(),
-            User::USER_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => User::class,
+          'relationKey' => User::USER_ID,
+        ],
+      ];
     }
-    
+
+   
     public function getFormFields(): array {
       return  ['actionFilter' => ['type' => 'str(256)']];
     }

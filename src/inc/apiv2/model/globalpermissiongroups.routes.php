@@ -14,37 +14,18 @@ class GlobalPermissionGroupAPI extends AbstractModelAPI {
 
     public static function getDBAclass(): string {
       return RightGroup::class;
-    }    
-
-    public static function getExpandables(): array {
-      return ['userMembers'];
     }
+
     public static function getToManyRelationships(): array {
       return [
         'userMembers' => [
-          'filterField' => User::RIGHT_GROUP_ID,
+          'key' => RightGroup::RIGHT_GROUP_ID,
+          
           'relationType' => User::class,
+          'relationKey' => User::RIGHT_GROUP_ID,        
         ],
       ];
-    }
-
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof RightGroup); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'userMembers':
-          return self::getManyToOneRelation(
-            $objects,
-            RightGroup::RIGHT_GROUP_ID,
-            Factory::getUserFactory(),
-            User::RIGHT_GROUP_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }
+    }    
 
     /** 
      * Rewrite permissions DB values to CRUD field values

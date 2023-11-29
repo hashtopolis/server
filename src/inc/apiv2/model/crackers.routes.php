@@ -18,27 +18,17 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       return CrackerBinary::class;
     }
 
-    public static function getExpandables(): array {
-      return ["crackerBinaryType"];
+    public static function getToOneRelationships(): array {
+      return [
+        'crackerBinaryType' => [
+          'key' => CrackerBinary::CRACKER_BINARY_TYPE_ID, 
+
+          'relationType' => CrackerBinaryType::class,
+          'relationKey' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+        ],
+      ];
     }
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof CrackerBinary); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'crackerBinaryType':
-          return self::getForeignKeyRelation(
-            $objects,
-            CrackerBinary::CRACKER_BINARY_TYPE_ID,
-            Factory::getCrackerBinaryTypeFactory(),
-            CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }
 
     protected function createObject(array $data): int {
       CrackerUtils::createBinary(

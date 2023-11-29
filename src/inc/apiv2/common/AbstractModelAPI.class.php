@@ -5,36 +5,86 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Exception\HttpNotFoundException;
-
+use Middlewares\Utils\HttpErrorException;
 
 use DBA\AbstractModelFactory;
-use DBA\AccessGroup;
-use DBA\AccessGroupUser;
-use DBA\AccessGroupUserFactory;
 use DBA\JoinFilter;
 use DBA\Factory;
 use DBA\ContainFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
-use Middlewares\Utils\HttpErrorException;
-use Psr\Container\NotFoundExceptionInterface;
-use Psr\Container\ContainerExceptionInterface;
-use SebastianBergmann\FileIterator\Facade;
-use Slim\Exception\HttpForbiddenException;
-
-use function PHPUnit\Framework\assertCount;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI {
-  abstract static public function getDBAClass(): string;
+  abstract static public function getDBAClass();
   abstract protected function createObject(array $data): int;
   abstract protected function deleteObject(object $object): void;
 
-  static public function getToOneRelationships(): array { return []; }
-  static public function getToManyRelationships(): array { return []; }
+  public static function getToOneRelationships(): array { return []; }
+  public static function getToManyRelationships(): array { return []; }
 
 
-  protected function getFactory(): object {
-    return self::getModelFactory($this->getDBAclass());
+  /** 
+   * Available 'expand' parameters on $object
+   */
+  public static function getExpandables(): array {
+    $expandables = array_merge(array_keys(static::getToOneRelationships()), array_keys(static::getToManyRelationships()));
+    return $expandables;
+  }
+
+  // /** 
+  //  * Fetch objects for  $expand on $objects
+  //  */
+  // protected static function fetchExpandObjects(array $objects, string $expand): mixed {
+  // }
+  
+
+  protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
+    /* Ensure we receive the proper type */
+    $baseModel = static::getDBAClass();
+    array_walk($objects, function($obj) use($baseModel) { assert($obj instanceof $baseModel); });
+    
+    $toOneRelationships = static::getToOneRelationships();
+    if (array_key_exists($expand, $toOneRelationships)) {       
+      $relationFactory = self::getModelFactory($toOneRelationships[$expand]['relationType']);
+      return self::getForeignKeyRelation(
+        $objects,
+        $toOneRelationships[$expand]['key'],
+        $relationFactory,
+        $toOneRelationships[$expand]['relationKey'],
+      );
+    };
+
+    $toManyRelationships = static::getToManyRelationships();
+    if (array_key_exists($expand, $toManyRelationships)) {
+      $relationFactory = self::getModelFactory($toManyRelationships[$expand]['relationType']);
+
+      /* Associative entity */
+      if (array_key_exists('junctionTableType', $toManyRelationships[$expand])) {
+        $junctionTableFactory = self::getModelFactory($toManyRelationships[$expand]['junctionTableType']);
+        return self::getManyToOneRelationViaIntermediate (
+          $objects,
+          $toManyRelationships[$expand]['key'],
+          $junctionTableFactory,
+          $toManyRelationships[$expand]['junctionTableFilterField'],
+          $relationFactory,
+          $toManyRelationships[$expand]['relationKey'],
+        );
+      };
+
+      return self::getManyToOneRelation(
+        $objects,
+        $toManyRelationships[$expand]['key'],
+        $relationFactory,
+        $toManyRelationships[$expand]['relationKey'],
+      );
+    };
+
+    throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
+  }  
+
+
+  final protected static function getFactory(): object {
+    return self::getModelFactory(static::getDBAclass());
   }
 
   /** 
@@ -261,7 +311,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // TODO: Maximum and default should be configurable per server instance
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? 50000;
 
-    $validExpandables = $apiClass->getExpandables();
+    $validExpandables = $apiClass::getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
 
     /* Object filter definition */
@@ -418,87 +468,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     return $this->getAliasedFeatures();
   }
 
-
-  /**
-   * Get single Resource
-   */
-  private static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode=200): Response
-  {
-    $apiClass->preCommon($request);
-
-    $validExpandables = $apiClass->getExpandables();
-    $expands = $apiClass->makeExpandables($request, $validExpandables);
-   
-    $objects = [$object];
-
-    /* Resolve all expandables */
-    $expandResult = [];
-    foreach ($expands as $expand) {
-      // mapping from $objectId -> result objects in
-      $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
-    }
-
-    /* Convert objects to JSON:API */
-    $dataResources = [];
-    $includedResources = [];
-
-    // Convert objects to data resources 
-    foreach ($objects as $object) {
-      // Create object
-      $newObject = $apiClass->obj2Resource($object, $expandResult);
-
-      // For compound document, included resources
-      foreach ($expands as $expand) {
-        if (array_key_exists($object->getId(), $expandResult[$expand])) {
-          $expandResultObject = $expandResult[$expand][$object->getId()];
-          if (is_array($expandResultObject)) {
-            foreach($expandResultObject as $expandObject) {
-              $includedResources[] = $apiClass->obj2Resource($expandObject);
-            }
-          } else {
-            if ($expandResultObject === null) {
-              // to-only relation which is nullable
-              continue;
-            }
-            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
-          }
-        }
-      }
-
-      // Add to result output
-      $dataResources[] = $newObject;
-    }
-    
-    $selfParams = $request->getQueryParams();
-    $linksQuery = urldecode(http_build_query($selfParams));
-    
-    $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' .  $linksQuery : '');
-
-    // Generate JSON:API GET output
-    $ret = [
-      "jsonapi" => [
-        "version" => "1.1",
-        "ext" => [
-          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-        ],
-      ],
-      "links" => [
-        "self" => $linksSelf,
-      ],
-      "data" => $dataResources[0],
-    ];
-
-    if (count($expands) > 0) {
-      $ret['included'] = $includedResources;
-    }
-  
-    $body = $response->getBody();
-    $body->write($apiClass->ret2json($ret));
-
-    return $response->withStatus($statusCode)
-      ->withHeader("Content-Type", "application/vnd.api+json")
-      ->withHeader("Location", $linksSelf);
-  }
 
 
   /**
@@ -825,7 +794,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Update object with provided values
    */
-  public function updateObject(object $object, array $data, array $processed = []): void
+  protected function updateObject(object $object, array $data, array $processed = []): void
   {
     // Apply changes 
     foreach ($data as $key => $value) {
@@ -873,6 +842,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   static public function register($app): void
   {
     $me = get_called_class();
+    $foo = $me::getDBAClass();
     $baseUri = $me::getBaseUri();
     $baseUriOne = $baseUri . '/{id:[0-9]+}';
 

@@ -129,7 +129,7 @@ class HashtopolisConnector(object):
 
         # Application hits a problem
         if r.status_code not in expected_status_code:
-            raise HashtopolisError(
+            raise HashtopolisResponseError(
                 "%s (status_code=%s): %s" % (error_msg, r.status_code, r.text),
                 status_code=r.status_code,
                 exception_details=r_json.get('exception', []),
@@ -481,7 +481,7 @@ class Model(metaclass=ModelBase):
                 continue
 
             resource_identifier_object_data_type = type(resource_identifier_object['data'])
-            if resource_identifier_object_data_type is None:
+            if resource_identifier_object_data_type is type(None):
                 # Empty to-one relationship
                 setattr(self, relationship_name, None)
                 self.__included.append(relationship_name)
@@ -520,8 +520,8 @@ class Model(metaclass=ModelBase):
             if include.endswith('_set'):
                 innitial_name = include[:-4]
                 # Retrieve innitial keys
-                v_innitial = self.__initial[innitial_name]
-                v_innitial_ids = [x['_id'] for x in v_innitial]
+                v_innitial = self.__initial['relationships'][innitial_name]['data']
+                v_innitial_ids = [x['id'] for x in v_innitial]
                 # Retrieve new/current keys
                 v_current = getattr(self, include)
                 v_current_ids = [x.id for x in v_current]

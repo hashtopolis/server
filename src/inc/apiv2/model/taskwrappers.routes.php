@@ -24,34 +24,28 @@ class TaskWrapperAPI extends AbstractModelAPI {
       return TaskWrapper::class;
     }    
 
-    public static function getExpandables(): array {
-      return ['accessGroup', 'tasks'];
+    public static function getToOneRelationships(): array {
+      return [
+        'accessGroup' => [
+          'key' => TaskWrapper::ACCESS_GROUP_ID, 
+
+          'relationType' => AccessGroup::class,
+          'relationKey' => AccessGroup::ACCESS_GROUP_ID,
+        ],
+      ];
     }
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof TaskWrapper); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'accessGroup':
-          return self::getForeignKeyRelation(
-            $objects,
-            TaskWrapper::ACCESS_GROUP_ID,
-            Factory::getAccessGroupFactory(),
-            AccessGroup::ACCESS_GROUP_ID
-          );
-        case 'tasks':
-          return self::getManyToOneRelation(
-            $objects,
-            TaskWrapper::TASK_WRAPPER_ID,
-            Factory::getTaskFactory(),
-            Task::TASK_WRAPPER_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+    public static function getToManyRelationships(): array {
+      return [
+        'tasks' => [
+          'key' => TaskWrapper::TASK_WRAPPER_ID,
+          
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_WRAPPER_ID,        
+        ],
+      ];
     }
+
 
     protected function createObject(array $data): int {
       assert(False, "TaskWrappers cannot be created via API");

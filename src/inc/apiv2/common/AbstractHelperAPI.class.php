@@ -17,8 +17,9 @@ use DBA\TaskWrapper;
 use DBA\User;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
-  abstract public function actionPost(array $data): array|null;
+  abstract public function actionPost(array $data): object|null;
   
+
   /* Chunk API endpoint specific call to abort chunk */
   public function processPost(Request $request, Response $response, array $args): Response 
   {
@@ -35,28 +36,16 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
     $this->validateData($data, $allFeatures);
 
     /* All creation of object */
-    try {
-      // TODO: Validate data is compliant with https://jsonapi.org/format/#document-top-level 'Primary data'
-      $returnData = $this->actionPost($data);
-      $status = ($returnData) ? 200 : 204;
-      $retval['data'] = $returnData;
-    } catch (Error | Exception $e) {
-      // https://jsonapi.org/format/#error-objects
-      $status = 400;
-      $retval['errors'] = [
-        'status' => $e->getCode(),
-        'source' => $e->getFile() . ':' . $e->getLine(),
-        'title' => $e->getMessage(),
-      ];
-    } finally {
-      if ($status == 204) {
-        return $response->withStatus($status);        
-      } else {
-        $response->getBody()->write($this->ret2json($retval));     
-        return $response->withStatus($status)
-        ->withHeader("Content-Type", "application/json");
-      }
-    } 
+    $newObject = $this->actionPost($data);
+
+    /* Successfully executed action of type update/delete */
+    if ($newObject == null) {
+      return $response->withStatus(204);
+    }
+
+    /* Succesful executed action of create */
+    $apiClass = new ($this->container->get('classMapper')->get($newObject::class))($this->container);
+    return self::getOneResource($apiClass, $newObject, $request, $response);
   }  
 
   /**

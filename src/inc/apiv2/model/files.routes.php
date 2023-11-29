@@ -20,26 +20,15 @@ class FileAPI extends AbstractModelAPI {
       return File::class;
     }   
     
-    public static function getExpandables(): array {
-      return ["accessGroup"];
-    }
+    public static function getToOneRelationships(): array {
+      return [
+        'accessGroup' => [
+          'key' => File::ACCESS_GROUP_ID, 
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof File); });
-
-      /* Expand requested section */
-      switch($expand) {
-        case 'accessGroup':
-          return self::getForeignKeyRelation(
-            $objects,
-            File::ACCESS_GROUP_ID,
-            Factory::getAccessGroupFactory(),
-            AccessGroup::ACCESS_GROUP_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
+          'relationType' => AccessGroup::class,
+          'relationKey' => AccessGroup::ACCESS_GROUP_ID,
+        ],
+      ];
     }
 
     public function getFormFields(): array {

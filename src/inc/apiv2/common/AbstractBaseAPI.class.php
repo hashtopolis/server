@@ -1,5 +1,7 @@
 <?php
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+
 
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpForbiddenException;
@@ -7,6 +9,7 @@ use Slim\Routing\RouteContext;
 
 use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
+use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\AgentBinary;
 use DBA\AgentStat;
@@ -42,7 +45,7 @@ use DBA\LikeFilterInsensitive;
 use DBA\LogEntry;
 use DBA\Preprocessor;
 use DBA\QueryFilter;
-
+use DBA\SupertaskPretask;
 use Middlewares\Utils\HttpErrorException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -140,19 +143,6 @@ abstract class AbstractBaseAPI
     return $this->user;
   }
 
-  /** 
-   * Available 'expand' parameters on $object
-   */
-  public static function getExpandables(): array {
-    return [];
-  }
-
-  /** 
-   * Fetch objects for  $expand on $objects
-   */
-  protected static function fetchExpandObjects(array $objects, string $expand): mixed {
-  }
-
 
   protected static function getModelFactory(string $model): object {
     switch($model) {
@@ -162,7 +152,6 @@ abstract class AbstractBaseAPI
         return Factory::getAccessGroupAgentFactory();
       case AccessGroupUser::class:
         return Factory::getAccessGroupUserFactory();
-  
       case Agent::class:
         return Factory::getAgentFactory();
       case AgentBinary::class:
@@ -183,6 +172,10 @@ abstract class AbstractBaseAPI
         return Factory::getCrackerBinaryTypeFactory();
       case File::class:
         return Factory::getFileFactory();
+      case FileTask::class:
+        return Factory::getFileTaskFactory();
+      case FilePretask::class:
+        return Factory::getFilePretaskFactory();
       case Hash::class:
         return Factory::getHashFactory();
       case Hashlist::class:
@@ -211,6 +204,8 @@ abstract class AbstractBaseAPI
         return Factory::getSpeedFactory();
       case Supertask::class:
         return Factory::getSupertaskFactory();
+      case SupertaskPretask::class:
+        return Factory::getSupertaskPretaskFactory();
       case Task::class:
         return Factory::getTaskFactory();
       case TaskWrapper::class:
@@ -301,7 +296,7 @@ abstract class AbstractBaseAPI
       'assignedAgents' => [Agent::PERM_READ],
       'agent' => [Agent::PERM_READ],
       'agents' => [AccessGroup::PERM_READ],
-      'agentstats' => [AgentStat::PERM_READ],
+      'agentStats' => [AgentStat::PERM_READ],
       'accessGroups' => [AccessGroup::PERM_READ], 
       'accessGroup' => [AccessGroup::PERM_READ],
       'chunk' => [Chunk::PERM_READ],
@@ -322,6 +317,7 @@ abstract class AbstractBaseAPI
       'pretaskFiles' => [FilePretask::PERM_READ, File::PERM_READ],
       'files' => [FileTask::PERM_READ, File::PERM_READ],
       'pretasks' => [Supertask::PERM_READ, Pretask::PERM_READ],
+      'user' => [User::PERM_READ],
       'users' => [User::PERM_READ],
       'userMembers' => [User::PERM_READ],
       'agentMembers' => [Agent::PERM_READ],
@@ -549,25 +545,25 @@ abstract class AbstractBaseAPI
           ];
         }
       }
+    }
 
-      /* Generate to-one relationships entries */
-      foreach ($toOneRelationships as $relationshipName => $toOneRelationship) {
-        // Build (optional) compound document resource linkage
-        if (array_key_exists($relationshipName, $expandResult)) {
-          // Empty to-one relationship
-          if (array_key_exists($obj->getId(), $expandResult[$relationshipName]) === false) {
-            $relationships[$relationshipName]["data"] = null;
-            continue;
-          }
-
-          // Fetch to-one-objects
-          $expandObject = $expandResult[$relationshipName][$obj->getId()];
-
-          $relationships[$relationshipName]["data"] = [
-              "type" => $this->getObjectTypeName($expandObject),
-              "id" => $expandObject->getId()
-          ];
+    /* Generate to-one relationships entries */
+    foreach ($toOneRelationships as $relationshipName => $toOneRelationship) {
+      // Build (optional) compound document resource linkage
+      if (array_key_exists($relationshipName, $expandResult)) {
+        // Empty to-one relationship
+        if (array_key_exists($obj->getId(), $expandResult[$relationshipName]) === false) {
+          $relationships[$relationshipName]["data"] = null;
+          continue;
         }
+
+        // Fetch to-one-objects
+        $expandObject = $expandResult[$relationshipName][$obj->getId()];
+
+        $relationships[$relationshipName]["data"] = [
+            "type" => $this->getObjectTypeName($expandObject),
+            "id" => $expandObject->getId()
+        ];
       }
     }
 
@@ -1115,6 +1111,88 @@ abstract class AbstractBaseAPI
     return $retval;
   }
 
+
+   /**
+   * Get single Resource
+   * TODO: Make JSON Return module
+   */
+  protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode=200): Response
+  {
+    $apiClass->preCommon($request);
+
+    $validExpandables = $apiClass->getExpandables();
+    $expands = $apiClass->makeExpandables($request, $validExpandables);
+   
+    $objects = [$object];
+
+    /* Resolve all expandables */
+    $expandResult = [];
+    foreach ($expands as $expand) {
+      // mapping from $objectId -> result objects in
+      $expandResult[$expand] = $apiClass->fetchExpandObjects($objects, $expand);
+    }
+
+    /* Convert objects to JSON:API */
+    $dataResources = [];
+    $includedResources = [];
+
+    // Convert objects to data resources 
+    foreach ($objects as $object) {
+      // Create object
+      $newObject = $apiClass->obj2Resource($object, $expandResult);
+
+      // For compound document, included resources
+      foreach ($expands as $expand) {
+        if (array_key_exists($object->getId(), $expandResult[$expand])) {
+          $expandResultObject = $expandResult[$expand][$object->getId()];
+          if (is_array($expandResultObject)) {
+            foreach($expandResultObject as $expandObject) {
+              $includedResources[] = $apiClass->obj2Resource($expandObject);
+            }
+          } else {
+            if ($expandResultObject === null) {
+              // to-only relation which is nullable
+              continue;
+            }
+            $includedResources[] = $apiClass->obj2Resource($expandResultObject);
+          }
+        }
+      }
+
+      // Add to result output
+      $dataResources[] = $newObject;
+    }
+    
+    $selfParams = $request->getQueryParams();
+    $linksQuery = urldecode(http_build_query($selfParams));
+    
+    $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' .  $linksQuery : '');
+
+    // Generate JSON:API GET output
+    $ret = [
+      "jsonapi" => [
+        "version" => "1.1",
+        "ext" => [
+          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+        ],
+      ],
+      "links" => [
+        "self" => $linksSelf,
+      ],
+      "data" => $dataResources[0],
+    ];
+
+    if (count($expands) > 0) {
+      $ret['included'] = $includedResources;
+    }
+  
+    $body = $response->getBody();
+    $body->write($apiClass->ret2json($ret));
+
+    return $response->withStatus($statusCode)
+      ->withHeader("Content-Type", "application/vnd.api+json")
+      ->withHeader("Location", $linksSelf);
+  }
 
 
   /**

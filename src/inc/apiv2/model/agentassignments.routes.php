@@ -23,34 +23,22 @@ class AgentAssignmentAPI extends AbstractModelAPI {
       return Assignment::class;
     }
 
-    public static function getExpandables(): array {
-      return ["task", "agent"];
-    }
+    public static function getToOneRelationships(): array {
+      return [
+        'agent' => [
+          'key' => Assignment::AGENT_ID, 
 
-    protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
-      /* Ensure we receive the proper type */
-      array_walk($objects, function($obj) { assert($obj instanceof Assignment); });
+          'relationType' => Agent::class,
+          'relationKey' => Agent::AGENT_ID,
+        ],
+        'task' => [
+          'key' => Assignment::TASK_ID, 
 
-      /* Expand requested section */
-      switch($expand) {
-        case 'task':
-          return self::getForeignKeyRelation(
-            $objects,
-            Assignment::TASK_ID,
-            Factory::getTaskFactory(),
-            Task::TASK_ID
-          );
-        case 'agent':
-          return self::getForeignKeyRelation(
-            $objects,
-            Assignment::AGENT_ID,
-            Factory::getAgentFactory(),
-            Agent::AGENT_ID
-          );
-        default:
-          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-      }
-    }
+          'relationType' => Task::class,
+          'relationKey' => Task::TASK_ID,
+        ],
+      ];
+    }    
 
     protected function createObject(array $data): int {
       AgentUtils::assign($data[Assignment::AGENT_ID], $data[Assignment::TASK_ID], $this->getCurrentUser());

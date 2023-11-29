@@ -43,21 +43,21 @@ class FilterTest(BaseTest):
         objs = HashType.objects.filter(hashTypeId__eq=100)
         all_objs = HashType.objects.all()
         self.assertEqual(
-            [x.id for x in all_objs if x.hashTypeId == 100],
+            [x.id for x in all_objs if x.id == 100],
             [x.id for x in objs])
 
     def test_filter__gt(self):
         objs = HashType.objects.filter(hashTypeId__gt=8000)
         all_objs = HashType.objects.all()
         self.assertEqual(
-            [x.id for x in all_objs if x.hashTypeId > 8000],
+            [x.id for x in all_objs if x.id > 8000],
             [x.id for x in objs])
 
     def test_filter__gte(self):
         objs = HashType.objects.filter(hashTypeId__gte=8000)
         all_objs = HashType.objects.all()
         self.assertEqual(
-            [x.id for x in all_objs if x.hashTypeId >= 8000],
+            [x.id for x in all_objs if x.id >= 8000],
             [x.id for x in objs])
 
     def test_filter__icontains(self):
@@ -88,21 +88,21 @@ class FilterTest(BaseTest):
         objs = HashType.objects.filter(hashTypeId__lt=100)
         all_objs = HashType.objects.all()
         self.assertEqual(
-            [x.id for x in all_objs if x.hashTypeId < 100],
+            [x.id for x in all_objs if x.id < 100],
             [x.id for x in objs])
 
     def test_filter__lte(self):
         objs = HashType.objects.filter(hashTypeId__lte=100)
         all_objs = HashType.objects.all()
         self.assertEqual(
-            [x.id for x in all_objs if x.hashTypeId <= 100],
+            [x.id for x in all_objs if x.id <= 100],
             [x.id for x in objs])
 
     def test_filter__ne(self):
         objs = HashType.objects.filter(hashTypeId__ne=100)
         all_objs = HashType.objects.all()
         self.assertEqual(
-            [x.id for x in all_objs if x.hashTypeId != 100],
+            [x.id for x in all_objs if x.id != 100],
             [x.id for x in objs])
 
     def test_filter__startswith(self):
@@ -115,7 +115,7 @@ class FilterTest(BaseTest):
     def test_ordering(self):
         model_objs = self.create_test_objects()
         objs = HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000).order_by('-hashTypeId')
-        sorted_model_objs = sorted(model_objs, key=lambda x: x.hashTypeId, reverse=True)
+        sorted_model_objs = sorted(model_objs, key=lambda x: x.id, reverse=True)
         self.assertEqual(
             [x.id for x in sorted_model_objs],
             [x.id for x in objs])
@@ -126,7 +126,7 @@ class FilterTest(BaseTest):
             HashType.objects.filter(hashTypeId__gte=90000, hashTypeId__lte=91000)
             .order_by('-isSalted', '-hashTypeId')
         )
-        sorted_model_objs = sorted(model_objs, key=lambda x: (x.isSalted, x.hashTypeId), reverse=True)
+        sorted_model_objs = sorted(model_objs, key=lambda x: (x.isSalted, x.id), reverse=True)
         self.assertEqual(
             [x.id for x in sorted_model_objs],
             [x.id for x in objs])

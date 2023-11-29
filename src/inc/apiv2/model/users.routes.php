@@ -22,26 +22,32 @@ class UserAPI extends AbstractModelAPI {
 
     public static function getToOneRelationships(): array {
       return [
-        'globalPermissionGroup' => ['key' => User::RIGHT_GROUP_ID, 'relationType' => RightGroup::class],
+        'globalPermissionGroup' => [
+          'key' => User::RIGHT_GROUP_ID, 
+
+          'relationType' => RightGroup::class,
+          'relationKey' => RightGroup::RIGHT_GROUP_ID,
+        ],
       ];
     }
 
     public static function getToManyRelationships(): array {
       return [
         'accessGroups' => [
-          'intermidiate' => AccessGroupUser::class, 
-          'filterField' => AccessGroupUser::USER_ID,
-          'joinField' => AccessGroupUser::ACCESS_GROUP_ID,
-          'joinFieldRelation' => AccessGroup::ACCESS_GROUP_ID,
+          'key' => User::USER_ID,
+          
+          'junctionTableType' => AccessGroupUser::class,
+          'junctionTableFilterField' => AccessGroupUser::USER_ID,
+          'junctionTableJoinField' => AccessGroupUser::ACCESS_GROUP_ID,
+
           'relationType' => AccessGroup::class,
+          'relationKey' => AccessGroup::ACCESS_GROUP_ID,        
         ],
       ];
     }
 
 
-    public static function getExpandables(): array {
-      return ["accessGroups", "globalPermissionGroup"];
-    }
+
 
     protected static function fetchExpandObjects(array $objects, string $expand): mixed {        
       array_walk($objects, function($obj) { assert($obj instanceof User); });

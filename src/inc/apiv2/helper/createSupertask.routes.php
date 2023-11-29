@@ -34,7 +34,7 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($data): array|null {
+  public function actionPost($data): object|null {
     $supertaskTemplate = self::getSupertask($data["supertaskTemplateId"]);
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     $crackerBinary = self::getCrackerBinary($data["crackerVersionId"]);
@@ -55,7 +55,7 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     $objects = self::getModelFactory(TaskWrapper::class)->filter([Factory::FILTER => $qFs, Factory::ORDER => $oF]);
     assert(count($objects) > 0);
 
-    return $this->object2Array($objects[0]);
+    return $objects[0];
   }
 }  
 
