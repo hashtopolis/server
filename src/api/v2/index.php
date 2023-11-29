@@ -231,11 +231,6 @@ $app->add((new DeflateEncoder())->contentType(
   '/^(image\/svg\\+xml|text\/.*|application\/json|"application\/vnd\.api+json)(;.*)?$/'
 ));
 
-// NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
-$errorMiddleware = $app->addErrorMiddleware(true, true, true);
-$errorHandler = $errorMiddleware->getDefaultErrorHandler();
-$errorHandler->forceContentType('application/json');
-
 $app->add(new CorsHackMiddleware());            // NOTE: The RoutingMiddleware should be added after our CORS middleware so routing is performed first
 $app->addRoutingMiddleware();
 
@@ -278,5 +273,10 @@ require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
+
+// NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
+$errorMiddleware = $app->addErrorMiddleware(true, true, true);
+$errorHandler = $errorMiddleware->getDefaultErrorHandler();
+$errorHandler->forceContentType('application/json');
 
 $app->run();
