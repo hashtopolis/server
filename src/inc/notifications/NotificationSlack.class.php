@@ -36,6 +36,7 @@ class HashtopolisNotificationSlack extends HashtopolisNotification {
       curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, "true");
     }
     
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
