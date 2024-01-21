@@ -69,10 +69,14 @@ switch ($format) {
         
         $output = "";
         $count += sizeof($current);
-        foreach ($current as $entry) {
+        
+		foreach ($current as $entry) {
           $output .= $entry->getHash();
           if (strlen($entry->getSalt()) > 0) {
-            $output .= "\t" . $entry->getSalt();
+            $salts = explode($hashlist->getSaltSeparator(), $entry->getSalt()); // Double salt
+			foreach ($salts as $salt) {
+			  $output .= "\t" . $salt;
+			}
           }
           $output .= $lineDelimiter;
         }

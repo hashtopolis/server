@@ -1323,7 +1323,10 @@ class TaskUtils {
         "crackpos" => $entry->getCrackPos()
       ];
       if (strlen($entry->getSalt()) > 0) {
-        $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+        $salts = explode($hashlist->getSaltSeparator(), $entry->getSalt()); // Double salt
+        foreach ($salts as $salt) {
+          $arr["hash"] .= $hashlist->getSaltSeparator() . $salt;
+        }
       }
       $hashes[] = $arr;
     }
