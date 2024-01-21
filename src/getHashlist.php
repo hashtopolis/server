@@ -70,7 +70,7 @@ switch ($format) {
         $output = "";
         $count += sizeof($current);
         
-		foreach ($current as $entry) {
+        foreach ($current as $entry) {
           $output .= $entry->getHash();
           if (strlen($entry->getSalt()) > 0) {
             $salts = explode($hashlist->getSaltSeparator(), $entry->getSalt()); // Double salt
