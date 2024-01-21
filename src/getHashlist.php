@@ -74,9 +74,9 @@ switch ($format) {
           $output .= $entry->getHash();
           if (strlen($entry->getSalt()) > 0) {
             $salts = explode($hashlist->getSaltSeparator(), $entry->getSalt()); // Double salt
-			foreach ($salts as $salt) {
-			  $output .= "\t" . $salt;
-			}
+            foreach ($salts as $salt) {
+              $output .= "\t" . $salt;
+            }
           }
           $output .= $lineDelimiter;
         }
