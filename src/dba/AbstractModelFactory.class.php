@@ -114,7 +114,7 @@ abstract class AbstractModelFactory {
     $stmt = $dbh->prepare($query);
     $stmt->execute($vals);
     
-    $id = $dbh->lastInsertId();
+    $id = intval($dbh->lastInsertId());
     if ($id != 0) {
       $model->setId($id);
       return $model;
