@@ -1,4 +1,4 @@
-from hashtopolis import Hashlist, Helper
+from hashtopolis import Hashlist, Helper, File
 from utils import BaseTest
 
 
@@ -37,6 +37,16 @@ class HashlistTest(BaseTest):
     def test_create_alternative_hashtype(self):
         model_obj = self.create_test_object(file_id='003')
         self._test_create(model_obj)
+
+    def test_export_cracked_hashes(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        helper = Helper()
+        file = helper.export_cracked_hashes(model_obj)
+
+        obj = File.objects.get(fileId=file.id)
+        self.assertEqual(int(file.id), obj.id)
+        self.assertIn('Pre-cracked_', obj.filename)
 
     def test_helper_create_superhashlist(self):
         hashlists = [self.create_test_object() for _ in range(2)]

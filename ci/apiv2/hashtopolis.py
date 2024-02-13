@@ -683,3 +683,10 @@ class Helper(HashtopolisConnector):
             'taskId': task.id,
         }
         return self._helper_request("purgeTask", payload)
+
+    def export_cracked_hashes(self, hashlist):
+        payload = {
+            'hashlistId': hashlist.id,
+        }
+        response = self._helper_request("exportCrackedHashes", payload)
+        return File(**response['data'])
