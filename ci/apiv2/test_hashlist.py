@@ -48,6 +48,30 @@ class HashlistTest(BaseTest):
         self.assertEqual(int(file.id), obj.id)
         self.assertIn('Pre-cracked_', obj.filename)
 
+    def test_export_left_hashes(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        helper = Helper()
+        file = helper.export_left_hashes(model_obj)
+
+        obj = File.objects.get(fileId=file.id)
+        self.assertEqual(int(file.id), obj.id)
+        self.assertIn('Leftlist_', obj.filename)
+
+    def test_export_wordlist(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
+        helper = Helper()
+        helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        file = helper.export_wordlist(model_obj)
+
+        obj = File.objects.get(fileId=file.id)
+        self.assertEqual(int(file.id), obj.id)
+        self.assertIn('Wordlist_', obj.filename)
+
     def test_import_cracked_hashes(self):
         model_obj = self.create_test_object(file_id='001')
 

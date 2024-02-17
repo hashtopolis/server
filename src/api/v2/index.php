@@ -270,6 +270,8 @@ require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/exportLeftHashes.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";

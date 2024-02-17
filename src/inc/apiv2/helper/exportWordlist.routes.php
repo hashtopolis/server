@@ -5,9 +5,9 @@ use DBA\Hashlist;
 
 require_once(dirname(__FILE__) . "/../common/AbstractHelperAPI.class.php");
 
-class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
+class ExportWordlistHelperAPI extends AbstractHelperAPI {
   public static function getBaseUri(): string {
-    return "/api/v2/helper/exportCrackedHashes";
+    return "/api/v2/helper/exportWordlist";
   }
 
   public static function getAvailableMethods(): array {
@@ -29,9 +29,10 @@ class ExportCrackedHashesHelperAPI extends AbstractHelperAPI {
   public function actionPost($data): array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
-    $file = HashlistUtils::export($hashlist->getId(), $this->getCurrentUser());
-    return $this->object2Array($file);
+    $arr = HashlistUtils::createWordlists($hashlist->getId(), $this->getCurrentUser());
+    
+    return $this->object2Array($arr[2]);
   }
 }
 
-ExportCrackedHashesHelperAPI::register($app);
+ExportWordlistHelperAPI::register($app);
