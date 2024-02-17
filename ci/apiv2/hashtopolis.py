@@ -690,3 +690,12 @@ class Helper(HashtopolisConnector):
         }
         response = self._helper_request("exportCrackedHashes", payload)
         return File(**response['data'])
+
+    def import_cracked_hashes(self, hashlist, source_data, separator):
+        payload = {
+            'hashlistId': hashlist.id,
+            'sourceData': source_data,
+            'separator': separator,
+        }
+        response = self._helper_request("importCrackedHashes", payload)
+        return response['data']

@@ -48,6 +48,64 @@ class HashlistTest(BaseTest):
         self.assertEqual(int(file.id), obj.id)
         self.assertIn('Pre-cracked_', obj.filename)
 
+    def test_import_cracked_hashes(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
+        helper = Helper()
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['newCracked'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 1)
+
+    def test_import_cracked_hashes_invalid(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5__test123"
+
+        helper = Helper()
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['invalid'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 0)
+
+    def test_import_cracked_hashes_notfound(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "ffffffffffffffffffffffffffffffff:test123"
+
+        helper = Helper()
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['notFound'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 0)
+
+    def test_import_cracked_hashes_already_cracked(self):
+        model_obj = self.create_test_object(file_id='001')
+
+        cracked = "cc03e747a6afbbcbf8be7668acfebee5:test123"
+
+        helper = Helper()
+        helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        result = helper.import_cracked_hashes(model_obj, cracked, ':')
+
+        self.assertEqual(result['totalLines'], 1)
+        self.assertEqual(result['alreadyCracked'], 1)
+
+        obj = Hashlist.objects.get(hashlistId=model_obj.id)
+        self.assertEqual(obj.cracked, 1)
+
     def test_helper_create_superhashlist(self):
         hashlists = [self.create_test_object() for _ in range(2)]
 
