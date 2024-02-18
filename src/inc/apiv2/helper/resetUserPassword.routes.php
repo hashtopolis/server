@@ -32,7 +32,7 @@ class ResetUserPasswordHelperAPI extends AbstractHelperAPI {
   public function actionPost($data): array|null {
     UserUtils::userForgotPassword($data[User::USERNAME], $data[User::EMAIL]);
     
-    return [];
+    return ["reset" => "success"];
   }
 }
 
