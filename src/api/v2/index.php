@@ -275,6 +275,7 @@ require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
 
