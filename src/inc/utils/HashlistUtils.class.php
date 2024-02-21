@@ -212,8 +212,9 @@ class HashlistUtils {
     fclose($wordlistFile);
     
     //add file to files list
-    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), null);
-    Factory::getFileFactory()->save($file);
+    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), $wordCount);
+    $file = Factory::getFileFactory()->save($file);
+    # TODO: returning wordCount and wordlistName are not really required here as the name and the count are already given in the file object
     return [$wordCount, $wordlistName, $file];
   }
   

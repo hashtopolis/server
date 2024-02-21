@@ -683,3 +683,33 @@ class Helper(HashtopolisConnector):
             'taskId': task.id,
         }
         return self._helper_request("purgeTask", payload)
+
+    def export_cracked_hashes(self, hashlist):
+        payload = {
+            'hashlistId': hashlist.id,
+        }
+        response = self._helper_request("exportCrackedHashes", payload)
+        return File(**response['data'])
+
+    def export_left_hashes(self, hashlist):
+        payload = {
+            'hashlistId': hashlist.id,
+        }
+        response = self._helper_request("exportLeftHashes", payload)
+        return File(**response['data'])
+
+    def export_wordlist(self, hashlist):
+        payload = {
+            'hashlistId': hashlist.id,
+        }
+        response = self._helper_request("exportWordlist", payload)
+        return File(**response['data'])
+
+    def import_cracked_hashes(self, hashlist, source_data, separator):
+        payload = {
+            'hashlistId': hashlist.id,
+            'sourceData': source_data,
+            'separator': separator,
+        }
+        response = self._helper_request("importCrackedHashes", payload)
+        return response['data']
