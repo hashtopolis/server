@@ -34,7 +34,7 @@ class AgentTest(BaseTest):
         agent_obj = self.create_test_object()
 
         task_test = TaskTest()
-        task_obj = task_test.create_test_object()
+        task_obj = task_test.create_test_object(delete=True)
 
         helper = Helper()
 
