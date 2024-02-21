@@ -45,3 +45,5 @@ class AgentTest(BaseTest):
         result = helper.unassign_agent(agent=agent_obj)
 
         self.assertEqual(result['unassign'], 'success')
+
+        task_test.tearDown()
