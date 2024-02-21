@@ -713,3 +713,18 @@ class Helper(HashtopolisConnector):
         }
         response = self._helper_request("importCrackedHashes", payload)
         return response['data']
+
+    def unassign_agent(self, agent):
+        payload = {
+            'agentId': agent.id,
+        }
+        response = self._helper_request("unassignAgent", payload)
+        return response['data']
+
+    def assign_agent(self, agent, task):
+        payload = {
+            'agentId': agent.id,
+            'taskId': task.id,
+        }
+        response = self._helper_request("assignAgent", payload)
+        return response['data']
