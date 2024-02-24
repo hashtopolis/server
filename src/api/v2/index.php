@@ -267,6 +267,7 @@ require __DIR__ . "/../../inc/apiv2/model/users.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/vouchers.routes.php";
 
 require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/assignAgent.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";
@@ -278,5 +279,6 @@ require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
 
 $app->run();
