@@ -1,4 +1,5 @@
-from hashtopolis import Agent
+from test_task import TaskTest
+from hashtopolis import Agent, Helper
 from hashtopolis import HashtopolisError
 
 from utils import BaseTest
@@ -28,3 +29,21 @@ class AgentTest(BaseTest):
         model_obj = self.create_test_object()
         expandables = ['accessGroups', 'agentstats']
         self._test_expandables(model_obj, expandables)
+
+    def test_assign_unassign_agent(self):
+        agent_obj = self.create_test_object()
+
+        task_test = TaskTest()
+        task_obj = task_test.create_test_object(delete=True)
+
+        helper = Helper()
+
+        result = helper.assign_agent(agent=agent_obj, task=task_obj)
+
+        self.assertEqual(result['assign'], 'success')
+
+        result = helper.unassign_agent(agent=agent_obj)
+
+        self.assertEqual(result['unassign'], 'success')
+
+        task_test.tearDown()
