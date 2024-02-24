@@ -714,6 +714,14 @@ class Helper(HashtopolisConnector):
         response = self._helper_request("importCrackedHashes", payload)
         return response['data']
 
+
+    def recount_file_lines(self, file):
+        payload = {
+            'fileId': file.id,
+        }
+        response = self._helper_request("recountFileLines", payload)
+        return File(**response['data'])
+
     def unassign_agent(self, agent):
         payload = {
             'agentId': agent.id,
