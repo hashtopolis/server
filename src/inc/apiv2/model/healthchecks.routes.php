@@ -1,8 +1,9 @@
 <?php
 use DBA\Factory;
-use DBA\QueryFilter;
 
+use DBA\CrackerBinary;
 use DBA\HealthCheck;
+use DBA\HealthCheckAgent;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -20,17 +21,30 @@ class HealthCheckAPI extends AbstractModelAPI {
       return ['crackerBinary', 'healthCheckAgents'];
     }
  
-    protected function doExpand($object, string $expand): mixed {
-      assert($object instanceof HealthCheck);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof HealthCheck); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'crackerBinary':
-          $obj = Factory::getCrackerBinaryFactory()->get($object->getCrackerBinaryId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            HealthCheck::CRACKER_BINARY_ID,
+            Factory::getCrackerBinaryFactory(),
+            CrackerBinary::CRACKER_BINARY_ID
+          );
         case 'healthCheckAgents':
-          $qF = new QueryFilter(HealthCheck::HEALTH_CHECK_ID, $object->getId(), "=");
-          return $this->filterQuery(Factory::getHealthCheckAgentFactory(), $qF);
+          return $this->getManyToOneRelation(
+            $objects,
+            HealthCheck::HEALTH_CHECK_ID,
+            Factory::getHealthCheckAgentFactory(),
+            HealthCheckAgent::HEALTH_CHECK_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
     
     protected function createObject(array $data): int {
       $obj = HealthUtils::createHealthCheck(

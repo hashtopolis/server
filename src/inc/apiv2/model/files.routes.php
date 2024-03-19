@@ -1,4 +1,6 @@
 <?php
+
+use DBA\AccessGroup;
 use DBA\Factory;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
@@ -22,12 +24,21 @@ class FileAPI extends AbstractModelAPI {
       return ["accessGroup"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof File);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof File); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'accessGroup':
-          $obj = Factory::getAccessGroupFactory()->get($object->getAccessGroupId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            File::ACCESS_GROUP_ID,
+            Factory::getAccessGroupFactory(),
+            AccessGroup::ACCESS_GROUP_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
     }
 

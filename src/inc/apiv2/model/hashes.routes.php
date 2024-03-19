@@ -1,7 +1,9 @@
 <?php
 use DBA\Factory;
 
+use DBA\Chunk;
 use DBA\Hash;
+use DBA\Hashlist;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -23,22 +25,30 @@ class HashAPI extends AbstractModelAPI {
       return ["hashlist", "chunk"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Hash);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Hash); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'hashlist':
-          $obj = Factory::getHashListFactory()->get($object->getHashlistId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Hash::HASHLIST_ID,
+            Factory::getHashListFactory(),
+            HashList::HASHLIST_ID
+          );
         case 'chunk':
-          if (is_null($object->getChunkId())) {
-            /* Chunk expansions are optional, hence the chunk object could be empty */
-            return [];
-          } else {
-            $obj = Factory::getChunkFactory()->get($object->getChunkId());
-            return $this->obj2Array($obj);
-          }
+          return $this->getForeignKeyRelation(
+            $objects,
+            Hash::CHUNK_ID,
+            Factory::getChunkFactory(),
+            Chunk::CHUNK_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     protected function createObject(array $data): int {
       /* Dummy code to implement abstract functions */

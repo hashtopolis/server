@@ -1,7 +1,9 @@
 <?php
 use DBA\Factory;
 
+use DBA\Agent;
 use DBA\Speed;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -28,17 +30,30 @@ class SpeedAPI extends AbstractModelAPI {
       return [ 'agent', 'task' ];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Speed);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Speed); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'agent':
-          $obj = Factory::getAgentFactory()->get($object->getAgentId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Speed::AGENT_ID,
+            Factory::getAgentFactory(),
+            Agent::AGENT_ID
+          );
         case 'task':
-          $obj = Factory::getTaskFactory()->get($object->getTaskId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            Speed::TASK_ID,
+            Factory::getTaskFactory(),
+            Task::TASK_ID
+          );  
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     protected function createObject(array $data): int {
       assert(False, "Speeds cannot be created via API");

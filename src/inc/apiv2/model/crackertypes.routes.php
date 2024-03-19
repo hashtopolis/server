@@ -22,14 +22,23 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
       return ["crackerVersions"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof CrackerBinaryType);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof CrackerBinaryType); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'crackerVersions':
-          $qF = new QueryFilter(CrackerBinary::CRACKER_BINARY_TYPE_ID, $object->getId(), "=");
-          return $this->filterQuery(Factory::getCrackerBinaryFactory(), $qF);
+          return $this->getManyToOneRelation(
+            $objects,
+            CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+            Factory::getCrackerBinaryFactory(),
+            CrackerBinary::CRACKER_BINARY_TYPE_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
   
     protected function createObject(array $data): int {
       CrackerUtils::createBinaryType($data[CrackerBinaryType::TYPE_NAME]);

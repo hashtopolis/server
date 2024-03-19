@@ -1,7 +1,5 @@
 <?php
 use DBA\Factory;
-use DBA\JoinFilter;
-use DBA\QueryFilter;
 
 use DBA\AccessGroup;
 use DBA\AccessGroupAgent;
@@ -25,19 +23,34 @@ class AccessGroupAPI extends AbstractModelAPI {
       return ["userMembers", "agentMembers"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof AccessGroup);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof AccessGroup); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'userMembers':
-          $qF = new QueryFilter(AccessGroupUser::ACCESS_GROUP_ID, $object->getId(), "=", Factory::getAccessGroupUserFactory());
-          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), User::USER_ID, AccessGroupUser::USER_ID);
-          return $this->joinQuery(Factory::getUserFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            AccessGroup::ACCESS_GROUP_ID,
+            Factory::getAccessGroupUserFactory(),
+            AccessGroupUser::ACCESS_GROUP_ID,
+            Factory::getUserFactory(),
+            User::USER_ID
+          );
         case 'agentMembers':
-          $qF = new QueryFilter(AccessGroupAgent::ACCESS_GROUP_ID, $object->getId(), "=", Factory::getAccessGroupAgentFactory());
-          $jF = new JoinFilter(Factory::getAccessGroupAgentFactory(), Agent::AGENT_ID, AccessGroupAgent::AGENT_ID);
-          return $this->joinQuery(Factory::getAgentFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            AccessGroup::ACCESS_GROUP_ID,
+            Factory::getAccessGroupAgentFactory(),
+            AccessGroupAgent::ACCESS_GROUP_ID,
+            Factory::getAgentFactory(),
+            Agent::AGENT_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     protected function createObject(array $data): int {
       $object = AccessGroupUtils::createGroup($data[AccessGroup::GROUP_NAME]);

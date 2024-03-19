@@ -1,5 +1,4 @@
 <?php
-use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Exception\HttpNotFoundException;
@@ -7,8 +6,6 @@ use Slim\Exception\HttpForbiddenException;
 use Slim\Routing\RouteContext;
 
 use DBA\AccessGroup;
-use DBA\AccessGroupAgent;
-use DBA\AccessGroupUser;
 use DBA\Agent;
 use DBA\AgentBinary;
 use DBA\AgentStat;
@@ -33,17 +30,15 @@ use DBA\RegVoucher;
 use DBA\RightGroup;
 use DBA\Speed;
 use DBA\Supertask;
-use DBA\SupertaskPretask;
 use DBA\Task;
 use DBA\TaskWrapper;
 use DBA\User;
 
 use DBA\Factory;
-use DBA\JoinFilter;
+use DBA\OrderFilter;
 use DBA\LikeFilter;
 use DBA\LikeFilterInsensitive;
 use DBA\LogEntry;
-use DBA\OrderFilter;
 use DBA\Preprocessor;
 use DBA\QueryFilter;
 
@@ -108,7 +103,7 @@ abstract class AbstractBaseAPI
     $features = [];
     foreach($this->getFormFields() as $key => $feature) {
       /* Innitate default values */
-      $features[$key] = $feature + ['null' => False, 'protected' => False, 'private' => False, 'choices' => "unset"];
+      $features[$key] = $feature + ['null' => False, 'protected' => False, 'private' => False, 'choices' => "unset", 'pk' => False];
       if (!array_key_exists('alias', $feature)) {
         $features[$key]['alias'] = $key;
       }
@@ -147,12 +142,12 @@ abstract class AbstractBaseAPI
     return [];
   }
 
-
   /** 
-   * Process $expand on $object
+   * Fetch objects for  $expand on $objects
    */
-  protected function doExpand(object $object, string $expand): mixed {
+  protected function fetchExpandObjects(array $objects, string $expand): mixed {
   }
+
 
   protected static function getModelFactory(string $model): object {
     switch($model) {
@@ -490,34 +485,43 @@ abstract class AbstractBaseAPI
     return $ret;
   }
 
+
+  protected function applyExpansions(object $object, array $expands, array $expandResult): array {
+    $newObject = $this->obj2Array($object);
+    foreach ($expands as $expand) {
+      if (array_key_exists($object->getId(), $expandResult[$expand]) == false) {
+        $newObject[$expand] = [];
+        continue;
+      }
+
+      $expandObject = $expandResult[$expand][$object->getId()];      
+      if (is_array($expandObject)) {
+        $newObject[$expand] = array_map(function($object) { return $this->obj2Array($object); }, $expandObject);
+      } else {
+        $newObject[$expand] = $this->obj2Array($expandObject);
+      }
+    }
+
+    /* Ensure sorted, for easy debugging of fields */
+    ksort($newObject);
+
+    return $newObject;
+  }
+
+
   
   /** 
    * Expands object items
    */
   protected function object2Array(object $object, array $expands = []): array
   {
-    $item = $this->obj2Array($object);
-    
+    $expandResult = [];
     foreach ($expands as $expand) {
       $apiClass = $this->container->get('classMapper')->get(get_class($object));
-      $item[$expand] = $apiClass::doExpand($object, $expand);     
-      if (is_null($item[$expand])) {
-        throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
+      $expandResult[$expand] = $apiClass::fetchExpandObjects([$object], $expand);
       }
-    };
 
-    $expandLeft = array_diff($expands, array_keys($item));
-    if (sizeof($expandLeft) > 0) {
-      /* This should never happen, since valid parameter checking is done pre-flight 
-       * in makeExpandables and assignment should be done for every expansion 
-       */
-      throw new BadFunctionCallException("Internal error: Expansion(s) '" .  join(',', $expandLeft) . "' not implemented!");
-    }
-
-    /* Ensure sorted, for easy debugging of fields */
-    ksort($item);
-
-    return $item;
+    return $this->applyExpansions($object, $expands, $expandResult);
   }
 
 
@@ -626,7 +630,7 @@ abstract class AbstractBaseAPI
   /**
    * Validate incoming parameter keys
    */
-  protected function validateParameters($data, $allFeatures): void {
+  protected function validateParameters(array $data, array $allFeatures): void {
     // Features which MAY be present
     $validFeatures = [];
     // Features which MUST be present
@@ -703,7 +707,7 @@ abstract class AbstractBaseAPI
   /**
    * Find primary key for DBA object
    */
-  private function getPrimaryKey(): string
+  protected function getPrimaryKey(): string
   {
     $features = $this->getFeatures();
     # Word-around required since getPrimaryKey is not static in dba/models/*.php

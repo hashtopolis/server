@@ -1,4 +1,4 @@
-from hashtopolis import Task
+from hashtopolis import Task, TaskWrapper
 from utils import BaseTest
 
 
@@ -75,3 +75,27 @@ class TaskTest(BaseTest):
         task = self.create_task(hashlist, extra_payload=extra_payload)
         obj = Task.objects.get(pk=task.id, expand='files')
         self.assertListEqual([x.id for x in files], [x.id for x in obj.files_set])
+
+    def test_task_update_priority(self):
+        task = self.create_test_object()
+        obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertEqual(task.priority, obj.priority)
+
+        new_priority = task.priority + 1234
+        task.priority = new_priority
+        task.save()
+
+        obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertEqual(new_priority, obj.priority)
+    
+    def test_task_update_maxagent(self):
+        task = self.create_test_object()
+        obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertEqual(task.maxAgents, obj.maxAgents)
+
+        new_maxagent = task.maxAgents + 1234
+        task.maxAgents = new_maxagent
+        task.save()
+
+        obj = TaskWrapper.objects.get(pk=task.taskWrapperId)
+        self.assertEqual(new_maxagent, obj.maxAgents)

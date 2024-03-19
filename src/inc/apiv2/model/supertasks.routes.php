@@ -1,6 +1,5 @@
 <?php
 use DBA\Factory;
-use DBA\JoinFilter;
 use DBA\QueryFilter;
 use DBA\OrderFilter;
 
@@ -24,15 +23,25 @@ class SupertaskAPI extends AbstractModelAPI {
       return [ "pretasks" ];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof Supertask);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof Supertask); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'pretasks':
-          $qF = new QueryFilter(SupertaskPretask::SUPERTASK_ID, $object->getId(), "=", Factory::getSupertaskPretaskFactory());
-          $jF = new JoinFilter(Factory::getSupertaskPretaskFactory(), Pretask::PRETASK_ID, SupertaskPretask::PRETASK_ID);
-          return $this->joinQuery(Factory::getPretaskFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            Supertask::SUPERTASK_ID,
+            Factory::getSupertaskPretaskFactory(),
+            SupertaskPretask::SUPERTASK_ID,
+            Factory::getPretaskFactory(),
+            Pretask::PRETASK_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }    
 
     public function getFormFields(): array {
       return  [

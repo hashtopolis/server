@@ -1,11 +1,11 @@
 <?php
 use DBA\Factory;
-use DBA\JoinFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 
 use DBA\AccessGroup;
 use DBA\AccessGroupUser;
+use DBA\RightGroup;
 use DBA\User;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
@@ -24,16 +24,30 @@ class UserAPI extends AbstractModelAPI {
       return ["accessGroups", "globalPermissionGroup"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof User);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof User); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'accessGroups':
-          $qF = new QueryFilter(AccessGroupUser::USER_ID, $object->getId(), "=", Factory::getAccessGroupUserFactory());
-          $jF = new JoinFilter(Factory::getAccessGroupUserFactory(), AccessGroup::ACCESS_GROUP_ID, AccessGroupUser::ACCESS_GROUP_ID);
-          return $this->joinQuery(Factory::getAccessGroupFactory(), $qF, $jF);
-      case 'globalPermissionGroup':
-          $obj = Factory::getRightGroupFactory()->get($object->getRightGroupId());
-          return $this->obj2Array($obj);   
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            User::USER_ID,
+            Factory::getAccessGroupUserFactory(),
+            AccessGroupUser::USER_ID,
+            Factory::getAccessGroupFactory(),
+            AccessGroup::ACCESS_GROUP_ID
+          );
+        case 'globalPermissionGroup':
+          return $this->getForeignKeyRelation(
+            $objects,
+            User::RIGHT_GROUP_ID,
+            Factory::getRightGroupFactory(),
+            RightGroup::RIGHT_GROUP_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
     }  
 

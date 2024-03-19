@@ -24,15 +24,25 @@ class PreTaskAPI extends AbstractModelAPI {
       return ["pretaskFiles"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof PreTask);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof PreTask); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'pretaskFiles':
-          $qF = new QueryFilter(FilePretask::PRETASK_ID, $object->getId(), "=", Factory::getFilePretaskFactory());
-          $jF = new JoinFilter(Factory::getFilePretaskFactory(), File::FILE_ID, FilePretask::FILE_ID);
-          return $this->joinQuery(Factory::getFileFactory(), $qF, $jF);
+          return $this->getManyToOneRelationViaIntermediate(
+            $objects,
+            Pretask::PRETASK_ID,
+            Factory::getFilePretaskFactory(),
+            FilePretask::PRETASK_ID,
+            Factory::getFileFactory(),
+            File::FILE_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     public function getFormFields(): array {
     // TODO Form declarations in more generic class to allow auto-generated OpenAPI specifications

@@ -4,6 +4,7 @@ use DBA\QueryFilter;
 use DBA\OrderFilter;
 
 use DBA\CrackerBinary;
+use DBA\CrackerBinaryType;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -21,14 +22,23 @@ class CrackerBinaryAPI extends AbstractModelAPI {
       return ["crackerBinaryType"];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof CrackerBinary);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof CrackerBinary); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'crackerBinaryType':
-          $obj = Factory::getCrackerBinaryTypeFactory()->get($object->getCrackerBinaryTypeId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            CrackerBinary::CRACKER_BINARY_TYPE_ID,
+            Factory::getCrackerBinaryTypeFactory(),
+            CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
-    }  
+    }
 
     protected function createObject(array $data): int {
       CrackerUtils::createBinary(

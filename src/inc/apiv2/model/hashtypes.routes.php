@@ -1,9 +1,4 @@
 <?php
-use DBA\Factory;
-use DBA\Hash;
-use DBA\QueryFilter;
-use DBA\OrderFilter;
-
 use DBA\HashType;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");

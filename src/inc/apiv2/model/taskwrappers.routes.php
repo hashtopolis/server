@@ -1,4 +1,6 @@
 <?php
+
+use DBA\AccessGroup;
 use DBA\Factory;
 use DBA\JoinFilter;
 use DBA\QueryFilter;
@@ -26,16 +28,28 @@ class TaskWrappersAPI extends AbstractModelAPI {
       return ['accessGroup', 'tasks'];
     }
 
-    protected function doExpand(object $object, string $expand): mixed {
-      assert($object instanceof TaskWrapper);
+    protected function fetchExpandObjects(array $objects, string $expand): mixed {     
+      /* Ensure we receive the proper type */
+      array_walk($objects, function($obj) { assert($obj instanceof TaskWrapper); });
+
+      /* Expand requested section */
       switch($expand) {
         case 'accessGroup':
-          $obj = Factory::getAccessGroupFactory()->get($object->getAccessGroupId());
-          return $this->obj2Array($obj);
+          return $this->getForeignKeyRelation(
+            $objects,
+            TaskWrapper::ACCESS_GROUP_ID,
+            Factory::getAccessGroupFactory(),
+            AccessGroup::ACCESS_GROUP_ID
+          );
         case 'tasks':
-          $qF = new QueryFilter(TaskWrapper::TASK_WRAPPER_ID, $object->getId(), "=", Factory::getTaskWrapperFactory());
-          $jF = new JoinFilter(Factory::getTaskWrapperFactory(), Task::TASK_WRAPPER_ID, TaskWrapper::TASK_WRAPPER_ID);
-          return $this->joinQuery(Factory::getTaskFactory(), $qF, $jF);    
+          return $this->getManyToOneRelation(
+            $objects,
+            TaskWrapper::TASK_WRAPPER_ID,
+            Factory::getTaskFactory(),
+            Task::TASK_WRAPPER_ID
+          );
+        default:
+          throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
       }
     }
 

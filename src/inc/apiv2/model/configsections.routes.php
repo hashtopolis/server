@@ -1,6 +1,4 @@
 <?php
-use DBA\Factory;
-
 use DBA\ConfigSection;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");

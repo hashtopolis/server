@@ -1,7 +1,5 @@
 <?php
 use DBA\Factory;
-use DBA\QueryFilter;
-use DBA\OrderFilter;
 
 use DBA\AgentStat;
 

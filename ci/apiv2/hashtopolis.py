@@ -683,3 +683,56 @@ class Helper(HashtopolisConnector):
             'taskId': task.id,
         }
         return self._helper_request("purgeTask", payload)
+
+    def export_cracked_hashes(self, hashlist):
+        payload = {
+            'hashlistId': hashlist.id,
+        }
+        response = self._helper_request("exportCrackedHashes", payload)
+        return File(**response['data'])
+
+    def export_left_hashes(self, hashlist):
+        payload = {
+            'hashlistId': hashlist.id,
+        }
+        response = self._helper_request("exportLeftHashes", payload)
+        return File(**response['data'])
+
+    def export_wordlist(self, hashlist):
+        payload = {
+            'hashlistId': hashlist.id,
+        }
+        response = self._helper_request("exportWordlist", payload)
+        return File(**response['data'])
+
+    def import_cracked_hashes(self, hashlist, source_data, separator):
+        payload = {
+            'hashlistId': hashlist.id,
+            'sourceData': source_data,
+            'separator': separator,
+        }
+        response = self._helper_request("importCrackedHashes", payload)
+        return response['data']
+
+
+    def recount_file_lines(self, file):
+        payload = {
+            'fileId': file.id,
+        }
+        response = self._helper_request("recountFileLines", payload)
+        return File(**response['data'])
+
+    def unassign_agent(self, agent):
+        payload = {
+            'agentId': agent.id,
+        }
+        response = self._helper_request("unassignAgent", payload)
+        return response['data']
+
+    def assign_agent(self, agent, task):
+        payload = {
+            'agentId': agent.id,
+            'taskId': task.id,
+        }
+        response = self._helper_request("assignAgent", payload)
+        return response['data']
