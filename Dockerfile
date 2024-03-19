@@ -25,6 +25,15 @@ ENV HASHTOPOLIS_LOG_PATH=${HASHTOPOLIS_PATH}/log
 ENV HASHTOPOLIS_CONFIG_PATH=${HASHTOPOLIS_PATH}/config
 ENV HASHTOPOLIS_BINARIES_PATH=${HASHTOPOLIS_PATH}/binaries
 
+ENV HASHTOPOLIS_SSMTP_ENABLE=0
+ENV HASHTOPOLIS_SSMTP_ROOT=hashtopolis@example.org
+ENV HASHTOPOLIS_SSMTP_MAILHUB=example.org:465
+ENV HASHTOPOLIS_SSMTP_HOSTNAME=hashtopolis.example.org
+ENV HASHTOPOLIS_SSMTP_USE_TLS=Yes
+ENV HASHTOPOLIS_SSMTP_USE_STARTTLS=No
+ENV HASHTOPOLIS_SSMTP_AUTH_USER=xxxx
+ENV HASHTOPOLIS_SSMTP_AUTH_PASS=xxxx
+
 # Add support for TLS inspection corporate setups, see .env.sample for details
 ENV NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt 
 
@@ -39,6 +48,7 @@ RUN apt-get update \
     && apt-get -y install git iproute2 procps lsb-release \
     && apt-get -y install mariadb-client \
     && apt-get -y install libpng-dev \
+    && apt-get -y install ssmtp sudo \
 \
     # Install extensions (optional)
     && docker-php-ext-install pdo_mysql gd \
@@ -76,6 +86,11 @@ COPY --from=preprocess /HEA[D] ${HASHTOPOLIS_DOCUMENT_ROOT}/../.git/
 
 COPY composer.json ${HASHTOPOLIS_DOCUMENT_ROOT}/../
 RUN composer install --working-dir=${HASHTOPOLIS_DOCUMENT_ROOT}/..
+
+RUN echo "www-data ALL=NOPASSWD:SETENV: /usr/local/bin/second-level-docker-entry.sh" >> /etc/sudoers.d/10_docker
+COPY second-level-docker-entry.sh /usr/local/bin
+
+RUN echo "" > /etc/ssmtp/ssmtp.conf
 
 ENV DEBIAN_FRONTEND=dialog
 COPY docker-entrypoint.sh /usr/local/bin

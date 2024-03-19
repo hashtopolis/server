@@ -48,6 +48,32 @@ class UserUtils {
     Factory::getUserFactory()->delete($user);
   }
   
+  public static function userForgotPassword($username, $email) {
+    $username = htmlentities($username, ENT_QUOTES, "UTF-8");
+    $qF = new QueryFilter(User::USERNAME, $username, "=");
+    $res = Factory::getUserFactory()->filter([Factory::FILTER => $qF]);
+    if ($res == null || sizeof($res) == 0) {
+      throw new HTException("No such user!");
+    }
+    $user = $res[0];
+    if ($user->getEmail() != $email) {
+      throw new HTException("No such user!");
+    }
+    $newSalt = Util::randomString(20);
+    $newPass = Util::randomString(10);
+    $newHash = Encryption::passwordHash($newPass, $newSalt);
+    
+    $tmpl = new Template("email/forgot");
+    $tmplPlain = new Template("email/forgot.plain");
+    $obj = array('username' => $user->getUsername(), 'password' => $newPass);
+    if (Util::sendMail($user->getEmail(), "Password reset", $tmpl->render($obj), $tmplPlain->render($obj))) {
+      Factory::getUserFactory()->mset($user, [User::PASSWORD_HASH => $newHash, User::PASSWORD_SALT => $newSalt, User::IS_COMPUTED_PASSWORD => 1]);
+    }
+    else {
+      throw new HTException("Password reset failed because of an error when sending the email! Please check if PHP is able to send emails.");
+    }
+  }
+  
   /**
    * @param int $userId
    * @throws HTException
