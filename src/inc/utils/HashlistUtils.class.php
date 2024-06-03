@@ -346,12 +346,19 @@ class HashlistUtils {
     $startTime = time();
     
     //find the line separator
-    $buffer = fread($file, 1024);
     $lineSeparators = array("\r\n", "\n", "\r");
     $lineSeparator = "";
-    foreach ($lineSeparators as $sep) {
-      if (strpos($buffer, $sep) !== false) {
-        $lineSeparator = $sep;
+
+    // This will loop through the buffer until it finds a line separator
+    while (!feof($file)) {
+      $buffer = fread($file, 1024);
+      foreach ($lineSeparators as $ls) {
+        if (strpos($buffer, $ls) !== false) {
+          $lineSeparator = $ls;
+          break;
+        }
+      }
+      if (!empty($lineSeparator)) {
         break;
       }
     }
@@ -387,7 +394,18 @@ class HashlistUtils {
       $crackedIn[$l->getId()] = 0;
     }
     while (!feof($file)) {
-      $data = stream_get_line($file, 1024, $lineSeparator);
+      $data = '';
+      while(($line = stream_get_line($file, 1024, $lineSeparator)) !== false){
+        $data .= $line;
+        // seek back the length of lineSeparator and check if it indeed was a line separator
+        // If no lineSeperator was found, make sure not to check but just to keep reading
+        if (strlen($lineSeparator) > 0) {
+          fseek($file, strlen($lineSeparator) * -1, SEEK_CUR);
+          if (fread($file, strlen($lineSeparator)) === $lineSeparator) {
+            break;
+          }
+        }
+      }
       if (strlen($data) == 0) {
         continue;
       }
