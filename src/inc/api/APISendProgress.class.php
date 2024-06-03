@@ -236,6 +236,10 @@ class APISendProgress extends APIBasic {
             $plain = $splitLine[2]; // if hash is salted
             $crackPos = $splitLine[4];
           }
+          else if (sizeof($splitLine) == 6) { // Doulbe salt
+            $plain = $splitLine[3]; // if hash is salted
+            $crackPos = $splitLine[5];
+          }
           else {
             $plain = $splitLine[1];
             $crackPos = $splitLine[3];
