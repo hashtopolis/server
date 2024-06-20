@@ -411,6 +411,31 @@ abstract class AbstractModelFactory {
     return $row['column_' . strtolower($op)];
   }
   
+  public function multicolAggregationFilter($options, $aggregations) {
+    //$options: as usual
+    //$columns: array of Aggregation objects
+    
+    $elements = [];
+    foreach ($aggregations as $aggregation) {
+      $elements[] = $aggregation->getQueryString();
+    }
+    
+    $query = "SELECT " . join(",", $elements);
+    $query = $query . " FROM " . $this->getModelTable();
+    
+    $vals = array();
+    
+    if (array_key_exists("filter", $options)) {
+      $query .= $this->applyFilters($vals, $options['filter']);
+    }
+    
+    $dbh = self::getDB();
+    $stmt = $dbh->prepare($query);
+    $stmt->execute($vals);
+    
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+  }
+  
   public function sumFilter($options, $sumColumn) {
     $query = "SELECT SUM($sumColumn) AS sum ";
     $query = $query . " FROM " . $this->getModelTable();

@@ -66,8 +66,10 @@ class APIGetChunk extends APIBasic {
       DServerLog::log(DServerLog::TRACE, "Agent is inactive!", [$this->agent]);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Agent is inactive!");
     }
+
+    $LOCKFILE = LOCK::CHUNKING.$task->getId();
     
-    LockUtils::get(Lock::CHUNKING);
+    LockUtils::get($LOCKFILE);
     DServerLog::log(DServerLog::TRACE, "Retrieved lock for chunking!", [$this->agent]);
     $task = Factory::getTaskFactory()->get($task->getId());
     Factory::getAgentFactory()->getDB()->beginTransaction();
@@ -76,7 +78,7 @@ class APIGetChunk extends APIBasic {
     if ($task == null) { // agent needs a new task
       DServerLog::log(DServerLog::DEBUG, "Task is fully dispatched", [$this->agent]);
       Factory::getAgentFactory()->getDB()->commit();
-      LockUtils::release(Lock::CHUNKING);
+      LockUtils::release($LOCKFILE);
       DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
@@ -93,14 +95,14 @@ class APIGetChunk extends APIBasic {
       // this is a special case where this task is either not allowed anymore, or it has priority 0 so it doesn't get auto assigned
       if (!AccessUtils::agentCanAccessTask($this->agent, $task)) {
         Factory::getAgentFactory()->getDB()->commit();
-        LockUtils::release(Lock::CHUNKING);
+        LockUtils::release($LOCKFILE);
         DServerLog::log(DServerLog::INFO, "Not allowed to work on requested task", [$this->agent, $task]);
         DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
         $this->sendErrorResponse(PActions::GET_CHUNK, "Not allowed to work on this task!");
       }
       if (TaskUtils::isSaturatedByOtherAgents($task, $this->agent)) {
         Factory::getAgentFactory()->getDB()->commit();
-        LockUtils::release(Lock::CHUNKING);
+        LockUtils::release($LOCKFILE);
         DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
         $this->sendErrorResponse(PActions::GET_CHUNK, "Task already saturated by other agents, no other task available!");
       }
@@ -108,7 +110,7 @@ class APIGetChunk extends APIBasic {
 
     if (TaskUtils::isSaturatedByOtherAgents($task, $this->agent)) {
       Factory::getAgentFactory()->getDB()->commit();
-      LockUtils::release(Lock::CHUNKING);
+      LockUtils::release($LOCKFILE);
       DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
       $this->sendErrorResponse(PActions::GET_CHUNK, "Task already saturated by other agents, other tasks available!");
     }
@@ -119,7 +121,7 @@ class APIGetChunk extends APIBasic {
       if ($bestTask->getId() != $task->getId()) {
         Factory::getAgentFactory()->getDB()->commit();
         DServerLog::log(DServerLog::INFO, "Task with higher priority available!", [$this->agent]);
-        LockUtils::release(Lock::CHUNKING);
+        LockUtils::release($LOCKFILE);
         DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
         $this->sendErrorResponse(PActions::GET_CHUNK, "Task with higher priority available!");
       }
@@ -150,7 +152,7 @@ class APIGetChunk extends APIBasic {
     if ($chunk == null) {
       DServerLog::log(DServerLog::DEBUG, "Could not create a chunk, task is fully dispatched", [$this->agent, $task]);
       Factory::getAgentFactory()->getDB()->commit();
-      LockUtils::release(Lock::CHUNKING);
+      LockUtils::release($LOCKFILE);
       DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
       $this->sendResponse(array(
           PResponseGetChunk::ACTION => PActions::GET_CHUNK,
@@ -171,7 +173,7 @@ class APIGetChunk extends APIBasic {
       return; // this can be safely done before the commit/release, because the only sendChunk which comes really at the end check for null before, so a lock which is not released cannot happen
     }
     Factory::getAgentFactory()->getDB()->commit();
-    LockUtils::release(Lock::CHUNKING);
+    LockUtils::release(Lock::CHUNKING.$chunk->getTaskId());
     DServerLog::log(DServerLog::TRACE, "Released lock for chunking!", [$this->agent]);
     $this->sendResponse(array(
         PResponseGetChunk::ACTION => PActions::GET_CHUNK,
