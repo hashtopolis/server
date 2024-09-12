@@ -38,7 +38,7 @@ if (isset($_POST['action']) && CSRF::check($_POST['csrf'])) {
 
 $trueKeys = array('verified', 'datacenter');
 $ltNumKeys = array('dph_total', 'dph');
-$gtKeys = array('cpu_ram', 'gpu_ram', 'reliability2', 'disk_size', 'cpu_cores');
+$gtKeys = array('cpu_ram', 'gpu_ram', 'reliability2', 'disk_space', 'cpu_cores');
 $eqKeys = array('gpu_name', 'cpu_name');
 $vastaiApiKey = SConfig::getInstance()->getVal(Dconfig::VAST_AI_API_KEY);
 UI::add('vastApiKey',$vastaiApiKey);
@@ -48,7 +48,7 @@ UI::add('search_gpu_name',get_or($_GET, 'gpu_name', ''));
 UI::add('search_dph_total',$_GET['dph_total'] ?? '.4');
 UI::add('search_gpu_ram',$_GET['gpu_ram'] ?? '');
 UI::add('search_cpu_ram',$_GET['cpu_ram'] ?? '');
-UI::add('search_disk_size',$_GET['disk_size'] ?? 8);
+UI::add('search_disk_space',$_GET['disk_space'] ?? 8);
 UI::add('search_cpu_cores',$_GET['cpu_cores'] ?? '');
 UI::add('search_reliability2',$_GET['reliability2'] ?? '.8');
 
@@ -75,6 +75,7 @@ if (isset($_GET['uninterruptible']) === false || $_GET['uninterruptible'] === 'o
 
 UI::add('pageTitle', "Vast.AI Search");
 $apiError = '';
+$gpus = array();
 if (isset($_GET['search']) && AccessControl::getInstance()->hasPermission(DAccessControl::MANAGE_AGENT_ACCESS)) {
   // prepare the query, I do not like this method of doing this, but it is working
   $query = array();
@@ -116,9 +117,8 @@ if (isset($_GET['search']) && AccessControl::getInstance()->hasPermission(DAcces
   // make the query
   $response = searchGpus(json_encode($query));
   if (isset($response['error'])) {
-      $apiError .= "vast.ai get offers error: " . $response;
+      $apiError .= "vast.ai get offers error: " . implode(", ", $response);
   } else if (isset($response['offers']) == true) {
-    $gpus = array();
     foreach ($response ['offers'] as $gpu) {
         $gpuClassInstance = new VastAiGPUArrayClass($gpu);
         array_push($gpus, $gpuClassInstance);
