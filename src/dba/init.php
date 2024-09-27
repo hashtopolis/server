@@ -9,6 +9,7 @@ define("DBA_PORT", (isset($CONN['port'])) ? $CONN['port'] : "");
 
 require_once(dirname(__FILE__) . "/AbstractModel.class.php");
 require_once(dirname(__FILE__) . "/AbstractModelFactory.class.php");
+require_once(dirname(__FILE__) . "/Aggregation.class.php");
 require_once(dirname(__FILE__) . "/Filter.class.php");
 require_once(dirname(__FILE__) . "/Order.class.php");
 require_once(dirname(__FILE__) . "/Join.class.php");
