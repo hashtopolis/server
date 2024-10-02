@@ -307,9 +307,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
 
-    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
+    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'offset') ?? 0;
     // TODO: Maximum and default should be configurable per server instance
-    $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? 50000;
+    $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'limit') ?? 50000;
 
     $validExpandables = $apiClass::getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
