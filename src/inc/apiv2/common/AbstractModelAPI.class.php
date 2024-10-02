@@ -411,13 +411,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     // Build self link
     $selfParams = $request->getQueryParams();
-    $selfParams['page']['size'] = $pageSize;
+    $selfParams['page']['limit'] = $pageSize;
     $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
 
     // Build next link
     $nextParams = $selfParams;
     if (count($objects) == $pageSize) {
-      $nextParams['page']['after'] = end($objects)->getId();
+      $nextParams['page']['offset'] = end($objects)->getId();
       $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
     } else {
       // We have no more entries pending
