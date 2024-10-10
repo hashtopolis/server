@@ -321,9 +321,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
 
-    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
+    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'offset') ?? 0;
     // TODO: Maximum and default should be configurable per server instance
-    $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? 50000;
+    $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'limit') ?? 50000;
 
     $validExpandables = $apiClass::getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
@@ -418,13 +418,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     // Build self link
     $selfParams = $request->getQueryParams();
-    $selfParams['page']['size'] = $pageSize;
+    $selfParams['page']['limit'] = $pageSize;
     $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
 
     // Build next link
     $nextParams = $selfParams;
     if (count($objects) == $pageSize) {
-      $nextParams['page']['after'] = end($objects)->getId();
+      $nextParams['page']['offset'] = end($objects)->getId();
       $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
     } else {
       // We have no more entries pending
