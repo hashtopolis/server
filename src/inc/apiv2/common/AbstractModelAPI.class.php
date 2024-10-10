@@ -11,22 +11,31 @@ use DBA\AbstractModelFactory;
 use DBA\JoinFilter;
 use DBA\Factory;
 use DBA\ContainFilter;
+use DBA\LimitFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
 
-abstract class AbstractModelAPI extends AbstractBaseAPI {
+abstract class AbstractModelAPI extends AbstractBaseAPI
+{
   abstract static public function getDBAClass();
   abstract protected function createObject(array $data): int;
   abstract protected function deleteObject(object $object): void;
 
-  public static function getToOneRelationships(): array { return []; }
-  public static function getToManyRelationships(): array { return []; }
+  public static function getToOneRelationships(): array
+  {
+    return [];
+  }
+  public static function getToManyRelationships(): array
+  {
+    return [];
+  }
 
 
   /** 
    * Available 'expand' parameters on $object
    */
-  public static function getExpandables(): array {
+  public static function getExpandables(): array
+  {
     $expandables = array_merge(array_keys(static::getToOneRelationships()), array_keys(static::getToManyRelationships()));
     return $expandables;
   }
@@ -36,15 +45,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   //  */
   // protected static function fetchExpandObjects(array $objects, string $expand): mixed {
   // }
-  
 
-  protected static function fetchExpandObjects(array $objects, string $expand): mixed {     
+
+  protected static function fetchExpandObjects(array $objects, string $expand): mixed
+  {
     /* Ensure we receive the proper type */
     $baseModel = static::getDBAClass();
-    array_walk($objects, function($obj) use($baseModel) { assert($obj instanceof $baseModel); });
-    
+    array_walk($objects, function ($obj) use ($baseModel) {
+      assert($obj instanceof $baseModel);
+    });
+
     $toOneRelationships = static::getToOneRelationships();
-    if (array_key_exists($expand, $toOneRelationships)) {       
+    if (array_key_exists($expand, $toOneRelationships)) {
       $relationFactory = self::getModelFactory($toOneRelationships[$expand]['relationType']);
       return self::getForeignKeyRelation(
         $objects,
@@ -61,7 +73,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       /* Associative entity */
       if (array_key_exists('junctionTableType', $toManyRelationships[$expand])) {
         $junctionTableFactory = self::getModelFactory($toManyRelationships[$expand]['junctionTableType']);
-        return self::getManyToOneRelationViaIntermediate (
+        return self::getManyToOneRelationViaIntermediate(
           $objects,
           $toManyRelationships[$expand]['key'],
           $junctionTableFactory,
@@ -80,10 +92,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     };
 
     throw new BadFunctionCallException("Internal error: Expansion '$expand' not implemented!");
-  }  
+  }
 
 
-  final protected static function getFactory(): object {
+  final protected static function getFactory(): object
+  {
     return self::getModelFactory(static::getDBAclass());
   }
 
@@ -91,148 +104,148 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
    * Get features based on Formfields and DBA model features
    */
   final protected function getFeatures(): array
-  {    
+  {
     return array_merge(
       parent::getFeatures(),
       call_user_func($this->getDBAclass() . '::getFeatures'),
     );
   }
 
-    /**
-     * Retrieve ForeignKey Relation
-     * 
-     * @param array $objects Objects Fetch relation for selected Objects 
-     * @param string $objectField Field to use as base for $objects
-     * @param object $factory Factory used to retrieve objects
-     * @param string $filterField Filter field of $field to filter against $objects field
-     * 
-     * @return array 
-     */
-    final protected static function getForeignKeyRelation(
-      array $objects,
-      string $objectField,
-      object $factory,
-      string $filterField
-    ): array {
-      assert($factory instanceof AbstractModelFactory);
-      $retval = array();      
+  /**
+   * Retrieve ForeignKey Relation
+   * 
+   * @param array $objects Objects Fetch relation for selected Objects 
+   * @param string $objectField Field to use as base for $objects
+   * @param object $factory Factory used to retrieve objects
+   * @param string $filterField Filter field of $field to filter against $objects field
+   * 
+   * @return array 
+   */
+  final protected static function getForeignKeyRelation(
+    array $objects,
+    string $objectField,
+    object $factory,
+    string $filterField
+  ): array {
+    assert($factory instanceof AbstractModelFactory);
+    $retval = array();
 
-      /* Fetch required objects */
-      $objectIds = [];
-      foreach($objects as $object) {
-        $kv = $object->getKeyValueDict();
-        $objectIds[] = $kv[$objectField];
+    /* Fetch required objects */
+    $objectIds = [];
+    foreach ($objects as $object) {
+      $kv = $object->getKeyValueDict();
+      $objectIds[] = $kv[$objectField];
+    }
+    $qF = new ContainFilter($filterField, $objectIds, $factory);
+    $hO = $factory->filter([Factory::FILTER => $qF]);
+
+    /* Objects are uniquely identified by fields, create mapping to speed-up further processing */
+    $f2o = [];
+    foreach ($hO as $relationObject) {
+      $f2o[$relationObject->getKeyValueDict()[$filterField]] = $relationObject;
+    };
+
+    /* Map objects */
+    foreach ($objects as $object) {
+      $fieldId = $object->getKeyValueDict()[$objectField];
+      if (array_key_exists($fieldId, $f2o) == true) {
+        $retval[$object->getId()] = $f2o[$fieldId];
       }
-      $qF = new ContainFilter($filterField, $objectIds, $factory);
-      $hO = $factory->filter([Factory::FILTER => $qF]);
-
-      /* Objects are uniquely identified by fields, create mapping to speed-up further processing */
-      $f2o = [];
-      foreach ($hO as $relationObject) {
-        $f2o[$relationObject->getKeyValueDict()[$filterField]] = $relationObject;
-      };
-
-      /* Map objects */
-      foreach ($objects as $object) {
-        $fieldId = $object->getKeyValueDict()[$objectField];
-        if (array_key_exists($fieldId, $f2o) == true) {
-          $retval[$object->getId()] = $f2o[$fieldId];
-        }
-      }
-
-      return $retval;
     }
 
-    /**
-     * Retrieve ManyToOneRelation (reverse ForeignKey)
-     * 
-     * @param array $objects Objects Fetch relation for selected Objects 
-     * @param string $objectField Field to use as base for $objects
-     * @param object $factory Factory used to retrieve objects
-     * @param string $filterField Filter field of $field to filter against $objects field
-     * 
-     * @return array 
-     */
-    final protected static function getManyToOneRelation(
-      array $objects,
-      string $objectField,
-      object $factory, 
-      string $filterField
-    ): array {
-      assert($factory instanceof AbstractModelFactory);
-      $retval = array();
+    return $retval;
+  }
 
-      /* Fetch required objects */
-      $objectIds = [];
-      foreach($objects as $object) {
-        $kv = $object->getKeyValueDict();
-        $objectIds[] = $kv[$objectField];
-      }
-      $qF = new ContainFilter($filterField, $objectIds, $factory);
-      $hO = $factory->filter([Factory::FILTER => $qF]);
+  /**
+   * Retrieve ManyToOneRelation (reverse ForeignKey)
+   * 
+   * @param array $objects Objects Fetch relation for selected Objects 
+   * @param string $objectField Field to use as base for $objects
+   * @param object $factory Factory used to retrieve objects
+   * @param string $filterField Filter field of $field to filter against $objects field
+   * 
+   * @return array 
+   */
+  final protected static function getManyToOneRelation(
+    array $objects,
+    string $objectField,
+    object $factory,
+    string $filterField
+  ): array {
+    assert($factory instanceof AbstractModelFactory);
+    $retval = array();
 
-      /* Map (multiple) objects to base objects */
-      foreach ($hO as $relationObject) {
-        $kv = $relationObject->getKeyValueDict();
-        $retval[$kv[$filterField]][] = $relationObject;
-      }
-
-      return $retval;
+    /* Fetch required objects */
+    $objectIds = [];
+    foreach ($objects as $object) {
+      $kv = $object->getKeyValueDict();
+      $objectIds[] = $kv[$objectField];
     }
-    
+    $qF = new ContainFilter($filterField, $objectIds, $factory);
+    $hO = $factory->filter([Factory::FILTER => $qF]);
 
-    /**
-     * Retrieve ManyToOne relalation for $objects ('parents') of type $targetFactory via 'intermidate'
-     * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by 
-     * $filterField at $intermediateFactory.
-     * 
-     * @param array $objects Objects Fetch relation for selected Objects 
-     * @param string $objectField Field to use as base for $objects
-     * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
-     * @param string $filterField Filter field of intermadiateObject to filter against $objects field
-     * @param object $targetFactory Object properties of objects returned
-     * @param string $joinField Field to connect 'intermediate' to 'target'
-
-     * @return array 
-     */
-    final protected static function getManyToOneRelationViaIntermediate(
-      array $objects, 
-      string $objectField,
-      object $intermediateFactory,
-      string $filterField,
-      object $targetFactory,
-      string $joinField,
-    ): array {
-      assert($intermediateFactory instanceof AbstractModelFactory);
-      assert($targetFactory instanceof AbstractModelFactory);
-      $retval = array();
-
-
-      /* Retrieve Parent -> Intermediate -> Target objects */
-      $objectIds = [];
-      foreach($objects as $object) {
-        $kv = $object->getKeyValueDict();
-        $objectIds[] = $kv[$objectField];
-      }
-      $qF = new ContainFilter($filterField, $objectIds, $intermediateFactory);        
-      $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
-      $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
-
-      /* Build mapping Parent -> Intermediate */
-      $i2p = [];
-      foreach($hO[$intermediateFactory->getModelName()] as $intermidiateObject) {
-        $kv = $intermidiateObject->getKeyValueDict();
-        $i2p[$kv[$joinField]] = $kv[$filterField];
-      }
-
-      /* Associate Target -> Parent (via Intermediate) */
-      foreach($hO[$targetFactory->getModelName()] as $targetObject) {
-        $parent = $i2p[$targetObject->getKeyValueDict()[$joinField]];
-        $retval[$parent][] = $targetObject;
-      }
-
-      return $retval;
+    /* Map (multiple) objects to base objects */
+    foreach ($hO as $relationObject) {
+      $kv = $relationObject->getKeyValueDict();
+      $retval[$kv[$filterField]][] = $relationObject;
     }
+
+    return $retval;
+  }
+
+
+  /**
+   * Retrieve ManyToOne relalation for $objects ('parents') of type $targetFactory via 'intermidate'
+   * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by 
+   * $filterField at $intermediateFactory.
+   * 
+   * @param array $objects Objects Fetch relation for selected Objects 
+   * @param string $objectField Field to use as base for $objects
+   * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
+   * @param string $filterField Filter field of intermadiateObject to filter against $objects field
+   * @param object $targetFactory Object properties of objects returned
+   * @param string $joinField Field to connect 'intermediate' to 'target'
+
+   * @return array 
+   */
+  final protected static function getManyToOneRelationViaIntermediate(
+    array $objects,
+    string $objectField,
+    object $intermediateFactory,
+    string $filterField,
+    object $targetFactory,
+    string $joinField,
+  ): array {
+    assert($intermediateFactory instanceof AbstractModelFactory);
+    assert($targetFactory instanceof AbstractModelFactory);
+    $retval = array();
+
+
+    /* Retrieve Parent -> Intermediate -> Target objects */
+    $objectIds = [];
+    foreach ($objects as $object) {
+      $kv = $object->getKeyValueDict();
+      $objectIds[] = $kv[$objectField];
+    }
+    $qF = new ContainFilter($filterField, $objectIds, $intermediateFactory);
+    $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
+    $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
+
+    /* Build mapping Parent -> Intermediate */
+    $i2p = [];
+    foreach ($hO[$intermediateFactory->getModelName()] as $intermidiateObject) {
+      $kv = $intermidiateObject->getKeyValueDict();
+      $i2p[$kv[$joinField]] = $kv[$filterField];
+    }
+
+    /* Associate Target -> Parent (via Intermediate) */
+    foreach ($hO[$targetFactory->getModelName()] as $targetObject) {
+      $parent = $i2p[$targetObject->getKeyValueDict()[$joinField]];
+      $retval[$parent][] = $targetObject;
+    }
+
+    return $retval;
+  }
 
   /** 
    * Retrieve  permissions based on class and method requested
@@ -241,7 +254,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   {
     $model = $this->getDBAclass();
     # Get required permission based on API method type
-    switch(strtoupper($method)) {
+    switch (strtoupper($method)) {
       case "GET":
         $required_perm = $model::PERM_READ;
         break;
@@ -293,11 +306,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
   /**
    * Additional filtering required for limiting access to objects 
    */
-  protected function getFilterACL(): array {
+  protected function getFilterACL(): array
+  {
     return [];
   }
- 
-   /**
+
+  /**
    * API entry point for requesting multiple objects
    */
   public static function getManyResources(object $apiClass, Request $request, Response $response, array $relationFs = []): Response
@@ -337,26 +351,19 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
      * TODO: Deny pagination with un-stable sorting
      */
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures);
-    if (count($orderTemplates) == 0) {
-      array_push($orderTemplates, ['by' => $apiClass->getPrimaryKey(), 'type' => 'ASC']);
-    }
-    // Alter last order filter to include LIMIT parameter.
-    $orderTemplate = array_pop($orderTemplates);
-    $orderTemplate['type'] .= ' LIMIT ' . $pageSize;
-    array_push($orderTemplates, $orderTemplate);
 
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
       $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
     }
 
-    // Add page[after] filter, note this depends on the ordering used
-    if ($orderTemplate['type'] == 'ASC') {
-      $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '<', $factory);
-    } else {
-      $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '>', $factory);
-    }
+    $aFs[Factory::LIMIT] = new LimitFilter($pageSize);
 
+    $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '>', $factory);
+    $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
+    if (isset($pageBefore)) {
+      $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageBefore, '<', $factory);
+    }
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
 
@@ -392,7 +399,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
         if (array_key_exists($object->getId(), $expandResult[$expand])) {
           $expandResultObject = $expandResult[$expand][$object->getId()];
           if (is_array($expandResultObject)) {
-            foreach($expandResultObject as $expandObject) {
+            foreach ($expandResultObject as $expandObject) {
               $includedResources[] = $apiClass->obj2Resource($expandObject);
             }
           } else {
@@ -452,7 +459,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
 
 
-   /**
+  /**
    * API entry point for requesting multiple objects
    */
   public function get(Request $request, Response $response, array $args): Response
@@ -494,7 +501,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     $data = $request->getParsedBody();
     $aliasedfeatures = $this->getAliasedFeatures();
-  
+
     // Validate incoming data
     foreach (array_keys($data) as $key) {
       // Ensure key is a regular string
@@ -571,9 +578,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     // Base object
     $object = $this->doFetch($request, $args['id']);
-   
+
     // Relation object
-    $relationObjects = $this->fetchExpandObjects([$object], $args['relation']);  
+    $relationObjects = $this->fetchExpandObjects([$object], $args['relation']);
     $relationObject = $relationObjects[$args['id']];
 
     $relationClass = array_column($this->getToOneRelationships(), 'relationType', 'name')[$args['relation']];
@@ -595,7 +602,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     $relation = $this->getToOneRelationships()[$args['relation']];
     $id = $object->getKeyValueDict()[$relation['key']];
-   
+
     if (is_null($id)) {
       $dataResource = null;
     } else {
@@ -674,25 +681,25 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     $aFs = [];
     if (array_key_exists('intermidiate', $toManyRelation)) {
       $aFs[Factory::FILTER][] = new QueryFilter(
-          $toManyRelation['filterField'], 
-          $args['id'], 
-          '=', 
-          self::getModelFactory($toManyRelation['intermidiate'])
-        );
-          
+        $toManyRelation['filterField'],
+        $args['id'],
+        '=',
+        self::getModelFactory($toManyRelation['intermidiate'])
+      );
+
       $aFs[Factory::JOIN][] = new JoinFilter(
-          self::getModelFactory($toManyRelation['intermidiate']),
-          $toManyRelation['joinField'],
-          $toManyRelation['joinFieldRelation'],
-        );
+        self::getModelFactory($toManyRelation['intermidiate']),
+        $toManyRelation['joinField'],
+        $toManyRelation['joinFieldRelation'],
+      );
     } else {
       $aFs[Factory::FILTER][] = new QueryFilter(
-        $toManyRelation['filterField'], 
-        $args['id'], 
-        '=', 
+        $toManyRelation['filterField'],
+        $args['id'],
+        '=',
       );
     };
-    
+
     return self::getManyResources($relationApiClass, $request, $response, $aFs);
   }
 
@@ -707,7 +714,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     // Base object -> Relationship objects
     $object = $this->doFetch($request, $args['id']);
     $expandObjects = $this->fetchExpandObjects([$object], $args['relation']);
-    
+
     $dataResources = [];
     if (array_key_exists($object->getId(), $expandObjects)) {
       foreach ($expandObjects[$object->getId()] as $relationshipObject) {
@@ -751,7 +758,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     return $response->withStatus(200)
       ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
-
   }
 
   /**
@@ -826,7 +832,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       if ($feature['private'] == True) {
         continue;
       }
-    
+
       $validFeatures[$name] = $feature;
     };
 
@@ -898,5 +904,3 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     }
   }
 }
-
-

@@ -926,15 +926,19 @@ abstract class AbstractBaseAPI
   /**
    * Check for valid ordering parameters and build QueryFilter
    */
-  protected function makeOrderFilterTemplates(Request $request, array $features): array
+  protected function makeOrderFilterTemplates(Request $request, array $features, $defaultSort = 'ASC'): array
   {
     $orderTemplates = [];
 
     $orderings = $this->getQueryParameterAsList($request, 'sort');
+    $contains_primary_key = false;
     foreach ($orderings as $order) {
       if (preg_match('/^(?P<operator>[-])?(?P<key>[_a-zA-Z]+)$/', $order, $matches)) {
         // Special filtering of _id to use for uniform access to model primary key
         $cast_key = $matches['key'] == '_id' ? $this->getPrimaryKey() : $matches['key'];
+        if ($cast_key == $this->getPrimaryKey()) {
+          $contains_primary_key = true;          
+        }
         if (array_key_exists($cast_key, $features)) {
           $remappedKey = $features[$cast_key]['dbname'];
           array_push($orderTemplates, ['by' => $remappedKey, 'type' => ($matches['operator'] == '-') ? "DESC" : "ASC" ]);
@@ -944,6 +948,11 @@ abstract class AbstractBaseAPI
       } else {
         throw new HTException("Ordering parameter '" . $order . "' is not valid");
       }
+    }
+
+    //when no primary key has been added in the sort parameter, add the default case of sorting on primary key
+    if ($contains_primary_key == false) {
+      array_push($orderTemplates, ['by' =>$this->getPrimaryKey(), 'type' => $defaultSort]);
     }
 
     return $orderTemplates;
