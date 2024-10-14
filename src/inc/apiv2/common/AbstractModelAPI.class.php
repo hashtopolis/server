@@ -14,6 +14,7 @@ use DBA\ContainFilter;
 use DBA\LimitFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use Slim\Exception\HttpException;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI
 {
@@ -321,9 +322,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $aliasedfeatures = $apiClass->getAliasedFeatures();
     $factory = $apiClass->getFactory();
 
-    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'offset') ?? 0;
     // TODO: Maximum and default should be configurable per server instance
-    $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'limit') ?? 50000;
+    $defaultPageSize = 10000;
+    $maxPageSize = 50000;
+
+    $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
+    $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
+    if ($pageSize < 0) {
+     throw new HttpErrorException("Invallid parameter, page[size] must be a positive integer", 400);
+    } elseif ($pageSize > $maxPageSize) {
+      throw new HttpErrorException(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize));
+    }
 
     $validExpandables = $apiClass::getExpandables();
     $expands = $apiClass->makeExpandables($request, $validExpandables);
@@ -344,9 +353,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
      * 
      * LIMIT is not officially supported via Filters, instead hacked in via the 'commonly' abused 
      * ORDER BY x LIMIT y variants. In our case we need to modify the last order filter.
-     * 
-     * Since we need to append to the last order filter, make sure to redefine default as defined at
-     * /src/dba/AbstractModelFactory.class.php:656 over here.
      * 
      * TODO: Deny pagination with un-stable sorting
      */
@@ -369,7 +375,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
-    // TODO: Yield 'Max Page Size Exceeded Error' if pagination is not possible and more items are returned than the actual page[size] limit
 
     /* JOIN statements will return related modules as well, discard for now */
     if (array_key_exists(Factory::JOIN, $finalFs)) {
@@ -418,17 +423,27 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     // Build self link
     $selfParams = $request->getQueryParams();
-    $selfParams['page']['limit'] = $pageSize;
+    $selfParams['page']['size'] = $pageSize;
     $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
 
-    // Build next link
+    // Build next link todo
+    if ($apiClass->getQueryParameterFamilyMember($request, 'page', 'after') != null){
     $nextParams = $selfParams;
     if (count($objects) == $pageSize) {
-      $nextParams['page']['offset'] = end($objects)->getId();
+      $nextParams['page']['after'] = end($objects)->getId();
       $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
-    } else {
+    }} else {
       // We have no more entries pending
       $linksNext = null;
+    }
+    // Build prev link TODO check nest and prev link, maybe better to do first and last first
+    if ($pageAfter > 0) { 
+      //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
+      //to the json API spec https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links
+      $prevParams['page']['before'] = reset($objects)->getId();
+      $linksPrev = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
+    } else {
+      $linksPrev = null;
     }
 
     // Generate JSON:API GET output
@@ -442,6 +457,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       "links" => [
         "self" => $linksSelf,
         "next" => $linksNext,
+        "prev" => $linksPrev, //TODO
       ],
       "data" => $dataResources,
     ];
