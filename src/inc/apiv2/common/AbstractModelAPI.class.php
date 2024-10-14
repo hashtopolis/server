@@ -411,18 +411,30 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
     // Build self link
     $selfParams = $request->getQueryParams();
-    $selfParams['page']['limit'] = $pageSize;
+    $selfParams['page']['size'] = $pageSize;
     $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
 
     // Build next link
     $nextParams = $selfParams;
     if (count($objects) == $pageSize) {
-      $nextParams['page']['offset'] = end($objects)->getId();
+      $nextParams['page']['after'] = end($objects)->getId();
       $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
     } else {
       // We have no more entries pending
       $linksNext = null;
     }
+
+    //build first link
+    $firstParams = $request->getQueryParams();
+    $firstParams['page']['size'] = $pageSize;
+    $firstParams['page']['after'] = 0;
+    $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
+
+    //build last link
+    $lastParams = $request->getQueryParams();
+    $lastParams['page']['size'] = $pageSize;
+    $lastParams['page']['after'] = 0;
+    $linkslast = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
 
     // Generate JSON:API GET output
     $ret = [
@@ -434,6 +446,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       ],
       "links" => [
         "self" => $linksSelf,
+        "first" => $linksFirst,
+        "last" => "",
         "next" => $linksNext,
       ],
       "data" => $dataResources,
