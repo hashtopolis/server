@@ -329,9 +329,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $pageAfter = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') ?? 0;
     $pageSize = $apiClass->getQueryParameterFamilyMember($request, 'page', 'size') ?? $defaultPageSize;
     if ($pageSize < 0) {
-     throw new HttpErrorException("Invallid parameter, page[size] must be a positive integer", 400);
+      throw new HttpErrorException("Invallid parameter, page[size] must be a positive integer", 400);
     } elseif ($pageSize > $maxPageSize) {
-      throw new HttpErrorException(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize));
+      throw new HttpErrorException(sprintf("You requested a size of %d, but %d is the maximum.", $pageSize, $maxPageSize), 400);
     }
 
     $validExpandables = $apiClass::getExpandables();
@@ -353,7 +353,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
      * 
      * TODO: Deny pagination with un-stable sorting
      */
-    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures);
+    $defaultSort = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') == null &&
+      $apiClass->getQueryParameterFamilyMember($request, 'page', 'before') != null  ?  'DESC' : 'ASC';
+    $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
 
     // Build actual order filters
     foreach ($orderTemplates as $orderTemplate) {
@@ -418,39 +420,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $dataResources[] = $newObject;
     }
 
-    // Build self link
-    $selfParams = $request->getQueryParams();
-    $selfParams['page']['size'] = $pageSize;
-    $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
-
-    // Build next link todo
-    if ($apiClass->getQueryParameterFamilyMember($request, 'page', 'after') != null){
-    $nextParams = $selfParams;
-    if (count($objects) == $pageSize) {
-      $nextParams['page']['after'] = end($objects)->getId();
-      $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
-    }} else {
-      // We have no more entries pending
-      $linksNext = null;
-    }
-    // Build prev link TODO check next and prev link, maybe better to do first and last first
-    if ($pageAfter > 0) { 
-      //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
-      //to the json API spec https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links
-      $prevParams['page']['before'] = reset($objects)->getId();
-      $linksPrev = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
-    } else {
-      $linksPrev = null;
-    }
-
-    //build first link
-    $firstParams = $request->getQueryParams();
-    unset($firstParams['page']['before']);
-    $firstParams['page']['size'] = $pageSize;
-    $firstParams['page']['after'] = 0;
-    $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
-
-
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
     //if this query is too expensive for big tables, it should be removed
@@ -461,6 +430,44 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $lastParams['page']['size'] = $pageSize;
     $lastParams['page']['before'] = $max + 1;
     $linksLast = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
+
+    // Build self link
+    $selfParams = $request->getQueryParams();
+    $selfParams['page']['size'] = $pageSize;
+    $linksSelf = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($selfParams));
+
+    $linksNext = null;
+    $linksPrev = null;
+
+    // Build next link
+    if (!empty($objects)) {
+    $nextId = $defaultSort == "ASC" ? end($objects)->getId() : reset($objects)->getId();
+    if ($nextId < $max) { //only set next page when its not the last page
+      $nextParams = $selfParams;
+      $nextParams['page']['after'] = $nextId;
+      unset($nextParams['page']['before']);
+      $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
+    }
+    // Build prev link 
+    $prevId = $defaultSort == "DESC" ? end($objects)->getId() : reset($objects)->getId();
+    if ($prevId != 1) { //only set previous page when its not the first page
+      $prevParams = $selfParams;
+      //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
+      //to the json API spec https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links
+      //We could also get the lowest id the same way we got the max, but this is probably unnecessary expensive.
+      //But pull request: https://github.com/hashtopolis/server/pull/1069 would create a cheaper way of doing this in a single query
+      $prevParams['page']['before'] = $prevId;
+      unset($prevParams['page']['after']);
+      $linksPrev = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
+    }
+  }
+
+    //build first link
+    $firstParams = $request->getQueryParams();
+    unset($firstParams['page']['before']);
+    $firstParams['page']['size'] = $pageSize;
+    $firstParams['page']['after'] = 0;
+    $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
 
     // Generate JSON:API GET output
     $ret = [
@@ -475,7 +482,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         "first" => $linksFirst,
         "last" => $linksLast,
         "next" => $linksNext,
-        "prev" => $linksPrev, //TODO
+        "prev" => $linksPrev,
       ],
       "data" => $dataResources,
     ];
