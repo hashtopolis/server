@@ -351,9 +351,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     /**
      * Create pagination
      * 
-     * LIMIT is not officially supported via Filters, instead hacked in via the 'commonly' abused 
-     * ORDER BY x LIMIT y variants. In our case we need to modify the last order filter.
-     * 
      * TODO: Deny pagination with un-stable sorting
      */
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures);
@@ -436,7 +433,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       // We have no more entries pending
       $linksNext = null;
     }
-    // Build prev link TODO check nest and prev link, maybe better to do first and last first
+    // Build prev link TODO check next and prev link, maybe better to do first and last first
     if ($pageAfter > 0) { 
       //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
       //to the json API spec https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links
@@ -448,15 +445,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     //build first link
     $firstParams = $request->getQueryParams();
+    unset($firstParams['page']['before']);
     $firstParams['page']['size'] = $pageSize;
     $firstParams['page']['after'] = 0;
     $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
 
+
+    //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
+    //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
+    //if this query is too expensive for big tables, it should be removed
+    $max = $factory->minMaxFilter([], $apiClass->getPrimaryKey(), "MAX");
     //build last link
     $lastParams = $request->getQueryParams();
+    unset($lastParams['page']['after']);
     $lastParams['page']['size'] = $pageSize;
-    $lastParams['page']['after'] = 0;
-    $linkslast = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
+    $lastParams['page']['before'] = $max + 1;
+    $linksLast = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
 
     // Generate JSON:API GET output
     $ret = [
@@ -469,7 +473,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       "links" => [
         "self" => $linksSelf,
         "first" => $linksFirst,
-        "last" => "",
+        "last" => $linksLast,
         "next" => $linksNext,
         "prev" => $linksPrev, //TODO
       ],
