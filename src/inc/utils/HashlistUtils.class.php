@@ -1147,6 +1147,15 @@ class HashlistUtils {
       }
       $hashes[] = $arr;
     }
+    $entries_binary = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+    foreach ($entries_binary as $entry) {
+      $arr = [
+        "hash" => $entry->getHash(),
+        "plain" => $entry->getPlaintext(),
+        "crackpos" => $entry->getCrackPos()
+      ];
+      $hashes[] = $arr;
+    }
     return $hashes;
   }
   
