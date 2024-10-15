@@ -1200,7 +1200,9 @@ abstract class AbstractBaseAPI
 
     return $response->withStatus($statusCode)
       ->withHeader("Content-Type", "application/vnd.api+json")
-      ->withHeader("Location", $linksSelf);
+      ->withHeader("Location", $dataResources[0]["links"]["self"]);
+      //for location we need to get the links value from $dataresources because if we use $linksSelf, the wrong location gets returned in 
+      //case of a POST request
   }
 
 

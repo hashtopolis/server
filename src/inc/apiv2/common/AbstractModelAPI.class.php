@@ -446,6 +446,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $linksPrev = null;
     }
 
+    //build first link
+    $firstParams = $request->getQueryParams();
+    $firstParams['page']['size'] = $pageSize;
+    $firstParams['page']['after'] = 0;
+    $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
+
+    //build last link
+    $lastParams = $request->getQueryParams();
+    $lastParams['page']['size'] = $pageSize;
+    $lastParams['page']['after'] = 0;
+    $linkslast = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($lastParams));
+
     // Generate JSON:API GET output
     $ret = [
       "jsonapi" => [
@@ -456,6 +468,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       ],
       "links" => [
         "self" => $linksSelf,
+        "first" => $linksFirst,
+        "last" => "",
         "next" => $linksNext,
         "prev" => $linksPrev, //TODO
       ],
