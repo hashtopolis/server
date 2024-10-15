@@ -15,3 +15,11 @@ if (!isset($PRESENT["v0.14.x_agentBinaries"])) {
   Util::checkAgentVersion("python", "0.7.2", true);
   $EXECUTED["v0.14.x_agentBinaries"] = true;
 }
+
+
+if (!isset($PRESENT["v0.14.x_attackCmd"])) {
+  Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Task` MODIFY `attackCmd` mediumtext;");
+  Factory::getAgentFactory()->getDB()->query("ALTER TABLE `Pretask` MODIFY `attackCmd` mediumtext;");
+  Factory::getAgentFactory()->getDB()->query("ALTER TABLE `HealthCheck` MODIFY `attackCmd` mediumtext;");
+  $EXECUTED["v0.14.x_attackCmd"] = true;
+}
