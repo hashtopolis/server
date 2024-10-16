@@ -5,6 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpForbiddenException;
 use Middlewares\Utils\HttpErrorException;
 
 use DBA\AbstractModelFactory;
@@ -540,29 +541,29 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->preCommon($request);
     $object = $this->doFetch($request, $args['id']);
 
-    $data = $request->getParsedBody();
+    $data = $request->getParsedBody()["attributes"];
     $aliasedfeatures = $this->getAliasedFeatures();
 
     // Validate incoming data
     foreach (array_keys($data) as $key) {
       // Ensure key is a regular string
       if (is_string($key) == False) {
-        throw new HttpErrorException("Key '$key' invalid");
+        throw new HttpErrorException("Key '$key' invalid", 403);
       }
       // Ensure key exists in target array
       if (array_key_exists($key, $aliasedfeatures) == False) {
-        throw new HttpErrorException("Key '$key' does not exists!");
+        throw new HttpErrorException("Key '$key' does not exists!", 403);
       }
 
       // Ensure key can be updated 
       if ($aliasedfeatures[$key]['read_only'] == True) {
-        throw new HttpErrorException("Key '$key' is immutable");
+        throw new HttpForbiddenException($request, "Key '$key' is immutable");
       }
       if ($aliasedfeatures[$key]['protected'] == True) {
-        throw new HttpErrorException("Key '$key' is protected");
+        throw new HttpForbiddenException($request, "Key '$key' is protected");
       }
       if ($aliasedfeatures[$key]['private'] == True) {
-        throw new HttpErrorException("Key '$key' is private");
+        throw new HttpForbiddenException($request, "Key '$key' is private");
       }
     }
     // Validate input data if it matches the correct type or subtype
