@@ -15,6 +15,7 @@ use DBA\ContainFilter;
 use DBA\LimitFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use phpDocumentor\Reflection\Types\This;
 use Slim\Exception\HttpException;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI
@@ -682,13 +683,45 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       ->withHeader("Content-Type", 'application/vnd.api+json');
   }
 
-  /**
-   * 
-   */
+  //This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist 
+  //by patching the foreingkey. Simple fix could be to make foreignkey immutable for cases like this.
   public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $object = $this->doFetch($request, $args['id']);
+
+    $jsonBody = $request->getParsedBody(); 
+
+    if ($jsonBody === null || !array_key_exists('data', $jsonBody)) {
+      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data": {"type": "foo", "id": 1}}');
+    }
+    $data = $jsonBody['data'];
+
+    $relationKey = $this->getToOneRelationships()[$args['relation']]['relationKey'];
+    if ($relationKey == null) {
+      throw new HttpErrorException("Relation does not exist!");
+    }
+
+    $feature = $this->getFeatures()[$relationKey];
+    if ($feature['read_only'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
+    }
+    if ($feature['protected'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
+    }
+    if ($feature['private'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
+    }
+
+    $factory = $this->getFactory();
+    $object = $this->doFetch($request, intval($args['id']));
+    if ($data == null) {
+      $factory->set($object, $relationKey, null);
+    } elseif (!isset($data['type']) || !is_numeric($data['id'])) {
+      throw new HttpErrorException('No valid resource identifier object was given as data!');
+    } else {
+      $factory->set($object, $relationKey, $data["id"]);
+    }
+    //TODO catch database exceptions like failed foreignkey constraint and return correct error response
 
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
