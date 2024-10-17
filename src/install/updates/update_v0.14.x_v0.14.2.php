@@ -1,7 +1,6 @@
 <?php /** @noinspection SqlNoDataSourceInspection */
 
 use DBA\Factory;
-use DBA\HashType;
 
 
 if (!isset($PRESENT["v0.14.x_maxAgents_taskwrapper"])) {
