@@ -8,6 +8,12 @@
   ],
   "workspaceFolder": "/var/www/html",
   "customizations": {
+    "jetbrains" : {
+      "settings" : {
+        "Docker:app:DockerSettings.dockerComposePath" : "/usr/bin/docker",
+        "Docker:app:DockerSettings.dockerPath" : "/usr/bin/docker"
+      }
+    },
     "vscode": {
       "extensions": [
         "xdebug.php-debug",
@@ -53,5 +59,6 @@
     "NODE_OPTIONS": "--use-openssl-ca"
   },
   "remoteUser": "vscode",
+  "overrideCommand": false,
   "postStartCommand": "composer install --working-dir=/var/www/html/"
 }
