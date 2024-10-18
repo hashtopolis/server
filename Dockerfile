@@ -98,7 +98,6 @@ RUN yes | pecl install xdebug && docker-php-ext-enable xdebug \
     && echo "xdebug.mode = debug" >> /usr/local/etc/php/conf.d/xdebug.ini \
     && echo "xdebug.start_with_request = yes" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.client_port = 9003" >> /usr/local/etc/php/conf.d/xdebug.ini \
-	&& echo "xdebug.client_host = localhost" >> /usr/local/etc/php/conf.d/xdebug.ini \
 	&& echo "xdebug.idekey = PHPSTORM" >> /usr/local/etc/php/conf.d/xdebug.ini \
     \
     # Configuring PHP
