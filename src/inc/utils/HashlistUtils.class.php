@@ -1135,26 +1135,30 @@ class HashlistUtils {
     $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
     $qF2 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
     $hashes = [];
-    $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-    foreach ($entries as $entry) {
-      $arr = [
-        "hash" => $entry->getHash(),
-        "plain" => $entry->getPlaintext(),
-        "crackpos" => $entry->getCrackPos()
-      ];
-      if (strlen($entry->getSalt()) > 0) {
-        $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+    $format = Factory::getHashlistFactory()->get($hashlistId);
+    if ($format->getFormat() != 0) {
+      $entries_binary = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+      foreach ($entries_binary as $entry) {
+        $arr = [
+          "hash" => $entry->getHash(),
+          "plain" => $entry->getPlaintext(),
+          "crackpos" => $entry->getCrackPos()
+        ];
+        $hashes[] = $arr;
       }
-      $hashes[] = $arr;
-    }
-    $entries_binary = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-    foreach ($entries_binary as $entry) {
-      $arr = [
-        "hash" => $entry->getHash(),
-        "plain" => $entry->getPlaintext(),
-        "crackpos" => $entry->getCrackPos()
-      ];
-      $hashes[] = $arr;
+    } else {
+      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
+      foreach ($entries as $entry) {
+        $arr = [
+          "hash" => $entry->getHash(),
+          "plain" => $entry->getPlaintext(),
+          "crackpos" => $entry->getCrackPos()
+        ];
+        if (strlen($entry->getSalt()) > 0) {
+          $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
+        }
+        $hashes[] = $arr;
+      }
     }
     return $hashes;
   }
