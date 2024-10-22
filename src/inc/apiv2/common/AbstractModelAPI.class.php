@@ -422,7 +422,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
     //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
     //if this query is too expensive for big tables, it should be removed
-    $max = $factory->minMaxFilter([], $apiClass->getPrimaryKey(), "MAX");
+    $max = $factory->minMaxFilter($relationFs, $apiClass->getPrimaryKey(), "MAX");
     //build last link
     $lastParams = $request->getQueryParams();
     unset($lastParams['page']['after']);
