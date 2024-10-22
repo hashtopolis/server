@@ -950,7 +950,7 @@ abstract class AbstractBaseAPI
       }
     }
 
-    //when no primary key has been added in the sort parameter, add the default case of sorting on primary key
+    //when no primary key has been added in the sort parameter, add the default case of sorting on primary key as last sort
     if ($contains_primary_key == false) {
       array_push($orderTemplates, ['by' =>$this->getPrimaryKey(), 'type' => $defaultSort]);
     }
@@ -1201,7 +1201,7 @@ abstract class AbstractBaseAPI
     return $response->withStatus($statusCode)
       ->withHeader("Content-Type", "application/vnd.api+json")
       ->withHeader("Location", $dataResources[0]["links"]["self"]);
-      //for location we need to get the links value from $dataresources because if we use $linksSelf, the wrong location gets returned in 
+      //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in 
       //case of a POST request
   }
 

@@ -46,17 +46,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   // /** 
   //  * Fetch objects for  $expand on $objects
   //  */
-  // protected static function fetchExpandObjects(array $objects, string $expand): mixed {
-  // }
-
-
   protected static function fetchExpandObjects(array $objects, string $expand): mixed
   {
+    //disabled the check because with intermediate objects its possible to fetch a different model
     /* Ensure we receive the proper type */
-    $baseModel = static::getDBAClass();
-    array_walk($objects, function ($obj) use ($baseModel) {
-      assert($obj instanceof $baseModel);
-    });
+    // $baseModel = static::getDBAClass();
+    // array_walk($objects, function ($obj) use ($baseModel) {
+    //   assert($obj instanceof $baseModel);
+    // });
 
     $toOneRelationships = static::getToOneRelationships();
     if (array_key_exists($expand, $toOneRelationships)) {
@@ -613,20 +610,38 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
 
   /**
-   * 
+   * API endpoint to get a to one related resource record 
    */
   public function getToOneRelatedResource(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
 
+    $relation = $args['relation'];
+
+    $relationMapper = $this->getToOneRelationships()[$relation];
+    $intermediate = $relationMapper["intermediateType"];
+    //if there is an intermediate table join on that
+    if ($intermediate !== null) {
+      $intermediateFactory = self::getModelFactory($intermediate);
+      $aFs[Factory::JOIN][] = new JoinFilter(
+        $intermediateFactory,
+        $relationMapper['joinField'],
+        $relationMapper['joinFieldRelation'],
+      );
+
+      $factory = $this->getFactory();
+      $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
+    }
+    else {
     // Base object
-    $object = $this->doFetch($request, $args['id']);
+      $object = $this->doFetch($request, $args['id']);
+    }
 
     // Relation object
-    $relationObjects = $this->fetchExpandObjects([$object], $args['relation']);
+    $relationObjects = $this->fetchExpandObjects([$object], $relation);
     $relationObject = $relationObjects[$args['id']];
 
-    $relationClass = array_column($this->getToOneRelationships(), 'relationType', 'name')[$args['relation']];
+    $relationClass = $relationMapper['relationType'];
     $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
 
     return self::getOneResource($relationApiClass, $relationObject, $request, $response);
@@ -634,16 +649,46 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
 
   /**
-   * 
+   * API endpoint to get a to one relationship link
    */
   public function getToOneRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
 
-    // Base object -> Relationship objects
-    $object = $this->doFetch($request, $args['id']);
-
     $relation = $this->getToOneRelationships()[$args['relation']];
+
+    /* Prepare filter for to-one relations */
+
+    // Example for Task:
+    // 'Hashlist' => [
+    //     'intermediateType' => TaskWrapper::class,
+    //     'joinField' => Task::TASK_WRAPPER_ID,
+    //     'joinFieldRelation' => TaskWrapper::TASK_WRAPPER_ID,
+    // ],
+    if (array_key_exists('intermediateType', $relation)) {
+      $aFs = [];
+      $intermediateFactory = self::getModelFactory($relation['intermediateType']);
+
+      $aFs[Factory::FILTER][] = new QueryFilter(
+        $relation['joinField'],
+        $args['id'],
+        '=',
+        $intermediateFactory
+      );
+
+      $aFs[Factory::JOIN][] = new JoinFilter(
+        $intermediateFactory,
+        $relation['joinField'],
+        $relation['joinFieldRelation'],
+      );
+
+      $factory = $this->getFactory();
+      //retrieve the only element of the intermediate table, which contains the data for the relatedResource
+      $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
+    } else {
+      $object = $this->doFetch($request, $args['id']);
+    };
+
     $id = $object->getKeyValueDict()[$relation['key']];
 
     if (is_null($id)) {
@@ -683,12 +728,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       ->withHeader("Content-Type", 'application/vnd.api+json');
   }
 
+  /*
+  * API endpoint to patch a to one rlationship link
+  */
   //This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist 
   //by patching the foreingkey. Simple fix could be to make foreignkey immutable for cases like this.
   public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-
     $jsonBody = $request->getParsedBody(); 
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody)) {
@@ -729,58 +776,47 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
 
   /**
-   * 
+   * API endpoint for retrieving to many relationship resource records
    */
   public function getToManyRelatedResource(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
 
     // Base object -> Relation objects
-    $object = $this->doFetch($request, $args['id']);
+    // $object = $this->doFetch($request, $args['id']);
 
     $toManyRelation = $this->getToManyRelationships()[$args['relation']];
     $relationClass = $toManyRelation['relationType'];
     $relationApiClass = new ($this->container->get('classMapper')->get($relationClass))($this->container);
 
-    /* Prepare filter for to-many relations */
-
-    // Example:
-    // 'accessGroups' => [
-    //   'intermidiate' => AccessGroupUser::class, 
-    //   'filterField' => AccessGroupUser::USER_ID,
-    //   'joinField' => AccessGroupUser::ACCESS_GROUP_ID,
-    //   'joinFieldRelation' => AccessGroup::ACCESS_GROUP_ID,
-    //   'relationType' => AccessGroup::class,
-    // ],
-
     $aFs = [];
-    if (array_key_exists('intermidiate', $toManyRelation)) {
-      $aFs[Factory::FILTER][] = new QueryFilter(
-        $toManyRelation['filterField'],
-        $args['id'],
-        '=',
-        self::getModelFactory($toManyRelation['intermidiate'])
-      );
+    $filterField = $toManyRelation['relationKey'];
+    $filterFactory = null;
+
+    if (array_key_exists('junctionTableType', $toManyRelation)) {
+      $filterField = $toManyRelation['junctionTableFilterField'];
+      $filterFactory = self::getModelFactory($toManyRelation['junctionTableType']);
 
       $aFs[Factory::JOIN][] = new JoinFilter(
-        self::getModelFactory($toManyRelation['intermidiate']),
-        $toManyRelation['joinField'],
-        $toManyRelation['joinFieldRelation'],
+        self::getModelFactory($toManyRelation['junctionTableType']),
+        $toManyRelation['junctionTableJoinField'],
+        $toManyRelation['key'],
       );
-    } else {
-      $aFs[Factory::FILTER][] = new QueryFilter(
-        $toManyRelation['filterField'],
-        $args['id'],
-        '=',
-      );
-    };
+    } 
+
+    $aFs[Factory::FILTER][] = new QueryFilter(
+      $filterField,
+      $args['id'],
+      '=',
+      $filterFactory
+    );
 
     return self::getManyResources($relationApiClass, $request, $response, $aFs);
   }
 
 
   /**
-   * 
+   * API get request to retrieve the to many relationship links 
    */
   public function getToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
@@ -836,7 +872,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * 
+   * PATCH request to patch the to many relationship link TODO 
    */
   public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
@@ -848,7 +884,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * 
+   * POST request for the to many relationship link TODO
    */
   public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
@@ -860,7 +896,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * 
+   * DELETE request for the to many relationship link TODO
    */
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {

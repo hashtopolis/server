@@ -23,8 +23,6 @@ class TaskAPI extends AbstractModelAPI {
       return Task::class;
     }
 
-
-    
     public static function getToOneRelationships(): array {
       return [
         'crackerBinary' => [
@@ -37,7 +35,18 @@ class TaskAPI extends AbstractModelAPI {
           'key' => Task::CRACKER_BINARY_TYPE_ID, 
 
           'relationType' => CrackerBinaryType::class,
-          'relationKey' => CrackerBinaryTYpe::CRACKER_BINARY_TYPE_ID,
+          'relationKey' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+        ],
+        'hashlist' => [
+          'key' => TaskWrapper::HASHLIST_ID, 
+
+          'relationType' => Hashlist::class,
+          'relationKey' => Hashlist::HASHLIST_ID,
+
+          //because task doesnt have a direct connection to hashlist
+          'intermediateType' => TaskWrapper::class,
+          'joinField' => Task::TASK_WRAPPER_ID,
+          'joinFieldRelation' => TaskWrapper::TASK_WRAPPER_ID,
         ],
       ];
     }
@@ -63,17 +72,6 @@ class TaskAPI extends AbstractModelAPI {
 
           'relationType' => File::class,
           'relationKey' => File::FILE_ID,        
-        ],
-        // FIXME: A task should be linked to a single hashlist instead
-        'hashlist' => [
-          'key' => Task::TASK_WRAPPER_ID,
-          
-          'junctionTableType' => TaskWrapper::class,
-          'junctionTableFilterField' => TaskWrapper::TASK_WRAPPER_ID,
-          'junctionTableJoinField' => TaskWrapper::HASHLIST_ID,
-
-          'relationType' => Hashlist::class,
-          'relationKey' => Hashlist::HASHLIST_ID,        
         ],
         'speeds' => [
           'key' => Task::TASK_ID,
