@@ -15,8 +15,6 @@ use DBA\ContainFilter;
 use DBA\LimitFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
-use phpDocumentor\Reflection\Types\This;
-use Slim\Exception\HttpException;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI
 {
@@ -109,6 +107,17 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       parent::getFeatures(),
       call_user_func($this->getDBAclass() . '::getFeatures'),
     );
+  }
+
+   /** 
+   * Get features based on DBA model features
+   * 
+   * @param string $dbaClass is the dba class to get the features from
+   */
+  //TODO doesnt retrieve features based on formfields, could be done by adding api class in relationship objects
+  final protected function getFeaturesOther(string $dbaClass): array
+  {
+    return call_user_func($dbaClass . '::getFeatures');
   }
 
   /**
@@ -278,6 +287,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * API entry point for deletion of single object
    */
   public function deleteOne(Request $request, Response $response, array $args): Response
+  // TODO how to handle cascading deletes?
+  // ex. Hash foreignkey to hashlist can't be null, but hashlist delete doesnt cascade to Hash
+  // Which effectively means that we cant delete a hashlist because of foreingkey constraints 
+  // Solution 1: make cascading rules in Database
+  // Solution 2: implement delete logic in every api model 
   {
     $this->preCommon($request);
     $object = $this->doFetch($request, $args['id']);
@@ -309,6 +323,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   protected function getFilterACL(): array
   {
     return [];
+  }
+
+  /**
+   * Helper function to determine if $resourceRecord is a valid resource record
+   * returns true if it is a valid resource record and false if it is an invallid resource record
+   */
+  final protected function validateResourceRecord(mixed $resourceRecord): bool {
+    return (isset($resourceRecord['type']) && is_numeric($resourceRecord['id']));
   }
 
   /**
@@ -729,7 +751,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /*
-  * API endpoint to patch a to one rlationship link
+  * API endpoint to patch a to one relationship link
   */
   //This works as intended but it can give weird behaviour. ex. it allows you to put an MD5 hash to a SHA1 hashlist 
   //by patching the foreingkey. Simple fix could be to make foreignkey immutable for cases like this.
@@ -763,7 +785,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $object = $this->doFetch($request, intval($args['id']));
     if ($data == null) {
       $factory->set($object, $relationKey, null);
-    } elseif (!isset($data['type']) || !is_numeric($data['id'])) {
+    } elseif (!$this->validateResourceRecord($data)) {
       throw new HttpErrorException('No valid resource identifier object was given as data!');
     } else {
       $factory->set($object, $relationKey, $data["id"]);
@@ -877,9 +899,69 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $object = $this->doFetch($request, $args['id']);
+    $jsonBody = $request->getParsedBody(); 
 
-    return $response->withStatus(201)
+    if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {
+      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
+    }
+    $data = $jsonBody['data'];
+
+    $relation = $this->getToManyRelationships()[$args['relation']];
+    $primaryKey = $relation['key'];
+    $relationKey = $relation['relationKey'];
+    if ($relationKey == null) {
+      throw new HttpErrorException("Relation does not exist!");
+    }
+
+    $relationType = $relation['relationType'];
+    $feature = $this->getFeaturesOther($relationType);
+    if ($feature['read_only'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
+    }
+    if ($feature['protected'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
+    }
+    if ($feature['private'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
+    }
+
+    $factory = self::getModelFactory($relationType);
+
+    $qF = new QueryFilter($relationKey, $args['id'], "=");
+    $models = $factory->filter([Factory::FILTER => $qF]);
+    //TODO Would be nicer if filter/factory could return a dict based on primarykeys directly
+    $modelsDict = array();
+    foreach ($models as $item) {
+      $modelsDict[$item->getPrimaryKeyValue()] = $item;
+    }
+
+    $updates = [];
+    foreach ($data as $item) {
+      if(!$this->validateResourceRecord($item)) {
+        $encoded_item = json_encode($item);
+        throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
+      }
+      $updates[] = new MassUpdateSet($item["id"], $args["id"]);
+      unset($modelsDict[$item["id"]]);
+    }
+
+    $leftover_primarykeys = array_keys($modelsDict);
+    if ($feature["null"] == False && count($leftover_primarykeys) > 0) {
+      throw new HttpErrorException("Not all current relationship objects have been included,
+       but the foreignkey can't be set to null. Either add all objects or delete the not needed objects");
+    }
+    foreach ($leftover_primarykeys as $key) {
+      //set all foreignkeys of current relationships to null that have not been included
+      $updates[] = new MassUpdateSet($key, null);
+    }
+    $factory->getDB()->beginTransaction();//start transaction to be able roll back
+    $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+    if(!$factory->getDB()->commit()) {
+      throw new HttpErrorException("Was not able to update to many relationship");
+    }
+    //TODO catch database exceptions like failed foreignkey constraint and return correct error response
+
+    return $response->withStatus(204)
       ->withHeader("Content-Type", "application/vnd.api+json");
   }
 
@@ -896,7 +978,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * DELETE request for the to many relationship link TODO
+   * DELETE request for the to many relationship link TODO 
    */
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
