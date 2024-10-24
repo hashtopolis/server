@@ -894,7 +894,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * PATCH request to patch the to many relationship link TODO 
+   * PATCH request to patch the to many relationship link TODO: handle intermediate tables
    */
   public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
@@ -914,14 +914,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
 
     $relationType = $relation['relationType'];
-    $feature = $this->getFeaturesOther($relationType);
-    if ($feature['read_only'] == True) {
+    $features = $this->getFeaturesOther($relationType);
+    if ($features[$relationKey]['read_only'] == True) {
       throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
     }
-    if ($feature['protected'] == True) {
+    if ($features[$relationKey]['protected'] == True) {
       throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
     }
-    if ($feature['private'] == True) {
+    if ($features[$relationKey]['private'] == True) {
       throw new HttpForbiddenException($request, "Key '$relationKey' is private");
     }
 
@@ -946,7 +946,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
 
     $leftover_primarykeys = array_keys($modelsDict);
-    if ($feature["null"] == False && count($leftover_primarykeys) > 0) {
+    if ($features[$relationKey]["null"] == False && count($leftover_primarykeys) > 0) {
       throw new HttpErrorException("Not all current relationship objects have been included,
        but the foreignkey can't be set to null. Either add all objects or delete the not needed objects");
     }
@@ -959,7 +959,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     if(!$factory->getDB()->commit()) {
       throw new HttpErrorException("Was not able to update to many relationship");
     }
-    //TODO catch database exceptions like failed foreignkey constraint and return correct error response
 
     return $response->withStatus(204)
       ->withHeader("Content-Type", "application/vnd.api+json");
@@ -978,12 +977,57 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * DELETE request for the to many relationship link TODO 
+   * DELETE request for the to many relationship link
+   * currently there is no object that can be altered this way because of constraints
    */
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $object = $this->doFetch($request, $args['id']);
+    // $object = $this->doFetch($request, $args['id']);
+    $jsonBody = $request->getParsedBody(); 
+
+    if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {
+      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
+    }
+
+    $relation = $this->getToManyRelationships()[$args['relation']];
+    $primaryKey = $relation['key'];
+    $relationKey = $relation['relationKey'];
+    if ($relationKey == null) {
+      throw new HttpErrorException("Relation does not exist!");
+    }
+
+    $relationType = $relation['relationType'];
+    $feature = $this->getFeaturesOther($relationType);
+    if ($feature[$relationKey]['read_only'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
+    }
+    if ($feature[$relationKey]['protected'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
+    }
+    if ($feature[$relationKey]['private'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
+    }
+    if ($feature[$relationKey]['null'] == False) {
+      // In this scenario another solution could be to delete object TODO?
+      throw new HttpForbiddenException($request, "Key '$relationKey' cant be set to null");
+    }
+
+    $data = $jsonBody['data'];
+
+    foreach ($data as $item) {
+      if(!$this->validateResourceRecord($item)) {
+        $encoded_item = json_encode($item);
+        throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
+      }
+      $updates[] = new MassUpdateSet($item["id"], null);
+    }
+    $factory = self::getModelFactory($relationType);
+    $factory->getDB()->beginTransaction();//start transaction to be able roll back
+    $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
+    if (!$factory->getDB()->commit()) {
+      throw new HttpErrorException("Some resources failed updating");
+    }
 
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
