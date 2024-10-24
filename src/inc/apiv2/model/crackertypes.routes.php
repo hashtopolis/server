@@ -5,6 +5,7 @@ use DBA\OrderFilter;
 
 use DBA\CrackerBinary;
 use DBA\CrackerBinaryType;
+use DBA\Task;
 
 require_once(dirname(__FILE__) . "/../common/AbstractModelAPI.class.php");
 
@@ -27,6 +28,12 @@ class CrackerBinaryTypeAPI extends AbstractModelAPI {
           'relationType' => CrackerBinary::class,
           'relationKey' => CrackerBinary::CRACKER_BINARY_TYPE_ID,        
         ],
+        'tasks' => [
+          'key' => CrackerBinaryType::CRACKER_BINARY_TYPE_ID,
+          
+          'relationType' => Task::class,
+          'relationKey' => Task::CRACKER_BINARY_TYPE_ID,
+        ]
       ];
     }
 
