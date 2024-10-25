@@ -31,7 +31,7 @@ class PreTaskAPI extends AbstractModelAPI {
       /* Expand requested section */
       switch($expand) {
         case 'pretaskFiles':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             Pretask::PRETASK_ID,
             Factory::getFilePretaskFactory(),

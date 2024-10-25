@@ -33,7 +33,7 @@ class AgentAPI extends AbstractModelAPI {
       /* Expand requested section */
       switch($expand) {
         case 'accessGroups':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             Agent::AGENT_ID,
             Factory::getAccessGroupAgentFactory(),

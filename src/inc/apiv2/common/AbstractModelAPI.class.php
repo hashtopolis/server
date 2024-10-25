@@ -118,7 +118,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
     
 
     /**
-     * Retrieve ManyToOne relalation for $objects ('parents') of type $targetFactory via 'intermidate'
+     * Retrieve ManyToMany relation for $objects ('parents') of type $targetFactory via 'intermediate'
      * of $intermediateFactory joining on $joinField (between 'intermediate' and 'target'). Filtered by 
      * $filterField at $intermediateFactory.
      * 
@@ -131,7 +131,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
      * @return array 
      */
-    final protected static function getManyToOneRelationViaIntermediate(
+    final protected static function getManyToManyRelation(
       array $objects, 
       string $objectField,
       object $intermediateFactory,

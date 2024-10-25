@@ -34,7 +34,7 @@ class TaskAPI extends AbstractModelAPI {
       /* Expand requested section */
       switch($expand) {
         case 'assignedAgents':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             Task::TASK_ID,
             Factory::getAssignmentFactory(),
@@ -57,7 +57,7 @@ class TaskAPI extends AbstractModelAPI {
             CrackerBinaryType::CRACKER_BINARY_TYPE_ID
           );
         case 'hashlist':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             Task::TASK_WRAPPER_ID,
             Factory::getTaskWrapperFactory(),
@@ -73,7 +73,7 @@ class TaskAPI extends AbstractModelAPI {
             Speed::TASK_ID
           );
         case 'files':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             Task::TASK_ID,
             Factory::getFileTaskFactory(),
