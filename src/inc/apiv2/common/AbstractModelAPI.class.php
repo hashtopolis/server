@@ -11,8 +11,6 @@ use DBA\AbstractModelFactory;
 use DBA\JoinFilter;
 use DBA\Factory;
 use DBA\ContainFilter;
-use DBA\OrderFilter;
-use DBA\QueryFilter;
 use Middlewares\Utils\HttpErrorException;
 
 
@@ -127,7 +125,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
      * @param array $objects Objects Fetch relation for selected Objects 
      * @param string $objectField Field to use as base for $objects
      * @param object $intermediateFactory Factory used as intermediate between parentObject and targetObject
-     * @param string $filterField Filter field of intermadiateObject to filter against $objects field
+     * @param string $filterField Filter field of intermediateObject to filter against $objects field
      * @param object $targetFactory Object properties of objects returned
      * @param string $joinField Field to connect 'intermediate' to 'target'
 
@@ -139,12 +137,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       object $intermediateFactory,
       string $filterField,
       object $targetFactory,
-      string $joinField,
+      string $joinField
     ): array {
       assert($intermediateFactory instanceof AbstractModelFactory);
       assert($targetFactory instanceof AbstractModelFactory);
-      $retval = array();
-
+      $many2Many = array();
 
       /* Retrieve Parent -> Intermediate -> Target objects */
       $objectIds = [];
@@ -156,20 +153,21 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
       $jF = new JoinFilter($intermediateFactory, $joinField, $joinField);
       $hO = $targetFactory->filter([Factory::FILTER => $qF, Factory::JOIN => $jF]);
 
-      /* Build mapping Parent -> Intermediate */
-      $i2p = [];
-      foreach($hO[$intermediateFactory->getModelName()] as $intermidiateObject) {
-        $kv = $intermidiateObject->getKeyValueDict();
-        $i2p[$kv[$joinField]] = $kv[$filterField];
-      }
+      $intermediateObjectList = $hO[$intermediateFactory->getModelName()];
+      $targetObjectList = $hO[$targetFactory->getModelName()];
+      
+      $intermediateObject = current($intermediateObjectList);
+      $targetObject = current($targetObjectList);
+      
+      while ($intermediateObject && $targetObject) {
+        $kv = $intermediateObject->getKeyValueDict();
+        $many2Many[$kv[$filterField]][] = $targetObject;
 
-      /* Associate Target -> Parent (via Intermediate) */
-      foreach($hO[$targetFactory->getModelName()] as $targetObject) {
-        $parent = $i2p[$targetObject->getKeyValueDict()[$joinField]];
-        $retval[$parent][] = $targetObject;
+        $intermediateObject = next($intermediateObjectList);
+        $targetObject = next($targetObjectList);
       }
-
-      return $retval;
+      
+      return $many2Many;
     }
 
   /** 
@@ -216,7 +214,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI {
 
 
   /**
-   * Request single object from database & validate permissons
+   * Request single object from database & validate permissions
    */
   protected function doFetch(Request $request, string $pk): mixed
   {
