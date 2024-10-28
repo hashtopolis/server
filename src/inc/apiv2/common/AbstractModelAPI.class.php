@@ -15,6 +15,7 @@ use DBA\ContainFilter;
 use DBA\LimitFilter;
 use DBA\OrderFilter;
 use DBA\QueryFilter;
+use Psr\Http\Message\ServerRequestInterface;
 
 abstract class AbstractModelAPI extends AbstractBaseAPI
 {
@@ -118,6 +119,23 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   final protected function getFeaturesOther(string $dbaClass): array
   {
     return call_user_func($dbaClass . '::getFeatures');
+  }
+
+  /**
+   * Find primary key for  another DBA object
+   * A little bit hacky because the getPrimaryKey function in dbaClass is not static
+   * 
+   * @param string $dbaClass is the dba class to get the primarykey from
+   */
+  protected function getPrimaryKeyOther(string $dbaClass): string
+  {
+    $features = $this->getFeaturesOther($dbaClass);
+    # Word-around required since getPrimaryKey is not static in dba/models/*.php
+    foreach($features as $key => $value) {
+      if ($value['pk'] == True) {
+        return $key;
+      }
+    }
   }
 
   /**
@@ -282,6 +300,29 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return array($required_perm);
   }
 
+  //TODO check where this function can be used
+  /**
+   * Validate the Permission of a foreignkey and check if foreign key may be altered
+   * 
+   * @param ServerRequestInterface $request Current request that is being handled
+   * @param string $relationKey Field to use as base for $objects
+   * @param array $features The features of the DBA object of the child
+   * 
+   * @throws HttpForbiddenException when it is not allowed to alter the foreignkey of the child object
+   * 
+   * @return void 
+   */
+  final protected function checkForeignkeyPermission(ServerRequestInterface $request, string $relationKey, array $features) {
+    if ($features[$relationKey]['read_only'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
+    }
+    if ($features[$relationKey]['protected'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
+    }
+    if ($features[$relationKey]['private'] == True) {
+      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
+    }
+  }
 
   /**
    * API entry point for deletion of single object
@@ -331,6 +372,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    */
   final protected function validateResourceRecord(mixed $resourceRecord): bool {
     return (isset($resourceRecord['type']) && is_numeric($resourceRecord['id']));
+  }
+
+  final protected function ResourceRecordArrayToUpdateArray($data, $parentId) {
+    $updates = [];
+    foreach ($data as $item) {
+      if(!$this->validateResourceRecord($item)) {
+        $encoded_item = json_encode($item);
+        throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
+      }
+      $updates[] = new MassUpdateSet($item["id"], $parentId);
+    }
+    return $updates;
   }
 
   /**
@@ -901,13 +954,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->preCommon($request);
     $jsonBody = $request->getParsedBody(); 
 
-    if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {
+    if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
       throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
     $data = $jsonBody['data'];
 
     $relation = $this->getToManyRelationships()[$args['relation']];
-    $primaryKey = $relation['key'];
+    $primaryKey = $this->getPrimaryKeyOther($relation['relationType']);
     $relationKey = $relation['relationKey'];
     if ($relationKey == null) {
       throw new HttpErrorException("Relation does not exist!");
@@ -930,6 +983,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $qF = new QueryFilter($relationKey, $args['id'], "=");
     $models = $factory->filter([Factory::FILTER => $qF]);
     //TODO Would be nicer if filter/factory could return a dict based on primarykeys directly
+    //rethink the logic with the dict
     $modelsDict = array();
     foreach ($models as $item) {
       $modelsDict[$item->getPrimaryKeyValue()] = $item;
@@ -970,7 +1024,28 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   public function postToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $object = $this->doFetch($request, $args['id']);
+
+    $jsonBody = $request->getParsedBody(); 
+    if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
+      throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
+    }
+    $data = $jsonBody['data'];
+
+    $relation = $this->getToManyRelationships()[$args['relation']];
+    $relationKey = $relation['relationKey'];
+    if ($relationKey == null) {
+      throw new HttpErrorException("Relation does not exist!");
+    }
+
+    $relationType = $relation['relationType'];
+    $primaryKey = $this->getPrimaryKeyOther($relationType);
+    $features = $this->getFeaturesOther($relationType);
+
+    $this->checkForeignkeyPermission($request, $relationKey, $features);
+
+    $factory = self::getModelFactory($relationType);
+    $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
+    $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
 
     return $response->withStatus(201)
       ->withHeader("Content-Type", "application/vnd.api+json");
@@ -980,6 +1055,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * DELETE request for the to many relationship link
    * currently there is no object that can be altered this way because of constraints
    */
+  //TODO check if primarykey here is correctly
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
@@ -1018,7 +1094,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     foreach ($data as $item) {
       if(!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
-        throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
+        throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
       }
       $updates[] = new MassUpdateSet($item["id"], null);
     }
