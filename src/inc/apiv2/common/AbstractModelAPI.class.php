@@ -110,7 +110,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     );
   }
 
-   /** 
+  /** 
    * Get features based on DBA model features
    * 
    * @param string $dbaClass is the dba class to get the features from
@@ -130,8 +130,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   protected function getPrimaryKeyOther(string $dbaClass): string
   {
     $features = $this->getFeaturesOther($dbaClass);
-    # Word-around required since getPrimaryKey is not static in dba/models/*.php
-    foreach($features as $key => $value) {
+    # Work-around required since getPrimaryKey is not static in dba/models/*.php
+    foreach ($features as $key => $value) {
       if ($value['pk'] == True) {
         return $key;
       }
@@ -312,7 +312,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * 
    * @return void 
    */
-  final protected function checkForeignkeyPermission(ServerRequestInterface $request, string $relationKey, array $features) {
+  final protected function checkForeignkeyPermission(ServerRequestInterface $request, string $relationKey, array $features)
+  {
     if ($features[$relationKey]['read_only'] == True) {
       throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
     }
@@ -370,14 +371,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * Helper function to determine if $resourceRecord is a valid resource record
    * returns true if it is a valid resource record and false if it is an invallid resource record
    */
-  final protected function validateResourceRecord(mixed $resourceRecord): bool {
+  final protected function validateResourceRecord(mixed $resourceRecord): bool
+  {
     return (isset($resourceRecord['type']) && is_numeric($resourceRecord['id']));
   }
 
-  final protected function ResourceRecordArrayToUpdateArray($data, $parentId) {
+  final protected function ResourceRecordArrayToUpdateArray($data, $parentId)
+  {
     $updates = [];
     foreach ($data as $item) {
-      if(!$this->validateResourceRecord($item)) {
+      if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
         throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
       }
@@ -515,26 +518,26 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     // Build next link
     if (!empty($objects)) {
-    $nextId = $defaultSort == "ASC" ? end($objects)->getId() : reset($objects)->getId();
-    if ($nextId < $max) { //only set next page when its not the last page
-      $nextParams = $selfParams;
-      $nextParams['page']['after'] = $nextId;
-      unset($nextParams['page']['before']);
-      $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
+      $nextId = $defaultSort == "ASC" ? end($objects)->getId() : reset($objects)->getId();
+      if ($nextId < $max) { //only set next page when its not the last page
+        $nextParams = $selfParams;
+        $nextParams['page']['after'] = $nextId;
+        unset($nextParams['page']['before']);
+        $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
+      }
+      // Build prev link 
+      $prevId = $defaultSort == "DESC" ? end($objects)->getId() : reset($objects)->getId();
+      if ($prevId != 1) { //only set previous page when its not the first page
+        $prevParams = $selfParams;
+        //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
+        //to the json API spec https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links
+        //We could also get the lowest id the same way we got the max, but this is probably unnecessary expensive.
+        //But pull request: https://github.com/hashtopolis/server/pull/1069 would create a cheaper way of doing this in a single query
+        $prevParams['page']['before'] = $prevId;
+        unset($prevParams['page']['after']);
+        $linksPrev = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
+      }
     }
-    // Build prev link 
-    $prevId = $defaultSort == "DESC" ? end($objects)->getId() : reset($objects)->getId();
-    if ($prevId != 1) { //only set previous page when its not the first page
-      $prevParams = $selfParams;
-      //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
-      //to the json API spec https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links
-      //We could also get the lowest id the same way we got the max, but this is probably unnecessary expensive.
-      //But pull request: https://github.com/hashtopolis/server/pull/1069 would create a cheaper way of doing this in a single query
-      $prevParams['page']['before'] = $prevId;
-      unset($prevParams['page']['after']);
-      $linksPrev = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($prevParams));
-    }
-  }
 
     //build first link
     $firstParams = $request->getQueryParams();
@@ -614,11 +617,15 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $this->preCommon($request);
     $object = $this->doFetch($request, $args['id']);
 
-    $data = $request->getParsedBody()["attributes"];
+    $data = $request->getParsedBody()['data'];
+    if (!$this->validateResourceRecord($data)) {
+      throw new HttpErrorException('No valid resource identifier object was given as data!');
+    }
     $aliasedfeatures = $this->getAliasedFeatures();
+    $attributes = $data['attributes'];
 
     // Validate incoming data
-    foreach (array_keys($data) as $key) {
+    foreach (array_keys($attributes) as $key) {
       // Ensure key is a regular string
       if (is_string($key) == False) {
         throw new HttpErrorException("Key '$key' invalid", 403);
@@ -640,11 +647,11 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       }
     }
     // Validate input data if it matches the correct type or subtype
-    $this->validateData($data, $aliasedfeatures);
+    $this->validateData($attributes, $aliasedfeatures);
 
     // This does the real things, patch the values that were sent in the data.
-    $mappedData = $this->unaliasData($data, $aliasedfeatures);
-    $this->updateObject($object, $mappedData);
+    $mappedData = $this->unaliasData($attributes, $aliasedfeatures);
+    $this->updateObject($object, $mappedData); //TODO updateObject not implemented in every route?
 
     // Return updated object
     $newObject = $this->getFactory()->get($object->getId());
@@ -706,9 +713,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
       $factory = $this->getFactory();
       $object = $factory->filter($aFs)[$intermediateFactory->getModelName()][0];
-    }
-    else {
-    // Base object
+    } else {
+      // Base object
       $object = $this->doFetch($request, $args['id']);
     }
 
@@ -811,7 +817,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   public function patchToOneRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $jsonBody = $request->getParsedBody(); 
+    $jsonBody = $request->getParsedBody();
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody)) {
       throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data": {"type": "foo", "id": 1}}');
@@ -877,7 +883,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         $toManyRelation['junctionTableJoinField'],
         $toManyRelation['key'],
       );
-    } 
+    }
 
     $aFs[Factory::FILTER][] = new QueryFilter(
       $filterField,
@@ -952,7 +958,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   public function patchToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    $jsonBody = $request->getParsedBody(); 
+    $jsonBody = $request->getParsedBody();
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
       throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
@@ -991,7 +997,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $updates = [];
     foreach ($data as $item) {
-      if(!$this->validateResourceRecord($item)) {
+      if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
         throw new HttpErrorException('Invallid resource record given in list! invalid resource record: ' . $encoded_item);
       }
@@ -1008,9 +1014,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       //set all foreignkeys of current relationships to null that have not been included
       $updates[] = new MassUpdateSet($key, null);
     }
-    $factory->getDB()->beginTransaction();//start transaction to be able roll back
+    $factory->getDB()->beginTransaction(); //start transaction to be able roll back
     $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
-    if(!$factory->getDB()->commit()) {
+    if (!$factory->getDB()->commit()) {
       throw new HttpErrorException("Was not able to update to many relationship");
     }
 
@@ -1025,7 +1031,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   {
     $this->preCommon($request);
 
-    $jsonBody = $request->getParsedBody(); 
+    $jsonBody = $request->getParsedBody();
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) || !is_array($jsonBody['data'])) {
       throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
     }
@@ -1060,7 +1066,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   {
     $this->preCommon($request);
     // $object = $this->doFetch($request, $args['id']);
-    $jsonBody = $request->getParsedBody(); 
+    $jsonBody = $request->getParsedBody();
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {
       throw new HttpErrorException('No data was sent! Send the json data in the following format: {"data":[{"type": "foo", "id": 1}}]');
@@ -1092,14 +1098,14 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $data = $jsonBody['data'];
 
     foreach ($data as $item) {
-      if(!$this->validateResourceRecord($item)) {
+      if (!$this->validateResourceRecord($item)) {
         $encoded_item = json_encode($item);
         throw new HttpErrorException('Invalid resource record given in list! invalid resource record: ' . $encoded_item);
       }
       $updates[] = new MassUpdateSet($item["id"], null);
     }
     $factory = self::getModelFactory($relationType);
-    $factory->getDB()->beginTransaction();//start transaction to be able roll back
+    $factory->getDB()->beginTransaction(); //start transaction to be able roll back
     $factory->massSingleUpdate($primaryKey, $relationKey, $updates);
     if (!$factory->getDB()->commit()) {
       throw new HttpErrorException("Some resources failed updating");
