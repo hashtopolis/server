@@ -398,7 +398,7 @@ abstract class AbstractBaseAPI
       $obj = array_map('intval', preg_split("/,/", $val, -1, PREG_SPLIT_NO_EMPTY));
     } elseif ($feature['type'] == 'dict' && $feature['subtype'] = 'bool') {
       $obj = unserialize($val);
-    } elseif (str_starts_with($feature['type'], 'str')) {
+    } elseif (str_starts_with($feature['type'], 'str') && $val !== null) {
       $obj = html_entity_decode($val, ENT_COMPAT, "UTF-8");
     }
     else {
