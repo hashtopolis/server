@@ -431,7 +431,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
      * TODO: Deny pagination with un-stable sorting
      */
     $defaultSort = $apiClass->getQueryParameterFamilyMember($request, 'page', 'after') == null &&
-      $apiClass->getQueryParameterFamilyMember($request, 'page', 'before') != null  ?  'DESC' : 'ASC';
+      $apiClass->getQueryParameterFamilyMember($request, 'page', 'before') != null ?  'DESC' : 'ASC';
     $orderTemplates = $apiClass->makeOrderFilterTemplates($request, $aliasedfeatures, $defaultSort);
 
     // Build actual order filters
@@ -439,15 +439,22 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $aFs[Factory::ORDER][] = new OrderFilter($orderTemplate['by'], $orderTemplate['type']);
     }
 
-    $aFs[Factory::LIMIT] = new LimitFilter($pageSize);
-
-    $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '>', $factory);
-    $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
-    if (isset($pageBefore)) {
-      $aFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageBefore, '<', $factory);
-    }
     /* Include relation filters */
     $finalFs = array_merge($aFs, $relationFs);
+
+    //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
+    //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
+    //if this query is too expensive for big tables, it should be removed
+    $max = $factory->minMaxFilter($finalFs, $apiClass->getPrimaryKey(), "MAX");
+
+    //pagination filters need to be added after max has been calculated
+    $finalFs[Factory::LIMIT] = new LimitFilter($pageSize);
+
+    $finalFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageAfter, '>', $factory);
+    $pageBefore = $apiClass->getQueryParameterFamilyMember($request, 'page', 'before');
+    if (isset($pageBefore)) {
+      $finalFs[Factory::FILTER][] = new QueryFilter($apiClass->getPrimaryKey(), $pageBefore, '<', $factory);
+    }
 
     /* Request objects */
     $filterObjects = $factory->filter($finalFs);
@@ -497,10 +504,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       $dataResources[] = $newObject;
     }
 
-    //according to JSON API spec, first and last have to be calculated if inexpensive to compute 
-    //(https://jsonapi.org/profiles/ethanresnick/cursor-pagination/#auto-id-links))
-    //if this query is too expensive for big tables, it should be removed
-    $max = $factory->minMaxFilter($relationFs, $apiClass->getPrimaryKey(), "MAX");
     //build last link
     $lastParams = $request->getQueryParams();
     unset($lastParams['page']['after']);
@@ -518,7 +521,18 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     // Build next link
     if (!empty($objects)) {
-      $nextId = $defaultSort == "ASC" ? end($objects)->getId() : reset($objects)->getId();
+      $minId = $maxId = $objects[0]->getId() ?? null;
+      foreach ($objects as $obj) {
+        $cur_id = $obj->getId();
+        if ($cur_id < $minId) {
+          $minId = $cur_id;
+        }
+        if ($cur_id > $maxId) {
+          $maxId = $cur_id;
+        }
+      }
+      $nextId = $defaultSort == "ASC" ? $maxId : $minId;
+
       if ($nextId < $max) { //only set next page when its not the last page
         $nextParams = $selfParams;
         $nextParams['page']['after'] = $nextId;
@@ -526,7 +540,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
         $linksNext = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($nextParams));
       }
       // Build prev link 
-      $prevId = $defaultSort == "DESC" ? end($objects)->getId() : reset($objects)->getId();
+      $prevId = $defaultSort == "DESC" ? $maxId : $minId;
       if ($prevId != 1) { //only set previous page when its not the first page
         $prevParams = $selfParams;
         //This scenario might return a link to an empty array if the elements with the lowest id are deleted, but this is allowed according
@@ -575,8 +589,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       ->withHeader("Content-Type", 'application/vnd.api+json; ext="https://jsonapi.org/profiles/ethanresnick/cursor-pagination"');
   }
 
-
-
   /**
    * API entry point for requesting multiple objects
    */
@@ -592,8 +604,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   {
     return $this->getAliasedFeatures();
   }
-
-
 
   /**
    * API entry point for requests of single object
@@ -619,7 +629,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $data = $request->getParsedBody()['data'];
     if (!$this->validateResourceRecord($data)) {
-      throw new HttpErrorException('No valid resource identifier object was given as data!');
+      throw new HttpErrorException('No valid resource identifier object was given as data!', 403);
     }
     $aliasedfeatures = $this->getAliasedFeatures();
     $attributes = $data['attributes'];
@@ -666,21 +676,26 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   {
     $this->preCommon($request);
 
-    $data = $request->getParsedBody();
+    $data = $request->getParsedBody()["data"];
     if ($data == null) {
-      throw new HttpErrorException("POST request requires data to be present");
+      throw new HttpErrorException("POST request requires data to be present", 403);
     }
+    //POST request RR only needs type, no ID
+    if (!isset($data['type'])) {
+      throw new HttpErrorException('No valid resource identifier object with type was given as data!', 403);
+    }
+    $attributes = $data["attributes"];
 
     $allFeatures = $this->getAliasedFeatures();
 
     // Validate incoming parameters
-    $this->validateParameters($data, $allFeatures);
+    $this->validateParameters($attributes, $allFeatures);
 
     // Validate incoming data by value
-    $this->validateData($data, $allFeatures);
+    $this->validateData($attributes, $allFeatures);
 
     // Remove key aliases and sanitize to 'db values and request creation
-    $mappedData = $this->unaliasData($data, $allFeatures);
+    $mappedData = $this->unaliasData($attributes, $allFeatures);
     $pk = $this->createObject($mappedData);
 
     // TODO: Return 409 (conflict) if resource already exists or cannot be created

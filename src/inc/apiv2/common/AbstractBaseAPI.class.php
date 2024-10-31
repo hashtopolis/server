@@ -781,7 +781,7 @@ abstract class AbstractBaseAPI
       ksort($invalidKeys);
       ksort($validFeatures);
       throw new HTException("Parameter(s) '" . join(", ", $invalidKeys) . "' not valid input " .
-                            "(valid key(s) : '" . join(", ", $validFeatures) . ")'");
+                            "(valid key(s) : '" . join(", ", $validFeatures) . ")'", 403);
     }
 
     // Find out about mandatory parameters which are not provided
