@@ -1130,35 +1130,23 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($lists, $user)) {
       throw new HTException("No access to the hashlists!");
     }
-    
     $hashlistIds = Util::arrayOfIds($lists);
     $qF1 = new ContainFilter(Hash::HASHLIST_ID, $hashlistIds);
     $qF2 = new QueryFilter(Hash::IS_CRACKED, 1, "=");
     $hashes = [];
-    $format = Factory::getHashlistFactory()->get($hashlistId);
-    if ($format->getFormat() != 0) {
-      $entries_binary = Factory::getHashBinaryFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-      foreach ($entries_binary as $entry) {
-        $arr = [
-          "hash" => $entry->getHash(),
-          "plain" => $entry->getPlaintext(),
-          "crackpos" => $entry->getCrackPos()
-        ];
-        $hashes[] = $arr;
+    $isBinary = $hashlist->getFormat() != 0;
+    $factory = $isBinary ? Factory::getHashBinaryFactory() : Factory::getHashFactory();
+    $entries = $factory->filter([Factory::FILTER => [$qF1, $qF2]]);
+    foreach ($entries as $entry) {
+      $arr = [
+        "hash" => $entry->getHash(),
+        "plain" => $entry->getPlaintext(),
+        "crackpos" => $entry->getCrackPos()
+      ];
+      if ($hashlist->getIsSalted()) {
+        $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
       }
-    } else {
-      $entries = Factory::getHashFactory()->filter([Factory::FILTER => [$qF1, $qF2]]);
-      foreach ($entries as $entry) {
-        $arr = [
-          "hash" => $entry->getHash(),
-          "plain" => $entry->getPlaintext(),
-          "crackpos" => $entry->getCrackPos()
-        ];
-        if (strlen($entry->getSalt()) > 0) {
-          $arr["hash"] .= $hashlist->getSaltSeparator() . $entry->getSalt();
-        }
-        $hashes[] = $arr;
-      }
+      $hashes[] = $arr;
     }
     return $hashes;
   }
