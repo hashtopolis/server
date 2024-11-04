@@ -99,7 +99,6 @@ class TaskUtils {
    * @throws HTException
    */
   public static function editNotes($taskId, $notes, $user) {
-    $notes = htmlentities($notes, ENT_QUOTES, "UTF-8");
     $task = TaskUtils::getTask($taskId, $user);
     Factory::getTaskFactory()->set($task, Task::NOTES, $notes);
   }
@@ -186,7 +185,7 @@ class TaskUtils {
    */
   public static function renameSupertask($taskWrapperId, $newName, $user) {
     $taskWrapper = TaskUtils::getTaskWrapper($taskWrapperId, $user);
-    Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::TASK_WRAPPER_NAME, htmlentities($newName, ENT_QUOTES, "UTF-8"));
+    Factory::getTaskWrapperFactory()->set($taskWrapper, TaskWrapper::TASK_WRAPPER_NAME, $newName);
   }
   
   /**
@@ -635,7 +634,7 @@ class TaskUtils {
   public static function rename($taskId, $name, $user) {
     // change task name
     $task = TaskUtils::getTask($taskId, $user);
-    Factory::getTaskFactory()->set($task, Task::TASK_NAME, htmlentities($name, ENT_QUOTES, "UTF-8"));
+    Factory::getTaskFactory()->set($task, Task::TASK_NAME, $name);
   }
   
   /**
@@ -745,7 +744,6 @@ class TaskUtils {
       throw new HTException("You cannot create a task for an archived hashlist!");
     }
     
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     if (strlen($name) == 0) {
       $name = "Task_" . $hashlist->getId() . "_" . date("Ymd_Hi");
     }
