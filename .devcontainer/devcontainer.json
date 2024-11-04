@@ -53,5 +53,6 @@
     "NODE_OPTIONS": "--use-openssl-ca"
   },
   "remoteUser": "vscode",
+  "overrideCommand": false,
   "postStartCommand": "composer install --working-dir=/var/www/html/"
 }
