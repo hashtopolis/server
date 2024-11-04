@@ -31,7 +31,7 @@ CREATE TABLE `Agent` (
   `uid`             VARCHAR(100) NOT NULL,
   `os`              INT(11)      NOT NULL,
   `devices`         TEXT         NOT NULL,
-  `cmdPars`         VARCHAR(256) NOT NULL,
+  `cmdPars`         TEXT         NOT NULL,
   `ignoreErrors`    TINYINT(4)   NOT NULL,
   `isActive`        TINYINT(4)   NOT NULL,
   `isTrusted`       TINYINT(4)   NOT NULL,
