@@ -763,8 +763,8 @@ class TaskUtils {
     else if (strpos($attackCmd, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("Attack command does not contain hashlist alias!");
     }
-    else if (strlen($attackCmd) > 16384) {
-      throw new HTException("Attack command is too long (max 16384 characters)!");
+    else if (strlen($attackCmd) > 65535) {
+      throw new HTException("Attack command is too long (max 65535 characters)!");
     }
     else if ($staticChunking < DTaskStaticChunking::NORMAL || $staticChunking > DTaskStaticChunking::NUM_CHUNKS) {
       throw new HTException("Invalid static chunk setting!");

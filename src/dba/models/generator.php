@@ -267,7 +267,7 @@ $CONF['HealthCheck'] = [
     ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int'],
     ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int'],
     ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(16384)', 'protected' => True],
+    ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
 ];
 $CONF['HealthCheckAgent'] = [
@@ -319,7 +319,7 @@ $CONF['Pretask'] = [
   'columns' => [
     ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskName', 'read_only' => False, 'type' => 'str(100)'],
-    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(16384)'],
+    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
     ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],
     ['name' => 'color', 'read_only' => False, 'type' => 'str(20)'],
@@ -382,7 +382,7 @@ $CONF['Task'] = [
   'columns' => [
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskName', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(16384)'],
+    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
     ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],
     ['name' => 'keyspace', 'read_only' => True, 'type' => 'int64', 'protected' => True],

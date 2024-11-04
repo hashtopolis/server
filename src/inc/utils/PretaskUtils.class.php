@@ -305,8 +305,8 @@ class PretaskUtils {
     else if (strpos($cmdLine, SConfig::getInstance()->getVal(DConfig::HASHLIST_ALIAS)) === false) {
       throw new HTException("The attack command does not contain the hashlist alias!");
     }
-    else if (strlen($cmdLine) > 16384) {
-      throw new HTException("Attack command is too long (max 16384 characters)!");
+    else if (strlen($cmdLine) > 65535) {
+      throw new HTException("Attack command is too long (max 65535 characters)!");
     }
     else if (Util::containsBlacklistedChars($cmdLine)) {
       throw new HTException("The command must contain no blacklisted characters!");
