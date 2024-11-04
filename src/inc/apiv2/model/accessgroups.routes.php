@@ -30,7 +30,7 @@ class AccessGroupAPI extends AbstractModelAPI {
       /* Expand requested section */
       switch($expand) {
         case 'userMembers':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             AccessGroup::ACCESS_GROUP_ID,
             Factory::getAccessGroupUserFactory(),
@@ -39,7 +39,7 @@ class AccessGroupAPI extends AbstractModelAPI {
             User::USER_ID
           );
         case 'agentMembers':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             AccessGroup::ACCESS_GROUP_ID,
             Factory::getAccessGroupAgentFactory(),

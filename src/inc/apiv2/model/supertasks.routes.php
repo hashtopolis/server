@@ -30,7 +30,7 @@ class SupertaskAPI extends AbstractModelAPI {
       /* Expand requested section */
       switch($expand) {
         case 'pretasks':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             Supertask::SUPERTASK_ID,
             Factory::getSupertaskPretaskFactory(),

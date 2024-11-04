@@ -58,7 +58,7 @@ class HashlistAPI extends AbstractModelAPI {
           );
         case 'hashlists':
           /* PARENT_HASHLIST_ID in use in intermediate table */
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects, 
             Hashlist::HASHLIST_ID,
             Factory::getHashlistHashlistFactory(),
@@ -67,7 +67,7 @@ class HashlistAPI extends AbstractModelAPI {
             Hashlist::HASHLIST_ID,
           );
         case 'tasks':
-          return $this->getManyToOneRelationViaIntermediate(
+          return $this->getManyToManyRelation(
             $objects,
             Hashlist::HASHLIST_ID,
             Factory::getTaskWrapperFactory(),
