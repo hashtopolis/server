@@ -105,6 +105,7 @@ class FilterTest(BaseTest):
             [x.id for x in all_objs if x.id != 100],
             [x.id for x in objs])
 
+    # is this test correct?  No description starts with net so just an empty array gets compared to an empty array
     def test_filter__startswith(self):
         objs = HashType.objects.filter(description__startswith="net")
         all_objs = HashType.objects.all()

@@ -116,6 +116,15 @@ class HashtopolisConnector(object):
         self._headers = {
             'Authorization': 'Bearer ' + self._token
         }
+    
+    def create_payload(self, obj, attributes, id=None):
+        payload = {"data": {
+            "type": type(obj).__name__,
+            "attributes": attributes
+        }}
+        if id is not None:
+            payload["data"]["id"] = id
+        return payload
 
     def validate_status_code(self, r, expected_status_code, error_msg):
         """ Validate response and convert to python exception """
@@ -190,12 +199,13 @@ class HashtopolisConnector(object):
         uri = self._hashtopolis_uri + obj.uri
         headers = self._headers
         headers['Content-Type'] = 'application/json'
-        payload = {}
+        attributes = {}
 
         for k, v in obj.diff().items():
             logger.debug("Going to patch object '%s' property '%s' from '%s' to '%s'", obj, k, v[0], v[1])
-            payload[k] = v[1]
-
+            attributes[k] = v[1]
+        
+        payload = self.create_payload(obj, attributes, id=obj.id)
         logger.debug("Sending PATCH payload: %s to %s", json.dumps(payload), uri)
         r = requests.patch(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, [201], "Patching failed")
@@ -212,8 +222,10 @@ class HashtopolisConnector(object):
         headers = self._headers
         headers['Content-Type'] = 'application/json'
 
-        payload = obj.get_fields()
+        attributes = obj.get_fields()
+        payload = self.create_payload(obj, attributes)
 
+        logger.debug("Sending POST payload: %s to %s", json.dumps(payload), uri)
         r = requests.post(uri, headers=headers, data=json.dumps(payload))
         self.validate_status_code(r, [201], "Creation of object failed")
 
