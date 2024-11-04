@@ -31,7 +31,7 @@ CREATE TABLE `Agent` (
   `uid`             VARCHAR(100) NOT NULL,
   `os`              INT(11)      NOT NULL,
   `devices`         TEXT         NOT NULL,
-  `cmdPars`         VARCHAR(256) NOT NULL,
+  `cmdPars`         TEXT         NOT NULL,
   `ignoreErrors`    TINYINT(4)   NOT NULL,
   `isActive`        TINYINT(4)   NOT NULL,
   `isTrusted`       TINYINT(4)   NOT NULL,
@@ -786,7 +786,7 @@ CREATE TABLE `NotificationSetting` (
 CREATE TABLE `Pretask` (
   `pretaskId`           INT(11)      NOT NULL,
   `taskName`            VARCHAR(100) NOT NULL,
-  `attackCmd`           VARCHAR(256) NOT NULL,
+  `attackCmd`           TEXT         NOT NULL,
   `chunkTime`           INT(11)      NOT NULL,
   `statusTimer`         INT(11)      NOT NULL,
   `color`               VARCHAR(20)  NULL,
@@ -851,7 +851,7 @@ CREATE TABLE `SupertaskPretask` (
 CREATE TABLE `Task` (
   `taskId`              INT(11)      NOT NULL,
   `taskName`            VARCHAR(256) NOT NULL,
-  `attackCmd`           VARCHAR(256) NOT NULL,
+  `attackCmd`           TEXT         NOT NULL,
   `chunkTime`           INT(11)      NOT NULL,
   `statusTimer`         INT(11)      NOT NULL,
   `keyspace`            BIGINT(20)   NOT NULL,
@@ -954,7 +954,7 @@ CREATE TABLE `HealthCheck` (
   `hashtypeId`      INT(11)      NOT NULL,
   `crackerBinaryId` INT(11)      NOT NULL,
   `expectedCracks`  INT(11)      NOT NULL,
-  `attackCmd`       VARCHAR(256) NOT NULL
+  `attackCmd`       TEXT         NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE `HealthCheckAgent` (
