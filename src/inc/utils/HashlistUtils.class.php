@@ -34,7 +34,7 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    Factory::getHashlistFactory()->set($hashlist, Hashlist::NOTES, htmlentities($notes, ENT_QUOTES, "UTF-8"));
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::NOTES, $notes);
   }
   
   /**
@@ -762,7 +762,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId, $brainFeatures) {
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
     $hexsalted = ($isHexSalted) ? "1" : "0";
