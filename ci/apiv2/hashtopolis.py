@@ -143,7 +143,51 @@ class HashtopolisConnector(object):
                 status_code=r.status_code,
                 exception_details=r_json.get('exception', []),
                 message=r_json.get('message', None))
+    
+    def validate_pagination_links(self, response, page):
+        """Validate all the links that are used for paginated data"""
+        data = response["data"]
+        highest_id = max(data, key=lambda obj: obj['id'])['id']
+        lowest_id = min(data, key=lambda obj: obj['id'])['id']
 
+        links = response["links"]
+        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["next"]).query)
+        assert (int(query_params["page[size]"][0]) == page["size"])
+        assert (int(query_params["page[after]"][0]) == highest_id)
+        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["prev"]).query)
+        assert (int(query_params["page[size]"][0]) == page["size"])
+        assert (int(query_params["page[before]"][0]) == lowest_id)
+        query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["first"]).query)
+        assert (int(query_params["page[size]"][0]) == page["size"])
+        assert (int(query_params["page[after]"][0]) == 0)
+        # query_params = urllib.parse.parse_qs(urllib.parse.urlparse(links["last"]).query)
+        # TODO not really a straightforward way to validate the last link
+    
+    def get_single_page(self, page, filter):
+        """Gets a single page by using the page parameters"""
+        self.authenticate()
+        headers = self._headers
+        request_uri = self._api_endpoint + self._model_uri
+        payload = {}
+
+        for k, v in page.items():
+            payload[f"page[{k}]"] = v
+        if filter:
+            for k, v in filter.items():
+                payload[f"filter[{k}]"] = v
+
+        request_uri = self._api_endpoint + self._model_uri + '?' + urllib.parse.urlencode(payload)
+        r = requests.get(request_uri, headers=headers)
+        logger.debug("Request URI: %s", urllib.parse.unquote(r.url))
+        self.validate_status_code(r, [200], "paging failed")
+        response = self.resp_to_json(r)
+        logger.debug("Response %s", json.dumps(response, indent=4))
+
+        # validate page links
+        self.validate_pagination_links(response, page)
+        return response["data"]
+
+    # todo refactor start_offset into page variable
     def filter(self, include, ordering, filter, start_offset):
         self.authenticate()
         headers = self._headers
@@ -250,11 +294,12 @@ class HashtopolisConnector(object):
 
 # Build Django ORM style django.query interface
 class QuerySet():
-    def __init__(self, cls, include=None, ordering=None, filters=None):
+    def __init__(self, cls, include=None, ordering=None, filters=None, pages=None):
         self.cls = cls
         self.include = include
         self.ordering = ordering
         self.filters = filters
+        self.pages = pages
 
     def __iter__(self):
         yield from self.__getitem__(slice(None, None, 1))
@@ -265,6 +310,13 @@ class QuerySet():
 
         if isinstance(k, slice):
             return self.filter_(k.start or 0, k.stop or sys.maxsize, k.step or 1)
+    
+    def get_pagination(self):
+        objs = self.cls.get_conn().get_single_page(self.pages, self.filters)
+        parsed_objs = []
+        for obj in objs:
+            parsed_objs.append(self.cls._model(**obj))
+        return parsed_objs
 
     def filter_(self, start, stop, step):
         index = start or 0
@@ -308,6 +360,10 @@ class QuerySet():
 
     def filter(self, **filters):
         self.filters = filters
+        return self
+    
+    def page(self, **pages):
+        self.pages = pages
         return self
 
     def all(self):
@@ -378,6 +434,10 @@ class ManagerBase(type):
     @classmethod
     def get(cls, **filters):
         return QuerySet(cls, filters=filters).get()
+
+    @classmethod
+    def paginate(cls, **pages):
+        return QuerySet(cls, pages=pages)
 
     @classmethod
     def filter(cls, **filters):
