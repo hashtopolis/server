@@ -708,14 +708,23 @@ abstract class AbstractBaseAPI
         }
         // Int
       } elseif (str_starts_with($features[$key]['type'], 'int')) {
-        // TODO: int32, int64 range validation
         if (is_integer($value) == False) {
           throw new HttpErrorException("Key '$key' is not of type integer");
+        }
+        $maxValue = ($features[$key]['type'] === 'int64') ? 9223372036854775807 : 2147483647;
+        if ($value > $maxValue || $value < -$maxValue) {
+          throw new HttpErrorException("The value exceeds the limit for a {$features[$key]['type']} integer.");
         }
         // Str
       } elseif (str_starts_with($features[$key]['type'], 'str')) {
         if (is_string($value) == False) {
           throw new HttpErrorException("Key '$key' is not of type string");
+        }
+        if (preg_match('/str\((\d+)\)/', $features[$key]['type'], $matches)) {
+          $max_string_len = (int) $matches[1];
+          if (strlen($value) > $max_string_len) {
+            throw new HttpErrorException("The string value: '$value' is too long. The max size is '$max_string_len'");
+          }
         }
         // TODO: Length validation
         // Array
@@ -798,6 +807,8 @@ abstract class AbstractBaseAPI
   /**
    * Check for valid expand parameters.
    */
+  //TODO: nice to have would be to be able to include objects that are further away in the relationship
+  //ex. from Hash include=hashlist.task to include all tasks from a hash (section 8.3 JSON API) 
   protected function makeExpandables(Request $request, array $validExpandables): array
   {
     $data = $request->getParsedBody();

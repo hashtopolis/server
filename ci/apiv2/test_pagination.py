@@ -6,7 +6,6 @@ class PaginationTest(BaseTest):
     model_class = HashType
 
     def pagination_test_helper(self, after, size):
-        # logger = logging.getLogger(__name__)
         objs = HashType.objects.paginate(size=size, after=after).get_pagination()
         all_objs = list(HashType.objects.all())
         index = None
