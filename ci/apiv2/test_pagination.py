@@ -1,6 +1,5 @@
 from hashtopolis import HashType
 from utils import BaseTest
-import logging
 
 
 class PaginationTest(BaseTest):
