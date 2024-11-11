@@ -300,7 +300,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return array($required_perm);
   }
 
-  //TODO check where this function can be used
   /**
    * Validate the Permission of a foreignkey and check if foreign key may be altered
    * 
@@ -559,28 +558,16 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $firstParams['page']['size'] = $pageSize;
     $firstParams['page']['after'] = 0;
     $linksFirst = $request->getUri()->getPath() . '?' .  urldecode(http_build_query($firstParams));
-
-    // Generate JSON:API GET output
-    $ret = [
-      "jsonapi" => [
-        "version" => "1.1",
-        "ext" => [
-          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-        ],
-      ],
-      "links" => [
+    $links = [
         "self" => $linksSelf,
         "first" => $linksFirst,
         "last" => $linksLast,
         "next" => $linksNext,
         "prev" => $linksPrev,
-      ],
-      "data" => $dataResources,
-    ];
+      ];
 
-    if (count($expands) > 0) {
-      $ret['included'] = $includedResources;
-    }
+    // Generate JSON:API GET output
+    $ret = self::createJsonResponse($dataResources, $links, $includedResources);
 
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
@@ -803,19 +790,13 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $apiClass = $this->container->get('classMapper')->get(get_class($object));
     $linksRelated = $this->routeParser->urlFor($apiClass . ':getToOneRelatedResource', $args);
 
-
-    // Generate JSON:API GET output
-    $ret = [
-      "jsonapi" => [
-        "version" => "1.1",
-      ],
-      "links" => [
+      $links = [
         "self" => $linksSelf,
         "related" => $linksRelated,
-      ],
-      "data" => $dataResource,
-    ];
+      ];
 
+    // Generate JSON:API GET output
+    $ret = self::createJsonResponse($dataResource, $links);
 
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
@@ -944,21 +925,12 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $linksNext = null;
 
     // Generate JSON:API GET output
-    $ret = [
-      "jsonapi" => [
-        "version" => "1.1",
-        "ext" => [
-          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-        ],
-      ],
-      "links" => [
-        "self" => $linksSelf,
-        "related" => $linksRelated,
-        "next" => $linksNext,
-      ],
-      "data" => $dataResources,
+    $links = [
+      "self" => $linksSelf,
+      "related" => $linksRelated,
+      "next" => $linksNext,
     ];
-
+    $ret = self::createJsonResponse($dataResources, $links);
 
     $body = $response->getBody();
     $body->write($this->ret2json($ret));
@@ -1004,7 +976,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $qF = new QueryFilter($relationKey, $args['id'], "=");
     $models = $factory->filter([Factory::FILTER => $qF]);
     //TODO Would be nicer if filter/factory could return a dict based on primarykeys directly
-    //rethink the logic with the dict
     $modelsDict = array();
     foreach ($models as $item) {
       $modelsDict[$item->getPrimaryKeyValue()] = $item;
@@ -1076,11 +1047,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
    * DELETE request for the to many relationship link
    * currently there is no object that can be altered this way because of constraints
    */
-  //TODO check if primarykey here is correctly
   public function deleteToManyRelationshipLink(Request $request, Response $response, array $args): Response
   {
     $this->preCommon($request);
-    // $object = $this->doFetch($request, $args['id']);
     $jsonBody = $request->getParsedBody();
 
     if ($jsonBody === null || !array_key_exists('data', $jsonBody) && is_array($jsonBody['data'])) {

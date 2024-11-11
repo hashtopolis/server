@@ -422,8 +422,6 @@ abstract class AbstractBaseAPI
       }
     } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
       $obj = array_map('intval', preg_split("/,/", $val, -1, PREG_SPLIT_NO_EMPTY));
-    } elseif ($feature['type'] == 'dict' && $feature['subtype'] = 'bool') {
-      $obj = unserialize($val);
     } else {
       // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
       $obj = $val;
@@ -765,7 +763,6 @@ abstract class AbstractBaseAPI
     }
   }
 
-  
   /**
    * Validate incoming parameter keys
    */
@@ -801,8 +798,6 @@ abstract class AbstractBaseAPI
       throw new HTException("Required parameter(s) '" .  join(", ", $missingKeys) . "' not specified");
     }
   }
-
-    
 
   /**
    * Check for valid expand parameters.
@@ -845,7 +840,6 @@ abstract class AbstractBaseAPI
       }
     }
   }
-
 
   /**
    * Check for valid filter parameters and build QueryFilter
@@ -1131,10 +1125,31 @@ abstract class AbstractBaseAPI
     return $retval;
   }
 
+  static function createJsonResponse(array $data = [], array $links = [], array $included = []) {
+    $response = [
+        "jsonapi" => [
+          "version" => "1.1",
+          "ext" => [
+            "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
+          ],
+        ],
+    ];
+    
+    if (!empty($links)) {
+      $response["links"] = $links;
+    }
+
+    $response["data"] = $data;
+
+    if (!empty($included)) {
+      $response["included"] = $included;
+    }
+
+    return $response;
+}
 
    /**
    * Get single Resource
-   * TODO: Make JSON Return module
    */
   protected static function getOneResource(object $apiClass, object $object, Request $request, Response $response, int $statusCode=200): Response
   {
@@ -1187,25 +1202,11 @@ abstract class AbstractBaseAPI
     $linksQuery = urldecode(http_build_query($selfParams));
     
     $linksSelf = $request->getUri()->getPath() . ((!empty($linksQuery)) ? '?' .  $linksQuery : '');
+    $links = ["self" => $linksSelf];
 
     // Generate JSON:API GET output
-    $ret = [
-      "jsonapi" => [
-        "version" => "1.1",
-        "ext" => [
-          "https://jsonapi.org/profiles/ethanresnick/cursor-pagination"
-        ],
-      ],
-      "links" => [
-        "self" => $linksSelf,
-      ],
-      "data" => $dataResources[0],
-    ];
+    $ret = self::createJsonResponse($dataResources[0], $links, $includedResources);
 
-    if (count($expands) > 0) {
-      $ret['included'] = $includedResources;
-    }
-  
     $body = $response->getBody();
     $body->write($apiClass->ret2json($ret));
 
@@ -1215,7 +1216,6 @@ abstract class AbstractBaseAPI
       //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in 
       //case of a POST request
   }
-
 
   /**
    * Override-able activated methods 
