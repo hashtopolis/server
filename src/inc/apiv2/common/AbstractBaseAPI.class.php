@@ -682,6 +682,37 @@ abstract class AbstractBaseAPI
   }
 
   /**
+   * Validate the Permission of a DBA column and check if it key may be altered
+   * 
+   * @param Request $request Current request that is being handled
+   * @param string $key Field to use as base for $objects
+   * @param array $features The features of the DBA object of the child
+   * 
+   * @throws HttpForbiddenException when it is not allowed to alter the key
+   * 
+   * @return void 
+   */
+  protected function isAllowedToMutate(Request $request, array $features, string $key) {
+      if (is_string($key) == False) {
+        throw new HttpErrorException("Key '$key' invalid", 403);
+      }
+      // Ensure key exists in target array
+      if (array_key_exists($key, $features) == False) {
+        throw new HttpErrorException("Key '$key' does not exists!", 403);
+      }
+
+      if ($features[$key]['read_only'] == True) {
+        throw new HttpForbiddenException($request, "Key '$key' is immutable");
+      }
+      if ($features[$key]['protected'] == True) {
+        throw new HttpForbiddenException($request, "Key '$key' is protected");
+      }
+      if ($features[$key]['private'] == True) {
+        throw new HttpForbiddenException($request, "Key '$key' is private");
+      }
+  }
+
+  /**
    * Validate incoming data
    */
   protected function validateData(array $data, array $features)

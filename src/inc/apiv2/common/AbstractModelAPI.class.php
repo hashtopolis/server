@@ -301,30 +301,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
   }
 
   /**
-   * Validate the Permission of a foreignkey and check if foreign key may be altered
-   * 
-   * @param ServerRequestInterface $request Current request that is being handled
-   * @param string $relationKey Field to use as base for $objects
-   * @param array $features The features of the DBA object of the child
-   * 
-   * @throws HttpForbiddenException when it is not allowed to alter the foreignkey of the child object
-   * 
-   * @return void 
-   */
-  final protected function checkForeignkeyPermission(ServerRequestInterface $request, string $relationKey, array $features)
-  {
-    if ($features[$relationKey]['read_only'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
-    }
-    if ($features[$relationKey]['protected'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
-    }
-    if ($features[$relationKey]['private'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
-    }
-  }
-
-  /**
    * API entry point for deletion of single object
    */
   public function deleteOne(Request $request, Response $response, array $args): Response
@@ -343,7 +319,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     return $response->withStatus(204)
       ->withHeader("Content-Type", "application/json");
   }
-
 
   /**
    * Request single object from database & validate permissons
@@ -623,25 +598,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     // Validate incoming data
     foreach (array_keys($attributes) as $key) {
-      // Ensure key is a regular string
-      if (is_string($key) == False) {
-        throw new HttpErrorException("Key '$key' invalid", 403);
-      }
-      // Ensure key exists in target array
-      if (array_key_exists($key, $aliasedfeatures) == False) {
-        throw new HttpErrorException("Key '$key' does not exists!", 403);
-      }
-
       // Ensure key can be updated 
-      if ($aliasedfeatures[$key]['read_only'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is immutable");
-      }
-      if ($aliasedfeatures[$key]['protected'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is protected");
-      }
-      if ($aliasedfeatures[$key]['private'] == True) {
-        throw new HttpForbiddenException($request, "Key '$key' is private");
-      }
+      $this->isAllowedToMutate($request, $aliasedfeatures, $key);
     }
     // Validate input data if it matches the correct type or subtype
     $this->validateData($attributes, $aliasedfeatures);
@@ -729,7 +687,6 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     return self::getOneResource($relationApiClass, $relationObject, $request, $response);
   }
-
 
   /**
    * API endpoint to get a to one relationship link
@@ -825,16 +782,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
       throw new HttpErrorException("Relation does not exist!");
     }
 
-    $feature = $this->getFeatures()[$relationKey];
-    if ($feature['read_only'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
-    }
-    if ($feature['protected'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
-    }
-    if ($feature['private'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
-    }
+    $features = $this->getFeatures();
+    $this->isAllowedToMutate($request, $features, $relationKey);
 
     $factory = $this->getFactory();
     $object = $this->doFetch($request, intval($args['id']));
@@ -961,15 +910,7 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
 
     $relationType = $relation['relationType'];
     $features = $this->getFeaturesOther($relationType);
-    if ($features[$relationKey]['read_only'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
-    }
-    if ($features[$relationKey]['protected'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
-    }
-    if ($features[$relationKey]['private'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
-    }
+    $this->isAllowedToMutate($request, $features, $relationKey);
 
     $factory = self::getModelFactory($relationType);
 
@@ -1033,7 +974,8 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     $primaryKey = $this->getPrimaryKeyOther($relationType);
     $features = $this->getFeaturesOther($relationType);
 
-    $this->checkForeignkeyPermission($request, $relationKey, $features);
+    // $this->checkForeignkeyPermission($request, $relationKey, $features);
+    $this->isAllowedToMutate($request, $features, $relationKey);
 
     $factory = self::getModelFactory($relationType);
     $updates = self::ResourceRecordArrayToUpdateArray($data, $args["id"]);
@@ -1064,17 +1006,9 @@ abstract class AbstractModelAPI extends AbstractBaseAPI
     }
 
     $relationType = $relation['relationType'];
-    $feature = $this->getFeaturesOther($relationType);
-    if ($feature[$relationKey]['read_only'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is immutable");
-    }
-    if ($feature[$relationKey]['protected'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is protected");
-    }
-    if ($feature[$relationKey]['private'] == True) {
-      throw new HttpForbiddenException($request, "Key '$relationKey' is private");
-    }
-    if ($feature[$relationKey]['null'] == False) {
+    $features = $this->getFeaturesOther($relationType);
+    $this->isAllowedToMutate($request, $features, $relationKey);
+    if ($features[$relationKey]['null'] == False) {
       // In this scenario another solution could be to delete object TODO?
       throw new HttpForbiddenException($request, "Key '$relationKey' cant be set to null");
     }
