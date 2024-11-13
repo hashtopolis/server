@@ -422,7 +422,10 @@ abstract class AbstractBaseAPI
       }
     } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
       $obj = array_map('intval', preg_split("/,/", $val, -1, PREG_SPLIT_NO_EMPTY));
-    } else {
+    } elseif (str_starts_with($feature['type'], 'str') && $val !== null) {
+      $obj = html_entity_decode($val, ENT_COMPAT, "UTF-8");
+    }
+    else {
       // TODO: Check all objects, instead of wild cast to hopefully-JSON compatible object
       $obj = $val;
     }
@@ -444,7 +447,7 @@ abstract class AbstractBaseAPI
       $val = htmlentities($obj, ENT_QUOTES, "UTF-8");
     } elseif ($feature['type'] == 'array' && $feature['subtype'] == 'int') {
       $val = implode(",", $obj);
-    } elseif ($feature['type'] == 'dict' && $feature['subtype'] = 'bool') {
+    } elseif ($feature['type'] == 'dict' && $feature['subtype'] == 'bool') {
       $val = serialize($obj);
     } else {
       $val = strval($obj);

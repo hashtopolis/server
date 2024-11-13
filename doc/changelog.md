@@ -1,9 +1,12 @@
-# v0.14.1 -> x.x.x
+# v0.14.1 -> v0.14.2
+
+## Tech Preview New API
+Release 0.14.2 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.
 
 ## Bugfixes
 - Setting maxAgent after creating doesn't update the maxAgents of the taskwrapper. This only causes issues when the maxAgents was set at creation time. #1013
 
-# v0.14.0 -> 0.14.1
+# v0.14.0 -> v0.14.1
 
 ## Tech Preview New API
 Release 0.14.1 comes with an update to the tech preview of APIv2. Be aware, it is a preview, it contains bugs and it will change; To use it, please see https://github.com/hashtopolis/server/wiki/Installation.

@@ -34,7 +34,7 @@ class HashlistUtils {
     if (!AccessUtils::userCanAccessHashlists($hashlist, $user)) {
       throw new HTException("No access to hashlist!");
     }
-    Factory::getHashlistFactory()->set($hashlist, Hashlist::NOTES, htmlentities($notes, ENT_QUOTES, "UTF-8"));
+    Factory::getHashlistFactory()->set($hashlist, Hashlist::NOTES, $notes);
   }
   
   /**
@@ -212,8 +212,9 @@ class HashlistUtils {
     fclose($wordlistFile);
     
     //add file to files list
-    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), null);
-    Factory::getFileFactory()->save($file);
+    $file = new File(null, $wordlistName, Util::filesize($wordlistFilename), $hashlist->getIsSecret(), 0, $hashlist->getAccessGroupId(), $wordCount);
+    $file = Factory::getFileFactory()->save($file);
+    # TODO: returning wordCount and wordlistName are not really required here as the name and the count are already given in the file object
     return [$wordCount, $wordlistName, $file];
   }
   
@@ -743,7 +744,6 @@ class HashlistUtils {
    * @throws HTException
    */
   public static function createHashlist($name, $isSalted, $isSecret, $isHexSalted, $separator, $format, $hashtype, $saltSeparator, $accessGroupId, $source, $post, $files, $user, $brainId, $brainFeatures) {
-    $name = htmlentities($name, ENT_QUOTES, "UTF-8");
     $salted = ($isSalted) ? "1" : "0";
     $secret = ($isSecret) ? "1" : "0";
     $hexsalted = ($isHexSalted) ? "1" : "0";

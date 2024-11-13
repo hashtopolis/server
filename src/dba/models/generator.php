@@ -56,7 +56,7 @@ $CONF['Agent'] = [
     ['name' => 'uid', 'read_only' => False, 'type' => 'str(100)'],
     ['name' => 'os', 'read_only' => False, 'type' => 'int'],
     ['name' => 'devices', 'read_only' => False, 'type' => 'str(65535)'],
-    ['name' => 'cmdPars', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'cmdPars', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'ignoreErrors', 'read_only' => False, 'type' => 'int', 'choices' => $FieldIgnoreErrorsChoices],
     ['name' => 'isActive', 'read_only' => False, 'type' => 'bool'],
     ['name' => 'isTrusted', 'read_only' => False, 'type' => 'bool'],
@@ -267,7 +267,7 @@ $CONF['HealthCheck'] = [
     ['name' => 'hashtypeId', 'read_only' => False, 'type' => 'int', 'relation' => 'HashType'],
     ['name' => 'crackerBinaryId', 'read_only' => False, 'type' => 'int', 'relation' => 'CrackerBinary'],
     ['name' => 'expectedCracks', 'read_only' => True, 'type' => 'int', 'protected' => True],
-    ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(256)', 'protected' => True],
+    ['name' => 'attackCmd', 'read_only' => True, 'type' => 'str(65535)', 'protected' => True],
   ],
 ];
 $CONF['HealthCheckAgent'] = [
@@ -319,7 +319,7 @@ $CONF['Pretask'] = [
   'columns' => [
     ['name' => 'pretaskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskName', 'read_only' => False, 'type' => 'str(100)'],
-    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
     ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],
     ['name' => 'color', 'read_only' => False, 'type' => 'str(20)'],
@@ -382,7 +382,7 @@ $CONF['Task'] = [
   'columns' => [
     ['name' => 'taskId', 'read_only' => True, 'type' => 'int', 'protected' => True],
     ['name' => 'taskName', 'read_only' => False, 'type' => 'str(256)'],
-    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(256)'],
+    ['name' => 'attackCmd', 'read_only' => False, 'type' => 'str(65535)'],
     ['name' => 'chunkTime', 'read_only' => False, 'type' => 'int'],
     ['name' => 'statusTimer', 'read_only' => False, 'type' => 'int'],
     ['name' => 'keyspace', 'read_only' => True, 'type' => 'int64', 'protected' => True],

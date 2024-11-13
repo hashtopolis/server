@@ -267,12 +267,19 @@ require __DIR__ . "/../../inc/apiv2/model/users.routes.php";
 require __DIR__ . "/../../inc/apiv2/model/vouchers.routes.php";
 
 require __DIR__ . "/../../inc/apiv2/helper/abortChunk.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/assignAgent.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSupertask.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/createSuperHashlist.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/exportCrackedHashes.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/exportLeftHashes.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/exportWordlist.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/importCrackedHashes.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/importFile.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/purgeTask.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/recountFileLines.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/resetChunk.routes.php";
 require __DIR__ . "/../../inc/apiv2/helper/setUserPassword.routes.php";
+require __DIR__ . "/../../inc/apiv2/helper/unassignAgent.routes.php";
 
 // NOTE: The ErrorMiddleware should be added after any middleware which may modify the response body
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
