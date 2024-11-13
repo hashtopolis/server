@@ -659,7 +659,7 @@ abstract class AbstractBaseAPI
   /**
    * Uniform conversion of php array to JSON output 
    */
-  protected function ret2json(array $result): string
+  protected static function ret2json(array $result): string
   {
     return json_encode($result, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . PHP_EOL;
   }
@@ -1159,7 +1159,7 @@ abstract class AbstractBaseAPI
     return $retval;
   }
 
-  static function createJsonResponse(array $data = [], array $links = [], array $included = []) {
+  static function createJsonResponse(array $data = [], array $links = [], array $included = [], array $meta = []) {
     $response = [
         "jsonapi" => [
           "version" => "1.1",
@@ -1171,6 +1171,10 @@ abstract class AbstractBaseAPI
     
     if (!empty($links)) {
       $response["links"] = $links;
+    }
+
+    if(!empty($meta)) {
+      $response["meta"] = $meta;
     }
 
     $response["data"] = $data;
@@ -1249,6 +1253,15 @@ abstract class AbstractBaseAPI
       ->withHeader("Location", $dataResources[0]["links"]["self"]);
       //for location we use links value from $dataresources because if we use $linksSelf, the wrong location gets returned in 
       //case of a POST request
+  }
+
+  //Meta response for helper functions that do not respond with resource records
+  protected static function getMetaResponse(array $meta, Request $request, Response $response, int $statusCode=200) {
+    $ret = self::createJsonResponse($meta=$meta);
+    $body = $response->getBody();
+    $body->write(self::ret2json($ret));
+
+    return $response->withStatus($statusCode)->withHeader("Content-Type", "application/vnd.api+json");
   }
 
   /**

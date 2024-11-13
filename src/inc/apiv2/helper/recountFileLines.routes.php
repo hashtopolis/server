@@ -24,7 +24,7 @@ class RecountFileFilesHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($data): array|null {
+  public function actionPost($data): object|array|null {
     // first retrieve the file, as fileCountLines does not check any permissions, therfore to be sure call getFile() first, even if it is not required technically
     FileUtils::getFile($data[File::FILE_ID], $this->getCurrentUser());
 

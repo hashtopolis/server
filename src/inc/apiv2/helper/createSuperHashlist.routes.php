@@ -34,7 +34,7 @@ class CreateSuperHashlistHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($data): object|null {
+  public function actionPost($data): object|array|null {
     /* Validate incoming hashlists */
     $hashlistIds = [];
     foreach($data["hashlistIds"] as $hashlistId) {

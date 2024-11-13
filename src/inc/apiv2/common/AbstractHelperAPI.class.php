@@ -17,7 +17,7 @@ use DBA\TaskWrapper;
 use DBA\User;
 
 abstract class AbstractHelperAPI extends AbstractBaseAPI {
-  abstract public function actionPost(array $data): object|null;
+  abstract public function actionPost(array $data): object|array|null;
   
 
   /* Chunk API endpoint specific call to abort chunk */
@@ -43,9 +43,15 @@ abstract class AbstractHelperAPI extends AbstractBaseAPI {
       return $response->withStatus(204);
     }
 
+
     /* Succesful executed action of create */
-    $apiClass = new ($this->container->get('classMapper')->get($newObject::class))($this->container);
-    return self::getOneResource($apiClass, $newObject, $request, $response);
+    if (is_object($newObject)) {
+      $apiClass = new ($this->container->get('classMapper')->get($newObject::class))($this->container);
+      return self::getOneResource($apiClass, $newObject, $request, $response);
+    /* A meta response of a helper function */
+    } elseif (is_array($newObject)) {
+      return self::getMetaResponse($newObject, $request, $response);
+    }
   }  
 
   /**

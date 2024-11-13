@@ -24,7 +24,7 @@ class ChunkResetHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost(array $data): object|null {
+  public function actionPost(array $data): object|array|null {
     $chunk = self::getChunk($data[Chunk::CHUNK_ID]);
     TaskUtils::resetChunk($chunk->getId(), $this->getCurrentUser());
     return null;

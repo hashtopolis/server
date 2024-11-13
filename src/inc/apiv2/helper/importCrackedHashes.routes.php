@@ -26,12 +26,11 @@ class ImportCrackedHashesHelperAPI extends AbstractHelperAPI {
     ];
   }
   
-  public function actionPost($data): array|null {
+  public function actionPost($data): object|array|null {
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     
     $result = HashlistUtils::processZap($hashlist->getId(), $data["separator"], "paste", ["hashfield" => $data["sourceData"]], [], $this->getCurrentUser());
     
-    # TODO: Check how to handle custom return messages that are not object, probably we want that to be in some kind of standardized form.
     return [
       "totalLines" => $result[0],
       "newCracked" => $result[1],

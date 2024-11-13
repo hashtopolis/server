@@ -34,7 +34,7 @@ class CreateSupertaskHelperAPI extends AbstractHelperAPI {
     ];
   }
 
-  public function actionPost($data): object|null {
+  public function actionPost($data): object|array|null {
     $supertaskTemplate = self::getSupertask($data["supertaskTemplateId"]);
     $hashlist = self::getHashlist($data[Hashlist::HASHLIST_ID]);
     $crackerBinary = self::getCrackerBinary($data["crackerVersionId"]);
